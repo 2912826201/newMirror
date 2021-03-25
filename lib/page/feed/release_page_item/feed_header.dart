@@ -46,7 +46,7 @@ class FeedHeader extends StatelessWidget {
       for (MediaFileModel v in selectedMediaFiles.list) {
         if (v.croppedImageData != null) {
           i++;
-          File imageFile = await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString());
+          File imageFile = await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString(),isPublish:true);
           v.file = imageFile;
         }
       }
@@ -54,7 +54,7 @@ class FeedHeader extends StatelessWidget {
       for (MediaFileModel v in selectedMediaFiles.list) {
         if (v.thumb != null) {
           i++;
-          File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString());
+          File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString(),isPublish:true);
           v.thumbPath = thumbFile.path;
         }
       }

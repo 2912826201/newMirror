@@ -55,50 +55,61 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    // 发布动态页发送发布model通知
     EventBus.getDefault().registerSingleParameter(
         (postprogress) => pulishFeed(postprogress, isBackToTheTop: true), EVENTBUS_HOME_PAGE,
         registerName: EVENTBUS_POST_PORGRESS_VIEW);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (AppPrefs.getPublishFeedLocalInsertData(
-              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
-          null) {
-        print("HomePageState发布失败数据");
-        // 取出发布动态数据
-        postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-        print("取出失败数据postprogressModel：${postprogressModel.toString()}");
-        if (postprogressModel != null && postprogressModel.postFeedModel != null) {
-          print("1111111111111");
-          postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
-            // 这里是之前未处理发布页图片和视频数据未解析成功直接发布过来时的情况
-            try{
-              v.file = File(v.filePath);
-            }catch(error) {
-              // 当成功处理清空数据
-              // 重新赋值存入
-              AppPrefs.setPublishFeedLocalInsertData(
-                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-              // todo 清除图片路径
 
-              // 清空发布model
-              postprogressModel.postFeedModel = null;
-              //还原进度条
-              postprogressModel.plannedSpeed = 0.0;
-              streamController.sink.add(0.0);
-              postprogressModel.isPublish = true;
-              streamProgress.sink.add(postprogressModel);
-              return;
-            }
-          });
-          postprogressModel.plannedSpeed = -1.0;
-          postprogressModel.showPulishView = true;
-          postprogressModel.isPublish = false;
-          streamController.sink.add(60.0);
-          streamProgress.sink.add(postprogressModel);
-        }
-      }
+
+    // 登录页重新登录获取发布失败model通知
+    EventBus.getDefault().registerNoParameter(postModelAssignment,EVENTBUS_HOME_PAGE,
+        registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      postModelAssignment();
     });
     _initConnectivity();
+  }
+
+  // 发布失败后发布model赋值
+  postModelAssignment() {
+    if (AppPrefs.getPublishFeedLocalInsertData(
+        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+        null) {
+      print("HomePageState发布失败数据");
+      // 取出发布动态数据
+      postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+      print("取出失败数据postprogressModel：${postprogressModel.toString()}");
+      if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+        print("1111111111111");
+        postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
+          // 这里是之前未处理发布页图片和视频数据未解析成功直接发布过来时的情况
+          try{
+            v.file = File(v.filePath);
+          }catch(error) {
+            // 当成功处理清空数据
+            // 重新赋值存入
+            AppPrefs.setPublishFeedLocalInsertData(
+                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+            // todo 清除图片路径
+
+            // 清空发布model
+            postprogressModel.postFeedModel = null;
+            //还原进度条
+            postprogressModel.plannedSpeed = 0.0;
+            streamController.sink.add(0.0);
+            postprogressModel.isPublish = true;
+            streamProgress.sink.add(postprogressModel);
+            return;
+          }
+        });
+        postprogressModel.plannedSpeed = -1.0;
+        postprogressModel.showPulishView = true;
+        postprogressModel.isPublish = false;
+        streamController.sink.add(60.0);
+        streamProgress.sink.add(postprogressModel);
+      }
+    }
   }
 
   // 取出发布动态数据
@@ -270,6 +281,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             AppPrefs.setPublishFeedLocalInsertData(
                 "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
             // todo 清除图片路径
+            print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file}");
 
             // 清空发布model
             postprogressModel.postFeedModel = null;
@@ -288,6 +300,40 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           streamProgress.sink.add(postprogressModel);
         }
       }
+    }
+  }
+  void _clearCache(String path) async {
+    try {
+      //删除缓存目录
+      Directory file = Directory(path);
+      await delDir(file);
+    } catch (e) {
+      print(e);
+      Toast.show('图片缓存失败', context);
+    } finally {}
+  }
+
+  ///递归方式删除目录
+  Future<Null> delDir(FileSystemEntity file) async {
+    try {
+      await file.stat().then((value) => print('========文件信息---------------$value'));
+      print('=============path=============${file.path}');
+      if (file is Directory) {
+        print('=========================================if');
+        final List<FileSystemEntity> children = file.listSync();
+        if(children.isNotEmpty){
+          print('=====================${children.first.path}');
+          for (final FileSystemEntity child in children) {
+            await delDir(child);
+          }
+        }
+      }else{
+        //只清理子文件
+        print('=========================================else');
+        await file.delete(recursive: false);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

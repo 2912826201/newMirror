@@ -161,3 +161,5 @@ const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
 const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
 // 是否可发布动态和展示进度视图
 const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";
+// 发布动态失败后是否获取数据库失败model
+const String EVENTBUS_GET_FAILURE_MODEL = "getfailuremodel";

@@ -7,6 +7,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
@@ -24,6 +25,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -264,8 +266,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
       child: Container(
         height: certificateBtnHeight,
         decoration: BoxDecoration(
-        color:_smsBtnColor,
-        borderRadius: BorderRadius.all(Radius.circular(3)),),
+          color: _smsBtnColor,
+          borderRadius: BorderRadius.all(Radius.circular(3)),
+        ),
         child: Row(
           children: [
             Spacer(),
@@ -317,9 +320,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
           AppRouter.navigateToPerfectUserPage(context);
         } else {
           //所有都齐全的情况 登录完成
-          try{
+          try {
             await _afterLogin(token);
-          }catch(e){
+          } catch (e) {
             print(e);
           }
         }
@@ -334,7 +337,6 @@ class _SmsCodePageState extends State<SmsCodePage> {
     });
   }
 
-
   //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
   _afterLogin(TokenModel token) async {
     TokenDto tokenDto = TokenDto.fromTokenModel(token);
@@ -342,7 +344,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     context.read<TokenNotifier>().setToken(tokenDto);
     //然后要去取一次个人用户信息
     UserModel user = await getUserInfo();
-    if(user!=null){
+    if (user != null) {
       print('((((((((((((((((((((((((((${user.uid}))))))))))))))))))))))))))))))');
       ProfileDto profile = ProfileDto.fromUserModel(user);
       await ProfileDBHelper().insertProfile(profile);
@@ -355,11 +357,16 @@ class _SmsCodePageState extends State<SmsCodePage> {
       //一些非关键数据获取
       _getMoreInfo();
       //页面跳转至登录前的页面
+      // 存在发布失败数据通知homePage获取数据
+      if (AppPrefs.getPublishFeedLocalInsertData(
+              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+          null) {
+        EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
+      }
       AppRouter.popToBeforeLogin(context);
-    }else{
+    } else {
       print('------------------用户信息请求失败');
     }
-
   }
 
   _getMoreInfo() async {
