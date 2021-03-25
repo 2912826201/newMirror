@@ -586,41 +586,46 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               ),
             ),
             Positioned(
-              top: 10,
-              right: 10,
+              top: 0,
+              right: 0,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => _onCheckBoxTap(context, entity),
-                child: notifier.selectedMap.containsKey(entity.id)
-                    ? Container(
-                        height: 20,
-                        width: 20,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColor.mainRed,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColor.mainRed, width: 1),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  width: 40,
+                  child: notifier.selectedMap.containsKey(entity.id)
+                      ? Container(
+                          height: 20,
+                          width: 20,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColor.mainRed,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColor.mainRed, width: 1),
+                          ),
+                          child: widget.maxImageAmount == 1 && widget.startCount == 0
+                              ? Icon(
+                                  Icons.check,
+                                  color: AppColor.white,
+                                  size: 16,
+                                )
+                              : Text(
+                                  "${notifier.selectedMap[entity.id].order + widget.startCount}",
+                                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                                ),
+                        )
+                      : Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: AppColor.black.withOpacity(0.36),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColor.white, width: 1),
+                          ),
                         ),
-                        child: widget.maxImageAmount == 1 && widget.startCount == 0
-                            ? Icon(
-                                Icons.check,
-                                color: AppColor.white,
-                                size: 16,
-                              )
-                            : Text(
-                                "${notifier.selectedMap[entity.id].order + widget.startCount}",
-                                style: TextStyle(color: AppColor.white, fontSize: 16),
-                              ),
-                      )
-                    : Container(
-                        height: 20,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: AppColor.black.withOpacity(0.36),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColor.white, width: 1),
-                        ),
-                      ),
+                ),
               ),
             ),
           ]),
