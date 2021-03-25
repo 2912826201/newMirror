@@ -128,12 +128,12 @@ class DynamicListLayout extends StatelessWidget {
               ),
 
               // 评论文本
-              (context.watch<FeedMapNotifier>().value.feedMap != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id] != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id].comments != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id].comments.length != 0)
-                  ? CommentLayout(model: model)
-                  : Container(),
+              // (context.watch<FeedMapNotifier>().value.feedMap != null &&
+              //         context.watch<FeedMapNotifier>().value.feedMap[model.id] != null &&
+              //         context.watch<FeedMapNotifier>().value.feedMap[model.id].comments != null &&
+              //         context.watch<FeedMapNotifier>().value.feedMap[model.id].comments.length != 0)
+              //     ? CommentLayout(model: model)
+              //     : Container(),
               // 输入框
               CommentInputBox(feedModel: model),
               // 推荐用户

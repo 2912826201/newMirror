@@ -37,7 +37,9 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true; //必须重写
   // taBar和TabBarView必要的
   TabController controller;
 
@@ -89,6 +91,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           }catch(error) {
             // 当成功处理清空数据
             // 重新赋值存入
+            print("清空数据_______________________");
             AppPrefs.setPublishFeedLocalInsertData(
                 "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
             // todo 清除图片路径

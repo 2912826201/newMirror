@@ -150,7 +150,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               border: InputBorder.none,
             ),
             inputFormatters: [
-              ExpressionTeamDeleteFormatter(maxLength: 15)
+              ExpressionTeamDeleteFormatter(maxLength: 30)
             ],
           ),
           Container(

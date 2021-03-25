@@ -16,6 +16,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/expression_team_delete_Formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:toast/toast.dart';
@@ -101,7 +102,9 @@ class _feedBackPage extends State<FeedBackPage> {
           hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
           border: InputBorder.none,
         ),
+        inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
         onChanged: (value) {
+          print('----------------${utf8.encode(value).length}');
           setState(() {
             editText = value;
           });
