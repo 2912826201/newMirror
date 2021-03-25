@@ -1,9 +1,3 @@
-
-
-
-import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:mirror/constant/color.dart';
-
 class ProfileModel{
   int uid;
   int followingCount = 0;
