@@ -145,6 +145,8 @@ const String EVENTBUS_POST_FEED_HEADER = "postFeedHeader";
 const String EVENTBUS_HOME_PAGE = "homePage";
 // 发布进度视图页
 const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
+// 底部bar
+const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 
 ///广播类型
 //发布动态
@@ -163,3 +165,5 @@ const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDele
 const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";
 // 发布动态失败后是否获取数据库失败model
 const String EVENTBUS_GET_FAILURE_MODEL = "getfailuremodel";
+//底部bar未读数
+const String EVENTBUS_IF_TAB_BAR_UNREAD = "_IFTabBarStateUnreadMessageNumber";

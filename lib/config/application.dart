@@ -149,6 +149,11 @@ class Application {
   // 话题model的map
   static Map<int, TopicDtoModel> topicMap= {};
 
+  //未读数-消息
+  static int unreadMessageNumber=0;
+  //未读数-通知
+  static int unreadNoticeNumber=0;
+
   //发布失败动态key
   static String postFailurekey  = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
