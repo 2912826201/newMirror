@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
@@ -30,33 +31,17 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends XCState {
   int currentIndex;
-  bool isInit = false;
-  List titles = ["首页", "训练", "消息", "我的"];
-  List<Widget> normalIcons = [];
-  List<Widget> selectedIcons = [];
-  double _start = 0;
+  final pageController = PageController();
 
   @override
   void initState() {
     super.initState();
     currentIndex = 0;
-    _start = (ScreenUtil.instance.width / 5) / 7;
-    EventBus.getDefault().registerNoParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
-  }
-
-  void _postFeedCallBack() {
-    print('--------------广播监听回调');
-    reload(() {
-      _start = (ScreenUtil.instance.width / 5) / 7;
-      currentIndex = 0;
-    });
   }
 
   @override
   void dispose() {
-    // controller.dispose();
     super.dispose();
-    /* EventBus.getDefault().unRegister(registerName:EVENTBUS_POSTFEED_CALLBACK,pageName:EVENTBUS_MAIN_PAGE);*/
   }
 
   _getFollowCount() async {
@@ -80,85 +65,40 @@ class MainPageState extends XCState {
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
-    double itemWidth = MediaQuery.of(context).size.width / 5;
-    // print("初始创建底部页");
-    // print(ScreenUtil.instance.bottomBarHeight);
-    // return ChangeNotifierProvider(
-    //     create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
-    // builder: (context, _) {
-    // return ChangeNotifierProvider(
-    //   create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
-    //   builder: (context, _) {
     return Scaffold(
-      // 此属性是重新计算布局空间大小
-      // 内部元素要监听键盘高度必需要设置为false,
-      // resizeToAvoidBottomInset: true,
-      bottomNavigationBar: IFTabBar(
-        tabBarClickListener: (index) {
-          if (currentIndex == index) {
-            return;
-          }
-          print('------------------------点击回调$index');
-          reload(() {
+        bottomNavigationBar: IFTabBar(
+          tabBarClickListener: (index) {
+            if (currentIndex == index) {
+              return;
+            }
+            pageController.jumpToPage(index);
             currentIndex = index;
-          });
-          if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-            _getUnReadFeedCount();
-          }
-          switch (index) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              getUnReads();
-              break;
-            case 3:
-              _getFollowCount();
-              break;
-          }
-        },
-      ),
-      // SlidingUpPanel
-      body:
-          // pages[currentIndex]
-          Stack(
-        children: <Widget>[
-          new Offstage(
-            offstage: currentIndex != 0, //这里控制
-            child: HomePage(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 1, //这里控制
-            child: TrainingPage(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 2, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 3, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
-          ),
-        ],
-      ),
-      // returnView(currentIndex),
-    );
-    //   },
-    // );
-  }
-}
-
-// 底部bottomNavigationBar item点击监听。
-class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
-  SelectedbottomNavigationBarNotifier(this.selectedIndex);
-
-  int selectedIndex;
-
-  changeIndex(int index) {
-    print("changeIndex $index");
-    this.selectedIndex = index;
-    //控制panel的控制器对象
-    notifyListeners();
+            if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
+              _getUnReadFeedCount();
+            }
+            switch (index) {
+              case 0:
+                break;
+              case 1:
+                break;
+              case 2:
+                getUnReads();
+                break;
+              case 3:
+                _getFollowCount();
+                break;
+            }
+          },
+        ),
+        body: PageView(
+          controller: pageController,
+          children: [
+            HomePage(),
+            TrainingPage(),
+            MessagePage(),
+            ProfilePage(),
+          ],
+          physics: NeverScrollableScrollPhysics(), // 禁止滑动
+        ));
   }
 }

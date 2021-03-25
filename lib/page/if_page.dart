@@ -130,11 +130,11 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
           Container(
         child: Stack(
           children: [
-            ChangeNotifierProvider(
-              create: (_) => SelectedbottomNavigationBarNotifier(0),
-              builder: (context, _) {
+            // ChangeNotifierProvider(
+            //   create: (_) => SelectedbottomNavigationBarNotifier(0),
+            //   builder: (context, _) {
                 // 暂时屏蔽负一屏
-                return MainPage();
+                 MainPage()
                 // return ScrollConfiguration(
                 //   behavior: NoBlueEffectBehavior(),
                 //   child: UnionOuterTabBarView(
@@ -146,8 +146,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                 //     children: _createTabContent(),
                 //   ),
                 // );
-              },
-            ),
+              // },
+            // ),
           ],
         ),
       ),
