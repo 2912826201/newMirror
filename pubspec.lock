@@ -7,7 +7,7 @@ packages:
       name: agora_rtc_engine
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.2.1"
+    version: "3.3.2"
   amap_core_fluttify:
     dependency: transitive
     description:
@@ -701,7 +701,7 @@ packages:
       name: photo_manager
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.6.0"
+    version: "0.5.8"
   photo_view:
     dependency: "direct main"
     description:
