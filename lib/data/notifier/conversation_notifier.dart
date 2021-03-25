@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/util/event_bus.dart';
 
 /// conversation_notifier
 /// Created by yangjiayi on 2020/12/21.
@@ -38,7 +40,7 @@ class ConversationNotifier with ChangeNotifier {
     _commonIdList.clear();
     _conversationMap.clear();
 
-    notifyListeners();
+    _notifyListeners();
   }
 
   insertTopList(List<ConversationDto> topList) {
@@ -49,7 +51,7 @@ class ConversationNotifier with ChangeNotifier {
       _conversationMap[dto.id] = dto;
     }
 
-    notifyListeners();
+    _notifyListeners();
   }
 
   insertCommonList(List<ConversationDto> commonList) {
@@ -60,7 +62,7 @@ class ConversationNotifier with ChangeNotifier {
       _conversationMap[dto.id] = dto;
     }
 
-    notifyListeners();
+    _notifyListeners();
   }
 
   removeConversation(List<ConversationDto> dtoList) {
@@ -70,19 +72,33 @@ class ConversationNotifier with ChangeNotifier {
       _conversationMap.remove(dto.id);
     }
 
-    notifyListeners();
+    _notifyListeners();
   }
 
   updateConversation(ConversationDto dto) {
     _conversationMap[dto.id] = dto;
-    notifyListeners();
+    _notifyListeners();
   }
 
   updateConversationName(String name,ConversationDto dto){
     if(_conversationMap[dto.id]!=null){
       _conversationMap[dto.id].name=name;
-      notifyListeners();
+      _notifyListeners();
     }
   }
 
+  _notifyListeners(){
+    notifyListeners();
+    _updateUnreadMessageNumber();
+  }
+
+  _updateUnreadMessageNumber(){
+    Application.unreadMessageNumber=0;
+    _conversationMap.forEach((key, value) {
+      print("--key, value--${key} ${value}");
+      print("--value.runtimeType--" + value.runtimeType.toString());
+      Application.unreadMessageNumber+=value.unreadCount;
+    });
+    EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+  }
 }

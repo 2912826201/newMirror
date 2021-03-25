@@ -28,6 +28,7 @@ import 'package:video_player/video_player.dart';
 final int _horizontalCount = 4;
 final double _itemMargin = 1;
 final int _galleryPageSize = 100;
+final int _commitInterval = 1000;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
@@ -99,6 +100,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   bool _permissionGranted;
 
   bool _isPaused = false;
+
+  // 右上角下一步按钮点击的时间戳
+  int _commitTimeStamp = 0;
+  
+  bool _isGettingImage = false;
 
   // @override
   // bool get wantKeepAlive => true;
@@ -448,6 +454,10 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   // item本体点击事件
   _onGridItemTap(BuildContext context, AssetEntity entity) async {
+    if(_isGettingImage){
+      return;
+    }
+
     final notifier = context.read<SelectedMapNotifier>();
     if (notifier.currentEntity != null && entity.id == notifier.currentEntity.id) {
       //如果之前选中的和点到的一样 则不做操作
@@ -458,7 +468,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     // 当最后一张图是预览并选中时 需要在点击下一步按钮时获取这张图
     if (widget.needCrop) {
       if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
-        _getImage(context, notifier.currentEntity.id);
+        _getImage(context, notifier.currentEntity.id, toData: true);
       }
     }
 
@@ -488,6 +498,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   // item选框点击事件
   // 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
   _onCheckBoxTap(BuildContext context, AssetEntity entity) {
+    if(_isGettingImage){
+      return;
+    }
     entity.file.then((value) => print(entity.id + ":" + value.path));
     bool isNew = context.read<SelectedMapNotifier>().handleMapChange(entity);
     if (isNew) {
@@ -586,41 +599,46 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               ),
             ),
             Positioned(
-              top: 10,
-              right: 10,
+              top: 0,
+              right: 0,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => _onCheckBoxTap(context, entity),
-                child: notifier.selectedMap.containsKey(entity.id)
-                    ? Container(
-                        height: 20,
-                        width: 20,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColor.mainRed,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColor.mainRed, width: 1),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  width: 40,
+                  child: notifier.selectedMap.containsKey(entity.id)
+                      ? Container(
+                          height: 20,
+                          width: 20,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColor.mainRed,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColor.mainRed, width: 1),
+                          ),
+                          child: widget.maxImageAmount == 1 && widget.startCount == 0
+                              ? Icon(
+                                  Icons.check,
+                                  color: AppColor.white,
+                                  size: 16,
+                                )
+                              : Text(
+                                  "${notifier.selectedMap[entity.id].order + widget.startCount}",
+                                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                                ),
+                        )
+                      : Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: AppColor.black.withOpacity(0.36),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColor.white, width: 1),
+                          ),
                         ),
-                        child: widget.maxImageAmount == 1 && widget.startCount == 0
-                            ? Icon(
-                                Icons.check,
-                                color: AppColor.white,
-                                size: 16,
-                              )
-                            : Text(
-                                "${notifier.selectedMap[entity.id].order + widget.startCount}",
-                                style: TextStyle(color: AppColor.white, fontSize: 16),
-                              ),
-                      )
-                    : Container(
-                        height: 20,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: AppColor.black.withOpacity(0.36),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColor.white, width: 1),
-                        ),
-                      ),
+                ),
               ),
             ),
           ]),
@@ -764,6 +782,12 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                 ? CustomRedButton.buttonStateDisable
                 : CustomRedButton.buttonStateNormal,
             () async {
+              int time = DateTime.now().millisecondsSinceEpoch;
+              if (time - _commitTimeStamp < _commitInterval) {
+                return;
+              }
+              _commitTimeStamp = time;
+
               // 先处理选中的结果
               final notifier = context.read<SelectedMapNotifier>();
 
@@ -786,7 +810,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               if (widget.needCrop && selectedResultType == AssetType.image) {
                 if (notifier.currentEntity != null &&
                     (notifier.selectedMap.isEmpty || notifier.selectedMap.containsKey(notifier.currentEntity.id))) {
-                  await _getImage(context, notifier.currentEntity.id);
+                  await _getImage(context, notifier.currentEntity.id, toData: true);
                 }
               }
 
@@ -818,6 +842,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                   switch (selectedResultType) {
                     case AssetType.image:
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
+                      mediaFileModel.croppedImageData = notifier.imageDataMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
                       mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
                       mediaFileModel.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
@@ -986,18 +1011,23 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     );
   }
 
-  _getImage(BuildContext context, String id) async {
+  _getImage(BuildContext context, String id, {bool toData = false}) async {
     print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
-
+    _isGettingImage = true;
     ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
 
     print("1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
     print(image);
-    // ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    // print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-    // Uint8List picBytes = byteData.buffer.asUint8List();
-    // print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
     context.read<SelectedMapNotifier>().addImage(id, image);
+    // 将图片数据先转好可节省后续转换的用时
+    if (toData) {
+      ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+      Uint8List picBytes = byteData.buffer.asUint8List();
+      print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+      context.read<SelectedMapNotifier>().addImageData(id, picBytes);
+    }
+    _isGettingImage = false;
   }
 
   _changeCurrentRatio() {
@@ -1058,6 +1088,10 @@ class SelectedMapNotifier with ChangeNotifier {
   Map<String, ui.Image> _imageMap = {};
 
   Map<String, ui.Image> get imageMap => _imageMap;
+
+  Map<String, Uint8List> _imageDataMap = {};
+
+  Map<String, Uint8List> get imageDataMap => _imageDataMap;
 
   // 记录已选的图片裁剪尺寸
   Size _selectedImageSize;
@@ -1153,8 +1187,16 @@ class SelectedMapNotifier with ChangeNotifier {
     _imageMap[id] = image;
   }
 
+  addImageData(String id, Uint8List imageData) {
+    _imageDataMap[id] = imageData;
+  }
+
   removeImage(String id) {
     _imageMap.remove(id);
+  }
+
+  removeImageData(String id) {
+    _imageDataMap.remove(id);
   }
 
   setOffset(String key, double offsetRatioX, double offsetRatioY) {

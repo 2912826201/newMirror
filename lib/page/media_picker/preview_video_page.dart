@@ -9,6 +9,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -53,7 +54,19 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
             svgName: AppIcon.nav_close,
             iconColor: AppColor.white,
             onTap: () {
-              Navigator.pop(context);
+              showAppDialog(context,
+                  title: "放弃视频?",
+                  info: "如果现在关闭相机,你的视频将被删除",
+                  barrierDismissible:false,
+                  cancel: AppDialogButton("放弃", () {
+                    print("点了放弃");
+                    Navigator.pop(context);
+                    return true;
+                  }),
+                  confirm: AppDialogButton("保留", () {
+                    print("点击了保留");
+                    return true;
+                  }));
             },
           ),
           actions: [

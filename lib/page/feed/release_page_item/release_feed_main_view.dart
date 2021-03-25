@@ -221,7 +221,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   // 解析数据
   resolveData() async {
     for (MediaFileModel model in widget.selectedMediaFiles.list) {
-      if (model.croppedImage != null) {
+      if (model.croppedImage != null && model.croppedImageData == null) {
         ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
         Uint8List picBytes = byteData.buffer.asUint8List();
         model.croppedImageData = picBytes;
@@ -271,7 +271,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             Application.selectedMediaFiles = null;
             print(files.type + ":" + files.list.toString());
             for (MediaFileModel model in files.list) {
-              if (model.croppedImage != null) {
+              if (model.croppedImage != null && model.croppedImageData == null) {
                 print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                 ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
                 print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
