@@ -392,9 +392,12 @@ class StringUtil {
   static String maxLength(String str, int len,{bool isOmit=true}) {
     if(str.length>len){
       String backString = "";
+      bool breakFor = false;
       for(int i = 0;i < str.characters.toList().length;i++){
-        if((backString+str.characters.toList()[i]).length<=len){
+        if((backString+str.characters.toList()[i]).length<=len&&!breakFor){
           backString += str.characters.toList()[i];
+        }else{
+          breakFor = true;
         }
       }
       return backString;

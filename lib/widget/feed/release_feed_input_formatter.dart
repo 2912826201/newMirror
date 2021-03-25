@@ -290,16 +290,43 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
     }
-    if(!isRule){
-      if((oldValue.text.length-newValue.text.length)<=oldValue.text.characters
-          .last.length){
-        print('------------------------------表情删除监听');
-        return TextEditingValue(text:oldValue.text.characters.skipLast(1).string,selection: TextSelection
-          (baseOffset:oldValue.text.characters.skipLast(1).string
-            .length,extentOffset: oldValue.text.characters.skipLast(1).string.length,
-        ));
+    /*if(!isRule){
+      ///这是删除的监听
+      if (oldValue.text.length > newValue.text.length) {
+        print('-------------------------------删除监听');
+
+        ///这是多选删除
+        if(oldValue.text.characters.length-newValue.text.characters.length>1){
+          return newValue;
+        }
+
+        ///这是单字符删除
+        print('------------------------------删除监听${newValue.selection.baseOffset}---${oldValue.selection.baseOffset}');
+        String backText = "";
+        int choseIndex;
+        for(int i = 0;i<oldValue.text.characters
+            .toList().length;i++){
+          if(oldValue.text.characters
+              .toList()[i].length+backText.length-1<newValue.selection.baseOffset){
+            backText += oldValue.text.characters
+                .toList()[i];
+            print('--------------------${backText}');
+          }else if(choseIndex==null){
+            choseIndex = i;
+          }else if(choseIndex!=i){
+            backText += oldValue.text.characters.toList()[i];
+          }
+        }
+        return TextEditingValue(
+            text:backText,
+            selection: TextSelection(
+              baseOffset: oldValue.text.characters
+                  .getRange(0,choseIndex).string.length,
+              extentOffset:  oldValue.text.characters
+                  .getRange(0,choseIndex).string.length,
+            ));
       }
-    }
+    }*/
     // if(!isRule) {
     //   print("提前返回了");
     //   return newValue;
