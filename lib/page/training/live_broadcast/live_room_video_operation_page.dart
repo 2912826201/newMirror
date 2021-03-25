@@ -970,6 +970,9 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
             resetOnlineUserNumber(--onlineUserNumber);
             print("${textMessage.sendUserInfo.name}退出了直播间");
             subLiveRoom(textMessage);
+          }else if(null!=contentMap["name"]&&contentMap["name"]=="feeling"){
+            print("弹出训练感受！！！${contentMap["data"].toString()}");
+            _showFeelingDialog(contentMap["data"]);
           }
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
@@ -1015,7 +1018,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
   ///这是关注的方法
   _onClickAttention()async {
     if (!(coachRelation == 1 || coachRelation == 3)) {
-      int attntionResult = await ProfileAddFollow(widget.coachId);
+      int attntionResult = await ProfileAddFollow(widget.coachId,type: 1);
       print('关注监听=========================================$attntionResult');
       if (attntionResult == 1 || attntionResult == 3) {
         coachRelation = 1;
@@ -1081,6 +1084,27 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
     msg.content = jsonEncode(textMap);
     await Application.rongCloud.sendChatRoomMessage(widget.coachId.toString(), msg);
   }
+
+
+  //显示dialog-训练感受
+  _showFeelingDialog(dynamic mapList){
+    var contentMap = json.decode(mapList.toString());
+    showAppDialog(context,
+        title: "训练感受",
+        info: "请问训练感觉怎么样呢？",
+        barrierDismissible: false,
+        buttonList: [
+          for(Map<String,dynamic> map in contentMap)
+            AppDialogButton(map["content"]??"", () {
+              print("${map["content"]},${map["id"]}");
+              if(null!=map["id"]) {
+                feeling(widget.liveCourseId, map["id"].toString());
+              }
+              return true;
+            }),
+        ]);
+  }
+
 
   static Element findChild(Element e, Widget w) {
     Element child;
