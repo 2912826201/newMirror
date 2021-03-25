@@ -217,7 +217,11 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                               child: Text(
                                 DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
                                 style: TextStyle(
-                                    color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
+                                  color: AppColor.white.withOpacity(0.85),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                  fontFamily: "BebasNeue",
+                                ),
                               ),
                             ),
                             Container(
@@ -355,23 +359,33 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_formatTime(_partList[_currentPartIndex] == null ? 0 : _partList[_currentPartIndex].duration),
-                    style:
-                        TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 28, fontWeight: FontWeight.w500)),
+                Text(
+                  _formatTime(_partList[_currentPartIndex] == null ? 0 : _partList[_currentPartIndex].duration),
+                  style: TextStyle(
+                    color: AppColor.white.withOpacity(0.85),
+                    fontSize: 28,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "BebasNeue",
+                  ),
+                ),
                 SizedBox(height: 7.5),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16)),
+                    Text(
+                      _partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                    ),
                     SizedBox(
                       width: 8,
                     ),
-                    Text("${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
-                        style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16)),
+                    Text(
+                      "${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                    ),
                     SizedBox(
                       width: 8,
                     ),
@@ -410,7 +424,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                           value: _progress,
                           strokeWidth: 3,
                           backgroundColor: AppColor.transparent,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColor.white.withOpacity(0.24)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColor.white.withOpacity(0.24),
+                          ),
                         ),
                       ),
                     ),
@@ -446,19 +462,24 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 Center(
                   child: Text(
                     _formatTime((_partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
-                    style:
-                        TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: AppColor.white.withOpacity(0.85),
+                      fontSize: 60,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: "BebasNeue",
+                    ),
                   ),
                 ),
                 SizedBox(
-                    height: 154,
-                    width: 154,
-                    child: CircularProgressIndicator(
-                      value: _restProgress,
-                      strokeWidth: 6,
-                      backgroundColor: AppColor.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColor.white),
-                    ))
+                  height: 154,
+                  width: 154,
+                  child: CircularProgressIndicator(
+                    value: _restProgress,
+                    strokeWidth: 6,
+                    backgroundColor: AppColor.transparent,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColor.white),
+                  ),
+                )
               ]),
             ),
             SizedBox(
@@ -479,8 +500,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 height: 32,
                 width: 92,
                 decoration: BoxDecoration(
-                    border: Border.all(color: AppColor.white.withOpacity(0.85), width: 1, style: BorderStyle.solid),
-                    borderRadius: BorderRadius.circular(16)),
+                  border: Border.all(color: AppColor.white.withOpacity(0.85), width: 1, style: BorderStyle.solid),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Text(
                   "跳过休息",
                   style: TextStyle(

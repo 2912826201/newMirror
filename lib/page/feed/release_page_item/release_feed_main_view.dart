@@ -229,7 +229,9 @@ class SeletedPhotoState extends State<SeletedPhoto> {
     }
     // 设置可发布
     context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -282,7 +284,9 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
             // 设置可发布
             context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
         child: Container(

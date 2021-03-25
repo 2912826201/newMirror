@@ -92,8 +92,10 @@ class _feedBackPage extends State<FeedBackPage> {
       child: TextField(
         cursorColor: AppColor.black,
         style: AppStyle.textRegular16,
+        maxLines: null,
         maxLength: 500,
         decoration: InputDecoration(
+          isDense:true ,
           counterText: '',
           hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
           hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),

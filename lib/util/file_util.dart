@@ -125,9 +125,9 @@ class FileUtil {
     SyFlutterQiniuStorage.cancelUpload();
   }
 
-  Future<File> writeImageDataToFile(Uint8List imageData, String fileName) async {
+  Future<File> writeImageDataToFile(Uint8List imageData, String fileName, {bool isPublish = false}) async {
     // 由入参来控制文件名 避免同一时间生成的文件名相同
-    String filePath = AppConfig.getAppPicDir() + "/" + fileName + ".jpg";
+    String filePath = (isPublish ? AppConfig.getAppPublishDir() : AppConfig.getAppPicDir()) + "/" + fileName + ".jpg";
     File file = File(filePath);
     file.writeAsBytesSync(imageData);
     return file;
