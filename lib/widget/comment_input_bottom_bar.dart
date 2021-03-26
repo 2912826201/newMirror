@@ -381,7 +381,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   double returnInputOffset(bool _emojiState) {
     double offset = 0.0;
     if (_emojiState) {
-      offset = 12 + Application.keyboardHeight;
+      offset = 12 + Application.keyboardHeightIfPage;
     } else {
       if (MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS) {
         offset = ScreenUtil.instance.bottomBarHeight + 12;
@@ -740,7 +740,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   //表情框
   Widget emoji() {
-    double emojiHeight = Application.keyboardHeight;
+    double emojiHeight = Application.keyboardHeightIfPage;
     return Container(
       height: emojiHeight,
       width: ScreenUtil.instance.width,
