@@ -112,10 +112,26 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   void updateHotComment(int feedId, {CommentDtoModel commentDtoModel, bool isDelete}) {
     print('9(((((((((((((((((((((((9updateHotComment');
     if (isDelete) {
-      value._feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
       value._feedMap[feedId].hotComment.removeWhere((element) {
         return element.id == commentDtoModel.id || element.targetId == commentDtoModel.id;
       });
+      if(value._feedMap[feedId].hotComment.length<2&&value._feedMap[feedId].comments.length!=0){
+        if(value._feedMap[feedId].comments.length>1&&value._feedMap[feedId].hotComment.length==0){
+          for(int i = 0;i<2;i++){
+            if(value._feedMap[feedId].comments[i].id!=commentDtoModel.id){
+              value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments[i]);
+            }
+          }
+        }else if(value._feedMap[feedId].hotComment.length!=0){
+          if(value._feedMap[feedId].comments.first.id!=value._feedMap[feedId].hotComment.first.id){
+            value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments.first);
+          }
+        }else{
+          if(value._feedMap[feedId].comments.length!=0){
+            value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments.first);
+          }
+        }
+      }
     } else {
       if (!value._feedMap[feedId].hotComment.contains(commentDtoModel)) {
         print('))))))))))))))))))))))))))))))))))))))))))添加');
@@ -127,6 +143,12 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     notifyListeners();
   }
 
+  void deleteCommentCount(int feedId,CommentDtoModel commentDtoModel){
+    value.feedMap[feedId].commentCount  -= 1+commentDtoModel.replyCount;
+    value.feedMap[feedId].totalCount -= 1+commentDtoModel.replyCount;
+    notifyListeners();
+
+  }
   // 删除动态
   void deleteFeed(int id) {
     value._feedMap.remove(id);

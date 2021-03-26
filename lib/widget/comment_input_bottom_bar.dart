@@ -528,13 +528,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             context.read<CommentEnterNotifier>().openAtCallback("");
                           },
                           child: Container(
-                            height: 48,
-                            width: ScreenUtil.instance.screenWidthDp,
-                            margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
+                      height: 48,
+                      width: ScreenUtil.instance.screenWidthDp,
+                      margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
+                      child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                      CircleAvatar(
                                   backgroundImage: NetworkImage(followList[index].avatarUri),
                                   maxRadius: 19,
                                 ),
