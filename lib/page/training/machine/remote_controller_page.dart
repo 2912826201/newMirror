@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/machine_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
@@ -14,6 +20,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/seekbar.dart';
 import 'package:mirror/widget/video_course_circle_progressbar.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// remote_controller_page
 /// Created by yangjiayi on 2020/12/31.
@@ -21,6 +28,12 @@ import 'package:mirror/widget/video_course_circle_progressbar.dart';
 //机器遥控器页
 
 class RemoteControllerPage extends StatefulWidget {
+  //模式  0-普通模式，1-直播间模式
+  final int mode;
+  final int liveRoomId;
+
+  RemoteControllerPage({this.mode=0,this.liveRoomId});
+
   @override
   _RemoteControllerState createState() => _RemoteControllerState();
 }
@@ -42,6 +55,15 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   int _status;
 
   @override
+  void dispose() {
+    super.dispose();
+    if(widget.mode==1&&widget.liveRoomId!=null){
+      //退出聊天室
+      Application.rongCloud.quitChatRoom(widget.liveRoomId.toString());
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     _parsePartList();
@@ -49,7 +71,14 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _volume = context.read<MachineNotifier>().machine?.volume;
     _luminance = context.read<MachineNotifier>().machine?.luminance;
     _status = context.read<MachineNotifier>().machine?.status;
+
+    if(widget.mode==1&&widget.liveRoomId!=null){
+      //加入聊天室
+      Application.rongCloud.joinChatRoom(widget.liveRoomId.toString());
+    }
   }
+
+
 
   _parsePartList() {
     _indexMapWithoutRest.clear();
@@ -88,6 +117,20 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         appBar: CustomAppBar(
           titleString: _title,
           actions: [
+            Visibility(
+              visible: widget.mode==1&&widget.liveRoomId!=null,
+              child: CustomAppBarIconButton(
+                  icon: Icons.menu_book_rounded,
+                  iconColor: AppColor.black,
+                  onTap: () {
+                    openInputBottomSheet(
+                      buildContext: this.context,
+                      voidCallback: _postMessage,
+                      isShowAt: false,
+                      isShowPostBtn: false,
+                    );
+                  }),
+            ),
             CustomAppBarIconButton(
                 icon: Icons.menu,
                 iconColor: AppColor.black,
@@ -121,18 +164,20 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildBody(MachineNotifier notifier) {
-    return Column(
-      children: [
-        Container(
-          height: 260,
-          child: _buildScreen(),
-        ),
-        Container(
-          height: 12,
-          color: AppColor.bgWhite,
-        ),
-        _buildPanel(notifier),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            height: 260,
+            child: _buildScreen(),
+          ),
+          Container(
+            height: 12,
+            color: AppColor.bgWhite,
+          ),
+          _buildPanel(notifier),
+        ],
+      ),
     );
   }
 
@@ -502,6 +547,35 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       },
     );
   }
+
+
+  //发送弹幕
+  _postMessage(String content, List<Rule> rules){
+    print("发送弹幕：$content");
+    if(null==content||content.length<1&&widget.liveRoomId!=null){
+      return;
+    }
+    _sendChatRoomMsg(content);
+  }
+
+  //发送直播聊天信息
+  _sendChatRoomMsg(text) async {
+    TextMessage msg = TextMessage();
+    UserInfo userInfo = UserInfo();
+    userInfo.userId = Application.profile.uid.toString();
+    userInfo.name = Application.profile.nickName;
+    userInfo.portraitUri = Application.profile.avatarUri;
+    msg.sendUserInfo = userInfo;
+    Map<String, dynamic> textMap = Map();
+    textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+    textMap["toUserId"] = widget.liveRoomId;
+    textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
+    textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
+    textMap["data"] = text;
+    msg.content = jsonEncode(textMap);
+    await Application.rongCloud.sendChatRoomMessage(widget.liveRoomId.toString(), msg);
+  }
+
 
   _showDisconnectPopup() {
     showModalBottomSheet(
