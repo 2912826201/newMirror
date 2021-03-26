@@ -37,7 +37,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
               extentOffset:oldValue.selection.baseOffset+interceptInputText.length,
             ));
       }
-      if(newValue.text.length>15){
+      if(newValue.text.length>maxLength){
         print('----------------------------正常拦截');
         return oldValue;
       }

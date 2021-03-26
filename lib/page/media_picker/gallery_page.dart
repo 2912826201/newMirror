@@ -103,7 +103,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   // 右上角下一步按钮点击的时间戳
   int _commitTimeStamp = 0;
-  
+
   bool _isGettingImage = false;
 
   // @override
@@ -454,7 +454,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   // item本体点击事件
   _onGridItemTap(BuildContext context, AssetEntity entity) async {
-    if(_isGettingImage){
+    if (_isGettingImage) {
       return;
     }
 
@@ -498,7 +498,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   // item选框点击事件
   // 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
   _onCheckBoxTap(BuildContext context, AssetEntity entity) {
-    if(_isGettingImage){
+    if (_isGettingImage) {
       return;
     }
     entity.file.then((value) => print(entity.id + ":" + value.path));
@@ -978,31 +978,35 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     SizedBox(
                       width: 16,
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${_albums[index].name}",
-                          style: TextStyle(
-                            color: AppColor.white,
-                            fontSize: 13,
-                          ),
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text("${_albums[index].assetCount}",
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${_albums[index].name}",
                             style: TextStyle(
-                              color: AppColor.white.withOpacity(0.35),
-                              fontSize: 12,
-                            )),
-                      ],
+                              color: AppColor.white,
+                              fontSize: 13,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(
+                            height: 2,
+                          ),
+                          Text("${_albums[index].assetCount}",
+                              style: TextStyle(
+                                color: AppColor.white.withOpacity(0.35),
+                                fontSize: 12,
+                              )),
+                        ],
+                      ),
                     ),
-                    Spacer(),
+                    SizedBox(
+                      width: 16,
+                    ),
                   ],
                 ),
               ),
