@@ -24,6 +24,13 @@ class ExpandableText extends StatefulWidget {
   }
 }
 
+class AtuserOrTopicModel {
+  String content;
+  String type;
+
+  AtuserOrTopicModel({this.type, this.content});
+}
+
 class _ExpandableTextState extends State<ExpandableText> {
   final String text;
   final int maxLines;
@@ -37,49 +44,114 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
   }
 
-  setBaseRichText() {
+  // 设置高亮文本
+  List<TextSpan> setHighlightTextSpan(HomeFeedModel value) {
     var textSpanList = <TextSpan>[];
-    if (model.atUsers != null && model.atUsers.length > 0) {
-      var textSpanList = <TextSpan>[];
-      var contentArray = <String>[];
-      Map<String, int> userMap = Map();
-      String content = model.content;
-      int subLen = 0;
-
-      List<AtUsersModel> atUsers = [];
-      atUsers.addAll(model.atUsers);
-      atUsers.sort((left, right) => left.index.compareTo(right.index));
-
-      for (int i = 0; i < atUsers.length; i++) {
-        int index = atUsers[i].index - subLen;
-        int end = atUsers[i].len - subLen;
+    var contentArray = <AtuserOrTopicModel>[];
+    // @和话题map：key为索引开始位置。
+    Map<String, dynamic> maps = Map();
+    // map 转keys数组
+    List<String> keys = [];
+    // 所有文本
+    String content = value.content;
+    // 记录跳转数据的map
+    Map<String, int> userMap = Map();
+    // 计算减去前一个高亮记录的索引
+    int subLen = 0;
+    // 高亮开始位置
+    int index = 0;
+    // 高亮结束位置
+    int end = 0;
+    if (value.topics != null && value.topics.length > 0) {
+      for (int i = 0; i < value.topics.length; i++) {
+        maps[value.topics[i].index.toString()] = value.topics[i];
+      }
+    }
+    if (value.atUsers != null && value.atUsers.length > 0) {
+      for (int i = 0; i < value.atUsers.length; i++) {
+        maps[value.atUsers[i].index.toString()] = value.atUsers[i];
+      }
+    }
+    keys = maps.keys.toList();
+    // key排序
+    keys.sort((left, right) => int.parse(left).compareTo(int.parse(right)));
+    print("keys排序：：：${keys.toString()}");
+    //通过重新排序keys的顺序将原先的map数据取出来。
+    for (int i = 0; i < keys.length; i++) {
+      // 话题或者@的model
+      String element = keys[i];
+      // 话题
+      if (maps[element] is TopicDtoModel) {
+        index = maps[element].index - subLen;
+        end = maps[element].len - subLen;
         if (index < content.length && index >= 0) {
+          AtuserOrTopicModel atuserOrTopicModel = AtuserOrTopicModel();
+          AtuserOrTopicModel atuserOrTopicModel1 = AtuserOrTopicModel();
           String firstString = content.substring(0, index);
           String secondString = content.substring(index, end);
           String threeString = content.substring(end, content.length);
-          contentArray.add(firstString);
-          contentArray.add(secondString);
-          userMap[(contentArray.length - 1).toString()] = atUsers[i].uid;
+          atuserOrTopicModel.content = firstString;
+          atuserOrTopicModel1.type = "#";
+          atuserOrTopicModel1.content = secondString;
+          contentArray.add(atuserOrTopicModel);
+          contentArray.add(atuserOrTopicModel1);
+          userMap[(contentArray.length - 1).toString()] = maps[element].id;
           content = threeString;
           subLen = subLen + firstString.length + secondString.length;
         }
       }
-      contentArray.add(content);
-      for (int i = 0; i < contentArray.length; i++) {
-        textSpanList.add(TextSpan(
-          text: contentArray[i],
-          recognizer: new TapGestureRecognizer()
-            ..onTap = () {
-              if (userMap[(i).toString()] != null) {
-                AppRouter.navigateToMineDetail(context, userMap[(i).toString()]);
-              }
-            },
-          style: TextStyle(
-            fontSize: 14,
-            color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
-          ),
-        ));
+      // @
+      if (maps[element] is AtUsersModel) {
+        index = maps[element].index - subLen;
+        end = maps[element].len - subLen;
+        if (index < content.length && index >= 0) {
+          AtuserOrTopicModel atuserOrTopicModel = AtuserOrTopicModel();
+          AtuserOrTopicModel atuserOrTopicModel1 = AtuserOrTopicModel();
+          String firstString = content.substring(0, index);
+          String secondString = content.substring(index, end);
+          String threeString = content.substring(end, content.length);
+          atuserOrTopicModel.content = firstString;
+          atuserOrTopicModel1.type = "@";
+          atuserOrTopicModel1.content = secondString;
+          contentArray.add(atuserOrTopicModel);
+          contentArray.add(atuserOrTopicModel1);
+          userMap[(contentArray.length - 1).toString()] = maps[element].uid;
+          content = threeString;
+          subLen = subLen + firstString.length + secondString.length;
+        }
       }
+    }
+    for (int i = 0; i < contentArray.length; i++) {
+      textSpanList.add(TextSpan(
+        text: contentArray[i].content,
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () async {
+            if (userMap[(i).toString()] != null) {
+              if (contentArray[i].type == "@") {
+                AppRouter.navigateToMineDetail(context, userMap[i.toString()]);
+              } else if (contentArray[i].type == "#") {
+                if (widget.topicId == userMap[i.toString()]) {
+                  return;
+                }
+                TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
+                AppRouter.navigateToTopicDetailPage(context, topicModel);
+              }
+            }
+          },
+        style: TextStyle(
+          fontSize: 14,
+          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
+        ),
+      ));
+    }
+    return textSpanList;
+  }
+
+  // 富文本展示
+  setBaseRichText() {
+    var textSpanList = <TextSpan>[];
+    if ((model.atUsers != null && model.atUsers.length > 0) || (model.topics != null && model.topics.length > 0)) {
+      textSpanList.addAll(setHighlightTextSpan(model));
     } else {
       textSpanList.add(TextSpan(
         text: model.content,
@@ -90,59 +162,17 @@ class _ExpandableTextState extends State<ExpandableText> {
       ));
     }
 
-    // List<BaseRichText> richTexts = [];
-    // // at高亮
-    // for ( AtUsersModel atModel in model.atUsers) {
-    //   richTexts.add(BaseRichText(
-    //       text.substring(atModel.index,atModel.len),
-    //     style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
-    //     onTap: () {
-    //       AppRouter.navigateToMineDetail(context, atModel.uid);
-    //       print("点击用户${atModel.uid}");
-    //     },
-    //   ));
-    // }
-    // // 话题高亮
-    // for (TopicDtoModel toModel in model.topics){
-    //   print("我看看文本内容：：：：：：：：：：$text");
-    //   richTexts.add(BaseRichText(
-    //     text.substring(toModel.index, toModel.len),
-    //     style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
-    //     onTap: () async{
-    //       if(widget.topicId == toModel.id) {
-    //         return;
-    //       }
-    //       TopicDtoModel topicModel = await getTopicInfo(topicId: toModel.id);
-    //       AppRouter.navigateToTopicDetailPage(context, topicModel);
-    //       print("点击话题${toModel.id}");
-    //     },
-    //   ));
-    // }
     return textSpanList;
   }
 
   RichTexts() {
-    // var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
-    // print("话题:topicStr:$topicStr");
-    // print( "全文本：${topicStr+text}");
     if ((model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) ||
         (model.topics.isNotEmpty && model.topics.last.len <= model.content.length)) {
-      return
-          RichText(
+      return RichText(
         maxLines: expand ? null : maxLines,
         overflow: expand ? TextOverflow.clip : TextOverflow.ellipsis,
         text: TextSpan(children: setBaseRichText()),
       );
-
-      // MyRichTextWidget(
-      //   Text(
-      //     text,
-      //     style: style,
-      //   ),
-      //   maxLines: expand ? null : maxLines,
-      //   textOverflow: expand ? TextOverflow.clip : TextOverflow.ellipsis,
-      //   richTexts: setBaseRichText(),
-      // );
     } else {
       return Text(
         text ?? '',
