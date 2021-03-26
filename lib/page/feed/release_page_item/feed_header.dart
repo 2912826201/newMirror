@@ -246,7 +246,7 @@ class FeedHeader extends StatelessWidget {
               pulishFeed(context, inputText, uid, rules, poi);
             },
             child: IgnorePointer(
-            // 监听输入框的值==""使外层点击不生效。非""手势生效。
+            // // 监听输入框的值==""使外层点击不生效。非""手势生效。
             ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
             child: Container(
               // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),

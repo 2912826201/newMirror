@@ -371,22 +371,29 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                               width: 86,
                               height: 86,
                             )
-                          : widget.selectedMediaFiles.list[index].file != null
-                              ? Image.file(
-                                  widget.selectedMediaFiles.list[index].file,
+                          : widget.selectedMediaFiles.list[index].croppedImage != null
+                              ? RawImage(
+                                  image: widget.selectedMediaFiles.list[index].croppedImage,
+                                  width: 86,
+                                  height: 86,
                                   fit: BoxFit.cover,
-                                  width: 86,
-                                  height: 86,
                                 )
-                              : Container(
-                                  width: 86,
-                                  height: 86,
-                                  child: Center(
-                                    child: CupertinoActivityIndicator(
-                                      radius: 10,
+                              : widget.selectedMediaFiles.list[index].file != null
+                                  ? Image.file(
+                                      widget.selectedMediaFiles.list[index].file,
+                                      fit: BoxFit.cover,
+                                      width: 86,
+                                      height: 86,
+                                    )
+                                  : Container(
+                                      width: 86,
+                                      height: 86,
+                                      child: Center(
+                                        child: CupertinoActivityIndicator(
+                                          radius: 10,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
                 ),
                 Positioned(
                   right: 0,
