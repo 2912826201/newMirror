@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 // 富文本文字
@@ -28,16 +30,26 @@ class MyRichTextWidget extends StatelessWidget {
     String defaultStr = defaultText.data;
     //Find the position of the substring
     richTexts.forEach((richText) {
-      RegExp regex = RegExp(richText.data, caseSensitive: this.caseSensitive);
-      Iterable<RegExpMatch> matchs = regex.allMatches(defaultStr);
-      matchs.forEach((match) {
-        int start = match.start;
-        int end = match.end;
-        if (end > start) {
-          result
-              .add(_RichTextModel(start: start, end: end, richText: richText));
-        }
-      });
+      try{
+        RegExp regex = RegExp(richText.data, caseSensitive: false);
+        print("regex:::${regex}");
+        Iterable<RegExpMatch> matchs = regex.allMatches(defaultStr);
+        print("matchs:::${matchs}");
+        print("matchsStart:::${matchs.first.start}");
+        print("matchsEnd:::${matchs.first.end}");
+        matchs.forEach((match) {
+          int start = match.start;
+          int end = match.end;
+          if (end > start) {
+            result
+                .add(_RichTextModel(start: start, end: end, richText: richText));
+          }
+        });
+      }catch(error) {
+        print("报错信息");
+        print(error);
+      }
+
     });
     if (result.isEmpty) {
       _resultRichTexts

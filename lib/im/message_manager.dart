@@ -15,6 +15,7 @@ import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -224,6 +225,10 @@ class MessageManager {
       dto.unreadCount = 0;
     } else {
       dto.unreadCount = 1;
+      print("加上全局未读数");
+      //加上全局未读数
+      Application.unreadMessageNumber+=1;
+      EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
     }
 
     return dto;
