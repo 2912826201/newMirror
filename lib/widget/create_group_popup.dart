@@ -393,7 +393,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         GestureDetector(
           onTap: _createGroupOrGoToChat,
           child: Container(
-            margin: const EdgeInsets.fromLTRB(0, 6, 0, 6),
+            margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
             alignment: Alignment.center,
             height: 36,
             decoration: BoxDecoration(
