@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -12,7 +13,6 @@ import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 
-
 // 类容评论排版
 class CommentLayout extends StatelessWidget {
   CommentLayout({
@@ -21,38 +21,47 @@ class CommentLayout extends StatelessWidget {
   }) : super(key: key);
   HomeFeedModel model;
 
-  setBaseRichText(CommentDtoModel model, BuildContext context) {
-    List<BaseRichText> richTexts = [];
-    String contextText;
-    if (model.replyName != null) {
-      contextText = model.name + ": 回复 " + model.replyName + " " + model.content;
-      richTexts.add(BaseRichText(
-        contextText.substring(0, model.name.length + 1),
-        style: AppStyle.textMedium14,
-        onTap: () {
-          AppRouter.navigateToMineDetail(context, model.uid);
-        },
+  //获取子评论的文字
+  List<TextSpan> getSubCommentText(CommentDtoModel value, BuildContext context) {
+    var textSpanList = <TextSpan>[];
+    if (value.replyId != null && value.replyId > 0) {
+      textSpanList.add(TextSpan(
+        text: "${value.name + ":"}",
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () {
+            AppRouter.navigateToMineDetail(context, value.uid);
+          },
+        style: AppStyle.textMedium13,
       ));
-      richTexts.add(BaseRichText(
-        contextText.substring(
-            model.name.length + ": 回复".length, model.name.length + ": 回复 ".length + model.replyName.length),
-        // "${model.name + model.replyName}:",
-        style: AppStyle.textMedium14,
-        onTap: () {
-          AppRouter.navigateToMineDetail(context, model.replyId);
-        },
+      textSpanList.add(TextSpan(text: " 回复 ", style: AppStyle.textPrimary3Regular13));
+
+      textSpanList.add(TextSpan(
+        text: "${value.replyName}  ",
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () {
+            AppRouter.navigateToMineDetail(context, value.replyId);
+          },
+        style: AppStyle.textMedium13,
+      ));
+      textSpanList.add(TextSpan(
+        text: "${value.content}",
+        style: AppStyle.textPrimary3Regular13,
       ));
     } else {
-      contextText = "${model.name}: ${model.content}";
-      richTexts.add(BaseRichText(
-        contextText.substring(0, model.name.length + 1),
-        style: AppStyle.textMedium14,
-        onTap: () {
-          AppRouter.navigateToMineDetail(context, model.uid);
-        },
+      textSpanList.add(TextSpan(
+        text: "${value.name + ":"}",
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () {
+            AppRouter.navigateToMineDetail(context, value.uid);
+          },
+        style: AppStyle.textMedium13,
+      ));
+      textSpanList.add(TextSpan(
+        text: " ${value.content}",
+        style: AppStyle.textPrimary3Regular13,
       ));
     }
-    return richTexts;
+    return textSpanList;
   }
 
   @override
@@ -99,16 +108,10 @@ class CommentLayout extends StatelessWidget {
                         },
                         child: Container(
                           child: model.hotComment.length > 0
-                              ? MyRichTextWidget(
-                                  Text(
-                                    item.replyName != null
-                                        ? "${item.name + ": 回复 " + item.replyName + " " + item.content}"
-                                        : "${item.name}: ${item.content}",
-                                    style: AppStyle.textPrimary3Regular13,
-                                  ),
+                              ? RichText(
                                   maxLines: 1,
-                                  textOverflow: TextOverflow.ellipsis,
-                                  richTexts: setBaseRichText(item, context),
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(children: getSubCommentText(item, context)),
                                 )
                               : Container(),
                         )),

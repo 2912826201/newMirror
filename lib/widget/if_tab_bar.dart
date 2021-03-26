@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -11,6 +12,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
+
+import 'count_badge.dart';
 
 /// IFTabBar
 /// Created by yangjiayi on 2021/3/20.
@@ -95,9 +98,17 @@ class _IFTabBarState extends State<IFTabBar> {
   StreamController<int> streamController = StreamController<int>();
 
   @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName:EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
+    EventBus.getDefault().unRegister(pageName:EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+  }
+
+  @override
   void initState() {
     super.initState();
     EventBus.getDefault().registerNoParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
+    EventBus.getDefault().registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
@@ -161,8 +172,16 @@ class _IFTabBarState extends State<IFTabBar> {
     onClickWidthList4.add(selectedButtonWidth + selectedButtonMargin);
   }
 
+
+
   _postFeedCallBack(){
     streamController.sink.add(0);
+  }
+  _resetUnreadMessage(){
+    print("接收到");
+    setState(() {
+
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -202,6 +221,10 @@ class _IFTabBarState extends State<IFTabBar> {
     print('------------------------点击');
     streamController.sink.add(index);
     widget.tabBarClickListener(index);
+    currentIndex=index;
+    setState(() {
+
+    });
   }
 
   Widget _onClickRow(AsyncSnapshot<int> snapshot) {
@@ -283,7 +306,7 @@ class _IFTabBarState extends State<IFTabBar> {
   Widget _iconRow(AsyncSnapshot<int> snapshot) {
     print('-------------------_iconRow');
     return Container(
-      height: iconSize,
+      height: tabBarHeight,
       width: screenWidth,
       child: Stack(
         children: [
@@ -291,42 +314,91 @@ class _IFTabBarState extends State<IFTabBar> {
             duration: Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon1(snapshot.data)),
             child: Container(
-              width: 24,
-              height: 24,
-              child: Stack(
-                children: [
-                  snapshot.data == 0 ? selectedIcons[0] : normalIcons[0],
-                  Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-                    return Positioned(
-                        top: 0,
-                        right: 0,
-                        child: notifier.value.unReadFeedCount != 0
-                            ? ClipOval(
-                                child: Container(
-                                  height: 10,
-                                  width: 10,
-                                  color: AppColor.mainRed,
-                                ),
-                              )
-                            : Container());
-                  })
-                ],
+              height: tabBarHeight,
+              width: 80,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 24,
+                height: 24,
+                child: Stack(
+                  children: [
+                    snapshot.data == 0 ? selectedIcons[0] : normalIcons[0],
+                    Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
+                      return Positioned(
+                          top: 0,
+                          right: 0,
+                          child: notifier.value.unReadFeedCount != 0
+                              ? ClipOval(
+                            child: Container(
+                              height: 10,
+                              width: 10,
+                              color: AppColor.mainRed,
+                            ),
+                          )
+                              : Container());
+                    })
+                  ],
+                ),
               ),
             ),
           ),
           AnimatedContainer(
             duration: Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
-            child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+            child: Container(
+              height: tabBarHeight,
+              width: 80,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 24,
+                height: 24,
+                child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+              ),
+            ),
           ),
           AnimatedContainer(
               duration: Duration(milliseconds: 250),
               margin: EdgeInsets.only(left: getLeftMarginIcon3(snapshot.data)),
-              child: snapshot.data == 2 ? selectedIcons[2] : normalIcons[2]),
+              child: Container(
+                height: tabBarHeight,
+                width: 80,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        child: snapshot.data == 2 ? selectedIcons[2] : normalIcons[2],
+                      ),
+                      left: 0,
+                      top: (tabBarHeight-24)/2,
+                    ),
+                    Visibility(
+                      visible: currentIndex==2?false:
+                        Application.unreadNoticeNumber+Application.unreadMessageNumber<1?false:true,
+                      child: Positioned(
+                        child: CountBadge(Application.unreadNoticeNumber+Application.unreadMessageNumber, false),
+                        left: 12,
+                        top: (tabBarHeight-24)/2-7,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+          ),
           AnimatedContainer(
             duration: Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon4(snapshot.data)),
-            child: snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
+            child: Container(
+              height: tabBarHeight,
+              width: 80,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 24,
+                height: 24,
+                child: snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
+              ),
+            ),
           ),
         ],
       ),
