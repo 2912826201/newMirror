@@ -3,12 +3,17 @@ import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
+import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/expandable_text.dart';
 
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
@@ -403,5 +408,111 @@ class StringUtil {
       return backString;
     }
     return str;
+  }
+
+  // 设置高亮文本
+  static List<TextSpan> setHighlightTextSpan(BuildContext context, String text, { int topicId ,List<TopicDtoModel> topics, List<AtUsersModel>  atUsers}) {
+    var textSpanList = <TextSpan>[];
+    var contentArray = <AtuserOrTopicModel>[];
+    // @和话题map：key为索引开始位置。
+    Map<String, dynamic> maps = Map();
+    // map 转keys数组
+    List<String> keys = [];
+    // 所有文本
+    String content = text;
+    // 记录跳转数据的map
+    Map<String, int> userMap = Map();
+    // 计算减去前一个高亮记录的索引
+    int subLen = 0;
+    // 高亮开始位置
+    int index = 0;
+    // 高亮结束位置
+    int end = 0;
+    if (topics != null && topics.length > 0) {
+      for (int i = 0; i < topics.length; i++) {
+        maps[topics[i].index.toString()] = topics[i];
+      }
+    }
+    if (atUsers != null && atUsers.length > 0) {
+      for (int i = 0; i < atUsers.length; i++) {
+        maps[atUsers[i].index.toString()] = atUsers[i];
+      }
+    }
+    keys = maps.keys.toList();
+    // key排序
+    keys.sort((left, right) => int.parse(left).compareTo(int.parse(right)));
+    print("keys排序：：：${keys.toString()}");
+    //通过重新排序keys的顺序将原先的map数据取出来。
+    for (int i = 0; i < keys.length; i++) {
+      // 话题或者@的model
+      String element = keys[i];
+      // 话题
+      if (maps[element] is TopicDtoModel) {
+        index = maps[element].index - subLen;
+        end = maps[element].len - subLen;
+        if (index < content.length && index >= 0) {
+          AtuserOrTopicModel atuserOrTopicModel = AtuserOrTopicModel();
+          AtuserOrTopicModel atuserOrTopicModel1 = AtuserOrTopicModel();
+          String firstString = content.substring(0, index);
+          String secondString = content.substring(index, end);
+          String threeString = content.substring(end, content.length);
+          atuserOrTopicModel.content = firstString;
+          atuserOrTopicModel1.type = "#";
+          atuserOrTopicModel1.content = secondString;
+          contentArray.add(atuserOrTopicModel);
+          contentArray.add(atuserOrTopicModel1);
+          userMap[(contentArray.length - 1).toString()] = maps[element].id;
+          content = threeString;
+          subLen = subLen + firstString.length + secondString.length;
+        }
+      }
+      // @
+      if (maps[element] is AtUsersModel) {
+        index = maps[element].index - subLen;
+        end = maps[element].len - subLen;
+        if (index < content.length && index >= 0) {
+          AtuserOrTopicModel atuserOrTopicModel = AtuserOrTopicModel();
+          AtuserOrTopicModel atuserOrTopicModel1 = AtuserOrTopicModel();
+          String firstString = content.substring(0, index);
+          String secondString = content.substring(index, end);
+          String threeString = content.substring(end, content.length);
+          atuserOrTopicModel.content = firstString;
+          atuserOrTopicModel1.type = "@";
+          atuserOrTopicModel1.content = secondString;
+          contentArray.add(atuserOrTopicModel);
+          contentArray.add(atuserOrTopicModel1);
+          userMap[(contentArray.length - 1).toString()] = maps[element].uid;
+          content = threeString;
+          subLen = subLen + firstString.length + secondString.length;
+        }
+      }
+    }
+    AtuserOrTopicModel atuserOrTopicModel2 = AtuserOrTopicModel();
+    atuserOrTopicModel2.content = content;
+    contentArray.add(atuserOrTopicModel2);
+    for (int i = 0; i < contentArray.length; i++) {
+      textSpanList.add(TextSpan(
+        text: contentArray[i].content,
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () async {
+            if (userMap[(i).toString()] != null) {
+              if (contentArray[i].type == "@") {
+                AppRouter.navigateToMineDetail(context, userMap[i.toString()]);
+              } else if (contentArray[i].type == "#") {
+                if (topicId == userMap[i.toString()]) {
+                  return;
+                }
+                TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
+                AppRouter.navigateToTopicDetailPage(context, topicModel);
+              }
+            }
+          },
+        style: TextStyle(
+          fontSize: 14,
+          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
+        ),
+      ));
+    }
+    return textSpanList;
   }
 }
