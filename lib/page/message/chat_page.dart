@@ -29,7 +29,6 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -44,7 +43,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
@@ -59,7 +57,7 @@ import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/widget/should_build_keyboard.dart';
 
 ////////////////////////////////
 //
@@ -92,6 +90,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   ///是否显示表情
   bool _emojiState = false;
+  bool _bottomSettingPanelState = false;
 
   ///是不是显示语音按钮
   bool _isVoiceState = false;
@@ -193,15 +192,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   bool isShowHaveAnimation;
 
+
   // 大图预览组装数据
   List<DemoSourceEntity> sourceList = [];
 
+
+
   @override
-  void initState() {
-    super.initState();
+  void initStatePage() {
     isShowHaveAnimation = false;
-    //初始化
-    WidgetsBinding.instance.addObserver(this);
 
     initData();
 
@@ -255,7 +254,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     return WillPopScope(
       child: Scaffold(
-        // resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
+        resizeToAvoidBottomInset: false,
         appBar: getAppBar(),
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
@@ -268,7 +267,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   @override
-  void dispose() {
+  void disposeStatePage() {
     _scrollController.dispose();
     if (Application.appContext != null) {
       //清聊天未读数
@@ -286,31 +285,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _timer = null;
     }
     deletePostCompleteMessage(conversation);
-    //销毁
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
-  double oldBottom = -1;
-
-  // @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (this.context != null) {
-        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
-          print("关闭键盘");
-        } else {
-          print("显示键盘");
-          if (Application.keyboardHeight < MediaQuery.of(this.context).viewInsets.bottom) {
-            print("-----------------------------------------");
-            Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
-            reload(() {});
-          }
-        }
-      }
-    });
-  }
 
   ///----------------------------------------ui start---------------------------------------------///
 
@@ -524,6 +500,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
+          _bottomSettingPanelState=true;
           if (_emojiState) {
             reload(() {
               _emojiState = !_emojiState;
@@ -531,6 +508,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           }
         },
         onLongTap: (){
+          _bottomSettingPanelState=true;
           if (_emojiState) {
             reload(() {
               _emojiState = !_emojiState;
@@ -584,26 +562,47 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //键盘与表情的框
   Widget bottomSettingBox() {
-    return emoji();
+    return Container(
+      child: Stack(
+        children: [
+          bottomSettingPanel(),
+          emoji(),
+        ],
+      ),
+    );
   }
+
+  Widget bottomSettingPanel(){
+
+    double keyboardHeight = 300.0;
+
+    if (Application.keyboardHeightChatPage > 0) {
+      keyboardHeight = Application.keyboardHeightChatPage;
+    }
+    if (keyboardHeight < 90) {
+      keyboardHeight = 300.0;
+    }
+
+    print("bottomSettingPanel:$_bottomSettingPanelState,$keyboardHeight");
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 50),
+      height: _bottomSettingPanelState ? keyboardHeight : 0.0,
+      child: Container(
+        height: _bottomSettingPanelState ? keyboardHeight : 0.0,
+        width: double.infinity,
+        color: AppColor.white,
+      ),
+    );
+  }
+
 
   //表情框
   Widget emoji() {
-    //Application.keyboardHeight
+    //Application.keyboardHeight1
     double keyboardHeight = 300.0;
-    if (_focusNode.hasFocus && MediaQuery.of(this.context).viewInsets.bottom > 0) {
-      Future.delayed(Duration(milliseconds: 200), () {
-        if (Application.keyboardHeight != MediaQuery.of(this.context).viewInsets.bottom) {
-          Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
-          if (mounted) {
-            reload(() {});
-          }
-        }
-      });
-    }
 
-    if (Application.keyboardHeight > 0) {
-      keyboardHeight = Application.keyboardHeight;
+    if (Application.keyboardHeightChatPage > 0) {
+      keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
@@ -1812,7 +1811,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("_messageInputBodyClick");
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
       FocusScope.of(context).requestFocus(new FocusNode());
-
+      _bottomSettingPanelState=false;
       if (mounted) {
         reload(() {
           _timerCount = 0;
@@ -2312,6 +2311,28 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       );
     } else {
       return DemoImageItem(sourceEntity);
+    }
+  }
+
+  @override
+  void endCanvasPage() {
+    print("停止改变屏幕高度");
+    if(MediaQuery.of(this.context).viewInsets.bottom>0){
+      if(Application.keyboardHeightChatPage!=MediaQuery.of(this.context).viewInsets.bottom){
+        Application.keyboardHeightChatPage=MediaQuery.of(this.context).viewInsets.bottom;
+        if (mounted) {
+          reload(() {});
+        }
+      }
+    }
+  }
+
+  @override
+  void startCanvasPage(bool isOpen) {
+    print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
+    _bottomSettingPanelState=isOpen;
+    if (mounted) {
+      reload(() {});
     }
   }
 }

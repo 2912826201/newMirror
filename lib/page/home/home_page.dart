@@ -65,7 +65,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
     // 登录页重新登录获取发布失败model通知
     EventBus.getDefault().registerNoParameter(postModelAssignment,EVENTBUS_HOME_PAGE,
-        registerName: EVENTBUS_POST_PORGRESS_VIEW);
+        registerName: EVENTBUS_GET_FAILURE_MODEL);
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       postModelAssignment();
     });

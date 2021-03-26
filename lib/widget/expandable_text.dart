@@ -4,7 +4,7 @@ import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/widget/rich_text_widget.dart';
+import 'package:mirror/util/string_util.dart';
 
 // 收起展开的文字
 class ExpandableText extends StatefulWidget {
@@ -24,6 +24,13 @@ class ExpandableText extends StatefulWidget {
   }
 }
 
+class AtuserOrTopicModel {
+  String content;
+  String type;
+
+  AtuserOrTopicModel({this.type, this.content});
+}
+
 class _ExpandableTextState extends State<ExpandableText> {
   final String text;
   final int maxLines;
@@ -37,49 +44,12 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
   }
 
+
+  // 富文本展示
   setBaseRichText() {
     var textSpanList = <TextSpan>[];
-    if (model.atUsers != null && model.atUsers.length > 0) {
-      var textSpanList = <TextSpan>[];
-      var contentArray = <String>[];
-      Map<String, int> userMap = Map();
-      String content = model.content;
-      int subLen = 0;
-
-      List<AtUsersModel> atUsers = [];
-      atUsers.addAll(model.atUsers);
-      atUsers.sort((left, right) => left.index.compareTo(right.index));
-
-      for (int i = 0; i < atUsers.length; i++) {
-        int index = atUsers[i].index - subLen;
-        int end = atUsers[i].len - subLen;
-        if (index < content.length && index >= 0) {
-          String firstString = content.substring(0, index);
-          String secondString = content.substring(index, end);
-          String threeString = content.substring(end, content.length);
-          contentArray.add(firstString);
-          contentArray.add(secondString);
-          userMap[(contentArray.length - 1).toString()] = atUsers[i].uid;
-          content = threeString;
-          subLen = subLen + firstString.length + secondString.length;
-        }
-      }
-      contentArray.add(content);
-      for (int i = 0; i < contentArray.length; i++) {
-        textSpanList.add(TextSpan(
-          text: contentArray[i],
-          recognizer: new TapGestureRecognizer()
-            ..onTap = () {
-              if (userMap[(i).toString()] != null) {
-                AppRouter.navigateToMineDetail(context, userMap[(i).toString()]);
-              }
-            },
-          style: TextStyle(
-            fontSize: 14,
-            color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
-          ),
-        ));
-      }
+    if ((model.atUsers != null && model.atUsers.length > 0) || (model.topics != null && model.topics.length > 0)) {
+      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, model.content,topicId: widget.topicId,atUsers: model.atUsers,topics: model.topics));
     } else {
       textSpanList.add(TextSpan(
         text: model.content,
@@ -90,59 +60,17 @@ class _ExpandableTextState extends State<ExpandableText> {
       ));
     }
 
-    // List<BaseRichText> richTexts = [];
-    // // at高亮
-    // for ( AtUsersModel atModel in model.atUsers) {
-    //   richTexts.add(BaseRichText(
-    //       text.substring(atModel.index,atModel.len),
-    //     style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
-    //     onTap: () {
-    //       AppRouter.navigateToMineDetail(context, atModel.uid);
-    //       print("点击用户${atModel.uid}");
-    //     },
-    //   ));
-    // }
-    // // 话题高亮
-    // for (TopicDtoModel toModel in model.topics){
-    //   print("我看看文本内容：：：：：：：：：：$text");
-    //   richTexts.add(BaseRichText(
-    //     text.substring(toModel.index, toModel.len),
-    //     style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
-    //     onTap: () async{
-    //       if(widget.topicId == toModel.id) {
-    //         return;
-    //       }
-    //       TopicDtoModel topicModel = await getTopicInfo(topicId: toModel.id);
-    //       AppRouter.navigateToTopicDetailPage(context, topicModel);
-    //       print("点击话题${toModel.id}");
-    //     },
-    //   ));
-    // }
     return textSpanList;
   }
 
   RichTexts() {
-    // var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
-    // print("话题:topicStr:$topicStr");
-    // print( "全文本：${topicStr+text}");
     if ((model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) ||
         (model.topics.isNotEmpty && model.topics.last.len <= model.content.length)) {
-      return
-          RichText(
+      return RichText(
         maxLines: expand ? null : maxLines,
         overflow: expand ? TextOverflow.clip : TextOverflow.ellipsis,
         text: TextSpan(children: setBaseRichText()),
       );
-
-      // MyRichTextWidget(
-      //   Text(
-      //     text,
-      //     style: style,
-      //   ),
-      //   maxLines: expand ? null : maxLines,
-      //   textOverflow: expand ? TextOverflow.clip : TextOverflow.ellipsis,
-      //   richTexts: setBaseRichText(),
-      // );
     } else {
       return Text(
         text ?? '',
