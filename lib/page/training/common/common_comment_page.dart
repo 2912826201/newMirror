@@ -600,7 +600,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-
+     context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId,commentDtoModel);
       ///TODO 这里是修改的删除评论的eventbus
       EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
       if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
@@ -614,6 +614,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           }
         }
       }
+
       ToastShow.show(msg: "已删除", context: context);
       setState(() {});
     } else {

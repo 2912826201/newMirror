@@ -394,7 +394,7 @@ class StringUtil {
       String backString = "";
       bool breakFor = false;
       for(int i = 0;i < str.characters.toList().length;i++){
-        if((backString+str.characters.toList()[i]).length<=len&&!breakFor){
+        if(!breakFor&&(backString+str.characters.toList()[i]).length<=len){
           backString += str.characters.toList()[i];
         }else{
           breakFor = true;
