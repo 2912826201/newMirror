@@ -95,7 +95,8 @@ class Application {
   static String sendSmsPhoneNum;
 
   //键盘的高度
-  static double keyboardHeight = 0;
+  static double keyboardHeightIfPage = 0;
+  static double keyboardHeightChatPage = 0;
 
   //用户分享的消息
   static Message shareMessage;
