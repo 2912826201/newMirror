@@ -190,8 +190,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
           //关闭键盘
         } else {
           //显示键盘
-          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
-            Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
+          if (Application.keyboardHeightIfPage <= MediaQuery.of(this.context).viewInsets.bottom) {
+            Application.keyboardHeightIfPage = MediaQuery.of(this.context).viewInsets.bottom;
           }
         }
       }
