@@ -379,7 +379,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                               PermissionStatus status = await Permission.camera.status;
 
                               if (status.isGranted) {
-                                _permissionCameraGranted = true;
+                                setState(() {
+                                  _permissionCameraGranted = true;
+                                });
+
                                 if (checkFullPermissions()) {
                                   print("Camera: ${Application.cameras}");
                                   if (Application.cameras.isNotEmpty) {
@@ -394,7 +397,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                 if (Application.platform == 0 || status.isUndetermined) {
                                   status = await Permission.camera.request();
                                   if (status.isGranted) {
-                                    _permissionCameraGranted = true;
+                                    setState(() {
+                                      _permissionCameraGranted = true;
+                                    });
+
                                     if (checkFullPermissions()) {
                                       print("Camera: ${Application.cameras}");
                                       if (Application.cameras.isNotEmpty) {
@@ -429,7 +435,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                     PermissionStatus status = await Permission.microphone.status;
 
                                     if (status.isGranted) {
-                                      _permissionMicrophoneGranted = true;
+                                      setState(() {
+                                        _permissionMicrophoneGranted = true;
+                                      });
+
                                       if (checkFullPermissions()) {
                                         print("Camera: ${Application.cameras}");
                                         if (Application.cameras.isNotEmpty) {
@@ -444,7 +453,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                       if (Application.platform == 0 || status.isUndetermined) {
                                         status = await Permission.microphone.request();
                                         if (status.isGranted) {
-                                          _permissionMicrophoneGranted = true;
+                                          setState(() {
+                                            _permissionMicrophoneGranted = true;
+                                          });
+
                                           if (checkFullPermissions()) {
                                             print("Camera: ${Application.cameras}");
                                             if (Application.cameras.isNotEmpty) {

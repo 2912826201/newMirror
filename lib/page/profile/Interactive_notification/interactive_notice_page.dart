@@ -196,7 +196,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                     footerText = "";
                                   });
                                 }
-
                             },
                             builder: (BuildContext context, LoadStatus mode) {
                               Widget body;
@@ -351,10 +350,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     } else {
       textSpanList.add(TextSpan(
         text: comment,
-        style: TextStyle(
-          fontSize: 14,
-          color: AppColor.textPrimary1,
-        ),
+        style: AppStyle.textRegular14,
       ));
     }
     return textSpanList;
@@ -393,11 +389,11 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
-          "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+          "$commentState$comment", AppStyle.textRegular14, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
     } else {
       TextPainter testSize =
-          calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+          calculateTextWidth("$comment", AppStyle.textRegular14, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
     }
     return Container(
