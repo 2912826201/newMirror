@@ -21,6 +21,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrcode/qrcode.dart';
 import 'package:scan/scan.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -32,20 +33,26 @@ class ScanCodePage extends StatefulWidget {
 }
 
 class scanCodePageState extends State<ScanCodePage> {
-  QrScanController _controller;
   String codeData;
   StreamController<double> streamController = StreamController<double>();
+  QRCaptureController _captureController = QRCaptureController();
   bool upOrDown = false;
   @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    _controller.stopCamera();
+    print('----------------------扫码界面deactivate');
+    _captureController.pause();
   }
 
   @override
   void initState() {
     super.initState();
+    streamController.sink.add(250);
+    _captureController.onCapture((data) {
+      print('onCapture----$data');
+      resolveScanResult(data);
+    });
     _getShortUrl();
   }
   _getShortUrl() async {
@@ -64,7 +71,6 @@ class scanCodePageState extends State<ScanCodePage> {
         appBar: CustomAppBar(
           titleString: "扫描二维码",
           leadingOnTap: () {
-            _controller.stopCamera();
             Navigator.pop(context);
           },
           actions: [
@@ -75,30 +81,13 @@ class scanCodePageState extends State<ScanCodePage> {
         ),
         body: Stack(
           children: [
-            QrScanView(
-              onCreated: (QrScanController controller) {
-                _controller = controller;
-                controller.hiddenScanRect();
-                // 开始识别
-                ///这里直接让它开启相机扫描会在弹起来到一半的时候卡顿
-                Future.delayed(Duration(milliseconds: 150),(){
-                  controller.startCamera();
-                  controller.startSpot();
-                });
-                streamController.sink.add(250);
-              },
-              onScanQRCodeSuccess: (String result) {
-                print("onScanQRCodeSuccess: $result");
-                _controller.stopCamera();
-                resolveScanResult(result);
-              },
-              onCameraAmbientBrightnessChanged: (bool isDark) {
-                print('----------------------------扫码环境是否变暗$isDark');
-            },
-              onScanQRCodeOpenCameraError: () {
-                print('---------------------打开相机错误');
-            },
-            ),
+        Container(
+        width: ScreenUtil.instance.screenWidthDp,
+          height: ScreenUtil.instance.height,
+          child: QRCaptureView(
+            controller: _captureController,
+          ),
+        ),
             _scanCoverView()
           ],
         ),
@@ -162,9 +151,7 @@ class scanCodePageState extends State<ScanCodePage> {
           SizedBox(height: 48,),
           InkWell(
               onTap: () {
-                _controller.stopSpot();
                 AppRouter.navigateToMyQrCodePage(context,(result){
-                  _controller.startSpot();
                 });
               },
               child:QrImage(
@@ -275,7 +262,6 @@ class scanCodePageState extends State<ScanCodePage> {
 
   _resolveUri(String uri) async {
     if (uri == null) {
-      _controller.startCamera();
       ToastShow.show(msg: "不支持的二维码", context: context);
       return;
     } else if (uri.startsWith("if://")) {
