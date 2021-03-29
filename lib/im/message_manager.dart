@@ -244,19 +244,13 @@ class MessageManager {
         }
       }
       dto.unreadCount = 1;
-      print("加上全局未读数");
+
       //加上全局未读数
       NoPromptUidModel model=NoPromptUidModel(type: dto.type,targetId: int.parse(dto.conversationId));
       if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
-        print("不存在");
         Application.unreadMessageNumber+=1;
         EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      }else{
-        print("存在");
       }
-      print("Application.unreadMessageNumber:${Application.unreadMessageNumber}");
-      print("model:${model.toString()}");
-      print("Application.queryNoPromptUidList:${Application.queryNoPromptUidList.toString()}");
     }
 
     return dto;
