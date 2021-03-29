@@ -44,7 +44,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
             curve: Curves.ease,
             child: _publishView(),
             onEnd: () {
-              if(widget.postprogressModel.postFeedModel == null){
+              if (widget.postprogressModel.postFeedModel == null) {
                 widget.postprogressModel.showPulishView = false;
               }
             },
@@ -86,7 +86,18 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                         child: Stack(
                           alignment: const FractionalOffset(0.5, 0.5),
                           children: [
-                            imageFile != null ? Image.file(imageFile) : Container(),
+                            imageFile != null
+                                ? Image.file(imageFile)
+                                : widget.postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage !=
+                                        null
+                                    ? RawImage(
+                                        image: widget
+                                            .postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : CupertinoActivityIndicator(
+                                        radius: 10,
+                                      ),
                             type != null
                                 ? type ==
                                         // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
@@ -128,7 +139,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                     ],
                   ))),
           LinearProgressIndicator(
-            value: widget.postprogressModel.plannedSpeed != -1 ? widget.postprogressModel.plannedSpeed : 1,
+            value: widget.postprogressModel.plannedSpeed != -1  && widget.postprogressModel.plannedSpeed <= 1 ?  widget.postprogressModel.plannedSpeed : 1 ,
             valueColor: new AlwaysStoppedAnimation<Color>(
                 widget.postprogressModel.plannedSpeed != -1 ? AppColor.mainRed : Colors.amberAccent),
             backgroundColor: AppColor.white,
@@ -146,7 +157,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
         "正在发布",
         style: AppStyle.textSecondaryRegular14,
       );
-    } else if (plannedSpeed == 1) {
+    } else if (plannedSpeed >= 1) {
       return Text(
         "完成",
         style: AppStyle.textSecondaryRegular14,

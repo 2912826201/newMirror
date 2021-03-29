@@ -119,12 +119,12 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     if (widget.topicId != null) {
       TopicDtoModel topicModel = Application.topicMap[widget.topicId];
       if (topicModel != null) {
-        _controller.text =  "#${topicModel.name}";
+        _controller.text = "#${topicModel.name}";
         _controller.selection = TextSelection(
           baseOffset: _controller.text.length,
           extentOffset: _controller.text.length,
         );
-        topicRule = Rule(0,  _controller.text.length,_controller.text, null, false, topicModel.id);
+        topicRule = Rule(0, _controller.text.length, _controller.text, null, false, topicModel.id);
       }
     }
     super.initState();
@@ -213,7 +213,9 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         print(" 插入城市${poi1.toString()}");
         pois.insert(0, poi1);
       }
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
     } else {
       // 请求失败
     }
@@ -232,7 +234,6 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
             rules: topicRule == null ? [] : [topicRule],
             atSearchStr: "",
             topicSearchStr: "",
-            isPostFeed: false,
           ),
           builder: (context, _) {
             String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
@@ -273,26 +274,17 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   }
 }
 
-
-
-
-
-
-
-
-
-
 // 发布动态文本监听
 class ReleaseFeedInputNotifier extends ChangeNotifier {
-  ReleaseFeedInputNotifier(
-      {this.keyWord,
-      this.inputText,
-      this.rules,
-      this.atCursorIndex,
-      this.atSearchStr,
-      this.topicSearchStr,
-      this.selectedMediaFiles,
-      this.isPostFeed});
+  ReleaseFeedInputNotifier({
+    this.keyWord,
+    this.inputText,
+    this.rules,
+    this.atCursorIndex,
+    this.atSearchStr,
+    this.topicSearchStr,
+    this.selectedMediaFiles,
+  });
 
   // 监听输入框输入的值是否为@#切换视图的
   String keyWord = "";
@@ -374,9 +366,6 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   // 话题滑动控制器
   ScrollController topScrollController;
-
-  // 是否可发布动态
-  bool isPostFeed;
 
   getAtCursorIndex(int atIndex) {
     this.atCursorIndex = atIndex;
@@ -501,10 +490,4 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   setClickTopic(bool top) {
     this.isClickTopic = top;
   }
-
-  // 是否可发布动态
-   setIsPostFeed(bool isPost) {
-    this.isPostFeed = isPost;
-    notifyListeners();
-   }
 }
