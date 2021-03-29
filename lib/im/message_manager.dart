@@ -158,6 +158,7 @@ class MessageManager {
     //只处理以下几个ObjectName的消息
     if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_GRPNTF &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
@@ -227,6 +228,7 @@ class MessageManager {
     //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
     if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
         msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2 ||
+        msg.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF ||
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
@@ -429,6 +431,7 @@ class MessageManager {
 
   //根据类型区分转化内容文字
   static String convertMsgContent(Message msg) {
+    print("根据类型区分转化内容文字");
     switch (msg.objectName) {
       case ChatTypeModel.MESSAGE_TYPE_TEXT:
         Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
@@ -467,7 +470,7 @@ class MessageManager {
       case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
         return "撤回了一条消息";
       case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-        return "群聊通知";
+        return _parseGrpNtf(msg.originContentMap,isTextMessageGrpNtf:false);
       case ChatTypeModel.MESSAGE_TYPE_CMD:
         return "私聊通知";
       default:
@@ -475,8 +478,14 @@ class MessageManager {
     }
   }
 
-  static String _parseGrpNtf(Map<String, dynamic> content) {
-    Map<String, dynamic> dataMap = json.decode(json.decode(content["data"])["data"]);
+  static String _parseGrpNtf(Map<String, dynamic> content,{bool isTextMessageGrpNtf=true}) {
+    Map<String, dynamic> dataMap;
+    if(isTextMessageGrpNtf){
+      dataMap = json.decode(json.decode(content["data"])["data"]);
+    }else{
+      dataMap = json.decode(content["data"]);
+    }
+    print("dataMap:${dataMap.toString()}");
     switch (dataMap["subType"]) {
       case 0:
         String names = "";
