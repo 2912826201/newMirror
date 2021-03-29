@@ -12,6 +12,8 @@ import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -137,14 +139,13 @@ class MessageManager {
       }
     }
   }
-  
-  
-  static updateConversationByMessageContent(BuildContext context,String id,{Message msg}){
+
+  static updateConversationByMessageContent(BuildContext context, String id, {Message msg}) {
     ConversationDto exist = context.read<ConversationNotifier>().getConversationById(id);
-    if(msg==null){
-      exist.content="";
-    }else{
-      exist.content= _convertMsgContent(msg);
+    if (msg == null) {
+      exist.content = "";
+    } else {
+      exist.content = convertMsgContent(msg);
     }
     if (exist.isTop == 0) {
       context.read<ConversationNotifier>().insertCommonList([exist]);
@@ -157,6 +158,7 @@ class MessageManager {
     //只处理以下几个ObjectName的消息
     if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_GRPNTF &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
@@ -167,7 +169,7 @@ class MessageManager {
     dto.conversationId = msg.targetId;
     dto.uid = Application.profile.uid;
     //TODO 会话内容需要转化
-    dto.content = _convertMsgContent(msg);
+    dto.content = convertMsgContent(msg);
     dto.avatarUri = "";
     dto.name = "";
     switch (msg.conversationType) {
@@ -181,15 +183,14 @@ class MessageManager {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
           //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
-          dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
-        } else {
-        }
+          dto.senderUid = msg.content.sendUserInfo.userId == null ? null : int.parse(msg.content.sendUserInfo.userId);
+        } else {}
         break;
       case RCConversationType.Group:
         dto.type = GROUP_TYPE;
         if (msg.content?.sendUserInfo != null) {
           //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
-          dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
+          dto.senderUid = msg.content.sendUserInfo.userId == null ? null : int.parse(msg.content.sendUserInfo.userId);
           //TODO 去更新群成员的本地数据库
         }
         break;
@@ -212,23 +213,39 @@ class MessageManager {
         //其他情况暂时不处理
         return null;
     }
-    //需要额外获取的信息
-    dto.isTop = 0;
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
     dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
 
+
+    //需要额外获取的信息
+    dto.isTop = 0;
+    TopChatModel topChatModel = new TopChatModel(type: dto.type==GROUP_TYPE?1:0, chatId: int.parse(dto.conversationId));
+    if(TopChatModel.contains(Application.topChatModelList, topChatModel)){
+      dto.isTop=1;
+    }
+
     //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
     if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
         msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2 ||
+        msg.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF ||
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
       dto.unreadCount = 1;
       print("加上全局未读数");
       //加上全局未读数
-      Application.unreadMessageNumber+=1;
-      EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      NoPromptUidModel model=NoPromptUidModel(type: dto.type,targetId: int.parse(dto.conversationId));
+      if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
+        print("不存在");
+        Application.unreadMessageNumber+=1;
+        EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      }else{
+        print("存在");
+      }
+      print("Application.unreadMessageNumber:${Application.unreadMessageNumber}");
+      print("model:${model.toString()}");
+      print("Application.queryNoPromptUidList:${Application.queryNoPromptUidList.toString()}");
     }
 
     return dto;
@@ -252,9 +269,9 @@ class MessageManager {
   }
 
   //判断是不是群聊的消息-更新群成员的信息
-  static Future<void> judgeIsGroupUpdateUserInformation(Message msg)async {
-    if (msg != null && msg.conversationType ==RCConversationType.Group) {
-     await GroupChatUserInformationDBHelper().update(message:msg);
+  static Future<void> judgeIsGroupUpdateUserInformation(Message msg) async {
+    if (msg != null && msg.conversationType == RCConversationType.Group) {
+      await GroupChatUserInformationDBHelper().update(message: msg);
     }
   }
 
@@ -393,12 +410,12 @@ class MessageManager {
       Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
       switch (dataMap["subType"]) {
         case 4:
-        //修改群名
+          //修改群名
           print("修改了群名");
-          ConversationDto dto =new ConversationDto();
-          dto.uid=Application.profile.uid;
-          dto.type=GROUP_TYPE;
-          dto.conversationId=message.targetId;
+          ConversationDto dto = new ConversationDto();
+          dto.uid = Application.profile.uid;
+          dto.type = GROUP_TYPE;
+          dto.conversationId = message.targetId;
           Application.appContext.read<ConversationNotifier>().updateConversationName(dataMap["groupChatName"], dto);
           break;
         default:
@@ -413,7 +430,8 @@ class MessageManager {
   }
 
   //根据类型区分转化内容文字
-  static String _convertMsgContent(Message msg) {
+  static String convertMsgContent(Message msg) {
+    print("根据类型区分转化内容文字");
     switch (msg.objectName) {
       case ChatTypeModel.MESSAGE_TYPE_TEXT:
         Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
@@ -433,11 +451,17 @@ class MessageManager {
               return "[直播课程]";
             case ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE:
               return "[视频课程]";
+            case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
+              return _parseGrpNtf(contentMap);
+            case ChatTypeModel.MESSAGE_TYPE_CMD:
+              return _parseCmdNtf(contentMap);
             default:
-              return msg.content.encode();
+              // return msg.content.encode();
+              return "[未知类型消息]";
           }
         } else {
-          return msg.content.encode();
+          // return msg.content.encode();
+          return "[未知类型消息]";
         }
         break;
       case ChatTypeModel.MESSAGE_TYPE_VOICE:
@@ -446,7 +470,7 @@ class MessageManager {
       case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
         return "撤回了一条消息";
       case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-        return "群聊通知";
+        return _parseGrpNtf(msg.originContentMap,isTextMessageGrpNtf:false);
       case ChatTypeModel.MESSAGE_TYPE_CMD:
         return "私聊通知";
       default:
@@ -454,16 +478,105 @@ class MessageManager {
     }
   }
 
+  static String _parseGrpNtf(Map<String, dynamic> content,{bool isTextMessageGrpNtf=true}) {
+    Map<String, dynamic> dataMap;
+    if(isTextMessageGrpNtf){
+      dataMap = json.decode(json.decode(content["data"])["data"]);
+    }else{
+      dataMap = json.decode(content["data"]);
+    }
+    print("dataMap:${dataMap.toString()}");
+    switch (dataMap["subType"]) {
+      case 0:
+        String names = "";
+        for (int i = 0; i < dataMap["users"].length; i++) {
+          if (dataMap["users"][i]["uid"] == Application.profile.uid) {
+            names += "你";
+          } else {
+            names += dataMap["users"][i]["groupNickName"];
+          }
+          if (i < dataMap["users"].length - 1) {
+            names += "、";
+          }
+        }
+        String operatorName = dataMap["operatorName"];
+        if (dataMap["operatorUid"] == Application.profile.uid) {
+          operatorName = "你";
+        }
+        return "$operatorName将$names加入了群聊";
+      case 1:
+        String names = "";
+        for (int i = 0; i < dataMap["users"].length; i++) {
+          if (dataMap["users"][i]["uid"] == Application.profile.uid) {
+            names += "你";
+          } else {
+            names += dataMap["users"][i]["groupNickName"];
+          }
+          if (i < dataMap["users"].length - 1) {
+            names += "、";
+          }
+        }
+        return "$names退出了群聊";
+      case 2:
+        String names = "";
+        for (int i = 0; i < dataMap["users"].length; i++) {
+          if (dataMap["users"][i]["uid"] == Application.profile.uid) {
+            names += "你";
+          } else {
+            names += dataMap["users"][i]["groupNickName"];
+          }
+          if (i < dataMap["users"].length - 1) {
+            names += "、";
+          }
+        }
+        String operatorName = dataMap["operatorName"];
+        if (dataMap["operatorUid"] == Application.profile.uid) {
+          operatorName = "你";
+        }
+        return "$operatorName将$names移出了群聊";
+      case 3:
+        String operatorName = dataMap["operatorName"];
+        if (dataMap["operatorUid"] == Application.profile.uid) {
+          operatorName = "你";
+        }
+        return "$operatorName转移了群主";
+      case 4:
+        String operatorName = dataMap["operatorName"];
+        if (dataMap["operatorUid"] == Application.profile.uid) {
+          operatorName = "你";
+        }
+        return "$operatorName修改了群名";
+      case 5:
+        String names = "";
+        for (int i = 0; i < dataMap["users"].length; i++) {
+          if (dataMap["users"][i]["uid"] == Application.profile.uid) {
+            names += "你";
+          } else {
+            names += dataMap["users"][i]["groupNickName"];
+          }
+          if (i < dataMap["users"].length - 1) {
+            names += "、";
+          }
+        }
+        return "$names通过扫码加入了群聊";
+      default:
+        return "[群聊通知]";
+    }
+  }
+
+  static String _parseCmdNtf(Map<String, dynamic> content) {
+    return "[系统通知]";
+  }
 
   //判断消息是不是弹幕消息
-  static bool judgeBarrageMessage(Message message){
-    if(message==null){
+  static bool judgeBarrageMessage(Message message) {
+    if (message == null) {
       return false;
-    }else if(message.objectName!=ChatTypeModel.MESSAGE_TYPE_TEXT){
+    } else if (message.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT) {
       return false;
-    }else{
+    } else {
       Map<String, dynamic> contentMap = json.decode((message.content as TextMessage).content);
-      if(null!=contentMap){
+      if (null != contentMap) {
         switch (contentMap["subObjectName"]) {
           case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
           case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
@@ -477,11 +590,11 @@ class MessageManager {
   }
 
   //判断是不是聊天室的通知
-  static bool judgeBarrageNotice(Message message){
-    if(message==null){
+  static bool judgeBarrageNotice(Message message) {
+    if (message == null) {
       return false;
-    }else if(message.objectName==ChatTypeModel.MESSAGE_TYPE_CMD&&
-        message.conversationType==RCConversationType.ChatRoom){
+    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD &&
+        message.conversationType == RCConversationType.ChatRoom) {
       return true;
     }
     return false;

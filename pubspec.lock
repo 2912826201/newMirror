@@ -758,6 +758,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.0"
+  qrcode:
+    dependency: "direct main"
+    description:
+      name: qrcode
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.4"
   r_upgrade:
     dependency: "direct main"
     description:

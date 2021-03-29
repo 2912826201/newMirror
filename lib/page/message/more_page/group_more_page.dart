@@ -12,6 +12,7 @@ import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
@@ -37,6 +38,7 @@ class GroupMorePage extends StatefulWidget {
 
   final Function(int type,String name) listener;
   final VoidCallback exitGroupListener;
+  final ConversationDto dto;
 
   ///群名字
   final String groupName;
@@ -45,7 +47,7 @@ class GroupMorePage extends StatefulWidget {
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener, this.exitGroupListener});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener,this.dto, this.exitGroupListener});
 
   @override
   createState() => GroupMorePageState();
@@ -53,6 +55,7 @@ class GroupMorePage extends StatefulWidget {
 
 class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
+  int disturbTheNewsIndex = -1;
   bool topChat = false;
   String groupMeName = "还未取名";
   GroupChatModel groupChatModel;
@@ -537,10 +540,19 @@ class GroupMorePageState extends State<GroupMorePage> {
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
-      if (Application.topChatModelList.contains(topChatModel)) {
-        Application.topChatModelList.remove(topChatModel);
-      } else {
+      int index=TopChatModel.containsIndex(Application.topChatModelList,topChatModel);
+      if(index>=0){
+        Application.topChatModelList.remove(index);
+        if(null!=widget.dto) {
+          widget.dto.isTop=0;
+          context.read<ConversationNotifier>().insertCommon(widget.dto);
+        }
+      }else{
         Application.topChatModelList.add(topChatModel);
+        if(null!=widget.dto) {
+          widget.dto.isTop=1;
+          context.read<ConversationNotifier>().insertTop(widget.dto);
+        }
       }
     } else {
       topChat = !topChat;
@@ -559,13 +571,16 @@ class GroupMorePageState extends State<GroupMorePage> {
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
-    if (!(map != null && map["state"] != null && map["state"])) {
-      disturbTheNews = !disturbTheNews;
+    if (map != null && map["state"] != null && map["state"]) {
+      NoPromptUidModel model=NoPromptUidModel(type: GROUP_TYPE,targetId: int.parse(widget.chatGroupId));
+      int index=NoPromptUidModel.containsIndex(Application.queryNoPromptUidList,model);
+      if(index>=0){
+        Application.queryNoPromptUidList.remove(index);
+      }else{
+        Application.queryNoPromptUidList.add(model);
+      }
     } else {
-      Application.rongCloud.setConversationNotificationStatus(
-          RCConversationType.Group, widget.chatGroupId, disturbTheNews, (int status, int code) {
-        print(status);
-      });
+      disturbTheNews = !disturbTheNews;
     }
     if(mounted) {
       setState(() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/util/event_bus.dart';
 
 /// conversation_notifier
@@ -47,6 +48,7 @@ class ConversationNotifier with ChangeNotifier {
     for (ConversationDto dto in topList) {
       //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
       _topIdList.remove(dto.id);
+      _commonIdList.remove(dto.id);
       _topIdList.insert(0, dto.id);
       _conversationMap[dto.id] = dto;
     }
@@ -54,14 +56,44 @@ class ConversationNotifier with ChangeNotifier {
     _notifyListeners();
   }
 
+  insertTop(ConversationDto dto) {
+    //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
+    _topIdList.remove(dto.id);
+    _commonIdList.remove(dto.id);
+    _topIdList.insert(0, dto.id);
+    if(_conversationMap[dto.id]==null) {
+      _conversationMap[dto.id] = dto;
+    }else{
+      _conversationMap[dto.id].isTop=1;
+    }
+    _notifyListeners();
+  }
+
+
+
   insertCommonList(List<ConversationDto> commonList) {
     for (ConversationDto dto in commonList) {
       //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
       _commonIdList.remove(dto.id);
+      _topIdList.remove(dto.id);
       _commonIdList.insert(0, dto.id);
       _conversationMap[dto.id] = dto;
     }
 
+    _notifyListeners();
+  }
+
+
+  insertCommon(ConversationDto dto) {
+    //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
+    _commonIdList.remove(dto.id);
+    _topIdList.remove(dto.id);
+    _commonIdList.insert(0, dto.id);
+    if(_conversationMap[dto.id]==null) {
+      _conversationMap[dto.id] = dto;
+    }else{
+      _conversationMap[dto.id].isTop=0;
+    }
     _notifyListeners();
   }
 
@@ -97,7 +129,10 @@ class ConversationNotifier with ChangeNotifier {
     _conversationMap.forEach((key, value) {
       print("--key, value--${key} ${value}");
       print("--value.runtimeType--" + value.runtimeType.toString());
-      Application.unreadMessageNumber+=value.unreadCount;
+      NoPromptUidModel model=NoPromptUidModel(type: value.type,targetId: int.parse(value.conversationId));
+      if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
+        Application.unreadMessageNumber+=value.unreadCount;
+      }
     });
     EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
   }
