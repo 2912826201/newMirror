@@ -21,4 +21,22 @@ class TopChatModel {
     map["chatId"] = chatId;
     return map;
   }
+
+
+  static bool contains(List<TopChatModel> modelList,TopChatModel model) {
+    for (TopChatModel e in modelList) {
+      if(e.type==model.type&&e.chatId==model.chatId){
+        return true;
+      }
+    }
+    return false;
+  }
+  static int containsIndex(List<TopChatModel> modelList,TopChatModel model) {
+    for (int i=0;i<modelList.length;i++) {
+      if(modelList[i].type==model.type&&modelList[i].chatId==model.chatId){
+        return i;
+      }
+    }
+    return -1;
+  }
 }

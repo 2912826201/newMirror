@@ -9,6 +9,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/click_util.dart';
@@ -26,11 +27,12 @@ class PrivateMorePage extends StatefulWidget {
   final String chatUserId;
   final String name;
   final Function(int type,String name) listener;
+  final ConversationDto dto;
 
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  PrivateMorePage({this.chatUserId, this.chatType, this.name, this.listener});
+  PrivateMorePage({this.chatUserId, this.chatType, this.dto, this.name, this.listener});
 
   @override
   createState() => PrivateMorePageState();
@@ -38,6 +40,7 @@ class PrivateMorePage extends StatefulWidget {
 
 class PrivateMorePageState extends State<PrivateMorePage> {
   bool disturbTheNews = false;
+  int disturbTheNewsIndex = -1;
   bool topChat = false;
   int topChatIndex = -1;
   bool isBlackList = false;
@@ -171,12 +174,20 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         Application.topChatModelList.add(topChatModel);
         topChatIndex = Application.topChatModelList.length - 1;
         topChat=true;
+        if(null!=widget.dto) {
+          widget.dto.isTop=1;
+          context.read<ConversationNotifier>().insertTop(widget.dto);
+        }
       }else{
         if(topChatIndex>=0) {
           Application.topChatModelList.removeAt(topChatIndex);
         }
         topChatIndex = -1;
         topChat=false;
+        if(null!=widget.dto) {
+          widget.dto.isTop=0;
+          context.read<ConversationNotifier>().insertCommon(widget.dto);
+        }
       }
     } else {
       topChat = !topChat;
@@ -195,13 +206,21 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatUserId), type: widget.chatType);
-    if (!(map != null && map["state"] != null && map["state"])) {
-      disturbTheNews = !disturbTheNews;
+    if (map != null && map["state"] != null && map["state"]) {
+      NoPromptUidModel model=NoPromptUidModel(type: widget.chatType,targetId: int.parse(widget.chatUserId));
+      if(disturbTheNews){
+        Application.queryNoPromptUidList.add(model);
+        disturbTheNewsIndex = Application.queryNoPromptUidList.length - 1;
+        disturbTheNews=true;
+      }else{
+        if(disturbTheNewsIndex>=0) {
+          Application.queryNoPromptUidList.removeAt(disturbTheNewsIndex);
+        }
+        disturbTheNewsIndex = -1;
+        disturbTheNews=false;
+      }
     } else {
-      Application.rongCloud.setConversationNotificationStatus(
-          RCConversationType.Private, widget.chatUserId, disturbTheNews, (int status, int code) {
-        print(status);
-      });
+      disturbTheNews = !disturbTheNews;
     }
     if(mounted) {
       setState(() {
@@ -230,9 +249,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
       disturbTheNews = false;
     } else {
-      for (NoPromptUidModel noPromptUidModel in Application.queryNoPromptUidList) {
-        if (noPromptUidModel.type == widget.chatType && noPromptUidModel.targetId.toString() == widget.chatUserId) {
+      for (int i = 0; i < Application.queryNoPromptUidList.length; i++) {
+        if (Application.queryNoPromptUidList[i].type == widget.chatType &&
+            Application.queryNoPromptUidList[i].targetId.toString() == widget.chatUserId) {
           disturbTheNews = true;
+          disturbTheNewsIndex = i;
           break;
         }
       }

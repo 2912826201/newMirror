@@ -211,8 +211,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
     });
     if (addFeedNum != 0) {
-      ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity:
-      Toast.CENTER);
+      ToastShow.show(
+          msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
+          context: context,
+          gravity: Toast.CENTER);
       context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
     }
@@ -246,8 +248,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     new Future.delayed(Duration.zero, () {
       context.read<FeedMapNotifier>().insertFeedMap(model);
     });
-    setState(() {
-    });
+    setState(() {});
     status = Status.concern;
   }
 
@@ -269,7 +270,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   backToTheTop() {
     // 判定滑动控制器是否绑定
     if (_controller.hasClients) {
-      _controller.animateTo(0,duration: Duration(milliseconds: 1),curve: Curves.easeInOut);
+      _controller.animateTo(0, duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
     }
   }
 
@@ -429,14 +430,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         return Container();
         break;
       case Status.concern:
-        if (index == attentionIdList.length) {
-          return LoadingView(
-            loadText: loadText,
-            loadStatus: loadStatus,
-          );
-        } else {
-          return backToView(index, feedModel);
-        }
+        return backToView(index, feedModel);
     }
   }
 
@@ -472,7 +466,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       this.attentionIdList.clear();
       this.attentionModelList.clear();
       this.lastTime = null;
-      loadStatus = LoadingStatus.STATUS_LOADING;
+      loadStatus = LoadingStatus.STATUS_IDEL;
       isRequestInterface = false;
     }
 
@@ -519,13 +513,21 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   id = attentionIdList[index];
                   feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
                 }
+                print("attentionIdList数据源长度：：：：${attentionIdList.length}");
+                if (index == attentionIdList.length) {
+                  return LoadingView(
+                    loadText: loadText,
+                    loadStatus: loadStatus,
+                  );
+                }
                 return ExposureDetector(
                   key: Key('attention_page_$id'),
                   child: pageDisplay(index, feedModel),
                   onExposure: (visibilityInfo) {
                     print("回调看数据:${attentionIdList.toString()}");
                     // 如果没有显示
-                    if(attentionIdList[index] != -1 &&  context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
+                    if (attentionIdList[index] != -1 &&
+                        context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
                       context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
                       print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                     }

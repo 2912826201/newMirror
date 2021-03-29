@@ -9,19 +9,19 @@ class PostprogressModel {
   // 发布动态需要的model
   PostFeedModel postFeedModel;
 
-  // 是否可以发布动态
-  bool isPublish = true;
+  // // 是否可以发布动态
+  // bool isPublish = true;
 
   // 是否显示发布进度视图
   bool showPulishView = false;
 
-  PostprogressModel({this.isPublish, this.postFeedModel, this.plannedSpeed, this.showPulishView});
+  PostprogressModel({ this.postFeedModel, this.plannedSpeed, this.showPulishView});
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["plannedSpeed"] = plannedSpeed;
     map["postFeedModel"] = postFeedModel.toJson();
-    map["isPublish"] = isPublish;
+    // map["isPublish"] = isPublish;
     map["showPulishView"] = showPulishView;
     return map;
   }
@@ -31,7 +31,7 @@ class PostprogressModel {
     if (json["postFeedModel"] != null) {
       postFeedModel = PostFeedModel.fromJson(json["postFeedModel"]);
     }
-    isPublish = json["isPublish"];
+    // isPublish = json["isPublish"];
     showPulishView = json["showPulishView"];
   }
 
