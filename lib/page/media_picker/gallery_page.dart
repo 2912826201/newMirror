@@ -468,7 +468,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     // 当最后一张图是预览并选中时 需要在点击下一步按钮时获取这张图
     if (widget.needCrop) {
       if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
-        _getImage(context, notifier.currentEntity.id, toData: true);
+        _getImage(context, notifier.currentEntity.id, toData: false);
       }
     }
 
@@ -810,7 +810,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               if (widget.needCrop && selectedResultType == AssetType.image) {
                 if (notifier.currentEntity != null &&
                     (notifier.selectedMap.isEmpty || notifier.selectedMap.containsKey(notifier.currentEntity.id))) {
-                  await _getImage(context, notifier.currentEntity.id, toData: true);
+                  await _getImage(context, notifier.currentEntity.id, toData: false);
                 }
               }
 

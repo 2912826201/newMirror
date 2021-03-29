@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
@@ -254,8 +255,12 @@ class _MediaTestState extends State<MediaTestPage> {
                   model.file,
                   fit: BoxFit.cover,
                 )
-              : Image.memory(
-                  model.croppedImageData,
+              // : Image.memory(
+              //     model.croppedImageData,
+              //     fit: BoxFit.cover,
+              //   );
+              : RawImage(
+                  image: model.croppedImage,
                   fit: BoxFit.cover,
                 );
     });

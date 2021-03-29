@@ -134,23 +134,30 @@ class GroupMorePageState extends State<GroupMorePage> {
           } else {
             groupUserList.addAll(chatGroupUserModelList);
           }
-          groupUserList.add(new ChatGroupUserModel());
-          groupUserList.add(new ChatGroupUserModel());
+          ChatGroupUserModel addModel=new ChatGroupUserModel();
+          addModel.avatarUri="addModel";
+          groupUserList.add(addModel);
+          bool isHaveSubBtn;
+          try {
+            isHaveSubBtn =chatGroupUserModelList[0].uid == Application.profile.uid;
+          } catch (e) {
+            isHaveSubBtn = false;
+          }
+          if(isHaveSubBtn){
+            ChatGroupUserModel addModel=new ChatGroupUserModel();
+            addModel.avatarUri="subModel";
+            groupUserList.add(addModel);
+          }
           return SliverGrid.count(
             crossAxisCount: 5,
             childAspectRatio: 1.0,
             mainAxisSpacing: 1,
             crossAxisSpacing: 1,
             children: List.generate(groupUserList.length, (index) {
-              if (index >= groupUserList.length - 2) {
-                bool isVisibility;
-                try {
-                  isVisibility =
-                      index == groupUserList.length - 2 || chatGroupUserModelList[0].uid == Application.profile.uid;
-                } catch (e) {
-                  isVisibility = false;
-                }
-                return getTopItemAddOrSubUserUi(index == groupUserList.length - 2, isVisibility);
+              if (groupUserList[index].avatarUri=="addModel") {
+                return getTopItemAddOrSubUserUi(true, true);
+              } else if(groupUserList[index].avatarUri=="subModel") {
+                return getTopItemAddOrSubUserUi(false, true);
               } else {
                 return getItemUserImage(index, groupUserList[index]);
               }

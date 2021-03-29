@@ -18,9 +18,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
@@ -344,19 +344,20 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     }
   }
 
-  List<BaseRichText> _atText(BuildContext context) {
-    List<BaseRichText> richList = [];
-    atUserList.forEach((element) {
-      print('atUserList=========================${element.index}                   ${element.len}');
-      richList.add(BaseRichText(
-        comment.substring(element.index, element.len),
-        style: widget.type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
-        onTap: () {
-          AppRouter.navigateToMineDetail(context, element.uid);
-        },
+  List<TextSpan> _atText(BuildContext context) {
+    var textSpanList = <TextSpan>[];
+    if ((atUserList != null && atUserList.length > 0)) {
+      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment,atUsers: atUserList));
+    } else {
+      textSpanList.add(TextSpan(
+        text: comment,
+        style: TextStyle(
+          fontSize: 14,
+          color: AppColor.textPrimary1,
+        ),
       ));
-    });
-    return richList;
+    }
+    return textSpanList;
   }
 
   @override
@@ -465,17 +466,18 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     height: 8,
                   ),
                   !commentIsDelete
-                      ? MyRichTextWidget(
-                          Text(
-                            "$comment",
-                            style: AppStyle.textRegular13,
-                          ),
-                          maxLines: 3,
-                          textOverflow: TextOverflow.ellipsis,
-                          richTexts: _atText(context),
-                          headText: commentState,
-                          headStyle: AppStyle.textMedium13,
-                        )
+                      ? RichText(text: TextSpan(children: _atText(context)))
+                  // MyRichTextWidget(
+                  //         Text(
+                  //           "$comment",
+                  //           style: AppStyle.textRegular13,
+                  //         ),
+                  //         maxLines: 3,
+                  //         textOverflow: TextOverflow.ellipsis,
+                  //         richTexts: _atText(context),
+                  //         headText: commentState,
+                  //         headStyle: AppStyle.textMedium13,
+                  //       )
                       : Text(
                           "该评论已删除",
                           style: AppStyle.textHintRegular13,

@@ -18,6 +18,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import '../custom_appbar.dart';
 import '../icon.dart';
 import 'feed_friends_cell.dart';
 import 'feed_index_bar.dart';
@@ -31,6 +32,7 @@ class Friends {
   int oldIndex;
 
   Friends({this.imageUrl, this.name, this.indexLetter, this.uid, this.oldIndex});
+
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["uid"] = uid;
@@ -40,6 +42,7 @@ class Friends {
     map["name"] = name;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -68,9 +71,6 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-
-
-
 //  字典里面放item和高度的对应数据
   final Map _groupOffsetMap = {
 //    这里因为根据实际数据变化和固定全部字母前两个值都是一样的，所以没有做动态修改，如果不一样记得要修改
@@ -131,7 +131,6 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-
   Widget getBodyUi() {
     if (loadingStatus == LoadingStatus.STATUS_LOADING) {
       return Container(
@@ -191,66 +190,54 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         onTap: () {
-          AppRouter.navigateFriendsPage(context: context,type: 4,shareMap: widget.shareMap,chatTypeModel: widget.chatTypeModel);
+          AppRouter.navigateFriendsPage(
+              context: context, type: 4, shareMap: widget.shareMap, chatTypeModel: widget.chatTypeModel);
         },
       ),
     );
   }
 
-
   //获取appbar
   Widget getAppBar() {
-    return AppBar(
-      title: Text(
-        (widget.type == 1 || widget.type == 2) ? "群成员 (${_listDatas.length})" : widget.type == 4 ? "选择群聊" : "选择联系人",
-        style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      backgroundColor: AppColor.white,
-      leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop(true);
-          },
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset(
-              "images/resource/2.0x/return2x.png",
-            ),
-          )),
-      leadingWidth: 44.0,
-      elevation: 0.5,
+    return CustomAppBar(
+      titleString: (widget.type == 1 || widget.type == 2)
+          ? "群成员 (${_listDatas.length})"
+          : widget.type == 4
+              ? "选择群聊"
+              : "选择联系人",
       actions: [
-
         Visibility(
-          visible: widget.type == 1&&
-              context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
-              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0&&
-              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid==Application.profile.uid,
+          visible: widget.type == 1 &&
+              context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED &&
+              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0 &&
+              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid == Application.profile.uid,
           child: GestureDetector(
             child: Container(
-              padding: const EdgeInsets.only(right: 16, left: 8),
+              padding: const EdgeInsets.only(right: 8, left: 8),
               alignment: Alignment.center,
               color: AppColor.transparent,
-              child: Text("移除群成员", style: TextStyle(fontSize: 14, color: AppColor.mainRed),),
+              child: Text(
+                "移除群成员",
+                style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+              ),
             ),
             onTap: () {
-             widget.type=2;
-             setState(() {
-
-             });
+              widget.type = 2;
+              setState(() {});
             },
           ),
         ),
-
         Visibility(
           visible: widget.type == 2 || widget.type == 3,
           child: GestureDetector(
             child: Container(
-              padding: const EdgeInsets.only(right: 16, left: 8),
+              padding: const EdgeInsets.only(right: 8, left: 8),
               alignment: Alignment.center,
               color: AppColor.transparent,
-              child: Text(widget.type == 2 ? "确认移除" : "确认添加", style: TextStyle(fontSize: 14, color: AppColor.mainRed),),
+              child: Text(
+                widget.type == 2 ? "确认移除" : "确认添加",
+                style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+              ),
             ),
             onTap: () {
               String uids = "";
@@ -300,7 +287,7 @@ class _FriendsPageState extends State<FriendsPage> {
               alignment: Alignment.center,
               child: TextField(
                 textInputAction: TextInputAction.search,
-                focusNode:FocusNode(),
+                focusNode: FocusNode(),
                 controller: textController,
                 onChanged: (text) {
                   if (StringUtil.strNoEmpty(text)) {
@@ -324,7 +311,6 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-
   //用户列表
   Widget _getListView() {
     // 排序字母数组
@@ -333,10 +319,8 @@ class _FriendsPageState extends State<FriendsPage> {
       _listUserDataList.addAll(_listDatas);
     } else {
       for (int i = 0; i < _listDatas.length; i++) {
-        if (_listDatas[i].name.toLowerCase().contains(
-            textController.text.toLowerCase())) {
-          print("_listDatas[i].name:${_listDatas[i]
-              .name}---textController.text:${textController.text}");
+        if (_listDatas[i].name.toLowerCase().contains(textController.text.toLowerCase())) {
+          print("_listDatas[i].name:${_listDatas[i].name}---textController.text:${textController.text}");
           _listUserDataList.add(_listDatas[i]);
         }
       }
@@ -350,23 +334,19 @@ class _FriendsPageState extends State<FriendsPage> {
             itemBuilder: (context, index) {
               int noBottomIndex = 0;
               if (index < _listUserDataList.length - 1 &&
-                  _listUserDataList[index + 1].indexLetter !=
-                      _listUserDataList[index].indexLetter) {
+                  _listUserDataList[index + 1].indexLetter != _listUserDataList[index].indexLetter) {
                 noBottomIndex = index + 1;
               }
-              return itemForRow(context, index, noBottomIndex,
-                  _listUserDataList[index], index == 0 ? null : _listUserDataList[index - 1]);
-            }
-        )
-    );
+              return itemForRow(context, index, noBottomIndex, _listUserDataList[index],
+                  index == 0 ? null : _listUserDataList[index - 1]);
+            }));
   }
 
   //每一个item
   Widget itemForRow(BuildContext context, int index, int noBottomIndex, Friends userModel, Friends oldUserModel) {
     //显示剩下的cell
     //如果当前和上一个cell的indexLetter一样，就不显示
-    bool _hideIndexLetter = (index > 0 &&
-        userModel.indexLetter == oldUserModel.indexLetter);
+    bool _hideIndexLetter = (index > 0 && userModel.indexLetter == oldUserModel.indexLetter);
     return FriendsCell(
       imageUrl: userModel.imageUrl,
       name: userModel.name,
@@ -380,42 +360,36 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-
   //悬浮检索控件
   Widget getIndexBar() {
     return IndexBar(
       indexBarCallBack: (String str) {
         if (_groupOffsetMap[str] != null) {
-          _scrollController.animateTo(_groupOffsetMap[str],
-              duration: Duration(milliseconds: 1), curve: Curves.easeIn);
+          _scrollController.animateTo(_groupOffsetMap[str], duration: Duration(milliseconds: 1), curve: Curves.easeIn);
         }
       },
       isShow: !isHaveTextLen,
     );
   }
 
-
   //初始化用户数据
   void initUserData() {
     if (widget.type == 1 || widget.type == 2) {
-      List<ChatGroupUserModel> chatGroupUserModelList = context
-          .read<GroupUserProfileNotifier>()
-          .chatGroupUserModelList;
+      List<ChatGroupUserModel> chatGroupUserModelList = context.read<GroupUserProfileNotifier>().chatGroupUserModelList;
       for (int i = 0; i < chatGroupUserModelList.length; i++) {
         addUserNameData(chatGroupUserModelList[i].groupNickName, i, userModel: chatGroupUserModelList[i]);
       }
     } else if (widget.type == 4) {
       for (int i = 0; i < groupMapList.length; i++) {
-        if(groupMapList[i]["modifiedName"]==null||groupMapList[i]["modifiedName"].toString().length<1) {
+        if (groupMapList[i]["modifiedName"] == null || groupMapList[i]["modifiedName"].toString().length < 1) {
           addUserNameData(groupMapList[i]["name"], i, groupMap: groupMapList[i]);
-        }else{
+        } else {
           addUserNameData(groupMapList[i]["modifiedName"], i, groupMap: groupMapList[i]);
         }
       }
     } else {
       for (int i = 0; i < followListModel.list.length; i++) {
-        addUserNameData(
-            followListModel.list[i].nickName, i, followModel: followListModel.list[i]);
+        addUserNameData(followListModel.list[i].nickName, i, followModel: followListModel.list[i]);
       }
     }
     // else {
@@ -436,7 +410,6 @@ class _FriendsPageState extends State<FriendsPage> {
     _listDatas.addAll(nonLetterlistDatas);
   }
 
-
   //对用户的名字格式化处理
   void addUserNameData(String name, int index,
       {ChatGroupUserModel userModel, BuddyModel followModel, Map<String, dynamic> groupMap}) {
@@ -444,9 +417,8 @@ class _FriendsPageState extends State<FriendsPage> {
     friendData.uid = -1;
     // 转换拼音再截取搜字母转大写
     String pinyinString =
-    PinyinHelper.getPinyinE(name, separator: " ", defPinyin: '#', format: PinyinFormat.WITHOUT_TONE).capitalize();
+        PinyinHelper.getPinyinE(name, separator: " ", defPinyin: '#', format: PinyinFormat.WITHOUT_TONE).capitalize();
     RegExp mobile = RegExp(r"[a-zA-Z]");
-
 
     friendData.name = name;
     friendData.oldIndex = index;
@@ -504,7 +476,7 @@ class _FriendsPageState extends State<FriendsPage> {
         //保存完了再加——groupOffset偏移
         _groupOffset += 76.0;
         _groupOffset += spacingHeight;
-      }  else {
+      } else {
         //此时没有头部，只需要加偏移量就好了
         _groupOffset += 48;
         _groupOffset += spacingHeight;
@@ -562,7 +534,7 @@ class _FriendsPageState extends State<FriendsPage> {
     if (widget.type == 3) {
       for (int i = 0; i < followListModel.list.length; i++) {
         // print("111111date:${Application.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"]}");
-        if (Application.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"]!=null) {
+        if (Application.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"] != null) {
           followListModel.list.removeAt(i);
           i--;
         }
@@ -572,9 +544,8 @@ class _FriendsPageState extends State<FriendsPage> {
     init();
   }
 
-
-  void _friendsCallback(String name, int userId, int type, BuildContext context)async{
-    if(widget.type==2||widget.type==3) {
+  void _friendsCallback(String name, int userId, int type, BuildContext context) async {
+    if (widget.type == 2 || widget.type == 3) {
       //----------------------------------------添加人进入群聊或者将人移除群聊------------------
       if (widget.type == 2 && userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
         return;
@@ -585,20 +556,22 @@ class _FriendsPageState extends State<FriendsPage> {
         selectUserUsIdList.add(userId);
       }
       setState(() {});
-    }else if(widget.type==1){
+    } else if (widget.type == 1) {
       //-----------------------------------------------查看群成员的个人信息------------
       Navigator.of(context).pop();
-      AppRouter.navigateToMineDetail(context,userId);
-    }else if(widget.type==4){
+      AppRouter.navigateToMineDetail(context, userId);
+    } else if (widget.type == 4) {
       //--------------------------------------------分享消息到群聊---------------
-      if (await jumpShareMessage(widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Group, context)) {
+      if (await jumpShareMessage(
+          widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Group, context)) {
         ToastShow.show(msg: "分享成功", context: context);
       } else {
         ToastShow.show(msg: "分享失败", context: context);
       }
-    }else if(widget.type==0){
+    } else if (widget.type == 0) {
       //----------------------------------------------分享消息到私聊-------------
-      if (await jumpShareMessage(widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Private, context)) {
+      if (await jumpShareMessage(
+          widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Private, context)) {
         ToastShow.show(msg: "分享成功", context: context);
       } else {
         ToastShow.show(msg: "分享失败", context: context);
@@ -606,26 +579,25 @@ class _FriendsPageState extends State<FriendsPage> {
     }
   }
 
-
   //添加这些用户
   void addUserGroup(String uids) async {
     Map<String, dynamic> model = await inviteJoin(groupChatId: widget.groupChatId, uids: uids);
     selectUserUsIdList.clear();
-    if(model!=null){
-      if(model["NotFriendList"]!=null&&model["NotFriendList"].length>0){
-        String name="";
-        for(int i=0;i<model["NotFriendList"].length;i++){
-          if(i==0){
-            name+=model["NotFriendList"][i]["nickName"];
-          }else{
-            name+=","+model["NotFriendList"][i]["nickName"];
+    if (model != null) {
+      if (model["NotFriendList"] != null && model["NotFriendList"].length > 0) {
+        String name = "";
+        for (int i = 0; i < model["NotFriendList"].length; i++) {
+          if (i == 0) {
+            name += model["NotFriendList"][i]["nickName"];
+          } else {
+            name += "," + model["NotFriendList"][i]["nickName"];
           }
         }
         ToastShow.show(msg: name, context: context);
-      }else{
+      } else {
         ToastShow.show(msg: "邀请成功", context: context);
       }
-    }else{
+    } else {
       ToastShow.show(msg: "邀请失败", context: context);
     }
     Future.delayed(Duration(milliseconds: 200), () {
@@ -649,9 +621,7 @@ class _FriendsPageState extends State<FriendsPage> {
       Navigator.of(context).pop();
     });
   }
-
 }
-
 
 // 返回首字母大写
 extension StringExtension on String {
