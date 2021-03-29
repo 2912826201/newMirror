@@ -8,6 +8,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -94,7 +95,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             AppPrefs.setPublishFeedLocalInsertData(
                 "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
             // todo 清除图片路径
-
+            if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+              _clearCache(AppConfig.getAppPublishDir());
+            }
             // 清空发布model
             postprogressModel.postFeedModel = null;
             //还原进度条
@@ -330,8 +333,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               AppPrefs.setPublishFeedLocalInsertData(
                   "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
               // todo 清除图片路径
-              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file}");
-
+              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path}");
+              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())}");
+              if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+                _clearCache(AppConfig.getAppPublishDir());
+              }
               // 清空发布model
               postprogressModel.postFeedModel = null;
               //还原进度条
@@ -501,7 +507,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         AppPrefs.setPublishFeedLocalInsertData(
                             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
                         // todo 清除图片路径
-
+                        if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+                          _clearCache(AppConfig.getAppPublishDir());
+                        }
                         // 清空发布model
                         postprogressModel.postFeedModel = null;
                         // context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
