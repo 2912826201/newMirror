@@ -32,7 +32,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   final Function correctRulesListener;
 
   // 记录@的光标
-  List<AtIndex> atIndexs;
+  List<AtIndex> atIndexs = [];
   int atIndex = 0;
   // @后跟随的实时搜索文本
   String atSearchStr = "";
@@ -78,9 +78,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值后光标${oldValue.selection.end}");
     print("at光标$atIndex");
     print("rules￥￥${rules.toString()}");
-    print("atIndexs${atIndexs.toString()}");
+    print("atCursorindex${atIndexs.toString()}");
     if (!isMonitorTop) {
-      if (atIndexs.isNotEmpty && atIndexs != null) {
+      if ( atIndexs.isNotEmpty) {
         atIndex = atIndexs.first.index;
       }
     }
@@ -153,12 +153,14 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("还调用了下面");
     // ios在输入中就要去修正索引
     if (Platform.isIOS && oldValue.isComposingRangeValid) {
+      print("ios输入中");
       if (rules.isNotEmpty ) {
         _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
       }
     }
     // 输入完成时安卓修正索引，ios再次修正
     if (!oldValue.composing.isValid ) {
+      print("ios 安卓：：：： 输入完成");
       if (rules.isNotEmpty ) {
         _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
       }
@@ -186,13 +188,14 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
           print(rules.toString());
         }
       }
-      if (!Platform.isIOS) {
+      // if (!Platform.isIOS) {
         _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr, true);
-      }
+      // }
       print("返回值++++++++++++++++${newValue.text}");
     }
     // 此是应对ios在输入中时也要回调回去。
-    if (Platform.isIOS) {
+    if (Platform.isIOS && oldValue.isComposingRangeValid) {
+      print("ios输入中返回回去");
       _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr, true);
     }
     return newValue;

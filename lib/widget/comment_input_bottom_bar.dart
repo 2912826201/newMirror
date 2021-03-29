@@ -75,7 +75,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   CommentInputBottomBarState(this.voidCallback, this.hintText, this.commentFocus);
 
   ReleaseFeedInputFormatter _formatter;
-  List<TextInputFormatter> inputFormatters = [];
 
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
@@ -634,7 +633,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               rangeStyles: getTextFieldStyle(rules),
                               textInputAction: TextInputAction.send,
                               inputFormatters:
-                                  inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
+                                   [_formatter] ,
                             ),
                           ),
                           Positioned(
