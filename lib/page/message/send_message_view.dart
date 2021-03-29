@@ -159,7 +159,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
     } else {
       print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-      return getTextMsg(text: "6版本过低请升级版本!");
+      return getTextMsg(text: "版本过低请升级版本!");
     }
   }
 
@@ -173,38 +173,42 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     String msgType = msg.objectName;
 
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-      // -----------------------------------------------自定义的-消息类型----------------------------------------------
 
+      // -----------------------------------------------自定义的-消息类型----------------------------------------------
       return getTextMessage(msg);
+
     } else if (msgType == VoiceMessage.objectName) {
       // -----------------------------------------------语音-消息----------------------------------------------
 
       return getVoiceMessage(msg);
     } else if (msgType == RecallNotificationMessage.objectName) {
+
       // -----------------------------------------------撤回-消息-----------------------------------------------
-
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
+
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+
       // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
-
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
+
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_CMD) {
-      // -----------------------------------------------通知-私聊-----------------------------------------------
 
+      // -----------------------------------------------通知-私聊-----------------------------------------------
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
+
     }
 
     //-------------------------------------------------消息类型未知--------------------------------------------
     if (msg.content == null || msg.content.mentionedInfo == null) {
-      return getTextMsg(text: "4版本过低请升级版本!");
+      return getTextMsg(text: "版本过低请升级版本!");
     } else {
-      return getTextMsg(text: "4版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
   }
 
@@ -277,14 +281,14 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       }
     } catch (e) {
       //-------------------------------------------------消息解析失败-------------------------------------------
-      return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
     }
 
     //-------------------------------------------------消息类型未知--------------------------------------------
     if (msg.content == null || msg.content.mentionedInfo == null) {
-      return getTextMsg(text: "2版本过低请升级版本!");
+      return getTextMsg(text: "版本过低请升级版本!");
     } else {
-      return getTextMsg(text: "1版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
   }
 

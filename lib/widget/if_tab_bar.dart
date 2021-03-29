@@ -183,9 +183,13 @@ class _IFTabBarState extends State<IFTabBar> {
     streamController.sink.add(0);
   }
   _resetUnreadMessage(){
-    print("接收到");
-    setState(() {
+    Future.delayed(Duration(milliseconds: 200),(){
+      print("接收到");
+      if(mounted) {
+        setState(() {
 
+        });
+      }
     });
   }
   @override
