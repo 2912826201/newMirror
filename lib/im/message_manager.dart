@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
+import 'package:qrcode/qrcode.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 
@@ -232,6 +233,16 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
+      if(msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+        Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
+        if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+          dto.unreadCount = 0;
+          return dto;
+        }else if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_CMD){
+          dto.unreadCount = 0;
+          return dto;
+        }
+      }
       dto.unreadCount = 1;
       print("加上全局未读数");
       //加上全局未读数
