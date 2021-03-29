@@ -27,7 +27,9 @@ import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/message/link_failure/network_link_failure_page.dart';
+import 'package:mirror/page/message/more_page/group_more_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
+import 'package:mirror/page/message/more_page/private_more_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
@@ -378,6 +380,20 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
   return ChatPage(conversation: conversation, shareMessage: shareMessage,context:context);
+});
+
+//群聊更多界面
+var handlerGroupMorePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ConversationDto dto = ConversationDto.fromMap(data["dto"]);
+  return GroupMorePage(chatGroupId:data["chatUserId"],chatType:data["chatType"],groupName:data["name"],dto:dto);
+});
+
+//私聊更多界面
+var handlerPrivateMorePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ConversationDto dto = ConversationDto.fromMap(data["dto"]);
+  return PrivateMorePage(chatUserId:data["chatUserId"],chatType:data["chatType"],name:data["name"],dto:dto);
 });
 
 //群聊二维码界面
