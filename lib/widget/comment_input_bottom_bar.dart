@@ -31,6 +31,7 @@ Future openInputBottomSheet({
   @required VoidCallback voidCallback,
   String hintText,
   bool isShowAt = true,
+  bool isShowPostBtn = true,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
@@ -46,6 +47,7 @@ Future openInputBottomSheet({
                 child: CommentInputBottomBar(
                   hintText: hintText,
                   isShowAt: isShowAt,
+                  isShowPostBtn: isShowPostBtn,
                   voidCallback: voidCallback,
                   commentFocus: _commentFocus,
                 ),
@@ -55,11 +57,12 @@ Future openInputBottomSheet({
 }
 
 class CommentInputBottomBar extends StatefulWidget {
-  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowAt})
+  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus,this.isShowPostBtn, this.isShowAt})
       : super(key: key);
   final VoidCallback voidCallback;
   String hintText;
   final bool isShowAt;
+  final bool isShowPostBtn;
   final FocusNode commentFocus;
 
   @override
@@ -224,6 +227,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
+        print('----------------------------关闭视图');
         context.read<CommentEnterNotifier>().openAtCallback("");
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
@@ -565,7 +569,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                     Container(
                       width: Platform.isIOS
                           ? ScreenUtil.instance.screenWidthDp - 32
-                          : ScreenUtil.instance.screenWidthDp - 32 - 52 - 12,
+                          : ScreenUtil.instance.screenWidthDp - 32 - (widget.isShowPostBtn?52 - 12:0) ,
                       margin: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -579,7 +583,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 minHeight: 16.0,
                                 maxWidth: Platform.isIOS
                                     ? ScreenUtil.instance.screenWidthDp - 32 - 76
-                                    : ScreenUtil.instance.screenWidthDp - 32 - 76 - 52 - 12),
+                                    : ScreenUtil.instance.screenWidthDp - 32 - 76 - (widget.isShowPostBtn?52 - 12:0)),
                             child: TextSpanField(
                               controller: _textEditingController,
                               focusNode: commentFocus,
@@ -679,41 +683,44 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                         ],
                       ),
                     ),
-                    Positioned(
-                        right: 16,
-                        bottom: 2,
-                        child: Offstage(
-                          offstage: Platform.isIOS,
-                          child: GestureDetector(
-                              onTap: () {
-                                voidCallback(
-                                  _textEditingController.text,
-                                  rules,
-                                );
-                                Navigator.of(context).pop(1);
-                              },
-                              child: IgnorePointer(
-                                // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                                ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
-                                child: Container(
+                    Visibility(
+                      visible: widget.isShowPostBtn,
+                      child: Positioned(
+                          right: 16,
+                          bottom: 2,
+                          child: Offstage(
+                            offstage: Platform.isIOS,
+                            child: GestureDetector(
+                                onTap: () {
+                                  voidCallback(
+                                    _textEditingController.text,
+                                    rules,
+                                  );
+                                  Navigator.of(context).pop(1);
+                                },
+                                child: IgnorePointer(
+                                  // 监听输入框的值==""使外层点击不生效。非""手势生效。
+                                  ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                                  child: Container(
                                     // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
-                                    height: 32,
-                                    width: 52,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(16)),
-                                      // 监听输入框的值动态改变样式
-                                      color: context.watch<CommentEnterNotifier>().textFieldStr != ""
-                                          ? AppColor.textPrimary1
-                                          : AppColor.textSecondary,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "发送",
-                                        style: TextStyle(color: AppColor.white, fontSize: 14),
+                                      height: 32,
+                                      width: 52,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                                        // 监听输入框的值动态改变样式
+                                        color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                            ? AppColor.textPrimary1
+                                            : AppColor.textSecondary,
                                       ),
-                                    )),
-                              )),
-                        ))
+                                      child: Center(
+                                        child: Text(
+                                          "发送",
+                                          style: TextStyle(color: AppColor.white, fontSize: 14),
+                                        ),
+                                      )),
+                                )),
+                          )),
+                    )
                   ],
                 )),
             Visibility(

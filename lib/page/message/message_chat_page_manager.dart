@@ -899,10 +899,89 @@ getFeedDetail(int feedId,BuildContext context) async {
   }
 }
 
+ConversationDto _convertMsgToConversation(Message msg) {
+  //只处理以下几个ObjectName的消息
+  if(msg==null){
+    return null;
+  }
+  if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
+      msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+      msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
+      msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
+    return null;
+  }
+
+  ConversationDto dto = ConversationDto();
+  //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
+  dto.conversationId = msg.targetId;
+  dto.uid = Application.profile.uid;
+  //TODO 会话内容需要转化
+  dto.content = MessageManager.convertMsgContent(msg);
+  dto.avatarUri = msg.content.sendUserInfo.portraitUri;
+  dto.name =  msg.content.sendUserInfo.name;
+  switch (msg.conversationType) {
+    case RCConversationType.Private:
+    //FIXME 这里需要处理管家消息
+      dto.type = PRIVATE_TYPE;
+      if (msg.senderUserId == Application.profile.uid.toString()) {
+        //如果发信人是自己。。。要从其他途径更新会话名字和头像
+        dto.senderUid = Application.profile.uid;
+      } else if (msg.content?.sendUserInfo != null) {
+        dto.avatarUri = msg.content.sendUserInfo.portraitUri;
+        dto.name = msg.content.sendUserInfo.name;
+        //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
+        dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
+      } else {
+      }
+      break;
+    case RCConversationType.Group:
+      dto.type = GROUP_TYPE;
+      if (msg.content?.sendUserInfo != null) {
+        //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
+        dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
+        //TODO 去更新群成员的本地数据库
+      }
+      break;
+    case RCConversationType.System:
+      if (msg.senderUserId == "1") {
+        dto.type = OFFICIAL_TYPE;
+        dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+        dto.name = "系统消息";
+      } else if (msg.senderUserId == "2") {
+        dto.type = LIVE_TYPE;
+        dto.avatarUri = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
+        dto.name = "官方直播";
+      } else if (msg.senderUserId == "3") {
+        dto.type = TRAINING_TYPE;
+        dto.avatarUri = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
+        dto.name = "运动数据";
+      }
+      break;
+    default:
+    //其他情况暂时不处理
+      return null;
+  }
+  //需要额外获取的信息
+  dto.isTop = 0;
+  //暂时将时间写一样
+  dto.createTime = msg.sentTime;
+  dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
+  dto.unreadCount = 0;
+
+  return dto;
+}
+
 //todo 之后改为路由跳转
 //判断去拿一个更多界面
 void judgeJumpPage(
-    int chatTypeId, String chatUserId, int chatType, BuildContext context, String name, listener, exitGroupListener) {
+    int chatTypeId,
+    String chatUserId,
+    int chatType,
+    BuildContext context,
+    String name,
+    listener,
+    exitGroupListener,
+    Message message) {
   if (chatTypeId == RCConversationType.Group) {
     jumpPage(
         GroupMorePage(
@@ -910,7 +989,8 @@ void judgeJumpPage(
             chatType: chatType,
             groupName: name,
             listener: listener,
-            exitGroupListener: exitGroupListener),
+            exitGroupListener: exitGroupListener,
+            dto: _convertMsgToConversation(message)),
         false,
         context);
   } else {
@@ -920,7 +1000,7 @@ void judgeJumpPage(
           chatType: chatType,
           name: name,
           listener: listener,
-        ),
+          dto: _convertMsgToConversation(message)),
         false,
         context);
   }

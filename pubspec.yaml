@@ -136,19 +136,19 @@ dependencies:
   flutter_svg: 0.19.1
   #可拖拽item list
   reorderables: ^0.3.2
-
-
-  #底部tab测试
-  bottom_bars: ^1.1.0
+  #扫码
+  scan: ^0.0.3
+  flutter_qr_code: ^0.0.2+2
+  #二维码生成
+  qr_flutter: ^3.2.0
 
   #安装包升级测试
   r_upgrade: ^0.3.2+3
 
   another_flushbar: ^1.10.11
-  #扫码测试
-  scan: ^0.0.3
-  #二维码生成测试
-  qr_flutter: ^3.2.0
+
+
+
   #测试用滚轮选择器
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git

@@ -12,6 +12,8 @@ import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -143,7 +145,7 @@ class MessageManager {
     if (msg == null) {
       exist.content = "";
     } else {
-      exist.content = _convertMsgContent(msg);
+      exist.content = convertMsgContent(msg);
     }
     if (exist.isTop == 0) {
       context.read<ConversationNotifier>().insertCommonList([exist]);
@@ -166,7 +168,7 @@ class MessageManager {
     dto.conversationId = msg.targetId;
     dto.uid = Application.profile.uid;
     //TODO 会话内容需要转化
-    dto.content = _convertMsgContent(msg);
+    dto.content = convertMsgContent(msg);
     dto.avatarUri = "";
     dto.name = "";
     switch (msg.conversationType) {
@@ -210,11 +212,17 @@ class MessageManager {
         //其他情况暂时不处理
         return null;
     }
-    //需要额外获取的信息
-    dto.isTop = 0;
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
     dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
+
+
+    //需要额外获取的信息
+    dto.isTop = 0;
+    TopChatModel topChatModel = new TopChatModel(type: dto.type==GROUP_TYPE?1:0, chatId: int.parse(dto.conversationId));
+    if(TopChatModel.contains(Application.topChatModelList, topChatModel)){
+      dto.isTop=1;
+    }
 
     //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
     if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
@@ -225,8 +233,17 @@ class MessageManager {
       dto.unreadCount = 1;
       print("加上全局未读数");
       //加上全局未读数
-      Application.unreadMessageNumber += 1;
-      EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      NoPromptUidModel model=NoPromptUidModel(type: dto.type,targetId: int.parse(dto.conversationId));
+      if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
+        print("不存在");
+        Application.unreadMessageNumber+=1;
+        EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      }else{
+        print("存在");
+      }
+      print("Application.unreadMessageNumber:${Application.unreadMessageNumber}");
+      print("model:${model.toString()}");
+      print("Application.queryNoPromptUidList:${Application.queryNoPromptUidList.toString()}");
     }
 
     return dto;
@@ -411,7 +428,7 @@ class MessageManager {
   }
 
   //根据类型区分转化内容文字
-  static String _convertMsgContent(Message msg) {
+  static String convertMsgContent(Message msg) {
     switch (msg.objectName) {
       case ChatTypeModel.MESSAGE_TYPE_TEXT:
         Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);

@@ -23,4 +23,28 @@ class NoPromptUidModel {
     map["type"] = this.type;
     return map;
   }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+
+
+
+  static bool contains(List<NoPromptUidModel> modelList,NoPromptUidModel model) {
+    for (NoPromptUidModel e in modelList) {
+      if(e.type==model.type&&e.targetId==model.targetId){
+        return true;
+      }
+    }
+    return false;
+  }
+  static int containsIndex(List<NoPromptUidModel> modelList,NoPromptUidModel model) {
+    for (int i=0;i<modelList.length;i++) {
+      if(modelList[i].type==model.type&&modelList[i].targetId==model.targetId){
+        return i;
+      }
+    }
+    return -1;
+  }
 }

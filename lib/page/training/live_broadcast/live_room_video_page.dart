@@ -63,6 +63,7 @@ class _LiveRoomVideoPageState extends XCState {
 
   //退出界面
   void exit(){
+    print("退出界面几次");
     Future.delayed(Duration(milliseconds: 100),(){
       EventBus.getDefault().unRegister(pageName:EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
       //退出聊天室

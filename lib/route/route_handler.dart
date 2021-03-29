@@ -388,7 +388,11 @@ var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<Str
 
 //机器遥控界面
 var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return RemoteControllerPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return RemoteControllerPage(
+    mode: data["mode"]??0,
+    liveRoomId: data["liveRoomId"],
+  );
 });
 
 //机器连接信息页

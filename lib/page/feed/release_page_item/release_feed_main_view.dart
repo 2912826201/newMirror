@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
+
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +143,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     }
     print("子页面回调${poi.toString()}");
     context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(poi);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   // 推荐地址Item
@@ -156,7 +158,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             selectAddress = address;
             checkIndex = 1;
             context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(address);
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           } else {
             AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
@@ -219,24 +223,22 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   ScrollController scrollController = ScrollController();
 
   // 解析数据
-  resolveData() async {
-    for (MediaFileModel model in widget.selectedMediaFiles.list) {
-      if (model.croppedImage != null && model.croppedImageData == null) {
-        ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-        Uint8List picBytes = byteData.buffer.asUint8List();
-        model.croppedImageData = picBytes;
-      }
-    }
-    // 设置可发布
-    context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  // resolveData() async {
+  //   for (MediaFileModel model in widget.selectedMediaFiles.list) {
+  //     if (model.croppedImage != null && model.croppedImageData == null) {
+  //       ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+  //       Uint8List picBytes = byteData.buffer.asUint8List();
+  //       model.croppedImageData = picBytes;
+  //     }
+  //   }
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  // }
 
   @override
   void initState() {
-    resolveData();
+    // resolveData();
   }
 
   // 进入相册的添加视图
@@ -270,23 +272,18 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             }
             Application.selectedMediaFiles = null;
             print(files.type + ":" + files.list.toString());
-            for (MediaFileModel model in files.list) {
-              if (model.croppedImage != null && model.croppedImageData == null) {
-                print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                Uint8List picBytes = byteData.buffer.asUint8List();
-                print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                model.croppedImageData = picBytes;
-              }
-            }
+            // for (MediaFileModel model in files.list) {
+            //   if (model.croppedImage != null && model.croppedImageData == null) {
+            //     print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+            //     ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+            //     print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+            //     Uint8List picBytes = byteData.buffer.asUint8List();
+            //     print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+            //     model.croppedImageData = picBytes;
+            //   }
+            // }
             widget.selectedMediaFiles.list.addAll(files.list);
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
-            // 设置可发布
-            context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
-            if (mounted) {
-              setState(() {});
-            }
           }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
         child: Container(
@@ -328,10 +325,12 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   }
 
   void _onReorder(int oldIndex, int newIndex) {
-    setState(() {
-      MediaFileModel model = widget.selectedMediaFiles.list.removeAt(oldIndex);
-      widget.selectedMediaFiles.list.insert(newIndex, model);
-    });
+    if (mounted) {
+      setState(() {
+        MediaFileModel model = widget.selectedMediaFiles.list.removeAt(oldIndex);
+        widget.selectedMediaFiles.list.insert(newIndex, model);
+      });
+    }
   }
 
   Widget _canPullReorderRow() {
@@ -402,14 +401,16 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                     iconSize: 18,
                     onTap: () {
                       print("关闭");
-                      setState(() {
-                        if (widget.selectedMediaFiles.list.length == 1) {
-                          ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
-                          return;
-                          // widget.selectedMediaFiles.type = null;
-                        }
-                        widget.selectedMediaFiles.list.removeAt(index);
-                      });
+                      if (mounted) {
+                        setState(() {
+                          if (widget.selectedMediaFiles.list.length == 1) {
+                            ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
+                            return;
+                            // widget.selectedMediaFiles.type = null;
+                          }
+                          widget.selectedMediaFiles.list.removeAt(index);
+                        });
+                      }
                     },
                   ),
                 ),

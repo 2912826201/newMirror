@@ -1746,6 +1746,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // 关闭@#视图回调
       shutDownCallback: () async {
         print("取消艾特功能3");
+        print('----------------------------关闭视图');
         context.read<ChatEnterNotifier>().openAtCallback("");
         delayedSetState();
       },
@@ -1896,8 +1897,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   _topMoreBtnClick() {
     _focusNode.unfocus();
     // ToastShow.show(msg: "点击了更多按钮", context: _context);
+    Message message=chatDataList==null||chatDataList.length<1||chatDataList[0].msg==null?null:chatDataList[0].msg;
     judgeJumpPage(
-        chatTypeId, this.chatId, conversation.type, context, chatName, _morePageOnClick, _moreOnClickExitChatPage);
+        chatTypeId,
+        this.chatId,
+        conversation.type,
+        context,
+        chatName,
+        _morePageOnClick,
+        _moreOnClickExitChatPage,
+        message);
   }
 
   //更多的界面-里面进行了一些的点击事件

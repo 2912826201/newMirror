@@ -112,7 +112,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   @override
   void initStatePage() {
-    print("开播时间是:$startTime");
+    print("开播时间是:$startTime,$coachId");
 
 
     EventBus.getDefault().registerSingleParameter(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
@@ -1139,7 +1139,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     msg.sendUserInfo = userInfo;
     Map<String, dynamic> textMap = Map();
     textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
-    textMap["toUserId"] = "1";
+    textMap["toUserId"] = coachId;
     textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
     textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
     textMap["data"] = text;
