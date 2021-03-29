@@ -123,7 +123,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         },
         // 关闭@#视图回调
         shutDownCallback: () async {
-          print('=======================shutDownCallback');
+          print('----------------------------关闭视图');
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         },
         valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,

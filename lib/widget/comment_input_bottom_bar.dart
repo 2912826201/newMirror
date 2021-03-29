@@ -227,6 +227,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
+        print('----------------------------关闭视图');
         context.read<CommentEnterNotifier>().openAtCallback("");
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,

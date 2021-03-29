@@ -136,19 +136,19 @@ dependencies:
   flutter_svg: 0.19.1
   #可拖拽item list
   reorderables: ^0.3.2
-
-
-  #底部tab测试
-  bottom_bars: ^1.1.0
+  #扫码
+  scan: ^0.0.3
+  flutter_qr_code: ^0.0.2+2
+  #二维码生成
+  qr_flutter: ^3.2.0
 
   #安装包升级测试
   r_upgrade: ^0.3.2+3
 
   another_flushbar: ^1.10.11
-  #扫码测试
-  scan: ^0.0.3
-  #二维码生成测试
-  qr_flutter: ^3.2.0
+
+
+
   #测试用滚轮选择器
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
@@ -169,7 +169,7 @@ dependencies:
   # 图像和视频预览组件，支持缩放和拖动
   interactiveviewer_gallery: any
   animate_do: any
-  flutter_qr_code: ^0.0.2+2
+
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
   #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。

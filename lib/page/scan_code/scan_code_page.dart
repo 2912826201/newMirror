@@ -28,13 +28,11 @@ import 'package:mirror/constant/color.dart';
 import 'package:provider/provider.dart';
 class ScanCodePage extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  scanCodePageState createState() => scanCodePageState();
 }
 
-class _MyAppState extends State<ScanCodePage> {
+class scanCodePageState extends State<ScanCodePage> {
   QrScanController _controller;
-  String imagePath = "";
-  ScanController controller = ScanController();
   String codeData;
   StreamController<double> streamController = StreamController<double>();
   bool upOrDown = false;
@@ -62,8 +60,7 @@ class _MyAppState extends State<ScanCodePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return  Scaffold(
         appBar: CustomAppBar(
           titleString: "扫描二维码",
           leadingOnTap: () {
@@ -87,12 +84,8 @@ class _MyAppState extends State<ScanCodePage> {
                 Future.delayed(Duration(milliseconds: 150),(){
                   controller.startCamera();
                   controller.startSpot();
-              /*    controller.startSpotAndShowRect();*/
                 });
                 streamController.sink.add(250);
-                /*Future.delayed(Duration.zero,(){
-                  _getShortUrl();
-                });*/
               },
               onScanQRCodeSuccess: (String result) {
                 print("onScanQRCodeSuccess: $result");
@@ -100,19 +93,19 @@ class _MyAppState extends State<ScanCodePage> {
                 resolveScanResult(result);
               },
               onCameraAmbientBrightnessChanged: (bool isDark) {
-              },
+                print('----------------------------扫码环境是否变暗$isDark');
+            },
               onScanQRCodeOpenCameraError: () {
-                print("onScanQRCodeOpenCameraError: ");
-              },
+                print('---------------------打开相机错误');
+            },
             ),
-            _scanTopView()
+            _scanCoverView()
           ],
         ),
-      ),
-    );
+      );
   }
 
-  Widget _scanTopView() {
+  Widget _scanCoverView() {
     return Stack(
       children: [
         Container(
@@ -169,7 +162,10 @@ class _MyAppState extends State<ScanCodePage> {
           SizedBox(height: 48,),
           InkWell(
               onTap: () {
-                AppRouter.navigateToMyQrCodePage(context);
+                _controller.stopSpot();
+                AppRouter.navigateToMyQrCodePage(context,(result){
+                  _controller.startSpot();
+                });
               },
               child:QrImage(
                 data:  codeData != null ? codeData : "",
