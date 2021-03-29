@@ -1746,6 +1746,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // 关闭@#视图回调
       shutDownCallback: () async {
         print("取消艾特功能3");
+        print('----------------------------关闭视图');
         context.read<ChatEnterNotifier>().openAtCallback("");
         delayedSetState();
       },

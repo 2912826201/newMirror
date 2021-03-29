@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -100,15 +101,17 @@ class _IFTabBarState extends State<IFTabBar> {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName:EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
-    EventBus.getDefault().unRegister(pageName:EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+    // EventBus.getDefault().unRegister(pageName:EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    // EventBus.getDefault().unRegister(pageName:EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
   }
 
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
-    EventBus.getDefault().registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      EventBus.getDefault().registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+      EventBus.getDefault().registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+    });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
@@ -174,7 +177,9 @@ class _IFTabBarState extends State<IFTabBar> {
 
 
 
-  _postFeedCallBack(){
+  _postFeedCallBack(PostprogressModel postprogress){
+    widget.tabBarClickListener(0);
+    print("几次");
     streamController.sink.add(0);
   }
   _resetUnreadMessage(){

@@ -432,8 +432,8 @@ class AppRouter {
     _navigateToPage(context, pathScanCodeResult, map);
   }
 
-  static void navigateToMyQrCodePage(BuildContext context) {
-    _navigateToPage(context, pathMyQrCodePage, {});
+  static void navigateToMyQrCodePage(BuildContext context,Function(dynamic result) callBack) {
+    _navigateToPage(context, pathMyQrCodePage, {},callback: callBack);
   }
 
   static void navigateToProfileDetailMore(BuildContext context) {

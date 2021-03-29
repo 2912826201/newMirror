@@ -39,34 +39,33 @@ class FeedHeader extends StatelessWidget {
     // var b = utf8.decode(a);
     // print("decode::$b");
     // 转换base64
-    String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-    int i = 0;
-    // 图片
-    if (selectedMediaFiles.type == mediaTypeKeyImage) {
-      for (MediaFileModel v in selectedMediaFiles.list) {
-        if (v.croppedImageData != null) {
-          i++;
-          File imageFile = await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString(),isPublish:true);
-          v.file = imageFile;
-        }
-      }
-    } else if (selectedMediaFiles.type == mediaTypeKeyVideo) {
-      for (MediaFileModel v in selectedMediaFiles.list) {
-        if (v.thumb != null) {
-          i++;
-          File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString(),isPublish:true);
-          v.thumbPath = thumbFile.path;
-        }
-      }
-    }
+    // String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+    // int i = 0;
+    // // 图片
+    // if (selectedMediaFiles.type == mediaTypeKeyImage) {
+    //   for (MediaFileModel v in selectedMediaFiles.list) {
+    //     if (v.croppedImageData != null) {
+    //       i++;
+    //       File imageFile = await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString(),isPublish:true);
+    //       v.file = imageFile;
+    //     }
+    //   }
+    // } else if (selectedMediaFiles.type == mediaTypeKeyVideo) {
+    //   for (MediaFileModel v in selectedMediaFiles.list) {
+    //     if (v.thumb != null) {
+    //       i++;
+    //       File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString(),isPublish:true);
+    //       v.thumbPath = thumbFile.path;
+    //     }
+    //   }
+    // }
     print("打印一下规则$rules");
 
     // 获取当前时间戳
     int currentTimestamp = DateTime.now().millisecondsSinceEpoch;
     PostFeedModel feedModel = PostFeedModel();
     PostprogressModel postprogressModel = PostprogressModel();
-    postprogressModel.isPublish = true;
-    postprogressModel.showPulishView = false;
+    postprogressModel.showPulishView = true;
     postprogressModel.plannedSpeed = 0.0;
     List<AtUsersModel> atUsersModel = [];
     String address;
@@ -122,14 +121,14 @@ class FeedHeader extends StatelessWidget {
         feedModel.selectedMediaFiles = selectedMediaFiles;
         postprogressModel.postFeedModel = feedModel;
         print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
-        // 存入数据
-        AppPrefs.setPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-            jsonEncode(postprogressModel.toJson()));
+        // // 存入数据
+        // AppPrefs.setPublishFeedLocalInsertData(
+        //     "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
+        //     jsonEncode(postprogressModel.toJson()));
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
-        EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
-        EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
+        // EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
+        // EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
         print('--------------Navigator------Navigator-------------Navigator------');
         Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
         print("打印结束");
@@ -169,7 +168,6 @@ class FeedHeader extends StatelessWidget {
         latitude = poi.location.split(",")[1];
         cityCode = poi.citycode;
       }
-      feedModel.selectedMediaFiles = selectedMediaFiles;
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
       feedModel.cityCode = cityCode;
@@ -178,20 +176,16 @@ class FeedHeader extends StatelessWidget {
       feedModel.topics = topics;
       feedModel.selectedMediaFiles = selectedMediaFiles;
       postprogressModel.postFeedModel = feedModel;
-      // 存入数据
-      AppPrefs.setPublishFeedLocalInsertData(
-          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-          jsonEncode(postprogressModel.toJson()));
-
+      print("图片视频长度：：：：${selectedMediaFiles.list.length}");
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       FocusScope.of(context).requestFocus(FocusNode());
-      EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
+      // EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
       print('--------------Navigator------Navigator-------------Navigator------');
-      // 传入发布动态model
-      EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
-      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
+    // 传入发布动态model
+    EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
+    Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
   }
 
   @override
@@ -245,9 +239,9 @@ class FeedHeader extends StatelessWidget {
               var uid = context.read<ProfileNotifier>().profile.uid;
               pulishFeed(context, inputText, uid, rules, poi);
             },
-            child: IgnorePointer(
+            // child: IgnorePointer(
             // // 监听输入框的值==""使外层点击不生效。非""手势生效。
-            ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
+            // ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
             child: Container(
               // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                 height: 28,
@@ -256,10 +250,10 @@ class FeedHeader extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     // 监听输入框的值动态改变样式
                     color:
-                    context.watch<ReleaseFeedInputNotifier>().isPostFeed
-                        ?
+                    // context.watch<ReleaseFeedInputNotifier>().isPostFeed
+                    //     ?
                     AppColor.mainRed
-                  : AppColor.mainRed.withOpacity(0.65),
+                  // : AppColor.mainRed.withOpacity(0.65),
                 ),
                 child: Center(
                   child: Text(
@@ -267,7 +261,7 @@ class FeedHeader extends StatelessWidget {
                     style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
                   ),
                 )),
-            )
+            // )
           ),
           SizedBox(
             width: 16,
