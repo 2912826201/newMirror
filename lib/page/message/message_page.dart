@@ -30,6 +30,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:app_settings/app_settings.dart';
 import 'message_chat_page_manager.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 
 /// message_page
 /// Created by yangjiayi on 2020/12/21.
@@ -423,6 +424,14 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _conversationItem(int index, ConversationDto conversation) {
+
+    int messageCount=conversation.unreadCount;
+    NoPromptUidModel model=NoPromptUidModel(type: conversation.type,targetId: int.parse(conversation.conversationId));
+    if(NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
+      messageCount=0;
+    }
+
+
     MessageContent msgContent = MessageContent();
     msgContent.decode(conversation.content);
     //FIXME 是否有人at我 不能只看最新一条 要从map中查
@@ -567,8 +576,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     SizedBox(
                       width: 12,
                     ),
-                    //TODO 免打扰需要处理
-                    CountBadge(conversation.unreadCount, false),
+                    CountBadge(messageCount, false),
                   ],
                 ),
                 SizedBox(
