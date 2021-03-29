@@ -65,7 +65,9 @@ class AtListState extends State<AtList> {
   @override
   void initState() {
     requestBothFollowList();
-    context.read<ReleaseFeedInputNotifier>().setAtScrollController(_scrollController);
+    Future.delayed(Duration.zero, () {
+      context.read<ReleaseFeedInputNotifier>().setAtScrollController(_scrollController);
+    });
     _scrollController.addListener(() {
       // 搜索全局用户关键字
       String searchUserStr = context.read<ReleaseFeedInputNotifier>().atSearchStr;
