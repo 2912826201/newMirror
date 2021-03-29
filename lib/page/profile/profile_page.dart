@@ -17,6 +17,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'profile_detail_page.dart';
 
@@ -215,7 +216,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               svgName: AppIcon.qrcode_scan,
               iconColor: AppColor.black,
               onTap: () {
-                AppRouter.navigateToScanCodePage(context);
+                Permission.camera.request().then((value){
+                  if(value!=null){
+                    AppRouter.navigateToScanCodePage(context);
+                  }
+                });
               }),
           Spacer(),
           CustomAppBarIconButton(
