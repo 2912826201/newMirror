@@ -51,7 +51,7 @@ class scanCodePageState extends State<ScanCodePage> {
     streamController.sink.add(250);
     _captureController.onCapture((data) {
       print('onCapture----$data');
-
+      resolveScanResult(data);
     });
     _getShortUrl();
   }
