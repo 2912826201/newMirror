@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
   // taBar和TabBarView必要的
@@ -57,18 +58,15 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-    // 发布动态页发送发布model通知
-    EventBus.getDefault().registerSingleParameter(
-        (postprogress) => pulishFeed(postprogress, isBackToTheTop: true), EVENTBUS_HOME_PAGE,
-        registerName: EVENTBUS_POST_PORGRESS_VIEW);
-
 
     // 登录页重新登录获取发布失败model通知
-    EventBus.getDefault().registerNoParameter(postModelAssignment,EVENTBUS_HOME_PAGE,
-        registerName: EVENTBUS_GET_FAILURE_MODEL);
+    EventBus.getDefault()
+        .registerNoParameter(postModelAssignment, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_GET_FAILURE_MODEL);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      postModelAssignment();
+      // 发布动态页发送发布model通知
+      EventBus.getDefault()
+          .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
     });
     _initConnectivity();
   }
@@ -76,7 +74,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 发布失败后发布model赋值
   postModelAssignment() {
     if (AppPrefs.getPublishFeedLocalInsertData(
-        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
         null) {
       print("HomePageState发布失败数据");
       // 取出发布动态数据
@@ -87,9 +85,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         print("1111111111111");
         postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
           // 这里是之前未处理发布页图片和视频数据未解析成功直接发布过来时的情况
-          try{
+          try {
             v.file = File(v.filePath);
-          }catch(error) {
+          } catch (error) {
             // 当成功处理清空数据
             // 重新赋值存入
             print("清空数据_______________________");
@@ -102,14 +100,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             //还原进度条
             postprogressModel.plannedSpeed = 0.0;
             streamController.sink.add(0.0);
-            postprogressModel.isPublish = true;
             streamProgress.sink.add(postprogressModel);
             return;
           }
         });
         postprogressModel.plannedSpeed = -1.0;
         postprogressModel.showPulishView = true;
-        postprogressModel.isPublish = false;
         streamController.sink.add(60.0);
         streamProgress.sink.add(postprogressModel);
       }
@@ -121,7 +117,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
     if (postprogressModel != null && postprogressModel.postFeedModel != null) {
-
       postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
         v.file = File(v.filePath);
       });
@@ -149,10 +144,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             null) {
           if (result == ConnectivityResult.mobile) {
             print("移动网");
-            pulishFeed(getPublishFeedData());
+            pulishFeed(getPublishFeedData(), isPostPageJump: false);
           } else if (result == ConnectivityResult.wifi) {
             print("wifi");
-            pulishFeed(getPublishFeedData());
+            pulishFeed(getPublishFeedData(), isPostPageJump: false);
           } else {
             print("无网了");
           }
@@ -168,144 +163,194 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   }
 
   // 发布动态
-  pulishFeed(PostprogressModel postprogress, {isBackToTheTop = false}) async {
-    postprogressModel = postprogress;
-    // 不可发布时
-    if (!postprogress.isPublish) {
-      return;
-    }
-
-    // 才从发布动态页跳转回来时
-    if (isBackToTheTop) {
-      // 定位到main_page页
-      Application.ifPageController.index = Application.ifPageController.length - 1;
-      // 定位到关注页
-      controller.index = 0;
-      streamController.sink.add(60.0);
-      postprogressModel.showPulishView = true;
-      // 关注页回到顶部
-      if (attentionKey.currentState != null) {
-        attentionKey.currentState.backToTheTop();
+  pulishFeed(PostprogressModel postprogress, {isPostPageJump = true}) async {
+    if (mounted) {
+      postprogressModel = postprogress;
+      // 才从发布动态页跳转回来时
+      print("是否是发布页跳转回来：——————————————————————————————————————$isPostPageJump");
+      if (isPostPageJump) {
+        // 定位到main_page页
+        Application.ifPageController.index = Application.ifPageController.length - 1;
+        // 定位到关注页
+        if (controller != null && controller.index != 0) {
+          controller.index = 0;
+        }
+        streamController.sink.add(60.0);
+        // 关注页回到顶部
+        if (attentionKey.currentState != null) {
+          attentionKey.currentState.backToTheTop();
+        }
+        // 展示进度条UI
+        streamProgress.sink.add(postprogressModel);
       }
-      // 设置不可发布
-      postprogressModel.isPublish = false;
-    }
-
-    List<File> fileList = [];
-    UploadResults results;
-    List<PicUrlsModel> picUrls = [];
-    List<VideosModel> videos = [];
-    print("发布1111111111111111111");
-    print("发布2222222222222222222");
-    if (postprogressModel != null) {
-      PostFeedModel postModel = postprogressModel.postFeedModel;
-      print(postModel.atUsersModel);
-      print("掉发布数据");
-      print(postModel.selectedMediaFiles.type == mediaTypeKeyImage);
-      // 上传图片
-      if (postModel.selectedMediaFiles.type == mediaTypeKeyImage) {
-        postModel.selectedMediaFiles.list.forEach((element) {
-          print(element.file);
-          fileList.add(element.file);
-          picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
-        });
-
-        results = await FileUtil().uploadPics(fileList, (percent) {
-          postprogressModel.plannedSpeed = percent;
-          streamProgress.sink.add(postprogressModel);
-        });
-        if (results.isSuccess == false) {
-          print('================================上传七牛云失败');
-          // 设置不可发布
-          postprogressModel.isPublish = false;
-          postprogressModel.plannedSpeed = -1.0;
-          streamProgress.sink.add(postprogressModel);
-          return;
+      // 解析数据
+      for (MediaFileModel model in postprogressModel.postFeedModel.selectedMediaFiles.list) {
+        // 解析进度
+        var _percent = 0.0;
+        if (model.croppedImage != null && model.croppedImageData == null) {
+          ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+          Uint8List picBytes = byteData.buffer.asUint8List();
+          model.croppedImageData = picBytes;
+          _percent += 1 / postprogressModel.postFeedModel.selectedMediaFiles.list.length;
+        } else {
+          _percent = 1;
         }
-        for (int i = 0; i < results.resultMap.length; i++) {
-          print("打印一下索引值￥$i");
-          UploadResultModel model = results.resultMap.values.elementAt(i);
-          picUrls[i].url = model.url;
+        postprogressModel.plannedSpeed = _percent / 3;
+        streamProgress.sink.add(postprogressModel);
+      }
+      // 转文件
+      String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+      int i = 0;
+      // 图片
+      if (postprogressModel.postFeedModel.selectedMediaFiles.type == mediaTypeKeyImage) {
+        for (MediaFileModel v in postprogressModel.postFeedModel.selectedMediaFiles.list) {
+          if (v.croppedImageData != null) {
+            i++;
+            File imageFile =
+                await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString(), isPublish: true);
+            v.file = imageFile;
+          }
         }
-      } else if (postModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
-        postModel.selectedMediaFiles.list.forEach((element) {
-          fileList.add(element.file);
-          videos.add(VideosModel(
-              width: element.sizeInfo.width,
-              height: element.sizeInfo.height,
-              duration: element.sizeInfo.duration,
-              videoCroppedRatio: element.sizeInfo.videoCroppedRatio,
-              offsetRatioX: element.sizeInfo.offsetRatioX,
-              offsetRatioY: element.sizeInfo.offsetRatioY));
-        });
-        results = await FileUtil().uploadMedias(fileList, (percent) {
-          print("percent：${percent}");
-          postprogressModel.plannedSpeed = percent;
-          streamProgress.sink.add(postprogressModel);
-          print("percent结束了:");
-        });
-        if (results.isSuccess == false) {
-          print('================================上传七牛云失败');
-          // 设置不可发布
-          postprogressModel.isPublish = false;
-          postprogressModel.plannedSpeed = -1.0;
-          streamProgress.sink.add(postprogressModel);
-          return;
-        }
-        print("resultsErroe:${results.isSuccess}");
-        for (int i = 0; i < results.resultMap.length; i++) {
-          print("打印一下视频索引值￥$i");
-          UploadResultModel model = results.resultMap.values.elementAt(i);
-          videos[i].url = model.url;
-          videos[i].coverUrl = FileUtil.getVideoFirstPhoto(model.url);
+      } else if (postprogressModel.postFeedModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
+        for (MediaFileModel v in postprogressModel.postFeedModel.selectedMediaFiles.list) {
+          if (v.thumb != null) {
+            i++;
+            File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString(), isPublish: true);
+            v.thumbPath = thumbFile.path;
+          }
         }
       }
-      print("数据请求发不打印${postModel.toString()}");
-      if (mounted) {
-        Map<String, dynamic> feedModel = await publishFeed(
-            type: 0,
-            content: postModel.content,
-            picUrls: jsonEncode(picUrls),
-            videos: jsonEncode(videos),
-            atUsers: jsonEncode(postModel.atUsersModel),
-            address: postModel.address,
-            latitude: postModel.latitude,
-            longitude: postModel.longitude,
-            cityCode: postModel.cityCode,
-            topics: jsonEncode(postModel.topics));
-        print("发不接受发布结束：feedModel$feedModel");
 
-        if (feedModel != null) {
-          // 发布完成
-          // 插入接口更新
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
-          // 延迟器:
-          new Future.delayed(Duration(seconds: 3), () {
-            // 重新赋值存入
-            AppPrefs.setPublishFeedLocalInsertData(
-                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-            // todo 清除图片路径
-            print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file}");
+      // 存入数据
+      AppPrefs.setPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
+          jsonEncode(postprogressModel.toJson()));
 
-            // 清空发布model
-            postprogressModel.postFeedModel = null;
-            //还原进度条
-            postprogressModel.plannedSpeed = 0.0;
-            streamController.sink.add(0.0);
-            postprogressModel.isPublish = true;
+      List<File> fileList = [];
+      UploadResults results;
+      List<PicUrlsModel> picUrls = [];
+      List<VideosModel> videos = [];
+      print("发布1111111111111111111");
+      print("发布2222222222222222222");
+      if (postprogressModel != null) {
+        PostFeedModel postModel = postprogressModel.postFeedModel;
+        print(postModel.atUsersModel);
+        print("掉发布数据");
+        print(postModel.selectedMediaFiles.type == mediaTypeKeyImage);
+        // 上传图片
+        if (postModel.selectedMediaFiles.type == mediaTypeKeyImage) {
+          postModel.selectedMediaFiles.list.forEach((element) {
+            print(element.file);
+            fileList.add(element.file);
+            picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
+          });
+
+          results = await FileUtil().uploadPics(fileList, (percent) {
+            if( postprogressModel.plannedSpeed < 1) {
+              postprogressModel.plannedSpeed += percent / 7;
+            } else {
+              postprogressModel.plannedSpeed = 1;
+            }
             streamProgress.sink.add(postprogressModel);
           });
-        } else {
-          // 发布失败
-          print('================================发布失败');
-          postprogressModel.isPublish = false;
-          postprogressModel.plannedSpeed = -1.0;
-          postprogressModel.showPulishView = true;
-          streamProgress.sink.add(postprogressModel);
+          if (results.isSuccess == false) {
+            print('================================上传七牛云失败');
+            // 设置不可发布
+            postprogressModel.plannedSpeed = -1.0;
+            streamProgress.sink.add(postprogressModel);
+            return;
+          }
+          for (int i = 0; i < results.resultMap.length; i++) {
+            print("打印一下索引值￥$i");
+            UploadResultModel model = results.resultMap.values.elementAt(i);
+            picUrls[i].url = model.url;
+          }
+        } else if (postModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
+          postModel.selectedMediaFiles.list.forEach((element) {
+            fileList.add(element.file);
+            videos.add(VideosModel(
+                width: element.sizeInfo.width,
+                height: element.sizeInfo.height,
+                duration: element.sizeInfo.duration,
+                videoCroppedRatio: element.sizeInfo.videoCroppedRatio,
+                offsetRatioX: element.sizeInfo.offsetRatioX,
+                offsetRatioY: element.sizeInfo.offsetRatioY));
+          });
+          results = await FileUtil().uploadMedias(fileList, (percent) {
+            print("percent：${percent}");
+            if( postprogressModel.plannedSpeed < 1) {
+              postprogressModel.plannedSpeed += percent / 7;
+            } else {
+              postprogressModel.plannedSpeed = 1;
+            }
+            // postprogressModel.plannedSpeed = percent;
+            streamProgress.sink.add(postprogressModel);
+            print("percent结束了:");
+          });
+          if (results.isSuccess == false) {
+            print('================================上传七牛云失败');
+            // 设置不可发布
+            postprogressModel.plannedSpeed = -1.0;
+            streamProgress.sink.add(postprogressModel);
+            return;
+          }
+          print("resultsErroe:${results.isSuccess}");
+          for (int i = 0; i < results.resultMap.length; i++) {
+            print("打印一下视频索引值￥$i");
+            UploadResultModel model = results.resultMap.values.elementAt(i);
+            videos[i].url = model.url;
+            videos[i].coverUrl = FileUtil.getVideoFirstPhoto(model.url);
+          }
+        }
+        print("数据请求发不打印${postModel.toString()}");
+        if (mounted) {
+          Map<String, dynamic> feedModel = Map();
+          feedModel = await publishFeed(
+              type: 0,
+              content: postModel.content,
+              picUrls: jsonEncode(picUrls),
+              videos: jsonEncode(videos),
+              atUsers: jsonEncode(postModel.atUsersModel),
+              address: postModel.address,
+              latitude: postModel.latitude,
+              longitude: postModel.longitude,
+              cityCode: postModel.cityCode,
+              topics: jsonEncode(postModel.topics));
+          print("发不接受发布结束：feedModel$feedModel");
+
+          if (feedModel != null) {
+            // 发布完成
+            // 插入接口更新
+            attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
+            postprogressModel.plannedSpeed = 1.0;
+            streamProgress.sink.add(postprogressModel);
+            // 延迟器:
+            new Future.delayed(Duration(seconds: 3), () {
+              // 重新赋值存入
+              AppPrefs.setPublishFeedLocalInsertData(
+                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+              // todo 清除图片路径
+              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file}");
+
+              // 清空发布model
+              postprogressModel.postFeedModel = null;
+              //还原进度条
+              postprogressModel.plannedSpeed = 0.0;
+              streamController.sink.add(0.0);
+              streamProgress.sink.add(postprogressModel);
+            });
+          } else {
+            // 发布失败
+            print('================================发布失败');
+            postprogressModel.plannedSpeed = -1.0;
+            postprogressModel.showPulishView = true;
+            streamProgress.sink.add(postprogressModel);
+          }
         }
       }
     }
   }
+
   void _clearCache(String path) async {
     try {
       //删除缓存目录
@@ -325,13 +370,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
       if (file is Directory) {
         print('=========================================if');
         final List<FileSystemEntity> children = file.listSync();
-        if(children.isNotEmpty){
+        if (children.isNotEmpty) {
           print('=====================${children.first.path}');
           for (final FileSystemEntity child in children) {
             await delDir(child);
           }
         }
-      }else{
+      } else {
         //只清理子文件
         print('=========================================else');
         await file.delete(recursive: false);
@@ -470,14 +515,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         // }
                         //还原进度条
                         postprogressModel.plannedSpeed = 0.0;
-                        // 设置可发布
-                        postprogressModel.isPublish = true;
                         streamController.sink.add(0.0);
                         streamProgress.sink.add(postprogressModel);
                       },
                       // 重新发送
                       resendFeedChanged: () {
-                        pulishFeed(getPublishFeedData());
+                        pulishFeed(getPublishFeedData(), isPostPageJump: false);
                       },
                     );
                   })),
