@@ -157,7 +157,7 @@ class scanCodePageState extends State<ScanCodePage> {
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColor.white,
                 version: QrVersions.auto,
-              )),
+              ) ),
           SizedBox(height: 9,),
           Text("我的二维码",style: AppStyle.whiteRegular12,)
         ],

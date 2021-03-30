@@ -30,11 +30,11 @@ class LikeState extends State<Like> {
   ScrollController scrollController = ScrollController();
   @override
   void initState() {
-    requestFeedLuadList();
+    requestFeedLuadList(isFrist: true);
   }
 
   // 请求点赞列表
-  requestFeedLuadList() async {
+  requestFeedLuadList({bool isFrist = false}) async {
     if (feedLuadHasNext != 0) {
       DataResponseModel model = await getFeedLaudList(targetId: widget.model.id, size: 20, lastTime: lastTime);
       if (model != null) {
@@ -51,10 +51,11 @@ class LikeState extends State<Like> {
       } else {
         refreshController.loadFailed();
       }
+    }else{
+      if(!isFrist){
+        refreshController.loadNoData();
+      }
     }
-    /*if (feedLuadHasNext == 0) {
-      refreshController.loadNoData();
-    }*/
     if(laudListModel.isNotEmpty) {
       if(laudListModel.first.uid != null) {
         laudListModel.insert(0, FeedLaudListModel());
@@ -104,7 +105,7 @@ class LikeState extends State<Like> {
                                     } else if (mode == LoadStatus.failed) {
                                       body = Text("加载失败,请重试");
                                     } else {
-                                      body = Text("没有更多了");
+                                      body = Text("$footerText");
                                     }
                                     return Container(
                                       child: Center(
@@ -117,6 +118,7 @@ class LikeState extends State<Like> {
                                   requestFeedLuadList();
                                 },
                                 child: ListView.builder(
+                                  controller: scrollController,
                                   itemCount: laudListModel.length,
                                   itemBuilder: (context, index) {
                                     return AnimationConfiguration.staggeredList(

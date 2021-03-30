@@ -202,19 +202,19 @@ class AppRouter {
       {Function(dynamic result) callback, bool replace = false, int transitionDuration = 250, bool isBuilder = false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
-    if(Application.minePageRouterName==null){
-      Application.minePageRouterName = [];
+    if(Application.pagePopRouterName==null){
+      Application.pagePopRouterName = [];
     }
-    if(Application.minePageRouterName.contains(uri)){
-      for(int i = 0;i<Application.minePageRouterName.length;i++){
-        if(i>Application.minePageRouterName.indexOf(uri)){
-          Application.minePageRouterName.remove(Application.minePageRouterName[i]);
+    if(Application.pagePopRouterName.contains(uri)){
+      for(int i = 0;i<Application.pagePopRouterName.length;i++){
+        if(i>Application.pagePopRouterName.indexOf(uri)){
+          Application.pagePopRouterName.remove(Application.pagePopRouterName[i]);
         }
       }
       Navigator.of(context).popUntil(ModalRoute.withName(uri));
       return;
       }
-     Application.minePageRouterName.add(uri);
+     Application.pagePopRouterName.add(uri);
       if (isBuilder) {
         Application.router.navigateTo(
           context,
@@ -224,8 +224,8 @@ class AppRouter {
           transition: TransitionType.custom,
           transitionBuilder: getFadeTransitionBuilder(),
         ).then((value){
-          if(Application.minePageRouterName.contains(uri)){
-            Application.minePageRouterName.remove(uri);
+          if(Application.pagePopRouterName.contains(uri)){
+            Application.pagePopRouterName.remove(uri);
           }
           if(callback!=null){
             callback(value);
@@ -238,8 +238,8 @@ class AppRouter {
           replace: replace,
           transitionDuration: Duration(milliseconds: transitionDuration),
         ).then((value){
-          if(Application.minePageRouterName.contains(uri)){
-            Application.minePageRouterName.remove(uri);
+          if(Application.pagePopRouterName.contains(uri)){
+            Application.pagePopRouterName.remove(uri);
           }
           if(callback!=null){
             callback(value);
@@ -249,9 +249,6 @@ class AppRouter {
 
   }
 
-  void _popReusePage(BuildContext context,String uri){
-
-  }
   static void popToBeforeLogin(BuildContext context) {
     if (Application.loginPopRouteName != null) {
       print('========================loginPopRouteName${Application.loginPopRouteName}');
@@ -543,8 +540,8 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     map["userId"] = uid;
     String uri = pathProfileDetails +"?$paramData=" +Uri.encodeComponent(json.encode(map));
-    if(Application.minePageRouterName.contains(uri)){
-      Application.minePageRouterName.remove(uri);
+    if(Application.pagePopRouterName.contains(uri)){
+      Application.pagePopRouterName.remove(uri);
     }
   }
 

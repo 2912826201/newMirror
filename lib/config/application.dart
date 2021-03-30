@@ -45,7 +45,7 @@ class Application {
   //页面路由
   static FluroRouter router;
 
-  static List<String> minePageRouterName;
+  static List<String> pagePopRouterName;
   //当前token
   static TokenDto token;
 
@@ -181,6 +181,7 @@ class Application {
         MessageManager.clearUserMessage(appContext);
         _clearUserRuntimeCache();
         //跳转页面 移除所有页面 重新打开首页
+        Application.pagePopRouterName.clear();
         navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
         //TODO 这个弹窗待定
         if (isKicked) {
