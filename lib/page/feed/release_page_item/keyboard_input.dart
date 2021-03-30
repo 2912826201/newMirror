@@ -20,10 +20,9 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 
 class KeyboardInput extends StatefulWidget {
-  final List<TextInputFormatter> inputFormatters;
   TextEditingController controller;
 
-  KeyboardInput({this.inputFormatters, this.controller});
+  KeyboardInput({this.controller});
 
   @override
   KeyboardInputState createState() => KeyboardInputState();
@@ -128,7 +127,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         },
         valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
             String topicSearchStr, bool isAdd) {
-          rules = rules;
+          // rules = rules;
           // print("输入框值回调：$value");
           // print(rules);
           print("实时At搜索字段$atSearchStr");
@@ -177,7 +176,6 @@ class KeyboardInputState extends State<KeyboardInput> {
             }
           }
         });
-    _init();
     super.initState();
   }
 
@@ -315,14 +313,9 @@ class KeyboardInputState extends State<KeyboardInput> {
          // labelStyle:
         ),
         rangeStyles: getTextFieldStyle(rules),
-        inputFormatters: widget.inputFormatters == null ? [_formatter] : (widget.inputFormatters..add(_formatter)),
+        inputFormatters:  [_formatter],
       ),
 // )
     );
-  }
-
-  void _init() {
-// widget.controller.text = "";
-// _formatter.clear();
   }
 }

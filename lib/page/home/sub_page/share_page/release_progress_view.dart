@@ -37,7 +37,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.postprogressModel.postFeedModel != null && widget.postprogressModel.showPulishView == true
+    return widget.postprogressModel.showPulishView == true
         ? AnimatedOpacity(
             opacity: widget.postprogressModel != null && widget.postprogressModel.postFeedModel != null ? 1 : 0,
             duration: Duration(milliseconds: 1500),

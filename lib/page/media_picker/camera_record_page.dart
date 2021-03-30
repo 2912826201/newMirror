@@ -379,7 +379,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                               PermissionStatus status = await Permission.camera.status;
 
                               if (status.isGranted) {
-                                _permissionCameraGranted = true;
+                                setState(() {
+                                  _permissionCameraGranted = true;
+                                });
+
                                 if (checkFullPermissions()) {
                                   print("Camera: ${Application.cameras}");
                                   if (Application.cameras.isNotEmpty) {
@@ -394,7 +397,10 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                 if (Application.platform == 0 || status.isUndetermined) {
                                   status = await Permission.camera.request();
                                   if (status.isGranted) {
-                                    _permissionCameraGranted = true;
+                                    setState(() {
+                                      _permissionCameraGranted = true;
+                                    });
+
                                     if (checkFullPermissions()) {
                                       print("Camera: ${Application.cameras}");
                                       if (Application.cameras.isNotEmpty) {
@@ -420,51 +426,59 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                         SizedBox(
                           height: 12,
                         ),
-                        GestureDetector(
-                          onTap: () async {
-                            if (!_permissionMicrophoneGranted) {
-                              //和相册页不一样的是 相册页在进入前会请求一次权限 所以一定会有结果 而相机和麦克风可能从未请求过权限
-                              PermissionStatus status = await Permission.microphone.status;
+                        _currentMode == 0
+                            ? Container()
+                            : GestureDetector(
+                                onTap: () async {
+                                  if (!_permissionMicrophoneGranted) {
+                                    //和相册页不一样的是 相册页在进入前会请求一次权限 所以一定会有结果 而相机和麦克风可能从未请求过权限
+                                    PermissionStatus status = await Permission.microphone.status;
 
-                              if (status.isGranted) {
-                                _permissionMicrophoneGranted = true;
-                                if (checkFullPermissions()) {
-                                  print("Camera: ${Application.cameras}");
-                                  if (Application.cameras.isNotEmpty) {
-                                    onCameraSelected(Application.cameras[_cameraIndex]);
-                                  }
-                                }
-                              } else if (status.isPermanentlyDenied) {
-                                //安卓的禁止且之后不提示
-                                AppSettings.openAppSettings();
-                              } else {
-                                //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                                if (Application.platform == 0 || status.isUndetermined) {
-                                  status = await Permission.microphone.request();
-                                  if (status.isGranted) {
-                                    _permissionMicrophoneGranted = true;
-                                    if (checkFullPermissions()) {
-                                      print("Camera: ${Application.cameras}");
-                                      if (Application.cameras.isNotEmpty) {
-                                        onCameraSelected(Application.cameras[_cameraIndex]);
+                                    if (status.isGranted) {
+                                      setState(() {
+                                        _permissionMicrophoneGranted = true;
+                                      });
+
+                                      if (checkFullPermissions()) {
+                                        print("Camera: ${Application.cameras}");
+                                        if (Application.cameras.isNotEmpty) {
+                                          onCameraSelected(Application.cameras[_cameraIndex]);
+                                        }
+                                      }
+                                    } else if (status.isPermanentlyDenied) {
+                                      //安卓的禁止且之后不提示
+                                      AppSettings.openAppSettings();
+                                    } else {
+                                      //安卓或者从未请求过权限则重新请求 iOS跳设置页
+                                      if (Application.platform == 0 || status.isUndetermined) {
+                                        status = await Permission.microphone.request();
+                                        if (status.isGranted) {
+                                          setState(() {
+                                            _permissionMicrophoneGranted = true;
+                                          });
+
+                                          if (checkFullPermissions()) {
+                                            print("Camera: ${Application.cameras}");
+                                            if (Application.cameras.isNotEmpty) {
+                                              onCameraSelected(Application.cameras[_cameraIndex]);
+                                            }
+                                          }
+                                        }
+                                      } else {
+                                        AppSettings.openAppSettings();
                                       }
                                     }
                                   }
-                                } else {
-                                  AppSettings.openAppSettings();
-                                }
-                              }
-                            }
-                          },
-                          child: Text(
-                            _permissionMicrophoneGranted ? "麦克风访问权限已启用" : "启用麦克风访问权限",
-                            style: TextStyle(
-                                color: _permissionMicrophoneGranted
-                                    ? AppColor.white.withOpacity(0.35)
-                                    : AppColor.mainRed.withOpacity(0.85),
-                                fontSize: 14),
-                          ),
-                        ),
+                                },
+                                child: Text(
+                                  _permissionMicrophoneGranted ? "麦克风访问权限已启用" : "启用麦克风访问权限",
+                                  style: TextStyle(
+                                      color: _permissionMicrophoneGranted
+                                          ? AppColor.white.withOpacity(0.35)
+                                          : AppColor.mainRed.withOpacity(0.85),
+                                      fontSize: 14),
+                                ),
+                              ),
                       ],
                     ),
             ),
