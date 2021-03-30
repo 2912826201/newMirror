@@ -135,7 +135,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         bodyType: Application.fitnessEntryModel.bodyType,
         target: Application.fitnessEntryModel.target,
         level: Application.fitnessEntryModel.hard,
-        keyPartList: Application.fitnessEntryModel.keyPartList,
+        keyParts: Application.fitnessEntryModel.keyParts,
         timesOfWeek: Application.fitnessEntryModel.timesOfWeek);
     if (getModel != null) {
       Loading.hideLoading(context);

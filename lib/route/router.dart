@@ -198,7 +198,19 @@ class AppRouter {
       {Function(dynamic result) callback, bool replace = false, int transitionDuration = 250, bool isBuilder = false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
-    if (callback == null) {
+    if(Application.minePageRouterName==null){
+      Application.minePageRouterName = [];
+    }
+    if(Application.minePageRouterName.contains(uri)){
+      for(int i = 0;i<Application.minePageRouterName.length;i++){
+        if(i>Application.minePageRouterName.indexOf(uri)){
+          Application.minePageRouterName.remove(Application.minePageRouterName[i]);
+        }
+      }
+      Navigator.of(context).popUntil(ModalRoute.withName(uri));
+      return;
+      }
+     Application.minePageRouterName.add(uri);
       if (isBuilder) {
         Application.router.navigateTo(
           context,
@@ -207,40 +219,35 @@ class AppRouter {
           transitionDuration: Duration(milliseconds: transitionDuration),
           transition: TransitionType.custom,
           transitionBuilder: getFadeTransitionBuilder(),
-        );
+        ).then((value){
+          if(Application.minePageRouterName.contains(uri)){
+            Application.minePageRouterName.remove(uri);
+          }
+          if(callback!=null){
+            callback(value);
+          }
+        });
       } else {
         Application.router.navigateTo(
           context,
           uri,
           replace: replace,
           transitionDuration: Duration(milliseconds: transitionDuration),
-        );
+        ).then((value){
+          if(Application.minePageRouterName.contains(uri)){
+            Application.minePageRouterName.remove(uri);
+          }
+          if(callback!=null){
+            callback(value);
+          }
+        });
       }
-    } else {
-      if (isBuilder) {
-        Application.router
-            .navigateTo(
-              context,
-              uri,
-              replace: replace,
-              transitionDuration: Duration(milliseconds: transitionDuration),
-              transition: TransitionType.custom,
-              transitionBuilder: getFadeTransitionBuilder(),
-            )
-            .then(callback);
-      } else {
-        Application.router
-            .navigateTo(
-              context,
-              uri,
-              replace: replace,
-              transitionDuration: Duration(milliseconds: transitionDuration),
-            )
-            .then(callback);
-      }
-    }
+
   }
 
+  void _popReusePage(BuildContext context,String uri){
+
+  }
   static void popToBeforeLogin(BuildContext context) {
     if (Application.loginPopRouteName != null) {
       print('========================loginPopRouteName${Application.loginPopRouteName}');
@@ -250,6 +257,7 @@ class AppRouter {
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
+
 
   static void navigateToPerfectUserPage(BuildContext context) {
     _navigateToPage(context, pathPerfectUserPage, {});
@@ -508,9 +516,32 @@ class AppRouter {
   }
 
   static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
+    /*if(Application.minePageRouterName==null){
+      Application.minePageRouterName = [];
+    }*/
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-    _navigateToPage(context, pathProfileDetails, map, callback: callback);
+  /*  String uri = pathProfileDetails +"?$paramData=" +Uri.encodeComponent(json.encode(map));
+    if(Application.minePageRouterName.contains(uri)){
+      for(int i = 0;i<Application.minePageRouterName.length;i++){
+        if(i>Application.minePageRouterName.indexOf(uri)){
+          Application.minePageRouterName.remove(Application.minePageRouterName[i]);
+        }
+      }
+      Navigator.of(context).popUntil(ModalRoute.withName(uri));
+    }else{
+      Application.minePageRouterName.add(uri);*/
+      _navigateToPage(context, pathProfileDetails, map, callback: callback);
+  /*  }*/
+  }
+
+  static void removeMineDtailRouterName(BuildContext context,int uid){
+    Map<String, dynamic> map = Map();
+    map["userId"] = uid;
+    String uri = pathProfileDetails +"?$paramData=" +Uri.encodeComponent(json.encode(map));
+    if(Application.minePageRouterName.contains(uri)){
+      Application.minePageRouterName.remove(uri);
+    }
   }
 
   static void navigateToVipOpenPage(BuildContext context) {

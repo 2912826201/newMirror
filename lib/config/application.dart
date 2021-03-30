@@ -45,6 +45,7 @@ class Application {
   //页面路由
   static FluroRouter router;
 
+  static List<String> minePageRouterName;
   //当前token
   static TokenDto token;
 

@@ -3,9 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui'as ui;
 import 'package:flutter/material.dart';
-
-import 'package:flutter_qr_code/qr_scan_view.dart';
-import 'package:flutter_qr_code/qr_scan_controller.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
