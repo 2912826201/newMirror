@@ -53,7 +53,6 @@ class AlertMsg extends StatelessWidget {
       onTap: (){},
       child: Container(
         color: AppColor.transparent,
-        padding: EdgeInsets.only(top: 8.0),
         alignment: Alignment.bottomCenter,
         width: MediaQuery.of(context).size.width,
         child: getAlertText(context),
@@ -331,6 +330,7 @@ class AlertMsg extends StatelessWidget {
   //获取消息
   Widget alertText() {
     return Container(
+      padding: const EdgeInsets.only(top: 8.0),
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(

@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
+import 'package:qrcode/qrcode.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 
@@ -232,20 +233,24 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
+      if(msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+        Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
+        if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+          dto.unreadCount = 0;
+          return dto;
+        }else if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_CMD){
+          dto.unreadCount = 0;
+          return dto;
+        }
+      }
       dto.unreadCount = 1;
-      print("加上全局未读数");
+
       //加上全局未读数
       NoPromptUidModel model=NoPromptUidModel(type: dto.type,targetId: int.parse(dto.conversationId));
       if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
-        print("不存在");
         Application.unreadMessageNumber+=1;
         EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      }else{
-        print("存在");
       }
-      print("Application.unreadMessageNumber:${Application.unreadMessageNumber}");
-      print("model:${model.toString()}");
-      print("Application.queryNoPromptUidList:${Application.queryNoPromptUidList.toString()}");
     }
 
     return dto;

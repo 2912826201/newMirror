@@ -208,18 +208,16 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newLength);
     print(oldStartIndex);
     int diffLength = newLength - oldLength;
-    bool judge=false;
     for (int i = 0; i < rules.length; i++) {
       print(rules[i]);
       if (rules[i].startIndex >= oldStartIndex) {
-        judge=true;
         int newStartIndex = rules[i].startIndex + diffLength;
         int newEndIndex = rules[i].endIndex + diffLength;
         rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
         print(rules[i]);
       }
     }
-    if(judge&&correctRulesListener!=null){
+    if(correctRulesListener!=null){
       correctRulesListener();
     }
   }
