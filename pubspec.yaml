@@ -138,7 +138,6 @@ dependencies:
   reorderables: ^0.3.2
   #扫码
   scan: ^0.0.3
-  flutter_qr_code: ^0.0.2+2
   qrcode: ^1.0.3
   #二维码生成
   qr_flutter: ^3.2.0

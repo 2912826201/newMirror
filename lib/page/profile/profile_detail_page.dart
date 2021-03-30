@@ -196,6 +196,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
+    print('--------------------------------个人主页deactivate');
+   /* AppRouter.removeMineDtailRouterName(context, widget.userId);*/
   }
 
   @override

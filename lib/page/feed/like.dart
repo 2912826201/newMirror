@@ -23,33 +23,38 @@ class LikeState extends State<Like> {
 
   // 请求下一页参数
   int lastTime;
-
+  String footerText = "没有更多了";
   // 是否存在下一页
   int feedLuadHasNext;
   RefreshController refreshController = RefreshController();
-
+  ScrollController scrollController = ScrollController();
   @override
   void initState() {
-    requestFeedLuadList();
+    requestFeedLuadList(isFrist: true);
   }
 
   // 请求点赞列表
-  requestFeedLuadList() async {
+  requestFeedLuadList({bool isFrist = false}) async {
     if (feedLuadHasNext != 0) {
       DataResponseModel model = await getFeedLaudList(targetId: widget.model.id, size: 20, lastTime: lastTime);
-      if (model != null && model.list.isNotEmpty) {
+      if (model != null) {
         feedLuadHasNext = model.hasNext;
         lastTime = model.lastTime;
-        model.list.forEach((v) {
-          laudListModel.add(FeedLaudListModel.fromJson(v));
-        });
-        refreshController.loadComplete();
+        if(model.list.isNotEmpty){
+          model.list.forEach((v) {
+            laudListModel.add(FeedLaudListModel.fromJson(v));
+          });
+          refreshController.loadComplete();
+        }else{
+          refreshController.loadNoData();
+        }
       } else {
         refreshController.loadFailed();
       }
-    }
-    if (feedLuadHasNext == 0) {
-      refreshController.loadNoData();
+    }else{
+      if(!isFrist){
+        refreshController.loadNoData();
+      }
     }
     if(laudListModel.isNotEmpty) {
       if(laudListModel.first.uid != null) {
@@ -83,6 +88,14 @@ class LikeState extends State<Like> {
                                 enablePullDown: false,
                                 controller: refreshController,
                                 footer: CustomFooter(
+                                  onOffsetChange: (offset){
+                                    if(footerText!=""&&scrollController.offset>0&&offset>=scrollController.offset){
+                                      print('---------------------------页面数据不够多,不展示文字');
+                                      setState(() {
+                                        footerText = "";
+                                      });
+                                    }
+                                  },
                                   builder: (BuildContext context, LoadStatus mode) {
                                     Widget body;
                                     if (mode == LoadStatus.loading) {
@@ -92,7 +105,7 @@ class LikeState extends State<Like> {
                                     } else if (mode == LoadStatus.failed) {
                                       body = Text("加载失败,请重试");
                                     } else {
-                                      body = Text("没有更多了");
+                                      body = Text("$footerText");
                                     }
                                     return Container(
                                       child: Center(
@@ -105,6 +118,7 @@ class LikeState extends State<Like> {
                                   requestFeedLuadList();
                                 },
                                 child: ListView.builder(
+                                  controller: scrollController,
                                   itemCount: laudListModel.length,
                                   itemBuilder: (context, index) {
                                     return AnimationConfiguration.staggeredList(

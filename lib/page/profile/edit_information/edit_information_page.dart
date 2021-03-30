@@ -53,7 +53,7 @@ class _EditInformationState extends State<EditInformation> {
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;
-  double textHeight;
+  double textHeight = 0;
   int buttonState = CustomRedButton.buttonStateNormal;
   @override
   void initState() {
@@ -67,7 +67,10 @@ class _EditInformationState extends State<EditInformation> {
     userName = context.read<ProfileNotifier>().profile.nickName;
     userSex = context.read<ProfileNotifier>().profile.sex;
     userBirthday = context.read<ProfileNotifier>().profile.birthday;
-    _introduction = context.read<ProfileNotifier>().profile.description;
+    if(context.read<ProfileNotifier>().profile.description!=null&&context.read<ProfileNotifier>().profile
+        .description!=""){
+      _introduction = context.read<ProfileNotifier>().profile.description;
+    }
     if (context.read<ProfileNotifier>().profile.cityCode != null) {
       provinceMap.forEach((key, value) {
         if (context.read<ProfileNotifier>().profile.cityCode == value.regionCode) {
@@ -113,12 +116,10 @@ class _EditInformationState extends State<EditInformation> {
     } else {
       userSexText = " ";
     }
-    if (_introduction != "") {
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width * 0.66, 5);
       textHeight = testSize.height;
       print('textHeight==============================$textHeight');
-    }
     return Scaffold(
         appBar: CustomAppBar(
           backgroundColor: AppColor.white,
@@ -281,14 +282,15 @@ class _EditInformationState extends State<EditInformation> {
               InkWell(
                 child: _rowChose(width, "简介", _introduction),
                 onTap: () {
-                  AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
+                  AppRouter.popToBeforeLogin(context);/*navigateToEditInfomationIntroduction(context, _introduction,
+                  (result) {
                     if (result != null) {
                       _introduction = result;
                     } else {
                       _introduction = null;
                     }
                     setState(() {});
-                  });
+                  });*/
                 },
               ),
               Container(
