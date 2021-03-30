@@ -121,8 +121,6 @@ class AlertMsg extends StatelessWidget {
       }else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
-        getGroupText(mapGroupModel, context);
-
         if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
           ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
           if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid!=Application.profile.uid) {
@@ -131,6 +129,7 @@ class AlertMsg extends StatelessWidget {
             if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
               textArray.clear();
             }else {
+              getGroupText(mapGroupModel, context);
             }
           }
         }else{
