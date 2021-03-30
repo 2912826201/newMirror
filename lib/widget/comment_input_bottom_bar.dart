@@ -343,8 +343,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       followList = filterFollowList;
     }
     if (searchHasNext == 0) {
-      searchLoadText = "已加载全部好友";
-      searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+      if(followList.length > 0) {
+        searchLoadText = "已加载全部好友";
+        searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+      } else {
+        searchLoadText = "";
+        searchLoadStatus = LoadingStatus.STATUS_IDEL;
+      }
     }
     if (mounted) {
       setState(() {});
@@ -383,7 +388,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       } else {
         loadText = "";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
+        loadStatus = LoadingStatus.STATUS_IDEL;
       }
       print("返回不请求数据");
     }
@@ -664,6 +669,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 child: AppIconButton(
                                   onTap: () {
                                     isClickAtIcon = true;
+                                    followList = backupFollowList;
                                     // 输入的文字
                                     String text = _textEditingController.text;
                                     // 获取光标位置
