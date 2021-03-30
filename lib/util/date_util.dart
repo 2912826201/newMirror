@@ -124,6 +124,10 @@ class DateUtil {
     return aDate.year == bDate.year && aDate.month == bDate.month && aDate.day == bDate.day;
   }
 
+  //获取两个时间的秒数相差数
+  static int twoDateTimeSeconds(DateTime aDate, DateTime bDate){
+    return ((bDate.millisecondsSinceEpoch-aDate.millisecondsSinceEpoch)/1000)~/1;
+  }
   //获取两个时间的分钟相差数
   static int twoDateTimeMinutes(DateTime aDate, DateTime bDate){
     return ((bDate.millisecondsSinceEpoch-aDate.millisecondsSinceEpoch)/1000/60)~/1;

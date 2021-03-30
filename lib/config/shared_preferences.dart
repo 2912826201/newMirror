@@ -1,4 +1,6 @@
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// shared_preferences
@@ -7,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 String prefsKeyIsFirstLaunch = "isFirstLaunch";
 // 发布动态本地插入数据
 String publishFeedLocalInsertData = "publishFeedLocalInsertDataPrefs";
+
+//直播间禁言状态
+String prefsKeyIsLiveRoomMute ="liveRoomMute";
 
 class AppPrefs {
   static SharedPreferences _instance;
@@ -41,5 +46,44 @@ class AppPrefs {
       value = null;
     }
    return  value;
+  }
+
+
+  static setLiveRoomMuteMessage(Message msg)async {
+    Map<String, dynamic> map = await queryMute(int.parse(msg.targetId));
+    if(null!=map["data"]&&null!=map["data"]["remainingMuteTime"]){
+      print("--------------${map["data"]["remainingMuteTime"]}");
+      if(map["data"]["remainingMuteTime"] is int && map["data"]["remainingMuteTime"]~/60~/1000>0){
+        setLiveRoomMute(msg.targetId, map["data"]["remainingMuteTime"]~/1000, true);
+      }
+    }
+  }
+
+  // 设置在直播间禁言状态
+  static setLiveRoomMute(String liveRoomId,int seconds,bool isMute) {
+    _instance.setBool("${prefsKeyIsLiveRoomMute}_isMute_$liveRoomId", isMute);
+    _instance.setInt("${prefsKeyIsLiveRoomMute}_startTime_$liveRoomId", DateTime.now().millisecondsSinceEpoch);
+    _instance.setInt("${prefsKeyIsLiveRoomMute}_second_$liveRoomId", seconds);
+  }
+
+  // 获取在直播间禁言状态
+  static List getLiveRoomMute(String liveRoomId) {
+    List list=[];
+    bool isMute = _instance.getBool("${prefsKeyIsLiveRoomMute}_isMute_$liveRoomId");
+    if (null == isMute) {
+      isMute = false;
+    }
+    int startTime = _instance.getInt("${prefsKeyIsLiveRoomMute}_startTime_$liveRoomId");
+    if (null == startTime) {
+      startTime = DateTime.now().millisecondsSinceEpoch;
+    }
+    int second = _instance.getInt("${prefsKeyIsLiveRoomMute}_second_$liveRoomId");
+    if (null == second) {
+      second = -1;
+    }
+    list.add(isMute);
+    list.add(startTime);
+    list.add(second);
+    return list;
   }
 }

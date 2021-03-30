@@ -406,6 +406,14 @@ class MessageManager {
           //TODO 如果有结果则打开训练结果页面
           if (trainingResult.hasResult == 1) {}
           break;
+        case 10:
+          //10-直播禁言
+          List list=[];
+          list.add(10);
+          list.add(dataMap["liveRoomId"].toString());
+          list.add(message);
+          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          break;
         default:
           break;
       }
@@ -573,9 +581,12 @@ class MessageManager {
     return "[系统通知]";
   }
 
-  //判断消息是不是弹幕消息
+  //判断消息是不是聊天室弹幕消息
   static bool judgeBarrageMessage(Message message) {
+    print("message.objectName：${message.objectName},${ message.conversationType}");
     if (message == null) {
+      return false;
+    } else if (message.conversationType != RCConversationType.ChatRoom) {
       return false;
     } else if (message.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT) {
       return false;
@@ -595,7 +606,8 @@ class MessageManager {
   }
 
   //判断是不是聊天室的通知
-  static bool judgeBarrageNotice(Message message) {
+  static bool judgeChatRoomNotice(Message message) {
+    print("message.objectName：${message.objectName},${ message.conversationType}");
     if (message == null) {
       return false;
     } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD &&

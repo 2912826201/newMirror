@@ -85,7 +85,7 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
   //计时
   _initTime() {
     _timerBottomHeight = Timer.periodic(Duration(milliseconds: 1), (timer) {
-      if(this.context!=null) {
+      if(this.context!=null&&this.mounted) {
         if (oldKeyboardHeight == MediaQuery.of(this.context).viewInsets.bottom) {
           _timerBottomHeightCount++;
           if(_timerBottomHeightCount>200){

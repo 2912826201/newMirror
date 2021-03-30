@@ -7,14 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -63,9 +66,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       this.coachUrl,
       this.coachName,
       this.startTime,
-      this.coachRelation,
-      );
-
+      this.coachRelation);
   int liveCourseId;
   int coachId;
   String coachUrl;
@@ -115,8 +116,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     print("开播时间是:$startTime,$coachId");
 
 
-    EventBus.getDefault().registerSingleParameter(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
 
     urlImageList.add("");
     urlImageList.add(coachUrl);
@@ -670,7 +673,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 : AppIcon.message_send,
             buttonWidth: 44,
             buttonHeight: 44,
-            onTap: () => _onSubmitClick(_textController.text),
+            onTap: (){
+              _onSubmitClick(_textController.text);
+            },
           ),
         ],
       ),
@@ -804,6 +809,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         if(ClickUtil.isFastClick()){
           return;
         }
+        // if(isMuteJudge()){
+        //   ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+        //   return;
+        // }
         isShowEditPlan=true;
         setState(() {
 
@@ -816,6 +825,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
+
+
+  bool isMuteJudge(){
+    List list=AppPrefs.getLiveRoomMute(coachId.toString());
+    if(list[0]){
+      int seconds=DateUtil.twoDateTimeSeconds(DateUtil.getDateTimeByMs(list[1]),DateTime.now());
+      print("seconds:$seconds,list[2]:${list[2]}");
+      if(list[2]<0){
+        return !(seconds>3600);
+      }else{
+        return list[2]>seconds;
+      }
+    }
+    return false;
+  }
 
 
   //获取底部评论列表的高度
@@ -978,6 +1002,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             pageName:EVENTBUS_ROOM_OPERATION_PAGE,
             registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
           );
+          EventBus.getDefault().unRegister(
+            pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+            registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
+          );
           if(timer!=null){
             timer.cancel();
             timer=null;
@@ -1000,14 +1028,69 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         pageName:EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
     );
+    EventBus.getDefault().unRegister(
+        pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
+    );
     if(timer!=null){
       timer.cancel();
       timer=null;
     }
   }
 
+  //接收直播间系统通知消息
+  void _receiveNoticeMessage(List list){
+    if(list[0] is int){
+      switch (list[0]) {
+        case 10:
+          //10-直播禁言
+          _liveMuteMessage(list[1],list[2]);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+
+  void _liveMuteMessage(String liveRoomId,Message msg){
+    print("liveRoomId,网络:$liveRoomId,本地:$coachId");
+    if(liveRoomId!=coachId.toString()){
+      return;
+    }
+    print("接收到$coachId系统通知:${msg.originContentMap}");
+    Map<String, dynamic> contentMap = json.decode(msg.originContentMap["data"]);
+    print("接收到${contentMap.toString()}");
+    if(null!=contentMap&&null!=contentMap["isMute"]){
+      bool isMute;
+      int minutes=-1;
+      if(contentMap["isMute"]==0){
+        print("解除禁言");
+        isMute=false;
+      }else{
+        print("禁言");
+        isMute=true;
+        if(null!=contentMap["minutes"]){
+          print("禁言时长：${contentMap["minutes"]}");
+          minutes=contentMap["minutes"];
+        }else{
+          print("禁言时长：-1");
+        }
+      }
+      print("直播间$coachId：是否禁言:$isMute,时长：$minutes");
+      AppPrefs.setLiveRoomMute(coachId.toString(), minutes*60, isMute);
+      if(isMute&&mounted){
+        ToastShow.show(msg: "您已被禁言${minutes>0?"$minutes分钟":""}", context: context);
+      }else{
+        print("你已被解除禁言");
+      }
+    }
+  }
+
+
+
   //接收直播间弹幕消息
-  void receiveBarrageMessage(Message msg){
+  void _receiveBarrageMessage(Message msg){
     print("message:${msg.targetId},$coachId");
     if(msg.targetId!=coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
@@ -1097,9 +1180,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if(null==text||text.length<1){
       return;
     }
-    _sendChatRoomMsg(text);
-    _textController.text="";
-    _onSubmitLiveRoomMessage(Application.profile.nickName,Application.profile.uid.toString(),text);
+    if(isMuteJudge()){
+      ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+    }else{
+      _sendChatRoomMsg(text);
+      _onSubmitLiveRoomMessage(Application.profile.nickName, Application.profile.uid.toString(), text);
+    }
+    _textController.text = "";
     if(!_emojiState) {
       FocusScope.of(context).requestFocus(_focusNode);
     }
@@ -1204,4 +1291,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       setState(() {});
     }
   }
+
+
+
+
 }
