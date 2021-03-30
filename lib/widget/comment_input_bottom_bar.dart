@@ -57,7 +57,8 @@ Future openInputBottomSheet({
 }
 
 class CommentInputBottomBar extends StatefulWidget {
-  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus,this.isShowPostBtn, this.isShowAt})
+  CommentInputBottomBar(
+      {Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowPostBtn, this.isShowAt})
       : super(key: key);
   final VoidCallback voidCallback;
   String hintText;
@@ -120,6 +121,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;
 
+  // 是否点击了@icon
+  bool isClickAtIcon = false;
+
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
 
@@ -152,14 +156,22 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       print("监听文字光标${_textEditingController.selection}");
       List<Rule> rules = context.read<CommentEnterNotifier>().rules;
       int atIndex = 0;
-      if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-        atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
+      if (context.read<CommentEnterNotifier>().atCursorIndexs.length > 0) {
+        atIndex = context.read<CommentEnterNotifier>().atCursorIndexs.first.index;
       }
       print("当前值￥${_textEditingController.text}");
       print(context.read<CommentEnterNotifier>().textFieldStr);
       // 获取光标位置
       int cursorIndex = _textEditingController.selection.baseOffset;
       print("实时光标位置$cursorIndex");
+      // 点击@图标
+      if (isClickAtIcon) {
+        var setCursor = TextSelection(
+          baseOffset: atIndex,
+          extentOffset: atIndex,
+        );
+        _textEditingController.selection = setCursor;
+      }
       // 在每次选择@用户后ios设置光标位置。
       if (Platform.isIOS && isClickAtUser) {
         // 设置光标
@@ -168,6 +180,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
           extentOffset: _textEditingController.text.length,
         );
         _textEditingController.selection = setCursor;
+        print("调整了光标：：：${_textEditingController.selection}");
       }
       if (Platform.isAndroid && isClickAtUser) {
         print("at位置&${atIndex}");
@@ -178,6 +191,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         _textEditingController.selection = setCursor;
       }
       isClickAtUser = false;
+      isClickAtIcon = false;
       // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
       if (isSwitchCursor && !Platform.isIOS) {
         // _textEditingController.o
@@ -212,7 +226,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       isSwitchCursor = true;
     });
     _formatter = ReleaseFeedInputFormatter(
-      atIndexs: context.read<CommentEnterNotifier>().atindexs,
+      atCursorIndexs: context.read<CommentEnterNotifier>().atCursorIndexs,
       isMonitorTop: false,
       controller: _textEditingController,
       rules: context.read<CommentEnterNotifier>().rules,
@@ -231,8 +245,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
           String topicSearchStr, bool add) {
-        rules = rules;
         print("输入框值回调：$value");
+        print(value.length);
         print(rules);
         print("搜索字段");
         print(atSearchStr);
@@ -262,7 +276,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   /// 获得文本输入框样式
   List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
-    print("11111111111");
+    print("展示高亮");
+    print("rules:::${rules.toString()}");
     List<RangeStyle> result = [];
     for (Rule rule in rules) {
       result.add(
@@ -451,8 +466,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             }
                             // 获取@的光标
                             int atIndex = 0;
-                            if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-                              atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
+                            if (context.read<CommentEnterNotifier>().atCursorIndexs.length > 0) {
+                              atIndex = context.read<CommentEnterNotifier>().atCursorIndexs.first.index;
                             }
                             // 获取实时搜索文本
                             String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
@@ -495,6 +510,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             print("controller.text:${_textEditingController.text}");
                             // 这是替换输入的文本修改后面输入的@的规则
                             if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
+                              print("搜索文本searchStr：：：$searchStr");
                               int oldLength = searchStr.length;
                               int newLength = followList[index].nickName.length;
                               int oldStartIndex = atIndex;
@@ -512,7 +528,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               // 当最新输入框内的文本对应不上之前的值时。
                               if (rules[i].params !=
                                   _textEditingController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-                                print("进入");
+                                print("进入更新后输入的");
                                 print(rules[i]);
                                 rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
                                     rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
@@ -531,13 +547,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             context.read<CommentEnterNotifier>().openAtCallback("");
                           },
                           child: Container(
-                      height: 48,
-                      width: ScreenUtil.instance.screenWidthDp,
-                      margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
-                      child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                      CircleAvatar(
+                            height: 48,
+                            width: ScreenUtil.instance.screenWidthDp,
+                            margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
                                   backgroundImage: NetworkImage(followList[index].avatarUri),
                                   maxRadius: 19,
                                 ),
@@ -568,7 +584,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                     Container(
                       width: Platform.isIOS
                           ? ScreenUtil.instance.screenWidthDp - 32
-                          : ScreenUtil.instance.screenWidthDp - 32 - (widget.isShowPostBtn?52 - 12:0) ,
+                          : ScreenUtil.instance.screenWidthDp - 32 - (widget.isShowPostBtn ? 52 - 12 : 0),
                       margin: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -582,7 +598,10 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 minHeight: 16.0,
                                 maxWidth: Platform.isIOS
                                     ? ScreenUtil.instance.screenWidthDp - 32 - 76
-                                    : ScreenUtil.instance.screenWidthDp - 32 - 76 - (widget.isShowPostBtn?52 - 12:0)),
+                                    : ScreenUtil.instance.screenWidthDp -
+                                        32 -
+                                        76 -
+                                        (widget.isShowPostBtn ? 52 - 12 : 0)),
                             child: TextSpanField(
                               controller: _textEditingController,
                               focusNode: commentFocus,
@@ -593,6 +612,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               enableInteractiveSelection: true,
                               // 光标颜色
                               cursorColor: Color.fromRGBO(253, 137, 140, 1),
+                              readOnly: context.watch<CommentEnterNotifier>().emojiState,
+                              showCursor: true,
                               scrollPadding: EdgeInsets.all(0),
                               style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
                               //内容改变的回调
@@ -613,9 +634,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               },
                               onTap: () {
                                 // 开启键盘关闭表情
-                                if (!commentFocus.hasFocus) {
-                                  context.read<CommentEnterNotifier>().openEmojiCallback(false);
-                                }
+                                // if (!commentFocus.hasFocus) {
+                                context.read<CommentEnterNotifier>().openEmojiCallback(false);
+                                // }
                               },
                               // 装饰器修改外观
                               decoration: InputDecoration(
@@ -632,8 +653,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
                               rangeStyles: getTextFieldStyle(rules),
                               textInputAction: TextInputAction.send,
-                              inputFormatters:
-                                   [_formatter] ,
+                              inputFormatters: [_formatter],
                             ),
                           ),
                           Positioned(
@@ -643,19 +663,40 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 visible: widget.isShowAt,
                                 child: AppIconButton(
                                   onTap: () {
-                                    isClickAtUser = true;
+                                    isClickAtIcon = true;
                                     // 输入的文字
                                     String text = _textEditingController.text;
                                     // 获取光标位置
-                                    int cursorIndex = _textEditingController.selection.baseOffset;
-                                    if(cursorIndex >= 0) {
+                                    int cursorIndex = 0;
+                                    // 在点击表情时关闭了
+                                    cursorIndex = _textEditingController.selection.baseOffset;
+                                    if (cursorIndex >= 0) {
                                       print("cursorIndex关闭：${cursorIndex}");
                                       context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                      _textEditingController.text =
-                                          text.substring(0, cursorIndex) + "@" +
-                                              text.substring(cursorIndex, text.length);
+                                      _textEditingController.text = text.substring(0, cursorIndex) +
+                                          "@" +
+                                          text.substring(cursorIndex, text.length);
+                                    }
+                                    // 这里文本会添加一个@,如果存在高亮和之前对不上需要加上一个@的长度
+                                    if (rules.isNotEmpty) {
+                                      // @符合的长度
+                                      int AtLength = 1;
+                                      print(rules.toString());
+                                      for (int i = 0; i < rules.length; i++) {
+                                        // 当最新输入框内的文本对应不上之前的值时。
+                                        if (rules[i].params !=
+                                            _textEditingController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+                                          print("进入更新后输入的");
+                                          print(rules[i]);
+                                          rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
+                                              rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
+                                          print(rules[i]);
+                                        }
+                                      }
+                                      print(rules.toString());
                                     }
                                     context.read<CommentEnterNotifier>().openAtCallback("@");
+                                    context.read<CommentEnterNotifier>().changeCallback(_textEditingController.text);
                                   },
                                   iconSize: 24,
                                   svgName: AppIcon.input_at,
@@ -670,8 +711,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 context.read<CommentEnterNotifier>().openAtCallback("");
                                 // 获取光标位置
                                 emojiCursorPosition = _textEditingController.selection.baseOffset;
-                                // 关闭输入框
-                                commentFocus.unfocus();
+                                print("点击emojiIcon时的光标位置：：：$emojiCursorPosition");
                                 // 显示表情刷新Ui
                                 context.read<CommentEnterNotifier>().openEmojiCallback(true);
                               },
@@ -701,7 +741,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   // 监听输入框的值==""使外层点击不生效。非""手势生效。
                                   ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
                                   child: Container(
-                                    // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                                      // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                                       height: 32,
                                       width: 52,
                                       decoration: BoxDecoration(
@@ -806,7 +846,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     TextStyle textStyle = const TextStyle(
       fontSize: 24,
     );
-    print("加载表情数据;${emojiModel.emoji}");
     return Material(
         color: Colors.white,
         child: new InkWell(
@@ -823,7 +862,12 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
             print("changeFrontPosition:1:$changeFrontPosition");
             // 获取输入框内的规则
             var rules = context.read<CommentEnterNotifier>().rules;
+
             if (emojiCursorPosition != null) {
+              print("光标前文字：：：：${_textEditingController.text.substring(0, emojiCursorPosition)}");
+              print("当前选择emoji::::${emojiModel.code}");
+              print(
+                  "光标后文字：：：：${_textEditingController.text.substring(emojiCursorPosition, _textEditingController.text.length)}");
               _textEditingController.text = _textEditingController.text.substring(0, emojiCursorPosition) +
                   emojiModel.code +
                   _textEditingController.text.substring(emojiCursorPosition, _textEditingController.text.length);
@@ -833,6 +877,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
             context.read<CommentEnterNotifier>().changeCallback(_textEditingController.text);
             // 记录新的emoji光标位置
             emojiCursorPosition = emojiCursorPosition + emojiModel.code.length;
+
+            var setCursor = TextSelection(
+              baseOffset: emojiCursorPosition,
+              extentOffset: emojiCursorPosition,
+            );
+            _textEditingController.selection = setCursor;
+
             print(emojiModel.code.length);
             print("emojiCursorPosition:$emojiCursorPosition");
             // 这是替换输入的文本修改后面输入的@的规则
@@ -841,16 +892,18 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
               print("changeFrontPosition:2:$changeFrontPosition");
               int diffLength = emojiCursorPosition - changeFrontPosition;
               print("diffLength:$diffLength");
+              print(rules.toString());
               for (int i = 0; i < rules.length; i++) {
                 if (rules[i].startIndex >= changeFrontPosition) {
+                  print("改光标了————————————————————————");
                   int newStartIndex = rules[i].startIndex + diffLength;
                   int newEndIndex = rules[i].endIndex + diffLength;
                   rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
                 }
               }
+              print(rules.toString());
+              print(_textEditingController.text);
             }
-            // 替换
-            context.read<CommentEnterNotifier>().replaceRules(rules);
           },
         ));
   }
@@ -870,7 +923,7 @@ class CommentEnterNotifier extends ChangeNotifier {
   String keyWord = "";
 
   // 记录@唤醒页面时光标的位置
-  List<AtIndex> atindexs = [];
+  List<AtIndex> atCursorIndexs = [];
 
   // 记录规则
   List<Rule> rules = [];
@@ -895,9 +948,9 @@ class CommentEnterNotifier extends ChangeNotifier {
   //   notifyListeners();
   // }
   getAtCursorIndex(int atIndex) {
-    this.atindexs.clear();
+    this.atCursorIndexs.clear();
     AtIndex ind = AtIndex(atIndex);
-    this.atindexs.add(ind);
+    this.atCursorIndexs.add(ind);
     notifyListeners();
   }
 
