@@ -512,6 +512,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
     if (Application.keyboardHeightChatPage > 0) {
       keyboardHeight = Application.keyboardHeightChatPage;
+    }else if(Application.keyboardHeightIfPage>0){
+      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
+      keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
