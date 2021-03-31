@@ -873,7 +873,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //初始化一些数据
   void initSetData() async {
-    Future.delayed(Duration(milliseconds: 200), () async {
+    Future.delayed(Duration(milliseconds: 250), () async {
       List msgList = new List();
       msgList = await RongCloud.init().getHistoryMessages(
           conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
