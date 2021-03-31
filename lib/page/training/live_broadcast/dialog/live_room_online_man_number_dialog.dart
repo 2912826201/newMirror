@@ -1,6 +1,8 @@
 
 
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -44,6 +46,9 @@ class BottomUserPanel extends StatefulWidget {
 
 class _BottomUserPanelState extends State<BottomUserPanel> {
 
+
+  StreamController<int> userOnlineListStream = StreamController.broadcast();
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +61,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   @override
   void dispose() {
     super.dispose();
+    userOnlineListStream.close();
     EventBus.getDefault().unRegister(
         pageName:EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
         registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET
@@ -119,12 +125,17 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
       constraints: BoxConstraints(
         maxHeight: 48.0*7,
       ),
-      child: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (context,index){
-          return getListViewItem(widget.onlineManList[index],index);
+      child: StreamBuilder(
+        stream: userOnlineListStream.stream,
+        builder: (context,snapshot){
+          return ListView.builder(
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context,index){
+              return getListViewItem(widget.onlineManList[index],index);
+            },
+            itemCount:widget.onlineManList.length,
+          );
         },
-        itemCount:widget.onlineManList.length,
       ),
     );
   }
@@ -166,9 +177,9 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
 
   void resetPage(){
     if(mounted){
-      setState(() {
-
-      });
+      if(userOnlineListStream!=null) {
+        userOnlineListStream.sink.add(0);
+      }
     }
   }
 }
