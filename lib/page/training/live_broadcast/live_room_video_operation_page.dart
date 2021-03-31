@@ -946,9 +946,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     onlineManList.insert(0,buddyModel);
     onlineManUidList.insert(0,buddyModel.uid);
     EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    // if(onlineManList.length<3){
+    if(onlineManList.length<3){
       resetOnlineUserImage();
-    // }
+    }
   }
 
 
@@ -968,9 +968,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
     if(isReset) {
       EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-      // if (onlineManList.length < 3) {
+      if (onlineManList.length < 3) {
         resetOnlineUserImage();
-      // }
+      }
     }
   }
 

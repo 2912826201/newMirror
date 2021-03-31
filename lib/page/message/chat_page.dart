@@ -197,6 +197,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   List<DemoSourceEntity> sourceList = [];
 
 
+  bool isShowTopFirst=true;
 
   @override
   void initStatePage() {
@@ -338,6 +339,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     return bodyArray;
   }
 
+
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
@@ -346,6 +348,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         if (chatDataList[0].msg.messageId == chatDataList[1].msg.messageId) {
           chatDataList.removeAt(0);
         }
+      }
+    }
+    bool isShowTop=!MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName);
+    if(isShowTop&&isShowTopFirst){
+      isShowTopFirst=false;
+      if(conversation.getType() != RCConversationType.System){
+        _onRefresh();
+      }else{
+        _onRefreshSystemInformation();
       }
     }
     return ChatDetailsBody(
@@ -362,7 +373,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      isShowTop: isShowTop,
       onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
       isShowHaveAnimation: isShowHaveAnimation,
