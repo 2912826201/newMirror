@@ -386,13 +386,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //获取appbar
   Widget getAppBar() {
-    Widget action;
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      action=Container();
-    }else{
-      action=CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
-    }
+    Widget action=CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
     if (conversation.getType() == RCConversationType.Group) {
+      if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
+        action=Container();
+      }
       userNumber = context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
       return CustomAppBar(
         titleString: chatName ?? "",
