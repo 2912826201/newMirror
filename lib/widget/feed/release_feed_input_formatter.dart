@@ -32,7 +32,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   final Function correctRulesListener;
 
   // 记录@的光标
-  List<AtIndex> atIndexs = [];
+ List<AtIndex> atCursorIndexs;
   int atIndex = 0;
   // @后跟随的实时搜索文本
   String atSearchStr = "";
@@ -54,7 +54,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     this.triggerAtSymbol = "@",
     this.triggerTopicSymbol = "#",
     this.isMonitorTop = true,
-    this.atIndexs,
+    this.atCursorIndexs,
     this.correctRulesListener,
     this.rules,
   })  : assert(triggerAtCallback != null && controller != null),
@@ -78,10 +78,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值后光标${oldValue.selection.end}");
     print("at光标$atIndex");
     print("rules￥￥${rules.toString()}");
-    print("atCursorindex${atIndexs.toString()}");
     if (!isMonitorTop) {
-      if ( atIndexs.isNotEmpty) {
-        atIndex = atIndexs.first.index;
+      print("atCursorIndex::::${atCursorIndexs.toString()}");
+      if ( atCursorIndexs.length > 0) {
+        atIndex = atCursorIndexs.first.index;
       }
     }
     // if (oldValue.text == newValue.text && Platform.isIOS) {

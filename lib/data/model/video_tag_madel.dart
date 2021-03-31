@@ -9,8 +9,10 @@ class VideoTagModel {
   List<SubTagModel> _level;
   List<SubTagModel> _part;
   List<SubTagModel> _target;
+  List<SubTagModel> _bodyType;
 
   List<SubTagModel> get level => _level;
+  List<SubTagModel> get bodyType => _bodyType;
 
   List<SubTagModel> get part => _part;
 
@@ -19,13 +21,21 @@ class VideoTagModel {
   VideoTagModel(
       {List<SubTagModel> level,
       List<SubTagModel> part,
-      List<SubTagModel> target}) {
+      List<SubTagModel> target,
+      List<SubTagModel> bodyType}) {
+     _bodyType = bodyType;
     _level = level;
     _part = part;
     _target = target;
   }
 
   VideoTagModel.fromJson(dynamic json) {
+    if (json["bodyType"] != null) {
+      _bodyType = [];
+      json["bodyType"].forEach((v) {
+        _bodyType.add(SubTagModel.fromJson(v));
+      });
+    }
     if (json["level"] != null) {
       _level = [];
       json["level"].forEach((v) {
@@ -48,6 +58,9 @@ class VideoTagModel {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
+    if (_bodyType != null) {
+      map["bodyType"] = _bodyType.map((v) => v.toJson()).toList();
+    }
     if (_level != null) {
       map["level"] = _level.map((v) => v.toJson()).toList();
     }

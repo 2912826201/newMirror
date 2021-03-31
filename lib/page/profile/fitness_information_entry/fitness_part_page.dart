@@ -94,7 +94,12 @@ class _FitnessPartState extends State<FitnessPartPage> {
                   if (choselist.isEmpty) {
                     Toast.show("请选择想要训练的部位", context);
                   } else {
-                    Application.fitnessEntryModel.keyPartList = choselist;
+                    List<int> choseIdList = [];
+                    choselist.forEach((element) {
+                      choseIdList.add(partList[element].id);
+                    });
+                    print('----------------choseIdList------------${choseIdList}');
+                    Application.fitnessEntryModel.keyParts = choseIdList;
                     /*  context.read<FitnessInformationNotifier>().setKeyPartList(choselist);*/
                     AppRouter.navigateToTrainSeveralPage(context);
                   }

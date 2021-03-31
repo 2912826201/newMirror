@@ -3,6 +3,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -16,10 +17,16 @@ class BodyTypePage extends StatefulWidget {
 }
 
 class _BodyTypeState extends State<BodyTypePage> {
-  int startSize = 10;
-  int endSize = 14;
-  int bodyType = 1;
-
+  List<SubTagModel> bodyTypeList;
+  SubTagModel choseType;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bodyTypeList = Application.videoTagModel.bodyType;
+    bodyTypeList.sort((a, b) => a.id.compareTo(b.id));
+    choseType = bodyTypeList.first;
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -71,7 +78,7 @@ class _BodyTypeState extends State<BodyTypePage> {
             ),
             Center(
               child: Text(
-                "$startSize%—$endSize%",
+                "${choseType.name}",
                 style: AppStyle.textRegular16,
               ),
             ),
@@ -91,7 +98,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 backColor: AppColor.bgBlack,
                 color: AppColor.transparent,
                 onTap: () {
-                  Application.fitnessEntryModel.bodyType = bodyType;
+                  Application.fitnessEntryModel.bodyType = choseType.id;
                   if(Application.videoTagModel!=null){
                     if(Application.videoTagModel.target!=null){
                       AppRouter.navigateToFitnessTargetPage(context);
@@ -121,32 +128,10 @@ class _BodyTypeState extends State<BodyTypePage> {
       child: Swiper(
           viewportFraction: 0.4,
           scale: 0.7,
-          itemCount: 5,
+          itemCount: bodyTypeList.length,
           onIndexChanged: (index) {
             setState(() {
-              bodyType = index + 1;
-              switch (index) {
-                case 0:
-                  startSize = 10;
-                  endSize = 14;
-                  break;
-                case 1:
-                  startSize = 15;
-                  endSize = 19;
-                  break;
-                case 2:
-                  startSize = 20;
-                  endSize = 24;
-                  break;
-                case 3:
-                  startSize = 25;
-                  endSize = 30;
-                  break;
-                case 4:
-                  startSize = 31;
-                  endSize = 40;
-                  break;
-              }
+              choseType = bodyTypeList[index];
             });
           },
           itemBuilder: (context, index) {

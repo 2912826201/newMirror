@@ -384,14 +384,14 @@ Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore})
   }
 }
 ///健身信息录入
-Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,List<int> keyPartList,int timesOfWeek}) async {
+Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,List<int> keyParts,int timesOfWeek}) async {
   Map<String,dynamic> map = Map();
   map["height"] =height;
   map["weight"] = weight;
   map["bodyType"] =bodyType ;
   map["target"] = target;
   map["level"] = level;
-  map["keyPartList"] =keyPartList;
+  map["keyParts"] =keyParts;
   map["timesOfWeek"] =timesOfWeek;
   BaseResponseModel responseModel = await requestApi(FITNESS_ENTRY, map);
   if (responseModel.isSuccess) {
