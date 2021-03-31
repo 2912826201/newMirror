@@ -49,12 +49,14 @@ class AppPrefs {
   }
 
 
-  static setLiveRoomMuteMessage(Message msg)async {
-    Map<String, dynamic> map = await queryMute(int.parse(msg.targetId));
+  static setLiveRoomMuteMessage(int liveRoomId)async {
+    Map<String, dynamic> map = await queryMute(liveRoomId);
     if(null!=map["data"]&&null!=map["data"]["remainingMuteTime"]){
       print("--------------${map["data"]["remainingMuteTime"]}");
       if(map["data"]["remainingMuteTime"] is int && map["data"]["remainingMuteTime"]~/60~/1000>0){
-        setLiveRoomMute(msg.targetId, map["data"]["remainingMuteTime"]~/1000, true);
+        setLiveRoomMute(liveRoomId.toString(), map["data"]["remainingMuteTime"]~/1000, true);
+      }else{
+        setLiveRoomMute(liveRoomId.toString(), -1, false);
       }
     }
   }

@@ -408,11 +408,7 @@ class MessageManager {
           break;
         case 10:
           //10-直播禁言
-          List list=[];
-          list.add(10);
-          list.add(dataMap["liveRoomId"].toString());
-          list.add(message);
-          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          print("直播禁言");
           break;
         default:
           break;
@@ -439,6 +435,42 @@ class MessageManager {
       //普通消息
       judgeIsHaveAtUserMes(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+    }
+  }
+
+  //直播间的通知消息
+  static splitChatRoomMessage(Message message) async {
+    if(message.conversationType != RCConversationType.ChatRoom){
+      return;
+    }
+    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      //私聊通知
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
+        case 0:
+          //0-直播开始
+          print("直播开始");
+
+          break;
+        case 1:
+          //1-心跳
+          print("心跳");
+
+          break;
+        case 2:
+          //2-直播禁言
+          List list=[];
+          list.add(2);
+          list.add(dataMap["liveRoomId"].toString());
+          list.add(dataMap["users"]);
+          list.add(message);
+          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          break;
+        default:
+          break;
+      }
+    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      //群聊通知
     }
   }
 
@@ -610,9 +642,14 @@ class MessageManager {
     print("message.objectName：${message.objectName},${ message.conversationType}");
     if (message == null) {
       return false;
-    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD &&
-        message.conversationType == RCConversationType.ChatRoom) {
-      return true;
+    } else if (message.conversationType == RCConversationType.ChatRoom) {
+      if(message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD){
+        print("聊天室：私通知");
+        return true;
+      }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+        print("聊天室：群通知");
+        return true;
+      }
     }
     return false;
   }

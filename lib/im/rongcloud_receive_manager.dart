@@ -41,6 +41,8 @@ class RongCloudReceiveManager {
 
     if(MessageManager.judgeChatRoomNotice(msg)){
       print("聊天室的通知消息：${msg.originContentMap}");
+      //分析消息是什么类型
+      MessageManager.splitChatRoomMessage(msg);
       return;
     }else if(MessageManager.judgeBarrageMessage(msg)){
       print("收到了弹幕消息：${msg.content.encode()}");
@@ -86,7 +88,7 @@ class RongCloudReceiveManager {
         //聊天室的消息
         if(code==23408){
           print("聊天室的消息:被禁言了");
-          AppPrefs.setLiveRoomMuteMessage(msg);
+          AppPrefs.setLiveRoomMuteMessage(int.parse(msg.targetId));
         }
       }else{
 

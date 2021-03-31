@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
@@ -44,6 +45,8 @@ class _LiveRoomVideoPageState extends XCState {
     super.initState();
     //加入聊天室
     Application.rongCloud.joinChatRoom(coachId);
+    //判断是否被禁言
+    AppPrefs.setLiveRoomMuteMessage(int.parse(coachId));
     // player.setDataSource(url, autoPlay: true);
     EventBus.getDefault().registerNoParameter(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus=LoadingStatus.STATUS_LOADING;

@@ -809,10 +809,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         if(ClickUtil.isFastClick()){
           return;
         }
-        // if(isMuteJudge()){
-        //   ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
-        //   return;
-        // }
+        if(isMuteJudge()){
+          ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+          return;
+        }
         isShowEditPlan=true;
         setState(() {
 
@@ -1042,9 +1042,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   void _receiveNoticeMessage(List list){
     if(list[0] is int){
       switch (list[0]) {
-        case 10:
-          //10-直播禁言
-          _liveMuteMessage(list[1],list[2]);
+        case 2:
+          //2-直播禁言
+          _liveMuteMessage(list[1],list[2],list[3]);
           break;
         default:
           break;
@@ -1053,9 +1053,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
 
-  void _liveMuteMessage(String liveRoomId,Message msg){
+  void _liveMuteMessage(String liveRoomId,List list,Message msg){
     print("liveRoomId,网络:$liveRoomId,本地:$coachId");
     if(liveRoomId!=coachId.toString()){
+      Application.rongCloud.quitChatRoom(msg.targetId);
+      return;
+    }
+    bool isHaveMeUid=false;
+    for(dynamic element in list){
+      if(element.toString()==Application.profile.uid.toString()){
+        isHaveMeUid=true;
+        break;
+      }
+    }
+    if(!isHaveMeUid){
+      print("有人被禁言了:${list.toString()}");
       return;
     }
     print("接收到$coachId系统通知:${msg.originContentMap}");
