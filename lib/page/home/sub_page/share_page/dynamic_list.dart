@@ -15,6 +15,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
@@ -184,10 +185,12 @@ class DynamicListLayout extends StatelessWidget {
       sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
+      ;
       return FeedVideoPlayer(
         videos.first.url,
         sizeInfo,
         ScreenUtil.instance.width,
+        durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
         isInListView: true,
       );
     }
