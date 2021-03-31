@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/file_util.dart';
@@ -37,9 +38,11 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
+  Function(double visibilityFraction) playerVisibilityChangedBehavior;
 
   @override
   void initState() {
+    print("初始化更好的播放器");
     _calculateSize();
 
     super.initState();
@@ -61,12 +64,18 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
           break;
       }
     };
+
+    playerVisibilityChangedBehavior = (double visibility) {
+      print("打印可见度 $visibility");
+    };
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: videoSize.width / videoSize.height,
         eventListener: eventListener,
+        playerVisibilityChangedBehavior: playerVisibilityChangedBehavior,
         autoPlay: !widget.isInListView,
         looping: true,
+        //定义按下播放器时播放器是否以全屏启动
         fullScreenByDefault: false,
         placeholder: widget.isFile
             ? widget.thumbPath == null
@@ -81,7 +90,28 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 width: videoSize.width,
                 height: videoSize.height,
               ),
-        controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false));
+        controlsConfiguration: BetterPlayerControlsConfiguration(
+            // 取消全屏按钮
+            enableFullscreen: false,
+            // tab背景颜色
+            controlBarColor:AppColor.transparent,
+            /*
+            要禁用更多按钮就需要把更多内的功能全部取消掉
+             */
+            // 标记，用于显示/隐藏溢出菜单，其中包含播放，字幕，质量选项。
+            enableOverflowMenu: false,
+            ///用于显示/隐藏播放速度的标志
+            enablePlaybackSpeed: false,
+            ///用于显示/隐藏字幕的标志
+            enableSubtitles: false,
+            ///标记用于显示/
+            enableQualities: false,
+            ///用于显示/隐藏画中画模式的标志
+            enablePip: false,
+            ///用于启用/禁用重试功能的标志
+            enableRetry: false,
+            ///用于显示/隐藏音轨的标志
+            enableAudioTracks: false));
 
     if (widget.isInListView) {
       listController = BetterPlayerListVideoPlayerController();
@@ -92,14 +122,19 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
 
   @override
   void dispose() {
+    print("销毁更好的播放器页面了");
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: containerSize.height,
-      width: containerSize.width,
+      height:
+      // videoSize.height,
+      containerSize.height,
+      width:
+      // videoSize.width ,
+      containerSize.width,
       child: Stack(
         children: [
           Positioned(

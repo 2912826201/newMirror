@@ -8,7 +8,7 @@ import 'api.dart';
 
 
 //校验token
-const String CHECKTOKEN = "/appuser/web/user/isEffective";
+const String CHECKTOKEN = "/ucenter/web/user/isEffective";
 //完善用户信息
 const String PERFECTUSERINFO = "/ucenter/web/user/perfectUserInfo";
 //获取用户信息
