@@ -517,23 +517,9 @@ class AppRouter {
   }
 
   static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
-    /*if(Application.minePageRouterName==null){
-      Application.minePageRouterName = [];
-    }*/
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-  /*  String uri = pathProfileDetails +"?$paramData=" +Uri.encodeComponent(json.encode(map));
-    if(Application.minePageRouterName.contains(uri)){
-      for(int i = 0;i<Application.minePageRouterName.length;i++){
-        if(i>Application.minePageRouterName.indexOf(uri)){
-          Application.minePageRouterName.remove(Application.minePageRouterName[i]);
-        }
-      }
-      Navigator.of(context).popUntil(ModalRoute.withName(uri));
-    }else{
-      Application.minePageRouterName.add(uri);*/
       _navigateToPage(context, pathProfileDetails, map, callback: callback);
-  /*  }*/
   }
 
   static void removeMineDtailRouterName(BuildContext context,int uid){

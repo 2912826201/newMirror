@@ -23,6 +23,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
   void initState() {
     super.initState();
     levelList = Application.videoTagModel.level;
+    levelList.sort((a, b) => a.id.compareTo(b.id));
     levelList.forEach((element) {
       print('levelListId==========================${element.id}');
     });
@@ -88,7 +89,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
         setState(() {
           beforIndex = index;
         });
-        Application.fitnessEntryModel.hard = index;
+        Application.fitnessEntryModel.hard = levelList[index].id;
         /*context.read<FitnessInformationNotifier>().setHard(index);*/
         print('index===============================$index');
         if (Application.videoTagModel != null) {
