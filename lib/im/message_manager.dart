@@ -406,6 +406,10 @@ class MessageManager {
           //TODO 如果有结果则打开训练结果页面
           if (trainingResult.hasResult == 1) {}
           break;
+        case 10:
+          //10-直播禁言
+          print("直播禁言");
+          break;
         default:
           break;
       }
@@ -431,6 +435,42 @@ class MessageManager {
       //普通消息
       judgeIsHaveAtUserMes(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+    }
+  }
+
+  //直播间的通知消息
+  static splitChatRoomMessage(Message message) async {
+    if(message.conversationType != RCConversationType.ChatRoom){
+      return;
+    }
+    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      //私聊通知
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
+        case 0:
+          //0-直播开始
+          print("直播开始");
+
+          break;
+        case 1:
+          //1-心跳
+          print("心跳");
+
+          break;
+        case 2:
+          //2-直播禁言
+          List list=[];
+          list.add(2);
+          list.add(dataMap["liveRoomId"].toString());
+          list.add(dataMap["users"]);
+          list.add(message);
+          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          break;
+        default:
+          break;
+      }
+    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      //群聊通知
     }
   }
 
@@ -573,9 +613,12 @@ class MessageManager {
     return "[系统通知]";
   }
 
-  //判断消息是不是弹幕消息
+  //判断消息是不是聊天室弹幕消息
   static bool judgeBarrageMessage(Message message) {
+    print("message.objectName：${message.objectName},${ message.conversationType}");
     if (message == null) {
+      return false;
+    } else if (message.conversationType != RCConversationType.ChatRoom) {
       return false;
     } else if (message.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT) {
       return false;
@@ -595,12 +638,18 @@ class MessageManager {
   }
 
   //判断是不是聊天室的通知
-  static bool judgeBarrageNotice(Message message) {
+  static bool judgeChatRoomNotice(Message message) {
+    print("message.objectName：${message.objectName},${ message.conversationType}");
     if (message == null) {
       return false;
-    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD &&
-        message.conversationType == RCConversationType.ChatRoom) {
-      return true;
+    } else if (message.conversationType == RCConversationType.ChatRoom) {
+      if(message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD){
+        print("聊天室：私通知");
+        return true;
+      }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+        print("聊天室：群通知");
+        return true;
+      }
     }
     return false;
   }

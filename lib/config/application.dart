@@ -45,6 +45,7 @@ class Application {
   //页面路由
   static FluroRouter router;
 
+  //记录路由名称
   static List<String> pagePopRouterName;
   //当前token
   static TokenDto token;

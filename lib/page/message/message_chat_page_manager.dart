@@ -992,6 +992,7 @@ void judgeJumpPage(
             exitGroupListener: exitGroupListener,
             dto: _convertMsgToConversation(message)),
         false,
+        AppRouter.pathGroupMorePage,
         context);
   } else {
     jumpPage(
@@ -1002,11 +1003,12 @@ void judgeJumpPage(
           listener: listener,
           dto: _convertMsgToConversation(message)),
         false,
+        AppRouter.pathPrivateMorePage,
         context);
   }
 }
 
-void jumpPage(var page, bool isCloseNewPage, BuildContext context) {
+void jumpPage(var page, bool isCloseNewPage, String name,BuildContext context) {
   if (isCloseNewPage) {
     //跳转并关闭当前页面
     Navigator.pushAndRemoveUntil(
@@ -1018,6 +1020,7 @@ void jumpPage(var page, bool isCloseNewPage, BuildContext context) {
     //跳转不关闭当前页面
     Navigator.of(context).push(
       new MaterialPageRoute(
+        settings: RouteSettings(name: name),
         builder: (context) {
           return page;
         },
