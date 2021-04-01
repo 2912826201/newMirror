@@ -307,34 +307,51 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
                               return entity == null
                                   ? Container()
-                                  : entity.type == AssetType.video
-                                      ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
-                                          context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                      : entity.type == AssetType.image
-                                          ? CropperImage(
-                                              FileImage(_fileMap[entity.id]),
-                                              round: 0,
-                                              maskPadding: 0,
-                                              outHeight: (selectedSize == null
-                                                      ? _getImageOutSize(
-                                                          entity,
-                                                          context.select((SelectedMapNotifier notifier) =>
-                                                              notifier.useOriginalRatio))
-                                                      : selectedSize)
-                                                  .height,
-                                              outWidth: (selectedSize == null
-                                                      ? _getImageOutSize(
-                                                          entity,
-                                                          context.select((SelectedMapNotifier notifier) =>
-                                                              notifier.useOriginalRatio))
-                                                      : selectedSize)
-                                                  .width,
-                                              key: _cropperKey,
-                                            )
-                                          : Container();
+                                  : Stack(
+                                      children: [
+                                        entity.type == AssetType.video
+                                            ? VideoPreviewArea(
+                                                _fileMap[entity.id],
+                                                _screenWidth,
+                                                context.select(
+                                                    (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                            : entity.type == AssetType.image
+                                                ? CropperImage(
+                                                    _fileMap[entity.id] != null
+                                                        ? FileImage(_fileMap[entity.id])
+                                                        : MemoryImage(_thumbMap[entity.id] ?? Uint8List.fromList([])),
+                                                    round: 0,
+                                                    maskPadding: 0,
+                                                    outHeight: (selectedSize == null
+                                                            ? _getImageOutSize(
+                                                                entity,
+                                                                context.select((SelectedMapNotifier notifier) =>
+                                                                    notifier.useOriginalRatio))
+                                                            : selectedSize)
+                                                        .height,
+                                                    outWidth: (selectedSize == null
+                                                            ? _getImageOutSize(
+                                                                entity,
+                                                                context.select((SelectedMapNotifier notifier) =>
+                                                                    notifier.useOriginalRatio))
+                                                            : selectedSize)
+                                                        .width,
+                                                    key: _cropperKey,
+                                                    backBoxColor0: AppColor.transparent,
+                                                    backBoxColor1: AppColor.transparent,
+                                                  )
+                                                : Container(),
+                                        _fileMap[entity.id] == null
+                                            ? Center(
+                                                child: CircularProgressIndicator(),
+                                              )
+                                            : Container(),
+                                      ],
+                                    );
                             },
                           ),
-                        ))
+                        ),
+                      )
                     : Container(),
                 widget.needCrop &&
                         !widget.cropOnlySquare &&
@@ -476,16 +493,23 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     if (_fileMap[entity.id] == null) {
       entity.file.then((value) {
         _fileMap[entity.id] = value;
-        print(entity.id + ":" + value.path);
-        if (widget.needCrop) {
-          // 裁剪模式需要将其置入裁剪框2
-          notifier.setCurrentEntity(entity);
-        } else {
-          //TODO 非裁剪模式跳转展示大图
+        print("取到媒体文件：" + entity.id + ":" + value.path);
+        if (notifier.currentEntity.id == entity.id) {
+          //如果当前预览的和正在加载的是一致的 则刷新界面
+          print("相册刷新了界面");
+          setState(() {});
         }
+      }).catchError((e) {
+        print("媒体文件报错：" + entity.id + ":" + e);
       });
+      if (widget.needCrop) {
+        // 裁剪模式需要将其置入裁剪框
+        notifier.setCurrentEntity(entity);
+      } else {
+        //TODO 非裁剪模式跳转展示大图
+      }
     } else {
-      print(entity.id + ":" + _fileMap[entity.id].path);
+      print("已有媒体文件：" + entity.id + ":" + _fileMap[entity.id].path);
       if (widget.needCrop) {
         // 裁剪模式需要将其置入裁剪框
         notifier.setCurrentEntity(entity);
