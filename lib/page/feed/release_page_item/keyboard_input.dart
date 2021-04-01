@@ -197,7 +197,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     }
-     // 记录搜索状态
+    // 记录搜索状态
     context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
     context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
@@ -298,9 +298,9 @@ class KeyboardInputState extends State<KeyboardInput> {
         // 不限制行数
         maxLines: null,
         // 光标颜色
-        cursorColor: Color.fromRGBO(253, 137, 140, 1),
+        cursorColor: const Color.fromRGBO(253, 137, 140, 1),
         // 装饰器修改外观
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           // 去除下滑线
           border: InputBorder.none,
           // 提示文本
@@ -310,10 +310,10 @@ class KeyboardInputState extends State<KeyboardInput> {
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
           contentPadding: EdgeInsets.only(top: 14, left: 16, right: 16),
-         // labelStyle:
+          // labelStyle:
         ),
         rangeStyles: getTextFieldStyle(rules),
-        inputFormatters:  [_formatter],
+        inputFormatters: [_formatter],
       ),
 // )
     );

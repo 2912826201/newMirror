@@ -109,13 +109,13 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                         builder: (BuildContext context, LoadStatus mode) {
                           Widget body;
                           if (mode == LoadStatus.loading) {
-                            body = Text("正在加载");
+                            body = const Text("正在加载");
                           } else if (mode == LoadStatus.idle) {
-                            body = Text("上拉加载更多");
+                            body = const Text("上拉加载更多");
                           } else if (mode == LoadStatus.failed) {
-                            body = Text("加载失败,请重试");
+                            body = const Text("加载失败,请重试");
                           } else {
-                            body = Text("没有更多了");
+                            body = const Text("没有更多了");
                           }
                           return Container(
                             child: Center(
@@ -125,8 +125,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                         },
                       ),
                       header: WaterDropHeader(
-                        complete: Text("刷新完成"),
-                        failed: Text(""),
+                        complete: const Text("刷新完成"),
+                        failed: const Text(""),
                       ),
                       controller: refreshController,
                       onRefresh: () {
@@ -212,9 +212,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   width: 224,
                   height: 224,
                   color: AppColor.color246,
-                  margin: EdgeInsets.only(bottom: 16, top: 188),
+                  margin: const EdgeInsets.only(bottom: 16, top: 188),
                 ),
-                Text(
+                const Text(
                   "这里空空如也，去推荐看看吧",
                   style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
                 ),

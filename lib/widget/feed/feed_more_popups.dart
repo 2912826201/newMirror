@@ -84,7 +84,7 @@ class BottomopupState extends State<BottomPopup> {
     // 取消Item
     var cancelContainer = Container(
         height: itemHeight + 12 + bottomPadding,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColor.white, // 底色
         ),
         child: Column(
@@ -92,7 +92,7 @@ class BottomopupState extends State<BottomPopup> {
             // 取消上面的分割块
             Container(
               height: 12,
-              color: Color.fromRGBO(243, 243, 243, 1),
+              color: const Color.fromRGBO(243, 243, 243, 1),
             ),
             Container(
               height: 50,
@@ -107,7 +107,7 @@ class BottomopupState extends State<BottomPopup> {
                   print("点击了吗");
                 },
                 child: Center(
-                  child: Text(
+                  child: const Text(
                     "取消",
                     style: TextStyle(
                         fontFamily: 'Robot',
@@ -153,7 +153,7 @@ class BottomopupState extends State<BottomPopup> {
     var text = widget.list[index];
     var contentText = Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
           fontWeight: FontWeight.normal, decoration: TextDecoration.none, color: Color(0xFF333333), fontSize: 18),
     );
 
@@ -172,18 +172,18 @@ class BottomopupState extends State<BottomPopup> {
     };
     // 除开取只有一个时
     if (listLength == 1) {
-      decoration = BoxDecoration(
+      decoration = const BoxDecoration(
         color: AppColor.white, // 底色
       );
     } else if (listLength > 1) {
       // 除开取消的最后一个
       if (index == listLength - 1) {
-        decoration = BoxDecoration(
+        decoration = const BoxDecoration(
           border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
           color: AppColor.white, // 底色
         );
       } else if(index >= 1) {
-        decoration = BoxDecoration(
+        decoration = const BoxDecoration(
           color: AppColor.white, // 底色
           border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         );

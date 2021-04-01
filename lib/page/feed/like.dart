@@ -24,10 +24,12 @@ class LikeState extends State<Like> {
   // 请求下一页参数
   int lastTime;
   String footerText = "没有更多了";
+
   // 是否存在下一页
   int feedLuadHasNext;
   RefreshController refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     requestFeedLuadList(isFrist: true);
@@ -40,24 +42,24 @@ class LikeState extends State<Like> {
       if (model != null) {
         feedLuadHasNext = model.hasNext;
         lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             laudListModel.add(FeedLaudListModel.fromJson(v));
           });
           refreshController.loadComplete();
-        }else{
+        } else {
           refreshController.loadNoData();
         }
       } else {
         refreshController.loadFailed();
       }
-    }else{
-      if(!isFrist){
+    } else {
+      if (!isFrist) {
         refreshController.loadNoData();
       }
     }
-    if(laudListModel.isNotEmpty) {
-      if(laudListModel.first.uid != null) {
+    if (laudListModel.isNotEmpty) {
+      if (laudListModel.first.uid != null) {
         laudListModel.insert(0, FeedLaudListModel());
       }
     }
@@ -73,7 +75,7 @@ class LikeState extends State<Like> {
           titleString: "赞",
         ),
         body: Container(
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: Column(
             children: [
               Expanded(
@@ -88,8 +90,10 @@ class LikeState extends State<Like> {
                                 enablePullDown: false,
                                 controller: refreshController,
                                 footer: CustomFooter(
-                                  onOffsetChange: (offset){
-                                    if(footerText!=""&&scrollController.offset>0&&offset>=scrollController.offset){
+                                  onOffsetChange: (offset) {
+                                    if (footerText != "" &&
+                                        scrollController.offset > 0 &&
+                                        offset >= scrollController.offset) {
                                       print('---------------------------页面数据不够多,不展示文字');
                                       setState(() {
                                         footerText = "";
@@ -99,11 +103,11 @@ class LikeState extends State<Like> {
                                   builder: (BuildContext context, LoadStatus mode) {
                                     Widget body;
                                     if (mode == LoadStatus.loading) {
-                                      body = Text("正在加载");
+                                      body = const Text("正在加载");
                                     } else if (mode == LoadStatus.idle) {
-                                      body = Text("上拉加载更多");
+                                      body = const Text("上拉加载更多");
                                     } else if (mode == LoadStatus.failed) {
-                                      body = Text("加载失败,请重试");
+                                      body = const Text("加载失败,请重试");
                                     } else {
                                       body = Text("$footerText");
                                     }
@@ -151,14 +155,14 @@ class LikeListViewItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 10),
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 10),
       height: 48,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             child: Container(
-              margin: EdgeInsets.only(right: 16),
+              margin: const EdgeInsets.only(right: 16),
               height: 38,
               width: 38,
               child: ClipOval(
@@ -176,13 +180,13 @@ class LikeListViewItem extends StatelessWidget {
               Text(
                 "${model.nickName}",
                 // '用户昵称显示',
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColor.textPrimary1,
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              Container(height: 2),
+              const SizedBox(height: 2),
               Offstage(
                 offstage: model.description == null,
                 child: Container(
@@ -191,7 +195,7 @@ class LikeListViewItem extends StatelessWidget {
                     "${model.description}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColor.textSecondary,
                       fontSize: 12,
                     ),

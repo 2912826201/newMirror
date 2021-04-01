@@ -85,7 +85,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         print("跳转选择地址页面");
       },
       child: Container(
-        margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+        margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
         height: 48,
         width: ScreenUtil.instance.screenWidthDp,
         child: Row(
@@ -94,7 +94,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             seletedAddressText != "你在哪儿"
                 ? AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.mainBlue)
                 : AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.black),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Container(
@@ -107,7 +107,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             AppIcon.getAppIcon(AppIcon.arrow_right_18, 18),
           ],
         ),
@@ -119,7 +119,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   recommendAddress() {
     return Container(
       height: 48,
-      padding: EdgeInsets.symmetric(vertical: 12.5),
+      padding: const EdgeInsets.symmetric(vertical: 12.5),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: 7,
@@ -171,13 +171,13 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         child: Container(
           // height: 23,
           margin: EdgeInsets.only(left: index == 0 ? 16 : 12, right: index == 6 ? 16 : 0),
-          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-          alignment: Alignment(0, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+          alignment: const Alignment(0, 0),
           decoration: BoxDecoration(
-              color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+              color: AppColor.textHint.withOpacity(0.24), borderRadius: const BorderRadius.all(Radius.circular(3))),
           child: Text(
             addressText(address, index),
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           ),
         ));
   }
@@ -287,10 +287,10 @@ class SeletedPhotoState extends State<SeletedPhoto> {
           }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
         child: Container(
-          margin: EdgeInsets.only(left: 10, top: 9, right: 16),
+          margin: const EdgeInsets.only(left: 10, top: 9, right: 16),
           width: 86,
           height: 86,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColor.bgWhite,
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
@@ -308,14 +308,14 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   Widget build(BuildContext context) {
     return Container(
       height: 95,
-      margin: EdgeInsets.only(top: 14),
+      margin: const EdgeInsets.only(top: 14),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             _canPullReorderRow(),
             addView(),
-            SizedBox(
+            const SizedBox(
               width: 8,
             )
           ],
@@ -348,7 +348,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
               // overflow: Overflow.visible,
               children: [
                 Container(
-                  margin: EdgeInsets.only(top: 9),
+                  margin: const EdgeInsets.only(top: 9),
                   width: 86,
                   height: 86,
                   decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(3.0))),

@@ -52,8 +52,8 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   ? 48
                   : 0,
       width: ScreenUtil.instance.width,
-      curve: Cubic(0.25, 0.25, 0.25, 0.25),
-      duration: Duration(milliseconds: 250),
+      curve: const Cubic(0.25, 0.25, 0.25, 0.25),
+      duration: const Duration(milliseconds: 250),
       child: Container(
         height: widget.isUnderline ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,

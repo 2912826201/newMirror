@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import '../release_page.dart';
+
 // @联系人列表
 class AtList extends StatefulWidget {
   AtList({this.controller});
@@ -102,7 +103,7 @@ class AtListState extends State<AtList> {
       return;
     }
     SearchUserModel model =
-    await ProfileSearchUser(keyWork, 20, lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
+        await ProfileSearchUser(keyWork, 20, lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
     if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
@@ -190,137 +191,137 @@ class AtListState extends State<AtList> {
     String searchUserStr = context.watch<ReleaseFeedInputNotifier>().atSearchStr;
     return list.isNotEmpty
         ? MediaQuery.removePadding(
-        removeTop: true,
-        context: context,
-        child: ListView.builder(
-          shrinkWrap: true,
-          controller: _scrollController,
-          itemBuilder: (context, index) {
-            if (index == list.length) {
-              return LoadingView(
-                loadText:
-                searchUserStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchLoadText : loadText,
-                loadStatus: searchUserStr.isNotEmpty
-                    ? context.read<ReleaseFeedInputNotifier>().searchLoadStatus
-                    : loadStatus,
-              );
-            } else if (index == list.length + 1) {
-              return Container();
-            } else {
-              return GestureDetector(
-                // 点击空白区域响应事件
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  context.read<ReleaseFeedInputNotifier>().setClickAtUser(true);
-                  // At的文字长度
-                  int AtLength = list[index].nickName.length;
-                  // 获取输入框内的规则
-                  var rules = context.read<ReleaseFeedInputNotifier>().rules;
-                  // 检测是否添加过
-                  if (rules.isNotEmpty) {
-                    for (Rule rule in rules) {
-                      if (rule.id == list[index].uid && rule.isAt == true) {
-                        ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
-                        return;
+            removeTop: true,
+            context: context,
+            child: ListView.builder(
+              shrinkWrap: true,
+              controller: _scrollController,
+              itemBuilder: (context, index) {
+                if (index == list.length) {
+                  return LoadingView(
+                    loadText:
+                        searchUserStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchLoadText : loadText,
+                    loadStatus: searchUserStr.isNotEmpty
+                        ? context.read<ReleaseFeedInputNotifier>().searchLoadStatus
+                        : loadStatus,
+                  );
+                } else if (index == list.length + 1) {
+                  return Container();
+                } else {
+                  return GestureDetector(
+                    // 点击空白区域响应事件
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      context.read<ReleaseFeedInputNotifier>().setClickAtUser(true);
+                      // At的文字长度
+                      int AtLength = list[index].nickName.length;
+                      // 获取输入框内的规则
+                      var rules = context.read<ReleaseFeedInputNotifier>().rules;
+                      // 检测是否添加过
+                      if (rules.isNotEmpty) {
+                        for (Rule rule in rules) {
+                          if (rule.id == list[index].uid && rule.isAt == true) {
+                            ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                            return;
+                          }
+                        }
                       }
-                    }
-                  }
-                  // 获取@的光标
-                  int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
-                  // 获取实时搜索文本
-                  String searchStr = context.read<ReleaseFeedInputNotifier>().atSearchStr;
-                  // @前的文字
-                  String atBeforeStr = widget.controller.text.substring(0, atIndex);
-                  // @后的文字
-                  String atRearStr = "";
-                  print(searchStr);
-                  print("controller.text:${widget.controller.text}");
-                  print("atBeforeStr$atBeforeStr");
-                  if (searchStr != "" || searchStr.isNotEmpty) {
-                    print("atIndex:$atIndex");
-                    print("searchStr:$searchStr");
-                    print("controller.text:${widget.controller.text}");
-                    atRearStr =
-                        widget.controller.text.substring(atIndex + searchStr.length, widget.controller.text.length);
-                    print("atRearStr:$atRearStr");
-                  } else {
-                    atRearStr = widget.controller.text.substring(atIndex, widget.controller.text.length);
-                  }
-
-                  // 拼接修改输入框的值
-                  widget.controller.text = atBeforeStr + list[index].nickName + atRearStr;
-                  // 设置光标
-                  if (!Platform.isIOS) {
-                    var setCursor = TextSelection(
-                      baseOffset: widget.controller.text.length,
-                      extentOffset: widget.controller.text.length,
-                    );
-                    print("设置光标${setCursor}");
-                    widget.controller.selection = setCursor;
-                  }
-
-                  print("controller.text:${widget.controller.text}");
-                  context.read<ReleaseFeedInputNotifier>().getInputText(widget.controller.text);
-                  // 这是替换输入的文本修改后面输入的@的规则
-                  if (searchStr != "" || searchStr.isNotEmpty) {
-                    int oldLength = searchStr.length;
-                    int newLength = list[index].nickName.length;
-                    int oldStartIndex = atIndex;
-                    int diffLength = newLength - oldLength;
-                    for (int i = 0; i < rules.length; i++) {
-                      if (rules[i].startIndex >= oldStartIndex) {
-                        int newStartIndex = rules[i].startIndex + diffLength;
-                        int newEndIndex = rules[i].endIndex + diffLength;
-                        rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                      // 获取@的光标
+                      int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
+                      // 获取实时搜索文本
+                      String searchStr = context.read<ReleaseFeedInputNotifier>().atSearchStr;
+                      // @前的文字
+                      String atBeforeStr = widget.controller.text.substring(0, atIndex);
+                      // @后的文字
+                      String atRearStr = "";
+                      print(searchStr);
+                      print("controller.text:${widget.controller.text}");
+                      print("atBeforeStr$atBeforeStr");
+                      if (searchStr != "" || searchStr.isNotEmpty) {
+                        print("atIndex:$atIndex");
+                        print("searchStr:$searchStr");
+                        print("controller.text:${widget.controller.text}");
+                        atRearStr =
+                            widget.controller.text.substring(atIndex + searchStr.length, widget.controller.text.length);
+                        print("atRearStr:$atRearStr");
+                      } else {
+                        atRearStr = widget.controller.text.substring(atIndex, widget.controller.text.length);
                       }
-                    }
-                  }
-                  // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
-                  for (int i = 0; i < rules.length; i++) {
-                    // 当最新输入框内的文本对应不上之前的值时。
-                    if (rules[i].params !=
-                        widget.controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-                      print("进入");
-                      print(rules[i]);
-                      rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
-                          rules[i].clickIndex, rules[i].isAt, rules[i].id);
-                      print(rules[i]);
-                    }
-                  }
-                  // 存储规则
-                  context.read<ReleaseFeedInputNotifier>().addRules(Rule(
-                      atIndex - 1, atIndex + AtLength, "@" + list[index].nickName, index, true, list[index].uid));
-                  print('----------------------关闭视图开始');
-                  context.read<ReleaseFeedInputNotifier>().setAtSearchStr("");
-                  // 关闭视图
-                  context.read<ReleaseFeedInputNotifier>().changeCallback("");
-                  print('----------------------关闭视图结束');
-                },
-                child: Container(
-                  height: 48,
-                  width: ScreenUtil.instance.width,
-                  margin: EdgeInsets.only(bottom: 10, left: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(list[index].avatarUri),
-                        maxRadius: 19,
+
+                      // 拼接修改输入框的值
+                      widget.controller.text = atBeforeStr + list[index].nickName + atRearStr;
+                      // 设置光标
+                      if (!Platform.isIOS) {
+                        var setCursor = TextSelection(
+                          baseOffset: widget.controller.text.length,
+                          extentOffset: widget.controller.text.length,
+                        );
+                        print("设置光标${setCursor}");
+                        widget.controller.selection = setCursor;
+                      }
+
+                      print("controller.text:${widget.controller.text}");
+                      context.read<ReleaseFeedInputNotifier>().getInputText(widget.controller.text);
+                      // 这是替换输入的文本修改后面输入的@的规则
+                      if (searchStr != "" || searchStr.isNotEmpty) {
+                        int oldLength = searchStr.length;
+                        int newLength = list[index].nickName.length;
+                        int oldStartIndex = atIndex;
+                        int diffLength = newLength - oldLength;
+                        for (int i = 0; i < rules.length; i++) {
+                          if (rules[i].startIndex >= oldStartIndex) {
+                            int newStartIndex = rules[i].startIndex + diffLength;
+                            int newEndIndex = rules[i].endIndex + diffLength;
+                            rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                          }
+                        }
+                      }
+                      // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
+                      for (int i = 0; i < rules.length; i++) {
+                        // 当最新输入框内的文本对应不上之前的值时。
+                        if (rules[i].params !=
+                            widget.controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+                          print("进入");
+                          print(rules[i]);
+                          rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
+                              rules[i].clickIndex, rules[i].isAt, rules[i].id);
+                          print(rules[i]);
+                        }
+                      }
+                      // 存储规则
+                      context.read<ReleaseFeedInputNotifier>().addRules(Rule(
+                          atIndex - 1, atIndex + AtLength, "@" + list[index].nickName, index, true, list[index].uid));
+                      print('----------------------关闭视图开始');
+                      context.read<ReleaseFeedInputNotifier>().setAtSearchStr("");
+                      // 关闭视图
+                      context.read<ReleaseFeedInputNotifier>().changeCallback("");
+                      print('----------------------关闭视图结束');
+                    },
+                    child: Container(
+                      height: 48,
+                      width: ScreenUtil.instance.width,
+                      margin: const EdgeInsets.only(bottom: 10, left: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(list[index].avatarUri),
+                            maxRadius: 19,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            list[index].nickName,
+                            // followList[index].nickName,
+                            style: AppStyle.textRegular16,
+                          )
+                        ],
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        list[index].nickName,
-                        // followList[index].nickName,
-                        style: AppStyle.textRegular16,
-                      )
-                    ],
-                  ),
-                ),
-              );
-            }
-          },
-          itemCount: list.length + 1,
-        ))
+                    ),
+                  );
+                }
+              },
+              itemCount: list.length + 1,
+            ))
         : Container();
   }
 }

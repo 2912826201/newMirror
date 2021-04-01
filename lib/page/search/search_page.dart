@@ -115,14 +115,14 @@ class _SearchHeaderState extends State<SearchHeader> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 16),
+            margin: const EdgeInsets.only(left: 16),
             height: 32,
             color: AppColor.bgWhite.withOpacity(0.65),
             width: ScreenUtil.instance.screenWidthDp - 32 - 32 - 12,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 9,
                 ),
                 AppIcon.getAppIcon(AppIcon.input_search, 24),
@@ -135,7 +135,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
-                    decoration: new InputDecoration(
+                    decoration: const InputDecoration(
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                         hintText: '搜索用户、话题、课程、动态',
@@ -166,7 +166,7 @@ class _SearchHeaderState extends State<SearchHeader> {
               ],
             ),
           ),
-          Spacer(),
+          const Spacer(),
           CustomAppBarTextButton("取消", AppColor.textPrimary1, () {
             Navigator.of(context).pop(true);
           }),
@@ -250,16 +250,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   searchTitleBar(BuildContext context) {
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
-      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
       height: 48,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             "最近搜索",
             style: AppStyle.textMedium15,
           ),
-          Spacer(),
+          const Spacer(),
           AppIconButton(
             iconSize: 18,
             svgName: AppIcon.trash_bucket,
@@ -302,10 +302,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+                    color: AppColor.textHint.withOpacity(0.24),
+                    borderRadius: const BorderRadius.all(Radius.circular(3))),
                 margin: EdgeInsets.only(left: 16, right: historyRecordItemSpacing(searchHistoryList.length, index)),
-                padding: EdgeInsets.only(left: 8, right: 8, bottom: 1),
-                alignment: Alignment(0, 0),
+                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 1),
+                alignment: const Alignment(0, 0),
                 child: Center(child: Text(searchHistoryList[index].word)),
               ),
             );
@@ -317,11 +318,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   HotCourseTitleBar() {
     return Container(
         width: ScreenUtil.instance.screenWidthDp,
-        margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+        margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
         height: 48,
         // 左居中对齐
-        alignment: Alignment(-1, 0),
-        child: Text(
+        alignment: const Alignment(-1, 0),
+        child: const Text(
           "热门课程",
           style: AppStyle.textMedium15,
         ));
@@ -332,7 +333,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
     return Container(
       height: liveVideoList.length > 2 ? 96 : 48,
       width: ScreenUtil.instance.screenWidthDp,
-      margin: EdgeInsets.only(
+      margin: const EdgeInsets.only(
         left: 16,
         right: 16,
       ),
@@ -354,7 +355,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         return Container(
           height: 48,
           width: (ScreenUtil.instance.width - 48) / 2,
-          padding: EdgeInsets.only(top: 5, bottom: 4),
+          padding: const EdgeInsets.only(top: 5, bottom: 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -362,7 +363,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                 "${index + 1}",
                 style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.redMedium14,
               ),
-              Spacer(),
+              const Spacer(),
               Container(
                 // height: 38,
                 width: ((ScreenUtil.instance.width - 48) / 2) - 40,
@@ -372,7 +373,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   children: [
                     Text(liveVideoList[index].title,
                         style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                       liveVideoList[index].description,
                       style: AppStyle.textSecondaryRegular12,
@@ -382,7 +383,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 22,
               )
             ],
@@ -394,11 +395,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   HotTopicTitleBar() {
     return Container(
         width: ScreenUtil.instance.screenWidthDp,
-        margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+        margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
         height: 48,
         // 左居中对齐
-        alignment: Alignment(-1, 0),
-        child: Text(
+        alignment: const Alignment(-1, 0),
+        child: const Text(
           "热门话题",
           style: AppStyle.textMedium15,
         ));
@@ -425,7 +426,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                 Container(
                   decoration: BoxDecoration(
                       // 渐变色
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomLeft,
                         colors: [
@@ -447,19 +448,19 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   "images/resource/2.0x/bg_topic@2x.png",
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 9),
+                  margin: const EdgeInsets.only(top: 9),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 10, top: 3.5),
+                        margin: const EdgeInsets.only(left: 10, top: 3.5),
                         child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 32, containerWidth: 32),
                       ),
                       // Expanded(
                       //     child:
                       Container(
                         width: ScreenUtil.instance.screenWidthDp * 0.68,
-                        margin: EdgeInsets.only(left: 12),
+                        margin: const EdgeInsets.only(left: 12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -468,7 +469,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                               maxLines: 3,
                               style: AppStyle.textRegular15,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 2,
                             ),
                             Text(
@@ -483,7 +484,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 10, top: 63, right: 10),
+                  margin: const EdgeInsets.only(left: 10, top: 63, right: 10),
                   height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                   child: ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
@@ -549,11 +550,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           width: ScreenUtil.instance.width,
           child: TabBar(
             controller: controller,
-            tabs: [Text("综合"), Text("课程"), Text("话题"), Text("动态"), Text("用户 ")],
+            tabs: const [Text("综合"), Text("课程"), Text("话题"), Text("动态"), Text("用户 ")],
             labelStyle: TextStyle(fontSize: 18),
             labelColor: Colors.black,
             unselectedLabelStyle: TextStyle(fontSize: 16),
-            indicator: RoundUnderlineTabIndicator(
+            indicator: const RoundUnderlineTabIndicator(
               borderSide: BorderSide(
                 width: 3,
                 color: Color.fromRGBO(253, 137, 140, 1),

@@ -40,7 +40,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
     return widget.postprogressModel.showPulishView == true
         ? AnimatedOpacity(
             opacity: widget.postprogressModel != null && widget.postprogressModel.postFeedModel != null ? 1 : 0,
-            duration: Duration(milliseconds: 1500),
+            duration: const Duration(milliseconds: 1500),
             curve: Curves.ease,
             child: _publishView(),
             onEnd: () {
@@ -74,7 +74,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
         children: [
           Expanded(
               child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
+                  margin: const EdgeInsets.only(left: 16, right: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +82,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                       Container(
                         width: 36,
                         height: 36,
-                        margin: EdgeInsets.only(right: 6),
+                        margin: const EdgeInsets.only(right: 6),
                         child: Stack(
                           alignment: const FractionalOffset(0.5, 0.5),
                           children: [
@@ -113,7 +113,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                         ),
                       ),
                       publishTextStatus(widget.postprogressModel.plannedSpeed),
-                      Spacer(),
+                      const Spacer(),
                       Offstage(
                           offstage: widget.postprogressModel.plannedSpeed != -1,
                           child: Container(
@@ -139,7 +139,9 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                     ],
                   ))),
           LinearProgressIndicator(
-            value: widget.postprogressModel.plannedSpeed != -1  && widget.postprogressModel.plannedSpeed <= 1 ?  widget.postprogressModel.plannedSpeed : 1 ,
+            value: widget.postprogressModel.plannedSpeed != -1 && widget.postprogressModel.plannedSpeed <= 1
+                ? widget.postprogressModel.plannedSpeed
+                : 1,
             valueColor: new AlwaysStoppedAnimation<Color>(
                 widget.postprogressModel.plannedSpeed != -1 ? AppColor.mainRed : Colors.amberAccent),
             backgroundColor: AppColor.white,
@@ -153,12 +155,12 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
   publishTextStatus(double plannedSpeed) {
     print("空值的来历￥￥$plannedSpeed");
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
-      return Text(
+      return const Text(
         "正在发布",
         style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed >= 1) {
-      return Text(
+      return const Text(
         "完成",
         style: AppStyle.textSecondaryRegular14,
       );
@@ -169,11 +171,11 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "发布失败",
               style: AppStyle.textMedium14,
             ),
-            Text(
+            const Text(
               "我们会在网络信号改善时重试",
               style: AppStyle.textSecondaryRegular11,
             )

@@ -334,9 +334,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                         width: 224,
                                         height: 224,
                                         color: AppColor.color246,
-                                        margin: EdgeInsets.only(bottom: 16, top: 188),
+                                        margin: const EdgeInsets.only(bottom: 16, top: 188),
                                       ),
-                                      Text(
+                                      const Text(
                                         "这里空空如也，去关注看看吧",
                                         style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
                                       ),
@@ -356,7 +356,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 课程横向布局
   getCourse() {
     return Container(
-      margin: EdgeInsets.only(top: 24, bottom: 18),
+      margin: const EdgeInsets.only(top: 24, bottom: 18),
       height: 93,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -382,7 +382,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 children: [
                   liveVideoModel[index].coachDto.isLiving == 1
                       ? Stack(
-                          alignment: Alignment(0, 0),
+                          alignment: const Alignment(0, 0),
                           children: [
                             Container(
                               margin: EdgeInsets.only(
@@ -394,7 +394,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                               width: 53,
                               decoration: BoxDecoration(
                                   // 渐变色
-                                  gradient: LinearGradient(
+                                  gradient: const LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomLeft,
                                     colors: [
@@ -403,7 +403,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       AppColor.mainRed,
                                     ],
                                   ),
-                                  borderRadius: new BorderRadius.circular((26.5))),
+                                  borderRadius: BorderRadius.circular((26.5))),
                               // decoration: new BoxDecoration(
                               //     color: AppColor.mainRed, borderRadius: new BorderRadius.circular((26.5))),
                               child: Center(
@@ -411,7 +411,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                   width: 50,
                                   height: 50,
                                   decoration: new BoxDecoration(
-                                      color: AppColor.white, borderRadius: new BorderRadius.circular((25))),
+                                      color: AppColor.white, borderRadius: BorderRadius.circular((25))),
                                   child: Center(
                                     child: Container(
                                         height: 47,
@@ -434,16 +434,16 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                 child: Container(
                                     height: 17,
                                     width: 43.5,
-                                    decoration: new BoxDecoration(
-                                        color: AppColor.white, borderRadius: new BorderRadius.circular((8.5))),
+                                    decoration: BoxDecoration(
+                                        color: AppColor.white, borderRadius: BorderRadius.circular((8.5))),
                                     child: Center(
                                       child: Container(
-                                        alignment: Alignment(0,0.5),
+                                        alignment: const Alignment(0, 0.5),
                                         height: 14,
                                         width: 40.5,
                                         decoration: BoxDecoration(
                                             // 渐变色
-                                            gradient: LinearGradient(
+                                            gradient: const LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.topRight,
                                               colors: [
@@ -453,7 +453,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                               ],
                                             ),
                                             borderRadius: new BorderRadius.circular((8.5))),
-                                        child: Text(
+                                        child: const Text(
                                           "LIVE",
                                           style: TextStyle(
                                               fontSize: 10, fontWeight: FontWeight.w500, color: AppColor.white),
