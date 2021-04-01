@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/qiniu_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -10,6 +11,7 @@ import 'package:mirror/data/database/download_db_helper.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/util/chunk_download.dart';
 import 'package:mirror/util/range_download.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
@@ -220,7 +222,9 @@ class FileUtil {
     });
   }
 
-  chunkDownLoad(String url, Dio dio, Function(String taskId, int received, int total) onProgressListener) async {
+  Future<DownloadDto> chunkDownLoad(String url, Function(String taskId, int received, int total)
+  onProgressListener,
+      {CancelToken cancelToken, Dio dio,int type = downloadTypeCommon}) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -229,21 +233,39 @@ class FileUtil {
     } else {
       fileName = StringUtil.generateMd5(fileName);
     }
-    String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+    String filePath;
+    switch (type) {
+      case downloadTypeCommon:
+        filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+        break;
+      case downloadTypeCourse:
+        filePath = "${AppConfig.getAppCourseDir()}/$fileName";
+        break;
+      default:
+        filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+        break;
+    }
     DownloadDto dto = DownloadDto();
     dto.taskId = taskId;
     dto.url = url;
     dto.filePath = filePath;
     print("start");
-    Response res = await RangeDownload.downloadWithChunks(url, filePath, onReceiveProgress: (received, total) {
+    return await ChunkDownLaod.downloadWithChunks(url, filePath, cancelToken: cancelToken,
+            onReceiveProgress: (received, total) {
       onProgressListener(taskId, received, total);
-      if (received == total) {
+    }, dio: dio)
+        .then((response) {
+      print('-------------------------下载完成2${response.statusCode}');
+      if (response.statusCode == HttpStatus.ok) {
         DownloadDBHelper().insertDownload(taskId, url, filePath);
+        return dto;
+      } else {
+        return null;
       }
-    }, dio: dio);
-    print(res.statusCode);
-    print(res.statusMessage);
-    print(res.data);
+    }).catchError((e) {
+      print('-----------------------$e');
+      return null;
+    });
   }
 
   // base64转file

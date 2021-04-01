@@ -46,6 +46,8 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
             onEnd: () {
               if (widget.postprogressModel.postFeedModel == null) {
                 widget.postprogressModel.showPulishView = false;
+                setState(() {
+                });
               }
             },
           )
