@@ -23,7 +23,7 @@ class FeedVideoPlayer extends StatefulWidget {
   final String durationString;
 
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
-      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath,this.durationString})
+      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString})
       : super(key: key);
 
   @override
@@ -211,8 +211,8 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                   stream: streamHeight.stream,
                   builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                     return AnimatedContainer(
-                        height:snapshot.data,
-                        width:ScreenUtil.instance.width ,
+                        height: snapshot.data,
+                        width: ScreenUtil.instance.width,
                         duration: Duration(milliseconds: 100),
                         child: Container(
                           decoration: BoxDecoration(
@@ -228,7 +228,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                           ),
                           width: ScreenUtil.instance.width,
                           height: 40,
-                          padding: EdgeInsets.only(left: 16, right: 16),
+                          padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -257,7 +257,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                               Spacer(),
                               Text(
                                 widget.durationString ?? "00 : 00",
-                                style: TextStyle(fontSize: 11, color: AppColor.white),
+                                style: const TextStyle(fontSize: 11, color: AppColor.white),
                               ),
                             ],
                           ),

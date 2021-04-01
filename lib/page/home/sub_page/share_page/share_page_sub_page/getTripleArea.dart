@@ -61,7 +61,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                                 ? 41
                                 : 21,
                     height: 21,
-                    margin: EdgeInsets.only(left: 16),
+                    margin: const EdgeInsets.only(left: 16),
                     child: Stack(
                       overflow: Overflow.visible,
                       alignment: const FractionalOffset(0, 0.5),
@@ -73,7 +73,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                   ? <String>[]
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
             }, selector: (context, notifier) {
@@ -84,10 +84,10 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
-            Spacer(),
+            const Spacer(),
             Container(
               width: 104,
-              margin: EdgeInsets.only(right: 16),
+              margin: const EdgeInsets.only(right: 16),
               child: roundedTriple(),
             )
           ],
@@ -237,7 +237,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
             "${StringUtil.getNumber(laudCount)}次赞",
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           );
         }, selector: (context, notifier) {
           return notifier.value.feedMap[widget.model.id].laudCount;
@@ -263,7 +263,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           },
         ),
         Container(
-          margin: EdgeInsets.only(left: 16),
+          margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(
             svgName: AppIcon.comment_feed,
             iconSize: 24,
@@ -291,7 +291,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 16),
+          margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(
             svgName: AppIcon.share_feed,
             iconSize: 24,

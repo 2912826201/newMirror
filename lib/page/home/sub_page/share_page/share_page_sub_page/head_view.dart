@@ -144,7 +144,7 @@ class HeadViewState extends State<HeadView> {
             _checkBlackStatus(widget.model.pushId, context, false);
           },
           child: Container(
-            margin: EdgeInsets.only(right: 6),
+            margin: const EdgeInsets.only(right: 6),
             height: 28,
             width: 64,
             decoration: BoxDecoration(
@@ -155,17 +155,17 @@ class HeadViewState extends State<HeadView> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Spacer(),
-                  Icon(
+                  const Spacer(),
+                  const Icon(
                     Icons.add,
                     color: AppColor.textPrimary1,
                     size: 16,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
-                  Container(
-                    child: Text(
+                   Container(
+                    child: const Text(
                       "关注",
                       style: TextStyle(
                         fontSize: 12,
@@ -173,7 +173,7 @@ class HeadViewState extends State<HeadView> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                 ],
               ),
             ),
@@ -184,7 +184,7 @@ class HeadViewState extends State<HeadView> {
           opacity: opacity,
           duration: Duration(milliseconds: 2000),
           child: Container(
-              margin: EdgeInsets.only(right: 6),
+              margin: const EdgeInsets.only(right: 6),
               height: 28,
               width: 64,
               decoration: BoxDecoration(
@@ -192,7 +192,7 @@ class HeadViewState extends State<HeadView> {
                 borderRadius: BorderRadius.circular((14.0)),
               ),
               child: Center(
-                child: Text(
+                child: const Text(
                   "已关注",
                   style: AppStyle.textRegular12,
                 ),
@@ -246,7 +246,7 @@ class HeadViewState extends State<HeadView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  margin: EdgeInsets.only(left: 16, right: 11),
+                  margin: const EdgeInsets.only(left: 16, right: 11),
                   child: CircleAvatar(
                     // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
                     backgroundImage: widget.model.avatarUrl != null
@@ -263,7 +263,7 @@ class HeadViewState extends State<HeadView> {
                   children: [
                     // GestureDetector(
                     //   child:
-                    Text(
+                     Text(
                       isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.ellipsis,
@@ -272,7 +272,7 @@ class HeadViewState extends State<HeadView> {
                     // onTap: () {},
                     // ),
                     Container(
-                      padding: EdgeInsets.only(top: 2),
+                      padding: const EdgeInsets.only(top: 2),
                       child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
                           style: TextStyle(
                             fontSize: 12,
@@ -283,7 +283,7 @@ class HeadViewState extends State<HeadView> {
                 )),
                 isShowFollowButton(context),
                Container(
-                    margin: EdgeInsets.only(right: 16),
+                    margin: const EdgeInsets.only(right: 16),
                     child: AppIconButton(
                       svgName: AppIcon.more_feed,
                       iconSize: 24,
