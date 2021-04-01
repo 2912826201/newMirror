@@ -1134,22 +1134,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if(null!=contentMap){
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
-          if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
-            if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
-              subLiveRoom(textMessage,isReset: false);
-            }else {
-              resetOnlineUserNumber(++onlineUserNumber);
-            }
-            _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
-            addLiveRoom(textMessage);
-          }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
-            resetOnlineUserNumber(--onlineUserNumber);
-            print("${textMessage.sendUserInfo.name}退出了直播间");
-            subLiveRoom(textMessage);
-          }else if(null!=contentMap["name"]&&contentMap["name"]=="feeling"){
-            print("弹出训练感受！！！${contentMap["data"].toString()}");
-            _showFeelingDialog(contentMap["data"]);
-          }
+          _judgeSysMessage(contentMap["name"],contentMap,textMessage);
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
           _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId,contentMap["data"]);
@@ -1159,6 +1144,38 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       }
     }
   }
+
+  void _judgeSysMessage(String type,Map<String, dynamic> contentMap,TextMessage textMessage){
+    if(null==type){
+      return;
+    }
+    switch(type){
+      case "joinLiveRoom":
+        //加入直播间
+        if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+          subLiveRoom(textMessage,isReset: false);
+        }else {
+          resetOnlineUserNumber(++onlineUserNumber);
+        }
+        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+        addLiveRoom(textMessage);
+        break;
+      case "quitLiveRoom":
+        //退出直播间
+        print("${textMessage.sendUserInfo.name}退出了直播间");
+
+        resetOnlineUserNumber(--onlineUserNumber);
+        subLiveRoom(textMessage);
+        break;
+      case "feeling":
+        print("弹出训练感受！！！${contentMap["data"].toString()}");
+        _showFeelingDialog(contentMap["data"]);
+        break;
+      default:
+        break;
+    }
+  }
+
 
 
   void _onDoubleClickBodyListener(){
@@ -1333,8 +1350,5 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       setState(() {});
     }
   }
-
-
-
 
 }
