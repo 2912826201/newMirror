@@ -157,6 +157,8 @@ class CropperImageElement extends RenderObjectElement {
     var listener;
     listener = ImageStreamListener((image, synchronousCall) {
       renderObject.image = image.image;
+      //NOTE 在替换图片后 将缩放尺寸重置复位
+      renderObject.scale = 0;
       stream.removeListener(listener);
     });
     stream.addListener(listener);
