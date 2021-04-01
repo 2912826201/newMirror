@@ -170,6 +170,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   onLoading: _onLoading,
                   child: ListView.builder(
                       itemCount: modelList.length,
+                      itemExtent:58,
                       itemBuilder: (context, index) {
                         return SearchUserItem(
                           model: modelList[index],

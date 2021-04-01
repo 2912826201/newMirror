@@ -156,6 +156,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                                 shrinkWrap: true,
                                 primary: false,
                                 itemCount: topicList.length + 1,
+                                itemExtent: 56,
                                 itemBuilder: (context, index) {
                                   // if (feedList.isNotEmpty) {
                                   if (index == topicList.length) {

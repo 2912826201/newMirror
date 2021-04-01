@@ -124,6 +124,7 @@ class LikeState extends State<Like> {
                                 child: ListView.builder(
                                   controller: scrollController,
                                   itemCount: laudListModel.length,
+                                  itemExtent: 48,
                                   itemBuilder: (context, index) {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
