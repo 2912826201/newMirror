@@ -225,6 +225,7 @@ class HeadViewState extends State<HeadView> {
 
   @override
   Widget build(BuildContext context) {
+    print("动态头部build");
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {

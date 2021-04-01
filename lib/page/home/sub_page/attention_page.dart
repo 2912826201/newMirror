@@ -210,7 +210,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0) {
+    if (addFeedNum != 0 && context.read<FeedMapNotifier>().value.unReadFeedCount != 0) {
       ToastShow.show(
           msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
           context: context,
@@ -289,7 +289,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
-        key: GlobalObjectKey("attention$index"),
+        // key: GlobalObjectKey("attention$index"),
         deleteFeedChanged: (id) {
           setState(() {
             attentionIdList.remove(id);

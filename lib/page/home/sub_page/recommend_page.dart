@@ -307,7 +307,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                             pageName: "recommendPage",
                                             isShowConcern: true,
                                             // 可选参数 子Item的个数
-                                            key: GlobalObjectKey("recommend$index"),
+                                            // key: GlobalObjectKey("recommend$index"),
                                             isShowRecommendUser: false),
                                         onExposure: (visibilityInfo) {
                                           print("回调看数据:${recommendIdList.toString()}");
@@ -378,23 +378,106 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             child: Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: index > 0 ? 24 : 16,
-                        right: index == liveVideoModel.length - 1 ? 16 : 0,
-                        top: 0,
-                        bottom: 8.5),
-                    height: 53,
-                    width: 53,
-                    decoration: BoxDecoration(
-                      // color: Colors.redAccent,
-                      image: DecorationImage(
-                          image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
-                      // image
-                      borderRadius: BorderRadius.all(Radius.circular(26.5)),
-                    ),
-                  ),
+                  liveVideoModel[index].coachDto.isLiving == 1
+                      ? Stack(
+                          alignment: Alignment(0, 0),
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: index > 0 ? 24 : 16,
+                                  right: index == liveVideoModel.length - 1 ? 16 : 0,
+                                  top: 0,
+                                  bottom: 8.5),
+                              height: 53,
+                              width: 53,
+                              decoration: BoxDecoration(
+                                  // 渐变色
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomLeft,
+                                    colors: [
+                                      Color.fromRGBO(0xFD, 0x86, 0x8A, 1.0),
+                                      Color.fromRGBO(0xFE, 0x56, 0x68, 1.0),
+                                      AppColor.mainRed,
+                                    ],
+                                  ),
+                                  borderRadius: new BorderRadius.circular((26.5))),
+                              // decoration: new BoxDecoration(
+                              //     color: AppColor.mainRed, borderRadius: new BorderRadius.circular((26.5))),
+                              child: Center(
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: new BoxDecoration(
+                                      color: AppColor.white, borderRadius: new BorderRadius.circular((25))),
+                                  child: Center(
+                                    child: Container(
+                                        height: 47,
+                                        width: 47,
+                                        decoration: BoxDecoration(
+                                          // color: Colors.redAccent,
+                                          image: DecorationImage(
+                                              image: NetworkImage(liveVideoModel[index].coachDto.avatarUri),
+                                              fit: BoxFit.cover),
+                                          // image
+                                          borderRadius: BorderRadius.all(Radius.circular(23.5)),
+                                        )),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                                bottom: 0,
+                                // left: index > 0 ? 29 : 21,
+                                child: Container(
+                                    height: 17,
+                                    width: 43.5,
+                                    decoration: new BoxDecoration(
+                                        color: AppColor.white, borderRadius: new BorderRadius.circular((8.5))),
+                                    child: Center(
+                                      child: Container(
+                                        alignment: Alignment(0,0.5),
+                                        height: 14,
+                                        width: 40.5,
+                                        decoration: BoxDecoration(
+                                            // 渐变色
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.topRight,
+                                              colors: [
+                                                Color.fromRGBO(0xFD, 0x86, 0x8A, 1.0),
+                                                Color.fromRGBO(0xFE, 0x56, 0x68, 1.0),
+                                                AppColor.mainRed,
+                                              ],
+                                            ),
+                                            borderRadius: new BorderRadius.circular((8.5))),
+                                        child: Text(
+                                          "LIVE",
+                                          style: TextStyle(
+                                              fontSize: 10, fontWeight: FontWeight.w500, color: AppColor.white),
+                                        ),
+                                      ),
+                                    )))
+                          ],
+                        )
+                      : Container(
+                          margin: EdgeInsets.only(
+                              left: index > 0 ? 24 : 16,
+                              right: index == liveVideoModel.length - 1 ? 16 : 0,
+                              top: 0,
+                              bottom: 8.5),
+                          height: 53,
+                          width: 53,
+                          decoration: BoxDecoration(
+                            // color: Colors.redAccent,
+                            image: DecorationImage(
+                                image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
+                            // image
+                            borderRadius: BorderRadius.all(Radius.circular(26.5)),
+                          ),
+                        ),
                   Container(
                     width: 53,
                     margin: EdgeInsets.only(

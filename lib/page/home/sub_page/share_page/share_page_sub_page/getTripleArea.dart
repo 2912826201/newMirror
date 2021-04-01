@@ -40,6 +40,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   @override
   Widget build(BuildContext context) {
     // print("打印model的值￥${widget.model}");
+    print(" 点赞，转发，评论三连区域build");
     return Container(
         key: widget.offsetKey,
         height: 48,
