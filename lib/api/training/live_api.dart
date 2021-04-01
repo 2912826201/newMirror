@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
-import 'package:mirror/util/toast_util.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate";
@@ -59,6 +57,10 @@ const String ROOMINFO = "/sport/web/liveCourse/roomInfo";
 
 //反馈直播训练感受
 const String FEELING = "/sport/web/liveCourse/feeling";
+
+
+//查询禁言时间
+const String QUERYMUTE = "/sport/web/liveMute/queryMute";
 
 
 
@@ -395,6 +397,19 @@ Future<Map> feeling(int courseId,String feel) async {
   params["courseId"] = courseId;
   params["feel"] = feel;
   BaseResponseModel responseModel = await requestApi(FEELING, params);
+  params["code"]=responseModel.code;
+  params["data"]=responseModel.data;
+  return params;
+}
+
+
+///反馈直播训练感受
+///liveRoomId：直播间id
+///uid：用户id不填则为当前用户
+Future<Map> queryMute(int liveRoomId) async {
+  Map<String, dynamic> params = {};
+  params["liveRoomId"] = liveRoomId;
+  BaseResponseModel responseModel = await requestApi(QUERYMUTE, params);
   params["code"]=responseModel.code;
   params["data"]=responseModel.data;
   return params;

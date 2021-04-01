@@ -91,9 +91,9 @@ class CourseAddressLabel extends StatelessWidget {
     // coverUrls.indexOf(i)
     return Container(
       margin: EdgeInsets.only(left: index != 0 ? 12 : 0),
-      padding: EdgeInsets.only(top: 3.5, bottom: 3.5),
+      padding: const EdgeInsets.only(top: 3.5, bottom: 3.5),
       width: getBgWidth(),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(12)),
         color: Color.fromRGBO(242, 242, 242, 1),
       ),
@@ -101,7 +101,7 @@ class CourseAddressLabel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 8),
+            margin: const EdgeInsets.only(left: 8),
             child: tags[index].type == feed_tag_type_location
                 ? AppIcon.getAppIcon(AppIcon.tag_location, 16)
                 : tags[index].type == feed_tag_type_course
@@ -114,11 +114,11 @@ class CourseAddressLabel extends StatelessWidget {
             width: getTextWidth(),
             child: Text(
               interceptText(tags[index].text),
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            margin: EdgeInsets.only(left: 3),
+            margin: const EdgeInsets.only(left: 3),
           ),
         ],
         // )

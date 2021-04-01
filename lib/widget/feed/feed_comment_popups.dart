@@ -22,7 +22,7 @@ Future openFeedCommentBottomSheet({
       context: context,
       // 圆角
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       builder: (BuildContext context) {
         return SizedBox(
           height: ScreenUtil.instance.height * 0.75,

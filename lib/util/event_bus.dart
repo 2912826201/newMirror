@@ -155,6 +155,8 @@ const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
 const String EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
 //直播界面接收弹幕功能
 const String EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
+//直播界面接收系统通知
+const String EVENTBUS_ROOM_RECEIVE_NOTICE = "LiveRoomTestOperationPage_receive_notice";
 //直播在线人数dailog刷新界面
 const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
 //个人主页删除动态

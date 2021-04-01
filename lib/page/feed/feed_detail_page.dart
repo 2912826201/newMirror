@@ -148,7 +148,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                     SliverToBoxAdapter(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
                                         // 顶部间距
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 14,
                                         ),
                                         // 头部布局
@@ -186,7 +186,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                         Offstage(
                                           offstage: (feedModel.address == null && feedModel.courseDto == null),
                                           child: Container(
-                                            margin: EdgeInsets.only(left: 16, right: 16),
+                                            margin: const EdgeInsets.only(left: 16, right: 16),
                                             // color: Colors.orange,
                                             width: ScreenUtil.instance.width,
                                             child: getCourseInfo(feedModel),
@@ -197,21 +197,21 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                           offstage: feedModel.content.length == 0,
                                           child: Container(
                                             // color: Colors.cyan,
-                                            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                                            margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
                                             width: ScreenUtil.instance.width,
                                             child: ExpandableText(
                                               text: feedModel.content,
                                               model: feedModel,
                                               maxLines: 2,
-                                              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                                              style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
                                             ),
                                           ),
                                         ),
                                         context.watch<FeedMapNotifier>().value.feedMap[feedModel.id].totalCount != -1
                                             ? Container(
                                                 // color: AppColor.mainRed,
-                                                margin: EdgeInsets.only(top: 18, left: 16),
-                                                alignment: Alignment(-1, 0),
+                                                margin: const EdgeInsets.only(top: 18, left: 16),
+                                                alignment: const Alignment(-1, 0),
                                                 child:
                                                     // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
                                                     //     ?
@@ -251,17 +251,17 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     Container(
                       height: ScreenUtil.instance.screenWidthDp * 0.59,
                       width: ScreenUtil.instance.screenWidthDp * 0.59,
                       color: AppColor.bgWhite,
                     ),
-                    Text(
+                    const Text(
                       "该动态已失效",
                       style: AppStyle.textHintRegular16,
                     ),
-                    Spacer()
+                    const Spacer()
                   ],
                 ),
               ));
@@ -370,7 +370,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       builder: (BuildContext context, LoadStatus mode) {
         Widget body;
         if (mode == LoadStatus.idle) {
-          body = Text("");
+          body = const Text("");
         } else if (mode == LoadStatus.loading) {
           body = Container(
             width: 20,
@@ -378,11 +378,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             child: CircularProgressIndicator(),
           );
         } else if (mode == LoadStatus.failed) {
-          body = Text("");
+          body = const Text("");
         } else if (mode == LoadStatus.canLoading) {
-          body = Text("");
+          body = const Text("");
         } else {
-          body = Text("");
+          body = const Text("");
         }
         return Container(
           height: 55.0,

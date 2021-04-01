@@ -64,6 +64,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<TopicUiChangeModel> appBarStreamController = StreamController<TopicUiChangeModel>();
   bool streamCanChange = false;
   TopicUiChangeModel topicUiChangeModel = TopicUiChangeModel();
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -105,7 +106,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             streamCanChange = true;
           }
         }
-
       });
     super.initState();
   }
@@ -159,8 +159,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(children: [
-
+        body: Stack(
+      children: [
         widget.model != null
             ? NestedScrollView(
                 controller: _scrollController,
@@ -228,15 +228,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       child: Container(
                                         width: 71,
                                         height: 71,
-                                        padding: EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: const BoxDecoration(
                                             // 圆角
                                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                             color: AppColor.white),
                                         child: Container(
                                             decoration: BoxDecoration(
                                                 // 圆角
-                                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                                                 image: DecorationImage(
                                                     image: NetworkImage(widget.model.avatarUrl ??
                                                         "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"),
@@ -254,7 +254,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       child: Container(
                                         height: 69,
                                         width: ScreenUtil.instance.width - 96,
-                                        margin: EdgeInsets.only(left: 96),
+                                        margin: const EdgeInsets.only(left: 96),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
@@ -263,13 +263,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Container(
-                                                  width:ScreenUtil.instance.width*(168/ScreenUtil.instance.width),
-                                                  child:Text(
-                                                  "#${widget.model.name}",
-                                                  style: AppStyle.textMedium16,
-                                                ) ,
+                                                  width: ScreenUtil.instance.width * (168 / ScreenUtil.instance.width),
+                                                  child: Text(
+                                                    "#${widget.model.name}",
+                                                    style: AppStyle.textMedium16,
+                                                  ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 3,
                                                 ),
                                                 Text(
@@ -279,9 +279,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               ],
                                             ),
                                             // SizedBox(width: 12,),
-                                            Spacer(),
+                                            const Spacer(),
                                             _followButton(),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 16,
                                             )
                                           ],
@@ -293,7 +293,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                           bottom: 0,
                                           child: Container(
                                             width: ScreenUtil.instance.width,
-                                            padding: EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
+                                            padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
                                             child: Text(
                                               widget.model.description,
                                               style: AppStyle.textRegular14,
@@ -312,9 +312,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         child: TabBar(
                           labelColor: Colors.black,
                           controller: _tabController,
-                          labelStyle: TextStyle(fontSize: 16),
+                          labelStyle: const TextStyle(fontSize: 16),
                           unselectedLabelColor: AppColor.textHint,
-                          indicator: RoundUnderlineTabIndicator(
+                          indicator: const RoundUnderlineTabIndicator(
                             borderSide: BorderSide(
                               width: 2,
                               color: AppColor.bgBlack,
@@ -323,8 +323,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             wantWidth: 20,
                           ),
                           tabs: <Widget>[
-                            Tab(text: '推荐'),
-                            Tab(text: '最新'),
+                            const Tab(text: '推荐'),
+                            const Tab(text: '最新'),
                           ],
                         ),
                       ),
@@ -354,51 +354,59 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 ),
               )
             : Container(),
-          Positioned(
-            bottom: ScreenUtil.instance.bottomBarHeight+28,
-            left: (ScreenUtil.instance.width-127)/2,
-            right: (ScreenUtil.instance.width-127)/2,
-            child: _gotoRelease(),)
-        ],));
+        Positioned(
+          bottom: ScreenUtil.instance.bottomBarHeight + 28,
+          left: (ScreenUtil.instance.width - 127) / 2,
+          right: (ScreenUtil.instance.width - 127) / 2,
+          child: _gotoRelease(),
+        )
+      ],
+    ));
   }
-Widget _gotoRelease(){
+
+  Widget _gotoRelease() {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Application.topicMap[widget.model.id] = widget.model;
-        AppRouter.navigateToMediaPickerPage(
-            context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+        AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
             publishMode: 1, topicId: widget.model.id);
       },
       child: Container(
-      width: 127,
-      height: 43,
-      decoration:BoxDecoration(
+        width: 127,
+        height: 43,
+        decoration: const BoxDecoration(
           color: AppColor.bgBlack,
           borderRadius: BorderRadius.all(Radius.circular(24)),
-          ) ,
-      padding: EdgeInsets.only(left: 12,right: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        ),
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             Container(
               height: 27,
               width: 27,
-              decoration:BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColor.white,
                 borderRadius: BorderRadius.all(Radius.circular(24)),
-              ) ,
-              child:Center(
-                child: Icon(Icons.camera_alt,color: AppColor.black,),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.camera_alt,
+                  color: AppColor.black,
+                ),
               ),
             ),
-          Spacer(),
-          Text("立即参与",style: AppStyle.whiteRegular16,)
-        ],
+            const Spacer(),
+            const Text(
+              "立即参与",
+              style: AppStyle.whiteRegular16,
+            )
+          ],
+        ),
       ),
-    ),);
+    );
+  }
 
-
-}
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
@@ -412,23 +420,23 @@ Widget _gotoRelease(){
             height: 28,
             width: 72,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
                 border: Border.all(width: 1, color: AppColor.black)),
             child: widget.model.isFollow == 0
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.add,
                         size: 16,
                         color: AppColor.black,
                       ),
-                      Text("关注", style: AppStyle.textMedium12)
+                      const Text("关注", style: AppStyle.textMedium12)
                     ],
                   )
                 : Center(
-                    child: Text("已关注", style: AppStyle.textMedium12),
+                    child: const Text("已关注", style: AppStyle.textMedium12),
                   )));
   }
 }

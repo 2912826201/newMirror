@@ -197,6 +197,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   List<DemoSourceEntity> sourceList = [];
 
 
+  bool isShowTopFirst=true;
 
   @override
   void initStatePage() {
@@ -338,6 +339,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     return bodyArray;
   }
 
+
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
@@ -346,6 +348,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         if (chatDataList[0].msg.messageId == chatDataList[1].msg.messageId) {
           chatDataList.removeAt(0);
         }
+      }
+    }
+    bool isShowTop=!MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName);
+    if(isShowTop&&isShowTopFirst){
+      isShowTopFirst=false;
+      if(conversation.getType() != RCConversationType.System){
+        _onRefresh();
+      }else{
+        _onRefreshSystemInformation();
       }
     }
     return ChatDetailsBody(
@@ -362,7 +373,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      isShowTop: isShowTop,
       onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
       isShowHaveAnimation: isShowHaveAnimation,
@@ -375,13 +386,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //获取appbar
   Widget getAppBar() {
-    Widget action;
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      action=Container();
-    }else{
-      action=CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
-    }
+    Widget action=CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
     if (conversation.getType() == RCConversationType.Group) {
+      if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
+        action=Container();
+      }
       userNumber = context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
       return CustomAppBar(
         titleString: chatName ?? "",
@@ -580,6 +589,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
     if (Application.keyboardHeightChatPage > 0) {
       keyboardHeight = Application.keyboardHeightChatPage;
+    }else if(Application.keyboardHeightIfPage>0){
+      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
+      keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
@@ -604,6 +616,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     double keyboardHeight = 300.0;
 
     if (Application.keyboardHeightChatPage > 0) {
+      keyboardHeight = Application.keyboardHeightChatPage;
+    }else if(Application.keyboardHeightIfPage>0){
+      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
       keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {

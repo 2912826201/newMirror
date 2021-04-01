@@ -186,7 +186,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         print(" 插入城市${poi1.toString()}");
         pois.insert(0, poi1);
       }
-      if(mounted) {
+      if (mounted) {
         setState(() {});
       }
     } else {

@@ -7,14 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -63,9 +66,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       this.coachUrl,
       this.coachName,
       this.startTime,
-      this.coachRelation,
-      );
-
+      this.coachRelation);
   int liveCourseId;
   int coachId;
   String coachUrl;
@@ -110,13 +111,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   bool bottomBarHeightColorIsWhite=false;
 
+  StreamController<int> userImageOnlineStream = StreamController.broadcast();
+  StreamController<int> messageListStream = StreamController.broadcast();
+
   @override
   void initStatePage() {
     print("开播时间是:$startTime,$coachId");
 
-
-    EventBus.getDefault().registerSingleParameter(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
 
     urlImageList.add("");
     urlImageList.add(coachUrl);
@@ -143,6 +148,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   @override
   Widget build(BuildContext context) {
+    print("buildbuildbuildbuildbuildbuildbuild");
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -159,6 +165,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               ),
             ),
             onTap: _onClickBodyListener,
+            onDoubleTap: _onDoubleClickBodyListener,
           ),
         ),
         onWillPop: _requestPop);
@@ -234,21 +241,26 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           Container(
             width: 21.0*3-12.0,
             height: 21.0,
-            child: Stack(
-              children: [
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
-                  right: 0,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
-                  right: 12,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
-                  right: 24,
-                ),
-              ],
+            child: StreamBuilder(
+              stream: userImageOnlineStream.stream,
+              builder: (context,snapshot){
+                return Stack(
+                  children: [
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
+                      right: 0,
+                    ),
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
+                      right: 12,
+                    ),
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
+                      right: 24,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           SizedBox(width: 6),
@@ -397,13 +409,18 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget getListView(){
     return Visibility(
       visible: isShowMessage,
-      child: ListView.builder(
-        reverse: true,
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (context,index){
-          return getListViewItem(index);
+      child: StreamBuilder(
+        stream: messageListStream.stream,
+        builder: (context,snapshot){
+          return ListView.builder(
+            reverse: true,
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context,index){
+              return getListViewItem(index);
+            },
+            itemCount: messageChatList.length,
+          );
         },
-        itemCount: messageChatList.length,
       ),
     );
   }
@@ -508,6 +525,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     double keyboardHeight = 300.0;
 
     if (Application.keyboardHeightChatPage > 0) {
+      keyboardHeight = Application.keyboardHeightChatPage;
+    }else if(Application.keyboardHeightIfPage>0){
+      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
       keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {
@@ -670,7 +690,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 : AppIcon.message_send,
             buttonWidth: 44,
             buttonHeight: 44,
-            onTap: () => _onSubmitClick(_textController.text),
+            onTap: (){
+              _onSubmitClick(_textController.text);
+            },
           ),
         ],
       ),
@@ -804,6 +826,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         if(ClickUtil.isFastClick()){
           return;
         }
+        if(isMuteJudge()){
+          ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+          return;
+        }
         isShowEditPlan=true;
         setState(() {
 
@@ -816,6 +842,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
+
+
+  bool isMuteJudge(){
+    List list=AppPrefs.getLiveRoomMute(coachId.toString());
+    if(list[0]){
+      int seconds=DateUtil.twoDateTimeSeconds(DateUtil.getDateTimeByMs(list[1]),DateTime.now());
+      print("seconds:$seconds,list[2]:${list[2]}");
+      if(list[2]<0){
+        return !(seconds>3600);
+      }else{
+        return list[2]>seconds;
+      }
+    }
+    return false;
+  }
 
 
   //获取底部评论列表的高度
@@ -840,24 +881,26 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         onlineManUidList.add(buddyModel.uid);
       });
     }
-    getAllOnlineUserNumber(onlineUserNumber);
+    getAllOnlineUserNumber(onlineUserNumber+1);
     resetOnlineUserImage();
   }
 
   //获取所有的在线人数
   void getAllOnlineUserNumber(int number)async{
-    print("number:$number");
-    Map<String, dynamic> map = await roomInfo(coachId,count: number);
-    if(null!=map["data"]["userList"]){
-      onlineManList.clear();
-      onlineManUidList.clear();
-      map["data"]["userList"].forEach((v) {
-        BuddyModel buddyModel=BuddyModel.fromJson(v);
-        onlineManList.add(buddyModel);
-        onlineManUidList.add(buddyModel.uid);
-      });
-      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    }
+    Future.delayed(Duration(seconds: 1),()async{
+      print("number:$number");
+      Map<String, dynamic> map = await roomInfo(coachId,count: number);
+      if(null!=map["data"]["userList"]){
+        onlineManList.clear();
+        onlineManUidList.clear();
+        map["data"]["userList"].forEach((v) {
+          BuddyModel buddyModel=BuddyModel.fromJson(v);
+          onlineManList.add(buddyModel);
+          onlineManUidList.add(buddyModel.uid);
+        });
+        EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      }
+    });
   }
 
 
@@ -952,9 +995,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       }
       print("11111:${urlImageList.toString()}");
       if(mounted) {
-        setState(() {
-
-        });
+        userImageOnlineStream.sink.add(0);
       }
     }
   }
@@ -978,6 +1019,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             pageName:EVENTBUS_ROOM_OPERATION_PAGE,
             registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
           );
+          EventBus.getDefault().unRegister(
+            pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+            registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
+          );
           if(timer!=null){
             timer.cancel();
             timer=null;
@@ -986,6 +1031,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             timerBottomHeight.cancel();
             timerBottomHeight = null;
           }
+          userImageOnlineStream.close();
+          messageListStream.close();
           Navigator.of(context).pop();
           return true;
         }),
@@ -1000,14 +1047,83 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         pageName:EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
     );
+    EventBus.getDefault().unRegister(
+        pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
+    );
     if(timer!=null){
       timer.cancel();
       timer=null;
     }
+    userImageOnlineStream.close();
+    messageListStream.close();
   }
 
+  //接收直播间系统通知消息
+  void _receiveNoticeMessage(List list){
+    if(list[0] is int){
+      switch (list[0]) {
+        case 2:
+          //2-直播禁言
+          _liveMuteMessage(list[1],list[2],list[3]);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+
+  void _liveMuteMessage(String liveRoomId,List list,Message msg){
+    print("liveRoomId,网络:$liveRoomId,本地:$coachId");
+    if(liveRoomId!=coachId.toString()){
+      Application.rongCloud.quitChatRoom(msg.targetId);
+      return;
+    }
+    bool isHaveMeUid=false;
+    for(dynamic element in list){
+      if(element.toString()==Application.profile.uid.toString()){
+        isHaveMeUid=true;
+        break;
+      }
+    }
+    if(!isHaveMeUid){
+      print("有人被禁言了:${list.toString()}");
+      return;
+    }
+    print("接收到$coachId系统通知:${msg.originContentMap}");
+    Map<String, dynamic> contentMap = json.decode(msg.originContentMap["data"]);
+    print("接收到${contentMap.toString()}");
+    if(null!=contentMap&&null!=contentMap["isMute"]){
+      bool isMute;
+      int minutes=-1;
+      if(contentMap["isMute"]==0){
+        print("解除禁言");
+        isMute=false;
+      }else{
+        print("禁言");
+        isMute=true;
+        if(null!=contentMap["minutes"]){
+          print("禁言时长：${contentMap["minutes"]}");
+          minutes=contentMap["minutes"];
+        }else{
+          print("禁言时长：-1");
+        }
+      }
+      print("直播间$coachId：是否禁言:$isMute,时长：$minutes");
+      AppPrefs.setLiveRoomMute(coachId.toString(), minutes*60, isMute);
+      if(isMute&&mounted){
+        ToastShow.show(msg: "您已被禁言${minutes>0?"$minutes分钟":""}", context: context);
+      }else{
+        print("你已被解除禁言");
+      }
+    }
+  }
+
+
+
   //接收直播间弹幕消息
-  void receiveBarrageMessage(Message msg){
+  void _receiveBarrageMessage(Message msg){
     print("message:${msg.targetId},$coachId");
     if(msg.targetId!=coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
@@ -1018,22 +1134,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if(null!=contentMap){
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
-          if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
-            if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
-              subLiveRoom(textMessage,isReset: false);
-            }else {
-              resetOnlineUserNumber(++onlineUserNumber);
-            }
-            _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
-            addLiveRoom(textMessage);
-          }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
-            resetOnlineUserNumber(--onlineUserNumber);
-            print("${textMessage.sendUserInfo.name}退出了直播间");
-            subLiveRoom(textMessage);
-          }else if(null!=contentMap["name"]&&contentMap["name"]=="feeling"){
-            print("弹出训练感受！！！${contentMap["data"].toString()}");
-            _showFeelingDialog(contentMap["data"]);
-          }
+          _judgeSysMessage(contentMap["name"],contentMap,textMessage);
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
           _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId,contentMap["data"]);
@@ -1044,10 +1145,48 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
+  void _judgeSysMessage(String type,Map<String, dynamic> contentMap,TextMessage textMessage){
+    if(null==type){
+      return;
+    }
+    switch(type){
+      case "joinLiveRoom":
+        //加入直播间
+        if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+          subLiveRoom(textMessage,isReset: false);
+        }else {
+          resetOnlineUserNumber(++onlineUserNumber);
+        }
+        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+        addLiveRoom(textMessage);
+        break;
+      case "quitLiveRoom":
+        //退出直播间
+        print("${textMessage.sendUserInfo.name}退出了直播间");
+
+        resetOnlineUserNumber(--onlineUserNumber);
+        subLiveRoom(textMessage);
+        break;
+      case "feeling":
+        print("弹出训练感受！！！${contentMap["data"].toString()}");
+        _showFeelingDialog(contentMap["data"]);
+        break;
+      default:
+        break;
+    }
+  }
+
+
+
+  void _onDoubleClickBodyListener(){
+    print("双击");
+
+  }
 
   //界面空白处点击事件
   void _onClickBodyListener(){
     if(isCleaningMode){
+      print("显示弹幕列表");
       setState(() {
         isCleaningMode=!isCleaningMode;
       });
@@ -1068,12 +1207,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       _bottomSettingPanelState=false;
     }
     if(bottomBarHeightColorIsWhite){
-      Future.delayed(Duration(milliseconds: 100),(){
+      Future.delayed(Duration(milliseconds: 50),(){
         bottomBarHeightColorIsWhite=false;
         if(mounted){
           setState(() {});
         }
       });
+    }
+    if(bottomBarHeightColorIsWhite){
+      print("处理点击事件");
+    }else{
+      print("普通点击");
     }
   }
 
@@ -1097,9 +1241,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if(null==text||text.length<1){
       return;
     }
-    _sendChatRoomMsg(text);
-    _textController.text="";
-    _onSubmitLiveRoomMessage(Application.profile.nickName,Application.profile.uid.toString(),text);
+    if(isMuteJudge()){
+      ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+    }else{
+      _sendChatRoomMsg(text);
+      _onSubmitLiveRoomMessage(Application.profile.nickName, Application.profile.uid.toString(), text);
+    }
+    _textController.text = "";
     if(!_emojiState) {
       FocusScope.of(context).requestFocus(_focusNode);
     }
@@ -1108,25 +1256,23 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //加入普通消息
   _onSubmitLiveRoomMessage(String name,String userId,String content){
-    setState(() {
-      messageChatList.insert(0, UserMessageModel(
-        name: name,
-        uId: userId,
-        messageContent: content,
-      ));
-    });
+    messageChatList.insert(0, UserMessageModel(
+      name: name,
+      uId: userId,
+      messageContent: content,
+    ));
+    messageListStream.sink.add(0);
   }
 
   //加入进入直播间的消息
   _onSubmitJoinLiveRoomMessage(String name,String userId){
-    setState(() {
-      messageChatList.insert(0, UserMessageModel(
-        name: name,
-        uId: userId,
-        messageContent: "进入了直播",
-        isJoinLiveRoomMessage: true,
-      ));
-    });
+    messageChatList.insert(0, UserMessageModel(
+      name: name,
+      uId: userId,
+      messageContent: "进入了直播",
+      isJoinLiveRoomMessage: true,
+    ));
+    messageListStream.sink.add(0);
   }
 
   //发送直播聊天信息
@@ -1204,4 +1350,5 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       setState(() {});
     }
   }
+
 }

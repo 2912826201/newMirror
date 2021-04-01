@@ -1,12 +1,15 @@
 
 
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -44,6 +47,9 @@ class BottomUserPanel extends StatefulWidget {
 
 class _BottomUserPanelState extends State<BottomUserPanel> {
 
+
+  StreamController<int> userOnlineListStream = StreamController.broadcast();
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +62,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   @override
   void dispose() {
     super.dispose();
+    userOnlineListStream.close();
     EventBus.getDefault().unRegister(
         pageName:EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
         registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET
@@ -119,56 +126,67 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
       constraints: BoxConstraints(
         maxHeight: 48.0*7,
       ),
-      child: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (context,index){
-          return getListViewItem(widget.onlineManList[index],index);
+      child: StreamBuilder(
+        stream: userOnlineListStream.stream,
+        builder: (context,snapshot){
+          return ListView.builder(
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context,index){
+              return getListViewItem(widget.onlineManList[index],index);
+            },
+            itemCount:widget.onlineManList.length,
+          );
         },
-        itemCount:widget.onlineManList.length,
       ),
     );
   }
 
   //item
   Widget getListViewItem(BuddyModel buddyModel,int index){
-    return Container(
-      height: 48.0,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          getUserImage(buddyModel.avatarUri,28,28),
-          SizedBox(width: 12),
-          Expanded(child: SizedBox(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                buddyModel.nickName,
-                style: TextStyle(fontSize: 14,color: AppColor.textPrimary1),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 1),
-              Text(
-                DateUtil.formatTimeString(DateUtil.getDateTimeByMs(buddyModel.time))+
-                " 进入了直播间",
-                style: TextStyle(fontSize: 10,color: AppColor.textSecondary),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),)),
-        ],
+    return GestureDetector(
+      child: Container(
+        height: 48.0,
+        color: AppColor.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            getUserImage(buddyModel.avatarUri,28,28),
+            SizedBox(width: 12),
+            Expanded(child: SizedBox(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  buddyModel.nickName,
+                  style: TextStyle(fontSize: 14,color: AppColor.textPrimary1),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 1),
+                Text(
+                  DateUtil.formatTimeString(DateUtil.getDateTimeByMs(buddyModel.time))+
+                      " 进入了直播间",
+                  style: TextStyle(fontSize: 10,color: AppColor.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),)),
+          ],
+        ),
       ),
+      onTap: (){
+        AppRouter.navigateToMineDetail(context, buddyModel.uid);
+      },
     );
   }
 
 
   void resetPage(){
     if(mounted){
-      setState(() {
-
-      });
+      if(userOnlineListStream!=null) {
+        userOnlineListStream.sink.add(0);
+      }
     }
   }
 }

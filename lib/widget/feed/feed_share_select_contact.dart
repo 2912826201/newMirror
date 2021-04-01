@@ -181,9 +181,9 @@ class _FriendsPageState extends State<FriendsPage> {
           height: 40,
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.only(left: 16),
-          margin: EdgeInsets.only(top: 55),
+          margin: const EdgeInsets.only(top: 55),
           child: UnconstrainedBox(
-            child: Text(
+            child: const Text(
               "已加入群聊",
               style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
             ),
@@ -216,7 +216,7 @@ class _FriendsPageState extends State<FriendsPage> {
               padding: const EdgeInsets.only(right: 8, left: 8),
               alignment: Alignment.center,
               color: AppColor.transparent,
-              child: Text(
+              child: const Text(
                 "移除群成员",
                 style: TextStyle(fontSize: 14, color: AppColor.mainRed),
               ),
@@ -270,14 +270,14 @@ class _FriendsPageState extends State<FriendsPage> {
   //搜索框
   Widget _getTopItemSearch() {
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
       height: 32,
       color: AppColor.bgWhite.withOpacity(0.65),
       width: ScreenUtil.instance.screenWidthDp,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 9,
           ),
           AppIcon.getAppIcon(AppIcon.input_search, 24),
@@ -297,7 +297,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   }
                   setState(() {});
                 },
-                decoration: new InputDecoration(
+                decoration: const InputDecoration(
                     isCollapsed: true,
                     contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                     hintText: '搜索用户',

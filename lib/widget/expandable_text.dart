@@ -44,16 +44,16 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
   }
 
-
   // 富文本展示
   setBaseRichText() {
     var textSpanList = <TextSpan>[];
     if ((model.atUsers != null && model.atUsers.length > 0) || (model.topics != null && model.topics.length > 0)) {
-      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, model.content,topicId: widget.topicId,atUsers: model.atUsers,topics: model.topics));
+      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, model.content,
+          topicId: widget.topicId, atUsers: model.atUsers, topics: model.topics));
     } else {
       textSpanList.add(TextSpan(
         text: model.content,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
           color: AppColor.textPrimary1,
         ),
@@ -101,7 +101,7 @@ class _ExpandableTextState extends State<ExpandableText> {
                 });
               },
               child: Container(
-                padding: EdgeInsets.only(top: 6),
+                padding: const EdgeInsets.only(top: 6),
                 child: Text(expand ? '收起' : '展开',
                     style: TextStyle(fontSize: style != null ? style.fontSize : null, color: AppColor.textSecondary)),
               ),

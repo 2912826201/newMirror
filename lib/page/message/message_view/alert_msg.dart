@@ -52,7 +52,6 @@ class AlertMsg extends StatelessWidget {
     return GestureDetector(
       onTap: (){},
       child: Container(
-        color: AppColor.transparent,
         alignment: Alignment.bottomCenter,
         width: MediaQuery.of(context).size.width,
         child: getAlertText(context),
@@ -121,8 +120,6 @@ class AlertMsg extends StatelessWidget {
       }else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
-        getGroupText(mapGroupModel, context);
-
         if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
           ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
           if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid!=Application.profile.uid) {
@@ -131,6 +128,7 @@ class AlertMsg extends StatelessWidget {
             if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
               textArray.clear();
             }else {
+              getGroupText(mapGroupModel, context);
             }
           }
         }else{
@@ -331,6 +329,7 @@ class AlertMsg extends StatelessWidget {
   Widget alertText() {
     return Container(
       padding: const EdgeInsets.only(top: 8.0),
+      color: AppColor.transparent,
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(

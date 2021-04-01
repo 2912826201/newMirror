@@ -26,6 +26,7 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import '../release_page.dart';
+
 class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
   TextEditingController controller;
@@ -136,7 +137,6 @@ class FeedHeader extends StatelessWidget {
         ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
       }
     } else {
-
       for (Rule rule in rules) {
         if (rule.isAt) {
           AtUsersModel atModel = AtUsersModel();
@@ -184,7 +184,7 @@ class FeedHeader extends StatelessWidget {
       print('--------------Navigator------Navigator-------------Navigator------');
     }
     // 传入发布动态model
-    EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
+    EventBus.getDefault().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
     Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
   }
 
@@ -194,13 +194,13 @@ class FeedHeader extends StatelessWidget {
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       height: 44,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           CustomAppBarIconButton(
@@ -221,7 +221,7 @@ class FeedHeader extends StatelessWidget {
               );
             },
           ),
-          Spacer(),
+          const Spacer(),
           GestureDetector(
             onTap: () {
               // 读取输入框最新的值
@@ -243,27 +243,27 @@ class FeedHeader extends StatelessWidget {
             // // 监听输入框的值==""使外层点击不生效。非""手势生效。
             // ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
             child: Container(
-              // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                 height: 28,
                 width: 60,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     // 监听输入框的值动态改变样式
                     color:
-                    // context.watch<ReleaseFeedInputNotifier>().isPostFeed
-                    //     ?
-                    AppColor.mainRed
-                  // : AppColor.mainRed.withOpacity(0.65),
-                ),
+                        // context.watch<ReleaseFeedInputNotifier>().isPostFeed
+                        //     ?
+                        AppColor.mainRed
+                    // : AppColor.mainRed.withOpacity(0.65),
+                    ),
                 child: Center(
-                  child: Text(
+                  child: const Text(
                     "发布",
                     style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
                   ),
                 )),
             // )
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
         ],

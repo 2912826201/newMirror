@@ -91,7 +91,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
     _scrollController.dispose();
 
     ///取消延时任务
-    if(timer != null) {
+    if (timer != null) {
       timer.cancel();
     }
     super.dispose();
@@ -148,7 +148,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                       slivers: [
                         SliverToBoxAdapter(
                             child: Container(
-                          margin: EdgeInsets.only(left: 16, right: 16),
+                          margin: const EdgeInsets.only(left: 16, right: 16),
                           child: MediaQuery.removePadding(
                               removeTop: true,
                               context: context,
@@ -156,6 +156,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                                 shrinkWrap: true,
                                 primary: false,
                                 itemCount: topicList.length + 1,
+                                itemExtent: 56,
                                 itemBuilder: (context, index) {
                                   // if (feedList.isNotEmpty) {
                                   if (index == topicList.length) {
@@ -187,11 +188,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
               color: AppColor.color246,
               // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
-            Text(
+            const Text(
               "你的放大镜陨落星辰了",
               style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
-            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -215,8 +216,8 @@ class SearchTopiciItem extends StatelessWidget {
       },
       child: Container(
         width: ScreenUtil.instance.width,
-        margin: EdgeInsets.only(left: 16, right: 16),
-        padding: EdgeInsets.only(top: 6, bottom: 6),
+        margin: const EdgeInsets.only(left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 6, bottom: 6),
         // height: 54,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -227,7 +228,7 @@ class SearchTopiciItem extends StatelessWidget {
               "#${model.name}",
               style: AppStyle.textRegular16,
             ),
-            SizedBox(height: 2),
+            const SizedBox(height: 2),
             Text(
               "${StringUtil.getNumber(model.feedCount)}篇动态",
               style: AppStyle.textHintRegular12,

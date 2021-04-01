@@ -147,7 +147,7 @@ class _SlideBannerState extends State<SlideBanner> {
             tag: item.url + "$indexs",
             child: CachedNetworkImage(
               /// imageUrl的淡入动画的持续时间。
-              fadeInDuration: Duration(milliseconds: 0),
+              // fadeInDuration: Duration(milliseconds: 0),
               imageUrl: item.url,
               width: ScreenUtil.instance.width,
               height: height,
@@ -164,7 +164,7 @@ class _SlideBannerState extends State<SlideBanner> {
                 height: height,
                 child: CachedNetworkImage(
                   /// imageUrl的淡入动画的持续时间。
-                  fadeInDuration: Duration(milliseconds: 0),
+                  // fadeInDuration: Duration(milliseconds: 0),
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
                   imageUrl: item.url != null ? item.url : "",
@@ -361,13 +361,13 @@ class _SlideBannerState extends State<SlideBanner> {
                         initialData: zindex, //初始值
                         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                           return Container(
-                            padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                            padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                                color: AppColor.textPrimary1.withOpacity(0.5)),
-                            child: Text(
+                                color:  AppColor.textPrimary1.withOpacity(0.5)),
+                            child:  Text(
                               "${snapshot.data + 1}/${imageCount}",
-                              style: TextStyle(color: AppColor.white, fontSize: 12),
+                              style: const TextStyle(color: AppColor.white, fontSize: 12),
                             ),
                           );
                         })),
@@ -383,7 +383,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
-                        padding: EdgeInsets.only(left: 2,right: 2),
+                        padding: const EdgeInsets.only(left: 2,right: 2),
                         width: getDotsWidth(snapshot.data),
                         height: 10,
                         margin: const EdgeInsets.only(top: 5),
@@ -404,7 +404,7 @@ class _SlideBannerState extends State<SlideBanner> {
                           },
                           separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                             width: 4,
-                            color: Color(0xFFFFFFFF),
+                            color: const Color(0xFFFFFFFF),
                           ),
                           itemCount: imageCount,
                         ),)

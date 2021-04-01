@@ -37,7 +37,8 @@ class _createMapScreenState extends State<createMapScreen> {
 
   // 查询定位信息
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await reverseGeographyHttp(widget.longitude,widget.latitude);
+    PeripheralInformationEntity locationInformationEntity =
+        await reverseGeographyHttp(widget.longitude, widget.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       formatted_address = locationInformationEntity.regeocode.formatted_address;
@@ -145,7 +146,7 @@ class _createMapScreenState extends State<createMapScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(left: 16, right: 16),
+                                  margin: const EdgeInsets.only(left: 16, right: 16),
                                   child: Text(
                                     widget.keyWords,
                                     maxLines: 1,
@@ -153,11 +154,11 @@ class _createMapScreenState extends State<createMapScreen> {
                                     style: AppStyle.textRegular16,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 4,
                                 ),
                                 Container(
-                                    margin: EdgeInsets.only(left: 16, right: 16),
+                                    margin: const EdgeInsets.only(left: 16, right: 16),
                                     child: Text(formatted_address,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

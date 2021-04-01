@@ -40,6 +40,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   @override
   Widget build(BuildContext context) {
     // print("打印model的值￥${widget.model}");
+    print(" 点赞，转发，评论三连区域build");
     return Container(
         key: widget.offsetKey,
         height: 48,
@@ -60,7 +61,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                                 ? 41
                                 : 21,
                     height: 21,
-                    margin: EdgeInsets.only(left: 16),
+                    margin: const EdgeInsets.only(left: 16),
                     child: Stack(
                       overflow: Overflow.visible,
                       alignment: const FractionalOffset(0, 0.5),
@@ -72,7 +73,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                   ? <String>[]
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
             }, selector: (context, notifier) {
@@ -83,10 +84,10 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
-            Spacer(),
+            const Spacer(),
             Container(
               width: 104,
-              margin: EdgeInsets.only(right: 16),
+              margin: const EdgeInsets.only(right: 16),
               child: roundedTriple(),
             )
           ],
@@ -121,7 +122,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             alignment: Alignment.center,
             child: roundedAvatar(
                 context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
-            duration: Duration(milliseconds: 200)),
+            duration: const Duration(milliseconds: 200)),
       );
     }
     // 其他用户点赞的头像
@@ -132,7 +133,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           item != context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)) {
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(userInfo, index, item: item),
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: animatedZoom(userInfo, index, item: item)));
       }
     }
@@ -148,7 +149,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(context, userInfo[index]),
-          duration: Duration(milliseconds: 200));
+          duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
     } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
       return AnimatedContainer(
@@ -156,7 +157,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(context, userInfo[index]),
-          duration: Duration(milliseconds: 200));
+          duration: const Duration(milliseconds: 200));
     } // 只展示前三个头像
     else if (index < 3) {
       return roundedAvatar(context, item);
@@ -236,7 +237,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
             "${StringUtil.getNumber(laudCount)}次赞",
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           );
         }, selector: (context, notifier) {
           return notifier.value.feedMap[widget.model.id].laudCount;
@@ -262,7 +263,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           },
         ),
         Container(
-          margin: EdgeInsets.only(left: 16),
+          margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(
             svgName: AppIcon.comment_feed,
             iconSize: 24,
@@ -290,7 +291,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 16),
+          margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(
             svgName: AppIcon.share_feed,
             iconSize: 24,

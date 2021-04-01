@@ -85,10 +85,10 @@ class _InteractiveVideoItemState extends State<InteractiveVideoItem> {
           ),
         ),
         _controller.value.isPlaying == true
-            ? SizedBox()
+            ? const SizedBox()
             : IgnorePointer(
           ignoring: true,
-          child: Icon(
+          child: const Icon(
             Icons.play_arrow,
             size: 100,
             color: Colors.white,

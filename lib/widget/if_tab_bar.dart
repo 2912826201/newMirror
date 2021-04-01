@@ -109,8 +109,10 @@ class _IFTabBarState extends State<IFTabBar> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      EventBus.getDefault().registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-      EventBus.getDefault().registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      EventBus.getDefault()
+          .registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+      EventBus.getDefault()
+          .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
     });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
@@ -175,23 +177,21 @@ class _IFTabBarState extends State<IFTabBar> {
     onClickWidthList4.add(selectedButtonWidth + selectedButtonMargin);
   }
 
-
-
-  _postFeedCallBack(PostprogressModel postprogress){
+  _postFeedCallBack(PostprogressModel postprogress) {
     widget.tabBarClickListener(0);
     print("几次");
     streamController.sink.add(0);
   }
-  _resetUnreadMessage(){
-    Future.delayed(Duration(milliseconds: 200),(){
-      print("接收到");
-      if(mounted) {
-        setState(() {
 
-        });
+  _resetUnreadMessage() {
+    Future.delayed(Duration(milliseconds: 200), () {
+      print("接收到");
+      if (mounted) {
+        setState(() {});
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     //用各get方法来获取当前index时的位置
@@ -230,10 +230,8 @@ class _IFTabBarState extends State<IFTabBar> {
     print('------------------------点击');
     streamController.sink.add(index);
     widget.tabBarClickListener(index);
-    currentIndex=index;
-    setState(() {
-
-    });
+    currentIndex = index;
+    setState(() {});
   }
 
   Widget _onClickRow(AsyncSnapshot<int> snapshot) {
@@ -298,9 +296,9 @@ class _IFTabBarState extends State<IFTabBar> {
       child: Stack(
         children: [
           AnimatedContainer(
-            curve: Cubic(0.1, 0.2, 0.2, 1.0),
+            curve: const Cubic(0.1, 0.2, 0.2, 1.0),
             margin: EdgeInsets.only(left: getLeftMarginSelectedButton(snapshot.data)),
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             child: Container(
               height: 32,
               width: 90,
@@ -320,7 +318,7 @@ class _IFTabBarState extends State<IFTabBar> {
       child: Stack(
         children: [
           AnimatedContainer(
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon1(snapshot.data)),
             child: Container(
               height: tabBarHeight,
@@ -338,12 +336,12 @@ class _IFTabBarState extends State<IFTabBar> {
                           right: 0,
                           child: notifier.value.unReadFeedCount != 0
                               ? ClipOval(
-                            child: Container(
-                              height: 10,
-                              width: 10,
-                              color: AppColor.mainRed,
-                            ),
-                          )
+                                  child: Container(
+                                    height: 10,
+                                    width: 10,
+                                    color: AppColor.mainRed,
+                                  ),
+                                )
                               : Container());
                     })
                   ],
@@ -352,7 +350,7 @@ class _IFTabBarState extends State<IFTabBar> {
             ),
           ),
           AnimatedContainer(
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
             child: Container(
               height: tabBarHeight,
@@ -366,37 +364,40 @@ class _IFTabBarState extends State<IFTabBar> {
             ),
           ),
           AnimatedContainer(
-              duration: Duration(milliseconds: 250),
-              margin: EdgeInsets.only(left: getLeftMarginIcon3(snapshot.data)),
-              child: Container(
-                height: tabBarHeight,
-                width: 80,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        child: snapshot.data == 2 ? selectedIcons[2] : normalIcons[2],
-                      ),
-                      left: 0,
-                      top: (tabBarHeight-24)/2,
+            duration: const Duration(milliseconds: 250),
+            margin: EdgeInsets.only(left: getLeftMarginIcon3(snapshot.data)),
+            child: Container(
+              height: tabBarHeight,
+              width: 80,
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      child: snapshot.data == 2 ? selectedIcons[2] : normalIcons[2],
                     ),
-                    Visibility(
-                      visible: currentIndex==2?false:
-                        Application.unreadNoticeNumber+Application.unreadMessageNumber<1?false:true,
-                      child: Positioned(
-                        child: CountBadge(Application.unreadNoticeNumber+Application.unreadMessageNumber, false),
-                        left: 12,
-                        top: (tabBarHeight-24)/2-7,
-                      ),
-                    )
-                  ],
-                ),
+                    left: 0,
+                    top: (tabBarHeight - 24) / 2,
+                  ),
+                  Visibility(
+                    visible: currentIndex == 2
+                        ? false
+                        : Application.unreadNoticeNumber + Application.unreadMessageNumber < 1
+                            ? false
+                            : true,
+                    child: Positioned(
+                      child: CountBadge(Application.unreadNoticeNumber + Application.unreadMessageNumber, false),
+                      left: 12,
+                      top: (tabBarHeight - 24) / 2 - 7,
+                    ),
+                  )
+                ],
               ),
+            ),
           ),
           AnimatedContainer(
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon4(snapshot.data)),
             child: Container(
               height: tabBarHeight,
@@ -423,10 +424,10 @@ class _IFTabBarState extends State<IFTabBar> {
         children: [
           AnimatedOpacity(
             opacity: snapshot.data == 0 ? 1 : 0,
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText1),
-              child: Text(
+              child: const Text(
                 "首页",
                 style: AppStyle.whiteMedium15,
               ),
@@ -434,26 +435,26 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AnimatedOpacity(
             opacity: snapshot.data == 1 ? 1 : 0,
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText2),
-              child: Text("训练", style: AppStyle.whiteMedium15),
+              child: const Text("训练", style: AppStyle.whiteMedium15),
             ),
           ),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText3),
-              child: Text("消息", style: AppStyle.whiteMedium15),
+              child: const Text("消息", style: AppStyle.whiteMedium15),
             ),
           ),
           AnimatedOpacity(
             opacity: snapshot.data == 3 ? 1 : 0,
-            duration: Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText4),
-              child: Text("我的", style: AppStyle.whiteMedium15),
+              child: const Text("我的", style: AppStyle.whiteMedium15),
             ),
           ),
         ],

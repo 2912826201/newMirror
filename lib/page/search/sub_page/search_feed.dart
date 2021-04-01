@@ -114,7 +114,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     _scrollController.dispose();
 
     ///取消延时任务
-    if(timer != null) {
+    if (timer != null) {
       timer.cancel();
     }
     super.dispose();
@@ -162,7 +162,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     print(feedList.isNotEmpty);
     if (feedList.isNotEmpty) {
       return Container(
-          margin: EdgeInsets.only(top: 12),
+          margin: const EdgeInsets.only(top: 12),
           child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
               child: RefreshIndicator(
@@ -240,23 +240,19 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                             return Container();
                           } else {
                             return ExposureDetector(
-                                key: Key('search_feed_${feedList[index].id}'),
-                                child: DynamicListLayout(
-                                  index: index,
-                                  isShowConcern: false,
-                                  pageName: "searchFeed",
-                                  isShowRecommendUser: false,
-                                  model: feedList[index],
-                                  // 可选参数 子Item的个数
-                                  key: GlobalObjectKey("attention$index"),
-                                ),
+                              key: Key('search_feed_${feedList[index].id}'),
+                              child: DynamicListLayout(
+                                index: index,
+                                isShowConcern: false,
+                                pageName: "searchFeed",
+                                isShowRecommendUser: false,
+                                model: feedList[index],
+                                // 可选参数 子Item的个数
+                                key: GlobalObjectKey("attention$index"),
+                              ),
                               onExposure: (visibilityInfo) {
                                 // 如果没有显示
-                                if (context
-                                    .read<FeedMapNotifier>()
-                                    .value
-                                    .feedMap[feedList[index].id]
-                                    .isShowInputBox) {
+                                if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
                                   context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
                                 }
                                 print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
@@ -277,11 +273,11 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
               color: AppColor.color246,
               // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
-            Text(
+            const Text(
               "你的放大镜陨落星辰了",
               style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
-            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -548,10 +544,10 @@ class SearchFeeditemState extends State<SearchFeeditem> {
         model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
         Container(
           width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-          margin: EdgeInsets.only(top: 8),
+          margin: const EdgeInsets.only(top: 8),
           child: Text(
             '${model.content}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
             ),
             maxLines: 2,
@@ -561,7 +557,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
         Container(
           width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
           // height: 16,
-          padding: EdgeInsets.only(
+          padding: const EdgeInsets.only(
             bottom: 8,
             top: 6,
           ),
@@ -574,11 +570,11 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                 radius: 8,
               ),
               Container(
-                margin: EdgeInsets.only(left: 4),
+                margin: const EdgeInsets.only(left: 4),
                 width: 81,
                 child: Text(
                   model.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 10,
                     color: AppColor.textSecondary,
                   ),
@@ -586,7 +582,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Expanded(
@@ -673,7 +669,7 @@ class LaudItemState extends State<LaudItem> {
             containerHeight: 16,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 2,
         ),
         Offstage(
