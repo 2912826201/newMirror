@@ -310,11 +310,25 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   : Stack(
                                       children: [
                                         entity.type == AssetType.video
-                                            ? VideoPreviewArea(
-                                                _fileMap[entity.id],
-                                                _screenWidth,
-                                                context.select(
-                                                    (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                            ? _fileMap[entity.id] != null
+                                                ? VideoPreviewArea(
+                                                    _fileMap[entity.id],
+                                                    _previewMaxHeight,
+                                                    context.select(
+                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                                : Stack(
+                                                    children: [
+                                                      Image.memory(
+                                                        _thumbMap[entity.id] ?? Uint8List.fromList([]),
+                                                        fit: BoxFit.cover,
+                                                        width: _previewMaxHeight,
+                                                        height: _previewMaxHeight,
+                                                      ),
+                                                      Center(
+                                                        child: CircularProgressIndicator(),
+                                                      ),
+                                                    ],
+                                                  )
                                             : entity.type == AssetType.image
                                                 ? CropperImage(
                                                     _fileMap[entity.id] != null
