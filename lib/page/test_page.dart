@@ -46,12 +46,31 @@ class TestPage extends StatefulWidget {
   _TestState createState() => _TestState();
 }
 
-class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
+class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   double nowProgress = 0;
 
   @override
   bool get wantKeepAlive => true; //必须重写
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("测试页生命周期变化：$state");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -372,7 +391,27 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   child: Text("视频课结果页"),
                 ),
               ]),
-
+              Container(
+                color: AppColor.mainRed,
+                child: Text(
+                  "12345:67890",
+                  style: TextStyle(fontSize: 32, fontFamily: "BebasNeue"),
+                ),
+              ),
+              Container(
+                color: AppColor.textHint,
+                child: Text(
+                  "12345:67890",
+                  style: TextStyle(fontSize: 32, fontFamily: "BebasNeue", fontWeight: FontWeight.w500),
+                ),
+              ),
+              Container(
+                color: AppColor.mainBlue,
+                child: Text(
+                  "12345:67890",
+                  style: TextStyle(fontSize: 32),
+                ),
+              ),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -392,7 +431,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                       onTap: () {
                         AppRouter.navigateToLoginSucess(context);
                       },
-                    )
+                    ),
                   ]),
             ],
           ),
