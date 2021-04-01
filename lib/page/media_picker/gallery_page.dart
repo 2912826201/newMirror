@@ -12,6 +12,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
@@ -499,7 +500,13 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     // 当最后一张图是预览并选中时 需要在点击下一步按钮时获取这张图
     if (widget.needCrop) {
       if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
-        _getImage(context, notifier.currentEntity.id, toData: false);
+        //如果当前的file尚未获取到 则不能继续
+        if (_fileMap[notifier.currentEntity.id] == null) {
+          ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+          return;
+        } else {
+          _getImage(context, notifier.currentEntity.id, toData: false);
+        }
       }
     }
 
@@ -539,8 +546,21 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     if (_isGettingImage) {
       return;
     }
-    entity.file.then((value) => print(entity.id + ":" + value.path));
-    bool isNew = context.read<SelectedMapNotifier>().handleMapChange(entity);
+    // entity.file.then((value) => print(entity.id + ":" + value.path));
+    SelectedMapNotifier notifier = context.read<SelectedMapNotifier>();
+    // 当之前没有选到目标文件时（要添加并预览该文件） 检查当前选中的文件file是否已获取 未获取中断操作
+    if (!notifier.selectedMap.containsKey(entity.id)) {
+      if (widget.needCrop) {
+        if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
+          //如果当前的file尚未获取到 则不能继续
+          if (_fileMap[notifier.currentEntity.id] == null) {
+            ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+            return;
+          }
+        }
+      }
+    }
+    bool isNew = notifier.handleMapChange(entity);
     if (isNew) {
       _onGridItemTap(context, entity);
     }
@@ -848,7 +868,13 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               if (widget.needCrop && selectedResultType == AssetType.image) {
                 if (notifier.currentEntity != null &&
                     (notifier.selectedMap.isEmpty || notifier.selectedMap.containsKey(notifier.currentEntity.id))) {
-                  await _getImage(context, notifier.currentEntity.id, toData: false);
+                  //如果当前的file尚未获取到 则不能继续
+                  if (_fileMap[notifier.currentEntity.id] == null) {
+                    ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+                    return;
+                  }else{
+                    await _getImage(context, notifier.currentEntity.id, toData: false);
+                  }
                 }
               }
 
@@ -887,6 +913,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                       break;
                     case AssetType.video:
                       mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                      //如果当前的file尚未获取到 则不能继续
+                      if(mediaFileModel.file == null){
+                        ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+                        return;
+                      }
                       mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
                       mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
@@ -907,6 +938,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                   }
                 } else {
                   mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                  //如果当前的file尚未获取到 则不能继续
+                  if(mediaFileModel.file == null){
+                    ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+                    return;
+                  }
                   mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
                   mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
                   mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
