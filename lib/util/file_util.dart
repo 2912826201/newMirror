@@ -12,7 +12,6 @@ import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/util/chunk_download.dart';
-import 'package:mirror/util/range_download.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:uuid/uuid.dart';
