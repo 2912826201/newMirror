@@ -1249,7 +1249,8 @@ class PreviewHeightNotifier with ChangeNotifier {
 
   double get maxHeight => _previewBaseHeight;
 
-  double get minHeight => _previewBaseHeight / 2;
+  //最小高度根据最大高度的一定比例得出 可调整
+  double get minHeight => _previewBaseHeight / 3;
 
   double get previewHeight => _previewHeight ?? _previewBaseHeight;
 
