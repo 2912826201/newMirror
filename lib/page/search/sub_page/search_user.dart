@@ -93,7 +93,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if (model!=null&&model.list.isNotEmpty) {
+      if (model != null && model.list.isNotEmpty) {
         noData = false;
         if (modelList == model.list) {
           _refreshController.refreshToIdle();
@@ -115,7 +115,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
       }
     } else if (dataPage > 1 && hashNext == 1) {
       _refreshController.isLoading;
-      if (model!=null&&model.list != null) {
+      if (model != null && model.list != null) {
         model.list.forEach((element) {
           modelList.add(element);
         });
@@ -127,7 +127,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
       }
     }
     refreshOver = true;
-    if(mounted){
+    if (mounted) {
       setState(() {});
     }
   }
@@ -136,63 +136,64 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     return !noData
         ? Container(
-            padding: EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16),
             child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
-                child:SmartRefresher(
-              enablePullUp: true,
-              enablePullDown: true,
-              footer: CustomFooter(
-                builder: (BuildContext context, LoadStatus mode) {
-                  Widget body;
-                  if (mode == LoadStatus.loading) {
-                    body = CircularProgressIndicator();
-                  } else if (mode == LoadStatus.noMore) {
-                    body = Text("没有更多了");
-                  } else if (mode == LoadStatus.failed) {
-                    body = Text("加载错误,请重试");
-                  } else {
-                    body = Text("");
-                  }
-                  return Container(
-                    child: Center(
-                      child: body,
-                    ),
-                  );
-                },
-              ),
-              controller: _refreshController,
-              header: WaterDropHeader(
-                complete: Text("刷新完成"),
-                failed: Text(""),
-              ),
-              onRefresh: _onRefresh,
-              onLoading: _onLoading,
-              child: ListView.builder(
-                  itemCount: modelList.length,
-                  itemBuilder: (context, index) {
-                    return SearchUserItem(
-                      model: modelList[index],
-                      width: ScreenUtil.instance.screenWidthDp,
-                      type: 1,
-                    );
-                  }),
-            )))
+                child: SmartRefresher(
+                  enablePullUp: true,
+                  enablePullDown: true,
+                  footer: CustomFooter(
+                    builder: (BuildContext context, LoadStatus mode) {
+                      Widget body;
+                      if (mode == LoadStatus.loading) {
+                        body = CircularProgressIndicator();
+                      } else if (mode == LoadStatus.noMore) {
+                        body = const Text("没有更多了");
+                      } else if (mode == LoadStatus.failed) {
+                        body = const Text("加载错误,请重试");
+                      } else {
+                        body = const Text("");
+                      }
+                      return Container(
+                        child: Center(
+                          child: body,
+                        ),
+                      );
+                    },
+                  ),
+                  controller: _refreshController,
+                  header: WaterDropHeader(
+                    complete: const Text("刷新完成"),
+                    failed: const Text(""),
+                  ),
+                  onRefresh: _onRefresh,
+                  onLoading: _onLoading,
+                  child: ListView.builder(
+                      itemCount: modelList.length,
+                      itemExtent:58,
+                      itemBuilder: (context, index) {
+                        return SearchUserItem(
+                          model: modelList[index],
+                          width: ScreenUtil.instance.screenWidthDp,
+                          type: 1,
+                        );
+                      }),
+                )))
         : Container(
             height: ScreenUtil.instance.height,
             width: ScreenUtil.instance.screenWidthDp,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Container(
                   height: ScreenUtil.instance.screenWidthDp * 0.59,
                   width: ScreenUtil.instance.screenWidthDp * 0.59,
                   color: AppColor.color246,
                 ),
-                 Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
-                Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
-                Spacer(),
+                const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                const Spacer(),
               ],
             ));
   }
@@ -235,7 +236,7 @@ class _SearchState extends State<SearchUserItem> {
     print('=========================搜索itembuid${widget.model.uid}');
     return Container(
       height: 58,
-      padding: EdgeInsets.only(top: 5, bottom: 5),
+      padding: const EdgeInsets.only(top: 5, bottom: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -261,7 +262,7 @@ class _SearchState extends State<SearchUserItem> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 11,
                   ),
                   Center(
@@ -270,7 +271,7 @@ class _SearchState extends State<SearchUserItem> {
                       height: 48,
                       child: Column(
                         children: [
-                          Spacer(),
+                          const Spacer(),
                           Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -280,7 +281,7 @@ class _SearchState extends State<SearchUserItem> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          widget.model.description != null ? Spacer() : Container(),
+                          widget.model.description != null ? const Spacer() : Container(),
                           //签名
                           widget.model.description != null
                               ? Container(
@@ -295,14 +296,14 @@ class _SearchState extends State<SearchUserItem> {
                               : Container(
                                   height: 0,
                                 ),
-                          Spacer(),
+                          const Spacer(),
                         ],
                       ),
                     ),
                   ),
                 ],
               )),
-          Spacer(),
+          const Spacer(),
           FollowButton(
             id: widget.model.uid,
             isFollow: isFollow,

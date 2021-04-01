@@ -81,7 +81,7 @@ class FeedSharePopups extends StatelessWidget {
           Container(
             height: 48,
             child: Center(
-              child: Text(
+              child: const Text(
                 "分享到",
                 style: AppStyle.textRegular16,
               ),

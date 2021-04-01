@@ -5,9 +5,6 @@ import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/feed/create_map_screen.dart';
-import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
@@ -22,7 +19,7 @@ import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
-class DynamicListLayout extends StatelessWidget {
+class DynamicListLayout extends StatefulWidget {
   DynamicListLayout(
       {Key key,
       this.index,
@@ -58,87 +55,89 @@ class DynamicListLayout extends StatelessWidget {
   bool isShowConcern;
 
   @override
+  DynamicListLayoutState createState() => DynamicListLayoutState();
+}
+
+class DynamicListLayoutState extends State<DynamicListLayout> {
+  // @override
+  // bool get wantKeepAlive => true; //必须重写   这么添加时保留轮播图滑动的图片
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    print(
+        "小红花&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // print('==============================动态itembuild');
-    return model != null
+    print('==============================动态itembuild');
+    return widget.model != null
         ? Column(
             children: [
               // 头部头像时间
               HeadView(
-                  model: model,
-                  isShowConcern: isShowConcern,
-                  pageName: pageName,
-                  mineDetailId: mineDetailId != null ? mineDetailId : 0,
+                  model: widget.model,
+                  isShowConcern: widget.isShowConcern,
+                  pageName: widget.pageName,
+                  mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
                   deleteFeedChanged: (id) {
-                    deleteFeedChanged(id);
+                    widget.deleteFeedChanged(id);
                   },
                   removeFollowChanged: (m) {
-                    removeFollowChanged(m);
+                    widget.removeFollowChanged(m);
                   }),
               // 图片区域
-              // model != null && model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyImage
-              //     ? SlideBanner(
-              //         height: model.selectedMediaFiles.list.first.sizeInfo.height.toDouble(),
-              //         model: model,
-              //         index: index,
-              //         pageName: pageName,
-              //         isHero: isHero,
-              //       )
-                   model.picUrls.length > 0
-                      ? SlideBanner(
-                          height: model.picUrls[0].height.toDouble(),
-                          model: model,
-                          index: index,
-                          pageName: pageName,
-                          isHero: isHero,
-                        )
-                      : Container(),
+              widget.model.picUrls.length > 0
+                  ? SlideBanner(
+                      height: widget.model.picUrls[0].height.toDouble(),
+                      model: widget.model,
+                      index: widget.index,
+                      pageName: widget.pageName,
+                      isHero: widget.isHero,
+                    )
+                  : Container(),
               // 视频区域
-              // model != null && model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyVideo
-              //     ? getVideo(selectedMediaFiles: model.selectedMediaFiles)
-              //     :
-              model.videos.isNotEmpty
-                      ? getVideo(videos: model.videos)
-                      : Container(),
+              widget.model.videos.isNotEmpty ? getVideo(videos: widget.model.videos) : Container(),
               // 点赞，转发，评论三连区域 getTripleArea
-              GetTripleArea(model: model, index: index),
+              GetTripleArea(model: widget.model, index: widget.index),
               // 课程信息和地址
               Offstage(
-                offstage: (model.address == null && model.courseDto == null),
+                offstage: (widget.model.address == null && widget.model.courseDto == null),
                 child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
+                  margin: const EdgeInsets.only(left: 16, right: 16),
                   width: ScreenUtil.instance.width,
-                  child: getCourseInfo(model, context),
+                  child: getCourseInfo(widget.model, context),
                 ),
               ),
 
               // 文本文案
               Offstage(
-                offstage: model.content.length == 0,
+                offstage: widget.model.content.length == 0,
                 child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                  margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,
                   child: ExpandableText(
-                    text: model.content,
-                    topicId: topicId,
-                    model: model,
+                    text: widget.model.content,
+                    topicId: widget.topicId,
+                    model: widget.model,
                     maxLines: 2,
-                    style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
                   ),
                 ),
               ),
 
               // 评论文本
               (context.watch<FeedMapNotifier>().value.feedMap != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id] != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id].comments != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[model.id].comments.length != 0)
-                  ? CommentLayout(model: model)
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id] != null &&
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments != null &&
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments.length != 0)
+                  ? CommentLayout(model: widget.model)
                   : Container(),
               // 输入框
-              CommentInputBox(feedModel: model),
+              CommentInputBox(feedModel: widget.model),
               // 推荐用户
-              getAttention(this.index, this.isShowRecommendUser),
+              getAttention(widget.index, widget.isShowRecommendUser),
               // 分割块
               Container(
                 height: 18,
@@ -148,32 +147,6 @@ class DynamicListLayout extends StatelessWidget {
           )
         : Container();
   }
-
-  // // 删除动态
-  // deleteFeed() async {
-  //   Map<String, dynamic> map = await deletefeed(id: model.id);
-  //   if (map["state"]) {
-  //     deleteFeedChanged(model.id);
-  //   } else {
-  //     print("删除失败");
-  //   }
-  // }
-  //
-  // // 关注or取消关注
-  // removeFollow(int isFollow, int id, BuildContext context) async {
-  //   print("isFollow:::::::::$isFollow");
-  //   // 取消关注
-  //   if (isFollow == 1) {
-  //     int relation = await ProfileCancelFollow(id);
-  //     if (relation == 0 || relation == 2) {
-  //       // context.read<FeedMapNotifier>().setIsFollow(id, isFollow);
-  //       removeFollowChanged(model);
-  //       ToastShow.show(msg: "已取消关注", context: context);
-  //     } else {
-  //       ToastShow.show(msg: "取消关注失败", context: context);
-  //     }
-  //   }
-  // }
 
 // 视频
   Widget getVideo({List<VideosModel> videos}) {
@@ -194,26 +167,6 @@ class DynamicListLayout extends StatelessWidget {
         isInListView: true,
       );
     }
-    // if (selectedMediaFiles != null) {
-    //   print(selectedMediaFiles.list.first.toString());
-    //   print(
-    //     selectedMediaFiles.list.first.file.path,
-    //   );
-    //   sizeInfo.width = selectedMediaFiles.list.first.sizeInfo.width;
-    //   sizeInfo.height = selectedMediaFiles.list.first.sizeInfo.height;
-    //   sizeInfo.duration = selectedMediaFiles.list.first.sizeInfo.duration;
-    //   sizeInfo.offsetRatioX = selectedMediaFiles.list.first.sizeInfo.offsetRatioX ?? 0.0;
-    //   sizeInfo.offsetRatioY = selectedMediaFiles.list.first.sizeInfo.offsetRatioY ?? 0.0;
-    //   sizeInfo.videoCroppedRatio = selectedMediaFiles.list.first.sizeInfo.videoCroppedRatio;
-    //   return FeedVideoPlayer(
-    //     selectedMediaFiles.list.first.file.path,
-    //     sizeInfo,
-    //     ScreenUtil.instance.width,
-    //     isInListView: true,
-    //     isFile: true,
-    //     thumbPath: selectedMediaFiles.list.first.thumbPath,
-    //   );
-    // }
   }
 
   // 课程信息和地址
@@ -262,7 +215,7 @@ class DynamicListLayout extends StatelessWidget {
     );
   }
 
-  // 列表3的推荐书籍
+  // 关注页的推荐用户
   Widget getAttention(var index, bool isShowRecommendUser) {
     if (index == 2 && isShowRecommendUser) {
       return AttentionUser();

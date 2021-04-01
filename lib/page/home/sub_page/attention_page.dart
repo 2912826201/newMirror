@@ -210,7 +210,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0) {
+    if (addFeedNum != 0 && context.read<FeedMapNotifier>().value.unReadFeedCount != 0) {
       ToastShow.show(
           msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
           context: context,
@@ -278,7 +278,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   backToView(int index, HomeFeedModel feedmodel) {
     print("疯狂build");
     if (index == 0) {
-      return Container(
+      return  Container(
         height: 14,
       );
     } else {
@@ -289,7 +289,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
-        key: GlobalObjectKey("attention$index"),
+        // key: GlobalObjectKey("attention$index"),
         deleteFeedChanged: (id) {
           setState(() {
             attentionIdList.remove(id);
@@ -380,13 +380,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 width: 224,
                 height: 224,
                 color: AppColor.color246,
-                margin: EdgeInsets.only(bottom: 16, top: 150),
+                margin: const EdgeInsets.only(bottom: 16, top: 150),
               ),
-              Text(
+              const Text(
                 "登录账号后查看你关注的精彩内容",
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
-              GestureDetector(
+               GestureDetector(
                 onTap: () async {
                   AppRouter.navigateToLoginPage(context);
                 },
@@ -394,9 +394,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   width: 293,
                   height: 44,
                   color: Colors.black,
-                  margin: EdgeInsets.only(top: 32),
-                  child: Center(
-                    child: Text(
+                  margin: const EdgeInsets.only(top: 32),
+                  child: const Center(
+                    child: const Text(
                       "登录",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -408,17 +408,17 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         );
         break;
       case Status.noConcern:
-        return Container(
-          child: Column(
+        return  Container(
+          child:  Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+               Container(
                 width: 224,
                 height: 224,
                 color: AppColor.color246,
-                margin: EdgeInsets.only(bottom: 16, top: 188),
+                margin: const EdgeInsets.only(bottom: 16, top: 188),
               ),
-              Text(
+              const Text(
                 "这里空空如也，去推荐看看吧",
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
@@ -427,7 +427,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         );
         break;
       case Status.loggedIn:
-        return Container();
+        return  Container();
         break;
       case Status.concern:
         return backToView(index, feedModel);
@@ -499,7 +499,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             getRecommendFeed();
           },
           child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
-            SliverList(
+             SliverList(
               // controller: _controller,
               delegate: SliverChildBuilderDelegate((content, index) {
                 if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
@@ -515,7 +515,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 }
                 print("attentionIdList数据源长度：：：：${attentionIdList.length}");
                 if (index == attentionIdList.length) {
-                  return LoadingView(
+                  return  LoadingView(
                     loadText: loadText,
                     loadStatus: loadStatus,
                   );

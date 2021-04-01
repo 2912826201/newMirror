@@ -85,7 +85,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
     _scrollController.dispose();
 
     ///取消延时任务
-    if(timer != null) {
+    if (timer != null) {
       timer.cancel();
     }
     super.dispose();
@@ -103,7 +103,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
       DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
       lastTime = model.lastTime;
       hasNext = model.hasNext;
-      if (model.list.length!=0) {
+      if (model.list.length != 0) {
         model.list.forEach((v) {
           liveVideoList.add(LiveVideoModel.fromJson(v));
         });
@@ -142,7 +142,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
                       slivers: [
                         SliverToBoxAdapter(
                             child: Container(
-                          margin: EdgeInsets.only(left: 16, right: 16),
+                          margin: const EdgeInsets.only(left: 16, right: 16),
                           child: MediaQuery.removePadding(
                               removeTop: true,
                               context: context,
@@ -183,11 +183,11 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
               color: AppColor.color246,
               // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
-            Text(
+            const Text(
               "你的放大镜陨落星辰了",
               style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
-            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
           ],
         ),
       );

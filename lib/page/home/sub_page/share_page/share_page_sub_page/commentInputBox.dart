@@ -52,8 +52,8 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   ? 48
                   : 0,
       width: ScreenUtil.instance.width,
-      curve: Cubic(0.25, 0.25, 0.25, 0.25),
-      duration: Duration(milliseconds: 250),
+      curve: const Cubic(0.25, 0.25, 0.25, 0.25),
+      duration: const Duration(milliseconds: 250),
       child: Container(
         height: widget.isUnderline ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
@@ -68,7 +68,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
             InkWell(
               onTap: () {},
               child: Container(
-                margin: EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
+                margin:  EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
                 child: ClipOval(
                   child: CachedNetworkImage(
                     height: 28,
@@ -94,14 +94,14 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 width: ScreenUtil.instance.screenWidthDp - 32 - 40,
                 height: 28,
                 margin: EdgeInsets.only(left: 12, top: widget.isFeedDetail ? 10 : 0),
-                padding: EdgeInsets.only(left: 16),
-                alignment: Alignment(-1, 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                padding: const EdgeInsets.only(left: 16),
+                alignment: const Alignment(-1, 0),
+                decoration:  BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(14)),
                   color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                 child: Text(widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~",
-                    style: TextStyle(fontSize: 14, color: AppColor.textHint)),
+                    style: const TextStyle(fontSize: 14, color: AppColor.textHint)),
               ),
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
