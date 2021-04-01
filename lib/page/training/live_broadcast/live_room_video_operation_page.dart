@@ -111,10 +111,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   bool bottomBarHeightColorIsWhite=false;
 
+  StreamController<int> userImageOnlineStream = StreamController.broadcast();
+  StreamController<int> messageListStream = StreamController.broadcast();
+
   @override
   void initStatePage() {
     print("开播时间是:$startTime,$coachId");
-
 
     EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
@@ -146,6 +148,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   @override
   Widget build(BuildContext context) {
+    print("buildbuildbuildbuildbuildbuildbuild");
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -162,6 +165,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               ),
             ),
             onTap: _onClickBodyListener,
+            onDoubleTap: _onDoubleClickBodyListener,
           ),
         ),
         onWillPop: _requestPop);
@@ -237,21 +241,26 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           Container(
             width: 21.0*3-12.0,
             height: 21.0,
-            child: Stack(
-              children: [
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
-                  right: 0,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
-                  right: 12,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
-                  right: 24,
-                ),
-              ],
+            child: StreamBuilder(
+              stream: userImageOnlineStream.stream,
+              builder: (context,snapshot){
+                return Stack(
+                  children: [
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
+                      right: 0,
+                    ),
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
+                      right: 12,
+                    ),
+                    Positioned(
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
+                      right: 24,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           SizedBox(width: 6),
@@ -400,13 +409,18 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget getListView(){
     return Visibility(
       visible: isShowMessage,
-      child: ListView.builder(
-        reverse: true,
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (context,index){
-          return getListViewItem(index);
+      child: StreamBuilder(
+        stream: messageListStream.stream,
+        builder: (context,snapshot){
+          return ListView.builder(
+            reverse: true,
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context,index){
+              return getListViewItem(index);
+            },
+            itemCount: messageChatList.length,
+          );
         },
-        itemCount: messageChatList.length,
       ),
     );
   }
@@ -511,6 +525,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     double keyboardHeight = 300.0;
 
     if (Application.keyboardHeightChatPage > 0) {
+      keyboardHeight = Application.keyboardHeightChatPage;
+    }else if(Application.keyboardHeightIfPage>0){
+      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
       keyboardHeight = Application.keyboardHeightChatPage;
     }
     if (keyboardHeight < 90) {
@@ -864,24 +881,26 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         onlineManUidList.add(buddyModel.uid);
       });
     }
-    getAllOnlineUserNumber(onlineUserNumber);
+    getAllOnlineUserNumber(onlineUserNumber+1);
     resetOnlineUserImage();
   }
 
   //获取所有的在线人数
   void getAllOnlineUserNumber(int number)async{
-    print("number:$number");
-    Map<String, dynamic> map = await roomInfo(coachId,count: number);
-    if(null!=map["data"]["userList"]){
-      onlineManList.clear();
-      onlineManUidList.clear();
-      map["data"]["userList"].forEach((v) {
-        BuddyModel buddyModel=BuddyModel.fromJson(v);
-        onlineManList.add(buddyModel);
-        onlineManUidList.add(buddyModel.uid);
-      });
-      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    }
+    Future.delayed(Duration(seconds: 1),()async{
+      print("number:$number");
+      Map<String, dynamic> map = await roomInfo(coachId,count: number);
+      if(null!=map["data"]["userList"]){
+        onlineManList.clear();
+        onlineManUidList.clear();
+        map["data"]["userList"].forEach((v) {
+          BuddyModel buddyModel=BuddyModel.fromJson(v);
+          onlineManList.add(buddyModel);
+          onlineManUidList.add(buddyModel.uid);
+        });
+        EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      }
+    });
   }
 
 
@@ -976,9 +995,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       }
       print("11111:${urlImageList.toString()}");
       if(mounted) {
-        setState(() {
-
-        });
+        userImageOnlineStream.sink.add(0);
       }
     }
   }
@@ -1014,6 +1031,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             timerBottomHeight.cancel();
             timerBottomHeight = null;
           }
+          userImageOnlineStream.close();
+          messageListStream.close();
           Navigator.of(context).pop();
           return true;
         }),
@@ -1036,6 +1055,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       timer.cancel();
       timer=null;
     }
+    userImageOnlineStream.close();
+    messageListStream.close();
   }
 
   //接收直播间系统通知消息
@@ -1140,9 +1161,15 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
 
+  void _onDoubleClickBodyListener(){
+    print("双击");
+
+  }
+
   //界面空白处点击事件
   void _onClickBodyListener(){
     if(isCleaningMode){
+      print("显示弹幕列表");
       setState(() {
         isCleaningMode=!isCleaningMode;
       });
@@ -1163,12 +1190,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       _bottomSettingPanelState=false;
     }
     if(bottomBarHeightColorIsWhite){
-      Future.delayed(Duration(milliseconds: 100),(){
+      Future.delayed(Duration(milliseconds: 50),(){
         bottomBarHeightColorIsWhite=false;
         if(mounted){
           setState(() {});
         }
       });
+    }
+    if(bottomBarHeightColorIsWhite){
+      print("处理点击事件");
+    }else{
+      print("普通点击");
     }
   }
 
@@ -1207,25 +1239,23 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //加入普通消息
   _onSubmitLiveRoomMessage(String name,String userId,String content){
-    setState(() {
-      messageChatList.insert(0, UserMessageModel(
-        name: name,
-        uId: userId,
-        messageContent: content,
-      ));
-    });
+    messageChatList.insert(0, UserMessageModel(
+      name: name,
+      uId: userId,
+      messageContent: content,
+    ));
+    messageListStream.sink.add(0);
   }
 
   //加入进入直播间的消息
   _onSubmitJoinLiveRoomMessage(String name,String userId){
-    setState(() {
-      messageChatList.insert(0, UserMessageModel(
-        name: name,
-        uId: userId,
-        messageContent: "进入了直播",
-        isJoinLiveRoomMessage: true,
-      ));
-    });
+    messageChatList.insert(0, UserMessageModel(
+      name: name,
+      uId: userId,
+      messageContent: "进入了直播",
+      isJoinLiveRoomMessage: true,
+    ));
+    messageListStream.sink.add(0);
   }
 
   //发送直播聊天信息
