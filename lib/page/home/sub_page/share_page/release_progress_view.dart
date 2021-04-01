@@ -65,80 +65,93 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
       }
     }
     return Container(
-      height: 60,
+      height: 62,
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-              child: Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        margin: const EdgeInsets.only(right: 6),
-                        child: Stack(
-                          alignment: const FractionalOffset(0.5, 0.5),
-                          children: [
-                            imageFile != null
-                                ? Image.file(imageFile)
-                                : widget.postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage !=
-                                        null
-                                    ? RawImage(
-                                        image: widget
-                                            .postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : CupertinoActivityIndicator(
-                                        radius: 10,
-                                      ),
-                            type != null
-                                ? type ==
-                                        // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
-                                        mediaTypeKeyVideo
-                                    ? Container(
-                                        width: 13,
-                                        height: 13,
-                                        color: AppColor.mainRed,
-                                      )
-                                    : Container()
+          // Expanded(
+          //     child:
+          Container(
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              height: 60,
+              width: ScreenUtil.instance.screenWidthDp,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    margin: const EdgeInsets.only(right: 6),
+                    child: Stack(
+                      alignment: const FractionalOffset(0.5, 0.5),
+                      children: [
+                        imageFile != null
+                            ? Container(
+                                width: 36,
+                                height: 36,
+                                child: Image.file(
+                                  imageFile,
+                                  fit: BoxFit.cover,
+                                ))
+                            : widget.postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage != null
+                                ? Container(
+                                    width: 36,
+                                    height: 36,
+                                    child: RawImage(
+                                      image: widget
+                                          .postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage,
+                                      fit: BoxFit.cover,
+                                    ))
+                                : CupertinoActivityIndicator(
+                                    radius: 10,
+                                  ),
+                        type != null
+                            ? type ==
+                                    // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                    mediaTypeKeyVideo
+                                ? Container(
+                                    width: 13,
+                                    height: 13,
+                                    color: AppColor.mainRed,
+                                  )
                                 : Container()
+                            : Container()
+                      ],
+                    ),
+                  ),
+                  publishTextStatus(widget.postprogressModel.plannedSpeed),
+                  const Spacer(),
+                  Offstage(
+                      offstage: widget.postprogressModel.plannedSpeed != -1,
+                      child: Container(
+                        child: Row(
+                          children: [
+                            AppIconButton(
+                              iconSize: 18,
+                              svgName: AppIcon.trash_bucket,
+                              buttonHeight: 30,
+                              buttonWidth: 30,
+                              onTap: widget.resendFeedChanged,
+                            ),
+                            AppIconButton(
+                              iconSize: 18,
+                              svgName: AppIcon.trash_bucket,
+                              buttonHeight: 30,
+                              buttonWidth: 30,
+                              onTap: widget.deleteReleaseFeedChanged,
+                            ),
                           ],
                         ),
-                      ),
-                      publishTextStatus(widget.postprogressModel.plannedSpeed),
-                      const Spacer(),
-                      Offstage(
-                          offstage: widget.postprogressModel.plannedSpeed != -1,
-                          child: Container(
-                            child: Row(
-                              children: [
-                                AppIconButton(
-                                  iconSize: 18,
-                                  svgName: AppIcon.trash_bucket,
-                                  buttonHeight: 30,
-                                  buttonWidth: 30,
-                                  onTap: widget.resendFeedChanged,
-                                ),
-                                AppIconButton(
-                                  iconSize: 18,
-                                  svgName: AppIcon.trash_bucket,
-                                  buttonHeight: 30,
-                                  buttonWidth: 30,
-                                  onTap: widget.deleteReleaseFeedChanged,
-                                ),
-                              ],
-                            ),
-                          ))
-                    ],
-                  ))),
+                      ))
+                ],
+                // )
+              )),
           LinearProgressIndicator(
+            minHeight: 2,
             value: widget.postprogressModel.plannedSpeed != -1 && widget.postprogressModel.plannedSpeed <= 1
                 ? widget.postprogressModel.plannedSpeed
                 : 1,
