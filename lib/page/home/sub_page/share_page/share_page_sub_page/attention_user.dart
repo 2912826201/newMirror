@@ -34,24 +34,24 @@ class AttentionUserState extends State<AttentionUser> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16, top: 18),
+              margin: const EdgeInsets.only(left: 16, right: 16, top: 18),
               height: 25,
               width: ScreenUtil.instance.screenWidthDp,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "为你推荐",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Container(
                     width: getTextSize("查看全部", TextStyle(fontSize: 14), 1).width + 20,
                     child: Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(right: 4),
-                          child: Text(
+                          margin: const EdgeInsets.only(right: 4),
+                          child: const Text(
                             "查看全部",
                             style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
                           ),
@@ -73,7 +73,7 @@ class AttentionUserState extends State<AttentionUser> {
   // 横向listView
   attentionList() {
     return Container(
-      margin: EdgeInsets.only(top: 18),
+      margin: const EdgeInsets.only(top: 18),
       height: 190,
       child: attentionUserAnimateList(
         itemCount: list.length,
@@ -85,28 +85,6 @@ class AttentionUserState extends State<AttentionUser> {
           }
           return list.length;
         },
-      ),
-    );
-  }
-
-  // 轮播样式
-  slide() {
-    Container(
-      height: 190,
-      margin: EdgeInsets.only(top: 18),
-      child: Swiper(
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            margin: EdgeInsets.only(right: 10),
-            color: Colors.red,
-            // width: 151,
-            height: 190,
-          );
-        },
-        itemCount: 7,
-        loop: false,
-        viewportFraction: 0.4,
-        scale: 0.9,
       ),
     );
   }
@@ -282,7 +260,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
           //背景
           color: Colors.white,
           //设置四周圆角 角度
-          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(4.0)),
           //设置四周边框
           border: new Border.all(width: 0.5, color: AppColor.bgWhite),
         ),
@@ -314,7 +292,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 18),
+              margin: const EdgeInsets.only(top: 18),
               width: 151,
               height: 172,
               // child: Expanded(
@@ -327,14 +305,14 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                     maxRadius: 23.5,
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 8),
+                    margin: const EdgeInsets.only(top: 8),
                     child: Text(
                       "金卡卡西${widget.str}",
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 2, bottom: 12),
+                    margin: const EdgeInsets.only(top: 2, bottom: 12),
                     width: 100,
                     child: Text(
                       "夕柚和其他2位用户关注了",
@@ -348,7 +326,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                     height: 28,
                     decoration: BoxDecoration(
                       color: isToggle ? AppColor.textHint : Colors.black,
-                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                      borderRadius: const BorderRadius.all(Radius.circular(16)),
                     ),
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
@@ -364,13 +342,13 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                             isToggle
                                 ? AppIcon.getAppIcon(AppIcon.check_follow, 16)
                                 : AppIcon.getAppIcon(AppIcon.add_follow, 16),
-                            SizedBox(
+                            const SizedBox(
                               width: 4,
                             ),
                             Container(
                               child: Text(
                                 isToggle ? "已关注" : "关注",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: AppColor.white,
                                 ),

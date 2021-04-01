@@ -56,96 +56,95 @@ class DynamicListLayout extends StatefulWidget {
 
   @override
   DynamicListLayoutState createState() => DynamicListLayoutState();
-
-
 }
-class DynamicListLayoutState extends State<DynamicListLayout>   {
+
+class DynamicListLayoutState extends State<DynamicListLayout> {
   // @override
   // bool get wantKeepAlive => true; //必须重写   这么添加时保留轮播图滑动的图片
   @override
   void dispose() {
     // TODO: implement dispose
-    print("小红花&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    print(
+        "小红花&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     print('==============================动态itembuild');
     return widget.model != null
         ? Column(
-      children: [
-        // 头部头像时间
-        HeadView(
-            model: widget.model,
-            isShowConcern: widget.isShowConcern,
-            pageName: widget.pageName,
-            mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
-            deleteFeedChanged: (id) {
-              widget.deleteFeedChanged(id);
-            },
-            removeFollowChanged: (m) {
-              widget.removeFollowChanged(m);
-            }),
-        // 图片区域
-        widget.model.picUrls.length > 0
-            ? SlideBanner(
-          height: widget.model.picUrls[0].height.toDouble(),
-          model: widget.model,
-          index: widget.index,
-          pageName: widget.pageName,
-          isHero: widget.isHero,
-        )
-            : Container(),
-        // 视频区域
-        widget.model.videos.isNotEmpty
-            ? getVideo(videos: widget.model.videos)
-            : Container(),
-        // 点赞，转发，评论三连区域 getTripleArea
-        GetTripleArea(model: widget.model, index: widget.index),
-        // 课程信息和地址
-        Offstage(
-          offstage: (widget.model.address == null && widget.model.courseDto == null),
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16),
-            width: ScreenUtil.instance.width,
-            child: getCourseInfo(widget.model, context),
-          ),
-        ),
+            children: [
+              // 头部头像时间
+              HeadView(
+                  model: widget.model,
+                  isShowConcern: widget.isShowConcern,
+                  pageName: widget.pageName,
+                  mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
+                  deleteFeedChanged: (id) {
+                    widget.deleteFeedChanged(id);
+                  },
+                  removeFollowChanged: (m) {
+                    widget.removeFollowChanged(m);
+                  }),
+              // 图片区域
+              widget.model.picUrls.length > 0
+                  ? SlideBanner(
+                      height: widget.model.picUrls[0].height.toDouble(),
+                      model: widget.model,
+                      index: widget.index,
+                      pageName: widget.pageName,
+                      isHero: widget.isHero,
+                    )
+                  : Container(),
+              // 视频区域
+              widget.model.videos.isNotEmpty ? getVideo(videos: widget.model.videos) : Container(),
+              // 点赞，转发，评论三连区域 getTripleArea
+              GetTripleArea(model: widget.model, index: widget.index),
+              // 课程信息和地址
+              Offstage(
+                offstage: (widget.model.address == null && widget.model.courseDto == null),
+                child: Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16),
+                  width: ScreenUtil.instance.width,
+                  child: getCourseInfo(widget.model, context),
+                ),
+              ),
 
-        // 文本文案
-        Offstage(
-          offstage: widget.model.content.length == 0,
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-            width: ScreenUtil.instance.screenWidthDp,
-            child: ExpandableText(
-              text: widget.model.content,
-              topicId: widget.topicId,
-              model: widget.model,
-              maxLines: 2,
-              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-            ),
-          ),
-        ),
+              // 文本文案
+              Offstage(
+                offstage: widget.model.content.length == 0,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+                  width: ScreenUtil.instance.screenWidthDp,
+                  child: ExpandableText(
+                    text: widget.model.content,
+                    topicId: widget.topicId,
+                    model: widget.model,
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                  ),
+                ),
+              ),
 
-        // 评论文本
-        (context.watch<FeedMapNotifier>().value.feedMap != null &&
-            context.watch<FeedMapNotifier>().value.feedMap[widget.model.id] != null &&
-            context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments != null &&
-            context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments.length != 0)
-            ? CommentLayout(model: widget.model)
-            : Container(),
-        // 输入框
-        CommentInputBox(feedModel: widget.model),
-        // 推荐用户
-        getAttention(widget.index, widget.isShowRecommendUser),
-        // 分割块
-        Container(
-          height: 18,
-          color: AppColor.white,
-        )
-      ],
-    )
+              // 评论文本
+              (context.watch<FeedMapNotifier>().value.feedMap != null &&
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id] != null &&
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments != null &&
+                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments.length != 0)
+                  ? CommentLayout(model: widget.model)
+                  : Container(),
+              // 输入框
+              CommentInputBox(feedModel: widget.model),
+              // 推荐用户
+              getAttention(widget.index, widget.isShowRecommendUser),
+              // 分割块
+              Container(
+                height: 18,
+                color: AppColor.white,
+              )
+            ],
+          )
         : Container();
   }
 
@@ -216,7 +215,7 @@ class DynamicListLayoutState extends State<DynamicListLayout>   {
     );
   }
 
-  // 列表3的推荐书籍
+  // 关注页的推荐用户
   Widget getAttention(var index, bool isShowRecommendUser) {
     if (index == 2 && isShowRecommendUser) {
       return AttentionUser();

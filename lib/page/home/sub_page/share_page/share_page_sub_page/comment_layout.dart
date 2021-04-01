@@ -68,13 +68,13 @@ class CommentLayout extends StatelessWidget {
     return context.watch<FeedMapNotifier>().value.feedMap[model.id] != null
         ? Container(
             width: ScreenUtil.instance.width,
-            margin: EdgeInsets.only(left: 16, right: 16, top: 8),
+            margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: ScreenUtil.instance.width,
-                  margin: EdgeInsets.only(bottom: 6),
+                  margin: const EdgeInsets.only(bottom: 6),
                   child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
                     return GestureDetector(
                       onTap: () {

@@ -428,24 +428,24 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                   }
                 }),
         // }),
-        titleWidget: Container(
-          width: 140,
+        titleWidget:  Container(
+          width:  140,
           child: TabBar(
             controller: controller,
             tabs: [
-              Text("关注"),
-              Text(
+              const Text("关注"),
+              const Text(
                 "推荐",
               )
             ],
-            labelStyle: TextStyle(
+             labelStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
             labelColor: Colors.black,
             unselectedLabelStyle: TextStyle(fontSize: 16),
-            indicator: RoundUnderlineTabIndicator(
-              borderSide: BorderSide(
+            indicator: const RoundUnderlineTabIndicator(
+              borderSide: const BorderSide(
                 width: 3,
                 color: Color.fromRGBO(253, 137, 140, 1),
               ),
@@ -455,7 +455,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           ),
         ),
         actions: [
-          CustomAppBarIconButton(
+           CustomAppBarIconButton(
               svgName: AppIcon.nav_search,
               iconColor: AppColor.black,
               onTap: () {

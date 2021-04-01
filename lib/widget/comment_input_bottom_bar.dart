@@ -343,7 +343,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       followList = filterFollowList;
     }
     if (searchHasNext == 0) {
-      if(followList.length > 0) {
+      if (followList.length > 0) {
         searchLoadText = "已加载全部好友";
         searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
       } else {
@@ -438,7 +438,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
               offstage: context.watch<CommentEnterNotifier>().keyWord != "@",
               child: Container(
                 height: 232,
-                decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
+                decoration:
+                    const BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
                 child: ListView.builder(
                     itemCount: followList.length + 1,
                     controller: _scrollController,
@@ -562,7 +563,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   backgroundImage: NetworkImage(followList[index].avatarUri),
                                   maxRadius: 19,
                                 ),
-                                SizedBox(width: 12),
+                                const SizedBox(width: 12),
                                 Text(
                                   followList[index].nickName,
                                   style: AppStyle.textRegular16,
@@ -590,9 +591,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                       width: Platform.isIOS
                           ? ScreenUtil.instance.screenWidthDp - 32
                           : ScreenUtil.instance.screenWidthDp - 32 - (widget.isShowPostBtn ? 52 - 12 : 0),
-                      margin: EdgeInsets.only(left: 16, right: 16),
+                      margin: const EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                        borderRadius: const BorderRadius.all(Radius.circular(16)),
                         color: AppColor.bgWhite.withOpacity(0.65),
                       ),
                       child: Stack(
@@ -691,7 +692,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       for (int i = 0; i < rules.length; i++) {
                                         // 当最新输入框内的文本对应不上之前的值时。
                                         if (rules[i].params !=
-                                            _textEditingController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+                                            _textEditingController.text
+                                                .substring(rules[i].startIndex, rules[i].endIndex)) {
                                           print("进入更新后输入的");
                                           print(rules[i]);
                                           rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
@@ -751,14 +753,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       height: 32,
                                       width: 52,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                                        borderRadius: const BorderRadius.all(Radius.circular(16)),
                                         // 监听输入框的值动态改变样式
                                         color: context.watch<CommentEnterNotifier>().textFieldStr != ""
                                             ? AppColor.textPrimary1
                                             : AppColor.textSecondary,
                                       ),
                                       child: Center(
-                                        child: Text(
+                                        child: const Text(
                                           "发送",
                                           style: TextStyle(color: AppColor.white, fontSize: 14),
                                         ),
@@ -796,7 +798,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     return Container(
       height: emojiHeight,
       width: ScreenUtil.instance.width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColor.white,
         border: Border(
           top: BorderSide(color: Colors.grey, width: 0.2),
@@ -810,7 +812,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   Widget emojiList() {
     if (emojiModelList == null || emojiModelList.length < 1) {
       return Center(
-        child: Text("暂无表情"),
+        child: const Text("暂无表情"),
       );
     } else {
       return GestureDetector(
