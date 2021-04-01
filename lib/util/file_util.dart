@@ -221,7 +221,7 @@ class FileUtil {
       return null;
     });
   }
-
+              ///断点续传
   Future<DownloadDto> chunkDownLoad(String url, Function(String taskId, int received, int total)
   onProgressListener,
       {CancelToken cancelToken, Dio dio,int type = downloadTypeCommon}) async {
