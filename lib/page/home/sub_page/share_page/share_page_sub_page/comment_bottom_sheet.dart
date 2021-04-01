@@ -50,7 +50,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
       builder: (BuildContext context, LoadStatus mode) {
         Widget body;
         if (mode == LoadStatus.idle) {
-          body = Text("");
+          body = const Text("");
         } else if (mode == LoadStatus.loading) {
           body = Container(
             width: 20,
@@ -58,11 +58,11 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
             child: CircularProgressIndicator(),
           );
         } else if (mode == LoadStatus.failed) {
-          body = Text("");
+          body = const Text("");
         } else if (mode == LoadStatus.canLoading) {
-          body = Text("");
+          body = const Text("");
         } else {
-          body = Text("");
+          body = const Text("");
         }
         return Container(
           height: 55.0,
@@ -181,7 +181,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
         children: <Widget>[
           Container(
             height: 48,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
             ),
             child: Stack(

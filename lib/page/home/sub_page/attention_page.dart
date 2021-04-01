@@ -380,7 +380,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 width: 224,
                 height: 224,
                 color: AppColor.color246,
-                margin: EdgeInsets.only(bottom: 16, top: 150),
+                margin: const EdgeInsets.only(bottom: 16, top: 150),
               ),
               const Text(
                 "登录账号后查看你关注的精彩内容",
@@ -394,9 +394,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   width: 293,
                   height: 44,
                   color: Colors.black,
-                  margin: EdgeInsets.only(top: 32),
+                  margin: const EdgeInsets.only(top: 32),
                   child: const Center(
-                    child: Text(
+                    child: const Text(
                       "登录",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -416,7 +416,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 width: 224,
                 height: 224,
                 color: AppColor.color246,
-                margin: EdgeInsets.only(bottom: 16, top: 188),
+                margin: const EdgeInsets.only(bottom: 16, top: 188),
               ),
               const Text(
                 "这里空空如也，去推荐看看吧",

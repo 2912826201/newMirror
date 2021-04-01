@@ -438,12 +438,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                 "推荐",
               )
             ],
-             labelStyle: TextStyle(
+             labelStyle: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
             labelColor: Colors.black,
-            unselectedLabelStyle: TextStyle(fontSize: 16),
+            unselectedLabelStyle: const TextStyle(fontSize: 16),
             indicator: const RoundUnderlineTabIndicator(
               borderSide: const BorderSide(
                 width: 3,
@@ -472,7 +472,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                   stream: streamController.stream,
                   builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                     return AnimatedContainer(
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.linear,
                       height: snapshot.data,
                       child: Container(

@@ -64,7 +64,7 @@ class FriendsCell extends StatelessWidget {
         child: groupTitle != null
             ? Text(
           groupTitle,
-          style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+          style: const TextStyle(fontSize: 14, color: AppColor.textPrimary3),
         )
             : null,
       ),
@@ -221,7 +221,7 @@ class FriendsCell extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 16 - 16 - 24 - 14.5 - 38 - 12 - 10,
       child: Text(
         name,
-        style: TextStyle(fontSize: 15, color: AppColor.textPrimary3),
+        style: const TextStyle(fontSize: 15, color: AppColor.textPrimary3),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

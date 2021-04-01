@@ -166,8 +166,8 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
                 ),
               ),
               _controller.value.isPlaying == true
-                  ? SizedBox()
-                  : IgnorePointer(
+                  ? const SizedBox()
+                  : const IgnorePointer(
                       ignoring: true,
                       child: Icon(
                         Icons.play_arrow,

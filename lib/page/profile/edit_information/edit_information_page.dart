@@ -282,7 +282,7 @@ class _EditInformationState extends State<EditInformation> {
               InkWell(
                 child: _rowChose(width, "简介", _introduction),
                 onTap: () {
-                  AppRouter.popToBeforeLogin(context);/*navigateToEditInfomationIntroduction(context, _introduction,
+                AppRouter.navigateToEditInfomationIntroduction(context, _introduction,
                   (result) {
                     if (result != null) {
                       _introduction = result;
@@ -290,7 +290,7 @@ class _EditInformationState extends State<EditInformation> {
                       _introduction = null;
                     }
                     setState(() {});
-                  });*/
+                  });
                 },
               ),
               Container(

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:provider/provider.dart';
@@ -104,6 +105,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                     _clearCache(AppConfig.getAppVideoDir());
                     _clearCache(AppConfig.getAppVoiceDir());
                     _clearCache(AppConfig.getAppDownloadDir());
+                    AppPrefs.clearDownLadTask();
                     //下载的视频课内容不在这里清，在专门管理课程的地方清
                     return true;
                   }),

@@ -14,7 +14,14 @@ import 'package:provider/provider.dart';
 
 class FeedFlow extends StatefulWidget {
   FeedFlow(
-      {Key key, this.feedList, this.pageName, this.feedLastTime, this.searchKeyWords, this.feedHasNext, this.feedIndex,this.listHeight})
+      {Key key,
+      this.feedList,
+      this.pageName,
+      this.feedLastTime,
+      this.searchKeyWords,
+      this.feedHasNext,
+      this.feedIndex,
+      this.listHeight})
       : super(key: key);
 
   @override
@@ -78,7 +85,7 @@ class FeedFlowState extends State<FeedFlow> {
         feedList.add(value);
       });
       // 更新全局内没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap( StringUtil.followModelFilterDeta(widget.feedList,feedList));
+      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(widget.feedList, feedList));
     }
     if (widget.feedHasNext == 0) {
       // 加载完毕
@@ -112,7 +119,7 @@ class FeedFlowState extends State<FeedFlow> {
       feedList.add(value);
     });
     // 更新全局内没有的数据
-    context.read<FeedMapNotifier>().updateFeedMap( StringUtil.followModelFilterDeta(widget.feedList,feedList));
+    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(widget.feedList, feedList));
 
     if (mounted) {
       setState(() {});
@@ -135,13 +142,13 @@ class FeedFlowState extends State<FeedFlow> {
                   builder: (BuildContext context, LoadStatus mode) {
                     Widget body;
                     if (mode == LoadStatus.loading) {
-                      body = Text("正在加载");
+                      body = const Text("正在加载");
                     } else if (mode == LoadStatus.idle) {
-                      body = Text("上拉加载更多");
+                      body = const Text("上拉加载更多");
                     } else if (mode == LoadStatus.failed) {
-                      body = Text("加载失败,请重试");
+                      body = const Text("加载失败,请重试");
                     } else {
-                      body = Text("没有更多了");
+                      body = const Text("没有更多了");
                     }
                     return Container(
                       child: Center(
@@ -151,8 +158,8 @@ class FeedFlowState extends State<FeedFlow> {
                   },
                 ),
                 header: WaterDropHeader(
-                  complete: Text("刷新完成"),
-                  failed: Text(" "),
+                  complete: const Text("刷新完成"),
+                  failed: const Text(" "),
                 ),
                 controller: _refreshController,
                 onLoading: requestFeednIterface,
@@ -168,7 +175,7 @@ class FeedFlowState extends State<FeedFlow> {
                           child: DynamicListLayout(
                             index: index,
                             pageName: widget.pageName,
-                            isShowConcern:false,
+                            isShowConcern: false,
                             isShowRecommendUser: false,
                             model: widget.feedList[index],
                             // 可选参数 子Item的个数

@@ -96,7 +96,6 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                     }else{
                       Navigator.pop(context,null);
                     }
-
                   }
                 },
               ),

@@ -223,11 +223,11 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                   color: AppColor.color246,
                   // margin: EdgeInsets.only(bottom: 16, top: 188),
                 ),
-                Text(
+                const Text(
                   "你的放大镜陨落星辰了",
                   style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
                 ),
-                Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
               ],
             ),
           )
@@ -262,7 +262,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                           offstage: userList.length == 0,
                           child: Container(
                               width: ScreenUtil.instance.width,
-                              margin: EdgeInsets.only(left: 16, right: 16),
+                              margin: const EdgeInsets.only(left: 16, right: 16),
                               child: SearchUserItem(
                                 model: userList[index],
                                 width: ScreenUtil.instance.width,
@@ -423,7 +423,7 @@ class ItemTitleState extends State<ItemTitle> with SingleTickerProviderStateMixi
             widget.title,
             style: AppStyle.textMedium15,
           ),
-          Spacer(),
+          const Spacer(),
           GestureDetector(
             onTap: () {
               print("跳转");
@@ -432,8 +432,8 @@ class ItemTitleState extends State<ItemTitle> with SingleTickerProviderStateMixi
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("更多", style: AppStyle.textSecondaryRegular13),
-                SizedBox(width: 6),
+                const Text("更多", style: AppStyle.textSecondaryRegular13),
+                const SizedBox(width: 6),
                 AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
               ],
             ),

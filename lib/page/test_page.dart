@@ -441,7 +441,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
   }
 
   void _getNewVersion(BuildContext context) async {
-    String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+    String url = "https://caaceed4aeaf2.cdn.sohucs.com/moyu_apk/%E6%91%B8%E9%B1%BCkik.apk";
     VersionModel model = await getNewVersion();
     if (model != null) {
       print('====================版本model有值');

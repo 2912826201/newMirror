@@ -122,7 +122,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             alignment: Alignment.center,
             child: roundedAvatar(
                 context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
-            duration: Duration(milliseconds: 200)),
+            duration: const Duration(milliseconds: 200)),
       );
     }
     // 其他用户点赞的头像
@@ -133,7 +133,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           item != context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)) {
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(userInfo, index, item: item),
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: animatedZoom(userInfo, index, item: item)));
       }
     }
@@ -149,7 +149,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(context, userInfo[index]),
-          duration: Duration(milliseconds: 200));
+          duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
     } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
       return AnimatedContainer(
@@ -157,7 +157,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(context, userInfo[index]),
-          duration: Duration(milliseconds: 200));
+          duration: const Duration(milliseconds: 200));
     } // 只展示前三个头像
     else if (index < 3) {
       return roundedAvatar(context, item);

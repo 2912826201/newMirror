@@ -78,7 +78,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
           children: <Widget>[
             //搜索框
             Container(
-              margin: EdgeInsets.only(top: 6),
+              margin: const EdgeInsets.only(top: 6),
               color: AppColor.white,
               height: 44.0,
               width: ScreenUtil.instance.screenWidthDp,
@@ -86,7 +86,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 16),
+                    margin: const EdgeInsets.only(left: 16),
                     height: 32,
                     width: ScreenUtil.instance.screenWidthDp - 32,
                     decoration: BoxDecoration(
@@ -96,7 +96,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 9,
                         ),
                         AppIcon.getAppIcon(AppIcon.input_search, 24),
@@ -107,7 +107,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             child: TextField(
                               controller: searchController,
                               textInputAction: TextInputAction.search,
-                              decoration: new InputDecoration(
+                              decoration: const InputDecoration(
                                   isCollapsed: true,
                                   contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                                   hintText: '搜索附近的位置',
@@ -116,7 +116,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                       ],
                     ),
                   ),
@@ -133,13 +133,13 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                           builder: (BuildContext context, LoadStatus mode) {
                             Widget body;
                             if (mode == LoadStatus.loading) {
-                              body = Text("正在加载");
+                              body = const Text("正在加载");
                             } else if (mode == LoadStatus.idle) {
-                              body = Text("上拉加载更多");
+                              body = const Text("上拉加载更多");
                             } else if (mode == LoadStatus.failed) {
-                              body = Text("加载失败,请重试");
+                              body = const Text("加载失败,请重试");
                             } else {
-                              body = Text("没有更多了");
+                              body = const Text("没有更多了");
                             }
                             return Container(
                               child: Center(
@@ -156,6 +156,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                         //   context: context,
                         child: ListView.builder(
                             controller: scrollController,
+                            itemExtent:69,
                             itemCount: searchController.text != null && searchController.text.isNotEmpty
                                 ? searchPois.length
                                 : pois.length,
@@ -355,8 +356,8 @@ class LocationItem extends StatelessWidget {
     return Container(
       width: ScreenUtil.instance.width,
       height: 69,
-      margin: EdgeInsets.only(left: 16, right: 16),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.bgWhite, width: 0.5))),
+      margin: const EdgeInsets.only(left: 16, right: 16),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.bgWhite, width: 0.5))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -366,12 +367,12 @@ class LocationItem extends StatelessWidget {
             height: 45,
             child: locationLayout(),
           ),
-          Spacer(),
+          const Spacer(),
           Offstage(
             offstage: index != checkIndex,
             child: AppIcon.getAppIcon(AppIcon.check, 18, color: AppColor.mainRed),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           )
         ],
@@ -385,7 +386,7 @@ class LocationItem extends StatelessWidget {
     print(poi.toString());
     if (poi.id == Application.cityId || index == 0) {
       return Container(
-        alignment: Alignment(-1, 0),
+        alignment: const Alignment(-1, 0),
         child: Text(poi.name, style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
       );
     } else {
@@ -394,7 +395,7 @@ class LocationItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(poi.name, style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
-          Spacer(),
+          const Spacer(),
           Text(
             poi.pname + poi.cityname + poi.adname + poi.address.toString(),
             style: AppStyle.textSecondaryRegular13,
