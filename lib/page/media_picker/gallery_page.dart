@@ -510,19 +510,10 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
       }
     }
 
-    //FIXME 这里iOS如果文件在iCloud 会取不到。。。
+    // 获取file
     if (_fileMap[entity.id] == null) {
-      entity.file.then((value) {
-        _fileMap[entity.id] = value;
-        print("取到媒体文件：" + entity.id + ":" + value.path);
-        if (notifier.currentEntity.id == entity.id) {
-          //如果当前预览的和正在加载的是一致的 则刷新界面
-          print("相册刷新了界面");
-          setState(() {});
-        }
-      }).catchError((e) {
-        print("媒体文件报错：" + entity.id + ":" + e);
-      });
+      _getFile(context, entity);
+
       if (widget.needCrop) {
         // 裁剪模式需要将其置入裁剪框
         notifier.setCurrentEntity(entity);
@@ -872,7 +863,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                   if (_fileMap[notifier.currentEntity.id] == null) {
                     ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
                     return;
-                  }else{
+                  } else {
                     await _getImage(context, notifier.currentEntity.id, toData: false);
                   }
                 }
@@ -914,7 +905,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     case AssetType.video:
                       mediaFileModel.file = _fileMap[orderedEntity.entity.id];
                       //如果当前的file尚未获取到 则不能继续
-                      if(mediaFileModel.file == null){
+                      if (mediaFileModel.file == null) {
                         ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
                         return;
                       }
@@ -939,7 +930,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                 } else {
                   mediaFileModel.file = _fileMap[orderedEntity.entity.id];
                   //如果当前的file尚未获取到 则不能继续
-                  if(mediaFileModel.file == null){
+                  if (mediaFileModel.file == null) {
                     ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
                     return;
                   }
@@ -1110,6 +1101,24 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   _changeCurrentRatio() {
     context.read<SelectedMapNotifier>().changeUseOriginalRatio();
+  }
+
+  //FIXME 这里iOS如果文件在iCloud 会取不到。。。要做循环判断是否需要重新获取
+  _getFile(BuildContext context, AssetEntity entity) {
+    entity.file.then((value) {
+      //有可能异步返回结果时已经有值了 则不需要重复赋值刷新
+      if (_fileMap[entity.id] == null) {
+        _fileMap[entity.id] = value;
+        print("取到媒体文件：" + entity.id + ":" + value.path);
+        if (context.read<SelectedMapNotifier>().currentEntity.id == entity.id) {
+          //如果当前预览的和正在加载的是一致的 则刷新界面
+          print("相册刷新了界面");
+          setState(() {});
+        }
+      }
+    }).catchError((e) {
+      print("媒体文件报错：" + entity.id + ":" + e);
+    });
   }
 }
 
