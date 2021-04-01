@@ -386,6 +386,18 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                         ),
                       )
                     : Container(),
+                widget.needCrop && context.watch<PreviewHeightNotifier>().previewHeight < _previewMaxHeight
+                    ?
+                    // 裁剪区域的遮罩
+                    GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          color: AppColor.textPrimary1.withOpacity(0.5),
+                          width: _previewMaxHeight,
+                          height: context.watch<PreviewHeightNotifier>().previewHeight,
+                        ),
+                      )
+                    : Container(),
                 context.select((SelectedMapNotifier value) => value.isAlbumListShow) ? _buildAlbumList() : Container(),
               ],
             ),
