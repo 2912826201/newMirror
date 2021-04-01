@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
@@ -512,6 +513,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
     // 获取file
     if (_fileMap[entity.id] == null) {
+      print("开始获取媒体文件：" + entity.id);
       _getFile(context, entity);
 
       if (widget.needCrop) {
@@ -875,6 +877,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               Map<String, _OrderedAssetEntity> selectedMap = notifier.selectedMap;
               if (selectedMap.isEmpty) {
                 if (notifier.currentEntity != null) {
+                  //如果当前的file尚未获取到 则不能继续
+                  if (_fileMap[notifier.currentEntity.id] == null) {
+                    ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+                    return;
+                  }
                   // 将当前正在预览的放入已选map中
                   _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(1, notifier.currentEntity);
                   selectedMap[notifier.currentEntity.id] = orderedEntity;
@@ -1105,6 +1112,18 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   //FIXME 这里iOS如果文件在iCloud 会取不到。。。要做循环判断是否需要重新获取
   _getFile(BuildContext context, AssetEntity entity) {
+    _doGetFile(context, entity);
+    //每隔一段时间检查一次 如果没有取到就重新获取 取到了则中断定时器
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
+      if (_fileMap[entity.id] != null) {
+        timer.cancel();
+      } else {
+        _doGetFile(context, entity);
+      }
+    });
+  }
+
+  _doGetFile(BuildContext context, AssetEntity entity) {
     entity.file.then((value) {
       //有可能异步返回结果时已经有值了 则不需要重复赋值刷新
       if (_fileMap[entity.id] == null) {
