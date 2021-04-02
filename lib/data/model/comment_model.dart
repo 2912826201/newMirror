@@ -17,7 +17,6 @@ class CommentModel {
   dynamic totalPage;
   int totalCount;
 
-
   CommentModel(
       {int hasNext,
       dynamic lastTime,
@@ -66,7 +65,6 @@ class CommentModel {
 
   @override
   String toString() {
-    // TODO: implement toString
     return toJson().toString();
   }
 }
