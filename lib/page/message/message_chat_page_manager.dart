@@ -27,6 +27,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -124,7 +125,7 @@ Future<bool> jumpShareMessage(
 //去聊天界面
 void jumpChatPageConversationDto(
     BuildContext context, ConversationDto conversation) {
-  _jumpChatPage(
+  _jumpJudgeChatPage(
       context: context, conversation: conversation, shareMessage: null);
 }
 
@@ -140,17 +141,48 @@ void jumpGroupPage(BuildContext context,String name,int groupId){
 
 //去测试界面
 void jumpChatPageTest(BuildContext context) {
-  _jumpChatPage(
+  _jumpJudgeChatPage(
       context: context, conversation: getConversationDto(), shareMessage: null);
 }
 
+//跳转界面-去聊天界面-先获取群成员
+void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async{
+  context.read<GroupUserProfileNotifier>().clearAllUser();
+
+  _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage);
+
+  if(conversation.type==GROUP_TYPE) {
+    int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
+    if (null == groupManNumber || groupManNumber < 1) {
+      ToastShow.show(msg: "未获取到群信息", context: context);
+      print("未获取到群信息：${conversation.toMap().toString()}");
+      return;
+    }
+  }
+}
+
+
 //跳转界面-去聊天界面
-void _jumpChatPage(
-    {BuildContext context,
-    ConversationDto conversation,
-    Message shareMessage}) {
+void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async{
+  List<ChatDataModel> chatDataModelList;
+  int systemPage=0;
+  String systemLastTime;
+  if (conversation.getType() != RCConversationType.System) {
+    chatDataModelList=await ChatPageUtil.init(context).getChatMessageList(conversation, shareMessage);
+  } else {
+    List list=await ChatPageUtil.init(context).getSystemInformationNet(conversation);
+    chatDataModelList=list[0];
+    systemLastTime=list[1];
+    systemPage=list[2];
+  }
   AppRouter.navigateToChatPage(
-      context: context, conversation: conversation, shareMessage: shareMessage);
+    context: context,
+    conversation: conversation,
+    chatDataModelList: chatDataModelList,
+    shareMessage: shareMessage,
+    systemPage:systemPage,
+    systemLastTime:systemLastTime,
+  );
 }
 
 //todo 目前没有自定义的所以差不多都是使用的是TextMessage 等有了自定义再改
@@ -701,9 +733,10 @@ int getRCConversationType(int type) {
 }
 
 
+
 //获取群成员信息
-Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context) async {
-  context.read<GroupUserProfileNotifier>().clearAllUser();
+Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) async {
+  Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
   List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
   // print("------model:${model.toString()}");
@@ -713,11 +746,15 @@ Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context)
       chatGroupUserModelList.add(model);
       GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
     });
-    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
-    initChatGroupUserModelMap(chatGroupUserModelList);
+    Future.delayed(Duration(milliseconds: 150),(){
+      Application.appContext.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
+    });
   } else {
-    context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
+    Future.delayed(Duration(milliseconds: 150),(){
+      Application.appContext.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
+    });
   }
+  return chatGroupUserModelList.length;
 
   // print("------len:${chatGroupUserModelList.length}");
 }
@@ -735,7 +772,6 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
       GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
     });
     context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
-    initChatGroupUserModelMap(chatGroupUserModelList);
   } else {
     context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
   }
@@ -743,22 +779,7 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
   print("------len:${chatGroupUserModelList.length}");
 }
 
-//获取群成员的信息 map id对应昵称
-void initChatGroupUserModelMap(List<ChatGroupUserModel> chatGroupUserModelList) {
-  if (!chatGroupUserModelList[0].isGroupLeader()) {
-    for (int i = 0; i < chatGroupUserModelList.length; i++) {
-      if (chatGroupUserModelList[i].isGroupLeader()) {
-        chatGroupUserModelList.insert(0, chatGroupUserModelList[i]);
-        chatGroupUserModelList.removeAt(i + 1);
-        break;
-      }
-    }
-  }
-  Application.chatGroupUserNameMap.clear();
-  for (ChatGroupUserModel userModel in chatGroupUserModelList) {
-    Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
-  }
-}
+
 
 String getChatUserName(String groupId,String userId, String name) {
   String userName = ((Application.chatGroupUserInformationMap["${groupId}_$userId"]??Map())

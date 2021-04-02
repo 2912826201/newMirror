@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -579,12 +580,21 @@ class AppRouter {
   }
 
   static void navigateToChatPage(
-      {@required BuildContext context, @required ConversationDto conversation, Message shareMessage}) {
+      {@required BuildContext context,
+        @required ConversationDto conversation,
+        @required List<ChatDataModel> chatDataModelList,
+        String systemLastTime,
+        int systemPage=0,
+        Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
       map["conversation"] = conversation.toMap();
     }
+    map["systemPage"] = systemPage;
+    map["systemLastTime"] = systemLastTime;
     Application.shareMessage = shareMessage;
+    Application.chatDataList.clear();
+    Application.chatDataList.addAll(chatDataModelList);
     _navigateToPage(context, pathChatPage, map);
   }
 

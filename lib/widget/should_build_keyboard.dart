@@ -75,11 +75,9 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
-    initStatePage();
     print("initState-初始化");
     _initTime();
   }
-  void initStatePage();
 
 
   //计时
@@ -158,7 +156,6 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
   @override
   void dispose() {
     super.dispose();
-    disposeStatePage();
     if (_timerBottomHeight != null) {
       _timerBottomHeight.cancel();
       _timerBottomHeight = null;
@@ -166,5 +163,4 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
     debugPrint("XCState dispose");
   }
 
-  void disposeStatePage();
 }

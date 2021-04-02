@@ -73,7 +73,7 @@ class FriendsCell extends StatelessWidget {
 
   //item-ui
   Widget itemUi(BuildContext context) {
-    if(!(isShowSingleChoice && groupTitle != "群成员")){
+    if(isShowSingleChoice && groupTitle == "群成员"){
       return Opacity(
         opacity: 0.2,
         child: Container(
