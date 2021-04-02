@@ -45,9 +45,13 @@ class CameraRecordPage extends StatefulWidget {
 }
 
 class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObserver {
-  //切换摄像头的时间间隔 1000ms
+  //切换摄像头的时间间隔
   final int _switchCameraInterval = 1000;
   int _latestSwitchCameraTime = 0;
+
+  //点击拍摄按钮的时间间隔
+  final int _shootInterval = 1000;
+  int _latestShootTime = 0;
 
   CameraController _controller;
 
@@ -232,6 +236,12 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                           child: _currentMode == 0
                               ? GestureDetector(
                                   onTap: () async {
+                                    int currentTime = DateTime.now().millisecondsSinceEpoch;
+                                    if (currentTime - _latestShootTime < _shootInterval) {
+                                      //避免点击拍摄按钮过于频繁
+                                      return;
+                                    }
+                                    _latestShootTime = currentTime;
                                     print("拍照！");
                                     String filePath = await takePhoto();
                                     print("保存照片：$filePath");
@@ -292,7 +302,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                               )
                                             : Container(),
                                         Text(
-                                          "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(_milliDuration))}",
+                                          _isRecording
+                                              ? "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(_milliDuration))}"
+                                              : " ",
                                           style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 10),
                                         ),
                                       ],
@@ -301,13 +313,26 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                       height: 12,
                                     ),
                                     GestureDetector(
-                                      onLongPressStart: (longPressStartDetails) async {
-                                        print("开始录制！");
-                                        await startRecordVideo();
+                                      onTap: () async {
+                                        int currentTime = DateTime.now().millisecondsSinceEpoch;
+                                        if (currentTime - _latestShootTime < _shootInterval) {
+                                          //避免点击拍摄按钮过于频繁
+                                          return;
+                                        }
+                                        _latestShootTime = currentTime;
+                                        if (_isRecording) {
+                                          finishRecording();
+                                        } else {
+                                          await startRecordVideo();
+                                        }
                                       },
-                                      onLongPressEnd: (longPressEndDetails) {
-                                        finishRecording();
-                                      },
+                                      // onLongPressStart: (longPressStartDetails) async {
+                                      //   print("开始录制！");
+                                      //   await startRecordVideo();
+                                      // },
+                                      // onLongPressEnd: (longPressEndDetails) {
+                                      //   finishRecording();
+                                      // },
                                       behavior: HitTestBehavior.opaque,
                                       child: Container(
                                         width: 66,
