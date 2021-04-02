@@ -50,41 +50,49 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
   bool lockOrUnlock = true;
   CancelToken cancelToken = CancelToken();
   Dio dio = Dio();
+  Connectivity connectivity = Connectivity();
+
   _VersionDialogState({this.url, this.content, this.strong});
 
   @override
   void initState() {
     super.initState();
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      switch (result) {
+        case ConnectivityResult.mobile:
+          print('----------mobile-----------------mobile');
+          break;
+        case ConnectivityResult.wifi:
+          print('----------wifi-----------------wifi');
+          break;
+        case ConnectivityResult.none:
+          dio.lock();
+          ToastShow.show(msg: "下载异常，请重试", context: context);
+          progressWidth = 1;
+          progressText = "继续下载";
+          setState(() {});
+          print('----------none-----------------none');
+          break;
+      }
+    });
   }
 
   void _updateProgress() {
-    FileUtil().chunkDownLoad(
-      context,
-      url,
-      (taskId, received, total) async {
-        if (received != total) {
-          progressWidth = received / total;
-          progressText = "${100 * (received / total)}".substring(0, "${100 * (received / total)}".indexOf(".")) + "%";
-          setState(() {});
-        }
-        print('==taskId$taskId====================progress${received / total}');
-      },
-      cancelToken: cancelToken,
-      dio: dio
-    ).then((value) {
+    FileUtil().chunkDownLoad(context, url, (taskId, received, total) async {
+      if (received != total) {
+        progressWidth = received / total;
+        progressText = "${100 * (received / total)}".substring(0, "${100 * (received / total)}".indexOf(".")) + "%";
+        setState(() {});
+      }
+      print('==taskId$taskId====================progress${received / total}');
+    }, cancelToken: cancelToken, dio: dio).then((value) {
       if (value != null && value.filePath != null) {
         print('-----------------下载完成4${value.filePath}');
         Future.delayed(Duration.zero, () async {
           _installApk();
         });
       }
-    }).catchError((e){
-      ToastShow.show(msg: "下载异常，请重试", context: context);
-      progressWidth = 1;
-      progressText = "继续下载";
-      setState(() {
-      });
-    });
+    }).catchError((e) {});
   }
 
   _installApk() async {
@@ -157,7 +165,8 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                   }
                 } else if (progressText == "去安装") {
                   _installApk();
-                }else if(progressText == "继续下载"){
+                } else if (progressText == "继续下载") {
+                  dio = Dio();
                   _updateProgress();
                 }
               },
@@ -211,7 +220,6 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       ),
     );
   }
-
 }
 
 showVersionDialog({String content, bool strong, String url, BuildContext context, bool barrierDismissible = false}) {

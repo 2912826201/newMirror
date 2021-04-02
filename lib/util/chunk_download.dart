@@ -42,7 +42,7 @@ class ChunkDownLaod {
         }
       };
     }
-   /* Application.connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+    /* Application.connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       switch (result) {
         case ConnectivityResult.mobile:
             dio.unlock();
@@ -80,6 +80,7 @@ class ChunkDownLaod {
           break;
       }
     }));*/
+
     ///合并文件
     Future mergeTempFiles(chunk) async {
       print('-------------合并文件----------mergeTempFiles');
