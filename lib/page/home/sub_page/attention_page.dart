@@ -17,6 +17,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
@@ -51,7 +52,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   bool get wantKeepAlive => true; //必须重写
 
   var status = Status.loggedIn;
-
+  //关注未读数
+  int _unReadFeedCount = 0;
   // 加载中默认文字
   String loadText = "";
 
@@ -83,7 +85,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   @override
   void initState() {
     print("初始化一下啊");
-
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否登录$isLoggedIn");
     if (!isLoggedIn) {
@@ -115,6 +116,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
+      EventBus.getDefault()
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_Page, registerName: EVENTBUS__FEED_UNREAD);
     });
   }
 
@@ -125,7 +128,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print('============================关注页deactivate');
     context.read<FeedMapNotifier>().setBuildCallBack(false);
   }
-
+  _feedUnreadCallBack(int unread) {
+    _unReadFeedCount = unread;
+  }
   // 请求关注接口
   getRecommendFeed() async {
     isRequestInterface = true;
@@ -210,12 +215,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0 && context.read<FeedMapNotifier>().value.unReadFeedCount != 0) {
+    if (addFeedNum != 0 && _unReadFeedCount != 0) {
       ToastShow.show(
-          msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
+          msg: "更新了${_unReadFeedCount}条动态",
           context: context,
           gravity: Toast.CENTER);
-      context.read<FeedMapNotifier>().setUnReadFeedCount(0);
+      _unReadFeedCount = 0;
+      EventBus.getDefault().post(msg: _unReadFeedCount ,registerName:EVENTBUS__FEED_UNREAD);
+      // context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
     }
     // 更新全局监听

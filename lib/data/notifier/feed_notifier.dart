@@ -34,10 +34,6 @@ class FeedMap {
 
   Map<int, dynamic> get courseCommentHot => _courseCommentHot;
 
-  //关注未读数
-  int _unReadFeedCount = 0;
-
-  int get unReadFeedCount => _unReadFeedCount;
   FeedMapNotifier wrapper;
 
   FeedMap(this._feedMap);
@@ -66,11 +62,6 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
 
   void interacticeNoticeChange({CommentModel courseCommentHots, int commentId}) {
     value.courseCommentHot[commentId] = courseCommentHots;
-  }
-
-  void setUnReadFeedCount(int count) {
-    value._unReadFeedCount = count;
-    notifyListeners();
   }
 
 
