@@ -357,7 +357,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   getCourse() {
     return Container(
       margin: const EdgeInsets.only(top: 24, bottom: 18),
-      height: 93,
+      height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -376,20 +376,20 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               }
             },
             child: Container(
+              margin: EdgeInsets.only(
+                left: index > 0 ? 29 : 16,
+                right: index == liveVideoModel.length - 1 ? 16 : 0,
+              ),
+              // decoration: BoxDecoration(border: Border.all(color: AppColor.mainRed)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   liveVideoModel[index].coachDto.isLiving == 1
                       ? Stack(
-                          alignment: const Alignment(0, 0),
+                          alignment: Alignment(0, -1),
                           children: [
                             Container(
-                              margin: EdgeInsets.only(
-                                  left: index > 0 ? 24 : 16,
-                                  right: index == liveVideoModel.length - 1 ? 16 : 0,
-                                  top: 0,
-                                  bottom: 8.5),
                               height: 53,
                               width: 53,
                               decoration: BoxDecoration(
@@ -404,8 +404,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular((26.5))),
-                              // decoration: new BoxDecoration(
-                              //     color: AppColor.mainRed, borderRadius: new BorderRadius.circular((26.5))),
                               child: Center(
                                 child: Container(
                                   width: 50,
@@ -430,7 +428,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             ),
                             Positioned(
                                 bottom: 0,
-                                // left: index > 0 ? 29 : 21,
                                 child: Container(
                                     height: 17,
                                     width: 43.5,
@@ -438,7 +435,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                         color: AppColor.white, borderRadius: BorderRadius.circular((8.5))),
                                     child: Center(
                                       child: Container(
-                                        alignment: const Alignment(0, 0.5),
+                                        alignment: Alignment.center,
                                         height: 14,
                                         width: 40.5,
                                         decoration: BoxDecoration(
@@ -463,11 +460,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                           ],
                         )
                       : Container(
-                          margin: EdgeInsets.only(
-                              left: index > 0 ? 24 : 16,
-                              right: index == liveVideoModel.length - 1 ? 16 : 0,
-                              top: 0,
-                              bottom: 8.5),
                           height: 53,
                           width: 53,
                           decoration: BoxDecoration(
@@ -480,11 +472,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         ),
                   Container(
                     width: 53,
-                    margin: EdgeInsets.only(
-                        left: index > 0 ? 24 : 16,
-                        right: index == liveVideoModel.length - 1 ? 16 : 0,
-                        top: 0,
-                        bottom: 8.5),
                     child: Center(
                       child: Text(
                         liveVideoModel[index].coachDto.nickName,
