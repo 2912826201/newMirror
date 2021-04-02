@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -71,7 +72,6 @@ class Application {
 
   // 动态model
   static HomeFeedModel feedModel;
-
   // 是否唤起键盘上方输入框
   static bool isArouse = false;
 
@@ -93,6 +93,7 @@ class Application {
   //发送验证码的全局计时
   static int smsCodeSendTime;
 
+  static Dio dio;
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 

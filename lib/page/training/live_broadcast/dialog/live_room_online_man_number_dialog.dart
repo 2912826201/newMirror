@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -142,35 +143,41 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
 
   //item
   Widget getListViewItem(BuddyModel buddyModel,int index){
-    return Container(
-      height: 48.0,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          getUserImage(buddyModel.avatarUri,28,28),
-          SizedBox(width: 12),
-          Expanded(child: SizedBox(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                buddyModel.nickName,
-                style: TextStyle(fontSize: 14,color: AppColor.textPrimary1),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 1),
-              Text(
-                DateUtil.formatTimeString(DateUtil.getDateTimeByMs(buddyModel.time))+
-                " 进入了直播间",
-                style: TextStyle(fontSize: 10,color: AppColor.textSecondary),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),)),
-        ],
+    return GestureDetector(
+      child: Container(
+        height: 48.0,
+        color: AppColor.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            getUserImage(buddyModel.avatarUri,28,28),
+            SizedBox(width: 12),
+            Expanded(child: SizedBox(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  buddyModel.nickName,
+                  style: TextStyle(fontSize: 14,color: AppColor.textPrimary1),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 1),
+                Text(
+                  DateUtil.formatTimeString(DateUtil.getDateTimeByMs(buddyModel.time))+
+                      " 进入了直播间",
+                  style: TextStyle(fontSize: 10,color: AppColor.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),)),
+          ],
+        ),
       ),
+      onTap: (){
+        AppRouter.navigateToMineDetail(context, buddyModel.uid);
+      },
     );
   }
 

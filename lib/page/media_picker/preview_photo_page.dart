@@ -95,6 +95,8 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 outWidth: widget.fixedWidth == null ? baseOutSize : widget.fixedWidth.toDouble(),
                 outHeight: widget.fixedHeight == null ? baseOutSize : widget.fixedHeight.toDouble(),
                 key: _cropperKey,
+                backBoxColor0: AppColor.transparent,
+                backBoxColor1: AppColor.transparent,
               ),
             ),
             Expanded(

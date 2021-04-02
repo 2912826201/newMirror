@@ -173,7 +173,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
             ),
             Spacer(),
             Text(
-              "已加入iFAAPP${_getUserCreateTime(data)}",
+              "已加入iF APP${_getUserCreateTime(data)}",
               style: AppStyle.textPrimary3Regular14,
             ),
             Spacer(),

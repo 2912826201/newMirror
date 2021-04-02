@@ -218,7 +218,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               onTap: () {
                 Permission.camera.request().then((value){
                   if(value!=null){
-
                     AppRouter.navigateToScanCodePage(context);
                   }
                 });
