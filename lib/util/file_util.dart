@@ -221,7 +221,7 @@ class FileUtil {
     });
   }
               ///断点续传
-  Future<DownloadDto> chunkDownLoad(String url, Function(String taskId, int received, int total)
+  Future<DownloadDto> chunkDownLoad(BuildContext context,String url, Function(String taskId, int received, int total)
   onProgressListener,
       {CancelToken cancelToken, Dio dio,int type = downloadTypeCommon}) async {
     String taskId = Uuid().v4();
@@ -261,9 +261,6 @@ class FileUtil {
       } else {
         return null;
       }
-    }).catchError((e) {
-      print('-----------------------$e');
-      return null;
     });
   }
 

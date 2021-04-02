@@ -47,22 +47,19 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
   double progressWidth = 1;
   String progressText = "立即更新";
   bool canOnClick = true;
+  bool lockOrUnlock = true;
   CancelToken cancelToken = CancelToken();
-  StreamSubscription<ConnectivityResult> connectivityListener;
-  Connectivity connectivity = Connectivity();
-
+  Dio dio = Dio();
   _VersionDialogState({this.url, this.content, this.strong});
 
   @override
   void initState() {
     super.initState();
-    if (AppPrefs.getDownLoadKeyList()!=null&&AppPrefs.getDownLoadKeyList().contains(url)) {
-      progressText = "继续下载";
-    }
   }
 
   void _updateProgress() {
     FileUtil().chunkDownLoad(
+      context,
       url,
       (taskId, received, total) async {
         if (received != total) {
@@ -73,14 +70,20 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
         print('==taskId$taskId====================progress${received / total}');
       },
       cancelToken: cancelToken,
+      dio: dio
     ).then((value) {
-      /* print('-----------------下载完成3  ${value.url} ${value.taskId}  ${value.filePath} ${value.id}');*/
       if (value != null && value.filePath != null) {
         print('-----------------下载完成4${value.filePath}');
         Future.delayed(Duration.zero, () async {
           _installApk();
         });
       }
+    }).catchError((e){
+      ToastShow.show(msg: "下载异常，请重试", context: context);
+      progressWidth = 1;
+      progressText = "继续下载";
+      setState(() {
+      });
     });
   }
 
@@ -146,7 +149,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
             Spacer(),
             InkWell(
               onTap: () async {
-                if (progressText == "立即更新"||progressText == "继续下载") {
+                if (progressText == "立即更新") {
                   if (Platform.isIOS) {
                     LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
                   } else {
@@ -154,6 +157,8 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                   }
                 } else if (progressText == "去安装") {
                   _installApk();
+                }else if(progressText == "继续下载"){
+                  _updateProgress();
                 }
               },
               child: ClipRRect(
@@ -206,115 +211,6 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       ),
     );
   }
-/* return StreamBuilder(
-        stream: RUpgrade.stream,
-        builder: (BuildContext context, AsyncSnapshot<DownloadInfo> snapshot) {
-          if(snapshot.data!=null){
-            print('==========================snapshot.data.path${snapshot.data.path.substring(0,snapshot.data.path
-                .indexOf(apkName))
-            }');
-          }
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: ScreenUtil.instance.screenWidthDp * 0.69,
-              height: 353,
-              child: Column(
-                children: [
-                  Container(
-                    height: ScreenUtil.instance.height * 0.15,
-                    color: AppColor.bgVip1,
-                  ),
-                  Spacer(),
-                  Text(
-                    "发现新版本",
-                    style: AppStyle.textMedium16,
-                  ),
-                  Spacer(),
-                  Container(
-                    height: 75,
-                    width: ScreenUtil.instance.screenWidthDp,
-                    padding: EdgeInsets.only(left: 23, right: 23),
-                    child: SingleChildScrollView(
-                        child: Text(
-                      content,
-                      style: AppStyle.textMedium15,
-                    )),
-                  ),
-                  Spacer(),
-                  InkWell(
-                      onTap: () async {
-                        switch(progressText){
-                          case "去安装":
-                           */ /* _testUpDataVersionApk();*/ /*
-                            await RUpgrade.install(lastId).then((value){
-                              if(value){
-                                Navigator.pop(context);
-                              }
-                            });
-                            break;
-                          case "继续更新":
-                            await RUpgrade.upgradeWithId(lastId,
-                                notificationVisibility: NotificationVisibility.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION);
-                            break;
-                          case "立即更新":
-                              _testUpDataVersionApk();
-                              break;
-                        }
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 180,
-                              height: 32,
-                              color: AppColor.bgWhite,
-                            ),
-                            Container(
-                              width:progressText!="立即更新"&&progressText!="去安装"&&progressText!="继续更新"
-                                  ?(snapshot.data
-                                  .percent / 100) * 180
-                                  : 180,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                  color: AppColor.black, borderRadius: BorderRadius.all(Radius.circular(16))),
-                            ),
-                            Container(
-                              width: 180,
-                              height: 32,
-                              child: Center(
-                                child: Text(
-                                   progressText,
-                                    style: AppStyle.whiteMedium15),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  !strong
-                      ? InkWell(
-                          onTap: () {
-                            if (snapshot.data!=null&&snapshot.data.status ==DownloadStatus.STATUS_RUNNING) {
-                              _cancelDownLoad();
-                            }
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "下次再说",
-                            style: AppStyle.textHintRegular14,
-                          ),
-                        )
-                      : Container(),
-                  Spacer(),
-                ],
-              ),
-            ),
-          );
-        });*/
 
 }
 

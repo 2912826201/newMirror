@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -290,6 +291,7 @@ class MyAppState extends State<MyApp> {
     Application.rongCloud.initReceiveManager(context);
     //设置一个全局的上下文
     Application.appContext = context;
+    Application.connectivity = Connectivity();
     //全局音频播放器的回调
     context.read<VoiceSettingNotifier>().onPlayerCompletion();
     context.read<VoiceSettingNotifier>().onPlayerError();
