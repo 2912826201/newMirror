@@ -108,6 +108,7 @@ dependencies:
   #  extended_nested_scroll_view: ^2.0.0
   # 更好的播放器
   better_player: ^0.0.61
+  inview_notifier_list: ^1.0.0
   # 绘制扩展 本打算画虚线用的
   # path_drawing: ^0.4.1+1
   # 获取视频的缩略图
