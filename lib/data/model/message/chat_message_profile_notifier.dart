@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'chat_type_model.dart';
@@ -95,10 +96,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
       List<dynamic> users = mapGroupModel["users"];
       for (dynamic d in users) {
         if (d["uid"] == Application.profile.uid) {
-          this.isResetPage = true;
-          this.isResetCoursePage = false;
-          this.resetMessage = message;
-          notifyListeners();
+          EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
           break;
         }
       }
@@ -117,10 +115,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
       List<dynamic> users = mapGroupModel["users"];
       for (dynamic d in users) {
         if (d["uid"] == Application.profile.uid) {
-          this.isResetPage = true;
-          this.isResetCoursePage = false;
-          this.resetMessage = message;
-          notifyListeners();
+          EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
           break;
         }
       }
@@ -132,9 +127,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   //撤回消息
   withdrawMessage(Message message){
     if (this.chatUserId==message.targetId) {
-      this.message = message;
-      this.isSettingStatus = false;
-      notifyListeners();
+      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
     }
   }
 
@@ -143,9 +136,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   judgeConversationMessage(Message message) {
     if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
       if (message.conversationType != RCConversationType.System) {
-        this.message = message;
-        this.isSettingStatus = false;
-        notifyListeners();
+        EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
       }
     }
     //判断是不是群通知-移除群成员的消息

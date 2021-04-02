@@ -422,7 +422,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //修改群名
   void modifyPr(String newName) async {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
+    if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -710,7 +710,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       print("快速点击");
       return false;
     }
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
+    if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return false;
     }

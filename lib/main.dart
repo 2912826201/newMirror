@@ -316,6 +316,7 @@ class MyAppState extends State<MyApp> {
       theme: ThemeData(
         // primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        platform: TargetPlatform.iOS,
       ),
       navigatorKey: Application.navigatorKey,
       //通过统一方法处理页面跳转路由
