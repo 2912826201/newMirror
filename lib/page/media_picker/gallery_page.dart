@@ -390,9 +390,13 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     ?
                     // 裁剪区域的遮罩
                     GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          print("需要恢复裁剪区域高度");
+                        },
                         child: Container(
-                          color: AppColor.textPrimary1.withOpacity(0.5),
+                          color: AppColor.textPrimary1.withOpacity(
+                              (_previewMaxHeight - context.watch<PreviewHeightNotifier>().previewHeight) /
+                                  _previewMaxHeight),
                           width: _previewMaxHeight,
                           height: context.watch<PreviewHeightNotifier>().previewHeight,
                         ),
@@ -1367,10 +1371,11 @@ class PreviewHeightNotifier with ChangeNotifier {
     } else if (newPreviewHeight < minHeight) {
       newPreviewHeight = minHeight;
     }
-    // 算完后赋值
-    _previewHeight = newPreviewHeight;
-
-    notifyListeners();
+    // 算完后赋值 只在值发生变化时更新界面
+    if (_previewHeight != newPreviewHeight) {
+      _previewHeight = newPreviewHeight;
+      notifyListeners();
+    }
   }
 }
 
