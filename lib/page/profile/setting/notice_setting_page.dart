@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/user_notice_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,6 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
   var permDenied = "denied";
   var permUnknown = "unknown";
   var permProvisional = "provisional";
-
   //设置用户通知设置
   _setUserNotice(int type, int isOpen) async {
     var noticeState = await setUserNotice(type, isOpen);
@@ -237,33 +237,29 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                 style: AppStyle.textRegular16,
               ),
               Expanded(child: SizedBox()),
-              Transform.scale(
-                scale: 0.8,
-                child: CupertinoSwitch(
-                    activeColor: AppColor.mainRed,
-                    value: isOpen,
-                    onChanged: context.watch<SettingNotifile>().permisionIsOpen
-                        ? (bool value) {
-                            switch (type) {
-                              case 0:
-                                _setUserNotice(0, context.read<SettingNotifile>().notFollow ? 0 : 1);
-                                break;
-                              case 1:
-                                _setUserNotice(1, context.read<SettingNotifile>().followBuddy ? 0 : 1);
-                                break;
-                              case 2:
-                                _setUserNotice(2, context.read<SettingNotifile>().mentionedMe ? 0 : 1);
-                                break;
-                              case 3:
-                                _setUserNotice(3, context.read<SettingNotifile>().comment ? 0 : 1);
-                                break;
-                              case 4:
-                                _setUserNotice(4, context.read<SettingNotifile>().laud ? 0 : 1);
-                                break;
-                            }
-                          }
-                        : null),
-              ),
+             SelectButton(
+               isOpen,
+               intervalsMilliseconds: 1000,
+               changeCallBack: context.watch<SettingNotifile>().permisionIsOpen
+                   ? (value){
+                   switch (type) {
+                     case 0:
+                       _setUserNotice(0, context.read<SettingNotifile>().notFollow ? 0 : 1);
+                       break;
+                     case 1:
+                       _setUserNotice(1, context.read<SettingNotifile>().followBuddy ? 0 : 1);
+                       break;
+                     case 2:
+                       _setUserNotice(2, context.read<SettingNotifile>().mentionedMe ? 0 : 1);
+                       break;
+                     case 3:
+                       _setUserNotice(3, context.read<SettingNotifile>().comment ? 0 : 1);
+                       break;
+                     case 4:
+                       _setUserNotice(4, context.read<SettingNotifile>().laud ? 0 : 1);
+                       break;
+                   }
+             }: null,)
             ],
           ),
         ),
