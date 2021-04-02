@@ -17,6 +17,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -288,17 +289,20 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   double getDotsWidth(int choseIndex) {
-    if (imageCount < 6) {                                                                       //多加一点边距
-      return (imageCount - 1) * mediumDotsSize + bigDotsSize + (imageCount - 1) * spacingWidth+mediumDotsSize
-          .toDouble();
+    if (imageCount < 6) {
+      //多加一点边距
+      return (imageCount - 1) * mediumDotsSize +
+          bigDotsSize +
+          (imageCount - 1) * spacingWidth +
+          mediumDotsSize.toDouble();
     } else if (imageCount > 6) {
       if (choseIndex < 3 || choseIndex >= imageCount - 3) {
-        return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
+        return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4 + mediumDotsSize.toDouble();
       } else {
-        return smallDotsSize * 2 + mediumDotsSize * 2 + bigDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
+        return smallDotsSize * 2 + mediumDotsSize * 2 + bigDotsSize + spacingWidth * 4 + mediumDotsSize.toDouble();
       }
     } else {
-      return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
+      return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4 + mediumDotsSize.toDouble();
     }
   }
 
@@ -338,10 +342,10 @@ class _SlideBannerState extends State<SlideBanner> {
                       onIndexChanged: (index) {
                         autoPlay(index);
                         if (index > 1) {
-                          if(index<imageCount-3){
+                          if (index < imageCount - 3) {
                             controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
                                 duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                          }else if(index==imageCount-3){
+                          } else if (index == imageCount - 3) {
                             controller.animateTo(controller.position.maxScrollExtent,
                                 duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                           }
@@ -364,8 +368,8 @@ class _SlideBannerState extends State<SlideBanner> {
                             padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                                color:  AppColor.textPrimary1.withOpacity(0.5)),
-                            child:  Text(
+                                color: AppColor.textPrimary1.withOpacity(0.5)),
+                            child: Text(
                               "${snapshot.data + 1}/${imageCount}",
                               style: const TextStyle(color: AppColor.white, fontSize: 12),
                             ),
@@ -383,32 +387,35 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
-                        padding: const EdgeInsets.only(left: 2,right: 2),
+                        padding: const EdgeInsets.only(left: 2, right: 2),
                         width: getDotsWidth(snapshot.data),
                         height: 10,
                         margin: const EdgeInsets.only(top: 5),
-                        child: ListView.separated(
-                          physics: NeverScrollableScrollPhysics(),
-                          controller: controller,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return AnimatedContainer(
-                              duration: Duration(milliseconds: 250),
-                              height: getDotsSize(snapshot.data, index).height,
-                              width: getDotsSize(snapshot.data, index).width,
-                              decoration: BoxDecoration(
-                                  color:
-                                      snapshot.data == index ? AppColor.black : AppColor.textPrimary1.withOpacity(0.12),
-                                  shape: BoxShape.circle),
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                            width: 4,
-                            color: const Color(0xFFFFFFFF),
+                        child: ScrollConfiguration(
+                          behavior: OverScrollBehavior(),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            controller: controller,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return AnimatedContainer(
+                                duration: Duration(milliseconds: 250),
+                                height: getDotsSize(snapshot.data, index).height,
+                                width: getDotsSize(snapshot.data, index).width,
+                                decoration: BoxDecoration(
+                                    color: snapshot.data == index
+                                        ? AppColor.black
+                                        : AppColor.textPrimary1.withOpacity(0.12),
+                                    shape: BoxShape.circle),
+                              );
+                            },
+                            separatorBuilder: (BuildContext context, int index) => VerticalDivider(
+                              width: 4,
+                              color: const Color(0xFFFFFFFF),
+                            ),
+                            itemCount: imageCount,
                           ),
-                          itemCount: imageCount,
-                        ),)
-                    ;
+                        ));
                   }))
         ],
       ),

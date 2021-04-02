@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -10,6 +9,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -21,6 +21,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -1069,6 +1071,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
         print(
             "滚动界面到指定的item--scrollHeight：$scrollHeight------------------------------------------------------------------------");
+        if(widget.fatherComment!=null){
+          double childCommentHeight = calculateTextWidth("${widget.commentDtoModel.name} 回复 ${widget.commentDtoModel
+              .replyName}${widget
+              .commentDtoModel
+              .content}", AppStyle
+              .textRegular14,
+              ScreenUtil.instance.screenWidthDp-149,
+              10).height+34;
+          scrollHeight += childCommentHeight;
+        }
         if (scrollHeight > 0) {
           widget.scrollController.animateTo(
             scrollHeight,

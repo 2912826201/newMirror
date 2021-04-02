@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -66,6 +67,7 @@ class Application {
   //IfPage的TabController
   static TabController ifPageController;
 
+  static Connectivity connectivity;
   //相机列表
   static List<CameraDescription> cameras;
   static bool isCameraInUse = false;

@@ -24,6 +24,7 @@ class ChunkDownLaod {
     int start = 0;
     int reserved = 0;
     ChunkDownLaodModel chunkDownLaodModel;
+    bool haveNetWork = true;
     if (dio == null) {
       dio = Dio();
     }
@@ -41,6 +42,44 @@ class ChunkDownLaod {
         }
       };
     }
+    /* Application.connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      switch (result) {
+        case ConnectivityResult.mobile:
+            dio.unlock();
+            haveNetWork = true;
+          print('----------mobile-----------------mobile');
+          break;
+        case ConnectivityResult.wifi:
+            dio.unlock();
+            haveNetWork = true;
+          print('----------wifi-----------------wifi');
+          break;
+        case ConnectivityResult.none:
+          dio.lock();
+          haveNetWork = false;
+          print('----------none-----------------none');
+          break;
+      }
+    });*/
+    /*//添加拦截器，捕捉catchError返回异常之前，处理对应的场景
+    dio.interceptors.add(InterceptorsWrapper(onError: (e) {
+      switch (e.type) {
+        case DioErrorType.CANCEL:
+          break;
+        case DioErrorType.CONNECT_TIMEOUT:
+          break;
+        case DioErrorType.DEFAULT:
+          print('-----------------------------DioErrorType.DEFAULT${e.message}');
+          dio.lock();
+          return DioError(type: DioErrorType.CONNECT_TIMEOUT,error:"网络连接异常");
+        case DioErrorType.RECEIVE_TIMEOUT:
+          break;
+        case DioErrorType.RESPONSE:
+          break;
+        case DioErrorType.SEND_TIMEOUT:
+          break;
+      }
+    }));*/
 
     ///合并文件
     Future mergeTempFiles(chunk) async {

@@ -220,10 +220,11 @@ class FileUtil {
       return null;
     });
   }
-              ///断点续传
-  Future<DownloadDto> chunkDownLoad(String url, Function(String taskId, int received, int total)
-  onProgressListener,
-      {CancelToken cancelToken, Dio dio,int type = downloadTypeCommon}) async {
+
+  ///断点续传
+  Future<DownloadDto> chunkDownLoad(
+      BuildContext context, String url, Function(String taskId, int received, int total) onProgressListener,
+      {CancelToken cancelToken, Dio dio, int type = downloadTypeCommon}) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -261,9 +262,6 @@ class FileUtil {
       } else {
         return null;
       }
-    }).catchError((e) {
-      print('-----------------------$e');
-      return null;
     });
   }
 
