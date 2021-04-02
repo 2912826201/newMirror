@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-///list用不显示底部水波纹，可套在刷新控件使用
+///list用不显示底部水波纹，解决ios回弹效果 ，可套在刷新控件使用
 class OverScrollBehavior extends ScrollBehavior{
 
   @override
@@ -22,5 +22,15 @@ class OverScrollBehavior extends ScrollBehavior{
     }
     return null;
   }
-
+@override//解决ios回弹效果
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+  switch (getPlatform(context)) {
+    case TargetPlatform.iOS:
+      return const ClampingScrollPhysics();
+    case TargetPlatform.android:
+    case TargetPlatform.fuchsia:
+      return const ClampingScrollPhysics();
+  }
+  return null;
+  }
 }
