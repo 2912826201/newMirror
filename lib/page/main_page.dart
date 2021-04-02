@@ -32,18 +32,25 @@ class MainPage extends StatefulWidget {
 class MainPageState extends XCState {
   int currentIndex;
   final pageController = PageController();
-
+  //关注未读数
+  int _unReadFeedCount = 0;
   @override
   void initState() {
     super.initState();
     currentIndex = 0;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      EventBus.getDefault()
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
   }
-
+  _feedUnreadCallBack(int unread) {
+    _unReadFeedCount = unread;
+  }
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
       if (attentionModel != null) {
@@ -57,7 +64,8 @@ class MainPageState extends XCState {
   _getUnReadFeedCount() {
     getUnReadFeedCount().then((value) {
       if (value != null) {
-        context.read<FeedMapNotifier>().setUnReadFeedCount(value);
+        _unReadFeedCount = value;
+        EventBus.getDefault().post(msg: _unReadFeedCount ,registerName:EVENTBUS__FEED_UNREAD);
       }
     });
   }
@@ -73,7 +81,7 @@ class MainPageState extends XCState {
             }
             pageController.jumpToPage(index);
             currentIndex = index;
-            if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
+            if(_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
             switch (index) {

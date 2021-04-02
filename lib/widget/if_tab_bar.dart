@@ -97,6 +97,7 @@ class _IFTabBarState extends State<IFTabBar> {
   List<double> onClickWidthList4 = [];
   double selectedButtonTextHeight = 0;
   StreamController<int> streamController = StreamController<int>();
+  StreamController<int> streamFeedUnread = StreamController<int>();
 
   @override
   void dispose() {
@@ -113,6 +114,8 @@ class _IFTabBarState extends State<IFTabBar> {
           .registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
       EventBus.getDefault()
           .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      EventBus.getDefault()
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);
     });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
@@ -181,6 +184,10 @@ class _IFTabBarState extends State<IFTabBar> {
     widget.tabBarClickListener(0);
     print("几次");
     streamController.sink.add(0);
+  }
+
+  _feedUnreadCallBack(int unread) {
+    streamFeedUnread.sink.add(unread);
   }
 
   _resetUnreadMessage() {
@@ -330,20 +337,23 @@ class _IFTabBarState extends State<IFTabBar> {
                 child: Stack(
                   children: [
                     snapshot.data == 0 ? selectedIcons[0] : normalIcons[0],
-                    Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-                      return Positioned(
-                          top: 0,
-                          right: 0,
-                          child: notifier.value.unReadFeedCount != 0
-                              ? ClipOval(
-                                  child: Container(
-                                    height: 10,
-                                    width: 10,
-                                    color: AppColor.mainRed,
-                                  ),
-                                )
-                              : Container());
-                    })
+                    StreamBuilder<int>(
+                        initialData: 0,
+                        stream: streamFeedUnread.stream,
+                        builder: (BuildContext streamFeedUnread, AsyncSnapshot<int> unread) {
+                          return Positioned(
+                              top: 0,
+                              right: 0,
+                              child: unread.data != 0
+                                  ? ClipOval(
+                                      child: Container(
+                                        height: 10,
+                                        width: 10,
+                                        color: AppColor.mainRed,
+                                      ),
+                                    )
+                                  : Container());
+                        })
                   ],
                 ),
               ),

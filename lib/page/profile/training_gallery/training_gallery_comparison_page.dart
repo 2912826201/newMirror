@@ -159,6 +159,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   outWidth: 2,
                   maskPadding: 0,
                   round: 0,
+                  backBoxColor0: AppColor.transparent,
+                  backBoxColor1: AppColor.transparent,
                 ),
                 Positioned(
                   left: 10,
@@ -179,6 +181,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   outWidth: 2,
                   maskPadding: 0,
                   round: 0,
+                  backBoxColor0: AppColor.transparent,
+                  backBoxColor1: AppColor.transparent,
                 ),
                 Positioned(
                   left: 10,
@@ -204,6 +208,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   outWidth: 1,
                   maskPadding: 0,
                   round: 0,
+                  backBoxColor0: AppColor.transparent,
+                  backBoxColor1: AppColor.transparent,
                 ),
                 Positioned(
                   left: 16,
@@ -224,6 +230,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   outWidth: 1,
                   maskPadding: 0,
                   round: 0,
+                  backBoxColor0: AppColor.transparent,
+                  backBoxColor1: AppColor.transparent,
                 ),
                 Positioned(
                   left: 16,
