@@ -202,51 +202,56 @@ class AppRouter {
       {Function(dynamic result) callback, bool replace = false, int transitionDuration = 250, bool isBuilder = false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
-    if(Application.pagePopRouterName==null){
+    if (Application.pagePopRouterName == null) {
       Application.pagePopRouterName = [];
     }
-    if(Application.pagePopRouterName.contains(uri)){
-      for(int i = 0;i<Application.pagePopRouterName.length;i++){
-        if(i>Application.pagePopRouterName.indexOf(uri)){
+    if (Application.pagePopRouterName.contains(uri)) {
+      for (int i = 0; i < Application.pagePopRouterName.length; i++) {
+        if (i > Application.pagePopRouterName.indexOf(uri)) {
           Application.pagePopRouterName.remove(Application.pagePopRouterName[i]);
         }
       }
       Navigator.of(context).popUntil(ModalRoute.withName(uri));
       return;
-      }
-     Application.pagePopRouterName.add(uri);
-      if (isBuilder) {
-        Application.router.navigateTo(
-          context,
-          uri,
-          replace: replace,
-          transitionDuration: Duration(milliseconds: transitionDuration),
-          transition: TransitionType.custom,
-          transitionBuilder: getFadeTransitionBuilder(),
-        ).then((value){
-          if(Application.pagePopRouterName.contains(uri)){
-            Application.pagePopRouterName.remove(uri);
-          }
-          if(callback!=null){
-            callback(value);
-          }
-        });
-      } else {
-        Application.router.navigateTo(
-          context,
-          uri,
-          replace: replace,
-          transitionDuration: Duration(milliseconds: transitionDuration),
-        ).then((value){
-          if(Application.pagePopRouterName.contains(uri)){
-            Application.pagePopRouterName.remove(uri);
-          }
-          if(callback!=null){
-            callback(value);
-          }
-        });
-      }
-
+    }
+    Application.pagePopRouterName.add(uri);
+    //TODO 这里是加了自定义转场效果的 需要严谨封装一下
+    if (isBuilder) {
+      Application.router
+          .navigateTo(
+        context,
+        uri,
+        replace: replace,
+        transitionDuration: Duration(milliseconds: transitionDuration),
+        transition: TransitionType.custom,
+        transitionBuilder: getFadeTransitionBuilder(),
+      )
+          .then((value) {
+        if (Application.pagePopRouterName.contains(uri)) {
+          Application.pagePopRouterName.remove(uri);
+        }
+        if (callback != null) {
+          callback(value);
+        }
+      });
+    } else {
+      Application.router
+          .navigateTo(
+        context,
+        uri,
+        replace: replace,
+        transition: TransitionType.cupertino,
+        transitionDuration: Duration(milliseconds: transitionDuration),
+      )
+          .then((value) {
+        if (Application.pagePopRouterName.contains(uri)) {
+          Application.pagePopRouterName.remove(uri);
+        }
+        if (callback != null) {
+          callback(value);
+        }
+      });
+    }
   }
 
   static void popToBeforeLogin(BuildContext context) {
@@ -258,7 +263,6 @@ class AppRouter {
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
-
 
   static void navigateToPerfectUserPage(BuildContext context) {
     _navigateToPage(context, pathPerfectUserPage, {});
@@ -441,8 +445,8 @@ class AppRouter {
     _navigateToPage(context, pathScanCodeResult, map);
   }
 
-  static void navigateToMyQrCodePage(BuildContext context,Function(dynamic result) callBack) {
-    _navigateToPage(context, pathMyQrCodePage, {},callback: callBack);
+  static void navigateToMyQrCodePage(BuildContext context, Function(dynamic result) callBack) {
+    _navigateToPage(context, pathMyQrCodePage, {}, callback: callBack);
   }
 
   static void navigateToProfileDetailMore(BuildContext context) {
@@ -519,14 +523,14 @@ class AppRouter {
   static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-      _navigateToPage(context, pathProfileDetails, map, callback: callback);
+    _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
-  static void removeMineDtailRouterName(BuildContext context,int uid){
+  static void removeMineDtailRouterName(BuildContext context, int uid) {
     Map<String, dynamic> map = Map();
     map["userId"] = uid;
-    String uri = pathProfileDetails +"?$paramData=" +Uri.encodeComponent(json.encode(map));
-    if(Application.pagePopRouterName.contains(uri)){
+    String uri = pathProfileDetails + "?$paramData=" + Uri.encodeComponent(json.encode(map));
+    if (Application.pagePopRouterName.contains(uri)) {
       Application.pagePopRouterName.remove(uri);
     }
   }
@@ -584,13 +588,8 @@ class AppRouter {
     _navigateToPage(context, pathChatPage, map);
   }
 
-  static void navigateToGroupMorePage(
-      BuildContext context,
-      String chatUserId,
-      int chatType,
-      String name,
-      ConversationDto dto,
-      Function(dynamic result) callback) {
+  static void navigateToGroupMorePage(BuildContext context, String chatUserId, int chatType, String name,
+      ConversationDto dto, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     if (dto != null) {
       map["dto"] = dto.toMap();
@@ -598,16 +597,11 @@ class AppRouter {
     map["name"] = name;
     map["chatType"] = chatType;
     map["chatUserId"] = chatUserId;
-    _navigateToPage(context, pathGroupMorePage, map,callback: callback);
+    _navigateToPage(context, pathGroupMorePage, map, callback: callback);
   }
 
-  static void navigateToPrivateMorePage(
-      BuildContext context,
-      String chatUserId,
-      int chatType,
-      String name,
-      ConversationDto dto,
-      Function(dynamic result) callback) {
+  static void navigateToPrivateMorePage(BuildContext context, String chatUserId, int chatType, String name,
+      ConversationDto dto, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     if (dto != null) {
       map["dto"] = dto.toMap();
@@ -615,7 +609,7 @@ class AppRouter {
     map["name"] = name;
     map["chatType"] = chatType;
     map["chatUserId"] = chatUserId;
-    _navigateToPage(context, pathChatPage, map,callback: callback);
+    _navigateToPage(context, pathChatPage, map, callback: callback);
   }
 
   static void navigateToNetworkLinkFailure({
@@ -654,7 +648,7 @@ class AppRouter {
   //
   //mode:模式  0-普通模式，1-直播间模式
   //当mode=1,liveRoomId必传
-  static void navigateToMachineRemoteController(BuildContext context,{int mode=0,int liveRoomId}) {
+  static void navigateToMachineRemoteController(BuildContext context, {int mode = 0, int liveRoomId}) {
     Map<String, dynamic> map = Map();
     map["mode"] = mode;
     map["liveRoomId"] = liveRoomId;
@@ -834,21 +828,20 @@ class AppRouter {
   }
 
   //去直播间
-  static void navigateLiveRoomPage(BuildContext context,LiveVideoModel liveModel){
-
+  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return LiveRoomVideoPage(liveCourseId:liveModel.id,coachId: liveModel.coachId.toString());
+      return LiveRoomVideoPage(liveCourseId: liveModel.id, coachId: liveModel.coachId.toString());
     }));
     Navigator.of(context).push(SimpleRoute(
       name: liveModel.title ?? "",
       title: liveModel.description ?? "",
       builder: (_) {
         return LiveRoomVideoOperationPage(
-            liveCourseId:liveModel.id,
-            coachName:liveModel.coachDto.nickName,
-            coachUrl:liveModel.coachDto.avatarUri,
-            coachRelation:liveModel.coachDto.relation,
-            startTime:liveModel.startTime,
+            liveCourseId: liveModel.id,
+            coachName: liveModel.coachDto.nickName,
+            coachUrl: liveModel.coachDto.avatarUri,
+            coachRelation: liveModel.coachDto.relation,
+            startTime: liveModel.startTime,
             coachId: liveModel.coachDto.uid);
       },
     ));
