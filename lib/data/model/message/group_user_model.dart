@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/util/event_bus.dart';
 
 import '../loading_status.dart';
 import 'chat_group_user_model.dart';
@@ -15,6 +17,7 @@ class GroupUserProfileNotifier extends ChangeNotifier {
 
   setLen(int len) {
     this.len = len;
+    EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
     notifyListeners();
   }
 
@@ -38,6 +41,18 @@ class GroupUserProfileNotifier extends ChangeNotifier {
   }
 
 
+  bool isHave(String userId){
+    for(ChatGroupUserModel model in chatGroupUserModelList){
+      if(model.uid.toString()==userId){
+        return true;
+      }
+    }
+    return false;
+  }
+  bool isNoHaveMe(){
+    return !isHave(Application.profile.uid.toString());
+  }
+
   clearAllUser() {
     chatGroupUserModelList.clear();
     loadingStatus = LoadingStatus.STATUS_IDEL;
@@ -58,6 +73,7 @@ class GroupUserProfileNotifier extends ChangeNotifier {
     }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     this.len = len;
+    EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
     notifyListeners();
   }
 }

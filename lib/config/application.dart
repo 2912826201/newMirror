@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
@@ -124,8 +125,6 @@ class Application {
   //用户所登录的机器
   static MachineModel machine;
 
-  //群成员的id--群成员昵称
-  static Map<String, String> chatGroupUserNameMap = Map();
 
   //聊天群的群成员信息
   static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
@@ -133,6 +132,9 @@ class Application {
   //发送消息的临时列表
   //key是:用户id_会话id_会话类型
   static Map<String,List<ChatDataModel>> postChatDataModelList=Map();
+
+  //进入聊天界面前先获取的消息列表
+  static  List<ChatDataModel> chatDataList=<ChatDataModel>[];
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
@@ -215,7 +217,6 @@ class Application {
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
     queryNoPromptUidList.clear();
-    chatGroupUserNameMap.clear();
     chatGroupUserInformationMap.clear();
     postChatDataModelList.clear();
 

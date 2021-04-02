@@ -105,7 +105,7 @@ class EventBus {
         _registerMap.remove(registerName);
       }
     } else {
-      if (_registerMap[registerName][pageName] != null) {
+      if (_registerMap[registerName]!=null&&_registerMap[registerName][pageName] != null) {
         _registerMap[registerName][pageName].close();
         _registerMap[registerName].remove(pageName);
       }
@@ -147,6 +147,8 @@ const String EVENTBUS_HOME_PAGE = "homePage";
 const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 // 底部bar
 const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
+//聊天界面
+const String EVENTBUS_CHAT_PAGE = "eventbus_chat_page";
 
 ///广播类型
 //发布动态
@@ -169,3 +171,11 @@ const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";
 const String EVENTBUS_GET_FAILURE_MODEL = "getfailuremodel";
 //底部bar未读数
 const String EVENTBUS_IF_TAB_BAR_UNREAD = "_IFTabBarStateUnreadMessageNumber";
+//聊天界面的bar
+const String EVENTBUS_CHAT_BAR = "eventbus_chat_bar";
+//聊天界面的加入群聊或者离开群聊
+const String CHAT_JOIN_EXIT = "eventbus_chat_bar";
+//聊天界面的更新消息状态
+const String RESET_MSG_STATUS = "reset_msg_status";
+//聊天界面的接收消息
+const String CHAT_GET_MSG = "chat_get_msg";

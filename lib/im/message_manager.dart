@@ -500,12 +500,12 @@ class MessageManager {
               return _parseGrpNtf(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_CMD:
               return _parseCmdNtf(contentMap);
+            case ChatTypeModel.MESSAGE_TYPE_ALERT:
+              return contentMap["data"];
             default:
-              // return msg.content.encode();
               return "[未知类型消息]";
           }
         } else {
-          // return msg.content.encode();
           return "[未知类型消息]";
         }
         break;
