@@ -48,7 +48,7 @@ dependencies:
   fluro: ^1.7.7
   # 富文本
   rich_text_widget: ^0.2.4
-  #  评论抽屉
+  # 下方弹出抽屉
   sliding_up_panel: ^0.3.6
   # 轮播图插件
   flutter_swiper: ^1.1.6
@@ -142,6 +142,8 @@ dependencies:
   qrcode: ^1.0.3
   #二维码生成
   qr_flutter: ^3.2.0
+
+
 
   #安装包升级测试
   r_upgrade: ^0.3.2+3

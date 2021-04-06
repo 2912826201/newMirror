@@ -87,6 +87,9 @@ class AppIcon {
   static const String message_send = "assets/svg/message_send.svg";
   static const String message_cant_send = "assets/svg/message_cant_send.svg";
   static const String message_emotion = "assets/svg/message_emotion.svg";
+  static const String message_at = "assets/svg/message_at.svg";
+  static const String message_comment = "assets/svg/message_comment.svg";
+  static const String message_like = "assets/svg/message_like.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
 
