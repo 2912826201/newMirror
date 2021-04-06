@@ -58,11 +58,7 @@ class LikeState extends State<Like> {
         refreshController.loadNoData();
       }
     }
-    if (laudListModel.isNotEmpty) {
-      if (laudListModel.first.uid != null) {
-        laudListModel.insert(0, FeedLaudListModel());
-      }
-    }
+
     if (mounted) {
       setState(() {});
     }
@@ -124,7 +120,7 @@ class LikeState extends State<Like> {
                                 child: ListView.builder(
                                   controller: scrollController,
                                   itemCount: laudListModel.length,
-                                  itemExtent: 48,
+                                  padding: const EdgeInsets.only(top: 14),
                                   itemBuilder: (context, index) {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
@@ -134,9 +130,7 @@ class LikeState extends State<Like> {
                                         verticalOffset: 50.0,
                                         child: FadeInAnimation(
                                             //渐隐渐现动画
-                                            child: index == 0
-                                                ? Container(height: 14)
-                                                : LikeListViewItem(model: laudListModel[index])),
+                                            child: LikeListViewItem(model: laudListModel[index])),
                                       ),
                                     );
                                   },
@@ -178,13 +172,18 @@ class LikeListViewItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                "${model.nickName}",
-                // '用户昵称显示',
-                style: const TextStyle(
-                  color: AppColor.textPrimary1,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
+              Container(
+                width: ScreenUtil.instance.width-32.0-38.0-16.0-4.0,
+                child: Text(
+                  "${model.nickName}",
+                  // '用户昵称显示',
+                  style: const TextStyle(
+                    color: AppColor.textPrimary1,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(height: 2),

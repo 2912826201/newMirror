@@ -535,7 +535,6 @@ class GroupMorePageState extends State<GroupMorePage> {
   //设置消息是否置顶
   void setTopChatApi() async {
     topChat = !topChat;
-    showProgressDialog();
     Map<String, dynamic> map =
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
@@ -559,7 +558,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
     if(mounted) {
       setState(() {
-        dismissProgressDialog();
       });
     }
   }
@@ -567,7 +565,6 @@ class GroupMorePageState extends State<GroupMorePage> {
   //设置消息免打扰
   void setConversationNotificationStatus() async {
     disturbTheNews = !disturbTheNews;
-    showProgressDialog();
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
@@ -584,7 +581,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
     if(mounted) {
       setState(() {
-        dismissProgressDialog();
       });
     }
   }

@@ -9,6 +9,7 @@ import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
@@ -44,34 +45,6 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
     super.dispose();
   }
 
-  //底部或滑动
-  Widget footerWidget() {
-    return CustomFooter(
-      builder: (BuildContext context, LoadStatus mode) {
-        Widget body;
-        if (mode == LoadStatus.idle) {
-          body = const Text("");
-        } else if (mode == LoadStatus.loading) {
-          body = Container(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(),
-          );
-        } else if (mode == LoadStatus.failed) {
-          body = const Text("");
-        } else if (mode == LoadStatus.canLoading) {
-          body = const Text("");
-        } else {
-          body = const Text("");
-        }
-        return Container(
-          height: 55.0,
-          child: Center(child: body),
-        );
-      },
-    );
-  }
-
   // 创建中间视图
   createMiddleView() {
     // print(context.select((FeedMapNotifier value) => value.feedMap[feedId].totalCount));
@@ -81,7 +54,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
         child: SmartRefresher(
             enablePullDown: false,
             enablePullUp: true,
-            footer: footerWidget(),
+            footer: SmartRefresherHeadFooter.init().getFooter(),
             controller: _refreshController,
             onLoading: () {
               childKey.currentState.onLoading();

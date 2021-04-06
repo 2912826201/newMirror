@@ -16,6 +16,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -105,29 +106,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                     child: SmartRefresher(
                       enablePullDown: true,
                       enablePullUp: true,
-                      footer: CustomFooter(
-                        builder: (BuildContext context, LoadStatus mode) {
-                          Widget body;
-                          if (mode == LoadStatus.loading) {
-                            body = const Text("正在加载");
-                          } else if (mode == LoadStatus.idle) {
-                            body = const Text("上拉加载更多");
-                          } else if (mode == LoadStatus.failed) {
-                            body = const Text("加载失败,请重试");
-                          } else {
-                            body = const Text("没有更多了");
-                          }
-                          return Container(
-                            child: Center(
-                              child: body,
-                            ),
-                          );
-                        },
-                      ),
-                      header: WaterDropHeader(
-                        complete: const Text("刷新完成"),
-                        failed: const Text(""),
-                      ),
+                      footer: SmartRefresherHeadFooter.init().getFooter(),
+                      header: SmartRefresherHeadFooter.init().getHeader(),
                       controller: refreshController,
                       onRefresh: () {
                         recommendTopicList.clear();

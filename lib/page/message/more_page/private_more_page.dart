@@ -164,7 +164,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //设置消息是否置顶
   void setTopChatApi() async {
     topChat = !topChat;
-    showProgressDialog();
     Map<String, dynamic> map = await (topChat ? stickChat : cancelTopChat)(
         targetId: int.parse(widget.chatUserId), type: 0);
     print(map.toString());
@@ -194,7 +193,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
     if(mounted) {
       setState(() {
-        dismissProgressDialog();
       });
     }
   }
@@ -202,7 +200,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //设置消息免打扰
   void setConversationNotificationStatus() async {
     disturbTheNews = !disturbTheNews;
-    showProgressDialog();
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatUserId), type: widget.chatType);
@@ -224,7 +221,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
     if(mounted) {
       setState(() {
-        dismissProgressDialog();
       });
     }
   }

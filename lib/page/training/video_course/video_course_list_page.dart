@@ -17,6 +17,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
@@ -331,31 +332,9 @@ class VideoCourseListPageState extends XCState {
       child: NotificationListener<ScrollNotification>(
           child: SmartRefresher(
             enablePullDown: true,
-            enablePullUp: isHaveMoreData,
-            header: WaterDropHeader(
-              complete: Text("刷新完成"),
-              failed: Text(""),
-            ),
-            footer: CustomFooter(
-              builder: (BuildContext context, LoadStatus mode) {
-                Widget body;
-                if (mode == LoadStatus.idle) {
-                  body = Text("");
-                } else if (mode == LoadStatus.loading) {
-                  body = CircularProgressIndicator();
-                } else if (mode == LoadStatus.failed) {
-                  body = Text("");
-                } else if (mode == LoadStatus.canLoading) {
-                  body = Text("");
-                } else {
-                  body = Text("");
-                }
-                return Container(
-                  height: 55.0,
-                  child: Center(child: body),
-                );
-              },
-            ),
+            enablePullUp: true,
+            header: SmartRefresherHeadFooter.init().getHeader(),
+            footer: SmartRefresherHeadFooter.init().getFooter(),
             controller: _refreshController,
             onRefresh: _onRefresh,
             onLoading: _onLoading,
@@ -726,6 +705,7 @@ class VideoCourseListPageState extends XCState {
 
   //获取数据
   _loadData({bool isRefreshOrLoad = false}) async {
+    print("获取数据----------------------------");
     List<int> _level = <int>[];
     List<int> _part = <int>[];
     List<int> _target = <int>[];
@@ -779,7 +759,7 @@ class VideoCourseListPageState extends XCState {
         if (isRefreshOrLoad) {
           _refreshController.refreshCompleted();
         } else {
-          _refreshController.loadNoData();
+          _refreshController.loadComplete();
         }
         if (mounted) {
           reload(() {

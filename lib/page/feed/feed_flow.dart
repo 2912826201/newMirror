@@ -8,6 +8,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:provider/provider.dart';
@@ -138,29 +139,8 @@ class FeedFlowState extends State<FeedFlow> {
             child: SmartRefresher(
                 enablePullUp: true,
                 enablePullDown: true,
-                footer: CustomFooter(
-                  builder: (BuildContext context, LoadStatus mode) {
-                    Widget body;
-                    if (mode == LoadStatus.loading) {
-                      body = const Text("正在加载");
-                    } else if (mode == LoadStatus.idle) {
-                      body = const Text("上拉加载更多");
-                    } else if (mode == LoadStatus.failed) {
-                      body = const Text("加载失败,请重试");
-                    } else {
-                      body = const Text("没有更多了");
-                    }
-                    return Container(
-                      child: Center(
-                        child: body,
-                      ),
-                    );
-                  },
-                ),
-                header: WaterDropHeader(
-                  complete: const Text("刷新完成"),
-                  failed: const Text(" "),
-                ),
+                footer: SmartRefresherHeadFooter.init().getFooter(),
+                header: SmartRefresherHeadFooter.init().getHeader(),
                 controller: _refreshController,
                 onLoading: requestFeednIterface,
                 onRefresh: _onRefresh,

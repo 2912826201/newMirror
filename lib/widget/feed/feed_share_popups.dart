@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/share_page/share_popup.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -105,7 +106,8 @@ class FeedSharePopups extends StatelessWidget {
                             return;
                           }
                           Navigator.of(context).pop(1);
-                          AppRouter.navigateFriendsPage(context: context,shareMap: map,chatTypeModel: chatTypeModel);
+                          showSharePopup(context,map,chatTypeModel);
+                          // AppRouter.navigateFriendsPage(context: context,shareMap: map,chatTypeModel: chatTypeModel);
                           break;
                         case "保存本地":
                           var result = await ImageGallerySaver.saveFile(map["file"]);

@@ -137,6 +137,32 @@ class DateUtil {
     return ((bDate.millisecondsSinceEpoch-aDate.millisecondsSinceEpoch)/1000/60/60)~/1;
   }
 
+  //获取两个时间的天数相差数
+  static int twoDateTimeDay(DateTime aDate, DateTime bDate){
+    if(aDateEqualBDate(aDate,bDate)){
+      return 0;
+    }
+    DateTime bigDate;
+    DateTime smallDate;
+    if(aDateCompareBDate(aDate,bDate)){
+      bigDate=aDate;
+      smallDate=bDate;
+    }else{
+      bigDate=bDate;
+      smallDate=aDate;
+    }
+    int countDay=0;
+    while(!aDateEqualBDate(bigDate,smallDate)){
+      smallDate.add(Duration(days: 1));
+      countDay++;
+      if(countDay>7){
+        print("时间有问题：$bigDate,$smallDate");
+        break;
+      }
+    }
+    return countDay;
+  }
+
 
   //判断输入的日期是否在今天这个日期的输入天数内
   static bool judgeDateTimeIsInScanDay(DateTime dateTime,int day){
@@ -392,17 +418,17 @@ class DateUtil {
     DateTime dateTime = getDateTimeByMs(int.parse(millisecondsSinceEpoch));
     String alertString = "";
     if (isToday(dateTime)) {
-      alertString += "今天";
+      alertString += "";
     } else if (isYesterday(dateTime)) {
       alertString += "昨天";
     } else if (isTheDayBeforeYesterday(dateTime)) {
       alertString += "前天";
-    } else if (isToYear(dateTime)) {
-      alertString += formatDateV(dateTime, format: "MM-dd");
+    } else if (judgeDateTimeIsInScanDay(dateTime,7)) {
+      alertString += "星期${getStringWeekDayStartZero(dateTime.weekday-1)}";
     } else {
-      alertString += formatDateV(dateTime, format: "yyyy-MM-dd");
+      alertString += formatDateV(dateTime, format: "yyyy-M-d");
     }
-    alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
+    alertString += " ${formatDateV(dateTime, format: "H:mm")}";
     return alertString;
   }
 
@@ -419,32 +445,29 @@ class DateUtil {
   // - 超过48小时则显示为月日 时分 ，如7-8  7:21；
   //
   // - 往年的显示 年-月-⽇ 如 16-5-21 12:12
-  static String getCommentShowData(DateTime dateTime,{bool isShowText = false}){
+  static String getCommentShowData(DateTime dateTime){
     DateTime time=new DateTime.now();
     String alertString="";
-    if(!isShowText){
-      if(twoDateTimeMinutes(dateTime,time)<=1){
-        return "刚刚";
-      }else if(twoDateTimeMinutes(dateTime,time)<60){
-        return "${twoDateTimeMinutes(dateTime, new DateTime.now())}分钟前";
-      }else if(isToday(dateTime)){
-        return "${twoDateTimeHours(dateTime, new DateTime.now())}小时前";
-      }else if(isYesterday(dateTime)){
-        alertString = "昨天";
-      }
+    if(twoDateTimeMinutes(dateTime,time)<=1){
+      return "刚刚";
+    }else if(twoDateTimeMinutes(dateTime,time)<60){
+      return "${twoDateTimeMinutes(dateTime, new DateTime.now())}分钟前";
+    }else if(isToday(dateTime)){
+      return "${twoDateTimeHours(dateTime, new DateTime.now())}小时前";
+    }else if(judgeDateTimeIsInScanDay(dateTime,7)){
+      return "${twoDateTimeDay(dateTime,time)}天前";
     }
-    if(!isToday(dateTime)||!isShowText){
-      if (isToYear(dateTime)) {
-        alertString += formatDateV(dateTime, format: "M${isShowText?"月":"-"}d${isShowText?"日":""}");
-      } else {
-        alertString += formatDateV(dateTime,
-            format: "yy${isShowText?"年":"-"}M${isShowText?"月":"-"}d${isShowText?"日":"-"}");
-      }
+    if (isToYear(dateTime)) {
+      alertString += formatDateV(dateTime, format: "M月dd日");
+    } else {
+      alertString += formatDateV(dateTime,
+          format: "yyyy年MM月dd日");
     }
-    alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
+    // alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
     return alertString;
   }
 
+  //会话列表
   //获取消息界面-消息列表的日期展示
   //①今日消息展示时分：15:57
   //
@@ -456,9 +479,11 @@ class DateUtil {
   static String getShowMessageDateString(DateTime dateTime){
     // DateTime time=new DateTime.now();
     if(isToday(dateTime)){
-      return formatDateV(dateTime, format: "HH:mm");
+      return formatDateV(dateTime, format: "H:mm");
     }else if(isYesterday(dateTime)){
       return "昨天";
+    }else if(isTheDayBeforeYesterday(dateTime)){
+      return "前天";
     }else if(judgeDateTimeIsInScanDay(dateTime,7)){
       // return "${dateTime.weekday>time.weekday?"上":""}周${getStringWeekDayStartZero(dateTime.weekday-1)}";
       return "星期${getStringWeekDayStartZero(dateTime.weekday-1)}";
