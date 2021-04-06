@@ -7,7 +7,9 @@ import 'package:mirror/util/screen_util.dart';
 /// Created by yangjiayi on 2020/12/12.
 
 class LiveRoomPage extends StatefulWidget {
-  final String url = "rtmp://58.200.131.2:1935/livetv/cctv13";
+  // final String url = "rtmp://58.200.131.2:1935/livetv/cctv13";
+  // final String url = "https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8";
+  final String url = "https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-720p.flv";
 
   @override
   _LiveRoomState createState() => _LiveRoomState();
