@@ -176,7 +176,11 @@ class HomeFeedModel {
     }
     if (json["topics"] != null) {
       json["topics"].forEach((v) {
-        topics.add(TopicDtoModel.fromJson(v));
+        if(v is TopicDtoModel){
+          topics.add(v);
+        }else{
+          topics.add(TopicDtoModel.fromJson(v));
+        }
       });
     }
     if (json["courseDto"] != null) {
