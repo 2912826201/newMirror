@@ -16,7 +16,12 @@ class PeripheralInformationEntity {
     if (json['pois'] != null) {
       pois = new List<PeripheralInformationPoi>();
       (json['pois'] as List).forEach((v) {
-        pois.add(new PeripheralInformationPoi.fromJson(v));
+        if(v is PeripheralInformationPoi){
+          pois.add(v);
+        }else{
+          pois.add(new PeripheralInformationPoi.fromJson(v));
+        }
+
       });
     }
     if (json['regeocode'] != null) {

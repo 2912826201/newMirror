@@ -12,6 +12,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -444,11 +445,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      /*if (userModel.isVip != 0) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VipNotOpenPage(type: VipState.NOTOPEN);
-        }));
-      } else {
+     /* if (userModel.isVip != 0) {*/
+     /*   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return ChangeNotifierProvider(
+              create: (_) => VipTitleChangeNotifier(),
+          child: VipNotOpenPage(type: VipState.NOTOPEN));
+        }));*/
+    /*  } else {
         AppRouter.navigateToVipOpenPage(context);
       }*/
     }
