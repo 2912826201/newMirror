@@ -42,6 +42,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     if (model != null) {
       model.list.forEach((element) {
         context.read<SettingNotifile>().setSwitchButton(element.type + 1, element.isOpen == 0 ? false : true);
+        context.read<SettingNotifile>().setSwitchButton(element.type + 1, element.isOpen == 0 ? false : true);
       });
     }
   }
@@ -239,9 +240,9 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
               Expanded(child: SizedBox()),
              SelectButton(
                isOpen,
-               intervalsMilliseconds: 1000,
-               changeCallBack: context.watch<SettingNotifile>().permisionIsOpen
-                   ? (value){
+               canOnClick:context.watch<SettingNotifile>().permisionIsOpen
+                   ? true:false,
+               changeCallBack:  (value){
                    switch (type) {
                      case 0:
                        _setUserNotice(0, context.read<SettingNotifile>().notFollow ? 0 : 1);
@@ -259,7 +260,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                        _setUserNotice(4, context.read<SettingNotifile>().laud ? 0 : 1);
                        break;
                    }
-             }: null,)
+             },)
             ],
           ),
         ),
