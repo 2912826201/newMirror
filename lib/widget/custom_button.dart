@@ -553,9 +553,9 @@ class _SelectButtonState extends State<SelectButton> {
           value: widget.selectOrNot,
           onChanged: widget.canOnClick
               ? (value) {
-                /*  setState(() {
+                  setState(() {
                     widget.selectOrNot = value;
-                  });*/
+                  });
                   if (isFrist) {
                     beforSelect = value;
                     widget.changeCallBack(widget.selectOrNot);
