@@ -16,7 +16,11 @@ class QueryListModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(QueryModel.fromJson(v));
+        if(v is QueryModel){
+          list.add(v);
+        }else{
+          list.add(QueryModel.fromJson(v));
+        }
       });
     }
   }

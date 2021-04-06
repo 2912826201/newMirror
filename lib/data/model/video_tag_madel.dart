@@ -33,25 +33,42 @@ class VideoTagModel {
     if (json["bodyType"] != null) {
       _bodyType = [];
       json["bodyType"].forEach((v) {
-        _bodyType.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _bodyType.add(v);
+        }else{
+          _bodyType.add(SubTagModel.fromJson(v));
+        }
       });
     }
     if (json["level"] != null) {
       _level = [];
       json["level"].forEach((v) {
-        _level.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _bodyType.add(v);
+        }else{
+          _bodyType.add(SubTagModel.fromJson(v));
+        }
       });
     }
     if (json["part"] != null) {
       _part = [];
       json["part"].forEach((v) {
-        _part.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _bodyType.add(v);
+        }else{
+          _bodyType.add(SubTagModel.fromJson(v));
+        }
+
       });
     }
     if (json["target"] != null) {
       _target = [];
       json["target"].forEach((v) {
-        _target.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _bodyType.add(v);
+        }else{
+          _bodyType.add(SubTagModel.fromJson(v));
+        }
       });
     }
   }

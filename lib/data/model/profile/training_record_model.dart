@@ -25,7 +25,11 @@ class TrainingRecordModel {
     this.finishTime = json["finishTime"];
     if (json["courseModelList"] != null) {
       json["courseModelList"].forEach((v) {
-        this.courseModelList.add(CourseModelList.fromJson(v));
+        if(v is CourseModelList){
+          this.courseModelList.add(v);
+        }else{
+          this.courseModelList.add(CourseModelList.fromJson(v));
+        }
       });
     }
     this.dmsecondsCount = json["dmsecondsCount"];

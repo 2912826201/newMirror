@@ -14,7 +14,12 @@ class TestModel {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(Item.fromJson(v));
+        if(v is Item){
+          list.add(v);
+        }else{
+          list.add(Item.fromJson(v));
+        }
+
       });
     }
   }

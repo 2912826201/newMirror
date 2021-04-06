@@ -7,7 +7,12 @@ class BlackListModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(blackUserModel.fromJson(v));
+        if(v is blackUserModel){
+          list.add(v);
+        }else{
+          list.add(blackUserModel.fromJson(v));
+        }
+
       });
     }
   }

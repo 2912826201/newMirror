@@ -596,7 +596,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);
     }
-    // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
     if (feedModel.code == CODE_SUCCESS || feedModel.code == CODE_NO_DATA) {
       AppRouter.navigateFeedDetailPage(

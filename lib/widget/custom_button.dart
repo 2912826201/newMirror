@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -360,8 +362,9 @@ class _CustomRedButtonState extends State<CustomRedButton> {
                 : Container(),
             widget.buttonState == CustomRedButton.buttonStateLoading
                 ? SizedBox(
-              width: 4.5,
-            ):Container(),
+                    width: 4.5,
+                  )
+                : Container(),
             Text(
               widget.text,
               style: TextStyle(
@@ -512,5 +515,65 @@ class _FollowButtonState extends State<FollowButton> {
         }
       },
     );
+  }
+}
+
+class SelectButton extends StatefulWidget {
+  //选中未选中·
+  bool selectOrNot;
+  Function(bool) changeCallBack;
+
+  //间隔时间
+  int intervalsMilliseconds;
+  bool canOnClick;
+  SelectButton(this.selectOrNot, {this.changeCallBack, this.intervalsMilliseconds = 1000, this.canOnClick = true});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _SelectButtonState();
+  }
+}
+
+class _SelectButtonState extends State<SelectButton> {
+  bool beforSelect;
+  int beforTimer = DateTime.now().millisecondsSinceEpoch;
+  bool isFrist = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+        scale: 0.8,
+        child: CupertinoSwitch(
+          activeColor: AppColor.mainRed,
+          value: widget.selectOrNot,
+          onChanged: widget.canOnClick
+              ? (value) {
+                  setState(() {
+                    widget.selectOrNot = value;
+                  });
+                  if (isFrist) {
+                    beforSelect = value;
+                    widget.changeCallBack(widget.selectOrNot);
+                    beforTimer = DateTime.now().millisecondsSinceEpoch;
+                    isFrist = false;
+                    return;
+                  }
+                  if (DateTime.now().millisecondsSinceEpoch - beforTimer >= widget.intervalsMilliseconds) {
+                    beforTimer = DateTime.now().millisecondsSinceEpoch;
+                    Future.delayed(Duration(milliseconds: widget.intervalsMilliseconds), () {
+                      if (beforSelect != widget.selectOrNot) {
+                        widget.changeCallBack(widget.selectOrNot);
+                        beforSelect = widget.selectOrNot;
+                      }
+                    });
+                  }
+                }
+              : null,
+        ));
   }
 }
