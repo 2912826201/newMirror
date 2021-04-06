@@ -63,7 +63,11 @@ class SelectedMediaFiles {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(MediaFileModel.fromJson(v));
+        if(v is MediaFileModel){
+          list.add(v);
+        }else{
+          list.add(MediaFileModel.fromJson(v));
+        }
       });
     }
   }
@@ -118,7 +122,11 @@ class SelectedMediaBase64 {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(MediaBase64Model.fromJson(v));
+        if(v is MediaBase64Model){
+          list.add(v);
+        }else{
+          list.add(MediaBase64Model.fromJson(v));
+        }
       });
     }
   }
