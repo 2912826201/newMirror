@@ -44,9 +44,9 @@ class VideoTagModel {
       _level = [];
       json["level"].forEach((v) {
         if(v is SubTagModel){
-          _bodyType.add(v);
+          _level.add(v);
         }else{
-          _bodyType.add(SubTagModel.fromJson(v));
+          _level.add(SubTagModel.fromJson(v));
         }
       });
     }
@@ -54,9 +54,9 @@ class VideoTagModel {
       _part = [];
       json["part"].forEach((v) {
         if(v is SubTagModel){
-          _bodyType.add(v);
+          _part.add(v);
         }else{
-          _bodyType.add(SubTagModel.fromJson(v));
+          _part.add(SubTagModel.fromJson(v));
         }
 
       });
@@ -65,9 +65,9 @@ class VideoTagModel {
       _target = [];
       json["target"].forEach((v) {
         if(v is SubTagModel){
-          _bodyType.add(v);
+          _target.add(v);
         }else{
-          _bodyType.add(SubTagModel.fromJson(v));
+          _target.add(SubTagModel.fromJson(v));
         }
       });
     }
