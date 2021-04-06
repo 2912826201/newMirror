@@ -431,7 +431,8 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ScanCodePage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ScanCodePage(showMyCode: data["showMyCode"],);
 });
 
 //扫描二维码结果页

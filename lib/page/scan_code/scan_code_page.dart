@@ -25,6 +25,8 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:provider/provider.dart';
 class ScanCodePage extends StatefulWidget {
+  bool showMyCode;
+  ScanCodePage({this.showMyCode});
   @override
   scanCodePageState createState() => scanCodePageState();
 }
@@ -146,7 +148,7 @@ class scanCodePageState extends State<ScanCodePage> {
           SizedBox(height: 12,),
           Text("将二维码放入框内，即可自动扫描",style: AppStyle.whiteMedium14,),
           SizedBox(height: 48,),
-          InkWell(
+          widget.showMyCode?InkWell(
               onTap: () {
                 AppRouter.navigateToMyQrCodePage(context,(result){
                 });
@@ -157,9 +159,9 @@ class scanCodePageState extends State<ScanCodePage> {
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColor.white,
                 version: QrVersions.auto,
-              ) ),
+              ) ):Container(),
           SizedBox(height: 9,),
-          Text("我的二维码",style: AppStyle.whiteRegular12,)
+          widget.showMyCode?Text("我的二维码",style: AppStyle.whiteRegular12,):Container()
         ],
       ),);
   }

@@ -436,8 +436,10 @@ class AppRouter {
     _navigateToPage(context, pathVideoDetail, map, callback: callback);
   }
 
-  static void navigateToScanCodePage(BuildContext context) {
-    _navigateToPage(context, pathScanCode, {});
+  static void navigateToScanCodePage(BuildContext context,{bool showMyCode = false}) {
+    Map<String, dynamic> map = Map();
+    map["showMyCode"] = showMyCode;
+    _navigateToPage(context, pathScanCode, map);
   }
 
   static void navigateToScanCodeResultPage(BuildContext context, ScanCodeResultModel resultModel) {
