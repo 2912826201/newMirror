@@ -847,7 +847,15 @@ class VideoDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid);
+    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,callback:(dynamic result){
+      print("result:$result");
+      if(null!=result && result is bool) {
+        videoModel.coachDto.relation = result?0:1;
+        if (mounted) {
+          reload(() {});
+        }
+      }
+    });
   }
 
   ///点击了他人刚刚训练完成

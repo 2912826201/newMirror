@@ -37,6 +37,7 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
   final String coachName;
   final String startTime;
   final int coachRelation;
+  final Function(int relation) callback;
 
   const LiveRoomVideoOperationPage({
     Key key,
@@ -45,6 +46,7 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
     @required this.coachUrl,
     @required this.startTime,
     @required this.coachRelation,
+    @required this.callback,
     @required this.coachId,}) : super(key: key);
 
   @override
@@ -55,7 +57,8 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
         coachUrl,
         coachName,
         startTime,
-        coachRelation);
+        coachRelation,
+        callback);
 }
 
 class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> {
@@ -66,7 +69,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       this.coachUrl,
       this.coachName,
       this.startTime,
-      this.coachRelation);
+      this.coachRelation,
+      this.callback,);
   int liveCourseId;
   int coachId;
   String coachUrl;
@@ -74,6 +78,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   String startTime;
   //与教练的关系
   int coachRelation;
+  Function(int relation) callback;
 
   List<UserMessageModel> messageChatList=[];
 
@@ -1228,9 +1233,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       print('关注监听=========================================$attntionResult');
       if (attntionResult == 1 || attntionResult == 3) {
         coachRelation = 1;
-        if (mounted) {
-          setState(() {});
+        if(mounted){
+          setState(() {
+
+          });
         }
+      }
+      if(callback!=null){
+        callback(coachRelation);
       }
     }
   }

@@ -738,7 +738,15 @@ class LiveDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,callback:(dynamic result){
+      print("result:$result");
+      if(null!=result && result is bool) {
+        liveModel.coachDto.relation = result?0:1;
+        if (mounted) {
+          reload(() {});
+        }
+      }
+    });
   }
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
@@ -854,7 +862,12 @@ class LiveDetailPageState extends XCState {
 
   //去直播页
   void gotoLiveVideoRoomPage(){
-    AppRouter.navigateLiveRoomPage(context,liveModel);
+    AppRouter.navigateLiveRoomPage(context,liveModel,callback:(int coachRelation){
+      liveModel.coachDto.relation=coachRelation;
+      if(mounted){
+        reload(() {});
+      }
+    });
   }
 
 
