@@ -53,6 +53,7 @@ class QueryModel{
   String senderName;
   String senderAvatarUrl;
   String coverUrl;
+  QueryModel();
   QueryModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     senderId = json["senderId"];
