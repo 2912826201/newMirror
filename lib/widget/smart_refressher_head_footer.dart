@@ -55,7 +55,7 @@ class SmartRefresherHeadFooter{
             child: CircularProgressIndicator(),
           );
         } else if (mode == LoadStatus.failed) {
-          body = Text("");
+          body = Text("上拉加载更多");
         } else if (mode == LoadStatus.canLoading) {
           body = Text("上拉加载更多");
         }  else if (mode == LoadStatus.noMore) {
