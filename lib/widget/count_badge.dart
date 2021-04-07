@@ -21,7 +21,7 @@ class CountBadge extends StatelessWidget {
         ? 32.0
         : count > 9
             ? 28.0
-            : 18;
+            : 18.0;
     return count == 0
         ? Container()
         : isSilent
@@ -33,15 +33,29 @@ class CountBadge extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
               )
-            : DecoratedBox(
-                decoration: BoxDecoration(
-                    color: AppColor.mainRed,
-                    borderRadius: BorderRadius.all(Radius.circular(height / 2)),
-                    border: Border.all(color: AppColor.white, width: 1)),
+            : Container(
+                //NOTE flutter的奇葩问题，同样大小的shape叠放上面的无法完美覆盖下面，留一丝丝边，用自带的border也有这个问题，只好用嵌套方式里面的尺寸写小点。。。
+                decoration: ShapeDecoration(
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                      color: AppColor.white,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                width: width,
+                height: height,
+                alignment: Alignment.center,
                 child: Container(
+                  decoration: ShapeDecoration(
+                    color: AppColor.mainRed,
+                    shape: StadiumBorder(
+                      side: BorderSide.none,
+                    ),
+                  ),
                   alignment: Alignment.center,
-                  width: width,
-                  height: height,
+                  width: width - 1,
+                  height: height - 1,
                   child: Text(
                     text,
                     style: TextStyle(fontSize: fontSize, color: AppColor.white),
