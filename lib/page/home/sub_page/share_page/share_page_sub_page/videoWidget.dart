@@ -74,10 +74,10 @@ class _VideoWidgetState extends State<VideoWidget> {
           }
           widget.feedModel.videos.first.controller.pause();
         }
+      } else {
+        print("初始化了啊啊啊啊");
+        init();
       }
-    }
-    if (mounted) {
-      setState(() {});
     }
   }
 
@@ -139,8 +139,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                         ? VideoPlayer(widget.feedModel.videos.first.controller)
                         : CachedNetworkImage(
                       imageUrl: widget.feedModel.videos.first.coverUrl,
-                      width: videoSize.width,
-                      height: videoSize.height,
+                      fit: BoxFit.fitWidth,
                     ),
                     // Center(
                     //         child: CupertinoActivityIndicator(radius: 30),
