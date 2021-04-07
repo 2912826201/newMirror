@@ -2,13 +2,14 @@ import 'dart:math' show max;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_layer.dart';
 
 import './render_exposure_detector.dart';
 
 /// exposure_detector
 /// Created by sl on 2021/3/13.
 class ExposureDetector extends SingleChildRenderObjectWidget {
-  const ExposureDetector({
+   ExposureDetector({
     @required Key key,
     @required Widget child,
     this.onExposure,
@@ -18,7 +19,7 @@ class ExposureDetector extends SingleChildRenderObjectWidget {
 
   /// 回调触发曝光函数
   final ExposureCallback onExposure;
-
+ bool isVideo;
   @override
   RenderExposureDetector createRenderObject(BuildContext context) {
     return RenderExposureDetector(

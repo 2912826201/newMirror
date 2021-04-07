@@ -5,6 +5,7 @@ import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/VideoWidget.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
@@ -13,10 +14,13 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTrip
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
@@ -98,7 +102,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     )
                   : Container(),
               // 视频区域
-              widget.model.videos.isNotEmpty ? getVideo(videos: widget.model.videos) : Container(),
+              widget.model.videos.isNotEmpty ? getVideo(feedModel: widget.model) : Container(),
               // 点赞，转发，评论三连区域 getTripleArea
               GetTripleArea(model: widget.model, index: widget.index),
               // 课程信息和地址
@@ -149,7 +153,9 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   }
 
 // 视频
-  Widget getVideo({List<VideosModel> videos}) {
+  Widget getVideo({HomeFeedModel feedModel}) {
+
+    List<VideosModel> videos = feedModel.videos;
     SizeInfo sizeInfo = SizeInfo();
     if (videos != null) {
       sizeInfo.width = videos.first.width;
@@ -158,14 +164,31 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-      ;
-      return FeedVideoPlayer(
-        videos.first.url,
-        sizeInfo,
-        ScreenUtil.instance.width,
-        durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
-        isInListView: true,
+      VideoIsPlay videoIsPlay = VideoIsPlay();
+     return VideoExposure(
+        key: Key('video_${widget.model.id}'),
+       child: VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNum2(videos.first.duration),),
+       onExposure: (visibilityInfo) {
+         videoIsPlay.id = feedModel.id;
+          if(visibilityInfo.visibleFraction == 1.0) {
+            videoIsPlay.isPlay = true;
+            EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
+          } else if(visibilityInfo.visibleFraction < 1.0 && visibilityInfo.visibleFraction >= 0.0){
+            videoIsPlay.isPlay = false;
+            EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
+          }
+
+         print('视频第${widget.index}个模块曝光,展示比例为${visibilityInfo.visibleFraction}');
+       },
+        // child:
       );
+        // return FeedVideoPlayer(
+      //   videos.first.url,
+      //   sizeInfo,
+      //   ScreenUtil.instance.width,
+      //   durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
+      //   isInListView: true,
+      // );
     }
   }
 
@@ -225,4 +248,10 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       height: 0,
     );
   }
+}
+
+class VideoIsPlay {
+  bool isPlay;
+  int id;
+  VideoIsPlay({this.isPlay = false,this.id});
 }
