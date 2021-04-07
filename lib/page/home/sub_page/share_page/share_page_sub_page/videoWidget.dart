@@ -56,18 +56,24 @@ class _VideoWidgetState extends State<VideoWidget> {
     print("视频产生变化：：：${videoIsPlay.isPlay}");
     widget.play = videoIsPlay;
     if (videoIsPlay.id == widget.feedModel.id) {
-      if (videoIsPlay.isPlay) {
-        if (widget.feedModel.videos.first.controller.value.isPlaying) {
-          return;
+      if (widget.feedModel.videos.first.controller != null) {
+        if (videoIsPlay.isPlay) {
+          if (widget.feedModel.videos.first.controller.value.isPlaying) {
+            return;
+          }
+
+          widget.feedModel.videos.first.controller.play();
+          streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
+          widget.feedModel.videos.first.controller.setLooping(true);
+        } else {
+            if (!widget.feedModel.videos.first.controller.value.isPlaying) {
+              return;
+            }
+            widget.feedModel.videos.first.controller.pause();
         }
-        widget.feedModel.videos.first.controller.play();
-        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
-        widget.feedModel.videos.first.controller.setLooping(true);
       } else {
-        if (!widget.feedModel.videos.first.controller.value.isPlaying) {
-          return;
-        }
-        widget.feedModel.videos.first.controller.pause();
+        // widget.feedModel.videos.first.controller?.pause();
+        // widget.feedModel.videos.first.controller.dispose();
       }
     }
     if (mounted) {
@@ -127,7 +133,10 @@ class _VideoWidgetState extends State<VideoWidget> {
                   });
                 },
                 child: widget.feedModel.videos.first.controller.value.initialized
-                    ? SizedBox(width: videoSize.width, height: videoSize.height, child: VideoPlayer(widget.feedModel.videos.first.controller))
+                    ? SizedBox(
+                        width: videoSize.width,
+                        height: videoSize.height,
+                        child: VideoPlayer(widget.feedModel.videos.first.controller))
                     : Center(
                         child: CupertinoActivityIndicator(radius: 30),
                       ),
@@ -172,7 +181,8 @@ class _VideoWidgetState extends State<VideoWidget> {
                                         } else {
                                           widget.feedModel.videos.first.controller.setVolume(1.0);
                                         }
-                                        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
+                                        streamController.sink
+                                            .add(widget.feedModel.videos.first.controller.value.volume > 0);
                                       },
                                       child: Icon(
                                         snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
