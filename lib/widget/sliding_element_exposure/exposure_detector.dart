@@ -12,7 +12,6 @@ class ExposureDetector extends SingleChildRenderObjectWidget {
    ExposureDetector({
     @required Key key,
     @required Widget child,
-    this.isVideo = false,
     this.onExposure,
   })  : assert(key != null),
         assert(child != null),
@@ -25,7 +24,6 @@ class ExposureDetector extends SingleChildRenderObjectWidget {
   RenderExposureDetector createRenderObject(BuildContext context) {
     return RenderExposureDetector(
       key: key,
-      isVideo: isVideo,
       onExposure: onExposure,
     );
   }
@@ -34,7 +32,6 @@ class ExposureDetector extends SingleChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, RenderExposureDetector renderObject) {
     assert(renderObject.key == key);
-    renderObject.isVideo = isVideo;
     renderObject.onExposure = onExposure;
   }
 }

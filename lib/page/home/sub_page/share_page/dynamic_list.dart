@@ -20,6 +20,7 @@ import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
@@ -163,17 +164,16 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-     return ExposureDetector(
+      VideoIsPlay videoIsPlay = VideoIsPlay();
+     return VideoExposure(
         key: Key('video_${widget.model.id}'),
-        isVideo: true,
-       child: VideoWidget(url: videos.first.url,id: feedModel.id,sizeInfo: sizeInfo,play:  videos.first.isPlay,durationString:  DateUtil.formatSecondToStringNum2(videos.first.duration),),
+       child: VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNum2(videos.first.duration),),
        onExposure: (visibilityInfo) {
-         VideoIsPlay videoIsPlay = VideoIsPlay();
          videoIsPlay.id = feedModel.id;
           if(visibilityInfo.visibleFraction == 1.0) {
             videoIsPlay.isPlay = true;
             EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
-          } else if(visibilityInfo.visibleFraction < 1.0 && visibilityInfo.visibleFraction > 0.0){
+          } else if(visibilityInfo.visibleFraction < 1.0 && visibilityInfo.visibleFraction >= 0.0){
             videoIsPlay.isPlay = false;
             EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
           }
@@ -253,5 +253,5 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
 class VideoIsPlay {
   bool isPlay;
   int id;
-  VideoIsPlay({this.isPlay,this.id});
+  VideoIsPlay({this.isPlay = false,this.id});
 }

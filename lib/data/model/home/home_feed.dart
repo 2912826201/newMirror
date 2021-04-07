@@ -7,6 +7,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import '../media_file_model.dart';
 
 enum CommentTypes {
@@ -273,8 +274,10 @@ class VideosModel {
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   bool isPlay = false;
+  // 播放器控制器
+  VideoPlayerController controller;
   VideosModel({this.url, this.hlsUrl, this.duration, this.coverUrl, this.height, this.width, this.videoCroppedRatio,
-    this.offsetRatioX, this.offsetRatioY});
+    this.offsetRatioX, this.offsetRatioY,this.controller});
 
   VideosModel.fromJson(Map<String, dynamic> json) {
     url = json["url"];

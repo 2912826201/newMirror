@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -12,23 +13,15 @@ import 'package:video_player/video_player.dart';
 import '../dynamic_list.dart';
 
 class VideoWidget extends StatefulWidget {
-  final String url;
-  final int id;
-  final bool play;
+  HomeFeedModel feedModel;
+  VideoIsPlay play;
   final SizeInfo sizeInfo;
   final bool isFile;
   final String thumbPath;
   final String durationString;
 
-  const VideoWidget(
-      {Key key,
-      @required this.url,
-      @required this.play,
-      this.sizeInfo,
-      this.id,
-      this.durationString,
-      this.thumbPath,
-      this.isFile})
+  VideoWidget(
+      {Key key, @required this.play, this.sizeInfo, this.feedModel, this.durationString, this.thumbPath, this.isFile})
       : super(key: key);
 
   @override
@@ -36,7 +29,6 @@ class VideoWidget extends StatefulWidget {
 }
 
 class _VideoWidgetState extends State<VideoWidget> {
-  VideoPlayerController _controller;
   Size containerSize;
   Size videoSize;
   double offsetX;
@@ -62,14 +54,21 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   _videoPlayOrpause(VideoIsPlay videoIsPlay) {
     print("视频产生变化：：：${videoIsPlay.isPlay}");
-    print("视频路径：：${widget.url}");
-    print(_controller.dataSource);
-    if (videoIsPlay.isPlay && videoIsPlay.id == widget.id) {
-      _controller.play();
-      streamController.sink.add(_controller.value.volume > 0);
-      _controller.setLooping(true);
-    } else {
-      _controller.pause();
+    widget.play = videoIsPlay;
+    if (videoIsPlay.id == widget.feedModel.id) {
+      if (videoIsPlay.isPlay) {
+        if (widget.feedModel.videos.first.controller.value.isPlaying) {
+          return;
+        }
+        widget.feedModel.videos.first.controller.play();
+        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
+        widget.feedModel.videos.first.controller.setLooping(true);
+      } else {
+        if (!widget.feedModel.videos.first.controller.value.isPlaying) {
+          return;
+        }
+        widget.feedModel.videos.first.controller.pause();
+      }
     }
     if (mounted) {
       setState(() {});
@@ -77,33 +76,35 @@ class _VideoWidgetState extends State<VideoWidget> {
   }
 
   init() async {
-    _controller = VideoPlayerController.network(widget.url);
-    _controller.setVolume(0);
-    await _controller.initialize();
-    if (mounted) {
-      setState(() {});
-    }
+    widget.feedModel.videos.first.controller = VideoPlayerController.network(widget.feedModel.videos.first.url);
+    widget.feedModel.videos.first.controller.setVolume(0);
+    await widget.feedModel.videos.first.controller.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
-  // @override
-  // void didUpdateWidget(VideoWidget oldWidget) {
-  //   if (oldWidget.play != widget.play) {
-  //     if (widget.play) {
-  //       _controller.play();
-  //       streamController.sink.add(_controller.value.volume > 0);
-  //       _controller.setLooping(true);
-  //     } else {
-  //       _controller.pause();
-  //     }
-  //   }
-  //   super.didUpdateWidget(oldWidget);
-  // }
+  @override
+  void didUpdateWidget(VideoWidget oldWidget) {
+    print("此回调什么时候又");
+    if (oldWidget.play != widget.play) {
+      if (widget.play.isPlay) {
+        widget.feedModel.videos.first.controller.play();
+        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
+        widget.feedModel.videos.first.controller.setLooping(true);
+      } else {
+        widget.feedModel.videos.first.controller.pause();
+      }
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void dispose() {
     print("视频页销毁————————————————————————————————————————————————");
-    // _controller?.pause();
-    // _controller.dispose();
+    widget.feedModel.videos.first.controller?.pause();
+    widget.feedModel.videos.first.controller.dispose();
     super.dispose();
   }
 
@@ -125,11 +126,11 @@ class _VideoWidgetState extends State<VideoWidget> {
                     streamHeight.sink.add(0.0);
                   });
                 },
-                child: _controller.value.initialized
-                    ? SizedBox(width: videoSize.width, height: videoSize.height, child: VideoPlayer(_controller))
-                    : Theme(
-                        data: ThemeData(cupertinoOverrideTheme: CupertinoThemeData(brightness: Brightness.dark)),
-                        child: CupertinoActivityIndicator(radius: 30)),
+                child: widget.feedModel.videos.first.controller.value.initialized
+                    ? SizedBox(width: videoSize.width, height: videoSize.height, child: VideoPlayer(widget.feedModel.videos.first.controller))
+                    : Center(
+                        child: CupertinoActivityIndicator(radius: 30),
+                      ),
               )),
           Positioned(
               bottom: 0,
@@ -161,17 +162,17 @@ class _VideoWidgetState extends State<VideoWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               StreamBuilder<bool>(
-                                  initialData: _controller.value.volume > 0,
+                                  initialData: widget.feedModel.videos.first.controller.value.volume > 0,
                                   stream: streamController.stream,
                                   builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
                                     return GestureDetector(
                                       onTap: () {
-                                        if (_controller.value.volume > 0) {
-                                          _controller.setVolume(0.0);
+                                        if (widget.feedModel.videos.first.controller.value.volume > 0) {
+                                          widget.feedModel.videos.first.controller.setVolume(0.0);
                                         } else {
-                                          _controller.setVolume(1.0);
+                                          widget.feedModel.videos.first.controller.setVolume(1.0);
                                         }
-                                        streamController.sink.add(_controller.value.volume > 0);
+                                        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
                                       },
                                       child: Icon(
                                         snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
