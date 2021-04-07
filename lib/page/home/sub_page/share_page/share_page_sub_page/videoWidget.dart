@@ -74,9 +74,6 @@ class _VideoWidgetState extends State<VideoWidget> {
           }
           widget.feedModel.videos.first.controller.pause();
         }
-      } else {
-        // widget.feedModel.videos.first.controller?.pause();
-        // widget.feedModel.videos.first.controller.dispose();
       }
     }
     if (mounted) {
