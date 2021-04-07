@@ -33,7 +33,11 @@ class TrainingGalleryDayModel with ISuspensionBean {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(TrainingGalleryImageModel.fromJson(v));
+        if(v is TrainingGalleryImageModel) {
+          list.add(v);
+        }else{
+          list.add(TrainingGalleryImageModel.fromJson(v));
+        }
       });
     }
   }

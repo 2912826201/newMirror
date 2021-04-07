@@ -21,6 +21,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
@@ -279,28 +280,23 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             child: Stack(
               overflow: Overflow.visible,
               children: [
-                Container(
-                  height: 45,
-                  width: 45,
-                  color: AppColor.mainBlue,
+                AppIcon.getAppIcon(
+                    type == 0
+                        ? AppIcon.message_comment
+                        : type == 1
+                            ? AppIcon.message_at
+                            : AppIcon.message_like,
+                    45),
+                Positioned(
+                  left: 29.5,
+                  child: CountBadge(
+                      type == 0
+                          ? notifier.comment
+                          : type == 1
+                              ? notifier.at
+                              : notifier.laud,
+                      false),
                 ),
-                Positioned(
-                    left: 6.5,
-                    top: 6.5,
-                    child: Container(
-                      height: 32,
-                      width: 32,
-                      color: AppColor.bgBlack,
-                    )),
-                Positioned(
-                    left: 29.5,
-                    child: CountBadge(
-                        type == 0
-                            ? notifier.comment
-                            : type == 1
-                                ? notifier.at
-                                : notifier.laud,
-                        false)),
               ],
             ),
           ),
@@ -369,18 +365,18 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
     if (conversation.type == PRIVATE_TYPE || conversation.type == GROUP_TYPE) {
-      if(Application.platform==0){
+      if (Application.platform == 0) {
         return GestureDetector(
           child: _conversationItem(index, conversation),
-          onTap: (){
+          onTap: () {
             getMessageType(conversation, context);
             jumpChatPageConversationDto(context, conversation);
           },
-          onLongPress: (){
+          onLongPress: () {
             showAppDialog(context,
                 title: "删除消息",
                 info: "确认删除这条对话消息吗？",
-                barrierDismissible:false,
+                barrierDismissible: false,
                 cancel: AppDialogButton("取消", () {
                   print("点了取消");
                   return true;
@@ -394,7 +390,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 }));
           },
         );
-      }else {
+      } else {
         return LeftScrollListView(
           itemKey: conversation.id,
           itemTag: "conversation",
@@ -424,13 +420,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _conversationItem(int index, ConversationDto conversation) {
-
-    int messageCount=conversation.unreadCount;
-    NoPromptUidModel model=NoPromptUidModel(type: conversation.type,targetId: int.parse(conversation.conversationId));
-    if(NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
-      messageCount=0;
+    int messageCount = conversation.unreadCount;
+    NoPromptUidModel model =
+        NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));
+    if (NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
+      messageCount = 0;
     }
-
 
     MessageContent msgContent = MessageContent();
     msgContent.decode(conversation.content);
@@ -446,91 +441,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 45,
-            width: 45,
-            child: Stack(
-              children: [
-                avatarList.length == 1
-                    ? ClipOval(
-                        child: CachedNetworkImage(
-                          height: 45,
-                          width: 45,
-                          imageUrl: avatarList.first,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
-                          ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : avatarList.length > 1
-                        ? Positioned(
-                            top: 0,
-                            right: 0,
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                height: 28,
-                                width: 28,
-                                imageUrl: avatarList.first,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Image.asset(
-                                  "images/test.png",
-                                  fit: BoxFit.cover,
-                                ),
-                                errorWidget: (context, url, error) => Image.asset(
-                                  "images/test.png",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ))
-                        : Container(),
-                avatarList.length > 1
-                    ? Positioned(
-                        bottom: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              //这里的边框颜色需要随背景变化
-                              border: Border.all(
-                                  width: 3, color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 28,
-                              width: 28,
-                              imageUrl: avatarList[1],
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-                conversation.type == OFFICIAL_TYPE ||
-                        conversation.type == LIVE_TYPE ||
-                        conversation.type == TRAINING_TYPE
-                    ? Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          color: AppColor.bgBlack,
-                        ))
-                    : Container()
-              ],
-            ),
-          ),
+              height: 45,
+              width: 45,
+              child: conversation.type == OFFICIAL_TYPE ||
+                      conversation.type == LIVE_TYPE ||
+                      conversation.type == TRAINING_TYPE
+                  ? _getOfficialAvatar(conversation.type)
+                  : _getConversationAvatar(avatarList, conversation.isTop)),
           SizedBox(
             width: 12,
           ),
@@ -567,7 +484,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     Expanded(
                         child: Text(
                       //FIXME 这个逻辑需要在群成员数据库写好后替换掉
-                      _getItemContent(conversation)??"",
+                      _getItemContent(conversation) ?? "",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       maxLines: 1,
@@ -594,36 +511,158 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-
-
-  String _getItemContent(ConversationDto conversation){
-    if(conversation.type == GROUP_TYPE &&
+  String _getItemContent(ConversationDto conversation) {
+    if (conversation.type == GROUP_TYPE &&
         conversation.senderUid != null &&
-        conversation.senderUid != Application.profile.uid){
+        conversation.senderUid != Application.profile.uid) {
       // print("用户id:${conversation.senderUid.toString()},群id:${conversation.conversationId}");
-      return _getChatUserName(conversation.conversationId,
-          conversation.senderUid.toString(),conversation.senderUid.toString())+":${conversation.content}";
-    }else{
+      return _getChatUserName(
+              conversation.conversationId, conversation.senderUid.toString(), conversation.senderUid.toString()) +
+          ":${conversation.content}";
+    } else {
       return conversation.content;
     }
   }
 
-  String _getChatUserName(String groupId,String uId, String name) {
+  String _getChatUserName(String groupId, String uId, String name) {
     // print("${groupId}_$uId");
     // print(Application.chatGroupUserInformationMap);
     // print(Application.chatGroupUserInformationMap["${groupId}_$uId"].toString());
     // print(GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME);
     // print((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-    String userName = ((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-    if(userName==null||userName.length<1){
-      userName =(Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-      [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    String userName = ((Application.chatGroupUserInformationMap["${groupId}_$uId"] ??
+        Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    if (userName == null || userName.length < 1) {
+      userName =
+          (Application.chatGroupUserInformationMap["${groupId}_$uId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
     if (userName == null) {
       return name;
     } else {
       return userName;
     }
+  }
+
+  Widget _getConversationAvatar(List<String> avatarList, int isTop) {
+    if (avatarList.length == 1) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          height: 45,
+          width: 45,
+          imageUrl: avatarList.first,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Image.asset(
+            "images/test.png",
+            fit: BoxFit.cover,
+          ),
+          errorWidget: (context, url, error) => Image.asset(
+            "images/test.png",
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else if (avatarList.length > 1) {
+      return Stack(
+        children: [
+          Positioned(
+            top: 0,
+            right: 0,
+            child: ClipOval(
+              child: CachedNetworkImage(
+                height: 28,
+                width: 28,
+                imageUrl: avatarList.first,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                ),
+                errorWidget: (context, url, error) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  //这里的边框颜色需要随背景变化
+                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.textHint : AppColor.white)),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  height: 28,
+                  width: 28,
+                  imageUrl: avatarList[1],
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    "images/test.png",
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    "images/test.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _getOfficialAvatar(int type) {
+    return Stack(
+      children: [
+        Container(
+          height: 45,
+          width: 45,
+          decoration: BoxDecoration(
+            color: AppColor.textPrimary2,
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          child: AppIcon.getAppIcon(
+              type == OFFICIAL_TYPE
+                  ? AppIcon.avatar_system
+                  : type == LIVE_TYPE
+                      ? AppIcon.avatar_live
+                      : type == TRAINING_TYPE
+                          ? AppIcon.avatar_training
+                          : AppIcon.avatar_system,
+              24),
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Container(
+            //NOTE flutter的奇葩问题，同样大小的shape叠放上面的无法完美覆盖下面，留一丝丝边，用自带的border也有这个问题，只好用嵌套方式里面的尺寸写小点。。。
+            decoration: ShapeDecoration(
+              shape: CircleBorder(
+                side: BorderSide(color: AppColor.white, width: 1),
+              ),
+            ),
+            height: 16,
+            width: 16,
+            alignment: Alignment.center,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColor.textPrimary2,
+                shape: BoxShape.circle,
+              ),
+              height: 15,
+              width: 15,
+              alignment: Alignment.center,
+              child: AppIcon.getAppIcon(AppIcon.official, 10),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

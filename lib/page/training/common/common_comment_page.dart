@@ -215,7 +215,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         List<CommentDtoModel> list = <CommentDtoModel>[];
         list.addAll(context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments);
         courseCommentHot.list = list;
-        courseCommentHot.totalCount=context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].totalCount;
+        courseCommentHot.totalCount = context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].totalCount;
         resetSubSetting(courseCommentHot);
       }
     }
@@ -316,9 +316,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //每一个评论的item底部提示文字
   Widget getCommentBottomAlertText(CommentDtoModel value, int index) {
-    var subComplete = getSubCommentComplete(value, commentListSubSettingList[index].isFold);
-    var subLoading = "正在加载。。。";
-    String alertText = commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED ? subComplete : subLoading;
+    var subComplete = Container(
+        child: Text(getSubCommentComplete(value, commentListSubSettingList[index].isFold),
+            style: TextStyle(color: Colors.grey)));
+    var subLoading = Container(
+        height: 17,
+        width: 17,
+        child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(AppColor.white), backgroundColor: AppColor.black, strokeWidth: 1.5));
+    Widget alertWidget = commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED ? subComplete : subLoading;
     return Offstage(
       offstage: value.replyCount + value.pullNumber < 1,
       child: Container(
@@ -333,7 +339,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               SizedBox(
                 width: 4,
               ),
-              Container(child: Text(alertText, style: TextStyle(color: Colors.grey))),
+              alertWidget
             ],
           ),
           onTap: () => onClickAddSubComment(value, index, true),
@@ -602,7 +608,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-     context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId,commentDtoModel);
+      context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId, commentDtoModel);
+
       ///TODO 这里是修改的删除评论的eventbus
       EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
       if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
@@ -932,7 +939,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       if (!widget.isShowHotOrTime &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
-
                         context
                             .read<FeedMapNotifier>()
                             .value
@@ -942,11 +948,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .add(model.id);
 
                         print("courseCommentHot.totalCount${courseCommentHot.totalCount}");
-                        context
-                            .read<FeedMapNotifier>().updateTotalCount
-                          (courseCommentHot.totalCount, widget.targetId);
+                        context.read<FeedMapNotifier>().updateTotalCount(courseCommentHot.totalCount, widget.targetId);
                       }
-
                     }
                   }
                 }
@@ -973,9 +976,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .comments[i]
                             .screenOutIds
                             .add(model.id);
-                        context
-                            .read<FeedMapNotifier>().updateTotalCount
-                          (courseCommentTime.totalCount, widget.targetId);
+                        context.read<FeedMapNotifier>().updateTotalCount(courseCommentTime.totalCount, widget.targetId);
                       }
                     }
                   }
@@ -1071,14 +1072,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
         print(
             "滚动界面到指定的item--scrollHeight：$scrollHeight------------------------------------------------------------------------");
-        if(widget.fatherComment!=null){
-          double childCommentHeight = calculateTextWidth("${widget.commentDtoModel.name} 回复 ${widget.commentDtoModel
-              .replyName}${widget
-              .commentDtoModel
-              .content}", AppStyle
-              .textRegular14,
-              ScreenUtil.instance.screenWidthDp-149,
-              10).height+34;
+        if (widget.fatherComment != null) {
+          double childCommentHeight = calculateTextWidth(
+                      "${widget.commentDtoModel.name} 回复 ${widget.commentDtoModel.replyName}${widget.commentDtoModel.content}",
+                      AppStyle.textRegular14,
+                      ScreenUtil.instance.screenWidthDp - 149,
+                      10)
+                  .height +
+              34;
           scrollHeight += childCommentHeight;
         }
         if (scrollHeight > 0) {

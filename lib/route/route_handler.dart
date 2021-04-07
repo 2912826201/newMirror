@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -40,7 +41,6 @@ import 'package:mirror/page/profile/edit_information/edit_information_introducti
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
-import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -105,10 +105,6 @@ var handlerMain = Handler(handlerFunc: (BuildContext context, Map<String, List<S
 
 var handlerTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TestPage();
-});
-
-var handlerLoginTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return LoginTestPage();
 });
 
 var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -377,9 +373,16 @@ var handlerNetworkLinkFailure = Handler(handlerFunc: (BuildContext context, Map<
 var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
+
+  // map["systemPage"] = systemPage;
+  // map["systemLastTime"] = systemLastTime;
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
-  return ChatPage(conversation: conversation, shareMessage: shareMessage,context:context);
+  return ChatPage(
+      conversation: conversation,
+      shareMessage: shareMessage,
+      chatDataList: Application.chatDataList,
+      context:context);
 });
 
 //群聊更多界面
@@ -423,7 +426,8 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ScanCodePage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ScanCodePage(showMyCode: data["showMyCode"],);
 });
 
 //扫描二维码结果页

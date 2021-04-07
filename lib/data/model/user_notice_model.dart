@@ -9,7 +9,12 @@ class UserNoticeModel{
    if (json["list"] != null) {
      list = [];
      json["list"].forEach((v) {
-       list.add(UserNoticeList.fromJson(v));
+       if(v is UserNoticeList){
+         list.add(v);
+       }else{
+         list.add(UserNoticeList.fromJson(v));
+       }
+
      });
    }
  }

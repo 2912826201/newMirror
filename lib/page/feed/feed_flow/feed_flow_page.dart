@@ -8,6 +8,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -74,10 +75,7 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
       enablePullDown: true,
       enablePullUp: true,
       footer: footerWidget(),
-      header: WaterDropHeader(
-        complete: Text("刷新完成"),
-        failed: Text(" "),
-      ),
+      header: SmartRefresherHeadFooter.init().getHeader(),
       onRefresh: _onRefresh,
       onLoading: _onLoading,
       controller: _refreshController,

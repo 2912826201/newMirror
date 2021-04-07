@@ -12,6 +12,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -34,6 +35,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int feedCount;
   UserModel userModel;
   ScrollController controller = ScrollController();
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -58,7 +60,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     if (extraInfoModel != null) {
-      Future.delayed(Duration.zero,(){
+      Future.delayed(Duration.zero, () {
         context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
       });
     }
@@ -129,7 +131,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               ),
               Row(
                 children: [
-                  _secondData(Icons.timer, context.watch<ProfileNotifier>().trainingSeconds, "训练记录"),
+                  _secondData(
+                      Icons.timer,
+                      DateTime.fromMillisecondsSinceEpoch(context.watch<ProfileNotifier>().trainingSeconds).minute,
+                      "训练记录"),
                   Spacer(),
                   _secondData(Icons.poll, context.watch<ProfileNotifier>().weight, "体重记录"),
                   Spacer(),
@@ -158,13 +163,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           return CachedNetworkImage(
             height: height * 0.16,
             width: width,
-            imageUrl: avatar!=null?avatar:"",
+            imageUrl: avatar != null ? avatar : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Image.asset(
               "images/test.png",
               fit: BoxFit.cover,
             ),
-            errorWidget:(context, url, error) => Image.asset(
+            errorWidget: (context, url, error) => Image.asset(
               "images/test.png",
               fit: BoxFit.cover,
             ),
@@ -216,9 +221,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               svgName: AppIcon.qrcode_scan,
               iconColor: AppColor.black,
               onTap: () {
-                Permission.camera.request().then((value){
-                  if(value!=null){
-                    AppRouter.navigateToScanCodePage(context);
+                Permission.camera.request().then((value) {
+                  if (value != null) {
+                    AppRouter.navigateToScanCodePage(context, showMyCode: true);
                   }
                 });
               }),
@@ -251,7 +256,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 style: AppStyle.textRegular16,
               ),
               Expanded(child: Container()),
-              Icon(Icons.arrow_forward_ios)
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 18,
+                color: AppColor.textHint,
+              )
             ],
           ),
         ),
@@ -444,11 +453,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      /*if (userModel.isVip != 0) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VipNotOpenPage(type: VipState.NOTOPEN);
-        }));
-      } else {
+      /* if (userModel.isVip != 0) {*/
+      /*   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return ChangeNotifierProvider(
+              create: (_) => VipTitleChangeNotifier(),
+          child: VipNotOpenPage(type: VipState.NOTOPEN));
+        }));*/
+      /*  } else {
         AppRouter.navigateToVipOpenPage(context);
       }*/
     }

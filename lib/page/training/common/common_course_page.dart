@@ -65,33 +65,7 @@ String getCourseShowImage(LiveVideoModel courseModel) {
   return imageUrl;
 }
 
-//底部或滑动
-Widget footerWidget() {
-  return CustomFooter(
-    builder: (BuildContext context, LoadStatus mode) {
-      Widget body;
-      if (mode == LoadStatus.idle) {
-        body = Text("");
-      } else if (mode == LoadStatus.loading) {
-        body = Container(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(),
-        );
-      } else if (mode == LoadStatus.failed) {
-        body = Text("");
-      } else if (mode == LoadStatus.canLoading) {
-        body = Text("");
-      } else {
-        body = Text("");
-      }
-      return Container(
-        height: 55.0,
-        child: Center(child: body),
-      );
-    },
-  );
-}
+
 
 //获取训练数据ui
 Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey globalKey) {

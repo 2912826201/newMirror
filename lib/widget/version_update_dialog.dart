@@ -19,7 +19,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:r_upgrade/r_upgrade.dart';
 
 enum UpgradeMethod {
   all,

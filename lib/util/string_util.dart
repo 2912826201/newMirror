@@ -218,29 +218,18 @@ class StringUtil {
     if (number == null||number == 0 || number<0) {
       return 0.toString();
     }
-    if (number < 10000) {
       if (number < 1000) {
         return number.toString();
       } else {
-        String db = "${(number / 1000).toString()}";
+        String db = "${(number / number < 10000?1000:10000).toString()}";
         if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
           String doubleText = db.substring(0, db.indexOf(".") + 2);
-          return doubleText + "k";
+          return doubleText + "${number < 10000?"k":"w"}";
         } else {
           String intText = db.substring(0, db.indexOf("."));
-          return intText + "k";
+          return intText + "${number < 10000?"k":"w"}";
         }
       }
-    } else {
-      String db = "${(number / 10000).toString()}";
-      if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
-        String doubleText = db.substring(0, db.indexOf(".") + 2);
-        return doubleText + "W";
-      } else {
-        String intText = db.substring(0, db.indexOf("."));
-        return intText + "W";
-      }
-    }
   }
 
   /*
@@ -405,7 +394,7 @@ class StringUtil {
           breakFor = true;
         }
       }
-      return backString;
+      return backString+"${isOmit?"...":""}";
     }
     return str;
   }

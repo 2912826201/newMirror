@@ -360,13 +360,22 @@ class LiveVideoModel {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        _partDtos.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _partDtos.add(v);
+        }else{
+          _partDtos.add(SubTagModel.fromJson(v));
+        }
+
       });
     }
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        if(v is EquipmentDtos){
+          _equipmentDtos.add(v);
+        }else{
+          _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        }
       });
     }
     _times = json["times"];
@@ -625,19 +634,31 @@ class CoursewareDto {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        _partDtos.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _partDtos.add(v);
+        }else{
+          _partDtos.add(SubTagModel.fromJson(v));
+      }
       });
     }
     if (json["componentDtos"] != null) {
       _componentDtos = [];
       json["componentDtos"].forEach((v) {
-        _componentDtos.add(ComponentDtos.fromJson(v));
+        if(v is ComponentDtos){
+          _componentDtos.add(v);
+        }else{
+          _componentDtos.add(ComponentDtos.fromJson(v));
+        }
       });
     }
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        if(v is EquipmentDtos){
+          _equipmentDtos.add(v);
+        }else{
+          _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        }
       });
     }
     _creatorId = json["creatorId"];
@@ -916,14 +937,22 @@ class ComponentDtos {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        _partDtos.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _partDtos.add(v);
+        }else{
+          _partDtos.add(SubTagModel.fromJson(v));
+        }
       });
     }
     _levelDto = json["levelDto"] != null ? SubTagModel.fromJson(json["levelDto"]) : null;
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        if(v is EquipmentDtos){
+          _equipmentDtos.add(v);
+        }else{
+          _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        }
       });
     }
     _calories = json["calories"];
@@ -932,13 +961,21 @@ class ComponentDtos {
     if (json["scripts"] != null) {
       _scripts = [];
       json["scripts"].forEach((v) {
-        _scripts.add(Scripts.fromJson(v));
+        if(v is Scripts){
+          _scripts.add(v);
+        }else{
+          _scripts.add(Scripts.fromJson(v));
+        }
       });
     }
     if (json["scriptToVideo"] != null) {
       _scriptToVideo = [];
       json["scriptToVideo"].forEach((v) {
-        _scriptToVideo.add(ScriptToVideo.fromJson(v));
+        if(v is ScriptToVideo){
+          _scriptToVideo.add(v);
+        }else{
+          _scriptToVideo.add(ScriptToVideo.fromJson(v));
+        }
       });
     }
     _creatorId = json["creatorId"];
@@ -1016,7 +1053,11 @@ class ScriptToVideo {
     if (json["scriptIds"] != null) {
       _scriptIds = [];
       json["scriptIds"].forEach((v) {
-        _scriptIds.add(ScriptIds.fromJson(v));
+        if(v is ScriptIds){
+          _scriptIds.add(v);
+        }else{
+          _scriptIds.add(ScriptIds.fromJson(v));
+        }
       });
     }
     _videoUrl = json["videoUrl"];
@@ -1265,14 +1306,23 @@ class Scripts {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        _partDtos.add(SubTagModel.fromJson(v));
+        if(v is SubTagModel){
+          _partDtos.add(v);
+        }else{
+          _partDtos.add(SubTagModel.fromJson(v));
+        }
       });
     }
     _equipmentIds = json["equipmentIds"];
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        if(v is EquipmentDtos){
+          _equipmentDtos.add(v);
+        }else{
+          _equipmentDtos.add(EquipmentDtos.fromJson(v));
+        }
+
       });
     }
     _type = json["type"];

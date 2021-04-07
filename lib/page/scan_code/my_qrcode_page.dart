@@ -194,6 +194,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
   String _getUserCreateTime(ProfileDto dto) {
     int createTime = dto.createTime;
     int nowTime = DateUtil.getNowDateMs();
+
     String day = "${((nowTime - createTime) / 86400000)}";
     return day.substring(0, day.indexOf(".")) + "天";
   }

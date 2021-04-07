@@ -17,7 +17,11 @@ class BuddyListModel {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(BuddyModel.fromJson(v));
+        if(v is BuddyModel){
+          list.add(v);
+        }else{
+          list.add(BuddyModel.fromJson(v));
+        }
       });
     }
   }

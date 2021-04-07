@@ -93,10 +93,10 @@ class RongCloudReceiveManager {
       }else{
 
         //系统消息和群聊消息和私聊消息
-        Application.appContext
-            .read<ChatMessageProfileNotifier>()
-            .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);
-
+        List<int> list=[];
+        list.add(messageId);
+        list.add(status);
+        EventBus.getDefault().post(msg: list,registerName: RESET_MSG_STATUS);
         MessageManager.updateConversationByMessageList(_context, [msg]);
       }
 

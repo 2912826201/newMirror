@@ -18,10 +18,11 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/expression_team_delete_Formatter.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
-import '../overscroll_behavior.dart';
+import '../../../widget/overscroll_behavior.dart';
 
 class QueryFollowList extends StatefulWidget {
   //传1为关注，传2为粉丝，3为话题
@@ -495,29 +496,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                               controller: _refreshController,
                               enablePullUp: true,
                               enablePullDown: true,
-                              footer: CustomFooter(
-                                builder: (BuildContext context, LoadStatus mode) {
-                                  Widget body;
-                                  if (mode == LoadStatus.loading) {
-                                    body = CircularProgressIndicator();
-                                  } else if (mode == LoadStatus.noMore) {
-                                    body = Text("没有更多了");
-                                  } else if (mode == LoadStatus.failed) {
-                                    body = Text("加载错误,请重试");
-                                  } else {
-                                    body = Text(" ");
-                                  }
-                                  return Container(
-                                    child: Center(
-                                      child: body,
-                                    ),
-                                  );
-                                },
-                              ),
-                              header: WaterDropHeader(
-                                complete: Text("刷新完成"),
-                                failed: Text("刷新失败"),
-                              ),
+                              footer: SmartRefresherHeadFooter.init().getFooter(),
+                              header: SmartRefresherHeadFooter.init().getHeader(),
                               onRefresh: __onRefresh,
                               onLoading: _onLoading,
                               child: ListView.builder(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -15,9 +16,8 @@ import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
-///各种提示消息的item
-// ignore: must_be_immutable
-class AlertMsg extends StatelessWidget {
+
+class AlertMsg extends StatefulWidget {
   final RecallNotificationMessage recallNotificationMessage;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
@@ -38,10 +38,18 @@ class AlertMsg extends StatelessWidget {
     this.chatUserName,
   });
 
+  @override
+  _AlertMsgState createState() => _AlertMsgState();
+}
+
+class _AlertMsgState extends State<AlertMsg> {
   bool isMyself;
   List<String> textArray = [];
   List<bool> isChangColorArray = [];
   List<Color> colorArray = [];
+
+  Timer timer;
+  int timeCount=0;
 
   @override
   Widget build(BuildContext context) {
@@ -65,48 +73,63 @@ class AlertMsg extends StatelessWidget {
     isChangColorArray.clear();
     colorArray.clear();
 
-    if (recallNotificationMessage != null) {
+    if (widget.recallNotificationMessage != null) {
       colorArray.add(AppColor.textSecondary);
       colorArray.add(AppColor.mainBlue);
 
       //撤回消息
-      isMyself = recallNotificationMessage.mOperatorId == Application.profile.uid.toString();
+      isMyself = widget.recallNotificationMessage.mOperatorId == Application.profile.uid.toString();
       if (isMyself) {
         textArray.add("你撤回了一条消息 ");
         isChangColorArray.add(false);
-        if (new DateTime.now().millisecondsSinceEpoch - recallNotificationMessage.recallActionTime < 5 * 60 * 1000) {
+        print("开始判断时间${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
+        if (new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime < 5 * 60 * 1000) {
+          print("开始判断时间1${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
           try {
-            if (json.decode(recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
+            if (json.decode(widget.recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
               textArray.add("重新编辑");
               isChangColorArray.add(true);
+              timer=Timer.periodic(Duration(seconds: 1), (timer) {
+                timeCount++;
+                print("$timeCount");
+                if(timeCount>60){
+                  timeCount=0;
+                  timer.cancel();
+                  timer=null;
+                  if(mounted) {
+                    setState(() {
+                    });
+                  }
+                }
+              });
             }
           } catch (e) {
-            if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
+            if (widget.recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
               textArray.add("重新编辑");
               isChangColorArray.add(true);
             }
           }
         }
       } else {
-        textArray.add("“$chatUserName”撤回了一条消息");
+        textArray.add("“${widget.chatUserName}”撤回了一条消息");
         isChangColorArray.add(false);
       }
-    } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
+    } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
       //时间提示
       colorArray.add(AppColor.textSecondary);
       colorArray.add(AppColor.textSecondary);
 
-      textArray.add(DateUtil.formatMessageAlertTime(map["data"]));
+      textArray.add(DateUtil.formatMessageAlertTime(widget.map["data"]));
       isChangColorArray.add(false);
-    } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT) {
+    } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT) {
       //文字提示
 
       colorArray.add(AppColor.textSecondary);
       colorArray.add(AppColor.textSecondary);
 
-      textArray.add(map["data"]);
+      textArray.add(widget.map["data"]);
       isChangColorArray.add(false);
-    } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
+    } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
       //0--加入群聊
       //1--退出群聊
       //2--移除群聊
@@ -114,7 +137,7 @@ class AlertMsg extends StatelessWidget {
       //4--群名改变
       //5--扫码加入群聊
       //群通知
-      Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
+      Map<String, dynamic> mapGroupModel = json.decode(widget.map["data"]["data"]);
       if (mapGroupModel["subType"] == 5) {
         getGroupEntryByQRCode(mapGroupModel, context);
       }else if (mapGroupModel["subType"] == 4) {
@@ -125,7 +148,7 @@ class AlertMsg extends StatelessWidget {
           if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid!=Application.profile.uid) {
             textArray.clear();
           } else {
-            if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
+            if(mapGroupModel["subType"] == 0&&widget.map["data"]["name"]=="Entry"){
               textArray.clear();
             }else {
               getGroupText(mapGroupModel, context);
@@ -135,7 +158,7 @@ class AlertMsg extends StatelessWidget {
           if (mapGroupModel["subType"] == 1) {
             textArray.clear();
           } else {
-            if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
+            if(mapGroupModel["subType"] == 0&&widget.map["data"]["name"]=="Entry"){
               textArray.clear();
             }else {
               getGroupText(mapGroupModel, context);
@@ -357,10 +380,10 @@ class AlertMsg extends StatelessWidget {
         ..onTap = () {
           if (text == "重新编辑") {
             Map<String, dynamic> map = Map();
-            map["type"] = recallNotificationMessage.mOriginalObjectName;
-            map["content"] = recallNotificationMessage.recallContent;
-            voidMessageClickCallBack(
-                contentType: RecallNotificationMessage.objectName, map: map, position: position);
+            map["type"] = widget.recallNotificationMessage.mOriginalObjectName;
+            map["content"] = widget.recallNotificationMessage.recallContent;
+            widget.voidMessageClickCallBack(
+                contentType: RecallNotificationMessage.objectName, map: map, position: widget.position);
           }
         },
       style: TextStyle(
@@ -370,3 +393,6 @@ class AlertMsg extends StatelessWidget {
     );
   }
 }
+
+
+

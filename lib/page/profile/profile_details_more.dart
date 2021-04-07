@@ -64,47 +64,10 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             height: height,
             width: width,
             color: AppColor.white,
-            child: !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
-                ? _follow(width)
-                : _notFollow(width)));
+            child: _columnLayOut(width)));
   }
-
-  ///没关注的布局
-  Widget _notFollow(double width) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () {
-            _showDialog(1);
-          },
-          child: _itemSelect(width, AppStyle.textRegular16, "举报"),
-        ),
-        Container(
-          width: width,
-          height: 0.5,
-          color: AppColor.bgWhite.withOpacity(0.65),
-        ),
-        InkWell(
-          onTap: () {
-            if (isBlack) {
-              _cancelBlack();
-            } else {
-              _showDialog(2);
-            }
-          },
-          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
-        ),
-        Container(
-          width: width,
-          height: 0.5,
-          color: AppColor.bgWhite.withOpacity(0.65),
-        ),
-      ],
-    );
-  }
-
   ///关注的布局
-  Widget _follow(double width) {
+  Widget _columnLayOut(double width) {
     return Column(
       children: [
         Container(
@@ -112,11 +75,11 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
           height: 0.5,
           color: AppColor.bgWhite.withOpacity(0.65),
         ),
-        Container(
+        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow?Container(
           width: width,
           height: 12,
           color: AppColor.bgWhite.withOpacity(0.65),
-        ),
+        ):Container(),
         InkWell(
           child: _itemSelect(width, AppStyle.textRegular16, "举报"),
           onTap: () {
@@ -139,19 +102,17 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
           },
           child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
         ),
-        Container(
+        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow?Container(
           width: width,
           height: 12,
           color: AppColor.bgWhite.withOpacity(0.65),
-        ),
-        InkWell(
+        ):Container(),
+        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow?InkWell(
           onTap: () {
             _cancelFollow();
           },
-          child: !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
-              ? _itemSelect(width, AppStyle.redRegular16, "取消关注")
-              : Container(),
-        ),
+          child: _itemSelect(width, AppStyle.redRegular16, "取消关注"),
+        ):Container(),
         Container(
           padding: EdgeInsets.only(left: 16, right: 16),
           width: width,

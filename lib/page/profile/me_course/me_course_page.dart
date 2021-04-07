@@ -7,6 +7,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 ///我的课程
@@ -49,29 +50,8 @@ class _MeCoursePageState extends State<MeCoursePage> {
         enablePullDown: true,
         enablePullUp: true,
         controller: _refreshController,
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus mode) {
-            Widget body;
-            if (mode == LoadStatus.loading) {
-              body = CircularProgressIndicator();
-            } else if (mode == LoadStatus.noMore) {
-              body = Text("没有更多了");
-            } else if (mode == LoadStatus.failed) {
-              body = Text("加载错误,请重试");
-            } else {
-              body = Text(" ");
-            }
-            return Container(
-              child: Center(
-                child: body,
-              ),
-            );
-          },
-        ),
-        header: WaterDropHeader(
-          complete: Text("刷新完成"),
-          failed: Text(" "),
-        ),
+        footer:  SmartRefresherHeadFooter.init().getFooter(),
+        header: SmartRefresherHeadFooter.init().getHeader(),
         onRefresh: _onRefresh,
         onLoading: loadData,
         child: CustomScrollView(
@@ -282,6 +262,8 @@ class _MeCoursePageState extends State<MeCoursePage> {
   void loadData({bool isRefresh=false}) {
     _isVideoCourseRequesting = true;
     if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
+      _refreshController.loadNoData();
+      _refreshController.refreshCompleted();
       return;
     }
     getMyCourse(_isVideoCoursePage,20, lastTime: _isVideoCourseLastTime).then((result) {
@@ -295,16 +277,16 @@ class _MeCoursePageState extends State<MeCoursePage> {
         _isVideoCourseLastTime = result.lastTime;
         _isVideoCourseTotalCount = result.totalCount;
         _videoCourseList.addAll(result.list);
+        _refreshController.loadComplete();
+      }else{
+        _refreshController.loadNoData();
       }
       if (mounted) {
-        _refreshController.loadComplete();
         _refreshController.refreshCompleted();
-        if(mounted){
-          setState(() {});
-        }
+        setState(() {});
       }
     }).catchError((error) {
-      _refreshController.loadComplete();
+      _refreshController.loadNoData();
       _refreshController.refreshCompleted();
       _isVideoCourseRequesting = false;
     });

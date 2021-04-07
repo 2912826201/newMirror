@@ -25,6 +25,8 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:provider/provider.dart';
 class ScanCodePage extends StatefulWidget {
+  bool showMyCode;
+  ScanCodePage({this.showMyCode});
   @override
   scanCodePageState createState() => scanCodePageState();
 }
@@ -48,6 +50,7 @@ class scanCodePageState extends State<ScanCodePage> {
     streamController.sink.add(250);
     _captureController.onCapture((data) {
       print('onCapture----$data');
+      _captureController.pause();
       resolveScanResult(data);
     });
     _getShortUrl();
@@ -146,7 +149,7 @@ class scanCodePageState extends State<ScanCodePage> {
           SizedBox(height: 12,),
           Text("将二维码放入框内，即可自动扫描",style: AppStyle.whiteMedium14,),
           SizedBox(height: 48,),
-          InkWell(
+          widget.showMyCode?InkWell(
               onTap: () {
                 AppRouter.navigateToMyQrCodePage(context,(result){
                 });
@@ -157,9 +160,9 @@ class scanCodePageState extends State<ScanCodePage> {
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColor.white,
                 version: QrVersions.auto,
-              ) ),
+              ) ):Container(),
           SizedBox(height: 9,),
-          Text("我的二维码",style: AppStyle.whiteRegular12,)
+          widget.showMyCode?Text("我的二维码",style: AppStyle.whiteRegular12,):Container()
         ],
       ),);
   }
@@ -260,6 +263,7 @@ class scanCodePageState extends State<ScanCodePage> {
   _resolveUri(String uri) async {
     if (uri == null) {
       ToastShow.show(msg: "不支持的二维码", context: context);
+      _captureController.resume();
       return;
     } else if (uri.startsWith("if://")) {
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
@@ -315,6 +319,7 @@ class scanCodePageState extends State<ScanCodePage> {
           AppRouter.navigateToScanCodeResultPage(context, model);
           break;
       }
+
     } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
       //网页 需要再细致区分处理 暂时先不处理
       ScanCodeResultModel model = ScanCodeResultModel();

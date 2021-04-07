@@ -37,25 +37,6 @@ class GroupChatUserInformationDBHelper {
     }
   }
 
-  Future<bool> _updateJudge(GroupChatUserInformationDto informationDto) async {
-    if (await _isHave(informationDto)) {
-      return await _update(informationDto);
-    } else {
-      return await _insert(informationDto);
-    }
-  }
-
-  Future<bool> _insert(GroupChatUserInformationDto informationDto) async {
-    var result = await DBHelper.instance.db.insert(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap());
-    return result > 0;
-  }
-
-  Future<bool> _update(GroupChatUserInformationDto informationDto) async {
-    var result = await DBHelper.instance.db.update(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap(),
-        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${informationDto.groupChatId}'");
-    return result > 0;
-  }
-
   Future<List<GroupChatUserInformationDto>> queryAll() async {
     List<GroupChatUserInformationDto> list = [];
     List<Map<String, dynamic>> result =await DBHelper.instance.db.query(TABLE_NAME_GROUP_CHAT_USER_INFORMATION);
@@ -67,6 +48,7 @@ class GroupChatUserInformationDBHelper {
     }
     return list;
   }
+
 
   Future<Map<String, Map<String, dynamic>>> queryAllMap() async {
     Map<String, Map<String, dynamic>> dataMap=Map();
@@ -82,28 +64,26 @@ class GroupChatUserInformationDBHelper {
     return dataMap;
   }
 
-  Future<bool> _isHave(GroupChatUserInformationDto informationDto) async {
-    List<Map<String, dynamic>> result = [];
-    result = await DBHelper.instance.db
-        .query(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
-        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${informationDto.groupChatId}'");
-    return result != null && result.length > 0;
-  }
-
   Future<void> clearAll() async {
     await DBHelper.instance.db.delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION);
   }
 
-  void _remove(String groupId,String userId) async {
-    print("清除群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
-    if(groupId==null||userId==null){
-      return;
+
+  Future<Map<String,GroupChatUserInformationDto>> queryGroupListMap(String chatGroupId) async {
+    Map<String,GroupChatUserInformationDto> mapList =Map();
+    List<Map<String, dynamic>> result =await DBHelper.instance.db.query(
+        TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
+        where:"$GROUP_CHAT_USER_INFORMATION_GROUP_ID = '$chatGroupId'");
+
+    print("result:${result.length}， result1:${result.toString()}");
+
+    for (Map<String, dynamic> map in result) {
+      mapList[map[GROUP_CHAT_USER_INFORMATION_ID]]=GroupChatUserInformationDto.fromMap(map);
     }
-    Application.chatGroupUserInformationMap["${groupId}_$userId"]=null;
-    DBHelper.instance.db
-        .delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
-        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${groupId}_$userId'");
+    return mapList;
   }
+
+
 
   //移除某一个或者某几个 被移除群成员信息
   void removeMessageGroup(Message message){
@@ -141,6 +121,53 @@ class GroupChatUserInformationDBHelper {
 
 
 
+  Future<bool> _updateJudge(GroupChatUserInformationDto informationDto) async {
+    if (await _isHave(informationDto)) {
+      return await _update(informationDto);
+    } else {
+      return await _insert(informationDto);
+    }
+  }
+
+  Future<bool> _insert(GroupChatUserInformationDto informationDto) async {
+    var result = await DBHelper.instance.db.insert(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap());
+    return result > 0;
+  }
+
+  Future<bool> _update(GroupChatUserInformationDto informationDto) async {
+    var result = await DBHelper.instance.db.update(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap(),
+        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${informationDto.groupChatId}'");
+    return result > 0;
+  }
+
+
+
+
+
+  Future<bool> _isHave(GroupChatUserInformationDto informationDto) async {
+    List<Map<String, dynamic>> result = [];
+    result = await DBHelper.instance.db
+        .query(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
+        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${informationDto.groupChatId}'");
+    return result != null && result.length > 0;
+  }
+
+
+
+  void _remove(String groupId,String userId) async {
+    print("清除群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
+    if(groupId==null||userId==null){
+      return;
+    }
+    Application.chatGroupUserInformationMap["${groupId}_$userId"]=null;
+    DBHelper.instance.db
+        .delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
+        where: "$GROUP_CHAT_USER_INFORMATION_ID = '${groupId}_$userId'");
+  }
+
+
+
+
   bool _isHaveEqualMap(GroupChatUserInformationDto informationDto){
     if(Application.chatGroupUserInformationMap[informationDto.groupChatId]!=null){
       return informationDto.isEqualMap(Application.chatGroupUserInformationMap[informationDto.groupChatId]);
@@ -152,7 +179,7 @@ class GroupChatUserInformationDBHelper {
     if(message!=null){
       return _getDtoInMessage(message);
     }else{
-      return _getDtoInModel(chatGroupUserModel,groupId);
+      return getDtoInModel(chatGroupUserModel,groupId);
     }
   }
 
@@ -168,7 +195,7 @@ class GroupChatUserInformationDBHelper {
     return dto;
   }
 
-  GroupChatUserInformationDto _getDtoInModel(ChatGroupUserModel chatGroupUserModel,String groupId){
+  GroupChatUserInformationDto getDtoInModel(ChatGroupUserModel chatGroupUserModel,String groupId){
     GroupChatUserInformationDto dto = GroupChatUserInformationDto();
     dto..groupChatId="${groupId}_${chatGroupUserModel.uid}"
       ..groupChatGroupId=groupId

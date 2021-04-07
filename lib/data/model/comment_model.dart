@@ -42,7 +42,11 @@ class CommentModel {
     this.list = [];
     if (json["list"] != null) {
       json["list"].forEach((v) {
-        this.list.add(CommentDtoModel.fromJson(v));
+        if(v is CommentDtoModel){
+          this.list.add(v);
+        }else{
+          this.list.add(CommentDtoModel.fromJson(v));
+        }
       });
     }
     this.totalPage = json["totalPage"];

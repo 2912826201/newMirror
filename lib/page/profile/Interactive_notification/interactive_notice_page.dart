@@ -21,11 +21,12 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-import '../overscroll_behavior.dart';
+import '../../../widget/overscroll_behavior.dart';
 
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
@@ -215,10 +216,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               );
                             },
                           ),
-                          header: WaterDropHeader(
-                            complete: Text("刷新完成"),
-                            failed: Text("刷新失败"),
-                          ),
+                          header: SmartRefresherHeadFooter.init().getHeader(),
                           onRefresh: _onRefresh,
                           onLoading: _onLoading,
                           child: ListView.builder(
@@ -482,7 +480,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     height: 7,
                   ),
                   Text(
-                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime), isShowText: true),
+                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime)),
                     style: AppStyle.textHintRegular12,
                   )
                 ],
@@ -598,7 +596,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);
     }
-    // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
     if (feedModel.code == CODE_SUCCESS || feedModel.code == CODE_NO_DATA) {
       AppRouter.navigateFeedDetailPage(

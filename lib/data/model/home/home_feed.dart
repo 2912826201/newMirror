@@ -177,7 +177,11 @@ class HomeFeedModel {
     }
     if (json["topics"] != null) {
       json["topics"].forEach((v) {
-        topics.add(TopicDtoModel.fromJson(v));
+        if(v is TopicDtoModel){
+          topics.add(v);
+        }else{
+          topics.add(TopicDtoModel.fromJson(v));
+        }
       });
     }
     if (json["courseDto"] != null) {
@@ -634,7 +638,11 @@ class CommentDtoModel {
         if (picUrls == null) {
           picUrls = <PicUrlsModel>[];
         }
-        picUrls.add(PicUrlsModel.fromJson(v));
+        if(v is PicUrlsModel){
+          picUrls.add(v);
+        }else{
+          picUrls.add(PicUrlsModel.fromJson(v));
+        }
       });
     }
     if (json["atUsers"] != null) {
@@ -642,7 +650,11 @@ class CommentDtoModel {
         if (atUsers == null) {
           atUsers = <AtUsersModel>[];
         }
-        atUsers.add(AtUsersModel.fromJson(v));
+        if(v is AtUsersModel){
+          atUsers.add(v);
+        }else{
+          atUsers.add(AtUsersModel.fromJson(v));
+        }
       });
     }
     if (json["replys"] != null) {
@@ -650,7 +662,11 @@ class CommentDtoModel {
         if (replys == null) {
           replys = <CommentDtoModel>[];
         }
-        replys.add(CommentDtoModel.fromJson(v));
+        if(v is CommentDtoModel){
+          replys.add(v);
+        }else{
+          replys.add(CommentDtoModel.fromJson(v));
+        }
       });
     }
   }

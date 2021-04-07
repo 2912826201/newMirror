@@ -58,15 +58,11 @@ class AppPrefs {
   }
   ///清空下载任务
   static clearDownLadTask(){
-    print('------------------清空下载任务');
     if(AppPrefs.getDownLoadKeyList()!=null){
-      print('------------------清空下载任务2');
       AppPrefs.getDownLoadKeyList().forEach((element) {
-        print('------------------清空下载任务3');
           _instance.setString(element, null);
       });
     }
-    print('------------------清空下载任务4');
     _instance.setStringList(downLoadKeyList, null);
     return;
   }

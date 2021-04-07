@@ -84,6 +84,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   StreamController<Color> streamController = StreamController<Color>();
+  StreamController<bool> loadingStreamController = StreamController<bool>();
 
   @override
   void initState() {
@@ -153,12 +154,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     if (model != null) {
       if (model.inYouBlack == 1) {
         Toast.show("关注失败，你已将对方加入黑名单", context);
+        loadingStreamController.sink.add(false);
       } else if (model.inThisBlack == 1) {
         Toast.show("关注失败，你已被对方加入黑名单", context);
+        loadingStreamController.sink.add(false);
       } else {
         _getAttention();
       }
+    }else{
+      loadingStreamController.sink.add(false);
     }
+    canOnClick = true;
   }
 
   ///获取用户信息
@@ -197,7 +203,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     // TODO: implement deactivate
     super.deactivate();
     print('--------------------------------个人主页deactivate');
-   /* AppRouter.removeMineDtailRouterName(context, widget.userId);*/
   }
 
   @override
@@ -205,12 +210,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     print('=======================================个人主页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
-      appBar: null,
-      body: _minehomeBody(width, height),
-    );
-  }
 
+    return  WillPopScope(
+        child: Scaffold(
+          appBar: null,
+          body: _minehomeBody(width, height),
+        ),
+        onWillPop: _requestPop);
+  }
+  // 监听返回事件
+  Future<bool> _requestPop() {
+    Navigator.pop(this.context,
+        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+    return new Future.value(false);
+  }
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
     return NestedScrollView(
@@ -546,6 +559,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 });
               } else {
                 if (notifier.profileUiChangeModel[widget.userId].isFollow) {
+                  loadingStreamController.sink.add(true);
+                  canOnClick = false;
                   _checkBlackStatus();
                 } else {
                   ///这里跳转到私聊界面
@@ -588,45 +603,36 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   Widget _buttonLayoutSelect(UserInteractiveNotifier notifier) {
-    return Stack(
-      children: [
-        ///关注按钮
-        Opacity(
-          opacity: notifier.profileUiChangeModel[widget.userId].isFollow ? 1 : 0,
-          child: Center(
-              child: Text(
-            "+ 关注",
-            style: TextStyle(color: AppColor.white, fontSize: 12),
-          )),
-        ),
-
-        ///私聊按钮
-        Opacity(
-          opacity: notifier.profileUiChangeModel[widget.userId].isFollow ? 0 : 1,
-          child: Center(
+   return  StreamBuilder<bool>(
+        initialData: false,
+        stream: loadingStreamController.stream,
+        builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+         return !snapshot.data
+             ?Center(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: 15,
-                ),
-                Image.asset(
-                  "images/test/comment-filling.png",
-                  width: 12,
-                  height: 12,
-                ),
+                Spacer(),
+                !notifier.profileUiChangeModel[widget.userId].isFollow ?Icon(Icons.message,size: 14,):Icon(Icons.add,
+                  color:
+                AppColor.white,size: 14),
                 SizedBox(
                   width: 2,
                 ),
                 Text(
-                  "私聊",
-                  style: AppStyle.textRegular12,
+                  notifier.profileUiChangeModel[widget.userId].isFollow?"关注":"私聊",
+                  style:notifier.profileUiChangeModel[widget.userId].isFollow?TextStyle(color: AppColor.white, fontSize: 12):AppStyle.textRegular12,
                 ),
+                Spacer(),
               ],
             ),
-          ),
-        )
-      ],
-    );
+          ):Center(
+           child: Container(
+             height: 16,
+             width: 16,
+             child: CircularProgressIndicator(
+                 valueColor: AlwaysStoppedAnimation(AppColor.mainRed), backgroundColor: AppColor.white, strokeWidth: 1.5)),)
+         ;});
   }
 
   ///头像
@@ -665,10 +671,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   _getAttention() async {
     int attntionResult = await ProfileAddFollow(widget.userId);
-    if (attntionResult == 1 || attntionResult == 3) {
-      context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
-      context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
-      ToastShow.show(msg: "关注成功!", context: context);
+    if(attntionResult!=null){
+      if (attntionResult == 1 || attntionResult == 3) {
+        context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
+        context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
+        ToastShow.show(msg: "关注成功!", context: context);
+      }
     }
+    loadingStreamController.sink.add(false);
   }
 }

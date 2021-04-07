@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -118,7 +119,6 @@ class AppRouter {
     router.define(pathIfPage, handler: handlerIfPage);
     router.define(pathMain, handler: handlerMain);
     router.define(pathTest, handler: handlerTest);
-    router.define(pathLoginTest, handler: handlerLoginTest);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
@@ -227,7 +227,7 @@ class AppRouter {
         transitionBuilder: getFadeTransitionBuilder(),
       )
           .then((value) {
-        if (Application.pagePopRouterName.contains(uri)) {
+        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
           Application.pagePopRouterName.remove(uri);
         }
         if (callback != null) {
@@ -244,7 +244,7 @@ class AppRouter {
         transitionDuration: Duration(milliseconds: transitionDuration),
       )
           .then((value) {
-        if (Application.pagePopRouterName.contains(uri)) {
+        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
           Application.pagePopRouterName.remove(uri);
         }
         if (callback != null) {
@@ -435,8 +435,10 @@ class AppRouter {
     _navigateToPage(context, pathVideoDetail, map, callback: callback);
   }
 
-  static void navigateToScanCodePage(BuildContext context) {
-    _navigateToPage(context, pathScanCode, {});
+  static void navigateToScanCodePage(BuildContext context,{bool showMyCode = false}) {
+    Map<String, dynamic> map = Map();
+    map["showMyCode"] = showMyCode;
+    _navigateToPage(context, pathScanCode, map);
   }
 
   static void navigateToScanCodeResultPage(BuildContext context, ScanCodeResultModel resultModel) {
@@ -579,12 +581,21 @@ class AppRouter {
   }
 
   static void navigateToChatPage(
-      {@required BuildContext context, @required ConversationDto conversation, Message shareMessage}) {
+      {@required BuildContext context,
+        @required ConversationDto conversation,
+        @required List<ChatDataModel> chatDataModelList,
+        String systemLastTime,
+        int systemPage=0,
+        Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
       map["conversation"] = conversation.toMap();
     }
+    map["systemPage"] = systemPage;
+    map["systemLastTime"] = systemLastTime;
     Application.shareMessage = shareMessage;
+    Application.chatDataList.clear();
+    Application.chatDataList.addAll(chatDataModelList);
     _navigateToPage(context, pathChatPage, map);
   }
 
@@ -828,7 +839,7 @@ class AppRouter {
   }
 
   //去直播间
-  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel) {
+  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel,{Function(int relation) callback}) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LiveRoomVideoPage(liveCourseId: liveModel.id, coachId: liveModel.coachId.toString());
     }));
@@ -842,6 +853,7 @@ class AppRouter {
             coachUrl: liveModel.coachDto.avatarUri,
             coachRelation: liveModel.coachDto.relation,
             startTime: liveModel.startTime,
+            callback:callback,
             coachId: liveModel.coachDto.uid);
       },
     ));

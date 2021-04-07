@@ -33,6 +33,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/sliver_custom_header_delegate_video.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/constants.dart';
@@ -257,7 +258,7 @@ class VideoDetailPageState extends XCState {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
-      footer: footerWidget(),
+      footer: SmartRefresherHeadFooter.init().getFooter(),
       controller: _refreshController,
       onLoading: () {
         if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
@@ -846,7 +847,15 @@ class VideoDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid);
+    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,callback:(dynamic result){
+      print("result:$result");
+      if(null!=result && result is bool) {
+        videoModel.coachDto.relation = result?0:1;
+        if (mounted) {
+          reload(() {});
+        }
+      }
+    });
   }
 
   ///点击了他人刚刚训练完成

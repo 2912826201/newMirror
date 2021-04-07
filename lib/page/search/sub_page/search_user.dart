@@ -10,13 +10,14 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/overscroll_behavior.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -142,30 +143,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                 child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
-                  footer: CustomFooter(
-                    builder: (BuildContext context, LoadStatus mode) {
-                      Widget body;
-                      if (mode == LoadStatus.loading) {
-                        body = CircularProgressIndicator();
-                      } else if (mode == LoadStatus.noMore) {
-                        body = const Text("没有更多了");
-                      } else if (mode == LoadStatus.failed) {
-                        body = const Text("加载错误,请重试");
-                      } else {
-                        body = const Text("");
-                      }
-                      return Container(
-                        child: Center(
-                          child: body,
-                        ),
-                      );
-                    },
-                  ),
+                  footer: SmartRefresherHeadFooter.init().getFooter(),
                   controller: _refreshController,
-                  header: WaterDropHeader(
-                    complete: const Text("刷新完成"),
-                    failed: const Text(""),
-                  ),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
                   onRefresh: _onRefresh,
                   onLoading: _onLoading,
                   child: ListView.builder(

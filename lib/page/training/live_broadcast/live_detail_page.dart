@@ -27,6 +27,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
@@ -245,7 +246,7 @@ class LiveDetailPageState extends XCState {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
-      footer: footerWidget(),
+      footer: SmartRefresherHeadFooter.init().getFooter(),
       controller: _refreshController,
       onLoading: (){
         if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
@@ -627,7 +628,7 @@ class LiveDetailPageState extends XCState {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
       if (result.isSuccess) {
         if (isBook) {
           createEvent(result.data, _deviceCalendarPlugin, value, alert);
@@ -652,7 +653,7 @@ class LiveDetailPageState extends XCState {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
       if (result.isSuccess) {
         _deleteAlertEvents(result.data, startTime);
       }
@@ -737,7 +738,15 @@ class LiveDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,callback:(dynamic result){
+      print("result:$result");
+      if(null!=result && result is bool) {
+        liveModel.coachDto.relation = result?0:1;
+        if (mounted) {
+          reload(() {});
+        }
+      }
+    });
   }
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
@@ -853,7 +862,12 @@ class LiveDetailPageState extends XCState {
 
   //去直播页
   void gotoLiveVideoRoomPage(){
-    AppRouter.navigateLiveRoomPage(context,liveModel);
+    AppRouter.navigateLiveRoomPage(context,liveModel,callback:(int coachRelation){
+      liveModel.coachDto.relation=coachRelation;
+      if(mounted){
+        reload(() {});
+      }
+    });
   }
 
 

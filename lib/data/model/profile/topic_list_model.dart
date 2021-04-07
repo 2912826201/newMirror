@@ -16,7 +16,12 @@ class TopicListModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(TopicDtoModel.fromJson(v));
+        if(v is TopicDtoModel){
+          list.add(v);
+        }else{
+          list.add(TopicDtoModel.fromJson(v));
+        }
+
       });
     }
   }

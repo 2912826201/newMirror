@@ -68,8 +68,7 @@ class HeadViewState extends State<HeadView> {
       EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       widget.deleteFeedChanged(widget.model.id);
       if (widget.isShowConcern) {
-        EventBus.getDefault()
-            .post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+        EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
     } else {
@@ -132,9 +131,10 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    return  Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+    return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
       if (widget.isShowConcern &&
-          notifier.profileUiChangeModel[widget.model.pushId].isFollow == true &&
+          (notifier.profileUiChangeModel[widget.model.pushId] == null ||
+              notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
         return GestureDetector(
           onTap: () {
@@ -164,7 +164,7 @@ class HeadViewState extends State<HeadView> {
                   const SizedBox(
                     width: 4,
                   ),
-                   Container(
+                  Container(
                     child: const Text(
                       "关注",
                       style: TextStyle(
@@ -207,20 +207,20 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-      if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
-        isMySelf = true;
-        context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
-        if (!context
-            .read<UserInteractiveNotifier>()
-            .profileUiChangeModel[widget.model.pushId]
-            .feedStringList
-            .contains("删除")) {
-          context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
-        }
-      } else {
-        context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
-            isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
+    if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
+      isMySelf = true;
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
+      if (!context
+          .read<UserInteractiveNotifier>()
+          .profileUiChangeModel[widget.model.pushId]
+          .feedStringList
+          .contains("删除")) {
+        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
       }
+    } else {
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
+          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
+    }
   }
 
   @override
@@ -263,7 +263,7 @@ class HeadViewState extends State<HeadView> {
                   children: [
                     // GestureDetector(
                     //   child:
-                     Text(
+                    Text(
                       isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.ellipsis,
@@ -282,42 +282,46 @@ class HeadViewState extends State<HeadView> {
                   ],
                 )),
                 isShowFollowButton(context),
-               Container(
-                    margin: const EdgeInsets.only(right: 16),
-                    child: AppIconButton(
-                      svgName: AppIcon.more_feed,
-                      iconSize: 24,
-                      onTap: () {
-                        print("点击更多按钮了");
-                        // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                        //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
-                        //         Application.insertFeedId) {
-                        //   // ToastShow.show(msg: "不响应", context: context);
-                        // } else {
-                        // ignore: missing_return
-                        openMoreBottomSheet(
-                            context: context,
-                            lists: context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList,
-                            onItemClickListener: (index) {
-                              switch (context.read<UserInteractiveNotifier>()
-                                  .profileUiChangeModel[widget.model.pushId]
-                                  // ignore: missing_return
-                                  .feedStringList[index]) {
-                                case "删除":
-                                  deleteFeed();
-                                  break;
-                                case "取消关注":
-                                  _checkBlackStatus(widget.model.pushId, context, true);
-                                  break;
-                                case "举报":
-                                  _showDialog();
-                                  break;
-                              }
-                            });
-                        // }
-                      },
-                    ),
-                  )
+                Container(
+                  margin: const EdgeInsets.only(right: 16),
+                  child: AppIconButton(
+                    svgName: AppIcon.more_feed,
+                    iconSize: 24,
+                    onTap: () {
+                      print("点击更多按钮了");
+                      // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+                      //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
+                      //         Application.insertFeedId) {
+                      //   // ToastShow.show(msg: "不响应", context: context);
+                      // } else {
+                      // ignore: missing_return
+                      openMoreBottomSheet(
+                          context: context,
+                          lists: context
+                              .read<UserInteractiveNotifier>()
+                              .profileUiChangeModel[widget.model.pushId]
+                              .feedStringList,
+                          onItemClickListener: (index) {
+                            switch (context
+                                .read<UserInteractiveNotifier>()
+                                .profileUiChangeModel[widget.model.pushId]
+                                // ignore: missing_return
+                                .feedStringList[index]) {
+                              case "删除":
+                                deleteFeed();
+                                break;
+                              case "取消关注":
+                                _checkBlackStatus(widget.model.pushId, context, true);
+                                break;
+                              case "举报":
+                                _showDialog();
+                                break;
+                            }
+                          });
+                      // }
+                    },
+                  ),
+                )
               ],
             )));
   }

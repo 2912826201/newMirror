@@ -13,7 +13,11 @@ class SearchUserModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(UserModel.fromJson(v));
+        if(v is UserModel){
+          list.add(v);
+        }else{
+          list.add(UserModel.fromJson(v));
+        }
       });
     }
   }

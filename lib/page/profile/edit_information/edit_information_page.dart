@@ -139,7 +139,7 @@ class _EditInformationState extends State<EditInformation> {
                     buttonState = CustomRedButton.buttonStateLoading;
                   });
                   if (userName != null && avataruri != null) {
-                    Loading.showLoading(context);
+                   /* Loading.showLoading(context);*/
                     _upDataUserInfo();
                   } else {
                     setState(() {
@@ -152,7 +152,10 @@ class _EditInformationState extends State<EditInformation> {
             ),
           ],
         ),
-        body: Container(
+        body: Stack(
+          children: [
+
+        Container(
           color: AppColor.white,
           height: height - ScreenUtil.instance.statusBarHeight,
           width: width,
@@ -301,7 +304,17 @@ class _EditInformationState extends State<EditInformation> {
               ),
             ],
           ),
-        ));
+        ),
+            buttonState == CustomRedButton.buttonStateLoading ? Expanded(
+                child:
+                InkWell(
+                  onTap: (){
+                    return null;
+                  },
+                  child:Container(
+                ) ,)):Container()
+
+          ],));
   }
 
   //这是每项资料的item
@@ -383,10 +396,7 @@ class _EditInformationState extends State<EditInformation> {
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                      child: Text(
-                    "+",
-                    style: TextStyle(fontSize: 12, color: AppColor.white),
-                  )),
+                      child: Icon(Icons.add,size: 16,color: AppColor.white,)),
                 ))
           ],
         ));
@@ -449,14 +459,14 @@ class _EditInformationState extends State<EditInformation> {
         "资料修改成功",
         context,
       );
-      Loading.hideLoading(context);
+    /*  Loading.hideLoading(context);*/
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
       setState(() {
         buttonState = CustomRedButton.buttonStateNormal;
       });
-      Loading.hideLoading(context);
+     /* Loading.hideLoading(context);*/
       Toast.show(
         "资料修改失败",
         context,
