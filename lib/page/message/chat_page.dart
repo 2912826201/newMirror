@@ -386,7 +386,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
                   isShowTopAttentionUi = false;
                   if (mounted) {
                     reload(() {
-                      print("reload111111111111111");
+                      //print("reload111111111111111");
                     });
                   }
                 },
@@ -465,7 +465,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           _bottomSettingPanelState=true;
           if (_emojiState) {
             reload(() {
-              print("reload2222222222222222222");
+              //print("reload2222222222222222222");
               _emojiState = !_emojiState;
             });
           }
