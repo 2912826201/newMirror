@@ -50,7 +50,11 @@ class ExposureTimeLayer {
 
 class ExposureDetectorLayer extends ContainerLayer {
   ExposureDetectorLayer(
-      {@required this.key, @required this.widgetSize, @required this.paintOffset, this.onExposureChanged})
+      {@required this.key,
+      @required this.widgetSize,
+      @required this.paintOffset,
+      this.isVideo = false,
+      this.onExposureChanged})
       : assert(key != null),
         assert(paintOffset != null),
         assert(widgetSize != null),
@@ -61,7 +65,7 @@ class ExposureDetectorLayer extends ContainerLayer {
   static final _updated = <Key, ExposureDetectorLayer>{};
 
   final Key key;
-
+  bool isVideo;
   final Size widgetSize;
 
   Offset _layerOffset;
@@ -167,14 +171,16 @@ class ExposureDetectorLayer extends ContainerLayer {
       }
 
       final widgetBounds = layer._computeWidgetBounds();
-
+      // 显示比例
+      double zoom = layer.isVideo ? 1 : 0.5;
+      // 曝光时间
+      int exposureTime = layer.isVideo ? 200 : ExposureDetectorController.instance.exposureTime;
       final info =
           VisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
-      if (info.visibleFraction >= 0.5) {
+      if (layer.isVideo) {
         if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
-          if (nowTime - _exposureTime[layer.key].time > ExposureDetectorController.instance.exposureTime) {
+          if (nowTime - _exposureTime[layer.key].time > exposureTime) {
             layer.onExposureChanged(info);
-            toRemove.add(layer.key);
           } else {
             setScheduleUpdate();
             toReserveList.add(layer.key);
@@ -182,12 +188,27 @@ class ExposureDetectorLayer extends ContainerLayer {
           }
         } else {
           _exposureTime[layer.key] = ExposureTimeLayer(nowTime, layer);
-
           toReserveList.add(layer.key);
           setScheduleUpdate();
         }
-      }
+      } else {
+        if (info.visibleFraction >= 0.5) {
+          if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
+            if (nowTime - _exposureTime[layer.key].time > exposureTime) {
+              layer.onExposureChanged(info);
+            } else {
+              setScheduleUpdate();
+              toReserveList.add(layer.key);
+              _exposureTime[layer.key].layer = layer;
+            }
+          } else {
+            _exposureTime[layer.key] = ExposureTimeLayer(nowTime, layer);
 
+            toReserveList.add(layer.key);
+            setScheduleUpdate();
+          }
+        }
+      }
       _exposureTime.removeWhere((key, _) => !toReserveList.contains(key));
     }
 

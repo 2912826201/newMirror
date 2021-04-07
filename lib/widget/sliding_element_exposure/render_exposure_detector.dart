@@ -9,11 +9,12 @@ import './exposure_detector_layer.dart';
 /// Created by sl on 2021/3/13.
 class RenderExposureDetector extends RenderProxyBox {
   /// Constructor.
-  RenderExposureDetector({RenderBox child, @required this.key, ExposureCallback onExposure})
+  RenderExposureDetector({RenderBox child, @required this.key, this.isVideo = false, ExposureCallback onExposure})
       : assert(key != null),
         _onExposure = onExposure,
         super(child);
   final Key key;
+  bool isVideo;
   ExposureCallback _onExposure;
 
   /// See [RenderObject.alwaysNeedsCompositing].
@@ -32,19 +33,32 @@ class RenderExposureDetector extends RenderProxyBox {
   /// See [RenderObject.paint].
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (_onExposure == null || ExposureDetectorController.instance.filterKeysContains(key)) {
-      // 不在需要创建ExposureDetectorLayer
-      ExposureDetectorLayer.forget(key);
-      super.paint(context, offset);
-      return;
+    if(isVideo) {
+      var visibilityDetectorLayer = ExposureDetectorLayer(
+        key: key,
+        widgetSize: semanticBounds.size,
+        paintOffset: offset,
+        isVideo: isVideo,
+        onExposureChanged: _onExposure,
+      );
+      final layer = visibilityDetectorLayer;
+      context.pushLayer(layer, super.paint, offset);
+    } else {
+      if (_onExposure == null || ExposureDetectorController.instance.filterKeysContains(key)) {
+        // 不在需要创建ExposureDetectorLayer
+        ExposureDetectorLayer.forget(key);
+        super.paint(context, offset);
+        return;
+      }
+      var visibilityDetectorLayer = ExposureDetectorLayer(
+        key: key,
+        widgetSize: semanticBounds.size,
+        isVideo: isVideo,
+        paintOffset: offset,
+        onExposureChanged: _onExposure,
+      );
+      final layer = visibilityDetectorLayer;
+      context.pushLayer(layer, super.paint, offset);
     }
-    var visibilityDetectorLayer = ExposureDetectorLayer(
-      key: key,
-      widgetSize: semanticBounds.size,
-      paintOffset: offset,
-      onExposureChanged: _onExposure,
-    );
-    final layer = visibilityDetectorLayer;
-    context.pushLayer(layer, super.paint, offset);
   }
 }

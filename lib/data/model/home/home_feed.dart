@@ -272,7 +272,7 @@ class VideosModel {
   double videoCroppedRatio; // 当视频不需要裁剪时 此值为null
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
-
+  bool isPlay = false;
   VideosModel({this.url, this.hlsUrl, this.duration, this.coverUrl, this.height, this.width, this.videoCroppedRatio,
     this.offsetRatioX, this.offsetRatioY});
 

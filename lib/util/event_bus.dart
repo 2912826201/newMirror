@@ -149,6 +149,8 @@ const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 // 关注页
 const String EVENTBUS_ATTENTION_Page = "AttentionPage";
+// 视频页
+const String EVENTBUS_VIDEOWIGET_PAGE = "videoWigetPage";
 
 ///广播类型
 //发布动态
@@ -173,3 +175,5 @@ const String EVENTBUS_GET_FAILURE_MODEL = "getfailuremodel";
 const String EVENTBUS_IF_TAB_BAR_UNREAD = "_IFTabBarStateUnreadMessageNumber";
 // 动态未读数
 const String EVENTBUS__FEED_UNREAD = "_FEED_UNREAD";
+// 视频播放暂停
+const String EVENTBUS__VIDEO_PLAYORPAUSE = "video_play_or_pause";
