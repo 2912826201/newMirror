@@ -42,7 +42,7 @@ class SmartRefresherHeadFooter{
   }
 
 
-  getFooter(){
+  getFooter({bool isShowNoMore=true}){
     return CustomFooter(
       builder: (BuildContext context, LoadStatus mode) {
         Widget body;
@@ -55,13 +55,13 @@ class SmartRefresherHeadFooter{
             child: CircularProgressIndicator(),
           );
         } else if (mode == LoadStatus.failed) {
-          body = Text("上拉加载更多failed");
+          body = Text("");
         } else if (mode == LoadStatus.canLoading) {
           body = Text("上拉加载更多");
         }  else if (mode == LoadStatus.noMore) {
-          body = Text("上拉加载更多noMore");
+          body = isShowNoMore?Text("没有更多数据了"):Text("");
         } else {
-          body = Text("上拉加载更多noMore--");
+          body = Text("");
         }
         return Container(
           height: 55.0,
@@ -70,6 +70,7 @@ class SmartRefresherHeadFooter{
       },
     );
   }
+
   getFooterContainer(){
     return CustomFooter(
       builder: (BuildContext context, LoadStatus mode) {
