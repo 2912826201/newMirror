@@ -24,6 +24,7 @@ class RCTestPage extends StatefulWidget {
 class RCTestState extends State<RCTestPage> {
   String _token = "";
   String _status = "未连接";
+  String _code = "";
   TextEditingController controller = TextEditingController();
   TextField inputText;
 
@@ -63,6 +64,7 @@ class RCTestState extends State<RCTestPage> {
               onPressed: _connectRC,
               child: Text("连接"),
             ),
+            Text("Code: ${_code}"),
             RaisedButton(
               onPressed: _disconnectRC,
               child: Text("断开连接"),
@@ -107,7 +109,10 @@ class RCTestState extends State<RCTestPage> {
   void _connectRC() {
     print("开始连接");
     Application.rongCloud.doConnect(_token, (int code, String userId) {
-      print('connect result ' + code.toString());
+      setState(() {
+        _code = code.toString();
+      });
+      print('connect result ' + _code);
       if (code == 0) {
         print("connect success userId" + userId);
         // 连接成功后打开数据库

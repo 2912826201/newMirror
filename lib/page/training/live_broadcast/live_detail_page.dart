@@ -628,7 +628,7 @@ class LiveDetailPageState extends XCState {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
       if (result.isSuccess) {
         if (isBook) {
           createEvent(result.data, _deviceCalendarPlugin, value, alert);
@@ -653,7 +653,7 @@ class LiveDetailPageState extends XCState {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
       if (result.isSuccess) {
         _deleteAlertEvents(result.data, startTime);
       }
