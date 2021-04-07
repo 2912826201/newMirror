@@ -441,91 +441,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 45,
-            width: 45,
-            child: Stack(
-              children: [
-                avatarList.length == 1
-                    ? ClipOval(
-                        child: CachedNetworkImage(
-                          height: 45,
-                          width: 45,
-                          imageUrl: avatarList.first,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
-                          ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : avatarList.length > 1
-                        ? Positioned(
-                            top: 0,
-                            right: 0,
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                height: 28,
-                                width: 28,
-                                imageUrl: avatarList.first,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Image.asset(
-                                  "images/test.png",
-                                  fit: BoxFit.cover,
-                                ),
-                                errorWidget: (context, url, error) => Image.asset(
-                                  "images/test.png",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ))
-                        : Container(),
-                avatarList.length > 1
-                    ? Positioned(
-                        bottom: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              //这里的边框颜色需要随背景变化
-                              border: Border.all(
-                                  width: 3, color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 28,
-                              width: 28,
-                              imageUrl: avatarList[1],
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-                conversation.type == OFFICIAL_TYPE ||
-                        conversation.type == LIVE_TYPE ||
-                        conversation.type == TRAINING_TYPE
-                    ? Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          color: AppColor.bgBlack,
-                        ))
-                    : Container()
-              ],
-            ),
-          ),
+              height: 45,
+              width: 45,
+              child: conversation.type == OFFICIAL_TYPE ||
+                      conversation.type == LIVE_TYPE ||
+                      conversation.type == TRAINING_TYPE
+                  ? _getOfficialAvatar(conversation.type)
+                  : _getConversationAvatar(avatarList, conversation.isTop)),
           SizedBox(
             width: 12,
           ),
@@ -619,5 +541,128 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     } else {
       return userName;
     }
+  }
+
+  Widget _getConversationAvatar(List<String> avatarList, int isTop) {
+    if (avatarList.length == 1) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          height: 45,
+          width: 45,
+          imageUrl: avatarList.first,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Image.asset(
+            "images/test.png",
+            fit: BoxFit.cover,
+          ),
+          errorWidget: (context, url, error) => Image.asset(
+            "images/test.png",
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else if (avatarList.length > 1) {
+      return Stack(
+        children: [
+          Positioned(
+            top: 0,
+            right: 0,
+            child: ClipOval(
+              child: CachedNetworkImage(
+                height: 28,
+                width: 28,
+                imageUrl: avatarList.first,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                ),
+                errorWidget: (context, url, error) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  //这里的边框颜色需要随背景变化
+                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.textHint : AppColor.white)),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  height: 28,
+                  width: 28,
+                  imageUrl: avatarList[1],
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    "images/test.png",
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    "images/test.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _getOfficialAvatar(int type) {
+    return Stack(
+      children: [
+        Container(
+          height: 45,
+          width: 45,
+          decoration: BoxDecoration(
+            color: AppColor.textPrimary2,
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          child: AppIcon.getAppIcon(
+              type == OFFICIAL_TYPE
+                  ? AppIcon.avatar_system
+                  : type == LIVE_TYPE
+                      ? AppIcon.avatar_live
+                      : type == TRAINING_TYPE
+                          ? AppIcon.avatar_training
+                          : AppIcon.avatar_system,
+              24),
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Container(
+            //NOTE flutter的奇葩问题，同样大小的shape叠放上面的无法完美覆盖下面，留一丝丝边，用自带的border也有这个问题，只好用嵌套方式里面的尺寸写小点。。。
+            decoration: ShapeDecoration(
+              shape: CircleBorder(
+                side: BorderSide(color: AppColor.white, width: 1),
+              ),
+            ),
+            height: 16,
+            width: 16,
+            alignment: Alignment.center,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColor.textPrimary2,
+                shape: BoxShape.circle,
+              ),
+              height: 15,
+              width: 15,
+              alignment: Alignment.center,
+              child: AppIcon.getAppIcon(AppIcon.official, 10),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
