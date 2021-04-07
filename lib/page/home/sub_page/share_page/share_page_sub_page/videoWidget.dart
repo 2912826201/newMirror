@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -54,6 +55,8 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   _videoPlayOrpause(VideoIsPlay videoIsPlay) {
     print("视频产生变化：：：${videoIsPlay.isPlay}");
+    print(videoIsPlay.id);
+    print(widget.feedModel.id);
     widget.play = videoIsPlay;
     if (videoIsPlay.id == widget.feedModel.id) {
       if (widget.feedModel.videos.first.controller != null) {
@@ -66,10 +69,10 @@ class _VideoWidgetState extends State<VideoWidget> {
           streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
           widget.feedModel.videos.first.controller.setLooping(true);
         } else {
-            if (!widget.feedModel.videos.first.controller.value.isPlaying) {
-              return;
-            }
-            widget.feedModel.videos.first.controller.pause();
+          if (!widget.feedModel.videos.first.controller.value.isPlaying) {
+            return;
+          }
+          widget.feedModel.videos.first.controller.pause();
         }
       } else {
         // widget.feedModel.videos.first.controller?.pause();
@@ -125,23 +128,28 @@ class _VideoWidgetState extends State<VideoWidget> {
               left: offsetX,
               top: offsetY,
               child: GestureDetector(
-                onTap: () {
-                  streamHeight.sink.add(40.0);
-                  // 延迟器:
-                  new Future.delayed(Duration(seconds: 3), () {
-                    streamHeight.sink.add(0.0);
-                  });
-                },
-                child: widget.feedModel.videos.first.controller.value.initialized
-                    ? SizedBox(
-                        width: videoSize.width,
-                        height: videoSize.height,
-                        child: VideoPlayer(widget.feedModel.videos.first.controller))
-                    : Center(
-                        child: CupertinoActivityIndicator(radius: 30),
-                      ),
-              )),
-          Positioned(
+                  onTap: () {
+                    streamHeight.sink.add(40.0);
+                    // 延迟器:
+                    new Future.delayed(Duration(seconds: 3), () {
+                      streamHeight.sink.add(0.0);
+                    });
+                  },
+                  child: SizedBox(
+                    width: videoSize.width,
+                    height: videoSize.height,
+                    child: widget.feedModel.videos.first.controller.value.initialized
+                        ? VideoPlayer(widget.feedModel.videos.first.controller)
+                        : CachedNetworkImage(
+                      imageUrl: widget.feedModel.videos.first.coverUrl,
+                      width: videoSize.width,
+                      height: videoSize.height,
+                    ),
+                    // Center(
+                    //         child: CupertinoActivityIndicator(radius: 30),
+                    //       ),
+                  ))),
+          widget.feedModel.videos.first.controller.value.initialized ? Positioned(
               bottom: 0,
               child: StreamBuilder<double>(
                   initialData: initHeight,
@@ -199,7 +207,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                             ],
                           ),
                         ));
-                  }))
+                  })) : Container()
         ],
       ),
     );
