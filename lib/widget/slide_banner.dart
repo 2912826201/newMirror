@@ -17,7 +17,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
-import 'package:mirror/page/profile/overscroll_behavior.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';

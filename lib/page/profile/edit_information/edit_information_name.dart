@@ -26,7 +26,7 @@ class EditInformationName extends StatefulWidget {
 
 class _EditInformationNameState extends State<EditInformationName> {
   int textLength = 0;
-  String _EditText;
+  String _editText;
   int _reciprocal = 15;
   int beforeLength = 0;
 
@@ -39,9 +39,9 @@ class _EditInformationNameState extends State<EditInformationName> {
   void initState() {
     super.initState();
     if (widget.userName != null) {
-      _EditText =StringUtil.maxLength(widget.userName,15,isOmit: false);
-      controller.text = _EditText;
-      textLength = _EditText.length;
+      _editText =StringUtil.maxLength(widget.userName,15,isOmit: false);
+      controller.text = _editText;
+      textLength = _editText.length;
       _reciprocal += beforeLength - textLength;
       beforeLength = textLength;
       // 设置光标
@@ -60,7 +60,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         lastInput = controller.completeText;
         ///通知onChanged
         setState(() {
-          _EditText = lastInput;
+          _editText = lastInput;
           textLength = lastInput.length;
           _reciprocal += beforeLength - textLength;
           beforeLength = textLength;
@@ -95,12 +95,12 @@ class _EditInformationNameState extends State<EditInformationName> {
               "确定",
               CustomRedButton.buttonStateNormal,
               () {
-                if (_EditText.isEmpty||_EditText.replaceAll(new RegExp(r"\s+"), "").length==0) {
+                if (_editText.isEmpty||_editText.replaceAll(new RegExp(r"\s+"), "").length==0) {
                  ToastShow.show(msg: "昵称不能为空", context: context);
                   return;
                 }
                 _commentFocus.unfocus();
-                Navigator.pop(this.context,_EditText);
+                Navigator.pop(this.context,_editText);
               },
             ),
           ),

@@ -195,7 +195,8 @@ class _SettingHomePageState extends State<SettingHomePage> {
             alignment: Alignment.centerRight,
             child: Icon(
               Icons.arrow_forward_ios,
-              color: AppColor.textSecondary,
+              size: 18,
+              color: AppColor.textHint,
             ),
           )
         ],

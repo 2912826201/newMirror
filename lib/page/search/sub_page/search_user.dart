@@ -10,7 +10,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/profile/overscroll_behavior.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';

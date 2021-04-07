@@ -41,7 +41,6 @@ import 'package:mirror/page/profile/edit_information/edit_information_introducti
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
-import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -106,10 +105,6 @@ var handlerMain = Handler(handlerFunc: (BuildContext context, Map<String, List<S
 
 var handlerTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TestPage();
-});
-
-var handlerLoginTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return LoginTestPage();
 });
 
 var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

@@ -134,7 +134,8 @@ class HeadViewState extends State<HeadView> {
   isShowFollowButton(BuildContext context) {
     return  Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
       if (widget.isShowConcern &&
-          notifier.profileUiChangeModel[widget.model.pushId].isFollow == true &&
+          (notifier.profileUiChangeModel[widget.model.pushId]==null||notifier.profileUiChangeModel[widget.model.pushId]
+          .isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
         return GestureDetector(
           onTap: () {

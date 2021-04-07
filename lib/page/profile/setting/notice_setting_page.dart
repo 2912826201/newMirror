@@ -42,7 +42,6 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     if (model != null) {
       model.list.forEach((element) {
         context.read<SettingNotifile>().setSwitchButton(element.type + 1, element.isOpen == 0 ? false : true);
-        context.read<SettingNotifile>().setSwitchButton(element.type + 1, element.isOpen == 0 ? false : true);
       });
     }
   }

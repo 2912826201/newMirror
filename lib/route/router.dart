@@ -119,7 +119,6 @@ class AppRouter {
     router.define(pathIfPage, handler: handlerIfPage);
     router.define(pathMain, handler: handlerMain);
     router.define(pathTest, handler: handlerTest);
-    router.define(pathLoginTest, handler: handlerLoginTest);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
@@ -228,7 +227,7 @@ class AppRouter {
         transitionBuilder: getFadeTransitionBuilder(),
       )
           .then((value) {
-        if (Application.pagePopRouterName.contains(uri)) {
+        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
           Application.pagePopRouterName.remove(uri);
         }
         if (callback != null) {
@@ -245,7 +244,7 @@ class AppRouter {
         transitionDuration: Duration(milliseconds: transitionDuration),
       )
           .then((value) {
-        if (Application.pagePopRouterName.contains(uri)) {
+        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
           Application.pagePopRouterName.remove(uri);
         }
         if (callback != null) {

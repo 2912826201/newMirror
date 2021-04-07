@@ -22,7 +22,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
-import '../overscroll_behavior.dart';
+import '../../../widget/overscroll_behavior.dart';
 
 class QueryFollowList extends StatefulWidget {
   //传1为关注，传2为粉丝，3为话题

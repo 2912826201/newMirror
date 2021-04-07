@@ -347,7 +347,6 @@ class _CustomRedButtonState extends State<CustomRedButton> {
                         ? AppColor.mainRed
                         : AppColor.textHint,
             borderRadius: BorderRadius.circular(14)),
-        //TODO loading状态需要加加载圈
         child: Row(
           children: [
             Spacer(),

@@ -514,18 +514,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //键盘与表情的框
   Widget bottomSettingBox() {
-    return Container(
-      color: AppColor.white,
-      child: Stack(
-        children: [
-          bottomSettingPanel(),
-          emojiPlan(),
-        ],
-      ),
-    );
-  }
-
-  Widget bottomSettingPanel(){
+    List<Widget> widgetList=[];
 
     double keyboardHeight = 300.0;
 
@@ -539,6 +528,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       keyboardHeight = 300.0;
     }
 
+    widgetList.add(bottomSettingPanel(keyboardHeight));
+
+
+    if((_emojiState ? keyboardHeight : 0.0)>0){
+      widgetList.add(emojiPlan(keyboardHeight));
+    }
+
+    return Container(
+      child: Stack(
+        children: widgetList,
+      ),
+    );
+  }
+
+  Widget bottomSettingPanel(double keyboardHeight){
     print("bottomSettingPanel:$_bottomSettingPanelState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
@@ -554,20 +558,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
 
   //表情框
-  Widget emojiPlan() {
-
-
-    //Application.keyboardHeight
-    double keyboardHeight=300.0;
-
-    if(Application.keyboardHeightIfPage>0){
-      keyboardHeight=Application.keyboardHeightIfPage;
-    }
-    if(keyboardHeight<90){
-      keyboardHeight=300.0;
-    }
-
-
+  Widget emojiPlan(double keyboardHeight) {
     return  AnimatedContainer(
       duration: Duration(milliseconds: 50),
       height: _emojiState?keyboardHeight:0.0,

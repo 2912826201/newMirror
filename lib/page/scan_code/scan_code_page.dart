@@ -50,6 +50,7 @@ class scanCodePageState extends State<ScanCodePage> {
     streamController.sink.add(250);
     _captureController.onCapture((data) {
       print('onCapture----$data');
+      _captureController.pause();
       resolveScanResult(data);
     });
     _getShortUrl();
@@ -262,6 +263,7 @@ class scanCodePageState extends State<ScanCodePage> {
   _resolveUri(String uri) async {
     if (uri == null) {
       ToastShow.show(msg: "不支持的二维码", context: context);
+      _captureController.resume();
       return;
     } else if (uri.startsWith("if://")) {
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
@@ -317,6 +319,7 @@ class scanCodePageState extends State<ScanCodePage> {
           AppRouter.navigateToScanCodeResultPage(context, model);
           break;
       }
+
     } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
       //网页 需要再细致区分处理 暂时先不处理
       ScanCodeResultModel model = ScanCodeResultModel();
