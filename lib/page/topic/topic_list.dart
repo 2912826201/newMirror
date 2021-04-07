@@ -13,7 +13,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/profile/overscroll_behavior.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:provider/provider.dart';

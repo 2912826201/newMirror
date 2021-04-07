@@ -45,7 +45,8 @@ class _feedBackPage extends State<FeedBackPage> {
         titleString: "意见反馈",
         actions: [
           Container(
-            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+            padding:
+                const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
             child: CustomRedButton(
               "提交",
               CustomRedButton.buttonStateNormal,
@@ -96,7 +97,7 @@ class _feedBackPage extends State<FeedBackPage> {
         maxLines: null,
         maxLength: 500,
         decoration: InputDecoration(
-          isDense:true ,
+          isDense: true,
           counterText: '',
           hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
           hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
@@ -244,11 +245,11 @@ class _feedBackPage extends State<FeedBackPage> {
         });
       }
       bool model = await putFeedBack(editText, jsonEncode(list));
-      if (model!=null && model) {
+      if (model != null && model) {
         Toast.show("反馈成功!", context);
         Loading.hideLoading(context);
         Navigator.pop(context);
-      }else{
+      } else {
         Toast.show("反馈失败!", context);
         Loading.hideLoading(context);
       }
@@ -256,6 +257,5 @@ class _feedBackPage extends State<FeedBackPage> {
       Loading.hideLoading(context);
       Toast.show("请添加图片", context);
     }
-
   }
 }

@@ -25,7 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-import '../overscroll_behavior.dart';
+import '../../../widget/overscroll_behavior.dart';
 
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {

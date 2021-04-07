@@ -18,7 +18,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/profile/overscroll_behavior.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';

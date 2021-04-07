@@ -17,7 +17,7 @@ import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
-import 'overscroll_behavior.dart';
+import '../../widget/overscroll_behavior.dart';
 
 ///个人主页动态List
 class ProfileDetailsList extends StatefulWidget {
