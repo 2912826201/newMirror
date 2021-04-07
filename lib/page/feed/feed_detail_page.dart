@@ -19,7 +19,6 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -30,6 +29,7 @@ import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

@@ -9,12 +9,12 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/overscroll_behavior.dart';
 
 class SearchTopic extends StatefulWidget {
   SearchTopic({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);

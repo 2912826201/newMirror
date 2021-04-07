@@ -9,11 +9,11 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/overscroll_behavior.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/widget/overscroll_behavior.dart';
 
 class SearchCourse extends StatefulWidget {
   SearchCourse({Key key, this.keyWord, this.textController, this.focusNode}) : super(key: key);
