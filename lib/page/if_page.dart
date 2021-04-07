@@ -2,15 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:toast/toast.dart';
-import 'package:union_tabs/union_tabs.dart';
-import 'package:provider/provider.dart';
 
 import 'media_picker/media_picker_page.dart';
 

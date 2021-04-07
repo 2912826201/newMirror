@@ -531,7 +531,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   key: Key('attention_page_$id'),
                   child: pageDisplay(index, feedModel),
                   onExposure: (visibilityInfo) {
-                    print("回调看数据:${attentionIdList.toString()}");
                     // 如果没有显示
                     if (attentionIdList[index] != -1 &&
                         context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {

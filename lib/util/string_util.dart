@@ -394,7 +394,7 @@ class StringUtil {
           breakFor = true;
         }
       }
-      return backString;
+      return backString+"${isOmit?"...":""}";
     }
     return str;
   }

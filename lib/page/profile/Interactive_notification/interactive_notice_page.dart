@@ -17,6 +17,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -51,7 +52,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   ScrollController scrollController  = ScrollController();
   String footerText = "没有更多了";
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
-
+  GlobalKey globalKey = GlobalKey();
+  bool showNoMore = true;
   ///获取互动通知列表
   _getMsgList(int type, {bool isRefreash = false}) async {
     if (listPage > 1 && lastTime == null) {
@@ -187,38 +189,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           controller: controller,
                           enablePullUp: true,
                           enablePullDown: true,
-                          footer: CustomFooter(
-                            onOffsetChange: (offset){
-                              print('---------------onOffsetChange${offset}');
-                                print('-----------------------scrollController${scrollController.offset}');
-                                if(footerText!=""&&scrollController.offset>0&&offset>=scrollController.offset){
-                                  print('---------------------------页面数据不够多,不展示文字');
-                                  setState(() {
-                                    footerText = "";
-                                  });
-                                }
-                            },
-                            builder: (BuildContext context, LoadStatus mode) {
-                              Widget body;
-                              if (mode == LoadStatus.loading) {
-                                body = CircularProgressIndicator();
-                              } else if (mode == LoadStatus.noMore) {
-                                body = Text("$footerText");
-                              } else if (mode == LoadStatus.failed) {
-                                body = Text("加载错误,请重试");
-                              } else {
-                                body = Text(" ");
-                              }
-                              return Container(
-                                child: Center(
-                                  child: body,
-                                ),
-                              );
-                            },
-                          ),
+                          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                           header: SmartRefresherHeadFooter.init().getHeader(),
                           onRefresh: _onRefresh,
-                          onLoading: _onLoading,
+                          onLoading: (){
+                            setState(() {
+                              showNoMore = IntegerUtil.showNoMore(globalKey);
+                            });
+                            _onLoading();
+                          },
                           child: ListView.builder(
                               controller: scrollController,
                               shrinkWrap: true, //解决无限高度问题
@@ -229,6 +208,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
+                                  globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,
                                 );
                               }),
                         ))

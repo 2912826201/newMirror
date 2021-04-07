@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -71,8 +72,9 @@ class _QueryFollowState extends State<QueryFollowList> {
   int searchHashNext;
   bool refreshOver = true;
   String lastString = "";
-
+  GlobalKey globalKey = GlobalKey();
   String hintText;
+  bool showNoMore = true;
   ///获取关注列表
   _getFollowList() async {
     if (listPage > 1 && _lastTime == null) {
@@ -85,14 +87,14 @@ class _QueryFollowState extends State<QueryFollowList> {
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
       if (model != null) {
-          buddyList.clear();
+        buddyList.clear();
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
           });
         }
-          _refreshController.refreshCompleted();
+        _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
         _refreshController.refreshFailed();
@@ -102,12 +104,12 @@ class _QueryFollowState extends State<QueryFollowList> {
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
           });
           _refreshController.loadComplete();
-        }else{
+        } else {
           _refreshController.loadNoData();
         }
       } else {
@@ -131,35 +133,35 @@ class _QueryFollowState extends State<QueryFollowList> {
     SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1) {
       _refreshController.loadComplete();
-      if (model!=null) {
+      if (model != null) {
         print('===================== =============model有值');
         buddyList.clear();
         buddyList.insert(0, BuddyModel());
-        if(model.list.isNotEmpty){
-        //这是插入的作为话题入口的假数据
-        buddyList.insert(0, BuddyModel());
-        model.list.forEach((element) {
-          //因为搜索的model和关注列表的model不一样，用这个model插入一条数据去接得到的数据
-          searchModel.clear();
-          searchModel.insert(0, BuddyModel());
-          searchModel.first.uid = element.uid;
-          searchModel.first.avatarUri = element.avatarUri;
-          searchModel.first.description = element.description;
-          searchModel.first.nickName = element.nickName;
-          if (element.relation == 0 || element.relation == 2) {
-            searchModel.first.relation = 0;
-          } else {
-            searchModel.first.relation = 1;
-          }
-          buddyList.add(searchModel.first);
-        });
-        _lastTime = model.lastTime;
-        _refreshController.refreshCompleted();
+        if (model.list.isNotEmpty) {
+          //这是插入的作为话题入口的假数据
+          buddyList.insert(0, BuddyModel());
+          model.list.forEach((element) {
+            //因为搜索的model和关注列表的model不一样，用这个model插入一条数据去接得到的数据
+            searchModel.clear();
+            searchModel.insert(0, BuddyModel());
+            searchModel.first.uid = element.uid;
+            searchModel.first.avatarUri = element.avatarUri;
+            searchModel.first.description = element.description;
+            searchModel.first.nickName = element.nickName;
+            if (element.relation == 0 || element.relation == 2) {
+              searchModel.first.relation = 0;
+            } else {
+              searchModel.first.relation = 1;
+            }
+            buddyList.add(searchModel.first);
+          });
+          _lastTime = model.lastTime;
+          _refreshController.refreshCompleted();
         }
       }
       _refreshController.refreshCompleted();
     } else if (listPage > 1 && _lastTime != null) {
-      if(model!=null){
+      if (model != null) {
         if (model.list != null) {
           model.list.forEach((element) {
             searchModel.clear();
@@ -180,7 +182,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         } else {
           _refreshController.loadNoData();
         }
-      }else{
+      } else {
         _refreshController.loadFailed();
       }
     }
@@ -210,30 +212,32 @@ class _QueryFollowState extends State<QueryFollowList> {
         buddyList.clear();
         hasNext = model.hasNext;
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
           });
         }
         _refreshController.refreshCompleted();
-      }else{
-          hintText = "内容君在来的路上出了点状况...";
+      } else {
+        hintText = "内容君在来的路上出了点状况...";
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
       print('lastTime================================$_lastTime');
       if (model != null) {
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
           });
-        }else{
-        _refreshController.loadNoData();
+        } else {
+          _refreshController.loadNoData();
         }
-      }else{
+      } else {
         _refreshController.loadFailed();
       }
+    }else{
+      _refreshController.loadNoData();
     }
     if (mounted) {
       setState(() {});
@@ -254,21 +258,21 @@ class _QueryFollowState extends State<QueryFollowList> {
       if (model != null) {
         topicList.clear();
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             print('话题名称============================${element.name}');
             topicList.add(element);
           });
         }
         _refreshController.refreshCompleted();
-      } else{
+      } else {
         hintText = "内容君在来的路上出了点状况...";
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
         _lastTime = model.lastTime;
-        if(model.list.isNotEmpty){
+        if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             topicList.add(element);
           });
@@ -296,7 +300,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     if (listPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if(model!=null){
+      if (model != null) {
         _lastScore = model.lastScore;
         topicList.clear();
         if (model.list.isNotEmpty) {
@@ -307,13 +311,13 @@ class _QueryFollowState extends State<QueryFollowList> {
           });
         }
         _refreshController.refreshCompleted();
-      }else{
+      } else {
         hintText = "内容君在来的路上出了点状况...";
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastScore != null) {
       _refreshController.isLoading;
-      if(model!=null){
+      if (model != null) {
         _lastScore = model.lastScore;
         if (model.list != null) {
           model.list.forEach((element) {
@@ -321,8 +325,8 @@ class _QueryFollowState extends State<QueryFollowList> {
           });
           _refreshController.loadComplete();
         }
-      }else{
-       _refreshController.loadFailed();
+      } else {
+        _refreshController.loadFailed();
       }
     }
     refreshOver = true;
@@ -496,10 +500,15 @@ class _QueryFollowState extends State<QueryFollowList> {
                               controller: _refreshController,
                               enablePullUp: true,
                               enablePullDown: true,
-                              footer: SmartRefresherHeadFooter.init().getFooter(),
+                              footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                               header: SmartRefresherHeadFooter.init().getHeader(),
                               onRefresh: __onRefresh,
-                              onLoading: _onLoading,
+                              onLoading:(){
+                                  setState(() {
+                                    showNoMore = IntegerUtil.showNoMore(globalKey);
+                                  });
+                                _onLoading();
+                              },
                               child: ListView.builder(
                                   shrinkWrap: true, //解决无限高度问题
                                   physics: AlwaysScrollableScrollPhysics(),
@@ -532,6 +541,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                                             width: width,
                                             userId: widget.userId,
                                             isMySelf: isMySelf,
+                                            globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
+                                                : topicList.length-1)?globalKey:null,
                                           );
                                         } else {
                                           return Container();
@@ -544,7 +555,9 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           buddyModel: buddyList[index],
                                           width: width,
                                           userId: widget.userId,
-                                          isMySelf: isMySelf);
+                                          isMySelf: isMySelf,
+                                          globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
+                                              : topicList.length-1)?globalKey:null);
                                     } else {
                                       return QueryFollowItem(
                                         type: widget.type,
@@ -552,6 +565,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         width: width,
                                         userId: widget.userId,
                                         isMySelf: isMySelf,
+                                          globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
+                                              : topicList.length-1)?globalKey:null,
                                         topicDeleteCallBack: () {
                                           print('=========================话题详情返回');
                                           if (context.read<UserInteractiveNotifier>().removeId != null) {
@@ -636,9 +651,11 @@ class QueryFollowItem extends StatefulWidget {
   int userId;
   bool isMySelf;
   DeleteChangedCallback topicDeleteCallBack;
+  GlobalKey globalKey;
 
   QueryFollowItem(
-      {this.width, this.buddyModel, this.tpcModel, this.type, this.userId, this.isMySelf, this.topicDeleteCallBack});
+      {this.width, this.buddyModel, this.tpcModel, this.type, this.userId, this.isMySelf, this.topicDeleteCallBack,
+        this.globalKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -697,6 +714,7 @@ class _FollowItemState extends State<QueryFollowItem> {
       }
     }
     return Container(
+      key: widget.globalKey,
       height: 58,
       padding: EdgeInsets.only(top: 5, bottom: 5),
       child: Row(

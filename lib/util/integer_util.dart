@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:mirror/util/screen_util.dart';
+
 class IntegerUtil {
   static String formatIntegerCn(int data) {
     if (data > 100000000) {
@@ -32,4 +35,15 @@ class IntegerUtil {
     return "${calorie/1000}${isHaveCompany?"千卡":""}";
   }
 
+  static bool showNoMore(GlobalKey key){
+    double itemHeight = 0;
+      RenderBox renderBox = key.currentContext.findRenderObject();
+    var offset =   renderBox.localToGlobal(Offset.zero);
+    itemHeight = offset.dy;
+    print('--itemHeight---itemHeight--------itemHeight---------itemHeight----------$itemHeight}');
+    if(itemHeight>ScreenUtil.instance.height/2){
+      return true;
+    }
+    return false;
+  }
 }

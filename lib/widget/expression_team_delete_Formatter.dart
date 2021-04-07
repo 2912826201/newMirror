@@ -26,7 +26,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
         ///这里先将新输入的文字之前的字符加进去
         backText += newValue.text.substring(0,oldValue.selection.baseOffset);
         ///这里用写好的通用截取字符方法去将新输入的字符截取成我们想要的格式
-        String interceptInputText = StringUtil.maxLength(inputText,needCount);
+        String interceptInputText = StringUtil.maxLength(inputText,needCount,isOmit: false);
         backText += interceptInputText;
         backText +=  newValue.text.substring(newValue.selection.baseOffset,newValue.text.length);
         print('------------------------backText$backText');

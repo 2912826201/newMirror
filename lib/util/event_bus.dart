@@ -151,6 +151,8 @@ const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 const String EVENTBUS_ATTENTION_Page = "AttentionPage";
 //聊天界面
 const String EVENTBUS_CHAT_PAGE = "eventbus_chat_page";
+// 视频页
+const String EVENTBUS_VIDEOWIGET_PAGE = "videoWigetPage";
 
 ///广播类型
 //发布动态
@@ -175,6 +177,8 @@ const String EVENTBUS_GET_FAILURE_MODEL = "getfailuremodel";
 const String EVENTBUS_IF_TAB_BAR_UNREAD = "_IFTabBarStateUnreadMessageNumber";
 // 动态未读数
 const String EVENTBUS__FEED_UNREAD = "_FEED_UNREAD";
+// 视频播放暂停
+const String EVENTBUS__VIDEO_PLAYORPAUSE = "video_play_or_pause";
 //聊天界面的bar
 const String EVENTBUS_CHAT_BAR = "eventbus_chat_bar";
 //聊天界面的加入群聊或者离开群聊

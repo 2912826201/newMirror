@@ -1,12 +1,76 @@
+import 'dart:async';
 import 'dart:async' show Timer;
 import 'dart:ui' as ui;
-
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 
-import './exposure_detector.dart';
-import './exposure_detector_controller.dart';
+class VideoExposure extends SingleChildRenderObjectWidget {
+  VideoExposure({
+    @required Key key,
+    @required Widget child,
+    this.onExposure,
+  })  : assert(key != null),
+        assert(child != null),
+        super(key: key, child: child);
+
+  /// 回调触发曝光函数
+  final ExposureCallback onExposure;
+
+  @override
+  RenderVideoExposure createRenderObject(BuildContext context) {
+    return RenderVideoExposure(
+      key: key,
+      onExposure: onExposure,
+    );
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, RenderVideoExposure renderObject) {
+    assert(renderObject.key == key);
+    renderObject.onExposure = onExposure;
+  }
+}
+
+typedef ExposureCallback = void Function(VisibilityInfo info);
+
+class RenderVideoExposure extends RenderProxyBox {
+  /// Constructor.
+  RenderVideoExposure({RenderBox child, @required this.key, ExposureCallback onExposure})
+      : assert(key != null),
+        _onExposure = onExposure,
+        super(child);
+  final Key key;
+  ExposureCallback _onExposure;
+
+  /// See [RenderObject.alwaysNeedsCompositing].
+  @override
+  bool get alwaysNeedsCompositing => (_onExposure != null);
+
+  /// See [VisibilityDetector.onVisibilityChanged].
+  ExposureCallback get onExposure => _onExposure;
+
+  set onExposure(ExposureCallback value) {
+    _onExposure = value;
+    markNeedsCompositingBitsUpdate();
+    markNeedsPaint();
+  }
+
+  /// See [RenderObject.paint].
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    var visibilityDetectorLayer = VideoExposureLayer(
+      key: key,
+      widgetSize: semanticBounds.size,
+      paintOffset: offset,
+      onExposureChanged: _onExposure,
+    );
+    final layer = visibilityDetectorLayer;
+    context.pushLayer(layer, super.paint, offset);
+  }
+}
 
 /// exposure_detector_layer
 /// Created by sl on 2021/3/13.
@@ -41,16 +105,19 @@ Rect _localRectToGlobal(Layer layer, Rect localRect) {
   return MatrixUtils.transformRect(transform, localRect);
 }
 
-class ExposureTimeLayer {
+class VideoExposureTimeLayer {
   final int time;
-  ExposureDetectorLayer layer;
+  VideoExposureLayer layer;
 
-  ExposureTimeLayer(this.time, this.layer);
+  VideoExposureTimeLayer(this.time, this.layer);
 }
 
-class ExposureDetectorLayer extends ContainerLayer {
-  ExposureDetectorLayer(
-      {@required this.key, @required this.widgetSize, @required this.paintOffset, this.onExposureChanged})
+class VideoExposureLayer extends ContainerLayer {
+  VideoExposureLayer(
+      {@required this.key,
+      @required this.widgetSize,
+      @required this.paintOffset,
+      this.onExposureChanged})
       : assert(key != null),
         assert(paintOffset != null),
         assert(widgetSize != null),
@@ -58,7 +125,7 @@ class ExposureDetectorLayer extends ContainerLayer {
         _layerOffset = Offset.zero;
   static Timer _timer;
 
-  static final _updated = <Key, ExposureDetectorLayer>{};
+  static final _updated = <Key, VideoExposureLayer>{};
 
   final Key key;
   final Size widgetSize;
@@ -69,9 +136,7 @@ class ExposureDetectorLayer extends ContainerLayer {
 
   final ExposureCallback onExposureChanged;
 
-  static List<Key> toRemove = [];
-
-  static final _exposureTime = <Key, ExposureTimeLayer>{};
+  static final _exposureTime = <Key, VideoExposureTimeLayer>{};
 
   bool filter = false;
 
@@ -160,7 +225,7 @@ class ExposureDetectorLayer extends ContainerLayer {
     int nowTime = new DateTime.now().millisecondsSinceEpoch;
     List<Key> toReserveList = [];
 
-    for (final ExposureDetectorLayer layer in _updated.values) {
+    for (final VideoExposureLayer layer in _updated.values) {
       if (!layer.attached) {
         continue;
       }
@@ -169,30 +234,22 @@ class ExposureDetectorLayer extends ContainerLayer {
       final info =
           VisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
 
-      if (info.visibleFraction >= 0.5) {
-        if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
-          if (nowTime - _exposureTime[layer.key].time > ExposureDetectorController.instance.exposureTime) {
-            layer.onExposureChanged(info);
-          } else {
-            setScheduleUpdate();
-            toReserveList.add(layer.key);
-            _exposureTime[layer.key].layer = layer;
-          }
+      if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
+        if (nowTime - _exposureTime[layer.key].time > 0) {
+          layer.onExposureChanged(info);
         } else {
-          _exposureTime[layer.key] = ExposureTimeLayer(nowTime, layer);
-
-          toReserveList.add(layer.key);
           setScheduleUpdate();
+          toReserveList.add(layer.key);
+          _exposureTime[layer.key].layer = layer;
         }
+      } else {
+        _exposureTime[layer.key] = VideoExposureTimeLayer(nowTime, layer);
+        toReserveList.add(layer.key);
+        setScheduleUpdate();
       }
-
       _exposureTime.removeWhere((key, _) => !toReserveList.contains(key));
     }
 
-    toRemove.forEach((key) {
-      ExposureDetectorController.instance.forget(key);
-    });
-    toRemove.clear();
     _updated.clear();
   }
 
