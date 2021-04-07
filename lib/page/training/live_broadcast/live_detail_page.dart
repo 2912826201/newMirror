@@ -246,7 +246,7 @@ class LiveDetailPageState extends XCState {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
-      footer: SmartRefresherHeadFooter.init().getFooter(),
+      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false,isShowAddMore: false),
       controller: _refreshController,
       onLoading: (){
         if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){

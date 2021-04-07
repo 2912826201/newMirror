@@ -199,7 +199,8 @@ class AppRouter {
   // 封装了入参，无论入参是什么格式都转成map
   //TODO 需要统一页面切换的过场效果
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false, int transitionDuration = 250, bool isBuilder = false}) {
+      {Function(dynamic result) callback, bool replace = false, int duration = 250,
+        RouteTransitionsBuilder builder}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (Application.pagePopRouterName == null) {
@@ -215,43 +216,22 @@ class AppRouter {
       return;
     }
     Application.pagePopRouterName.add(uri);
-    //TODO 这里是加了自定义转场效果的 需要严谨封装一下
-    if (isBuilder) {
-      Application.router
-          .navigateTo(
-        context,
-        uri,
-        replace: replace,
-        transitionDuration: Duration(milliseconds: transitionDuration),
-        transition: TransitionType.custom,
-        transitionBuilder: getFadeTransitionBuilder(),
-      )
-          .then((value) {
-        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
-          Application.pagePopRouterName.remove(uri);
-        }
-        if (callback != null) {
-          callback(value);
-        }
-      });
-    } else {
-      Application.router
-          .navigateTo(
-        context,
-        uri,
-        replace: replace,
-        transition: TransitionType.cupertino,
-        transitionDuration: Duration(milliseconds: transitionDuration),
-      )
-          .then((value) {
-        if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
-          Application.pagePopRouterName.remove(uri);
-        }
-        if (callback != null) {
-          callback(value);
-        }
-      });
-    }
+
+    Application.router.navigateTo(
+      context,
+      uri,
+      replace: replace,
+      transitionDuration: Duration(milliseconds: duration),
+      transition: builder==null?TransitionType.cupertino:TransitionType.custom,
+      transitionBuilder: builder,
+    ).then((value) {
+      if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
+        Application.pagePopRouterName.remove(uri);
+      }
+      if (callback != null) {
+        callback(value);
+      }
+    });
   }
 
   static void popToBeforeLogin(BuildContext context) {
@@ -732,7 +712,11 @@ class AppRouter {
     map["pullFeedTargetId"] = pullFeedTargetId;
     map["pullFeedType"] = pullFeedType;
     map["initScrollHeight"] = initScrollHeight;
-    _navigateToPage(context, pathOtherCompleteCourse, map, transitionDuration: duration, isBuilder: duration > 0);
+    RouteTransitionsBuilder builder;
+    if(duration>0){
+      builder=getFadeTransitionBuilder();
+    }
+    _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, builder: builder);
   }
 
   /// 自定义页面切换动画 - 渐变切换
