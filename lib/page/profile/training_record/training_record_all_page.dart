@@ -10,6 +10,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dotted_line.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'training_record_page.dart';
@@ -129,34 +130,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       child: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
-        header: WaterDropHeader(
-          complete: Text("刷新完成"),
-          failed: Text(" "),
-        ),
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus mode) {
-            Widget body;
-            if (mode == LoadStatus.idle) {
-              body = Text("");
-            } else if (mode == LoadStatus.loading) {
-              body = Container(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(),
-              );
-            } else if (mode == LoadStatus.failed) {
-              body = Text("");
-            } else if (mode == LoadStatus.canLoading) {
-              body = Text("");
-            } else {
-              body = Text("");
-            }
-            return Container(
-              height: 55.0,
-              child: Center(child: body),
-            );
-          },
-        ),
+        header: SmartRefresherHeadFooter.init().getHeader(),
+        footer:SmartRefresherHeadFooter.init().getFooter(),
         controller: _refreshController,
         onLoading: onLoadData,
         onRefresh: onRefresh,

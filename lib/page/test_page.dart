@@ -432,6 +432,20 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                         AppRouter.navigateToLoginSucess(context);
                       },
                     ),
+                  ]),Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.lightBlue,width: 1),
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 50),
                   ]),
             ],
           ),

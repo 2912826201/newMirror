@@ -210,12 +210,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     print('=======================================个人主页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
-      appBar: null,
-      body: _minehomeBody(width, height),
-    );
-  }
 
+    return  WillPopScope(
+        child: Scaffold(
+          appBar: null,
+          body: _minehomeBody(width, height),
+        ),
+        onWillPop: _requestPop);
+  }
+  // 监听返回事件
+  Future<bool> _requestPop() {
+    Navigator.pop(this.context,
+        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+    return new Future.value(false);
+  }
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
     return NestedScrollView(

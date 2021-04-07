@@ -364,7 +364,7 @@ Future<Map> deleteFromMyCourse(int courseId) async {
 ///获取直播地址
 ///courseId：课程id
 ///直播协议类型typr：HTTP_FLV、RTMP、HLS
-Future<Map> getPullStreamUrl(int courseId,{String type="RTMP"}) async {
+Future<Map> getPullStreamUrl(int courseId,{String type="HLS"}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId;
   params["type"] = type;

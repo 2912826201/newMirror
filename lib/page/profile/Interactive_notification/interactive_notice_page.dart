@@ -21,6 +21,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
@@ -215,10 +216,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               );
                             },
                           ),
-                          header: WaterDropHeader(
-                            complete: Text("刷新完成"),
-                            failed: Text("刷新失败"),
-                          ),
+                          header: SmartRefresherHeadFooter.init().getHeader(),
                           onRefresh: _onRefresh,
                           onLoading: _onLoading,
                           child: ListView.builder(
@@ -482,7 +480,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     height: 7,
                   ),
                   Text(
-                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime), isShowText: true),
+                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime)),
                     style: AppStyle.textHintRegular12,
                   )
                 ],

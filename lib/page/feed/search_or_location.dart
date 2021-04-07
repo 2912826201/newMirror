@@ -9,6 +9,7 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
@@ -129,26 +130,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                     ? SmartRefresher(
                         enablePullUp: true,
                         enablePullDown: false,
-                        footer: CustomFooter(
-                          builder: (BuildContext context, LoadStatus mode) {
-                            Widget body;
-                            if (mode == LoadStatus.loading) {
-                              body = const Text("正在加载");
-                            } else if (mode == LoadStatus.idle) {
-                              body = const Text("上拉加载更多");
-                            } else if (mode == LoadStatus.failed) {
-                              body = const Text("加载失败,请重试");
-                            } else {
-                              body = const Text("没有更多了");
-                            }
-                            return Container(
-                              child: Center(
-                                child: body,
-                              ),
-                            );
-                          },
-                        ),
-
+                        footer: SmartRefresherHeadFooter.init().getHeader(),
                         controller: _refreshController,
                         onLoading: onLoadMore,
                         // child: MediaQuery.removePadding(

@@ -839,7 +839,7 @@ class AppRouter {
   }
 
   //去直播间
-  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel) {
+  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel,{Function(int relation) callback}) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LiveRoomVideoPage(liveCourseId: liveModel.id, coachId: liveModel.coachId.toString());
     }));
@@ -853,6 +853,7 @@ class AppRouter {
             coachUrl: liveModel.coachDto.avatarUri,
             coachRelation: liveModel.coachDto.relation,
             startTime: liveModel.startTime,
+            callback:callback,
             coachId: liveModel.coachDto.uid);
       },
     ));

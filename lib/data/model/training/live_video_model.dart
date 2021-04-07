@@ -961,7 +961,11 @@ class ComponentDtos {
     if (json["scripts"] != null) {
       _scripts = [];
       json["scripts"].forEach((v) {
-        _scripts.add(Scripts.fromJson(v));
+        if(v is Scripts){
+          _scripts.add(v);
+        }else{
+          _scripts.add(Scripts.fromJson(v));
+        }
       });
     }
     if (json["scriptToVideo"] != null) {

@@ -14,6 +14,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
@@ -191,29 +192,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 child: SmartRefresher(
                     enablePullUp: true,
                     enablePullDown: true,
-                    footer: CustomFooter(
-                      builder: (BuildContext context, LoadStatus mode) {
-                        Widget body;
-                        if (mode == LoadStatus.loading) {
-                          body = Text("正在加载");
-                        } else if (mode == LoadStatus.idle) {
-                          body = Text("上拉加载更多");
-                        } else if (mode == LoadStatus.failed) {
-                          body = Text("加载失败,请重试");
-                        } else {
-                          body = Text("没有更多了");
-                        }
-                        return Container(
-                          child: Center(
-                            child: body,
-                          ),
-                        );
-                      },
-                    ),
-                    header: WaterDropHeader(
-                      complete: Text("刷新完成"),
-                      failed: Text("刷新失败"),
-                    ),
+                    footer: SmartRefresherHeadFooter.init().getFooter(),
+                    header: SmartRefresherHeadFooter.init().getHeader(),
                     controller: _refreshController,
                     onLoading: () {
                       if (refreshOver) {

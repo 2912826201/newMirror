@@ -130,9 +130,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   ///列表的滑动监听
   ScrollController _scrollController = ScrollController();
 
-  ///内容的点击事件还是表情的点击
-  bool isContentClickOrEmojiClick = true;
-
   ///界面能不能被输入法顶起
   // bool isResizeToAvoidBottomInset = true;
 
@@ -294,7 +291,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               isShow: context.read<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
               groupChatId: conversation.conversationId,
-              delayedSetState: delayedSetState,
+              delayedSetState: (){
+                //print("delayedSetState-uuuuuuuuuuuuuuuuuuuuu");
+                delayedSetState();
+              },
             ),
           ],
         ),
@@ -385,7 +385,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
                 onTap: () {
                   isShowTopAttentionUi = false;
                   if (mounted) {
-                    reload(() {});
+                    reload(() {
+                      print("reload111111111111111");
+                    });
                   }
                 },
               ),
@@ -463,6 +465,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           _bottomSettingPanelState=true;
           if (_emojiState) {
             reload(() {
+              print("reload2222222222222222222");
               _emojiState = !_emojiState;
             });
           }
@@ -471,6 +474,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           _bottomSettingPanelState=true;
           if (_emojiState) {
             reload(() {
+              //print("reload-33333333333333333");
               _emojiState = !_emojiState;
             });
           }
@@ -522,17 +526,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //键盘与表情的框
   Widget bottomSettingBox() {
-    return Container(
-      child: Stack(
-        children: [
-          bottomSettingPanel(),
-          emoji(),
-        ],
-      ),
-    );
-  }
-
-  Widget bottomSettingPanel(){
+    List<Widget> widgetList=[];
 
     double keyboardHeight = 300.0;
 
@@ -546,6 +540,21 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       keyboardHeight = 300.0;
     }
 
+    widgetList.add(bottomSettingPanel(keyboardHeight));
+
+
+    if((_emojiState ? keyboardHeight : 0.0)>0){
+      widgetList.add(emoji(keyboardHeight));
+    }
+
+    return Container(
+      child: Stack(
+        children: widgetList,
+      ),
+    );
+  }
+
+  Widget bottomSettingPanel(double keyboardHeight){
     print("bottomSettingPanel:$_bottomSettingPanelState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
@@ -560,20 +569,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
 
   //表情框
-  Widget emoji() {
-    //Application.keyboardHeight1
-    double keyboardHeight = 300.0;
-
-    if (Application.keyboardHeightChatPage > 0) {
-      keyboardHeight = Application.keyboardHeightChatPage;
-    }else if(Application.keyboardHeightIfPage>0){
-      Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
-      keyboardHeight = Application.keyboardHeightChatPage;
-    }
-    if (keyboardHeight < 90) {
-      keyboardHeight = 300.0;
-    }
-
+  Widget emoji(double keyboardHeight) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
       height: _emojiState ? keyboardHeight : 0.0,
@@ -747,6 +743,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         b = false;
         if (mounted) {
           reload(() {
+            //print("reload-44444444444444444");
           });
         }
       } else {
@@ -779,6 +776,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //print("111111111111111111111111111111");
       if (mounted) {
         reload(() {
+          //print("reload-55555555555555555555");
         });
       }
     }
@@ -817,17 +815,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       } else {
         isShowTopAttentionUi = true;
       }
-    }
-  }
-
-  //获取系统消息
-  void getSystemInformation() async {
-    List<ChatDataModel> dataList = await getSystemInformationNet();
-    if (dataList != null && dataList.length > 0) {
-      chatDataList.addAll(dataList);
-      //加入时间提示
-      getTimeAlert(chatDataList, conversation.conversationId);
-      delayedSetState();
     }
   }
 
@@ -913,6 +900,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       if (isHaveAtMeMsgIndex < 0) {
         if (!isHaveAtMeMsg) {
           isHaveAtMeMsg = true;
+          //print("delayedSetState-1111111111111111111");
           delayedSetState();
           //print('1--------------------------显示标识at');
         }
@@ -922,6 +910,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         if (isHaveAtMeMsg) {
           isHaveAtMeMsg = false;
           //print('2--------------------------关闭标识at');
+          //print("delayedSetState-2222222222222222222222");
           delayedSetState();
         }
         //print('2--------------------------已经是关闭--关闭标识at');
@@ -931,6 +920,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       } else {
         if (!isHaveAtMeMsg) {
           isHaveAtMeMsg = true;
+          //print("delayedSetState-333333333333333333333");
           delayedSetState();
           //print('3--------------------------显示标识at');
         }
@@ -978,6 +968,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
         if (mounted) {
           reload(() {
+            //print("reload-66666666666666666666666");
           });
         }
         await Future.delayed(Duration(milliseconds: 100), () {
@@ -1070,6 +1061,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       if (mounted) {
         reload(() {
+          //print("reload-7777777777777777777");
           _textController.text = "";
           isHaveTextLen = false;
         });
@@ -1079,6 +1071,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
+      //print("delayedSetState-333333333333333333333");
       delayedSetState();
     });
   }
@@ -1112,9 +1105,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     animateToBottom();
     if (mounted) {
       reload(() {
+        //print("reload-8888888888888888888888");
       });
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
+      //print("delayedSetState-444444444444444");
       delayedSetState();
     });
   }
@@ -1136,9 +1131,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     animateToBottom();
     if (mounted) {
       reload(() {
+        //print("reload-9999999999999999999");
       });
     }
     postVoice(chatDataList[0], conversation.conversationId, conversation.type, conversation.getType(), () {
+      //print("delayedSetState-5555555555555555");
       delayedSetState();
     });
   }
@@ -1158,11 +1155,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     animateToBottom();
     if (mounted) {
       reload(() {
+        //print("reload-aaaaaaaaaaaaaaaaaaaaaaaa");
         _textController.text = "";
         isHaveTextLen = false;
       });
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
+      //print("delayedSetState-555555555555555");
       delayedSetState();
     });
   }
@@ -1178,6 +1177,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       MessageManager.updateConversationByMessageList(context, [chatDataList[position].msg]);
       if (mounted) {
         reload(() {
+          //print("reload-bbbbbbbbbbbbbbbbbbbbbbb");
         });
       }
     }
@@ -1201,6 +1201,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         recallNotificationMessagePosition = -1;
         if (mounted) {
           reload(() {
+            //print("reload-cccccccccccccccccccccccccccc");
             _textController.text = "";
             isHaveTextLen = false;
           });
@@ -1245,6 +1246,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         chatDataList.insert(0, chatDataModel);
         if (mounted) {
           reload(() {
+            //print("reload-dddddddddddddddddddddddd");
             isShowTopAttentionUi = true;
             recallNotificationMessagePosition = -1;
             _textController.text = "";
@@ -1298,6 +1300,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     chatDataList[0].isTemporary = true;
     addTemporaryMessage(chatDataList[0], conversation);
     postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), () {
+      //print("delayedSetState-777777777777777");
       delayedSetState();
     });
   }
@@ -1335,9 +1338,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     animateToBottom();
     if (mounted) {
       reload(() {
+        //print("reload-eeeeeeeeeeeeeeeeeeee");
       });
     }
     postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), () {
+      //print("delayedSetState-8888888888888888888888");
       delayedSetState();
     });
   }
@@ -1357,10 +1362,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
     if (mounted) {
       reload(() {
+        //print("reload-ffffffffffffffffffffffffff");
         isHaveTextLen = false;
       });
     }
     resetPostMessage(chatDataList[0], () {
+      //print("delayedSetState-999999999999999999999");
       delayedSetState();
     });
   }
@@ -1375,14 +1382,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       Future.delayed(Duration.zero, () {
         //print("setState--delayedSetState");
         if (mounted) {
-          reload(() {});
+          reload(() {
+          });
         }
       });
     } else {
       Future.delayed(Duration(milliseconds: milliseconds), () {
         //print("setState--delayedSetState");
         if (mounted) {
-          reload(() {});
+          reload(() {
+          });
         }
       });
     }
@@ -1411,6 +1420,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             } else if (status == RCSentStatus.Sent) {
               getHistoryMessage(dataModel);
             }
+            //print("delayedSetState-aaaaaaaaaaaaaaaaaa");
             delayedSetState();
             return ;
           }
@@ -1430,6 +1440,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       for (ChatDataModel model in chatDataList) {
         if (model.msg.messageUId == message.messageUId) {
           model.msg = message;
+          //print("delayedSetState-bbbbbbbbbbbbbbbbbbbbbb");
           delayedSetState();
           break;
         }
@@ -1462,6 +1473,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       isHaveReceiveChatDataList = true;
       if (scrollPositionPixels < 500) {
         isHaveReceiveChatDataList = false;
+        //print("delayedSetState-ccccccccccccccccc");
         delayedSetState();
       }
     }
@@ -1498,7 +1510,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void getHistoryMessage(ChatDataModel model) async {
     if (null == model.msg.messageUId || model.msg.messageUId.length < 1) {
       model.msg = await Application.rongCloud.getMessageById(model.msg.messageId);
-      delayedSetState();
     }
   }
 
@@ -1516,6 +1527,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           if (scrollPositionPixels < 500) {
             isHaveReceiveChatDataList = false;
 
+            //print("delayedSetState-eeeeeeeeeeeeeeeeeee");
             delayedSetState();
           }
         }
@@ -1537,6 +1549,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           // 先设置状态，防止下拉就直接加载reload
           if (mounted) {
             reload(() {
+              //print("reload-iiiiiiiiiiiiiiiiiiiii");
               loadText = "加载中...";
               loadStatus = LoadingStatus.STATUS_LOADING;
             });
@@ -1550,6 +1563,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       } else if (_scrollController.position.pixels <= 0) {
         if (mounted && isHaveReceiveChatDataList) {
           reload(() {
+            //print("reload-jjjjjjjjjjjjjjjjjjjj");
             isHaveReceiveChatDataList = false;
           });
         }
@@ -1619,8 +1633,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
         // 唤起@#后切换光标关闭视图
         if (cursorIndex != atIndex) {
-          context.read<ChatEnterNotifier>().openAtCallback("");
-          delayedSetState();
+          if(context.read<ChatEnterNotifier>().keyWord!="") {
+            context.read<ChatEnterNotifier>().openAtCallback("");
+            //print("delayedSetState-ffffffffffffffffffffffffff");
+            delayedSetState();
+          }
         }
       }
       isSwitchCursor = true;
@@ -1630,7 +1647,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
-      correctRulesListener: () => delayedSetState(milliseconds: 0),
+      correctRulesListener: (){
+        //print("delayedSetState-lllllllllllllllllllllllll");
+        delayedSetState(milliseconds: 0);
+      },
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
@@ -1638,6 +1658,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         if (conversation.getType() == RCConversationType.Group) {
           context.read<ChatEnterNotifier>().openAtCallback(str);
           isClickAtUser = false;
+          //print("delayedSetState-mmmmmmmmmmmmmmmmmmm");
           delayedSetState();
         }
         return "";
@@ -1647,6 +1668,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         print("取消艾特功能3");
         print('----------------------------关闭视图');
         context.read<ChatEnterNotifier>().openAtCallback("");
+        //print("delayedSetState-qqqqqqqqqqqqqqqqqqqq");
         delayedSetState();
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
@@ -1710,21 +1732,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   _messageInputBodyClick() {
     print("_messageInputBodyClick");
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
-      FocusScope.of(context).requestFocus(new FocusNode());
-      _bottomSettingPanelState=false;
-      if (mounted) {
-        reload(() {
-          _emojiState = false;
-          isContentClickOrEmojiClick = true;
-        });
+      if(MediaQuery.of(context).viewInsets.bottom>0) {
+        FocusScope.of(context).requestFocus(new FocusNode());
       }
-      Future.delayed(Duration(milliseconds: 300), () {
+      _bottomSettingPanelState=false;
+      if(_emojiState) {
         if (mounted) {
           reload(() {
-            // isResizeToAvoidBottomInset = !_emojiState;
+            //print("reload-kkkkkkkkkkkkkkkkkk");
+            _emojiState = false;
           });
         }
-      });
+      }
     }
   }
 
@@ -1735,10 +1754,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _focusNode.unfocus();
     }
     _emojiState = !_emojiState;
-    isContentClickOrEmojiClick = false;
     _isVoiceState = false;
     if (mounted) {
       reload(() {
+        //print("reload-mmmmmmmmmmmmmmmmmmmmmmmmmmmm");
       });
     }
   }
@@ -1780,10 +1799,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
     _focusNode.unfocus();
     _emojiState = false;
-    isContentClickOrEmojiClick = true;
     _isVoiceState = !_isVoiceState;
     if (mounted) {
       reload(() {
+        //print("reload-mmmmmmmmmmmmmmmmmmmmmmmm");
       });
     }
   }
@@ -1813,6 +1832,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
       //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       // }
+      //print("delayedSetState-wwwwwwwwwwwwwwwwwwwwwww");
       delayedSetState();
     } else if (type == 1) {
       conversation.name = name;
@@ -1853,7 +1873,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           text = "关注成功!";
           isShowTopAttentionUi = false;
           if (mounted) {
-            reload(() {});
+            reload(() {
+
+              //print("reload-nnnnnnnnnnnnnnnnnnnnnnnn");
+            });
           }
           context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(conversation.conversationId), true);
           if (context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(conversation.conversationId))) {
@@ -1868,7 +1891,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       isShowTopAttentionUi = false;
       if (mounted) {
-        reload(() {});
+        reload(() {
+
+          //print("reload-rrrrrrrrrrrrrrrrrrrrrrrrrrr");
+        });
       }
     }
   }
@@ -1973,6 +1999,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       context.read<ChatEnterNotifier>().setAtSearchStr("");
       // 关闭视图
       context.read<ChatEnterNotifier>().openAtCallback("");
+      //print("delayedSetState-rrrrrrrrrrrrrrr");
       delayedSetState();
     });
   }
@@ -2011,6 +2038,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _refreshController.loadComplete();
       if (mounted) {
         reload(() {
+          //print("reload-sssssssssssssssssssssss");
         });
       }
     });
@@ -2033,6 +2061,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     _refreshController.loadComplete();
+    //print("delayedSetState-ttttttttttttttttttttttttttt");
     delayedSetState();
   }
 
@@ -2051,6 +2080,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         updateMessagePageAlert(conversation, context);
         if (mounted) {
           reload(() {
+            //print("reload-tttttttttttttttttttt");
             chatDataList.removeAt(position);
           });
         }
@@ -2106,6 +2136,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
           reload(() {
+            //print("reload-uuuuuuuuuuuuuuuuuuuuuuu");
           });
         }
       });
@@ -2127,6 +2158,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       }
       if (mounted) {
         reload(() {
+          //print("reload-vvvvvvvvvvvvvvvvvvvvvvv");
         });
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
@@ -2220,7 +2252,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       if(Application.keyboardHeightChatPage!=MediaQuery.of(this.context).viewInsets.bottom){
         Application.keyboardHeightChatPage=MediaQuery.of(this.context).viewInsets.bottom;
         if (mounted) {
-          reload(() {});
+          reload(() {
+
+            //print("reload-wwwwwwwwwwwwwwwwwwwwwwwwwwww");
+          });
         }
       }
     }
@@ -2231,7 +2266,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
     _bottomSettingPanelState=isOpen;
     if (mounted) {
-      reload(() {});
+      reload(() {
+
+        //print("reload-zzzzzzzzzzzzzzzzzzzzzzz");
+      });
     }
   }
 }

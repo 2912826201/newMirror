@@ -14,6 +14,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 ///
@@ -556,11 +557,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         child: SmartRefresher(
           enablePullDown: false,
           enablePullUp: true,
-          footer: CustomFooter(
-            builder: (BuildContext context, LoadStatus mode) {
-              return Container();
-            },
-          ),
+          footer: SmartRefresherHeadFooter.init().getFooterContainer(),
           controller: _refreshController,
           onLoading: onLoadData,
           scrollDirection: Axis.horizontal,
