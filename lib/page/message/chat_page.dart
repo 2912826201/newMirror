@@ -48,6 +48,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:toast/toast.dart';
@@ -1795,8 +1796,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //录音按钮的点击事件
   _voiceOnTapClick() async {
-    // await [Permission.microphone].request();
-
+    await [Permission.microphone].request();
     _focusNode.unfocus();
     _emojiState = false;
     _isVoiceState = !_isVoiceState;
