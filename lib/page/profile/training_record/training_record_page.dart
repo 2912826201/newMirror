@@ -17,7 +17,6 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-///
 /// 训练记录页
 class TrainingRecordPage extends StatefulWidget {
   @override
