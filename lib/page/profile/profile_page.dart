@@ -285,7 +285,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Positioned(
                 left: width * 0.38,
                 bottom: 0,
-                child: Row(children: [
+                child: Row(
+                    children: [
                   InkWell(
                     child: _textAndNumber(
                         "关注",

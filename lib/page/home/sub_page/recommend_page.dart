@@ -14,11 +14,14 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -88,7 +91,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   List<int> recommendIdList = [];
   List<HomeFeedModel> recommendModelList = [];
   List<LiveVideoModel> liveVideoModel = [];
-
+  RefreshController _refreshController = RefreshController();
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -101,9 +104,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 加载中默认文字
   String loadText = "";
   bool isLogin = true;
-
-  // 加载状态
-  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+  GlobalKey globalKey = GlobalKey();
+  bool showNoMore = true;
 
   // 初始化的第一个item上的间距
   double initHeight = 0.0;
@@ -125,11 +127,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     isLogin = context.read<TokenNotifier>().isLoggedIn;
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        getRecommendFeed();
-      }
-    });
     super.initState();
   }
 
@@ -167,14 +164,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });
+              _refreshController.refreshCompleted();
             }
             hasNext = dataModel.hasNext;
-            if (hasNext == 0) {
-              print('================================hashnext');
-              loadStatus = LoadingStatus.STATUS_COMPLETED;
-              loadText = "";
-            }
           } else {
+            _refreshController.refreshCompleted();
             isRequestData = false;
           }
         });
@@ -190,20 +184,21 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 推荐页model
   getRecommendFeed() async {
     print('==================推荐页数据加载');
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
+    /*if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
       setState(() {
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
-    }
+    }*/
     DataResponseModel dataModel = DataResponseModel();
     // List<HomeFeedModel> modelList = [];
     if (hasNext != 0) {
       // 请求推荐接口
       dataModel = await getHotList(size: 20);
       if (dataModel == null) {
-        loadText = "";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
+        _refreshController.loadNoData();
+       /* loadText = "";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;*/
       }
       if (dataModel != null && dataModel.list.isNotEmpty) {
         print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
@@ -213,19 +208,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           // modelList.add(HomeFeedModel.fromJson(v));
           recommendModelList.add(HomeFeedModel.fromJson(v));
         });
+        _refreshController.loadComplete();
       }
-      // if (modelList.isNotEmpty) {
-      //   for (HomeFeedModel model in modelList) {
-      //     recommendIdList.add(model.id);
-      //   }
-      //   recommendModelList.addAll(modelList);
-      // }
-      loadStatus = LoadingStatus.STATUS_IDEL;
-      loadText = "加载中...";
     }
     if (hasNext == 0) {
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      _refreshController.loadNoData();
     }
     if (mounted) {
       setState(() {});
@@ -242,9 +229,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         if (notifier.isLoggedIn && !isLogin) {
           Future.delayed(Duration.zero, () {
             print('=========isLogin=========isLogin========isLogin===$isLogin');
-            /*  recommendIdList.clear();
-            recommendModelList.clear();
-            liveVideoModel.clear();*/
             mergeRequest();
           });
           isLogin = notifier.isLoggedIn;
@@ -252,14 +236,19 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         return Stack(
           children: [
             Container(
-              child: RefreshIndicator(
-                  onRefresh: () async {
-                    print("推荐ye下拉刷新");
-                    // dataPage = 1;
-                    loadStatus = LoadingStatus.STATUS_LOADING;
-                    // 清空曝光过的listKey
-                    ExposureDetectorController.instance.signOutClearHistory();
-                    loadText = "加载中...";
+              child: SmartRefresher(
+                  enablePullUp: true,
+                  enablePullDown: true,
+                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
+                  controller: _refreshController,
+                  onLoading: (){
+                    setState(() {
+                      showNoMore = IntegerUtil.showNoMore(globalKey);
+                    });
+                    getRecommendFeed();
+                  },
+                  onRefresh: (){
                     hasNext = null;
                     mergeRequest();
                   },
@@ -293,12 +282,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       id = recommendIdList[index];
                                       model = context.read<FeedMapNotifier>().value.feedMap[id];
                                     }
-                                    if (index == recommendIdList.length) {
-                                      return LoadingView(
-                                        loadText: loadText,
-                                        loadStatus: loadStatus,
-                                      );
-                                    } else {
                                       return ExposureDetector(
                                         key: Key('recommend_page_${id}'),
                                         child: DynamicListLayout(
@@ -322,7 +305,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                           print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                                         },
                                       );
-                                    }
                                   }, childCount: recommendIdList.length + 1),
                                 )
                               : SliverToBoxAdapter(

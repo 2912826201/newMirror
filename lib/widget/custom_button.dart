@@ -525,7 +525,8 @@ class SelectButton extends StatefulWidget {
   //间隔时间
   int intervalsMilliseconds;
   bool canOnClick;
-  SelectButton(this.selectOrNot, {this.changeCallBack, this.intervalsMilliseconds = 1000, this.canOnClick = true});
+  SelectButton(this.selectOrNot, {this.changeCallBack, this.intervalsMilliseconds = 1000, this.canOnClick =
+  true});
 
   @override
   State<StatefulWidget> createState() {
@@ -566,8 +567,8 @@ class _SelectButtonState extends State<SelectButton> {
                     beforTimer = DateTime.now().millisecondsSinceEpoch;
                     Future.delayed(Duration(milliseconds: widget.intervalsMilliseconds), () {
                       if (beforSelect != widget.selectOrNot) {
-                        widget.changeCallBack(widget.selectOrNot);
-                        beforSelect = widget.selectOrNot;
+                          widget.changeCallBack(widget.selectOrNot);
+                          beforSelect = widget.selectOrNot;
                       }
                     });
                   }

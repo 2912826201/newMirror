@@ -18,11 +18,14 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 enum Status {
@@ -66,7 +69,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 数据源
   List<int> attentionIdList = [];
   List<HomeFeedModel> attentionModelList = [];
-
+  RefreshController _refreshController = RefreshController();
   // 请求下一页
   int lastTime;
 
@@ -76,12 +79,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 是否登录
   bool isLoggedIn = false;
 
+  bool showNoMroe = true;
   // 是否请求接口
   bool isRequestInterface = false;
 
   // 声明定时器
   Timer timer;
 
+  GlobalKey globalKey = GlobalKey();
   @override
   void initState() {
     print("初始化一下啊");
@@ -107,12 +112,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
 
     // 上拉加载
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        dataPage += 1;
-        getRecommendFeed();
-      }
-    });
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
@@ -134,19 +133,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 请求关注接口
   getRecommendFeed() async {
     isRequestInterface = true;
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
     print("开始请求动态数据");
     if (dataPage > 1 && lastTime == null) {
-      setState(() {
-        loadText = "已加载全部动态";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
-        print("返回不请求数据");
-      });
+      _refreshController.loadNoData();
       return;
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
@@ -162,27 +151,19 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 attentionIdList.add(HomeFeedModel.fromJson(v).id);
                 attentionModelList.add(HomeFeedModel.fromJson(v));
               });
-              if (model.hasNext == 0) {
-                loadText = "";
-                loadStatus = LoadingStatus.STATUS_IDEL;
-              }
               attentionIdList.insert(0, -1);
               status = Status.concern;
-            } else {
-              status = Status.noConcern;
             }
+            _refreshController.refreshCompleted();
           } else if (dataPage > 1 && lastTime != null) {
             if (model.list.isNotEmpty) {
               model.list.forEach((v) {
                 attentionIdList.add(HomeFeedModel.fromJson(v).id);
                 attentionModelList.add(HomeFeedModel.fromJson(v));
               });
-              loadStatus = LoadingStatus.STATUS_IDEL;
-              loadText = "加载中...";
+              _refreshController.loadComplete();
             } else {
-              // 加载完毕
-              loadText = "已加载全部动态";
-              loadStatus = LoadingStatus.STATUS_COMPLETED;
+             _refreshController.loadNoData();
             }
           }
           // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
@@ -195,8 +176,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         null) {
       status = Status.noConcern;
     } else {
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      _refreshController.loadNoData();
     }
     // 更新动态数量
     int addFeedNum = 0;
@@ -306,8 +286,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             print(attentionIdList.toString());
             if (attentionIdList.length == 1 && attentionIdList.first == -1) {
-              loadStatus = LoadingStatus.STATUS_IDEL;
-              loadText = "";
               attentionIdList.clear();
               attentionModelList.clear();
               status = Status.noConcern;
@@ -331,15 +309,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             dataPage = 1;
             attentionIdList.clear();
             attentionModelList.clear();
-            loadStatus = LoadingStatus.STATUS_IDEL;
             lastTime = null;
-            loadText = "";
             getRecommendFeed();
           } else {
             setState(() {
               attentionIdList = arrayDate(attentionIdList, themList);
-              loadStatus = LoadingStatus.STATUS_IDEL;
-              loadText = "";
               // 去重
               attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
               // 更新全局监听
@@ -473,7 +447,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       this.attentionIdList.clear();
       this.attentionModelList.clear();
       this.lastTime = null;
-      loadStatus = LoadingStatus.STATUS_IDEL;
       isRequestInterface = false;
     }
 
@@ -482,32 +455,33 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       getRecommendFeed();
     }
     return Container(
-      child: RefreshIndicator(
-          onRefresh: () async {
-            dataPage = 1;
-            attentionIdList.clear();
-            attentionModelList.clear();
-            loadStatus = LoadingStatus.STATUS_IDEL;
-            lastTime = null;
-            loadText = "";
-            // 清空曝光过的listKey
-            ExposureDetectorController.instance.signOutClearHistory();
-            // if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-            //   attentionIdList.insert(
-            //       0,
-            //       HomeFeedModel()
-            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
-            //           .id);
-            //   attentionModelList.insert(
-            //       0,
-            //       HomeFeedModel()
-            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
-            // }
+      child: SmartRefresher(
+          enablePullUp: true,
+          enablePullDown: true,
+          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
+          header: SmartRefresherHeadFooter.init().getHeader(),
+          controller: _refreshController,
+          onLoading:(){
+            setState(() {
+              showNoMroe = IntegerUtil.showNoMore(globalKey);
+            });
+            dataPage += 1;
             getRecommendFeed();
           },
+            onRefresh: (){
+              dataPage = 1;
+              attentionIdList.clear();
+              attentionModelList.clear();
+              lastTime = null;
+              // 清空曝光过的listKey
+              ExposureDetectorController.instance.signOutClearHistory();
+              getRecommendFeed();
+            },
+
           child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
              SliverList(
               // controller: _controller,
+               key: globalKey,
               delegate: SliverChildBuilderDelegate((content, index) {
                 if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
                   return pageDisplay(0, HomeFeedModel());
@@ -521,12 +495,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
                 }
                 print("attentionIdList数据源长度：：：：${attentionIdList.length}");
-                if (index == attentionIdList.length) {
-                  return  LoadingView(
-                    loadText: loadText,
-                    loadStatus: loadStatus,
-                  );
-                }
                 return ExposureDetector(
                   key: Key('attention_page_$id'),
                   child: pageDisplay(index, feedModel),

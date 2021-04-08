@@ -32,8 +32,11 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     if (noticeState != null) {
       if (noticeState) {
         context.read<SettingNotifile>().changeSwitchButton(type + 1);
+        return;
       }
     }
+    print('---------###################################################---');
+    context.read<SettingNotifile>().changeSwitchButton(type + 1, breakToBefore: true);
   }
 
   //获取用户通知设置
@@ -115,79 +118,77 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
         appBar: CustomAppBar(
           titleString: "通知设置",
         ),
-        body: Container(
-          padding: EdgeInsets.only(left: 16, right: 16),
-          width: width,
-          height: height,
-          child: Column(
-            children: [
-              InkWell(
-                onTap: () {
-                  AppSettings.openNotificationSettings();
-                },
-                child: _getNotice(),
-              ),
-              Container(
-                height: 0.5,
-                color: AppColor.bgWhite,
-                width: width,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Container(
-                height: 32,
-                width: width,
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "私信通知",
-                    style: AppStyle.textSecondaryRegular14,
+        body: Consumer<SettingNotifile>(builder: (context, notifier, child) {
+          return Container(
+            padding: EdgeInsets.only(left: 16, right: 16),
+            width: width,
+            height: height,
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    AppSettings.openNotificationSettings();
+                  },
+                  child: _getNotice(notifier),
+                ),
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                  width: width,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Container(
+                  height: 32,
+                  width: width,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "私信通知",
+                      style: AppStyle.textSecondaryRegular14,
+                    ),
                   ),
                 ),
-              ),
-              _switchRow(width, 0, context.watch<SettingNotifile>().notFollow, "未关注私信人"),
-              _switchRow(width, 1, context.watch<SettingNotifile>().followBuddy, "我关注及好友私信"),
-              SizedBox(
-                height: 12,
-              ),
-              Container(
-                height: 32,
-                width: width,
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "互动通知",
-                    style: AppStyle.textSecondaryRegular14,
+                _switchRow(width, 0, notifier.notFollow, "未关注私信人",notifier),
+                _switchRow(width, 1, notifier.followBuddy, "我关注及好友私信",notifier),
+                SizedBox(
+                  height: 12,
+                ),
+                Container(
+                  height: 32,
+                  width: width,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "互动通知",
+                      style: AppStyle.textSecondaryRegular14,
+                    ),
                   ),
                 ),
-              ),
-              _switchRow(width, 2, context.watch<SettingNotifile>().mentionedMe, "@我"),
-              _switchRow(width, 3, context.watch<SettingNotifile>().comment, "评论"),
-              _switchRow(width, 4, context.watch<SettingNotifile>().laud, "赞"),
-            ],
-          ),
-        ),);
+                _switchRow(width, 2, notifier.mentionedMe, "@我",notifier),
+                _switchRow(width, 3, notifier.comment, "评论",notifier),
+                _switchRow(width, 4, notifier.laud, "赞",notifier),
+              ],
+            ),
+          );
+        }));
   }
 
   ///接收通知设置
-  Widget _getNotice() {
-    print('====================${context.watch<SettingNotifile>().permisionIsOpen}');
+  Widget _getNotice(SettingNotifile notifile) {
     return Container(
       height: 48,
-      child: FutureBuilder(
-        future: permissionStatusFuture,
-        builder: (context, snapshot) {
-          return Center(
+      child: Center(
             child: Row(
               children: [
                 Text(
                   "接收推送通知",
                   style: AppStyle.textRegular16,
                 ),
-                Expanded(child: Container()),
+                Spacer(),
                 Text(
-                  context.watch<SettingNotifile>().permisionIsOpen ? "已开启" : "未开启",
+                  notifile.permisionIsOpen ? "已开启" : "未开启",
                   style: AppStyle.textHintRegular16,
                 ),
                 SizedBox(
@@ -196,9 +197,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                 Icon(Icons.arrow_forward_ios)
               ],
             ),
-          );
-        },
-      ),
+          )
     );
   }
 
@@ -209,18 +208,20 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
         cancel: AppDialogButton("取消", () {
           return true;
         }),
-        confirm: AppDialogButton("去打开", () {
-          AppSettings.openNotificationSettings();
-          return true;
-        },
+        confirm: AppDialogButton(
+          "去打开",
+          () {
+            AppSettings.openNotificationSettings();
+            return true;
+          },
         ),
         barrierDismissible: false);
   }
 
-  Widget _switchRow(double width, int type, bool isOpen, String title) {
+  Widget _switchRow(double width, int type, bool isOpen, String title,SettingNotifile notifile) {
     return GestureDetector(
       onTap: () {
-        if (context.read<SettingNotifile>().permisionIsOpen) {
+        if (notifile.permisionIsOpen) {
           return false;
         } else {
           _showDialog();
@@ -237,29 +238,29 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                 style: AppStyle.textRegular16,
               ),
               Expanded(child: SizedBox()),
-             SelectButton(
-               isOpen,
-               canOnClick:context.watch<SettingNotifile>().permisionIsOpen
-                   ? true:false,
-               changeCallBack:  (value){
-                   switch (type) {
-                     case 0:
-                       _setUserNotice(0, context.read<SettingNotifile>().notFollow ? 0 : 1);
-                       break;
-                     case 1:
-                       _setUserNotice(1, context.read<SettingNotifile>().followBuddy ? 0 : 1);
-                       break;
-                     case 2:
-                       _setUserNotice(2, context.read<SettingNotifile>().mentionedMe ? 0 : 1);
-                       break;
-                     case 3:
-                       _setUserNotice(3, context.read<SettingNotifile>().comment ? 0 : 1);
-                       break;
-                     case 4:
-                       _setUserNotice(4, context.read<SettingNotifile>().laud ? 0 : 1);
-                       break;
-                   }
-             },)
+              SelectButton(
+                isOpen,
+                canOnClick: notifile.permisionIsOpen ? true : false,
+                changeCallBack: (value) {
+                  switch (type) {
+                    case 0:
+                      _setUserNotice(0, notifile.notFollow ? 0 : 1);
+                      break;
+                    case 1:
+                      _setUserNotice(1, notifile.followBuddy ? 0 : 1);
+                      break;
+                    case 2:
+                      _setUserNotice(2, notifile.mentionedMe ? 0 : 1);
+                      break;
+                    case 3:
+                      _setUserNotice(3, notifile.comment ? 0 : 1);
+                      break;
+                    case 4:
+                      _setUserNotice(4, notifile.laud ? 0 : 1);
+                      break;
+                  }
+                },
+              )
             ],
           ),
         ),
@@ -273,7 +274,7 @@ class SettingNotifile extends ChangeNotifier {
   bool notFollow;
 
   //我关注及好友私信  2
-  bool followBuddy ;
+  bool followBuddy;
 
   //@我  3
   bool mentionedMe;
@@ -286,7 +287,15 @@ class SettingNotifile extends ChangeNotifier {
 
   //是否开启权限
   bool permisionIsOpen;
-  SettingNotifile({this.laud = false,this.comment = false,this.permisionIsOpen = false,this.notFollow = false,this.followBuddy = false,this.mentionedMe = false});
+
+  SettingNotifile(
+      {this.laud = false,
+      this.comment = false,
+      this.permisionIsOpen = false,
+      this.notFollow = false,
+      this.followBuddy = false,
+      this.mentionedMe = false});
+
   void changePermision(bool result) {
     permisionIsOpen = result;
     notifyListeners();
@@ -313,22 +322,22 @@ class SettingNotifile extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSwitchButton(int type) {
+  void changeSwitchButton(int type, {bool breakToBefore = false}) {
     switch (type) {
       case 1:
-        notFollow = !notFollow;
+        notFollow = breakToBefore ? notFollow : !notFollow;
         break;
       case 2:
-        followBuddy = !followBuddy;
+        followBuddy = breakToBefore ? followBuddy : !followBuddy;
         break;
       case 3:
-        mentionedMe = !mentionedMe;
+        mentionedMe = breakToBefore ? mentionedMe : !mentionedMe;
         break;
       case 4:
-        comment = !comment;
+        comment = breakToBefore ? comment : !comment;
         break;
       case 5:
-        laud = !laud;
+        laud = breakToBefore ? laud : !laud;
         break;
     }
     notifyListeners();
