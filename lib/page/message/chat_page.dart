@@ -1926,7 +1926,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: _context);
-      AppRouter.navigateToMineDetail(context, map["uid"]);
+      AppRouter.navigateToMineDetail(context, map["uid"],callback:(dynamic result){
+        print("result:$result");
+        getRelation();
+      });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
