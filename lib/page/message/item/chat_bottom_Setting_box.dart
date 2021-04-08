@@ -81,11 +81,15 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   //表情框
   Widget emoji(double keyboardHeight) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 50),
       height: emojiState ? keyboardHeight : 0.0,
-      width: double.infinity,
-      color: AppColor.white,
-      child: emojiState?emojiList(keyboardHeight):Container(),
+      child: Container(
+        height: emojiState ? keyboardHeight : 0.0,
+        width: double.infinity,
+        color: AppColor.white,
+        child: emojiState?emojiList(keyboardHeight):Container(),
+      ),
     );
   }
 
@@ -261,10 +265,14 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   Widget bottomSettingPanel(double keyboardHeight){
     print("bottomSettingPanel:$bottomSettingPanelState,$keyboardHeight");
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 50),
       height: bottomSettingPanelState ? keyboardHeight : 0.0,
-      width: double.infinity,
-      color: AppColor.white,
+      child: Container(
+        height: bottomSettingPanelState ? keyboardHeight : 0.0,
+        width: double.infinity,
+        color: AppColor.white,
+      ),
     );
   }
 
