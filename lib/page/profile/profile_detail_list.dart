@@ -61,7 +61,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         followlastTime = model.lastTime;
         followModel.clear();
         feedIdList.clear();
-        feedIdList.insert(0, -1);
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
@@ -88,6 +87,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         _refreshController.loadFailed();
       }
     }
+    feedIdListController.sink.add(feedIdList);
     if (mounted) {
       setState(() {});
     }
@@ -146,38 +146,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    print(state);
-    switch (state) {
-
-      ///resumed 界面可见， 同安卓的onResume
-      case AppLifecycleState.resumed:
-        print('============================resumed');
-        break;
-
-      ///inactive界面退到后台或弹出对话框情况下， 即失去了焦点但仍可以执行
-      ///drawframe回调；同安卓的onPause
-      case AppLifecycleState.inactive:
-        print('============================inactive');
-        break;
-
-      ///paused应用挂起，比如退到后台，失去了焦点且不会收到
-      ///drawframe 回调；同安卓的onStop
-      case AppLifecycleState.paused:
-        print('============================paused');
-        break;
-
-      ///页面销毁
-      case AppLifecycleState.detached:
-        print('============================detached');
-
-        /// TODO: Handle this case.
-        break;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return  Container(
       width: ScreenUtil.instance.screenWidthDp,
@@ -208,7 +176,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   Widget _showDataUi(AsyncSnapshot<List<int>> snapshot) {
     var list = ListView.builder(
-        shrinkWrap: true, //解决无限高度问题
+        shrinkWrap: true,
+        padding: EdgeInsets.only(top: 10),//解决无限高度问题
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: snapshot.data.length,
         itemBuilder: (context, index) {
@@ -221,11 +190,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               print(e);
             }
           }
-          if (index == 0) {
-            return Container(
-              height: 10,
-            );
-          } else {
             return ExposureDetector(
               key: widget.type == 2
                   ? Key('profile_feed_${snapshot.data[index]}')
@@ -249,7 +213,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
               },
             );
-          }
         });
     var noDataUi = Container(
         padding: EdgeInsets.only(top: 12),
@@ -274,7 +237,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             )
           ],
         ));
-    if (snapshot.data.length < 2) {
+    if (snapshot.data.length < 1) {
       return noDataUi;
     } else {
       return list;
