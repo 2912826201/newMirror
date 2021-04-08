@@ -7,6 +7,7 @@ import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
@@ -20,21 +21,42 @@ class ChatAtUserList extends StatefulWidget {
   final bool isShow;
   final StringCallback onItemClickListener;
   final String groupChatId;
-  final Function delayedSetState;
 
-  ChatAtUserList({this.isShow = false, this.onItemClickListener, this.groupChatId, this.delayedSetState});
+  ChatAtUserList({this.isShow = false, this.onItemClickListener, this.groupChatId});
 
   @override
-  createState() => _ChatAtUserListState();
+  createState() => _ChatAtUserListState(isShow);
 }
 
 class _ChatAtUserListState extends State<ChatAtUserList> {
+  bool isShow;
+
+  _ChatAtUserListState(this.isShow);
+
+  @override
+  void initState() {
+    super.initState();
+    EventBus.getDefault().registerNoParameter(_resetChatAtPanel, EVENTBUS_CHAT_PAGE,registerName: CHAT_AT_GROUP_PANEL);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE,registerName: CHAT_AT_GROUP_PANEL);
+  }
+
+  _resetChatAtPanel(){
+    isShow=context.read<ChatEnterNotifier>().keyWord == "@";
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isShow) {
+    if (isShow) {
       return Offstage(
-        offstage: !widget.isShow,
+        offstage: !isShow,
         child: GestureDetector(
           child: Container(
             color: Colors.grey.withOpacity(0.3),
@@ -48,9 +70,10 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
           onTap: () {
             print("取消艾特功能1");
             context.read<ChatEnterNotifier>().openAtCallback("");
-            if(widget.delayedSetState!=null){
-              widget.delayedSetState();
-            }
+            isShow=false;
+            setState(() {
+
+            });
           },
         ),
       );
@@ -65,7 +88,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
         builder: (context, notifier, child) {
           int count=context.watch<GroupUserProfileNotifier>().getSearchUserModelList().length;
           return AnimatedContainer(
-            height: widget.isShow ? (count<2?2:count>5?5:count)*48.0 : 0.0,
+            height: isShow ? (count<2?2:count>5?5:count)*48.0 : 0.0,
             duration: Duration(milliseconds: 300),
             child: Container(
               height: (count<2?2:count>5?5:count)*48.0,

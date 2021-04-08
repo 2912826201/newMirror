@@ -120,7 +120,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   StreamController<int> messageListStream = StreamController.broadcast();
 
   @override
-  void initStatePage() {
+  void initState() {
+    super.initState();
     print("开播时间是:$startTime,$coachId");
 
     EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
@@ -1046,7 +1047,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   @override
-  void disposeStatePage() {
+  void dispose() {
+    super.dispose();
     EventBus.getDefault().unRegister(
         pageName:EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
@@ -1381,6 +1383,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     _bottomSettingPanelState=isOpen;
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  @override
+  void keyBoardHeightThanZero() {
+    if(MediaQuery.of(this.context).viewInsets.bottom>0&&!_bottomSettingPanelState){
+      _focusNode.unfocus();
     }
   }
 

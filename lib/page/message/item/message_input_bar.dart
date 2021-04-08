@@ -22,6 +22,7 @@ class MessageInputBar extends StatefulWidget {
   final String value;
 
   MessageInputBar({
+    Key key,
     this.voiceOnTap,
     this.isVoice,
     this.edit,
@@ -31,14 +32,25 @@ class MessageInputBar extends StatefulWidget {
     this.onEmojio,
     this.value,
     this.voiceFile,
-  });
+  }): super(key: key);
 
   @override
-  State<StatefulWidget> createState() => MessageInputBarState();
+  State<StatefulWidget> createState() => MessageInputBarState(isVoice);
 }
 
 class MessageInputBarState extends State<MessageInputBar> {
-  String path;
+  bool isVoice;
+
+  setIsVoice(bool isVoice){
+    this.isVoice=isVoice;
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
+
+  MessageInputBarState(this.isVoice);
 
   @override
   void initState() {
@@ -75,7 +87,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                       iconSize: 24,
                       buttonWidth: 36,
                       buttonHeight: 36,
-                      svgName: widget.isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
+                      svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
                     ),
                   ),
                   Expanded(child: SizedBox(
@@ -89,7 +101,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                           color: AppColor.bgWhite.withOpacity(0.65),
                           borderRadius: BorderRadius.circular(16.0)
                       ),
-                      child: widget.isVoice?ChatVoice(voiceFile: widget.voiceFile): LayoutBuilder(builder: widget.edit),
+                      child: isVoice?ChatVoice(voiceFile: widget.voiceFile): LayoutBuilder(builder: widget.edit),
                     ),
                   )),
                   Container(

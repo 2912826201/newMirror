@@ -11,11 +11,9 @@ abstract class StateKeyboard<T> extends State with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
-    initStatePage();
     print("initState-初始化");
     _initTime();
   }
-  void initStatePage();
 
 
   //计时
@@ -40,6 +38,9 @@ abstract class StateKeyboard<T> extends State with WidgetsBindingObserver{
           }
         }
         oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
+        if(MediaQuery.of(this.context).viewInsets.bottom>0){
+          keyBoardHeightThanZero();
+        }
       }
     });
   }
@@ -53,7 +54,6 @@ abstract class StateKeyboard<T> extends State with WidgetsBindingObserver{
   @override
   void dispose() {
     super.dispose();
-    disposeStatePage();
     if (timerBottomHeight != null) {
       timerBottomHeight.cancel();
       timerBottomHeight = null;
@@ -61,5 +61,5 @@ abstract class StateKeyboard<T> extends State with WidgetsBindingObserver{
     debugPrint("XCState dispose");
   }
 
-  void disposeStatePage();
+  void keyBoardHeightThanZero();
 }

@@ -187,3 +187,7 @@ const String CHAT_JOIN_EXIT = "eventbus_chat_bar";
 const String RESET_MSG_STATUS = "reset_msg_status";
 //聊天界面的接收消息
 const String CHAT_GET_MSG = "chat_get_msg";
+//聊天界面的at群成员
+const String CHAT_AT_GROUP_PANEL = "eventbus_chat_at_group_panel";
+//聊天界面的输入框旁边的发送按钮和图片按钮
+const String CHAT_BOTTOM_MORE_BTN = "eventbus_chat_bottom_more_btn";

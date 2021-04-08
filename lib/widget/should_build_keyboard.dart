@@ -102,6 +102,9 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
           }
         }
         oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
+        if(MediaQuery.of(this.context).viewInsets.bottom>0){
+          keyBoardHeightThanZero();
+        }
       }
     });
   }
@@ -163,4 +166,6 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
     debugPrint("XCState dispose");
   }
 
+
+  void keyBoardHeightThanZero();
 }
