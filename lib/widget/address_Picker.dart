@@ -11,6 +11,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
+
+import 'overscroll_behavior.dart';
 //城市选择底部弹窗
 Future openaddressPickerBottomSheet({
   @required BuildContext context,
@@ -252,6 +254,7 @@ class _AddressPickerState extends State<AddressPicker>{
               cityNameList.add(element.regionName);
             });
           }
+          rightfixedExtentController.jumpToItem(0);
           setState(() {});
         }
       },

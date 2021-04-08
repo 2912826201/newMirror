@@ -1007,7 +1007,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //滚动界面到指定的item
   void startAnimationScroll(int targetId) {
     print("滚动界面到指定的item--targetId：$targetId------------------------------------------------------------------------");
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(Duration(milliseconds: 300), () {
       if (widget.scrollController != null) {
         double scrollHeight = 0;
         int index = 0;
@@ -1206,6 +1206,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
         setCommentListSubSetting(courseCommentHot, isFold: isFold);
         if (widget.commentDtoModel != null && widget.fatherComment != null && isFirstScroll && mounted) {
+          /*   _getSubComment(courseCommentHot.list[choseIndex].id, courseCommentHot.list[choseIndex].replys?.length, courseCommentHot.list[choseIndex].replyCount, courseCommentHot.list[choseIndex].pullNumber, choseIndex);*/
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex, false);
         }
         widget.refreshController.loadComplete();
@@ -1236,7 +1237,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //获取子评论
-  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment) async {
+  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment,bool isOnClick)
+  async {
     int subCommentPageSize = 3;
     if (replyLength == 0) {
       (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = null;
@@ -1305,7 +1307,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = commentModel.lastId;
 
           for (CommentDtoModel dtoModel in commentDtoModelList) {
-            dtoModel.isHaveAnimation = true;
+
+            dtoModel.isHaveAnimation = isOnClick?true:false;
           }
 
           if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
@@ -1431,7 +1434,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         if (mounted) {
           setState(() {});
         }
-        _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index);
+        _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index,isOnClickListener);
       }
     }
   }
