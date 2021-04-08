@@ -412,18 +412,26 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       child: TextSpanField(
         onTap: () {
           _bottomSettingPanelState=true;
-          bottomSettingChildKey.currentState.bottomSettingPanelState=true;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+            bottomSettingChildKey.currentState.setData(
+              bottomSettingPanelState: true,
+              emojiState: _emojiState,
+            );
+          }else{
+            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
           }
         },
         onLongTap: (){
           _bottomSettingPanelState=true;
-          bottomSettingChildKey.currentState.bottomSettingPanelState=true;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+            bottomSettingChildKey.currentState.setData(
+              bottomSettingPanelState: true,
+              emojiState: _emojiState,
+            );
+          }else{
+            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
           }
         },
         scrollController: textScrollController,
@@ -1507,17 +1515,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //聊天内容的点击事件
   _messageInputBodyClick() {
     print("_messageInputBodyClick");
-    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
+    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0||_bottomSettingPanelState) {
       if(MediaQuery.of(context).viewInsets.bottom>0) {
         FocusScope.of(context).requestFocus(new FocusNode());
       }
       _bottomSettingPanelState=false;
       bottomSettingChildKey.currentState.bottomSettingPanelState=false;
       if(_emojiState) {
-        if (mounted) {
-          _emojiState = false;
-          bottomSettingChildKey.currentState.setEmojiState(_emojiState);
-        }
+        _emojiState = false;
+        bottomSettingChildKey.currentState.setData(
+          bottomSettingPanelState: false,
+          emojiState: _emojiState,
+        );
+      }else{
+        bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
       }
     }
   }

@@ -81,18 +81,30 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   //表情框
   Widget emoji(double keyboardHeight) {
+    double height=emojiState ? keyboardHeight : 0.0;
     return AnimatedContainer(
-      duration: Duration(milliseconds: 50),
-      height: emojiState ? keyboardHeight : 0.0,
+      duration: height>0?Duration.zero:Duration(milliseconds: 40),
+      height: height,
       child: Container(
-        height: emojiState ? keyboardHeight : 0.0,
+        height: height,
         width: double.infinity,
         color: AppColor.white,
         child: emojiState?emojiList(keyboardHeight):Container(),
       ),
     );
   }
-
+  Widget bottomSettingPanel(double keyboardHeight){
+    double height=bottomSettingPanelState ? keyboardHeight : 0.0;
+    return AnimatedContainer(
+      duration: height>0?Duration.zero:Duration(milliseconds: 40),
+      height: height,
+      child: Container(
+        height: height,
+        width: double.infinity,
+        color: AppColor.white,
+      ),
+    );
+  }
 
   //emoji具体是什么界面
   Widget emojiList(double keyboardHeight) {
@@ -263,18 +275,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
         ));
   }
 
-  Widget bottomSettingPanel(double keyboardHeight){
-    print("bottomSettingPanel:$bottomSettingPanelState,$keyboardHeight");
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 50),
-      height: bottomSettingPanelState ? keyboardHeight : 0.0,
-      child: Container(
-        height: bottomSettingPanelState ? keyboardHeight : 0.0,
-        width: double.infinity,
-        color: AppColor.white,
-      ),
-    );
-  }
+
 
   double getKeyBoardHeight(){
     double keyboardHeight = 300.0;
