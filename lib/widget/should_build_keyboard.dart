@@ -88,10 +88,15 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
           _timerBottomHeightCount++;
           if(_timerBottomHeightCount>200){
             _timerBottomHeightCount=0;
-            if(!pageHeightStopCanvas) {
-              pageHeightStopCanvas = true;
-              endCanvasPage();
-              print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
+            if(MediaQuery.of(this.context).viewInsets.bottom>90) {
+              if (!pageHeightStopCanvas) {
+                pageHeightStopCanvas = true;
+                endCanvasPage();
+                print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery
+                    .of(this.context)
+                    .viewInsets
+                    .bottom}");
+              }
             }
           }
         }else{
