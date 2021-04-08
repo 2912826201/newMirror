@@ -433,7 +433,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     return minWidth;
   }
 
-  //获取欧报废地址，以及md5加密后的地址
+  //获取地址，以及md5加密后的地址
   _getUrlMd5String() {
     if (widget.isTemporary) {
       urlString = widget.chatVoiceModel.filePath;

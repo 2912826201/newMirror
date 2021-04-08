@@ -681,6 +681,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           Spacer(),
           AppIconButton(
             iconSize: 24,
+            svgName: AppIcon.close_18,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: _deleteEditText,
+          ),
+          AppIconButton(
+            iconSize: 24,
             svgName: _textController.text == null || _textController.text.isEmpty
                 ? AppIcon.message_cant_send
                 : AppIcon.message_send,
@@ -1239,6 +1246,28 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
+
+  //点击删除输入框
+  _deleteEditText() {
+    if(_textController.text==null||_textController.text.length<1||cursorIndexPr<=0){
+      return;
+    }
+    String editString=_textController.text;
+    List<String> listString=editString.characters.toList();
+    editString="";
+    int textLength=0;
+    int deleteTextLength=0;
+    for(int i=1;i<listString.length+1;i++){
+      textLength+=listString[i-1].length;
+      if(cursorIndexPr!=textLength){
+        editString += listString[i-1];
+      }else{
+        deleteTextLength=listString[i-1].length;
+      }
+    }
+    cursorIndexPr-=deleteTextLength;
+    _textController.text=editString;
+  }
 
   //发送按钮点击事件
   _onSubmitClick(text) {

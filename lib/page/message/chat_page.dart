@@ -638,9 +638,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //表情的bar
   Widget _emojiBottomBox() {
-    TextStyle textStyle = const TextStyle(
-      fontSize: 24,
-    );
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -661,6 +658,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             onTap: () {},
           ),
           Spacer(),
+          AppIconButton(
+            iconSize: 24,
+            svgName: AppIcon.close_18,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: _deleteEditText,
+          ),
           AppIconButton(
             iconSize: 24,
             svgName: _textController.text == null || _textController.text.isEmpty
@@ -1792,6 +1796,44 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       return;
     }
     _postText(text);
+  }
+
+  //点击删除输入框
+  _deleteEditText() {
+    if(_textController.text==null||_textController.text.length<1||cursorIndexPr<=0){
+      return;
+    }
+
+    var setCursorOld = TextSelection(
+      baseOffset: cursorIndexPr,
+      extentOffset: cursorIndexPr,
+    );
+    String editString=_textController.text;
+    TextEditingValue oldValue=TextEditingValue(
+        text: editString,
+        selection: setCursorOld,
+        composing: TextRange.empty);
+    List<String> listString=editString.characters.toList();
+    editString="";
+    int textLength=0;
+    int deleteTextLength=0;
+    for(int i=1;i<listString.length+1;i++){
+      textLength+=listString[i-1].length;
+      if(cursorIndexPr!=textLength){
+        editString += listString[i-1];
+      }else{
+        deleteTextLength=listString[i-1].length;
+      }
+    }
+    cursorIndexPr-=deleteTextLength;
+    var setCursor = TextSelection(
+      baseOffset: cursorIndexPr,
+      extentOffset: cursorIndexPr,
+    );
+    TextEditingValue newValue=TextEditingValue(text: editString, selection: setCursor, composing: TextRange.empty);
+    TextEditingValue value=_formatter.formatEditUpdate(oldValue, newValue);
+    cursorIndexPr=value.selection.baseOffset;
+    _textController.value=value;
   }
 
   //录音按钮的点击事件
