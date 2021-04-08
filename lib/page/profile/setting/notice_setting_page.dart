@@ -186,7 +186,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                   "接收推送通知",
                   style: AppStyle.textRegular16,
                 ),
-                Expanded(child: Container()),
+                Spacer(),
                 Text(
                   notifile.permisionIsOpen ? "已开启" : "未开启",
                   style: AppStyle.textHintRegular16,

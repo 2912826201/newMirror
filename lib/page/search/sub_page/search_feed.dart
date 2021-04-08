@@ -140,11 +140,16 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         loadText = "加载中...";
       }
       List<HomeFeedModel> feedModel = [];
-      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
-        feedModel.add(value);
-      });
-      // 更新全局内没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feedModel));
+      try{
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          feedModel.add(value);
+        });
+        // 更新全局内没有的数据
+        context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feedModel));
+      }catch(e){
+        print('-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$e');
+      }
+
     }
     if (hasNext == 0) {
       // 加载完毕

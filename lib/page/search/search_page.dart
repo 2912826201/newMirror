@@ -419,6 +419,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           return GestureDetector(
             onTap: () async {
               TopicDtoModel topicModel = await getTopicInfo(topicId: topicList[index].id);
+              FocusScope.of(context).requestFocus(FocusNode());
               AppRouter.navigateToTopicDetailPage(context, topicModel);
             },
             child: Stack(
