@@ -76,7 +76,7 @@ class FeedSharePopups extends StatelessWidget {
     return Container(
       color: AppColor.white,
       width: ScreenUtil.instance.screenWidthDp,
-      height: 48 + 89 + ScreenUtil.instance.bottomHeight,
+      height: 48 + 89 + ScreenUtil.instance.bottomHeight+49,
       child: Column(
         children: [
           Container(
@@ -176,7 +176,23 @@ class FeedSharePopups extends StatelessWidget {
                     ),
                   );
                 }),
-          )
+          ),
+          Container(
+            width: ScreenUtil.instance.screenWidthDp,
+            height: 1,
+            color: AppColor.bgWhite,
+          ),
+          InkWell(
+            onTap: (){
+              Navigator.pop(context);
+            },
+            child: Container(
+            height: 48,
+            width: ScreenUtil.instance.screenWidthDp,
+            child: Center(
+              child: Text("取消",style: AppStyle.textMedium18,),
+            ),
+          ),)
         ],
       ),
     );
