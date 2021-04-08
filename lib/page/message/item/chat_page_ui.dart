@@ -70,7 +70,10 @@ class ChatPageUtil{
 
 
   //获取关注按钮条
-  Widget getTopAttentionUi(bool isShowTopAttentionUi,int conversationType,Function() _attntionOnClick){
+  Widget getTopAttentionUi(bool isShowTopAttentionUi,
+      int conversationType,
+      Function() _attntionOnClick,
+      Function(bool isShow) _showTopAttentionUi){
     if (conversationType != PRIVATE_TYPE) {
       isShowTopAttentionUi = false;
     }
@@ -93,7 +96,9 @@ class ChatPageUtil{
                   child: Icon(Icons.close, size: 16, color: AppColor.colorb9b9b9),
                 ),
                 onTap: () {
-                  print("关闭关注条");
+                  if(_showTopAttentionUi!=null){
+                    _showTopAttentionUi(false);
+                  }
                 },
               ),
               Expanded(
@@ -182,6 +187,7 @@ class ChatPageUtil{
     }
   }
 
+  //获取普通消息
   Future<List<ChatDataModel>> getChatMessageList(ConversationDto conversation,Message shareMessage)async{
     List msgList = new List();
     List<ChatDataModel> chatDataList = <ChatDataModel>[];

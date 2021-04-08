@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/page/message/item/chat_top_at_mark.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:mirror/widget/icon.dart';
@@ -36,6 +37,7 @@ class ChatDetailsBody extends StatelessWidget {
   final LoadingStatus loadStatus;
   final bool isShowTop;
   final bool isShowHaveAnimation;
+  final Key chatTopAtMarkChildKey;
 
   ChatDetailsBody(
       {this.scrollController,
@@ -58,6 +60,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.onRefresh,
       this.refreshController,
       this.onAtUiClickListener,
+      this.chatTopAtMarkChildKey,
       this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
@@ -92,11 +95,10 @@ class ChatDetailsBody extends StatelessWidget {
           bottom: 0,
         ),
         Positioned(
-          child: Visibility(
-            visible: isHaveAtMeMsg,
-            child: Container(
-              child: getAtUi(),
-            ),
+          child: ChatTopAtMark(
+            key: chatTopAtMarkChildKey,
+            onAtUiClickListener: onAtUiClickListener,
+            isHaveAtMeMsg: isHaveAtMeMsg,
           ),
           top: 24,
           right: 0,
@@ -191,48 +193,7 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
-  //获取at的视图
-  Widget getAtUi() {
-    return GestureDetector(
-      onTap: () {
-        if (onAtUiClickListener != null) {
-          onAtUiClickListener();
-        }
-      },
-      child: Container(
-        height: 44,
-        width: 114,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(22), bottomLeft: Radius.circular(22)),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 8,
-            ),
-            Container(
-              alignment: Alignment.center,
-              height: 28,
-              width: 28,
-              decoration: BoxDecoration(
-                color: AppColor.mainBlue,
-                shape: BoxShape.circle,
-              ),
-              child: AppIcon.getAppIcon(AppIcon.at_16, 16),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              "有人@你",
-              style: TextStyle(fontSize: 14, color: AppColor.mainBlue),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
