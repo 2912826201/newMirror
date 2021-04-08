@@ -29,7 +29,7 @@ import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
-import 'package:mirror/widget/loading.dart';
+
 
 class EditInformation extends StatefulWidget {
   @override
@@ -389,8 +389,8 @@ class _EditInformationState extends State<EditInformation> {
                 bottom: 0,
                 right: 0,
                 child: Container(
-                  width: 23,
-                  height: 23,
+                  width: 20,
+                  height: 20,
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.all(Radius.circular(59)),
@@ -454,12 +454,10 @@ class _EditInformationState extends State<EditInformation> {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
-      /*context.read<AddressPickerNotifier>().cleanCityData();*/
       Toast.show(
         "资料修改成功",
         context,
       );
-    /*  Loading.hideLoading(context);*/
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
