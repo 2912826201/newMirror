@@ -917,6 +917,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //刷新人数
   void resetOnlineUserNumber(number){
+    print("刷新人数");
     if(null==number||!(number is int)||number<2){
       return;
     }
@@ -1149,8 +1150,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       case "joinLiveRoom":
         //加入直播间
         if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+          print("有这个人");
           subLiveRoom(textMessage,isReset: false);
         }else {
+          print("没有这个人");
           resetOnlineUserNumber(++onlineUserNumber);
         }
         _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);

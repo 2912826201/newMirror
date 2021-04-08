@@ -176,7 +176,7 @@ class ChatDetailsBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
-              visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
+              visible: loadStatus != LoadingStatus.STATUS_COMPLETED ? true : false,
               child: SizedBox(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(AppColor.mainRed),

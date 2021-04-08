@@ -6,6 +6,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -24,6 +25,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
   bool _videoCourseHasNext = false;
   List<LiveVideoModel> _videoCourseList = [];
   RefreshController _refreshController = RefreshController();
+  bool isShowNoMore=true;
 
   @override
   void initState() {
@@ -47,10 +49,10 @@ class _MeCoursePageState extends State<MeCoursePage> {
     return Container(
       color: AppColor.white,
       child: SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: true,
+        enablePullDown: _videoCourseList.length > 0,
+        enablePullUp: _videoCourseList.length > 0,
         controller: _refreshController,
-        footer:  SmartRefresherHeadFooter.init().getFooter(),
+        footer:  SmartRefresherHeadFooter.init().getFooter(isShowNoMore:isShowNoMore),
         header: SmartRefresherHeadFooter.init().getHeader(),
         onRefresh: _onRefresh,
         onLoading: loadData,
@@ -262,8 +264,12 @@ class _MeCoursePageState extends State<MeCoursePage> {
   void loadData({bool isRefresh=false}) {
     _isVideoCourseRequesting = true;
     if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
-      _refreshController.loadNoData();
-      _refreshController.refreshCompleted();
+      if(isRefresh) {
+        _refreshController.refreshCompleted();
+      }else {
+        _refreshController.loadNoData();
+      }
+      setIsShowNoMore();
       return;
     }
     getMyCourse(_isVideoCoursePage,20, lastTime: _isVideoCourseLastTime).then((result) {
@@ -271,24 +277,46 @@ class _MeCoursePageState extends State<MeCoursePage> {
         _videoCourseList.clear();
       }
       _isVideoCourseRequesting = false;
-      if (result != null) {
+      if (result != null&&result.list!=null&&result.list.length>0) {
         _isVideoCoursePage++;
         _videoCourseHasNext = result.hasNext == 1;
         _isVideoCourseLastTime = result.lastTime;
         _isVideoCourseTotalCount = result.totalCount;
         _videoCourseList.addAll(result.list);
-        _refreshController.loadComplete();
+        if(isRefresh) {
+          _refreshController.refreshCompleted();
+        }else {
+          _refreshController.loadComplete();
+        }
       }else{
+        if(isRefresh) {
+          _refreshController.refreshCompleted();
+        }else {
+          _refreshController.loadNoData();
+        }
+      }
+      setIsShowNoMore();
+    }).catchError((error) {
+      if(isRefresh) {
+        _refreshController.refreshCompleted();
+      }else {
         _refreshController.loadNoData();
       }
-      if (mounted) {
-        _refreshController.refreshCompleted();
-        setState(() {});
-      }
-    }).catchError((error) {
-      _refreshController.loadNoData();
-      _refreshController.refreshCompleted();
+      setIsShowNoMore();
       _isVideoCourseRequesting = false;
     });
+  }
+
+  void setIsShowNoMore(){
+    if(_videoCourseList==null||_videoCourseList.length<1){
+      isShowNoMore=false;
+    }else {
+      isShowNoMore=_videoCourseList.length*72.0>
+          (ScreenUtil.instance.height-
+          ScreenUtil.instance.statusBarHeight-44.0-69.0-12.0-75.0);
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
