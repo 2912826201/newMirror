@@ -1296,6 +1296,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       uId: userId,
       messageContent: content,
     ));
+    if(messageChatList.length>100){
+      messageChatList=messageChatList.sublist(0,99);
+    }
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
     messageListStream.sink.add(0);
   }
 
@@ -1307,6 +1311,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       messageContent: "进入了直播",
       isJoinLiveRoomMessage: true,
     ));
+    if(messageChatList.length>100){
+      messageChatList=messageChatList.sublist(0,99);
+    }
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
     messageListStream.sink.add(0);
   }
 
