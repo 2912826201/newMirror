@@ -2056,6 +2056,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if(MediaQuery.of(this.context).viewInsets.bottom>0){
       if(Application.keyboardHeightChatPage!=MediaQuery.of(this.context).viewInsets.bottom){
         Application.keyboardHeightChatPage=MediaQuery.of(this.context).viewInsets.bottom;
+        print("Application.keyboardHeightChatPage:${Application.keyboardHeightChatPage}");
         bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
       }
     }
