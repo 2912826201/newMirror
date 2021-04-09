@@ -67,10 +67,22 @@ android {
         debug {
             //签名
             signingConfig signingConfigs.debug
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            minifyEnabled false
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources false
         }
         release {
             //签名
             signingConfig signingConfigs.release
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            minifyEnabled false
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources false
         }
     }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-abstract class StateKeyboard<T> extends State with WidgetsBindingObserver{
+abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with WidgetsBindingObserver{
   double oldKeyboardHeight=0;
   Timer timerBottomHeight;
   int _timerBottomHeightCount=0;

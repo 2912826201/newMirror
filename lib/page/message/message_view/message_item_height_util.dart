@@ -36,6 +36,9 @@ class MessageItemHeightUtil{
 
   //判断获取消息的高度是否大于等于展示区域的高度
   bool judgeMessageItemHeightIsThenScreenHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
+    if(chatDataList.length<1){
+      return false;
+    }
     double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0;
     return _judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
   }
