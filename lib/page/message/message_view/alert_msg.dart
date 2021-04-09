@@ -91,7 +91,6 @@ class _AlertMsgState extends State<AlertMsg> {
               isChangColorArray.add(true);
               timer=Timer.periodic(Duration(seconds: 1), (timer) {
                 timeCount++;
-                print("$timeCount");
                 if(timeCount>60){
                   timeCount=0;
                   timer.cancel();

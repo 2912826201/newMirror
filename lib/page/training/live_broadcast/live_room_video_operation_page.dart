@@ -51,34 +51,16 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
 
   @override
   _LiveRoomVideoOperationPageState createState() => 
-      _LiveRoomVideoOperationPageState(
-        liveCourseId,
-        coachId,
-        coachUrl,
-        coachName,
-        startTime,
-        coachRelation,
-        callback);
+      _LiveRoomVideoOperationPageState(coachRelation);
 }
 
 class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> {
 
-  _LiveRoomVideoOperationPageState(
-      this.liveCourseId,
-      this.coachId,
-      this.coachUrl,
-      this.coachName,
-      this.startTime,
-      this.coachRelation,
-      this.callback,);
-  int liveCourseId;
-  int coachId;
-  String coachUrl;
-  String coachName;
-  String startTime;
+  _LiveRoomVideoOperationPageState(this.coachRelation);
+
   //与教练的关系
   int coachRelation;
-  Function(int relation) callback;
+
 
   List<UserMessageModel> messageChatList=[];
 
@@ -122,7 +104,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   @override
   void initState() {
     super.initState();
-    print("开播时间是:$startTime,$coachId");
+    print("开播时间是:${widget.startTime},${widget.coachId}");
 
     EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
@@ -130,10 +112,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
 
     urlImageList.add("");
-    urlImageList.add(coachUrl);
+    urlImageList.add(widget.coachUrl);
     urlImageList.add(Application.profile.avatarUri);
 
-    timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(startTime);
+    timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
     onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(onlineUserNumber);
 
     messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
@@ -191,7 +173,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               child: otherUserUi(),
               onTap: ()=>openBottomOnlineManNumberDialog(
                 buildContext:context,
-                liveRoomId: coachId,
+                liveRoomId: widget.coachId,
                 onlineManList:onlineManList,
               ),
             ),
@@ -304,12 +286,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            LiveRoomPageCommon.init().getUserImage(coachUrl,28,28),
+            LiveRoomPageCommon.init().getUserImage(widget.coachUrl,28,28),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
+                Text(widget.coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
                 onlineMenNumberText,
               ],
             ),
@@ -387,7 +369,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           height: 48.0,
           child: Stack(
             children: [
-              getBottomBar0(),
+              getBottomBarShowTextPanel(),
               getBottomBarAnimatedContainer(),
             ],
           ),
@@ -458,11 +440,11 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
       height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
-      child: getBottomBar1(),
+      child: getBottomBarEditTextPanel(),
     );
   }
 
-  Widget getBottomBar1(){
+  Widget getBottomBarEditTextPanel(){
     return Container(
       height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
       // height: 48.0,
@@ -750,7 +732,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
 
-  Widget getBottomBar0(){
+  Widget getBottomBarShowTextPanel(){
     return Container(
       height: 48.0,
       alignment: Alignment.centerLeft,
@@ -849,7 +831,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
 
   bool isMuteJudge(){
-    List list=AppPrefs.getLiveRoomMute(coachId.toString());
+    List list=AppPrefs.getLiveRoomMute(widget.coachId.toString());
     if(list[0]){
       int seconds=DateUtil.twoDateTimeSeconds(DateUtil.getDateTimeByMs(list[1]),DateTime.now());
       print("seconds:$seconds,list[2]:${list[2]}");
@@ -874,7 +856,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   void initData()async{
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Map<String, dynamic> map = await roomInfo(coachId,count: 3);
+    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 3);
     if(null!=map["data"]["total"]){
       resetOnlineUserNumber(map["data"]["total"]);
     }
@@ -893,7 +875,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   void getAllOnlineUserNumber(int number)async{
     Future.delayed(Duration(seconds: 1),()async{
       print("number:$number");
-      Map<String, dynamic> map = await roomInfo(coachId,count: number);
+      Map<String, dynamic> map = await roomInfo(widget.coachId,count: number);
       if(null!=map["data"]["userList"]){
         onlineManList.clear();
         onlineManUidList.clear();
@@ -914,7 +896,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       if(mounted) {
         Element e = findChild(context as Element, timeText);
         if (e != null) {
-          timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(startTime);
+          timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
           e.owner.lockState(() {
             e.update(timeText);
           });
@@ -993,7 +975,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         onlineManList.forEach((element) {
           urlImageList.add(element.avatarUri);
         });
-        urlImageList.add(coachUrl);
+        urlImageList.add(widget.coachUrl);
         for(int i=0;i<3;i++){
           urlImageList.add("");
         }
@@ -1081,8 +1063,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
 
   void _liveMuteMessage(String liveRoomId,List list,Message msg){
-    print("liveRoomId,网络:$liveRoomId,本地:$coachId");
-    if(liveRoomId!=coachId.toString()){
+    print("liveRoomId,网络:$liveRoomId,本地:${widget.coachId}");
+    if(liveRoomId!=widget.coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
       return;
     }
@@ -1097,7 +1079,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       print("有人被禁言了:${list.toString()}");
       return;
     }
-    print("接收到$coachId系统通知:${msg.originContentMap}");
+    print("接收到${widget.coachId}系统通知:${msg.originContentMap}");
     Map<String, dynamic> contentMap = json.decode(msg.originContentMap["data"]);
     print("接收到${contentMap.toString()}");
     if(null!=contentMap&&null!=contentMap["isMute"]){
@@ -1116,8 +1098,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           print("禁言时长：-1");
         }
       }
-      print("直播间$coachId：是否禁言:$isMute,时长：$minutes");
-      AppPrefs.setLiveRoomMute(coachId.toString(), minutes*60, isMute);
+      print("直播间${widget.coachId}：是否禁言:$isMute,时长：$minutes");
+      AppPrefs.setLiveRoomMute(widget.coachId.toString(), minutes*60, isMute);
       if(isMute&&mounted){
         ToastShow.show(msg: "您已被禁言${minutes>0?"$minutes分钟":""}", context: context);
       }else{
@@ -1130,8 +1112,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //接收直播间弹幕消息
   void _receiveBarrageMessage(Message msg){
-    print("message:${msg.targetId},$coachId");
-    if(msg.targetId!=coachId.toString()){
+    print("message:${msg.targetId},${widget.coachId}");
+    if(msg.targetId!=widget.coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
       return;
     }
@@ -1232,7 +1214,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   ///这是关注的方法
   _onClickAttention()async {
     if (!(coachRelation == 1 || coachRelation == 3)) {
-      int attntionResult = await ProfileAddFollow(coachId,type: 1);
+      int attntionResult = await ProfileAddFollow(widget.coachId,type: 1);
       print('关注监听=========================================$attntionResult');
       if (attntionResult == 1 || attntionResult == 3) {
         coachRelation = 1;
@@ -1242,8 +1224,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           });
         }
       }
-      if(callback!=null){
-        callback(coachRelation);
+      if(widget.callback!=null){
+        widget.callback(coachRelation);
       }
     }
   }
@@ -1285,6 +1267,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     _textController.text = "";
     if(!_emojiState) {
       FocusScope.of(context).requestFocus(_focusNode);
+
     }
   }
 
@@ -1328,12 +1311,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     msg.sendUserInfo = userInfo;
     Map<String, dynamic> textMap = Map();
     textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
-    textMap["toUserId"] = coachId;
+    textMap["toUserId"] = widget.coachId;
     textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
     textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
     textMap["data"] = text;
     msg.content = jsonEncode(textMap);
-    await Application.rongCloud.sendChatRoomMessage(coachId.toString(), msg);
+    await Application.rongCloud.sendChatRoomMessage(widget.coachId.toString(), msg);
   }
 
 
@@ -1349,7 +1332,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             AppDialogButton(map["content"]??"", () {
               print("${map["content"]},${map["id"]}");
               if(null!=map["id"]) {
-                feeling(liveCourseId, map["id"].toString());
+                feeling(widget.liveCourseId, map["id"].toString());
               }
               return true;
             }),

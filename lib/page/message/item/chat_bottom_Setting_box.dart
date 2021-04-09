@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -50,11 +51,26 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   List<EmojiModel> emojiModelList=[];
 
   ChatBottomSettingBoxState(this.bottomSettingPanelState,this.emojiState);
-  
+
+
+
   @override
   void initState() {
+    EventBus.getDefault().registerNoParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
     super.initState();
     _initData();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
+  }
+  _resetPostBtn(){
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
   
   _initData()async{
@@ -165,6 +181,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             onTap: () {},
           ),
           Spacer(),
+          //表情面板删除按钮
           AppIconButton(
             iconSize: 24,
             svgName: AppIcon.message_delete,
@@ -176,6 +193,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
               }
             },
           ),
+          //表情面板发送按钮
           AppIconButton(
             iconSize: 24,
             svgName: widget.textController.text == null || widget.textController.text.isEmpty
