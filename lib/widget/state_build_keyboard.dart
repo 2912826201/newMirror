@@ -31,7 +31,7 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
             }
           }
         }else{
-          if(pageHeightStopCanvas) {
+          if(pageHeightStopCanvas&&MediaQuery.of(this.context).viewInsets.bottom>0) {
             startCanvasPage(oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom);
             print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
             pageHeightStopCanvas = false;

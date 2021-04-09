@@ -378,27 +378,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
-          _bottomSettingPanelState=true;
+          pageHeightStopCanvas=true;
+          oldKeyboardHeight=-1;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(
-              bottomSettingPanelState: true,
-              emojiState: _emojiState,
-            );
-          }else{
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
           }
         },
         onLongTap: (){
-          _bottomSettingPanelState=true;
+          pageHeightStopCanvas=true;
+          oldKeyboardHeight=-1;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(
-              bottomSettingPanelState: true,
-              emojiState: _emojiState,
-            );
-          }else{
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
           }
         },
         scrollController: textScrollController,
@@ -1940,8 +1932,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
-    _bottomSettingPanelState=isOpen;
-    bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    if(MediaQuery.of(this.context).viewInsets.bottom>0) {
+      _bottomSettingPanelState = isOpen;
+      bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    }
   }
 
   @override
