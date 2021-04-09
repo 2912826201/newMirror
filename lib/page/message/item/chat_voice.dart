@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
@@ -60,7 +61,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   bool automaticPost=false;
 
-  int maxTimeSecond=60;
 
   @override
   void initState() {
@@ -165,7 +165,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    if (costTime < 2) {
+    if (costTime < minRecordVoiceDuration+1) {
       context.read<VoiceAlertData>().changeCallback(alertText: "说话时间太短");
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
@@ -297,7 +297,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if(mounted){
         setState(() {
-          if(costTime+1>maxTimeSecond){
+          if(costTime+1>maxRecordVoiceDuration){
             _timer.cancel();
             context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime+1));
             hideVoiceView(true);

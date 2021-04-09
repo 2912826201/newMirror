@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -192,7 +193,8 @@ class ChatPageUtil{
     List msgList = new List();
     List<ChatDataModel> chatDataList = <ChatDataModel>[];
     msgList = await RongCloud.init().getHistoryMessages(
-        conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
+        conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch,
+        chatAddHistoryMessageCount, 0);
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
         chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
@@ -219,7 +221,7 @@ class ChatPageUtil{
     int systemPage = 0;
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
-    await querySysMsgList(type: conversation.type, size: 20);
+    await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
