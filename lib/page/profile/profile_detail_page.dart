@@ -161,7 +161,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       } else {
         _getAttention();
       }
-    }else{
+    } else {
       loadingStreamController.sink.add(false);
     }
     canOnClick = true;
@@ -211,19 +211,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
 
-    return  WillPopScope(
+    return WillPopScope(
         child: Scaffold(
           appBar: null,
           body: _minehomeBody(width, height),
         ),
         onWillPop: _requestPop);
   }
+
   // 监听返回事件
   Future<bool> _requestPop() {
-    Navigator.pop(this.context,
-        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+    Navigator.pop(this.context, context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
     return new Future.value(false);
   }
+
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
     return NestedScrollView(
@@ -319,6 +320,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ? SliverPersistentHeader(
                     /// 可以吸顶的TabBar
                     pinned: true,
+
+                    ///note
                     delegate: StickyTabBarDelegate(
                       width: width,
                       child: TabBar(
@@ -603,36 +606,45 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   Widget _buttonLayoutSelect(UserInteractiveNotifier notifier) {
-   return  StreamBuilder<bool>(
+    return StreamBuilder<bool>(
         initialData: false,
         stream: loadingStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-         return !snapshot.data
-             ?Center(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Spacer(),
-                !notifier.profileUiChangeModel[widget.userId].isFollow ?Icon(Icons.message,size: 14,):Icon(Icons.add,
-                  color:
-                AppColor.white,size: 14),
-                SizedBox(
-                  width: 2,
-                ),
-                Text(
-                  notifier.profileUiChangeModel[widget.userId].isFollow?"关注":"私聊",
-                  style:notifier.profileUiChangeModel[widget.userId].isFollow?TextStyle(color: AppColor.white, fontSize: 12):AppStyle.textRegular12,
-                ),
-                Spacer(),
-              ],
-            ),
-          ):Center(
-           child: Container(
-             height: 16,
-             width: 16,
-             child: CircularProgressIndicator(
-                 valueColor: AlwaysStoppedAnimation(AppColor.mainRed), backgroundColor: AppColor.white, strokeWidth: 1.5)),)
-         ;});
+          return !snapshot.data
+              ? Center(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Spacer(),
+                      !notifier.profileUiChangeModel[widget.userId].isFollow
+                          ? Icon(
+                              Icons.message,
+                              size: 14,
+                            )
+                          : Icon(Icons.add, color: AppColor.white, size: 14),
+                      SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        notifier.profileUiChangeModel[widget.userId].isFollow ? "关注" : "私聊",
+                        style: notifier.profileUiChangeModel[widget.userId].isFollow
+                            ? TextStyle(color: AppColor.white, fontSize: 12)
+                            : AppStyle.textRegular12,
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                )
+              : Center(
+                  child: Container(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
+                          backgroundColor: AppColor.white,
+                          strokeWidth: 1.5)),
+                );
+        });
   }
 
   ///头像
@@ -671,7 +683,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   _getAttention() async {
     int attntionResult = await ProfileAddFollow(widget.userId);
-    if(attntionResult!=null){
+    if (attntionResult != null) {
       if (attntionResult == 1 || attntionResult == 3) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
