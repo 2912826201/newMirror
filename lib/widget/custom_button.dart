@@ -517,16 +517,22 @@ class _FollowButtonState extends State<FollowButton> {
   }
 }
 
+enum SelectOverType { OK, ERROE, COMPLET }
+
 class SelectButton extends StatefulWidget {
   //选中未选中·
   bool selectOrNot;
-  Function(bool) changeCallBack;
+
+  //有返回值的回调方法，返回true表示网络请求成功,反之则是失败按钮切换回移动之前的状态
+  Future<bool> Function(bool) changeCallBack;
 
   //间隔时间
   int intervalsMilliseconds;
   bool canOnClick;
-  SelectButton(this.selectOrNot, {this.changeCallBack, this.intervalsMilliseconds = 1000, this.canOnClick =
-  true});
+  SelectOverType selectOverType;
+
+  SelectButton(this.selectOrNot,
+      {this.changeCallBack, this.intervalsMilliseconds = 1000, this.canOnClick = true, this.selectOverType});
 
   @override
   State<StatefulWidget> createState() {
@@ -557,8 +563,15 @@ class _SelectButtonState extends State<SelectButton> {
                     widget.selectOrNot = value;
                   });
                   if (isFrist) {
-                    beforSelect = value;
-                    widget.changeCallBack(widget.selectOrNot);
+                    widget.changeCallBack(widget.selectOrNot).then((callBack) {
+                      if (callBack != null && callBack) {
+                        beforSelect = value;
+                      } else {
+                        beforSelect = !widget.selectOrNot;
+                        widget.selectOrNot = !widget.selectOrNot;
+                        setState(() {});
+                      }
+                    });
                     beforTimer = DateTime.now().millisecondsSinceEpoch;
                     isFrist = false;
                     return;
@@ -567,8 +580,14 @@ class _SelectButtonState extends State<SelectButton> {
                     beforTimer = DateTime.now().millisecondsSinceEpoch;
                     Future.delayed(Duration(milliseconds: widget.intervalsMilliseconds), () {
                       if (beforSelect != widget.selectOrNot) {
-                          widget.changeCallBack(widget.selectOrNot);
-                          beforSelect = widget.selectOrNot;
+                        widget.changeCallBack(widget.selectOrNot).then((callBack) {
+                          if (callBack != null && callBack) {
+                            beforSelect = widget.selectOrNot;
+                          } else {
+                            widget.selectOrNot = !widget.selectOrNot;
+                            setState(() {});
+                          }
+                        });
                       }
                     });
                   }

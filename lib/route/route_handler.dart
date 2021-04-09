@@ -188,10 +188,7 @@ var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<St
 });
 
 var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ChangeNotifierProvider(
-    create: (_) => SettingNotifile(),
-    child: NoticeSettingPage(),
-  );
+  return  NoticeSettingPage();
 });
 
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

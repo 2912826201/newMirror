@@ -58,7 +58,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   String _signature;
 
   ///头像
-  String _avatar = "";
+  String _avatar;
 
   TabController _mController;
 
@@ -93,6 +93,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
     ///判断是自己的页面还是别人的页面
+
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
     } else {
@@ -119,8 +120,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
-        if (!isScroll) {
-          streamController.sink.add(AppColor.black);
+            if (!isScroll) {
+              streamController.sink.add(AppColor.black);
           canOnClick = false;
           isScroll = true;
         }
@@ -320,8 +321,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ? SliverPersistentHeader(
                     /// 可以吸顶的TabBar
                     pinned: true,
-
-                    ///note
                     delegate: StickyTabBarDelegate(
                       width: width,
                       child: TabBar(
@@ -415,12 +414,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             child: CachedNetworkImage(
               height: height * 0.33,
               width: height * 0.33,
-              imageUrl: _avatar,
+              imageUrl: _avatar!=null?_avatar:"",
               fit: BoxFit.cover,
               placeholder: (context, url) => Image.asset(
                 "images/test.png",
                 fit: BoxFit.cover,
               ),
+             /* errorWidget: (context, url, e) {
+                return Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                );
+              },*/
             ),
           ),
           Positioned(
@@ -652,11 +657,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     return Container(
       child: ClipOval(
         child: CachedNetworkImage(
-            height: height * 0.09,
-            width: height * 0.09,
-            imageUrl: isMselfId ? context.read<ProfileNotifier>().profile.avatarUri : _avatar,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => CircularProgressIndicator()),
+          height: height * 0.09,
+          width: height * 0.09,
+          useOldImageOnUrlChange: true,
+          imageUrl: _avatar!=null?_avatar:"",
+          fit: BoxFit.cover,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          /*errorWidget:(context, url, e) {
+            return Image.asset(
+              "images/test.png",
+              fit: BoxFit.cover,
+            );
+          },*/
+        ),
       ),
     );
   }

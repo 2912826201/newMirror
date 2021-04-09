@@ -140,10 +140,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
     if (model != null) {
+      print('---7666666666666666666666666666666666666model！=null');
       if (mounted) {
         setState(() {
           print("dataPage:  ￥￥$dataPage");
-
           if (dataPage == 1) {
             //fixme model.list为空 null 会报错
             if (model.list != null && model.list.isNotEmpty) {
@@ -174,8 +174,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     } else if (PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
         null) {
+      print('-""--7666666666666666666666666666666666666else if');
       status = Status.noConcern;
+      _refreshController.loadNoData();
     } else {
+      print('-""--7666666666666666666666666666666666666else else');
       _refreshController.loadNoData();
     }
     // 更新动态数量
@@ -478,10 +481,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               getRecommendFeed();
             },
 
-          child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
+          child: CustomScrollView( key: globalKey,controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
              SliverList(
               // controller: _controller,
-               key: globalKey,
               delegate: SliverChildBuilderDelegate((content, index) {
                 if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
                   return pageDisplay(0, HomeFeedModel());
