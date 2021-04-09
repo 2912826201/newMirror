@@ -167,7 +167,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
           Spacer(),
           AppIconButton(
             iconSize: 24,
-            svgName: AppIcon.close_18,
+            svgName: AppIcon.message_delete,
             buttonWidth: 44,
             buttonHeight: 44,
             onTap: (){
