@@ -165,7 +165,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
       VideoIsPlay videoIsPlay = VideoIsPlay();
-     return VideoExposure(
+     /*return VideoExposure(
         key: Key('video_${widget.model.id}'),
        child: VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNum2(videos.first.duration),),
        onExposure: (visibilityInfo) {
@@ -181,14 +181,14 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
          print('视频第${widget.index}个模块曝光,展示比例为${visibilityInfo.visibleFraction}');
        },
         // child:
+      );*/
+        return FeedVideoPlayer(
+        videos.first.url,
+        sizeInfo,
+        ScreenUtil.instance.width,
+        durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
+        isInListView: true,
       );
-        // return FeedVideoPlayer(
-      //   videos.first.url,
-      //   sizeInfo,
-      //   ScreenUtil.instance.width,
-      //   durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
-      //   isInListView: true,
-      // );
     }
   }
 

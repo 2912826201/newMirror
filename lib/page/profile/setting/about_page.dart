@@ -104,7 +104,7 @@ class _AboutPageState extends State<AboutPage> {
               text,
               style: AppStyle.textRegular16,
             ),
-            Expanded(child: SizedBox()),
+            Spacer(),
             text == "版本更新" && haveNewVersion
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(12),

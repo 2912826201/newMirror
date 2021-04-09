@@ -85,6 +85,7 @@ class AppIcon {
   static const String group_chat_24 = "assets/svg/group_chat_24.svg";
   static const String at_16 = "assets/svg/at_16.svg";
   static const String message_send = "assets/svg/message_send.svg";
+  static const String message_delete = "assets/svg/message_delete.svg";
   static const String message_cant_send = "assets/svg/message_cant_send.svg";
   static const String message_emotion = "assets/svg/message_emotion.svg";
   static const String message_at = "assets/svg/message_at.svg";

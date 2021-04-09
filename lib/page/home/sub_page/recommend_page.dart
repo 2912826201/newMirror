@@ -92,6 +92,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   List<HomeFeedModel> recommendModelList = [];
   List<LiveVideoModel> liveVideoModel = [];
   RefreshController _refreshController = RefreshController();
+
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -197,7 +198,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       dataModel = await getHotList(size: 20);
       if (dataModel == null) {
         _refreshController.loadNoData();
-       /* loadText = "";
+        /* loadText = "";
         loadStatus = LoadingStatus.STATUS_COMPLETED;*/
       }
       if (dataModel != null && dataModel.list.isNotEmpty) {
@@ -242,17 +243,18 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                   footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   controller: _refreshController,
-                  onLoading: (){
+                  onLoading: () {
                     setState(() {
                       showNoMore = IntegerUtil.showNoMore(globalKey);
                     });
                     getRecommendFeed();
                   },
-                  onRefresh: (){
+                  onRefresh: () {
                     hasNext = null;
                     mergeRequest();
                   },
                   child: CustomScrollView(
+                    key: globalKey,
                     controller: _controller,
                     // BouncingScrollPhysics
                     physics:
@@ -282,29 +284,29 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       id = recommendIdList[index];
                                       model = context.read<FeedMapNotifier>().value.feedMap[id];
                                     }
-                                      return ExposureDetector(
-                                        key: Key('recommend_page_${id}'),
-                                        child: DynamicListLayout(
-                                            index: index,
-                                            model: model,
-                                            pageName: "recommendPage",
-                                            isShowConcern: true,
-                                            // 可选参数 子Item的个数
-                                            // key: GlobalObjectKey("recommend$index"),
-                                            isShowRecommendUser: false),
-                                        onExposure: (visibilityInfo) {
-                                          print("回调看数据:${recommendIdList.toString()}");
-                                          // 如果没有显示
-                                          if (context
-                                              .read<FeedMapNotifier>()
-                                              .value
-                                              .feedMap[recommendIdList[index]]
-                                              .isShowInputBox) {
-                                            context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
-                                          }
-                                          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                                        },
-                                      );
+                                    return ExposureDetector(
+                                      key: Key('recommend_page_${id}'),
+                                      child: DynamicListLayout(
+                                          index: index,
+                                          model: model,
+                                          pageName: "recommendPage",
+                                          isShowConcern: true,
+                                          // 可选参数 子Item的个数
+                                          // key: GlobalObjectKey("recommend$index"),
+                                          isShowRecommendUser: false),
+                                      onExposure: (visibilityInfo) {
+                                        print("回调看数据:${recommendIdList.toString()}");
+                                        // 如果没有显示
+                                        if (context
+                                            .read<FeedMapNotifier>()
+                                            .value
+                                            .feedMap[recommendIdList[index]]
+                                            .isShowInputBox) {
+                                          context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
+                                        }
+                                        print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                      },
+                                    );
                                   }, childCount: recommendIdList.length + 1),
                                 )
                               : SliverToBoxAdapter(

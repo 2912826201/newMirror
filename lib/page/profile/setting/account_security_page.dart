@@ -55,7 +55,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             SizedBox(
               height: 12,
             ),
-            _itemRow("手机号", phoneNumber != null ? phoneNumber : phoneNumber),
+            _itemRow("手机号", phoneNumber),
             Container(
                 height: 44,
                 width: width,
@@ -133,7 +133,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
               height: 18,
               width: 18,
               child: Icon(
-                Icons.arrow_forward_ios,
+                Icons.arrow_forward_ios_rounded,
                 size: 18,
                 color: AppColor.textHint,
               ),
