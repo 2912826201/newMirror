@@ -862,6 +862,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       if (mounted) {
         _textController.text = "";
+        _resetEditText();
+        context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
         if(chatDataList.length>100){
           List<ChatDataModel> list=[];
@@ -877,6 +879,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
+      _textController.text = "";
+      _resetEditText();
       // List list=[];
       // list.add(0);
       // list.add(chatDataModel.id);
