@@ -180,7 +180,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   //消息列表上方的所有部分
   Widget _buildTopView(UnreadMessageNotifier notifier) {
     return Column(
-      children: [_buildConnectionView(), _buildMentionView(notifier), _buildPermissionView(), _buildEmptyView()],
+      children: [_buildConnectionView(), _buildPermissionView(), _buildMentionView(notifier), _buildEmptyView()],
     );
   }
 
@@ -209,9 +209,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 style: TextStyle(fontSize: 14, color: AppColor.mainRed),
               ),
               Spacer(),
-              Icon(
-                Icons.chevron_right,
-                size: 16,
+              AppIcon.getAppIcon(
+                AppIcon.arrow_right_16,
+                16,
                 color: AppColor.mainRed,
               ),
               SizedBox(
@@ -321,16 +321,46 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       return Container();
     } else {
       return GestureDetector(
+        child: Container(
+          height: 36,
+          color: AppColor.orange.withOpacity(0.1),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 16,
+              ),
+              Icon(
+                Icons.error_outline,
+                size: 16,
+                color: AppColor.orange,
+              ),
+              SizedBox(
+                width: 6,
+              ),
+              Text(
+                "开启系统通知，以免错过新消息",
+                style: TextStyle(fontSize: 14, color: AppColor.orange),
+              ),
+              Spacer(),
+              Text(
+                "去开启",
+                style: TextStyle(fontSize: 14, color: AppColor.orange),
+              ),
+              AppIcon.getAppIcon(
+                AppIcon.arrow_right_16,
+                16,
+                color: AppColor.orange,
+              ),
+              SizedBox(
+                width: 16,
+              )
+            ],
+          ),
+        ),
         onTap: () {
           AppSettings.openNotificationSettings();
         },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Container(
-            color: AppColor.mainBlue,
-            height: 56,
-          ),
-        ),
       );
     }
   }

@@ -481,7 +481,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               getRecommendFeed();
             },
 
-          child: CustomScrollView( key: globalKey,controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
+          child: CustomScrollView(key: globalKey,controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
              SliverList(
               // controller: _controller,
               delegate: SliverChildBuilderDelegate((content, index) {

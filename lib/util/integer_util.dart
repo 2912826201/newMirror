@@ -35,11 +35,14 @@ class IntegerUtil {
     return "${calorie/1000}${isHaveCompany?"千卡":""}";
   }
 
-  static bool showNoMore(GlobalKey key){
+  static bool showNoMore(GlobalKey key,{lastItemToTop = false}){
     double itemHeight = 0;
       RenderBox renderBox = key.currentContext.findRenderObject();
-    var offset =   renderBox.localToGlobal(Offset.zero);
-    itemHeight = offset.dy;
+      if(lastItemToTop){
+        itemHeight =  renderBox.localToGlobal(Offset.zero).dy;
+      }else{
+        itemHeight =   renderBox.size.height;
+      }
     print('--itemHeight---itemHeight--------itemHeight---------itemHeight----------$itemHeight}');
     if(itemHeight>ScreenUtil.instance.height/2){
       return true;

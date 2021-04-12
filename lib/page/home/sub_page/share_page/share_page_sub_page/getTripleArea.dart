@@ -1,4 +1,5 @@
 //  点赞，转发，评论三连区域
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
@@ -121,7 +122,22 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                 : 0,
             alignment: Alignment.center,
             child: roundedAvatar(
-                context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
+                context,
+                context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri),
+                (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                            null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                    ? 21
+                    : 0,
+                (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                            null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                    ? 21
+                    : 0),
             duration: const Duration(milliseconds: 200)),
       );
     }
@@ -148,7 +164,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
-          child: roundedAvatar(context, userInfo[index]),
+          child: roundedAvatar(
+              context,
+              userInfo[index],
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0),
           duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
     } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
@@ -156,11 +176,19 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
-          child: roundedAvatar(context, userInfo[index]),
+          child: roundedAvatar(
+              context,
+              userInfo[index],
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0),
           duration: const Duration(milliseconds: 200));
     } // 只展示前三个头像
     else if (index < 3) {
-      return roundedAvatar(context, item);
+      return roundedAvatar(
+          context,
+          item,
+          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0);
     } else {
       return Container();
     }
@@ -205,10 +233,25 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 横排头像默认值
-  roundedAvatar(BuildContext context, String url, {double radius = 10.5}) {
-    return CircleAvatar(
-      backgroundImage: NetworkImage(url) ?? AssetImage("images/test/yxlm9.jpeg"),
-      maxRadius: radius,
+  roundedAvatar(BuildContext context, String url, double height, double width, {double radius = 10.5}) {
+    return ClipOval(
+      child: CachedNetworkImage(
+            height: height,
+            width: width,
+            imageUrl: url != null ? url : "",
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Image.asset(
+              "images/test.png",
+              fit: BoxFit.cover,
+            ),
+            errorWidget: (context, url, e) {
+              return Image.asset(
+                "images/test.png",
+                fit: BoxFit.cover,
+              );
+            },
+          ) ??
+          AssetImage("images/test/yxlm9.jpeg"),
     );
   }
 

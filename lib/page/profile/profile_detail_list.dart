@@ -66,6 +66,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
+          feedIdListController.sink.add(feedIdList);
         }
         _refreshController.refreshCompleted();
       } else {
@@ -81,13 +82,14 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
+          feedIdListController.sink.add(feedIdList);
         }
         _refreshController.loadComplete();
       } else {
         _refreshController.loadFailed();
       }
     }
-    feedIdListController.sink.add(feedIdList);
+
     if (mounted) {
       setState(() {});
     }
@@ -113,6 +115,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     _getDynamicData();
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    EventBus.getDefault().unRegister(registerName:EVENTBUS_PROFILE_DELETE_FEED,pageName:EVENTBUS_PROFILE_PAGE);
+  }
   @override
   void initState() {
     super.initState();
