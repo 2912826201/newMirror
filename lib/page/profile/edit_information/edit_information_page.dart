@@ -22,7 +22,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
-import 'package:mirror/widget/address_Picker.dart';
+import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';

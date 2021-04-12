@@ -17,7 +17,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_Formatter.dart';
+import 'package:mirror/widget/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

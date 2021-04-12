@@ -10,7 +10,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-import 'package:mirror/widget/precision_limit_Formatter.dart';
+import 'package:mirror/widget/precision_limit_formatter.dart';
 import 'package:provider/provider.dart';
 import '../profile_detail_page.dart';
 import '../profile_detail_page.dart';
