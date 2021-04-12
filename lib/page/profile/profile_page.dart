@@ -132,21 +132,23 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               Row(
                 children: [
                   _secondData(
-                      Icons.timer,
+                      AppIcon.getAppIcon(AppIcon.profile_record, 18),
                       DateTime.fromMillisecondsSinceEpoch(context.watch<ProfileNotifier>().trainingSeconds).minute,
                       "训练记录"),
                   Spacer(),
-                  _secondData(Icons.poll, context.watch<ProfileNotifier>().weight, "体重记录"),
+                  _secondData(
+                      AppIcon.getAppIcon(AppIcon.profile_weight, 18), context.watch<ProfileNotifier>().weight, "体重记录"),
                   Spacer(),
-                  _secondData(Icons.photo, context.watch<ProfileNotifier>().albumNum, "健身相册"),
+                  _secondData(AppIcon.getAppIcon(AppIcon.profile_gallery, 18),
+                      context.watch<ProfileNotifier>().albumNum, "健身相册"),
                 ],
               ),
               SizedBox(
                 height: 28,
               ),
-              _bottomSetting(Icon(Icons.menu_book), "我的课程"),
-              _bottomSetting(Icon(Icons.article_outlined), "我的订单"),
-              _bottomSetting(Icon(Icons.emoji_events_outlined), "我的成就"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),
             ],
           ),
         ),
@@ -215,31 +217,32 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: CustomAppBar.appBarHeight,
       width: width,
       child: Center(
-          child: Row(
-        children: [
-          CustomAppBarIconButton(
-              svgName: AppIcon.qrcode_scan,
-              iconColor: AppColor.black,
-              onTap: () {
-                Permission.camera.request().then((value) {
-                  if (value != null) {
-                    AppRouter.navigateToScanCodePage(context, showMyCode: true);
-                  }
-                });
-              }),
-          Spacer(),
-          CustomAppBarIconButton(
-              icon: Icons.menu,
-              iconColor: AppColor.black,
-              onTap: () {
-                AppRouter.navigateToSettingHomePage(context);
-              }),
-        ],
-      )),
+        child: Row(
+          children: [
+            CustomAppBarIconButton(
+                svgName: AppIcon.nav_scan,
+                iconColor: AppColor.black,
+                onTap: () {
+                  Permission.camera.request().then((value) {
+                    if (value != null) {
+                      AppRouter.navigateToScanCodePage(context, showMyCode: true);
+                    }
+                  });
+                }),
+            Spacer(),
+            CustomAppBarIconButton(
+                svgName: AppIcon.nav_settings,
+                iconColor: AppColor.black,
+                onTap: () {
+                  AppRouter.navigateToSettingHomePage(context);
+                }),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _bottomSetting(Icon icon, String text) {
+  Widget _bottomSetting(Widget icon, String text) {
     return GestureDetector(
       child: Container(
         color: AppColor.transparent,
@@ -256,11 +259,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 style: AppStyle.textRegular16,
               ),
               Expanded(child: Container()),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
+              AppIcon.getAppIcon(
+                AppIcon.arrow_right_18,
+                18,
                 color: AppColor.textHint,
-              )
+              ),
             ],
           ),
         ),
@@ -285,8 +288,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Positioned(
                 left: width * 0.38,
                 bottom: 0,
-                child: Row(
-                    children: [
+                child: Row(children: [
                   InkWell(
                     child: _textAndNumber(
                         "关注",
@@ -340,36 +342,37 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       width: height * 0.11,
       height: height * 0.11,
       child: InkWell(
-          onTap: () {
-            AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
-          },
-          child: Stack(
-            children: [
-              Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-                print("头像地址:$avatar");
-                return Hero(
-                    tag: "我的头像",
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        height: height * 0.11,
-                        width: height * 0.11,
-                        imageUrl: avatar == null ? "" : avatar,
+        onTap: () {
+          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
+        },
+        child: Stack(
+          children: [
+            Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+              print("头像地址:$avatar");
+              return Hero(
+                  tag: "我的头像",
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      height: height * 0.11,
+                      width: height * 0.11,
+                      imageUrl: avatar == null ? "" : avatar,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Image.asset(
+                        "images/test.png",
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
-                        ),
-                        errorWidget: (context, url, error) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
-                        ),
                       ),
-                    ));
-              }, selector: (context, notifier) {
-                return notifier.profile.avatarUri;
-              }),
-            ],
-          )),
+                      errorWidget: (context, url, error) => Image.asset(
+                        "images/test.png",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ));
+            }, selector: (context, notifier) {
+              return notifier.profile.avatarUri;
+            }),
+          ],
+        ),
+      ),
     );
   }
 
@@ -396,7 +399,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(IconData icon, number, String text) {
+  Widget _secondData(Widget icon, number, String text) {
     var _userPlate = Stack(
       children: [
         Container(
@@ -414,10 +417,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   child: SizedBox(),
                   flex: 2,
                 ),
-                Icon(
-                  icon,
-                  size: 24,
-                ),
+                icon,
                 SizedBox(
                   height: 8,
                 ),

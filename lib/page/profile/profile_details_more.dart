@@ -23,11 +23,11 @@ class ProfileDetailsMore extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _detailsMoreState();
+    return _DetailsMoreState();
   }
 }
 
-class _detailsMoreState extends State<ProfileDetailsMore> {
+class _DetailsMoreState extends State<ProfileDetailsMore> {
   bool isBlack = false;
 
   @override

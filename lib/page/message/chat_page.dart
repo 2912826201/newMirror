@@ -765,7 +765,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
-
     mentionedInfo.type = RCMentionedType.Users;
     atUserIdList.clear();
     // 获取输入框内的规则
@@ -791,6 +790,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       if (mounted) {
         _textController.text = "";
         isHaveTextLen = false;
+        if(chatDataList.length>100){
+          List<ChatDataModel> list=[];
+          list=chatDataList.sublist(0,100);
+          chatDataList.clear();
+          chatDataList.addAll(list);
+        }
         chatDetailsBodyChildKey.currentState.resetChatMessageCount();
         EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
       }
@@ -799,7 +804,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // List list=[];
+      // list.add(0);
+      // list.add(chatDataModel.id);
+      // EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -831,10 +840,25 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     animateToBottom();
     if (mounted) {
+      if(chatDataList.length>100){
+        List<ChatDataModel> list=[];
+        list=chatDataList.sublist(0,100);
+        chatDataList.clear();
+        chatDataList.addAll(list);
+      }
       chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // modelList.forEach((element) {
+      //
+      //   List list=[];
+      //   list.add(0);
+      //   list.add(element.id);
+      //   EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
+      //   // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // });
+
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -854,10 +878,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     addTemporaryMessage(chatDataModel, conversation);
     animateToBottom();
     if (mounted) {
+      if(chatDataList.length>100){
+        List<ChatDataModel> list=[];
+        list=chatDataList.sublist(0,100);
+        chatDataList.clear();
+        chatDataList.addAll(list);
+      }
       chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
     postVoice(chatDataList[0], conversation.conversationId, conversation.type, conversation.getType(), () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -877,11 +907,22 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (mounted) {
       _textController.text = "";
       isHaveTextLen = false;
+      if(chatDataList.length>100){
+        List<ChatDataModel> list=[];
+        list=chatDataList.sublist(0,100);
+        chatDataList.clear();
+        chatDataList.addAll(list);
+      }
       chatDetailsBodyChildKey.currentState.resetChatMessageCount();
       EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      //
+      // List list=[];
+      // list.add(0);
+      // list.add(chatDataModel.id);
+      // EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -996,7 +1037,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     chatDataList[0].isTemporary = true;
     addTemporaryMessage(chatDataList[0], conversation);
     postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -1035,7 +1076,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
     postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -1059,7 +1100,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
     resetPostMessage(chatDataList[0], () {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     });
   }
 
@@ -1434,7 +1475,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //图片的点击事件
   onPicAndVideoBtnClick() {
     //print("=====图片的点击事件");
-    _focusNode.unfocus();
+    _messageInputBodyClick();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
@@ -1519,7 +1560,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // Application.atMesGroupModel.add(atMsg);
-    _focusNode.unfocus();
+    _messageInputBodyClick();
     Message message=chatDataList==null||chatDataList.length<1||chatDataList[0].msg==null?null:chatDataList[0].msg;
     judgeJumpPage(
         conversation.getType(),
@@ -1723,7 +1764,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // 加载完毕
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+    chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus,isResetPage: true);
   }
 
   //加载更多的系统消息
@@ -1797,6 +1838,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: _context);
+      _messageInputBodyClick();
       AppRouter.navigateToMineDetail(context, map["uid"],callback:(dynamic result){
         print("result:$result");
         getRelation();
@@ -1930,9 +1972,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   @override
-  void startCanvasPage(bool isOpen) {
+  void startCanvasPage(bool isOpen,double keyBoardHeight) {
     print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
-    if(MediaQuery.of(this.context).viewInsets.bottom>0) {
+    if(!(_bottomSettingPanelState==isOpen)){
       _bottomSettingPanelState = isOpen;
       bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
     }
@@ -1942,6 +1984,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void keyBoardHeightThanZero() {
     if(MediaQuery.of(this.context).viewInsets.bottom>0&&!_bottomSettingPanelState){
       _focusNode.unfocus();
+    }
+  }
+
+  @override
+  void secondListener() {
+    if(scrollPositionPixels<500&&chatDataList.length>100){
+      List<ChatDataModel> list=[];
+      list=chatDataList.sublist(0,100);
+      chatDataList.clear();
+      chatDataList.addAll(list);
+      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
   }
 }

@@ -65,6 +65,8 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   bool isScroll = false;
   bool isHaveLoadAnimation=true;
 
+  Widget loadStatusWidget;
+
   @override
   void setState(fn) {
     if(mounted){
@@ -75,7 +77,8 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   @override
   void initState() {
     super.initState();
-    initData();
+    _initData();
+    _initWidget();
   }
 
   @override
@@ -152,7 +155,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
       childrenDelegate: FirstEndItemChildrenDelegate(
             (BuildContext context, int index) {
           if (index == childCount-1 && isHaveLoadAnimation) {
-            return getLoadingUi();
+            return loadStatusWidget;
           } else if(index == 0 && widget.isPersonalButler){
             return Container(
               width: double.infinity,
@@ -247,7 +250,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
         widget.isShowChatUserName, widget.conversationDtoType);
   }
 
-  initData(){
+  _initData(){
     isShowHaveAnimation=MessageItemHeightUtil.init().
       judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
     isShowTop=!isShowHaveAnimation;
@@ -258,20 +261,54 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     }
   }
 
+  _initWidget(){
+    loadStatusWidget=getLoadingUi();
+  }
+
   resetChatMessageCount(){
-    initData();
+    _initData();
     setState(() {});
   }
 
-  setLoadStatus(LoadingStatus loadStatus){
+  setLoadStatus(LoadingStatus loadStatus,{bool isResetPage=false}){
     this.loadStatus=loadStatus;
     if (loadStatus != LoadingStatus.STATUS_COMPLETED && !isShowTop) {
-      isHaveLoadAnimation=true;
+      if(!isHaveLoadAnimation){
+        isHaveLoadAnimation=true;
+        setState(() {});
+        return;
+      }
     }
-    setState(() {});
+    if(isResetPage){
+      setState(() {});
+      return;
+    }
+    _resetLoadStatus();
   }
 
 
 
+
+  _resetLoadStatus(){
+    Element e = findChild(context as Element, loadStatusWidget);
+    if (e != null) {
+      loadStatusWidget=getLoadingUi();
+      e.owner.lockState(() {
+        e.update(loadStatusWidget);
+      });
+    }
+  }
+
+  Element findChild(Element e, Widget w) {
+    Element child;
+    void visit(Element element) {
+      if (w == element.widget)
+        child = element;
+      else
+        element.visitChildren(visit);
+    }
+    visit(e);
+    return child;
+  }
 }
 

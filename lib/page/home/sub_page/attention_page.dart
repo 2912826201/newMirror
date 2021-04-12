@@ -285,7 +285,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         result.add(obj);
       }
     }
-    print("result${result.toString()}");
+    // print("result${result.toString()}");
     return result;
   }
 

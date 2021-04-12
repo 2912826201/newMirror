@@ -194,11 +194,11 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           onRefresh: _onRefresh,
                           onLoading: (){
                             setState(() {
-                              showNoMore = IntegerUtil.showNoMore(globalKey);
+                              showNoMore = IntegerUtil.showNoMore(globalKey,lastItemToTop: true);
                             });
                             _onLoading();
                           },
-                          child: ListView.builder(
+                          child:ListView.builder(
                               controller: scrollController,
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),

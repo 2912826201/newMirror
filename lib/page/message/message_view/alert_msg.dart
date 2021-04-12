@@ -82,7 +82,6 @@ class _AlertMsgState extends State<AlertMsg> {
       if (isMyself) {
         textArray.add("你撤回了一条消息 ");
         isChangColorArray.add(false);
-        print("开始判断时间${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
         if (new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime < 5 * 60 * 1000) {
           print("开始判断时间1${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
           try {

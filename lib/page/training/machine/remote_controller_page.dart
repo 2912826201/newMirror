@@ -132,7 +132,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   }),
             ),
             CustomAppBarIconButton(
-                icon: Icons.menu,
+                svgName: AppIcon.nav_settings,
                 iconColor: AppColor.black,
                 onTap: () {
                   AppRouter.navigateToMachineSetting(context);

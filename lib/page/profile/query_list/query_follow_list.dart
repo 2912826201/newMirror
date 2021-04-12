@@ -514,7 +514,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                               onRefresh: __onRefresh,
                               onLoading:(){
                                   setState(() {
-                                    showNoMore = IntegerUtil.showNoMore(globalKey);
+                                    showNoMore = IntegerUtil.showNoMore(globalKey,lastItemToTop: true);
                                   });
                                 _onLoading();
                               },
