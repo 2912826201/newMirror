@@ -354,6 +354,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
 
   //获取日期的item
   Widget getDateUi(int index) {
+    bool isFold=(monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
+        monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == 0);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -375,7 +377,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
                         height: 28,
                         width: 50,
                         color: Colors.transparent,
-                        child: Icon(Icons.arrow_circle_up, size: 18),
+                        child: Icon(isFold?Icons.keyboard_arrow_up:Icons.keyboard_arrow_down, size: 18),
                       ),
                       onTap: () {
                         if (monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
