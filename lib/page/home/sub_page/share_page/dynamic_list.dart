@@ -5,7 +5,6 @@ import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/VideoWidget.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
@@ -14,13 +13,10 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTrip
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
-import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
-import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
