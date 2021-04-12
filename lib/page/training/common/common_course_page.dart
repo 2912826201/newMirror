@@ -183,35 +183,44 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               ),
             ),
             Expanded(child: SizedBox()),
-            ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(100)),
-              child: Material(
-                  borderRadius: BorderRadius.all(Radius.circular(100)),
-                  color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
-                      ? AppColor.white
-                      : AppColor.black,
-                  child: InkWell(
-                    splashColor: AppColor.textHint,
-                    onTap: onClickAttention,
-                    child: Container(
-                      decoration: BoxDecoration(
+            GestureDetector(
+              onTap: onClickAttention,
+              child: Container(
+                color: Colors.transparent,
+                height: 32.0+16.0+16.0,
+                child: UnconstrainedBox(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    child: Material(
                         borderRadius: BorderRadius.all(Radius.circular(100)),
-                        border: Border.all(
-                            width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? 1 : 0.0,
-                            color: AppColor.textHint),
-                      ),
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                      child: Text(
-                        videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? "已关注" : "关注",
-                        style: TextStyle(
-                            color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
-                                ? AppColor.textHint
-                                : AppColor.white,
-                            fontSize: 11),
-                      ),
-                    ),
-                  )),
-            )
+                        color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                            ? AppColor.white
+                            : AppColor.black,
+                        child: InkWell(
+                          splashColor: AppColor.textHint,
+                          onTap: onClickAttention,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(100)),
+                              border: Border.all(
+                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? 1 : 0.0,
+                                  color: AppColor.textHint),
+                            ),
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
+                            child: Text(
+                              videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? "已关注" : "关注",
+                              style: TextStyle(
+                                  color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                                      ? AppColor.textHint
+                                      : AppColor.white,
+                                  fontSize: 11),
+                            ),
+                          ),
+                        )),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

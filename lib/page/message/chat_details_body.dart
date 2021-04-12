@@ -195,7 +195,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
 
   Widget getLoadingUi() {
     return Container(
-      height: 40,
+      height: loadStatus != LoadingStatus.STATUS_COMPLETED?40.0:0.0,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -249,9 +249,11 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
 
   initData(){
     isShowHaveAnimation=MessageItemHeightUtil.init().
-    judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
+      judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
     isShowTop=!isShowHaveAnimation;
-    if (loadStatus != LoadingStatus.STATUS_COMPLETED && !isShowTop) {
+    if(isShowTop){
+      loadStatus=LoadingStatus.STATUS_COMPLETED;
+    }else if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
       isHaveLoadAnimation=true;
     }
   }

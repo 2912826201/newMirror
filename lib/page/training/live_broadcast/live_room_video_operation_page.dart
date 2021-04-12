@@ -690,12 +690,15 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget edit() {
     return TextSpanField(
       onTap: (){
-        _bottomSettingPanelState=true;
+        pageHeightStopCanvas=true;
+        oldKeyboardHeight=-1;
         isShowEmojiBtn=true;
         _emojiState=false;
         setState(() {});
       },
       onLongTap: (){
+        pageHeightStopCanvas=true;
+        oldKeyboardHeight=-1;
         _bottomSettingPanelState=true;
         isShowEmojiBtn=true;
         _emojiState=false;
@@ -1371,9 +1374,11 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   @override
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
-    _bottomSettingPanelState=isOpen;
-    if (mounted) {
-      setState(() {});
+    if(MediaQuery.of(this.context).viewInsets.bottom>0) {
+      _bottomSettingPanelState = isOpen;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 

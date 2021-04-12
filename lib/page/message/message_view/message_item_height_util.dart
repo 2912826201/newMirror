@@ -353,7 +353,7 @@ class MessageItemHeightUtil{
     itemHeight+=8.0;
 
     //todo 这里目前暂时定提示消息只有一行
-    itemHeight+=getTextSize("提示消息", TextStyle(fontSize: 14), 1).height;
+    itemHeight+=getTextSize("提示消息", TextStyle(fontSize: 10), 1).height;
 
     return itemHeight;
   }

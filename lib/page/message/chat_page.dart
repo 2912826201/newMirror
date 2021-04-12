@@ -13,6 +13,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -35,7 +36,6 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/item/chat_bottom_Setting_box.dart';
 import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
-import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -92,7 +92,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   final ConversationDto conversation;
   final Message shareMessage;
   final BuildContext _context;
-  ///所有的会话消息
+  //所有的会话消息
   final List<ChatDataModel> chatDataList;
 
 
@@ -109,28 +109,24 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
 
 
-  ///是否显示表情
+  //是否显示表情
   bool _emojiState = false;
   bool _bottomSettingPanelState = false;
 
-  ///是不是显示语音按钮
+  //是不是显示语音按钮
   bool _isVoiceState = false;
 
-  ///输入框的监听
+  //输入框的监听
   TextEditingController _textController = TextEditingController();
 
-  ///输入框的焦点
+  //输入框的焦点
   FocusNode _focusNode = new FocusNode();
 
-  ///输入框内是不是有字符--作用是来判断是否刷新界面
+  //输入框内是不是有字符--作用是来判断是否刷新界面
   bool isHaveTextLen = false;
 
-  ///列表的滑动监听
+  //列表的滑动监听
   ScrollController _scrollController = ScrollController();
-
-  ///界面能不能被输入法顶起
-  // bool isResizeToAvoidBottomInset = true;
-
 
 
   // 是否点击了弹起的@用户列表
@@ -177,7 +173,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   int cursorIndexPr = -1;
 
-  // bool isShowEmjiPageWhite=false;
 
   ScrollController textScrollController = ScrollController();
 
@@ -383,27 +378,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
-          _bottomSettingPanelState=true;
+          pageHeightStopCanvas=true;
+          oldKeyboardHeight=-1;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(
-              bottomSettingPanelState: true,
-              emojiState: _emojiState,
-            );
-          }else{
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
           }
         },
         onLongTap: (){
-          _bottomSettingPanelState=true;
+          pageHeightStopCanvas=true;
+          oldKeyboardHeight=-1;
           if (_emojiState) {
             _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(
-              bottomSettingPanelState: true,
-              emojiState: _emojiState,
-            );
-          }else{
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
           }
         },
         scrollController: textScrollController,
@@ -535,7 +522,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
-        await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
+        await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount, lastTime: systemLastTime);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -615,9 +602,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       if (isHaveAtMeMsgIndex < 0) {
         if (!isHaveAtMeMsg) {
           isHaveAtMeMsg = true;
-          // print("delayedSetState-1111111111111111111");
-          // delayedSetState();
-          //print('1--------------------------显示标识at');
         }
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
@@ -655,7 +639,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         //print("chatDataList.len:${chatDataList.length}");
         List msgList = new List();
         msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
-            chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
+            chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
         List<ChatDataModel> dataList = <ChatDataModel>[];
         if (msgList != null && msgList.length > 0) {
           for (int i = 1; i < msgList.length; i++) {
@@ -1083,27 +1067,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
 
 
-  //延迟更新
-  void delayedSetState({int milliseconds = 200}) {
-    if (milliseconds <= 0) {
-      Future.delayed(Duration.zero, () {
-        //print("setState--delayedSetState");
-        if (mounted) {
-          reload(() {
-          });
-        }
-      });
-    } else {
-      Future.delayed(Duration(milliseconds: milliseconds), () {
-        //print("setState--delayedSetState");
-        if (mounted) {
-          reload(() {
-          });
-        }
-      });
-    }
-  }
-
 
   //设置消息的状态
   void resetSettingStatus(List<int> list){
@@ -1357,8 +1320,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
       correctRulesListener: (){
-        // print("delayedSetState-lllllllllllllllllllllllll");
-        // delayedSetState(milliseconds: 0);
         _resetEditText();
       },
       rules: context.read<ChatEnterNotifier>().rules,
@@ -1737,7 +1698,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   _onRefresh() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(
-        conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
+        conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime,
+        chatAddHistoryMessageCount, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
     if (msgList != null && msgList.length > 1) {
       dataList.clear();
@@ -1871,11 +1833,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         );
         _textController.selection = setCursor;
       }
-      // if (mounted) {
-      //   reload(() {
-      //     print("reload-vvvvvvvvvvvvvvvvvvvvvvv");
-      //   });
-      // }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
       _postSelectMessage(content);
@@ -1975,8 +1932,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
-    _bottomSettingPanelState=isOpen;
-    bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    if(MediaQuery.of(this.context).viewInsets.bottom>0) {
+      _bottomSettingPanelState = isOpen;
+      bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    }
   }
 
   @override

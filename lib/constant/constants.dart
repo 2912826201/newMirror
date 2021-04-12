@@ -8,3 +8,10 @@ const double minMediaRatio = 0.8;
 //录制视频最短及最长时长 单位秒
 const int minRecordVideoDuration = 1;
 const int maxRecordVideoDuration = 60;
+
+//聊天界面每次获取的记录是多少条
+const int chatAddHistoryMessageCount=50;
+
+//录音最长时长 单位秒
+const int maxRecordVoiceDuration=60;
+const int minRecordVoiceDuration=1;
