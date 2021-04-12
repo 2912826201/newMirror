@@ -19,6 +19,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
@@ -309,14 +310,16 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 未登录状态不需要刷新
     if (status == Status.notLoggedIn) {
       return Container(
+        height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 224,
               height: 224,
               color: AppColor.color246,
-              margin: const EdgeInsets.only(bottom: 16, top: 150),
+              margin: const EdgeInsets.only(bottom: 16),
             ),
             const Text(
               "登录账号后查看你关注的精彩内容",
@@ -345,8 +348,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     return Container(
       child: SmartRefresher(
-          enablePullUp: true,
-          enablePullDown: true,
+          enablePullUp: status == Status.concern ? true : false,
+          enablePullDown: true ,
           footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
           header: SmartRefresherHeadFooter.init().getHeader(),
           controller: _refreshController,
@@ -410,14 +413,16 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     switch (status) {
       case Status.noConcern:
         return Container(
+          height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 width: 224,
                 height: 224,
                 color: AppColor.color246,
-                margin: const EdgeInsets.only(bottom: 16, top: 188),
+                margin: const EdgeInsets.only(bottom: 16),
               ),
               const Text(
                 "这里空空如也，去推荐看看吧",

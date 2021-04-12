@@ -15,6 +15,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -220,7 +221,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       children: [
         Container(
           child: SmartRefresher(
-              enablePullUp: true,
+              enablePullUp: recommendModelList.isNotEmpty ? true : false,
               enablePullDown: true,
               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
               header: SmartRefresherHeadFooter.init().getHeader(),
@@ -293,14 +294,20 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             )
                           : SliverToBoxAdapter(
                               child: Container(
+                              height: ScreenUtil.instance.height -
+                                  48 -
+                                  44 -
+                                  ScreenUtil.instance.bottomBarHeight -
+                                  ScreenUtil.instance.statusBarHeight,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
                                     width: 224,
                                     height: 224,
                                     color: AppColor.color246,
-                                    margin: const EdgeInsets.only(bottom: 16, top: 188),
+                                    margin: const EdgeInsets.only(bottom: 16),
                                   ),
                                   const Text(
                                     "这里空空如也，去关注看看吧",

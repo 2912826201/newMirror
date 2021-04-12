@@ -48,6 +48,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // 头像布局
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return GestureDetector(
                 onTap: () {
@@ -66,7 +67,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     child: Stack(
                       overflow: Overflow.visible,
                       alignment: const FractionalOffset(0, 0.5),
-                      children: avatarOverlap(laudUserInfo.length, context, laudUserInfo),
+                      children: avatarOverlap( context, laudUserInfo),
                     )),
               );
             }, selector: (context, notifier) {
@@ -75,6 +76,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             const SizedBox(width: 5),
+            // 几次点赞
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
             }, selector: (context, notifier) {
@@ -86,6 +88,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
             const Spacer(),
+            // 横排三连布局
             Container(
               width: 104,
               margin: const EdgeInsets.only(right: 16),
@@ -96,15 +99,16 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 横排重叠头像
-  avatarOverlap(int num, BuildContext context, List<String> laudUserInfo) {
+  avatarOverlap( BuildContext context, List<String> laudUserInfo) {
     List<Widget> avatarList = [];
     List<String> userInfo = [];
+    // 只展示前三个点赞头像
     for (int i = 0; i < laudUserInfo.length; i++) {
       if (i < 4) {
         userInfo.add(laudUserInfo[i]);
       }
     }
-    // 默认用户的头像
+    // 默认用户的头像点赞了显示用户本人头像
     if (context.select((TokenNotifier tokenNotifier) => tokenNotifier.isLoggedIn)) {
       avatarList.add(
         AnimatedContainer(
@@ -122,22 +126,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                 : 0,
             alignment: Alignment.center,
             child: roundedAvatar(
-                context,
-                context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri),
-                (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
-                            null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-                    ? 21
-                    : 0,
-                (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
-                            null &&
-                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-                    ? 21
-                    : 0),
+              context,
+              context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri),
+            ),
             duration: const Duration(milliseconds: 200)),
       );
     }
@@ -165,10 +156,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(
-              context,
-              userInfo[index],
-              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
-              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0),
+            context,
+            userInfo[index],
+          ),
           duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
     } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
@@ -177,18 +167,16 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(
-              context,
-              userInfo[index],
-              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
-              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0),
+            context,
+            userInfo[index],
+          ),
           duration: const Duration(milliseconds: 200));
     } // 只展示前三个头像
     else if (index < 3) {
       return roundedAvatar(
-          context,
-          item,
-          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
-          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0);
+        context,
+        item,
+      );
     } else {
       return Container();
     }
@@ -233,11 +221,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 横排头像默认值
-  roundedAvatar(BuildContext context, String url, double height, double width, {double radius = 10.5}) {
+  roundedAvatar(BuildContext context, String url, {double radius = 10.5}) {
     return ClipOval(
       child: CachedNetworkImage(
-            height: height,
-            width: width,
+            height: 21,
+            width: 21,
             imageUrl: url != null ? url : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Image.asset(
@@ -302,10 +290,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             onTap: () {
               bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
               if (isLoggedIn) {
-                // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-                //   ToastShow.show(msg: "不响应", context: context);
-                // } else {
                 openFeedCommentBottomSheet(
                     context: context,
                     feedId: widget.model.id,
@@ -314,7 +298,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                         widget.back();
                       }
                     });
-                // }
               } else {
                 // 去登录
                 AppRouter.navigateToLoginPage(context);
@@ -329,10 +312,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             iconSize: 24,
             onTap: () {
               if (context.read<TokenNotifier>().isLoggedIn) {
-                // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-                //   ToastShow.show(msg: "不响应", context: context);
-                // } else {
                 InquireCheckBlack(
                     checkId: widget.model.pushId,
                     inquireCheckBlackCallback: (BlackModel blackModel) {
@@ -350,7 +329,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                           chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
                           sharedType: 1);
                     });
-                // }
               } else {
                 // 去登录
                 AppRouter.navigateToLoginPage(context);
