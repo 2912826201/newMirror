@@ -142,6 +142,8 @@ dependencies:
   qrcode: ^1.0.3
   #二维码生成
   qr_flutter: ^3.2.0
+  #url
+  url_launcher: '5.7.10'
 
 
 

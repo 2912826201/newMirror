@@ -48,6 +48,7 @@ import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
@@ -1828,7 +1829,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
-      ToastShow.show(msg: "跳转网页地址: $content", context: _context);
+      _launchUrl(content);
+      // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"], context);
@@ -1958,7 +1960,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       return DemoImageItem(sourceEntity);
     }
   }
-
+  _launchUrl(String url) async {
+    if(!(url.contains("http://")||url.contains("https://"))){
+      url="https://"+url;
+    }
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
   @override
   void endCanvasPage() {
     print("停止改变屏幕高度");
