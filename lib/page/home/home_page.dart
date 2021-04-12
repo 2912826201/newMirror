@@ -481,7 +481,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     );
                   }),
               Expanded(
-                child: UnionInnerTabBarView(
+                child: TabBarView(
                   controller: controller,
                   children: [
                     AttentionPage(
