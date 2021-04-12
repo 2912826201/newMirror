@@ -194,13 +194,11 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           onRefresh: _onRefresh,
                           onLoading: (){
                             setState(() {
-                              showNoMore = IntegerUtil.showNoMore(globalKey);
+                              showNoMore = IntegerUtil.showNoMore(globalKey,lastItemToTop: true);
                             });
                             _onLoading();
                           },
-                          child: Container(
-                            child: ListView.builder(
-                              key: globalKey,
+                          child:ListView.builder(
                               controller: scrollController,
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
@@ -210,9 +208,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
-                              /*    globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,*/
+                                  globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,
                                 );
-                              }),),
+                              }),
                         ))
                     : Center(
                         child: Column(
