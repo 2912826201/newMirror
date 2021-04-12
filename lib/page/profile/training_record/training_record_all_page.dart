@@ -9,6 +9,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dotted_line.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -25,16 +26,22 @@ class TrainingRecordAllPage extends StatefulWidget {
 class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   //加载数据的状态
   LoadingStatus loadingStatus = LoadingStatus.STATUS_LOADING;
+
   //加载数据的状态
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+
   //每一天的数据
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
+
   //每一个月的数据--没有具体数据-有每一天的索引
   List<TrainingRecordMonthModel> monthModelList = <TrainingRecordMonthModel>[];
+
   //哪一个月进行了折叠操作
   Map<String, int> monthUnfoldModelMap = Map();
+
   //哪一个月展示全部的数据
   Map<String, int> monthAllModelMap = Map();
+
   //总数据的记录
   Map<String, dynamic> allDataMap = Map();
 
@@ -131,7 +138,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         enablePullDown: true,
         enablePullUp: true,
         header: SmartRefresherHeadFooter.init().getHeader(),
-        footer:SmartRefresherHeadFooter.init().getFooter(),
+        footer: SmartRefresherHeadFooter.init().getFooter(),
         controller: _refreshController,
         onLoading: onLoadData,
         onRefresh: onRefresh,
@@ -144,7 +151,6 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       ),
     );
   }
-
 
   //获取item
   Widget getListViewItemUi(int index) {
@@ -192,7 +198,6 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       }
     }
 
-
     bool isVisible = true;
     if (monthUnfoldModelMap[monthModelList[index].dateCompleteString1] != null &&
         monthUnfoldModelMap[monthModelList[index].dateCompleteString1] != 0) {
@@ -203,7 +208,9 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       lengthAllCount--;
     }
 
-    widgetArray.add(Container(height: 50,));
+    widgetArray.add(Container(
+      height: 50,
+    ));
 
     return Visibility(
       visible: isVisible,
@@ -216,9 +223,9 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Expanded(child: SizedBox(
-                    child:
-                    Container(
+                  Expanded(
+                      child: SizedBox(
+                    child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       width: 1,
                       color: AppColor.textSecondary,
@@ -237,16 +244,15 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
             ),
             Expanded(
                 child: SizedBox(
-                  child: Column(
-                    children: widgetArray,
-                  ),
-                )),
+              child: Column(
+                children: widgetArray,
+              ),
+            )),
           ],
         ),
       ),
     );
   }
-
 
   //获取查看更多数据
   Widget getShowAllDataUi(String dateCompleteString1) {
@@ -262,12 +268,10 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
               height: 48,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 2),
-                    child: Icon(Icons.keyboard_arrow_down, size: 16, color: AppColor.textPrimary2),
-                  ),
-                  SizedBox(width: 6),
+                  AppIcon.getAppIcon(AppIcon.double_arrow_down_16, 16, color: AppColor.textPrimary2),
+                  SizedBox(width: 2),
                   Text("查看更多"),
                 ],
               ),
@@ -276,14 +280,14 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         ),
       ),
       onTap: () {
-        bool isShowAllItem = monthAllModelMap[dateCompleteString1] == null ||
-            monthAllModelMap[dateCompleteString1] == 0;
+        bool isShowAllItem =
+            monthAllModelMap[dateCompleteString1] == null || monthAllModelMap[dateCompleteString1] == 0;
         if (isShowAllItem) {
           monthAllModelMap[dateCompleteString1] = 1;
         } else {
           monthAllModelMap[dateCompleteString1] = 0;
         }
-        if(mounted){
+        if (mounted) {
           setState(() {});
         }
       },
@@ -291,8 +295,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   }
 
   //获取每一个item
-  Widget getItem(bool isShowBottomViewLine, int index, int len, int learnTime, int calorie,
-      CourseModelList courseModelList) {
+  Widget getItem(
+      bool isShowBottomViewLine, int index, int len, int learnTime, int calorie, CourseModelList courseModelList) {
     DateTime dateTime = DateUtil.getDateTimeByMs(courseModelList.createTime);
     String date = "${dateTime.month}月${dateTime.day}日";
     String showTime = DateUtil.formatDateV(dateTime, format: "yyyy-MM-dd HH:mm");
@@ -303,37 +307,27 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           getLineView(leftWidth: 0, rightWidth: 0),
-
           Visibility(
             visible: index == 0,
             child: SizedBox(height: 22),
           ),
-
           Visibility(
             visible: index == 0,
             child: Container(
               height: 20,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 3),
-                    child: Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
-                  ),
-                  SizedBox(width: 5),
+                  AppIcon.getAppIcon(AppIcon.time_filled_16, 16),
+                  SizedBox(width: 6),
                   Text(date, style: TextStyle(fontSize: 14, color: AppColor.textPrimary2)),
-                  Expanded(child: SizedBox()),
-                  Container(
-                    margin: const EdgeInsets.only(top: 3),
-                    child: Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
-                  ),
-                  SizedBox(width: 4),
+                  Spacer(),
+                  AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textPrimary2),
+                  SizedBox(width: 2),
                   Text("${learnTime ~/ 1000 ~/ 60}分钟", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
                   SizedBox(width: 10),
-                  Container(
-                    margin: const EdgeInsets.only(top: 3),
-                    child: Icon(Icons.local_fire_department, size: 12, color: AppColor.textPrimary2),
-                  ),
-                  SizedBox(width: 4),
+                  AppIcon.getAppIcon(AppIcon.calorie_16, 16, color: AppColor.textPrimary2),
+                  SizedBox(width: 2),
                   Text("$calorie千卡", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
                 ],
               ),
@@ -344,7 +338,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
           SizedBox(height: 11),
           Text(courseModelList.title, style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           SizedBox(height: 6),
-          Text("第${courseModelList.no}次  ${courseModelList.mseconds ~/ 1000 ~/ 60}分钟 "
+          Text(
+              "第${courseModelList.no}次  ${courseModelList.mseconds ~/ 1000 ~/ 60}分钟 "
               " ${IntegerUtil.formationCalorie(courseModelList.calorie)}",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
           SizedBox(height: 12),
@@ -357,9 +352,10 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     );
   }
 
-
   //获取日期的item
   Widget getDateUi(int index) {
+    bool isFold=(monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
+        monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == 0);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -368,38 +364,38 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
           getMark(index),
           Expanded(
               child: SizedBox(
-                child: Column(
+            child: Column(
+              children: [
+                SizedBox(height: 28),
+                Row(
                   children: [
-                    SizedBox(height: 28),
-                    Row(
-                      children: [
-                        Text(monthModelList[index].dateCompleteString1,
-                            style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
-                        Expanded(child: SizedBox()),
-                        GestureDetector(
-                          child: Container(
-                            height: 28,
-                            width: 50,
-                            color: Colors.transparent,
-                            child: Icon(Icons.arrow_circle_up, size: 18),
-                          ),
-                          onTap: () {
-                            if (monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
-                                monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == 0) {
-                              monthUnfoldModelMap[monthModelList[index].dateCompleteString1] = 1;
-                            } else {
-                              monthUnfoldModelMap[monthModelList[index].dateCompleteString1] = 0;
-                            }
-                            if(mounted){
-                              setState(() {});
-                            }
-                          },
-                        )
-                      ],
-                    ),
+                    Text(monthModelList[index].dateCompleteString1,
+                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
+                    Expanded(child: SizedBox()),
+                    GestureDetector(
+                      child: Container(
+                        height: 28,
+                        width: 50,
+                        color: Colors.transparent,
+                        child: Icon(isFold?Icons.keyboard_arrow_up:Icons.keyboard_arrow_down, size: 18),
+                      ),
+                      onTap: () {
+                        if (monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
+                            monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == 0) {
+                          monthUnfoldModelMap[monthModelList[index].dateCompleteString1] = 1;
+                        } else {
+                          monthUnfoldModelMap[monthModelList[index].dateCompleteString1] = 0;
+                        }
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      },
+                    )
                   ],
                 ),
-              ))
+              ],
+            ),
+          ))
         ],
       ),
     );
@@ -474,25 +470,21 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       height: 48.0,
       alignment: Alignment.center,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text("全部", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
-          Expanded(child: SizedBox()),
-          Container(
-            margin: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary3),
-          ),
+          Spacer(),
+          //FIXME 少了一个icon
+          AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textHint),
+          SizedBox(width: 2),
           Text("$countString次", style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
-          SizedBox(width: 15),
-          Container(
-            margin: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary3),
-          ),
+          SizedBox(width: 12),
+          AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textHint),
+          SizedBox(width: 2),
           Text("$timeString分钟", style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
-          SizedBox(width: 15),
-          Container(
-            margin: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary3),
-          ),
+          SizedBox(width: 12),
+          AppIcon.getAppIcon(AppIcon.calorie_16, 16, color: AppColor.textHint),
+          SizedBox(width: 2),
           Text("$calorieCount千卡", style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
         ],
       ),
@@ -506,7 +498,6 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
       color: AppColor.bgWhite,
     );
   }
-
 
   void onRefresh() {
     pageIndex = 0;
@@ -541,7 +532,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     if (isGetAllData) {
       allDataMap = await getTrainingRecords();
     }
-    if(mounted) {
+    if (mounted) {
       setState(() {
         if (this.monthUnfoldModelMap.length > 0) {
           loadingStatus = LoadingStatus.STATUS_COMPLETED;
@@ -573,8 +564,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         monthModelList.add(monthModel);
         monthUnfoldModelMap[getMonthString(recordModel.finishTime)] = monthModelList.length - 1;
       } else {
-        TrainingRecordMonthModel monthModel = monthModelList[monthUnfoldModelMap[getMonthString(
-            recordModel.finishTime)]];
+        TrainingRecordMonthModel monthModel =
+            monthModelList[monthUnfoldModelMap[getMonthString(recordModel.finishTime)]];
         monthModel.dataStringList.add(recordModel.finishTime);
         monthModel.dayListIndex.add(position);
         monthModel.dcalorieCount += recordModel.dcalorieCount;
@@ -625,9 +616,4 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     }
     return position;
   }
-
-
 }
-
-
-
