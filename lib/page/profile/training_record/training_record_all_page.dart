@@ -357,7 +357,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     bool isFold=(monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
         monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == 0);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.only(left: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -377,7 +377,10 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
                         height: 28,
                         width: 50,
                         color: Colors.transparent,
-                        child: Icon(isFold?Icons.keyboard_arrow_up:Icons.keyboard_arrow_down, size: 18),
+                        child: Icon(isFold?Icons.keyboard_arrow_up:Icons.keyboard_arrow_down,
+                            size: 18,
+                          color: AppColor.textHint,
+                        ),
                       ),
                       onTap: () {
                         if (monthUnfoldModelMap[monthModelList[index].dateCompleteString1] == null ||
@@ -404,7 +407,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   //标识
   Widget getMark(int index) {
     return Container(
-      width: 22,
+      width: 21,
       height: 56,
       child: Stack(
         alignment: AlignmentDirectional.bottomCenter,
