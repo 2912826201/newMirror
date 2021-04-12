@@ -68,7 +68,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
             InkWell(
               onTap: () {},
               child: Container(
-                margin:  EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
+                margin: EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
                 child: ClipOval(
                   child: CachedNetworkImage(
                     height: 28,
@@ -96,7 +96,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 margin: EdgeInsets.only(left: 12, top: widget.isFeedDetail ? 10 : 0),
                 padding: const EdgeInsets.only(left: 16),
                 alignment: const Alignment(-1, 0),
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(14)),
                   color: AppColor.bgWhite.withOpacity(0.65),
                 ),
@@ -105,15 +105,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
               ),
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
-                  // if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-                  //   // ToastShow.show(msg: "不响应", context: context);
-                  // } else {
                   openInputBottomSheet(
                     buildContext: context,
-                    hintText:
-                        // widget.isUnderline ?
-                        "说点什么吧~",
-                    // : "喜欢就评论吧~",
+                    hintText: "说点什么吧~",
                     voidCallback: (String text, List<Rule> rules) {
                       List<AtUsersModel> atListModel = [];
                       for (Rule rule in rules) {
@@ -164,12 +158,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                                 }
                               }
                             }
-                            // 关闭评论输入框
-                            // Navigator.of(context).pop(1);
                           });
                     },
                   );
-                  // }
                 } else {
                   // 去登录
                   AppRouter.navigateToLoginPage(context);

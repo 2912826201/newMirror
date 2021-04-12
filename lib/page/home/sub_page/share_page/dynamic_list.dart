@@ -150,7 +150,6 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
 
 // 视频
   Widget getVideo({HomeFeedModel feedModel}) {
-
     List<VideosModel> videos = feedModel.videos;
     SizeInfo sizeInfo = SizeInfo();
     if (videos != null) {
@@ -161,7 +160,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
       VideoIsPlay videoIsPlay = VideoIsPlay();
-     /*return VideoExposure(
+      /*return VideoExposure(
         key: Key('video_${widget.model.id}'),
        child: VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNum2(videos.first.duration),),
        onExposure: (visibilityInfo) {
@@ -178,7 +177,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
        },
         // child:
       );*/
-        return FeedVideoPlayer(
+      return FeedVideoPlayer(
         videos.first.url,
         sizeInfo,
         ScreenUtil.instance.width,
@@ -251,5 +250,6 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
 class VideoIsPlay {
   bool isPlay;
   int id;
-  VideoIsPlay({this.isPlay = false,this.id});
+
+  VideoIsPlay({this.isPlay = false, this.id});
 }
