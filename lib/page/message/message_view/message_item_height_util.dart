@@ -42,6 +42,13 @@ class MessageItemHeightUtil{
     double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0;
     return _judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
   }
+  //获取消息的高度
+  double getMessageHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
+    if(chatDataList.length<1){
+      return 0.0;
+    }
+    return _getMessageItemHeight(chatDataList,isShowChatUserName);
+  }
 
   //获取消息的高度
   double _judgeMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName,double chatListPageHeight){
@@ -57,7 +64,16 @@ class MessageItemHeightUtil{
     return itemHeight;
   }
 
-
+  //获取消息的高度
+  double _getMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
+    double itemHeight=0.0;
+    if(chatDataList!=null&&chatDataList.length>0){
+      chatDataList.forEach((element) {
+        itemHeight+=_judgeTemporaryData(element,isShowChatUserName);
+      });
+    }
+    return itemHeight;
+  }
 
   double _judgeTemporaryData(ChatDataModel model,bool isShowName){
     if (model.isTemporary) {
@@ -228,7 +244,7 @@ class MessageItemHeightUtil{
     itemHeight+=8.0;
 
     double textMaxWidth=ScreenUtil.instance.width- (16 + 7 + 38 + 2) * 2;
-    itemHeight+=getTextSize(content, TextStyle(fontSize: 15), 100,textMaxWidth).height;
+    itemHeight+=getTextSize(content, TextStyle(fontSize: 14), 100,textMaxWidth).height;
 
     if(isOnlyContentHeight) {
       return itemHeight;

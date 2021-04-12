@@ -67,10 +67,24 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
 
   Widget loadStatusWidget;
 
+  int atItemMessagePosition=-1;
+
+
+  AnimationController _animationController;
+  Animation _animation;
+
   @override
   void setState(fn) {
     if(mounted){
       super.setState(fn);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if(_animationController!=null){
+      _animationController.dispose();
     }
   }
 
@@ -146,7 +160,6 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   Widget getListView() {
     int childCount=getChildCount();
     return ListView.custom(
-      cacheExtent: 0.0,
       physics: BouncingScrollPhysics(),
       controller: widget.scrollController,
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -237,16 +250,48 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
           sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
           axisAlignment: 0.0,
           child: Container(
-            child: getBodyItem(model, position),
+            child: getBodyAtItem(model, position),
           ));
     } else {
-      return getBodyItem(model, position);
+      return getBodyAtItem(model, position);
     }
   }
 
+
   //获取每一个item
-  Widget getBodyItem(ChatDataModel model, int position) {
-    return SendMessageView(model, widget.chatId, position, widget.voidMessageClickCallBack, widget.voidItemLongClickCallBack, widget.chatName,
+  Widget getBodyAtItem(ChatDataModel model, int position) {
+    if(atItemMessagePosition==position){
+      _animationController =
+          AnimationController(duration: Duration(seconds: 2), vsync:  widget.vsync);
+      _animation = DecorationTween(begin: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            AppColor.transparent,
+            AppColor.textHint,
+            AppColor.transparent,
+          ],
+        ),
+      ), end: BoxDecoration(
+        color: AppColor.transparent,
+      ))
+          .animate(_animationController);
+      Future.delayed(Duration(milliseconds: 500), () {
+        _animationController.forward();
+      });
+      atItemMessagePosition=-1;
+      return DecoratedBoxTransition(
+          decoration: _animation,
+          child: getBodyItem(model,position));
+    }else{
+      return getBodyItem(model,position);
+    }
+  }
+
+  Widget getBodyItem(ChatDataModel model, int position){
+    return SendMessageView(model, widget.chatId, position,
+        widget.voidMessageClickCallBack, widget.voidItemLongClickCallBack, widget.chatName,
         widget.isShowChatUserName, widget.conversationDtoType);
   }
 
@@ -270,7 +315,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     setState(() {});
   }
 
-  setLoadStatus(LoadingStatus loadStatus,{bool isResetPage=false}){
+  setLoadStatus(LoadingStatus loadStatus){
     this.loadStatus=loadStatus;
     if (loadStatus != LoadingStatus.STATUS_COMPLETED && !isShowTop) {
       if(!isHaveLoadAnimation){
@@ -279,13 +324,15 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
         return;
       }
     }
-    if(isResetPage){
-      setState(() {});
-      return;
-    }
     _resetLoadStatus();
   }
 
+  setAtItemMessagePosition(int atItemMessagePosition){
+    this.atItemMessagePosition=atItemMessagePosition;
+    if(atItemMessagePosition>0){
+      setState(() {});
+    }
+  }
 
 
 

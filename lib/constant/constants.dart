@@ -10,7 +10,7 @@ const int minRecordVideoDuration = 1;
 const int maxRecordVideoDuration = 60;
 
 //聊天界面每次获取的记录是多少条
-const int chatAddHistoryMessageCount=50;
+const int chatAddHistoryMessageCount=20;
 
 //录音最长时长 单位秒
 const int maxRecordVoiceDuration=60;
