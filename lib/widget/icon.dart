@@ -13,6 +13,8 @@ class AppIcon {
   static const String nav_share = "assets/svg/nav_share.svg";
   static const String nav_add_favorites = "assets/svg/nav_add_favorites.svg";
   static const String nav_more = "assets/svg/nav_more.svg";
+  static const String nav_scan = "assets/svg/nav_scan.svg";
+  static const String nav_settings = "assets/svg/nav_settings.svg";
   static const String input_at = "assets/svg/input_at.svg";
   static const String input_keyboard = "assets/svg/input_keyboard.svg";
   static const String input_voice = "assets/svg/input_voice.svg";
@@ -82,6 +84,7 @@ class AppIcon {
   static const String headset = "assets/svg/headset.svg";
   static const String selection_selected = "assets/svg/selection_selected.svg";
   static const String selection_not_selected = "assets/svg/selection_not_selected.svg";
+  static const String selection_remove = "assets/svg/selection_remove.svg";
   static const String group_chat_24 = "assets/svg/group_chat_24.svg";
   static const String at_16 = "assets/svg/at_16.svg";
   static const String message_send = "assets/svg/message_send.svg";
@@ -95,8 +98,13 @@ class AppIcon {
   static const String avatar_system = "assets/svg/avatar_system.svg";
   static const String avatar_training = "assets/svg/avatar_training.svg";
   static const String official = "assets/svg/official.svg";
-
-  static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
+  static const String profile_course = "assets/svg/profile_course.svg";
+  static const String profile_order = "assets/svg/profile_order.svg";
+  static const String profile_achievement = "assets/svg/profile_achievement.svg";
+  static const String profile_record = "assets/svg/profile_record.svg";
+  static const String profile_weight = "assets/svg/profile_weight.svg";
+  static const String profile_gallery = "assets/svg/profile_gallery.svg";
+  static const String profile_edit = "assets/svg/profile_edit.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

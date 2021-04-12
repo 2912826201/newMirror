@@ -5,9 +5,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
-import 'package:toast/toast.dart';
 
 //关于
 class AboutPage extends StatefulWidget {
@@ -124,9 +123,9 @@ class _AboutPageState extends State<AboutPage> {
             SizedBox(
               width: 12,
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 18,
+            AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              18,
               color: AppColor.textHint,
             ),
           ],

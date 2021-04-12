@@ -6,17 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
-import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
@@ -28,13 +24,13 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
-enum StateResult { HAVERESULT, RESULTNULL }
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
@@ -48,9 +44,6 @@ class ProfileDetailPage extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
-  final String _imgShared = "images/test/分享.png";
-  final String _imgMore = "images/test/ic_big_dynamic_more.png";
-
   ///昵称
   String _textName;
 
@@ -120,8 +113,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
-            if (!isScroll) {
-              streamController.sink.add(AppColor.black);
+        if (!isScroll) {
+          streamController.sink.add(AppColor.black);
           canOnClick = false;
           isScroll = true;
         }
@@ -249,20 +242,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
                     );
                   }),
-
-              leading: InkWell(
+              leading: CustomAppBarIconButton(
+                svgName: AppIcon.nav_return,
+                iconColor: AppColor.black,
                 onTap: () {
                   Navigator.pop(this.context,
                       context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
                 },
-                child: Image.asset(
-                  "images/test/back.png",
-                  width: 24,
-                  height: 24,
-                ),
               ),
               actions: [
-                InkWell(
+                CustomAppBarIconButton(
+                  svgName: AppIcon.nav_share,
+                  iconColor: AppColor.black,
                   onTap: () {
                     openShareBottomSheet(
                         context: context,
@@ -270,17 +261,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
                         sharedType: 1);
                   },
-                  child: Image.asset(
-                    _imgShared,
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
                 ),
                 !isMselfId
-                    ? InkWell(
+                    ? Container()
+                    : SizedBox(
+                        width: 8,
+                      ),
+                !isMselfId
+                    ? CustomAppBarIconButton(
+                        svgName: AppIcon.nav_more,
+                        iconColor: AppColor.black,
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailsMore(
@@ -291,20 +281,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                             _getFollowCount(id: widget.userId);
                           });
                         },
-                        child: Image.asset(
-                          _imgMore,
-                          width: 24,
-                          height: 24,
-                        ),
                       )
-                    : Container(
-                        width: 0,
-                      ),
+                    : Container(),
                 !isMselfId
                     ? SizedBox(
-                        width: 15.5,
+                        width: 8,
                       )
-                    : Container()
+                    : Container(),
               ],
               backgroundColor: AppColor.white,
               expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + _signatureHeight,
@@ -414,13 +397,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             child: CachedNetworkImage(
               height: height * 0.33,
               width: height * 0.33,
-              imageUrl: _avatar!=null?_avatar:"",
+              imageUrl: _avatar != null ? _avatar : "",
               fit: BoxFit.cover,
               placeholder: (context, url) => Image.asset(
                 "images/test.png",
                 fit: BoxFit.cover,
               ),
-             /* errorWidget: (context, url, e) {
+              /* errorWidget: (context, url, e) {
                 return Image.asset(
                   "images/test.png",
                   fit: BoxFit.cover,
@@ -660,7 +643,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: height * 0.09,
           width: height * 0.09,
           useOldImageOnUrlChange: true,
-          imageUrl: _avatar!=null?_avatar:"",
+          imageUrl: _avatar != null ? _avatar : "",
           fit: BoxFit.cover,
           placeholder: (context, url) => CircularProgressIndicator(),
           /*errorWidget:(context, url, e) {
