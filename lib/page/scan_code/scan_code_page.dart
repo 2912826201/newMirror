@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui'as ui;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/message_api.dart';
@@ -17,6 +17,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrcode/qrcode.dart';
 import 'package:scan/scan.dart';
@@ -24,9 +25,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:provider/provider.dart';
+
 class ScanCodePage extends StatefulWidget {
   bool showMyCode;
+
   ScanCodePage({this.showMyCode});
+
   @override
   scanCodePageState createState() => scanCodePageState();
 }
@@ -36,6 +40,7 @@ class scanCodePageState extends State<ScanCodePage> {
   StreamController<double> streamController = StreamController<double>();
   QRCaptureController _captureController = QRCaptureController();
   bool upOrDown = false;
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -55,6 +60,7 @@ class scanCodePageState extends State<ScanCodePage> {
     });
     _getShortUrl();
   }
+
   _getShortUrl() async {
     Map<String, dynamic> map = await getShortUrl(type: 3, targetId: context.read<ProfileNotifier>().profile.uid);
     if (map != null) {
@@ -65,33 +71,34 @@ class scanCodePageState extends State<ScanCodePage> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: CustomAppBar(
-          titleString: "扫描二维码",
-          leadingOnTap: () {
-            Navigator.pop(context);
-          },
-          actions: [
-            CustomAppBarTextButton("相册", AppColor.textPrimary2, () {
-              _getImagePicker();
-            }),
-          ],
-        ),
-        body: Stack(
-          children: [
-        Container(
-        width: ScreenUtil.instance.screenWidthDp,
-          height: ScreenUtil.instance.height,
-          child: QRCaptureView(
-            controller: _captureController,
+    return Scaffold(
+      appBar: CustomAppBar(
+        titleString: "扫描二维码",
+        leadingOnTap: () {
+          Navigator.pop(context);
+        },
+        actions: [
+          CustomAppBarTextButton("相册", AppColor.textPrimary2, () {
+            _getImagePicker();
+          }),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Container(
+            width: ScreenUtil.instance.screenWidthDp,
+            height: ScreenUtil.instance.height,
+            child: QRCaptureView(
+              controller: _captureController,
+            ),
           ),
-        ),
-            _scanCoverView()
-          ],
-        ),
-      );
+          _scanCoverView()
+        ],
+      ),
+    );
   }
 
   Widget _scanCoverView() {
@@ -104,11 +111,13 @@ class scanCodePageState extends State<ScanCodePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: ScreenUtil.instance.height*0.24,
+                height: ScreenUtil.instance.height * 0.24,
                 width: ScreenUtil.instance.screenWidthDp,
                 color: AppColor.black.withOpacity(0.3),
               ),
-              SizedBox(height: 250,),
+              SizedBox(
+                height: 250,
+              ),
               Expanded(
                 child: Container(
                   color: AppColor.black.withOpacity(0.3),
@@ -118,16 +127,17 @@ class scanCodePageState extends State<ScanCodePage> {
           ),
         ),
         _textContainerColumn()
-      ],);
+      ],
+    );
   }
 
-  Widget _textContainerColumn(){
+  Widget _textContainerColumn() {
     return Container(
-      child:Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: ScreenUtil.instance.height*0.24,
+            height: ScreenUtil.instance.height * 0.24,
           ),
           Row(
             children: [
@@ -146,26 +156,40 @@ class scanCodePageState extends State<ScanCodePage> {
               ),
             ],
           ),
-          SizedBox(height: 12,),
-          Text("将二维码放入框内，即可自动扫描",style: AppStyle.whiteMedium14,),
-          SizedBox(height: 48,),
-          widget.showMyCode?InkWell(
-              onTap: () {
-                AppRouter.navigateToMyQrCodePage(context,(result){
-                });
-              },
-              child:QrImage(
-                data:  codeData != null ? codeData : "",
-                size: 40,
-                padding: EdgeInsets.zero,
-                backgroundColor: AppColor.white,
-                version: QrVersions.auto,
-              ) ):Container(),
-          SizedBox(height: 9,),
-          widget.showMyCode?Text("我的二维码",style: AppStyle.whiteRegular12,):Container()
+          SizedBox(
+            height: 12,
+          ),
+          Text(
+            "将二维码放入框内，即可自动扫描",
+            style: AppStyle.whiteMedium14,
+          ),
+          SizedBox(
+            height: 48,
+          ),
+          widget.showMyCode
+              ? AppIconButton(
+                  iconSize: 40,
+                  svgName: AppIcon.qrcode,
+                  bgColor: AppColor.white,
+                  onTap: () {
+                    AppRouter.navigateToMyQrCodePage(context, (result) {});
+                  },
+                )
+              : Container(),
+          SizedBox(
+            height: 9,
+          ),
+          widget.showMyCode
+              ? Text(
+                  "我的二维码",
+                  style: AppStyle.whiteRegular12,
+                )
+              : Container()
         ],
-      ),);
+      ),
+    );
   }
+
   Widget _whiteSmallRow() {
     return Container(
       width: 26,
@@ -204,7 +228,7 @@ class scanCodePageState extends State<ScanCodePage> {
                     duration: Duration(milliseconds: 3000),
                     margin: EdgeInsets.only(top: snapshot.data),
                     onEnd: () {
-                      streamController.sink.add(upOrDown?250:0);
+                      streamController.sink.add(upOrDown ? 250 : 0);
                       upOrDown = !upOrDown;
                     },
                     child: Container(
@@ -217,6 +241,7 @@ class scanCodePageState extends State<ScanCodePage> {
           ],
         ));
   }
+
   _getImagePicker() {
     AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
@@ -246,7 +271,6 @@ class scanCodePageState extends State<ScanCodePage> {
       }
     });
   }
-
 
   //解析这个短链接
   void resolveScanResult(String result) async {
@@ -319,7 +343,6 @@ class scanCodePageState extends State<ScanCodePage> {
           AppRouter.navigateToScanCodeResultPage(context, model);
           break;
       }
-
     } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
       //网页 需要再细致区分处理 暂时先不处理
       ScanCodeResultModel model = ScanCodeResultModel();

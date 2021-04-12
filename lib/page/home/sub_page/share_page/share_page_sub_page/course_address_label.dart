@@ -18,15 +18,17 @@ class CourseAddressLabel extends StatelessWidget {
   double getBgWidth() {
     // 获取屏幕宽度
     double screenWidth = ScreenUtil.instance.screenWidthDp;
-    // 课程边框最大宽度
+    // 第一个边框最大宽度
     double maxWidth = (screenWidth - 32 - 12) * 0.75; //减去两遍间距 32，再减去和地址的间距12.按照需求最大占剩下的4分之3，地址最大占4分之一
     // 文本最大宽度
     double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去两边间距16，图片 16，文本和图片间距3.
     // 获取文本宽度
-    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1).width;
+    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1,textMaxWidth).width;
     // 获取背景边框宽度
     double BgWidth = textWidth + 16 + 16 + 3;
-    // 为课程时
+    // 课程地址所占的最大长度
+    double courseAddressMaxWidth = screenWidth - 32 - 12 - 35 - 35;// 减去二变间距32，二个item间距32，二个item内的二边间距图片大小图片文本间距总和35
+    // 此是第一个标签的长度
     if (index == 0) {
       // 文字宽度超长
       if (textWidth >= textMaxWidth) {
@@ -36,12 +38,15 @@ class CourseAddressLabel extends StatelessWidget {
       }
     } else {
       // 地址位置
-      if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width >= textMaxWidth) {
+      // 课程文字长度大于了UI规定的最大长度时，地址显示剩余的4分之一长度
+      if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width >= textMaxWidth) {
         return (screenWidth - 32 - 12) * 0.25;
       } else {
-        if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width + textWidth >
-            (screenWidth - 32 - 12 - 32 - 3 - 32 - 3)) {
-          return (screenWidth - 32 - 12) - getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width - 35;
+        // 课程文字长度加地址长度 大于了课程地址所占的最大长度时
+        if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width + textWidth >
+            courseAddressMaxWidth) {
+          // 可使用的剩下最大宽度
+          return (screenWidth - 32 - 12) - getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width - 35;
         } else {
           return BgWidth;
         }

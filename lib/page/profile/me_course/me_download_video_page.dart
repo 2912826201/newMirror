@@ -18,6 +18,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
 ///我的课程-下载课程界面
@@ -372,7 +373,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                 ),
               ),
               SizedBox(width: 40),
-              Icon(Icons.chevron_right, size: 18, color: AppColor.textHint),
+              AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textHint),
             ],
           ),
           Container(

@@ -191,6 +191,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   // 课程信息和地址
   Widget getCourseInfo(HomeFeedModel model, BuildContext context) {
     List<FeedTagModel> tags = [];
+    // 课程不为空转换model
     if (model.courseDto != null) {
       FeedTagModel tag = FeedTagModel();
       tag.type = feed_tag_type_course;
@@ -198,6 +199,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       tag.courseId = model.courseDto.id;
       tags.add(tag);
     }
+    // 地址不为空转换model
     if (model.address != null) {
       FeedTagModel tag = FeedTagModel();
       tag.type = feed_tag_type_location;
