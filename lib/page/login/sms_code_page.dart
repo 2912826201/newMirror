@@ -363,6 +363,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
           null) {
         EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
+      // 重新登录替换关注页布局
+      EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       AppRouter.popToBeforeLogin(context);
     } else {
       print('------------------用户信息请求失败');

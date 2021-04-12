@@ -94,8 +94,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             print("清空数据_______________________");
             AppPrefs.setPublishFeedLocalInsertData(
                 "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-            // todo 清除图片路径
-            if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+            //  清除图片路径
+            if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                .contains(AppConfig.getAppPublishDir())) {
               _clearCache(AppConfig.getAppPublishDir());
             }
             // 清空发布model
@@ -249,7 +250,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
 
           results = await FileUtil().uploadPics(fileList, (percent) {
-            if( postprogressModel.plannedSpeed < 1) {
+            if (postprogressModel.plannedSpeed < 1) {
               postprogressModel.plannedSpeed += percent / 7;
             } else {
               postprogressModel.plannedSpeed = 1;
@@ -281,7 +282,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
           results = await FileUtil().uploadMedias(fileList, (percent) {
             print("percent：${percent}");
-            if( postprogressModel.plannedSpeed < 1) {
+            if (postprogressModel.plannedSpeed < 1) {
               postprogressModel.plannedSpeed += percent / 7;
             } else {
               postprogressModel.plannedSpeed = 1;
@@ -332,18 +333,21 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               // 重新赋值存入
               AppPrefs.setPublishFeedLocalInsertData(
                   "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-              // todo 清除图片路径
+              //  清除图片路径
               print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path}");
-              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())}");
-              if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+              print(
+                  "文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())}");
+              if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                  .contains(AppConfig.getAppPublishDir())) {
                 _clearCache(AppConfig.getAppPublishDir());
               }
               // 清空发布model
               postprogressModel.postFeedModel = null;
-              //还原进度条
-              postprogressModel.plannedSpeed = 0.0;
-              streamController.sink.add(0.0);
               streamProgress.sink.add(postprogressModel);
+              streamController.sink.add(0.0);
+            });
+            new Future.delayed(Duration(milliseconds: 4500), () {
+              postprogressModel.plannedSpeed = 0.0;
             });
           } else {
             // 发布失败
@@ -428,8 +432,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                   }
                 }),
         // }),
-        titleWidget:  Container(
-          width:  140,
+        titleWidget: Container(
+          width: 140,
           child: TabBar(
             controller: controller,
             tabs: [
@@ -438,7 +442,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                 "推荐",
               )
             ],
-             labelStyle: const TextStyle(
+            labelStyle: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -455,7 +459,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           ),
         ),
         actions: [
-           CustomAppBarIconButton(
+          CustomAppBarIconButton(
               svgName: AppIcon.nav_search,
               iconColor: AppColor.black,
               onTap: () {
@@ -506,21 +510,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         // 重新赋值存入
                         AppPrefs.setPublishFeedLocalInsertData(
                             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-                        // todo 清除图片路径
-                        if(postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())) {
+                        //  清除图片路径
+                        if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                            .contains(AppConfig.getAppPublishDir())) {
                           _clearCache(AppConfig.getAppPublishDir());
                         }
                         // 清空发布model
                         postprogressModel.postFeedModel = null;
-                        // context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
-                        // 删除本地插入数据
-                        // if (attentionKey.currentState != null) {
-                        //   attentionKey.currentState.deleteData();
-                        // } else {
-                        //   new Future.delayed(Duration(milliseconds: 500), () {
-                        //     attentionKey.currentState.deleteData();
-                        //   });
-                        // }
                         //还原进度条
                         postprogressModel.plannedSpeed = 0.0;
                         streamController.sink.add(0.0);
