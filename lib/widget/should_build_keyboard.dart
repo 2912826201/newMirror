@@ -69,6 +69,7 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
   bool _isShouldBuild = false;
   double oldKeyboardHeight=0;
   Timer _timerBottomHeight;
+  int _timerCount=0;
   int _timerBottomHeightCount=0;
   bool pageHeightStopCanvas=true;
 
@@ -83,6 +84,11 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
   //计时
   _initTime() {
     _timerBottomHeight = Timer.periodic(Duration(milliseconds: 1), (timer) {
+      _timerCount++;
+      if(_timerCount>1000){
+        _timerCount=0;
+        secondListener();
+      }
       if(this.context!=null&&this.mounted) {
         if (oldKeyboardHeight == MediaQuery.of(this.context).viewInsets.bottom) {
           _timerBottomHeightCount++;
@@ -100,8 +106,15 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
             }
           }
         }else{
-          if(pageHeightStopCanvas&&MediaQuery.of(this.context).viewInsets.bottom>0) {
-            startCanvasPage(oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom);
+          print("pageHeightStopCanvas:$pageHeightStopCanvas,${MediaQuery.of(this.context).viewInsets.bottom}");
+          if(pageHeightStopCanvas) {
+            bool isOpen;
+            if(oldKeyboardHeight<0){
+              isOpen=true;
+            }else{
+              isOpen=oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom;
+            }
+            startCanvasPage(isOpen, MediaQuery.of(this.context).viewInsets.bottom);
             print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
             pageHeightStopCanvas = false;
           }
@@ -156,7 +169,7 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
     });
   }
 
-  void startCanvasPage(bool isOpen);
+  void startCanvasPage(bool isOpen,double keyBoardHeight);
 
   void endCanvasPage();
 
@@ -173,4 +186,5 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
 
 
   void keyBoardHeightThanZero();
+  void secondListener();
 }
