@@ -47,6 +47,7 @@ class AppIcon {
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
+  static const String double_arrow_down_16 = "assets/svg/double_arrow_down_16.svg";
   static const String close_18 = "assets/svg/close_18.svg";
   static const String close_24 = "assets/svg/close_24.svg";
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
@@ -81,7 +82,9 @@ class AppIcon {
   static const String score_16 = "assets/svg/score_16.svg";
   static const String calorie_16 = "assets/svg/calorie_16.svg";
   static const String time_16 = "assets/svg/time_16.svg";
+  static const String time_filled_16 = "assets/svg/time_filled_16.svg";
   static const String headset = "assets/svg/headset.svg";
+  static const String dumbbell = "assets/svg/dumbbell.svg";
   static const String selection_selected = "assets/svg/selection_selected.svg";
   static const String selection_not_selected = "assets/svg/selection_not_selected.svg";
   static const String selection_remove = "assets/svg/selection_remove.svg";

@@ -110,7 +110,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
               elevation: 0.5,
               brightness: Brightness.light,
               backgroundColor: AppColor.white,
-              expandedHeight: CustomAppBar.appBarHeight+36.0+16.0,
+              expandedHeight: CustomAppBar.appBarHeight + 36.0 + 16.0,
               flexibleSpace: buildFlexibleSpaceBar(),
               bottom: buildTabBar(),
             ),
@@ -320,7 +320,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   children: [
                     Text("查看所有训练", style: TextStyle(color: AppColor.textPrimary1, fontSize: 16)),
                     Expanded(child: SizedBox()),
-                    Icon(Icons.arrow_forward_ios_sharp, size: 18, color: AppColor.textHint),
+                    AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textHint),
                   ],
                 ),
               ),
@@ -404,18 +404,20 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             visible: isShowDate,
             child: Container(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
-                  SizedBox(width: 8),
+                  AppIcon.getAppIcon(AppIcon.time_filled_16, 16),
+                  SizedBox(width: 6),
                   Text(date, style: TextStyle(fontSize: 14, color: AppColor.textPrimary2)),
-                  Expanded(child: SizedBox()),
-                  Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
-                  SizedBox(width: 4),
+                  Spacer(),
+                  AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textPrimary2),
+                  SizedBox(width: 2),
                   Text("${time ~/ 1000 ~/ 60}分钟", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
                   SizedBox(width: 12),
-                  Icon(Icons.local_fire_department, size: 12, color: AppColor.textHint),
-                  SizedBox(width: 4),
-                  Text(IntegerUtil.formationCalorie(calorie), style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
+                  AppIcon.getAppIcon(AppIcon.calorie_16, 16, color: AppColor.textPrimary2),
+                  SizedBox(width: 2),
+                  Text(IntegerUtil.formationCalorie(calorie),
+                      style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
                 ],
               ),
             ),
@@ -428,7 +430,8 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           SizedBox(height: 11),
           Text(courseModel.title, style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           SizedBox(height: 6),
-          Text("第${courseModel.no}次  ${courseModel.mseconds ~/ 1000 ~/ 60}分钟  ${IntegerUtil.formationCalorie(courseModel.calorie)}",
+          Text(
+              "第${courseModel.no}次  ${courseModel.mseconds ~/ 1000 ~/ 60}分钟  ${IntegerUtil.formationCalorie(courseModel.calorie)}",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
           SizedBox(height: 12),
           Container(
@@ -471,9 +474,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         height: 71.0,
         child: Row(
           children: [
-            Container(
-              child: Icon(Icons.sports_baseball_sharp, color: AppColor.textPrimary1, size: 24),
-            ),
+            AppIcon.getAppIcon(AppIcon.dumbbell, 24),
             SizedBox(width: 12),
             Expanded(
                 child: SizedBox(
@@ -490,14 +491,14 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                       Expanded(child: SizedBox()),
                       Container(
                         margin: const EdgeInsets.only(top: 3),
-                        child: Icon(Icons.access_time_sharp, size: 16, color: AppColor.textHint),
+                        child: AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textHint),
                       ),
                       SizedBox(width: 2),
                       Text(time, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
                       SizedBox(width: 15),
                       Container(
                         margin: const EdgeInsets.only(top: 3),
-                        child: Icon(Icons.local_fire_department, size: 16, color: AppColor.textHint),
+                        child: AppIcon.getAppIcon(AppIcon.calorie_16, 16, color: AppColor.textHint),
                       ),
                       SizedBox(width: 2),
                       Text(calorie, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
@@ -850,14 +851,14 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       if (allDataMap == null || allDataMap["calorieCount"] == null) {
         return "0";
       } else {
-        return IntegerUtil.formationCalorie(allDataMap["calorieCount"],isHaveCompany: false);
+        return IntegerUtil.formationCalorie(allDataMap["calorieCount"], isHaveCompany: false);
       }
     } else if (typeString == "月") {
-      return IntegerUtil.formationCalorie(monthModelList[monthSelectPosition].dcalorieCount,isHaveCompany: false);
+      return IntegerUtil.formationCalorie(monthModelList[monthSelectPosition].dcalorieCount, isHaveCompany: false);
     } else if (typeString == "周") {
-      return IntegerUtil.formationCalorie(weekModelList[weekSelectPosition].dcalorieCount,isHaveCompany: false);
+      return IntegerUtil.formationCalorie(weekModelList[weekSelectPosition].dcalorieCount, isHaveCompany: false);
     } else {
-      return IntegerUtil.formationCalorie(dayModelList[daySelectPosition].dcalorieCount,isHaveCompany: false);
+      return IntegerUtil.formationCalorie(dayModelList[daySelectPosition].dcalorieCount, isHaveCompany: false);
     }
   }
 
@@ -933,7 +934,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     allDataMap = await getTrainingRecords();
     if (mounted) {
       setState(() {
-        if (null!=dayModelList&&dayModelList.length > 0) {
+        if (null != dayModelList && dayModelList.length > 0) {
           loadingStatus = LoadingStatus.STATUS_COMPLETED;
         } else {
           loadingStatus = LoadingStatus.STATUS_IDEL;
