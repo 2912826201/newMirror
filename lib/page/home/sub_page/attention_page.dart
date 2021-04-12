@@ -96,8 +96,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   void dispose() {
     print("关注页面销毁了");
     _controller.dispose();
-    EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_Page);
-    EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_Page);
+    EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_PAGE);
+    EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_PAGE);
     super.dispose();
   }
 
@@ -137,11 +137,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
       // 重新登录替换关注页布局
-      EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_Page,
+      EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
           registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       // 动态未读数
       EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_Page, registerName: EVENTBUS__FEED_UNREAD);
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);
     });
   }
 
