@@ -299,10 +299,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //总-全部数据页
   Widget getAllTrainingUi() {
     String countString;
-    if (allDataMap == null || allDataMap["clockCount"] == null) {
+    if (allDataMap == null || allDataMap["timesCount"] == null) {
       countString = "0";
     } else {
-      countString = (allDataMap["clockCount"]).toString();
+      countString = (allDataMap["timesCount"]).toString();
     }
 
     return SliverToBoxAdapter(
@@ -471,6 +471,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         height: 71.0,
         child: Row(
           children: [
