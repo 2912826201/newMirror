@@ -116,6 +116,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    EventBus.getDefault().unRegister(registerName:EVENTBUS_PROFILE_DELETE_FEED,pageName:EVENTBUS_PROFILE_PAGE);
+  }
+  @override
   void initState() {
     super.initState();
     print('-----------------------------profileDetailsListInit');

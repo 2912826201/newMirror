@@ -198,7 +198,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                             });
                             _onLoading();
                           },
-                          child: ListView.builder(
+                          child: Container(
+                            child: ListView.builder(
+                              key: globalKey,
                               controller: scrollController,
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
@@ -208,9 +210,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
-                                  globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,
+                              /*    globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,*/
                                 );
-                              }),
+                              }),),
                         ))
                     : Center(
                         child: Column(
