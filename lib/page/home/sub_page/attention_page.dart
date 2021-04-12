@@ -91,10 +91,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   Timer timer;
 
   GlobalKey globalKey = GlobalKey();
+
   @override
   void dispose() {
     print("关注页面销毁了");
     _controller.dispose();
+    EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_Page);
+    EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_Page);
     super.dispose();
   }
 
@@ -110,6 +113,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // context.read<FeedMapNotifier>().clearBuildCount();
     super.didUpdateWidget(oldWidget);
   }
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -117,6 +121,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print('============================关注页deactivate');
     context.read<FeedMapNotifier>().setBuildCallBack(false);
   }
+
   @override
   void initState() {
     print("初始化一下啊");
@@ -132,25 +137,27 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
       // 重新登录替换关注页布局
-      EventBus.getDefault()
-          .registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_Page, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_Page,
+          registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       // 动态未读数
       EventBus.getDefault()
           .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_Page, registerName: EVENTBUS__FEED_UNREAD);
     });
   }
 
- // 动态未读数
+  // 动态未读数
   _feedUnreadCallBack(int unread) {
     _unReadFeedCount = unread;
   }
+
   // 重新登录替换布局
   _againLoginReplaceLayout() {
     // 调用关注接口替换
-    if(!isRequestInterface) {
+    if (!isRequestInterface) {
       getRecommendFeed();
     }
   }
+
   // 请求关注接口
   getRecommendFeed() async {
     isRequestInterface = true;
@@ -231,13 +238,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       print('--------------------------------------------addFeedNum != 0');
     }
     // 更新全局监听
-    if(attentionModelList.length > 0) {
+    if (attentionModelList.length > 0) {
       context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-      print("本地存储的数据长度1:${context
-          .read<FeedMapNotifier>()
-          .value
-          .feedMap
-          .length}");
+      print("本地存储的数据长度1:${context.read<FeedMapNotifier>().value.feedMap.length}");
     }
   }
 
@@ -400,6 +403,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               ])),
     );
   }
+
   // 缺省图关注视图切换
   Widget pageDisplay(int index, HomeFeedModel feedModel) {
     print("status:::$status");
@@ -430,6 +434,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         return backToView(index, feedModel);
     }
   }
+
   // 返回关注视图
   Widget backToView(int index, HomeFeedModel feedmodel) {
     print("疯狂build");

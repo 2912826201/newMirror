@@ -56,6 +56,14 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   StreamController<PostprogressModel> streamProgress = StreamController<PostprogressModel>();
 
   @override
+  void dispose() {
+    controller.dispose();
+    EventBus.getDefault().unRegister(registerName: EVENTBUS_GET_FAILURE_MODEL, pageName: EVENTBUS_HOME_PAGE);
+    EventBus.getDefault().unRegister(registerName: EVENTBUS_POST_PORGRESS_VIEW, pageName: EVENTBUS_HOME_PAGE);
+    super.dispose();
+  }
+
+  @override
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
@@ -133,14 +141,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   //获取网络连接状态
   _initConnectivity() async {
-    // ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
-    // if (connectivityResult == ConnectivityResult.mobile) {
-    //   pulishFeed(getPublishFeedData());
-    // } else if (connectivityResult == ConnectivityResult.wifi) {
-    //   pulishFeed(getPublishFeedData());
-    // } else {
-    //
-    // }
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (context.read<TokenNotifier>().isLoggedIn) {
         if (AppPrefs.getPublishFeedLocalInsertData(
@@ -158,12 +158,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         }
       }
     });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 
   // 发布动态
@@ -402,36 +396,30 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
-        leading:
-            // StreamBuilder<PostprogressModel>(
-            //     initialData: postprogressModel,
-            //     stream: streamCustomAppBar.stream,
-            //     builder: (BuildContext stramContext, AsyncSnapshot<PostprogressModel> snapshot) {
-            CustomAppBarIconButton(
-                svgName: AppIcon.nav_camera,
-                iconColor: AppColor.black,
-                onTap: () {
-                  print("${FluroRouter.appRouter.hashCode}");
-                  if (postprogressModel != null && postprogressModel.postFeedModel != null) {
-                    if (postprogressModel.plannedSpeed != -1) {
-                      ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
-                    } else {
-                      ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
-                    }
-                  } else {
-                    // 从打开新页面改成滑到负一屏
-                    if (context.read<TokenNotifier>().isLoggedIn) {
-                      // 暂时屏蔽负一屏
-                      AppRouter.navigateToMediaPickerPage(
-                          context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                          publishMode: 1);
-                      // Application.ifPageController.animateTo(0);
-                    } else {
-                      AppRouter.navigateToLoginPage(context);
-                    }
-                  }
-                }),
-        // }),
+        leading: CustomAppBarIconButton(
+            svgName: AppIcon.nav_camera,
+            iconColor: AppColor.black,
+            onTap: () {
+              print("${FluroRouter.appRouter.hashCode}");
+              if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+                if (postprogressModel.plannedSpeed != -1) {
+                  ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+                } else {
+                  ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+                }
+              } else {
+                // 从打开新页面改成滑到负一屏
+                if (context.read<TokenNotifier>().isLoggedIn) {
+                  // 暂时屏蔽负一屏
+                  AppRouter.navigateToMediaPickerPage(
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                      publishMode: 1);
+                  // Application.ifPageController.animateTo(0);
+                } else {
+                  AppRouter.navigateToLoginPage(context);
+                }
+              }
+            }),
         titleWidget: Container(
           width: 140,
           child: TabBar(
