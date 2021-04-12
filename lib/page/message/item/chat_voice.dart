@@ -115,10 +115,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     print("444444444444444");
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(
-        showDataTime: DateUtil.formatSecondToStringNum(costTime));
-    context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
-
-    // print("showVoiceView");
+        showDataTime: DateUtil.formatSecondToStringNum(costTime),
+        imageIconString: moveUpCancelPostImageString,
+        alertText: "手指上滑,取消发送");
 
     _mPath = AppConfig.getAppVoiceFilePath();
     var outputFile = File(_mPath);
@@ -166,7 +165,10 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer = null;
     }
     if (costTime < minRecordVoiceDuration+1) {
-      context.read<VoiceAlertData>().changeCallback(alertText: "说话时间太短");
+      context.read<VoiceAlertData>().changeCallback(
+        alertText: "说话时间太短",
+        imageIconString: speckTimeTooShortImageString,
+      );
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
         await outputFile.delete();
@@ -212,15 +214,24 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         if(this.automaticPost){
           this.textShow = "按住说话";
           toastShow = "手指上滑,取消发送";
-          context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+          context.read<VoiceAlertData>().changeCallback(
+              alertText: "手指上滑,取消发送",
+              imageIconString: moveUpCancelPostImageString,
+          );
         }if (isUp) {
           this.textShow = "松开手指,取消发送";
           toastShow = textShow;
-          context.read<VoiceAlertData>().changeCallback(alertText: "松开手指,取消发送");
+          context.read<VoiceAlertData>().changeCallback(
+            alertText: "松开手指,取消发送",
+            imageIconString: letGoOfYourFingerCancelPostImageString,
+          );
         } else {
           this.textShow = "松开发送";
           toastShow = "手指上滑,取消发送";
-          context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+          context.read<VoiceAlertData>().changeCallback(
+            alertText: "手指上滑,取消发送",
+            imageIconString: moveUpCancelPostImageString,
+          );
         }
       });
     }
@@ -293,7 +304,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       return;
     }
     costTime = 0;
-    context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
+    context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime),);
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if(mounted){
         setState(() {

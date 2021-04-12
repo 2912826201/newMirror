@@ -596,49 +596,44 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
   }
 
-  int firstIndex;
-  int lastIndex;
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    this.firstIndex=firstIndex;
-    this.lastIndex=lastIndex;
-
     // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
-    // if (isHaveAtMeMsgPr) {
-    //   if (isHaveAtMeMsgIndex < 0) {
-    //     if (!isHaveAtMeMsg) {
-    //       isHaveAtMeMsg = true;
-    //     }
-    //     isHaveAtMeMsg = true;
-    //     isHaveAtMeMsgPr = true;
-    //     chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-    //   } else if (isHaveAtMeMsgIndex <= lastIndex) {
-    //     if (isHaveAtMeMsg) {
-    //       isHaveAtMeMsg = false;
-    //       //print('2--------------------------关闭标识at');
-    //     }
-    //     //print('2--------------------------已经是关闭--关闭标识at');
-    //     isHaveAtMeMsgPr = false;
-    //     isHaveAtMeMsgIndex = -1;
-    //     Application.atMesGroupModel.remove(atMeMsg);
-    //     chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-    //   } else {
-    //     if (!isHaveAtMeMsg) {
-    //       isHaveAtMeMsg = true;
-    //       //print('3--------------------------显示标识at');
-    //     }
-    //     isHaveAtMeMsg = true;
-    //     isHaveAtMeMsgPr = true;
-    //     chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-    //   }
-    // }
+    if (isHaveAtMeMsgPr) {
+      if (isHaveAtMeMsgIndex < 0) {
+        if (!isHaveAtMeMsg) {
+          isHaveAtMeMsg = true;
+        }
+        isHaveAtMeMsg = true;
+        isHaveAtMeMsgPr = true;
+        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      } else if (isHaveAtMeMsgIndex <= lastIndex) {
+        if (isHaveAtMeMsg) {
+          isHaveAtMeMsg = false;
+          //print('2--------------------------关闭标识at');
+        }
+        //print('2--------------------------已经是关闭--关闭标识at');
+        isHaveAtMeMsgPr = false;
+        isHaveAtMeMsgIndex = -1;
+        Application.atMesGroupModel.remove(atMeMsg);
+        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      } else {
+        if (!isHaveAtMeMsg) {
+          isHaveAtMeMsg = true;
+          //print('3--------------------------显示标识at');
+        }
+        isHaveAtMeMsg = true;
+        isHaveAtMeMsgPr = true;
+        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      }
+    }
   }
 
   void onAtUiClickListener()async{
-    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,firstIndex:$firstIndex,lastIndex:$lastIndex");
+    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if(isHaveAtMeMsgIndex<0) {
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
         //print("chatDataList.len:${chatDataList.length}");
@@ -862,6 +857,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       if (mounted) {
         _textController.text = "";
+        _resetEditText();
+        context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
         if(chatDataList.length>100){
           List<ChatDataModel> list=[];
@@ -877,6 +874,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
+      _textController.text = "";
+      _resetEditText();
       // List list=[];
       // list.add(0);
       // list.add(chatDataModel.id);
