@@ -65,8 +65,6 @@ String getCourseShowImage(LiveVideoModel courseModel) {
   return imageUrl;
 }
 
-
-
 //获取训练数据ui
 Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey globalKey) {
   var widgetArray = <Widget>[];
@@ -187,7 +185,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               onTap: onClickAttention,
               child: Container(
                 color: Colors.transparent,
-                height: 32.0+16.0+16.0,
+                height: 32.0 + 16.0 + 16.0,
                 child: UnconstrainedBox(
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
@@ -203,7 +201,9 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(100)),
                               border: Border.all(
-                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? 1 : 0.0,
+                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                                      ? 1
+                                      : 0.0,
                                   color: AppColor.textHint),
                             ),
                             padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
@@ -576,10 +576,7 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList, BuildContext cont
                     ),
                     Container(
                       padding: const EdgeInsets.only(right: 16),
-                      child: Icon(
-                        Icons.chevron_right,
-                        color: AppColor.textHint,
-                      ),
+                      child: AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textHint),
                     ),
                   ],
                 ),

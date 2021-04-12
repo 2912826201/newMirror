@@ -8,6 +8,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -20,17 +21,17 @@ class MeCoursePage extends StatefulWidget {
 class _MeCoursePageState extends State<MeCoursePage> {
   bool _isVideoCourseRequesting = false;
   int _isVideoCourseLastTime;
-  int _isVideoCoursePage=0;
+  int _isVideoCoursePage = 0;
   int _isVideoCourseTotalCount = 0;
   bool _videoCourseHasNext = false;
   List<LiveVideoModel> _videoCourseList = [];
   RefreshController _refreshController = RefreshController();
-  bool isShowNoMore=true;
+  bool isShowNoMore = true;
 
   @override
   void initState() {
     super.initState();
-    _isVideoCoursePage=1;
+    _isVideoCoursePage = 1;
     loadData();
   }
 
@@ -52,7 +53,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
         enablePullDown: _videoCourseList.length > 0,
         enablePullUp: _videoCourseList.length > 0,
         controller: _refreshController,
-        footer:  SmartRefresherHeadFooter.init().getFooter(isShowNoMore:isShowNoMore),
+        footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: isShowNoMore),
         header: SmartRefresherHeadFooter.init().getHeader(),
         onRefresh: _onRefresh,
         onLoading: loadData,
@@ -88,7 +89,8 @@ class _MeCoursePageState extends State<MeCoursePage> {
               child: getItem(_videoCourseList[index]),
               splashColor: AppColor.textHint,
               onTap: () {
-                AppRouter.navigateToVideoDetail(context, _videoCourseList[index].id,callback: (result)=>_onRefresh());
+                AppRouter.navigateToVideoDetail(context, _videoCourseList[index].id,
+                    callback: (result) => _onRefresh());
               },
             ));
       }, childCount: _videoCourseList.length),
@@ -128,7 +130,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
             height: 6,
           ),
           Text(
-              getLastLearnTimeString(videoModel.lastPracticeTime),
+            getLastLearnTimeString(videoModel.lastPracticeTime),
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
           ),
           SizedBox(
@@ -143,14 +145,12 @@ class _MeCoursePageState extends State<MeCoursePage> {
     );
   }
 
-  String getLastLearnTimeString(int lastPracticeTime){
-    if(lastPracticeTime==null||lastPracticeTime<1){
+  String getLastLearnTimeString(int lastPracticeTime) {
+    if (lastPracticeTime == null || lastPracticeTime < 1) {
       return "尚未学习";
     }
     return "上次学习${DateUtil.getDateDayString(DateUtil.getDateTimeByMs(lastPracticeTime))}";
   }
-
-
 
   //没有数据的ui
   Widget noDateUi() {
@@ -189,14 +189,13 @@ class _MeCoursePageState extends State<MeCoursePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("我收藏的课程",
-                      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                  Text("我收藏的课程", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
                   Row(
                     children: [
-                      Icon(Icons.chevron_right, size: 16, color: AppColor.textHint),
+                      AppIcon.getAppIcon(AppIcon.collection_course, 16, color: AppColor.textHint),
                       SizedBox(width: 6),
-                      Text("共$_isVideoCourseTotalCount节课程", style: TextStyle(fontSize: 16, color: AppColor
-                          .textSecondary)),
+                      Text("共$_isVideoCourseTotalCount节课程",
+                          style: TextStyle(fontSize: 16, color: AppColor.textSecondary)),
                     ],
                   ),
                 ],
@@ -225,7 +224,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
               getLineView1(width: 12),
               Text("下载课程", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
               Expanded(child: SizedBox()),
-              Icon(Icons.chevron_right, size: 18, color: AppColor.textHint),
+              AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textHint),
             ],
           ),
         ),
@@ -257,49 +256,49 @@ class _MeCoursePageState extends State<MeCoursePage> {
 
   _onRefresh() {
     _isVideoCourseLastTime = null;
-    _isVideoCoursePage=1;
-    loadData(isRefresh:true);
+    _isVideoCoursePage = 1;
+    loadData(isRefresh: true);
   }
 
-  void loadData({bool isRefresh=false}) {
+  void loadData({bool isRefresh = false}) {
     _isVideoCourseRequesting = true;
-    if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
-      if(isRefresh) {
+    if (_isVideoCoursePage > 1 && _isVideoCourseLastTime == null) {
+      if (isRefresh) {
         _refreshController.refreshCompleted();
-      }else {
+      } else {
         _refreshController.loadNoData();
       }
       setIsShowNoMore();
       return;
     }
-    getMyCourse(_isVideoCoursePage,20, lastTime: _isVideoCourseLastTime).then((result) {
-      if(isRefresh){
+    getMyCourse(_isVideoCoursePage, 20, lastTime: _isVideoCourseLastTime).then((result) {
+      if (isRefresh) {
         _videoCourseList.clear();
       }
       _isVideoCourseRequesting = false;
-      if (result != null&&result.list!=null&&result.list.length>0) {
+      if (result != null && result.list != null && result.list.length > 0) {
         _isVideoCoursePage++;
         _videoCourseHasNext = result.hasNext == 1;
         _isVideoCourseLastTime = result.lastTime;
         _isVideoCourseTotalCount = result.totalCount;
         _videoCourseList.addAll(result.list);
-        if(isRefresh) {
+        if (isRefresh) {
           _refreshController.refreshCompleted();
-        }else {
+        } else {
           _refreshController.loadComplete();
         }
-      }else{
-        if(isRefresh) {
+      } else {
+        if (isRefresh) {
           _refreshController.refreshCompleted();
-        }else {
+        } else {
           _refreshController.loadNoData();
         }
       }
       setIsShowNoMore();
     }).catchError((error) {
-      if(isRefresh) {
+      if (isRefresh) {
         _refreshController.refreshCompleted();
-      }else {
+      } else {
         _refreshController.loadNoData();
       }
       setIsShowNoMore();
@@ -307,13 +306,12 @@ class _MeCoursePageState extends State<MeCoursePage> {
     });
   }
 
-  void setIsShowNoMore(){
-    if(_videoCourseList==null||_videoCourseList.length<1){
-      isShowNoMore=false;
-    }else {
-      isShowNoMore=_videoCourseList.length*72.0>
-          (ScreenUtil.instance.height-
-          ScreenUtil.instance.statusBarHeight-44.0-69.0-12.0-75.0);
+  void setIsShowNoMore() {
+    if (_videoCourseList == null || _videoCourseList.length < 1) {
+      isShowNoMore = false;
+    } else {
+      isShowNoMore = _videoCourseList.length * 72.0 >
+          (ScreenUtil.instance.height - ScreenUtil.instance.statusBarHeight - 44.0 - 69.0 - 12.0 - 75.0);
     }
     if (mounted) {
       setState(() {});

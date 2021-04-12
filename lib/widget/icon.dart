@@ -111,6 +111,10 @@ class AppIcon {
   static const String profile_edit = "assets/svg/profile_edit.svg";
   static const String layout_vertical = "assets/svg/layout_vertical.svg";
   static const String layout_horizontal = "assets/svg/layout_horizontal.svg";
+  static const String qrcode = "assets/svg/qrcode.svg";
+  static const String collection_course = "assets/svg/collection_course.svg";
+  static const String remocon_stop_74 = "assets/svg/remocon_stop_74.svg";
+  static const String remocon_play_74 = "assets/svg/remocon_play_74.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {
