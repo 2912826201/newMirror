@@ -20,6 +20,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/api/message_api.dart';
@@ -36,7 +37,7 @@ class GroupMorePage extends StatefulWidget {
   ///群id
   final String chatGroupId;
 
-  final Function(int type,String name) listener;
+  final Function(int type, String name) listener;
   final VoidCallback exitGroupListener;
   final ConversationDto dto;
 
@@ -47,7 +48,7 @@ class GroupMorePage extends StatefulWidget {
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener,this.dto, this.exitGroupListener});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener, this.dto, this.exitGroupListener});
 
   @override
   createState() => GroupMorePageState();
@@ -69,6 +70,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     super.initState();
     getGroupInformation();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,9 +109,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           getListItem(text: "群聊名称", subtitle: groupName ?? "未命名"),
           getListItem(text: "群聊二维码", isRightIcon: true),
           getContainer(height: 12, horizontal: 0),
-          getListItem(
-              text: "群昵称",
-              subtitle: groupMeName == "还未取名" ? getGroupMeName() : groupMeName),
+          getListItem(text: "群昵称", subtitle: groupMeName == "还未取名" ? getGroupMeName() : groupMeName),
           getContainer(),
           getListItem(text: "消息免打扰", isOpen: disturbTheNews, index: 1),
           getListItem(text: "置顶聊天", isOpen: topChat, index: 2),
@@ -117,7 +117,10 @@ class GroupMorePageState extends State<GroupMorePage> {
           getListItem(text: "删除并退出", textColor: AppColor.mainRed),
           getContainer(),
           SliverToBoxAdapter(
-            child: Container(height: ScreenUtil.instance.bottomBarHeight,color: AppColor.white,),
+            child: Container(
+              height: ScreenUtil.instance.bottomBarHeight,
+              color: AppColor.white,
+            ),
           )
         ],
       ),
@@ -137,18 +140,18 @@ class GroupMorePageState extends State<GroupMorePage> {
           } else {
             groupUserList.addAll(chatGroupUserModelList);
           }
-          ChatGroupUserModel addModel=new ChatGroupUserModel();
-          addModel.avatarUri="addModel";
+          ChatGroupUserModel addModel = new ChatGroupUserModel();
+          addModel.avatarUri = "addModel";
           groupUserList.add(addModel);
           bool isHaveSubBtn;
           try {
-            isHaveSubBtn =chatGroupUserModelList[0].uid == Application.profile.uid;
+            isHaveSubBtn = chatGroupUserModelList[0].uid == Application.profile.uid;
           } catch (e) {
             isHaveSubBtn = false;
           }
-          if(isHaveSubBtn){
-            ChatGroupUserModel addModel=new ChatGroupUserModel();
-            addModel.avatarUri="subModel";
+          if (isHaveSubBtn) {
+            ChatGroupUserModel addModel = new ChatGroupUserModel();
+            addModel.avatarUri = "subModel";
             groupUserList.add(addModel);
           }
           return SliverGrid.count(
@@ -157,9 +160,9 @@ class GroupMorePageState extends State<GroupMorePage> {
             mainAxisSpacing: 1,
             crossAxisSpacing: 1,
             children: List.generate(groupUserList.length, (index) {
-              if (groupUserList[index].avatarUri=="addModel") {
+              if (groupUserList[index].avatarUri == "addModel") {
                 return getTopItemAddOrSubUserUi(true, true);
-              } else if(groupUserList[index].avatarUri=="subModel") {
+              } else if (groupUserList[index].avatarUri == "subModel") {
                 return getTopItemAddOrSubUserUi(false, true);
               } else {
                 return getItemUserImage(index, groupUserList[index]);
@@ -186,9 +189,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取查看更多用户的按钮
   Widget getSeeAllUserBtn() {
-    if (context
-        .watch<GroupUserProfileNotifier>()
-        .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+    if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
       return SliverToBoxAdapter(
         child: Container(
           child: GestureDetector(
@@ -200,11 +201,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                   "查看更多群成员",
                   style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: AppColor.textSecondary,
-                  size: 12,
-                ),
+                AppIcon.getAppIcon(AppIcon.arrow_right_12, 12, color: AppColor.textSecondary),
               ],
             ),
             onTap: seeMoreGroupUser,
@@ -213,41 +210,28 @@ class GroupMorePageState extends State<GroupMorePage> {
       );
     } else {
       return SliverToBoxAdapter(
-        child: Container(
-
-        ),
+        child: Container(),
       );
     }
   }
 
   //获取下面每一个listItem
-  Widget getListItem(
-      {String text,
-      String subtitle,
-      bool isOpen,
-      bool isRightIcon,
-      Color textColor,
-      int index}) {
+  Widget getListItem({String text, String subtitle, bool isOpen, bool isRightIcon, Color textColor, int index}) {
     return SliverToBoxAdapter(
         // child: getItemList(text,subtitle,isOpen,isRightIcon,textColor),
         child: Material(
             color: AppColor.white,
             child: new InkWell(
-              child: getItemList(
-                  text, subtitle, isOpen, isRightIcon, textColor, index),
+              child: getItemList(text, subtitle, isOpen, isRightIcon, textColor, index),
               splashColor: AppColor.textHint,
               onTap: () {
-                onClickItemList(title: text,
-                    subtitle: subtitle,
-                    isOpen: isOpen,
-                    index: index);
+                onClickItemList(title: text, subtitle: subtitle, isOpen: isOpen, index: index);
               },
             )));
   }
 
   //每一个item--list
-  Widget getItemList(String text, String subtitle, bool isOpen,
-      bool isRightIcon, Color textColor, int index) {
+  Widget getItemList(String text, String subtitle, bool isOpen, bool isRightIcon, Color textColor, int index) {
     var padding1 = const EdgeInsets.only(left: 16, right: 10);
     var padding2 = const EdgeInsets.symmetric(horizontal: 16);
     return Container(
@@ -256,22 +240,17 @@ class GroupMorePageState extends State<GroupMorePage> {
       child: Row(
         children: [
           Text(text,
-              style: TextStyle(
-                  fontSize: 16,
-                  color: textColor ?? AppColor.textPrimary1,
-                  fontWeight: FontWeight.w500)),
+              style: TextStyle(fontSize: 16, color: textColor ?? AppColor.textPrimary1, fontWeight: FontWeight.w500)),
           Expanded(child: SizedBox()),
           subtitle != null
-              ? Text(StringUtil.maxLength(subtitle,15),
-            style: AppStyle.textSecondaryMedium14,)
+              ? Text(
+                  StringUtil.maxLength(subtitle, 15),
+                  style: AppStyle.textSecondaryMedium14,
+                )
               : Container(),
           subtitle != null ? SizedBox(width: 12) : Container(),
           isRightIcon != null || subtitle != null
-              ? Icon(
-                  Icons.chevron_right,
-                  size: 17,
-                  color: AppColor.textSecondary,
-                )
+              ? AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textSecondary)
               : Container(),
           isOpen != null
               ? Container(
@@ -281,8 +260,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                       activeColor: AppColor.mainRed,
                       value: isOpen,
                       onChanged: (bool value) {
-                        onClickItemList(
-                            title: text, isOpen: isOpen, index: index);
+                        onClickItemList(title: text, isOpen: isOpen, index: index);
                       },
                     ),
                   ),
@@ -315,8 +293,8 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     return GestureDetector(
-      onTap: ()async{
-        if(!(await isContinue())){
+      onTap: () async {
+        if (!(await isContinue())) {
           return;
         }
         AppRouter.navigateToMineDetail(context, userModel.uid);
@@ -383,35 +361,24 @@ class GroupMorePageState extends State<GroupMorePage> {
   String getGroupMeName() {
     String name = "还未取名";
     if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-      for (int i = 0; i < context
-          .watch<GroupUserProfileNotifier>()
-          .chatGroupUserModelList
-          .length; i++) {
-        if (context
-            .watch<GroupUserProfileNotifier>()
-            .chatGroupUserModelList[i].uid ==
-            Application.profile.uid) {
-          groupMeName = context
-              .watch<GroupUserProfileNotifier>()
-              .chatGroupUserModelList[i].groupNickName;
-          return context
-              .watch<GroupUserProfileNotifier>()
-              .chatGroupUserModelList[i].groupNickName;
+      for (int i = 0; i < context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length; i++) {
+        if (context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].uid == Application.profile.uid) {
+          groupMeName = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].groupNickName;
+          return context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].groupNickName;
         }
       }
     }
     return name;
   }
 
-
   //获取群信息
   void getGroupInformation() async {
     try {
       List<GroupChatModel> list = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
-      if (list != null ) {
+      if (list != null) {
         list.forEach((v) {
           groupChatModel = v;
-          groupName = groupChatModel.modifiedName == null? groupChatModel.name : groupChatModel.modifiedName;
+          groupName = groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName;
         });
         await getConversationNotificationStatus();
       }
@@ -427,18 +394,15 @@ class GroupMorePageState extends State<GroupMorePage> {
       return;
     }
     try {
-      Map<String, dynamic> model = await modify(
-          groupChatId: int.parse(widget.chatGroupId), newName: newName);
+      Map<String, dynamic> model = await modify(groupChatId: int.parse(widget.chatGroupId), newName: newName);
       if (model != null && model["state"] != null && model["state"]) {
         groupChatModel.modifiedName = newName;
         groupName = newName;
         if (widget.listener != null) {
-          widget.listener(1,groupName);
+          widget.listener(1, groupName);
         }
-        if(mounted) {
-          setState(() {
-
-          });
+        if (mounted) {
+          setState(() {});
         }
       } else {
         ToastShow.show(msg: "修改失败", context: context);
@@ -451,21 +415,18 @@ class GroupMorePageState extends State<GroupMorePage> {
   //修改群昵称
   void modifyNickNamePr(String newName) async {
     try {
-      Map<String, dynamic> model = await modifyNickName(
-          groupChatId: int.parse(widget.chatGroupId), newName: newName);
+      Map<String, dynamic> model = await modifyNickName(groupChatId: int.parse(widget.chatGroupId), newName: newName);
       print(model == null ? "" : model.toString());
       if (model != null && model["uid"] != null) {
         groupMeName = newName;
-        ChatGroupUserModel chatGroupUserModel=new ChatGroupUserModel();
-        chatGroupUserModel.uid=Application.profile.uid;
-        chatGroupUserModel.groupNickName=groupMeName;
-        chatGroupUserModel.nickName=Application.profile.nickName;
-        chatGroupUserModel.avatarUri=Application.profile.avatarUri;
-        GroupChatUserInformationDBHelper().update(chatGroupUserModel: chatGroupUserModel,groupId: widget.chatGroupId);
-        if(mounted) {
-          setState(() {
-
-          });
+        ChatGroupUserModel chatGroupUserModel = new ChatGroupUserModel();
+        chatGroupUserModel.uid = Application.profile.uid;
+        chatGroupUserModel.groupNickName = groupMeName;
+        chatGroupUserModel.nickName = Application.profile.nickName;
+        chatGroupUserModel.avatarUri = Application.profile.avatarUri;
+        GroupChatUserInformationDBHelper().update(chatGroupUserModel: chatGroupUserModel, groupId: widget.chatGroupId);
+        if (mounted) {
+          setState(() {});
         }
       } else {
         ToastShow.show(msg: "修改失败", context: context);
@@ -487,30 +448,28 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-
-
   //查看更多群成员
-  void seeMoreGroupUser()async{
-    if(!(await isContinue())){
+  void seeMoreGroupUser() async {
+    if (!(await isContinue())) {
       return;
     }
-    AppRouter.navigateFriendsPage(context: context,type: 1,groupChatId: int.parse(widget.chatGroupId));
+    AppRouter.navigateFriendsPage(context: context, type: 1, groupChatId: int.parse(widget.chatGroupId));
   }
 
   //添加用户按钮
-  void addGroupUser()async {
-    if(!(await isContinue())){
+  void addGroupUser() async {
+    if (!(await isContinue())) {
       return;
     }
-    AppRouter.navigateFriendsPage(context: context,type: 3,groupChatId: int.parse(widget.chatGroupId));
+    AppRouter.navigateFriendsPage(context: context, type: 3, groupChatId: int.parse(widget.chatGroupId));
   }
 
   //删除用户按钮
-  void deleteGroupUser() async{
-    if(!(await isContinue())){
+  void deleteGroupUser() async {
+    if (!(await isContinue())) {
       return;
     }
-    AppRouter.navigateFriendsPage(context: context,type: 2,groupChatId: int.parse(widget.chatGroupId));
+    AppRouter.navigateFriendsPage(context: context, type: 2, groupChatId: int.parse(widget.chatGroupId));
   }
 
   //退出按钮
@@ -531,7 +490,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-
   //设置消息是否置顶
   void setTopChatApi() async {
     topChat = !topChat;
@@ -539,26 +497,25 @@ class GroupMorePageState extends State<GroupMorePage> {
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
-      int index=TopChatModel.containsIndex(Application.topChatModelList,topChatModel);
-      if(index>=0){
+      int index = TopChatModel.containsIndex(Application.topChatModelList, topChatModel);
+      if (index >= 0) {
         Application.topChatModelList.remove(index);
-        if(null!=widget.dto) {
-          widget.dto.isTop=0;
+        if (null != widget.dto) {
+          widget.dto.isTop = 0;
           context.read<ConversationNotifier>().insertCommon(widget.dto);
         }
-      }else{
+      } else {
         Application.topChatModelList.add(topChatModel);
-        if(null!=widget.dto) {
-          widget.dto.isTop=1;
+        if (null != widget.dto) {
+          widget.dto.isTop = 1;
           context.read<ConversationNotifier>().insertTop(widget.dto);
         }
       }
     } else {
       topChat = !topChat;
     }
-    if(mounted) {
-      setState(() {
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -569,19 +526,18 @@ class GroupMorePageState extends State<GroupMorePage> {
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
     if (map != null && map["state"] != null && map["state"]) {
-      NoPromptUidModel model=NoPromptUidModel(type: GROUP_TYPE,targetId: int.parse(widget.chatGroupId));
-      int index=NoPromptUidModel.containsIndex(Application.queryNoPromptUidList,model);
-      if(index>=0){
+      NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE, targetId: int.parse(widget.chatGroupId));
+      int index = NoPromptUidModel.containsIndex(Application.queryNoPromptUidList, model);
+      if (index >= 0) {
         Application.queryNoPromptUidList.remove(index);
-      }else{
+      } else {
         Application.queryNoPromptUidList.add(model);
       }
     } else {
       disturbTheNews = !disturbTheNews;
     }
-    if(mounted) {
-      setState(() {
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -611,15 +567,19 @@ class GroupMorePageState extends State<GroupMorePage> {
       }
     }
 
-    if(mounted) {
-      setState(() {
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 
   //点击事件
-  void onClickItemList({String title, String subtitle, bool isOpen, int index,})async {
-    if(!(await isContinue())){
+  void onClickItemList({
+    String title,
+    String subtitle,
+    bool isOpen,
+    int index,
+  }) async {
+    if (!(await isContinue())) {
       return;
     }
     if (isOpen != null) {
@@ -631,7 +591,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       // ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
     } else if (title == "群聊名称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        if(mounted) {
+        if (mounted) {
           setState(() {
             if (result != null && groupName != result) {
               modifyPr(result);
@@ -642,7 +602,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        if(mounted) {
+        if (mounted) {
           setState(() {
             if (result != null && groupMeName != result) {
               modifyNickNamePr(result);
@@ -665,14 +625,14 @@ class GroupMorePageState extends State<GroupMorePage> {
           }));
       // ToastShow.show(msg: "点击了：$title", context: context);
     } else if (title == "群聊二维码") {
-      if(groupChatModel == null){
+      if (groupChatModel == null) {
         ToastShow.show(msg: "获取群聊信息失败", context: context);
-      }else{
+      } else {
         AppRouter.navigateToGroupQrCodePage(
-            context: context,
-            imageUrl: groupChatModel.coverUrl,
-            name: groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName,
-            groupId: groupChatModel.id.toString(),
+          context: context,
+          imageUrl: groupChatModel.coverUrl,
+          name: groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName,
+          groupId: groupChatModel.id.toString(),
         );
       }
     } else {
@@ -680,18 +640,21 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-
-  showProgressDialog({Widget progress,
-    Color bgColor,}) {
+  showProgressDialog({
+    Widget progress,
+    Color bgColor,
+  }) {
     if (_dialogLoadingController == null) {
       _dialogLoadingController = DialogLoadingController();
       Navigator.of(context).push(PageRouteBuilder(
           opaque: false,
           pageBuilder: (ctx, animation, secondAnimation) {
-            return LoadingProgress(controller: _dialogLoadingController,
-              progress: progress, bgColor: bgColor,);
-          }
-      ));
+            return LoadingProgress(
+              controller: _dialogLoadingController,
+              progress: progress,
+              bgColor: bgColor,
+            );
+          }));
     }
   }
 
@@ -701,7 +664,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //是否继续
-  Future<bool> isContinue()async{
+  Future<bool> isContinue() async {
     if (ClickUtil.isFastClick()) {
       print("快速点击");
       return false;
@@ -710,15 +673,14 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "你不是群成员", context: context);
       return false;
     }
-    if(await isOffline()){
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return false;
     }
     return true;
   }
 
-
-  Future<bool> isOffline()async{
+  Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       return false;
@@ -729,5 +691,3 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 }
-
-

@@ -32,7 +32,7 @@ class RemoteControllerPage extends StatefulWidget {
   final int mode;
   final int liveRoomId;
 
-  RemoteControllerPage({this.mode=0,this.liveRoomId});
+  RemoteControllerPage({this.mode = 0, this.liveRoomId});
 
   @override
   _RemoteControllerState createState() => _RemoteControllerState();
@@ -57,7 +57,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   @override
   void dispose() {
     super.dispose();
-    if(widget.mode==1&&widget.liveRoomId!=null){
+    if (widget.mode == 1 && widget.liveRoomId != null) {
       //退出聊天室
       Application.rongCloud.quitChatRoom(widget.liveRoomId.toString());
     }
@@ -72,13 +72,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _luminance = context.read<MachineNotifier>().machine?.luminance;
     _status = context.read<MachineNotifier>().machine?.status;
 
-    if(widget.mode==1&&widget.liveRoomId!=null){
+    if (widget.mode == 1 && widget.liveRoomId != null) {
       //加入聊天室
       Application.rongCloud.joinChatRoom(widget.liveRoomId.toString());
     }
   }
-
-
 
   _parsePartList() {
     _indexMapWithoutRest.clear();
@@ -118,7 +116,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           titleString: _title,
           actions: [
             Visibility(
-              visible: widget.mode==1&&widget.liveRoomId!=null,
+              visible: widget.mode == 1 && widget.liveRoomId != null,
               child: CustomAppBarIconButton(
                   icon: Icons.menu_book_rounded,
                   iconColor: AppColor.black,
@@ -481,20 +479,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 74,
-                            width: 74,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColor.textPrimary1,
-                            ),
-                            child: Icon(
-                              Icons.stop,
-                              size: 48,
-                              color: AppColor.textHint,
-                            ),
-                          ),
+                          AppIcon.getAppIcon(AppIcon.remocon_stop_74, 74),
                           SizedBox(
                             height: 16,
                           ),
@@ -516,20 +501,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 74,
-                            width: 74,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColor.white,
-                            ),
-                            child: Icon(
-                              Icons.play_arrow,
-                              size: 48,
-                              color: AppColor.textHint,
-                            ),
-                          ),
+                          AppIcon.getAppIcon(AppIcon.remocon_play_74, 74),
                           SizedBox(
                             height: 16,
                           ),
@@ -548,11 +520,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     );
   }
 
-
   //发送弹幕
-  _postMessage(String content, List<Rule> rules){
+  _postMessage(String content, List<Rule> rules) {
     print("发送弹幕：$content");
-    if(null==content||content.length<1&&widget.liveRoomId!=null){
+    if (null == content || content.length < 1 && widget.liveRoomId != null) {
       return;
     }
     _sendChatRoomMsg(content);
@@ -575,7 +546,6 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     msg.content = jsonEncode(textMap);
     await Application.rongCloud.sendChatRoomMessage(widget.liveRoomId.toString(), msg);
   }
-
 
   _showDisconnectPopup() {
     showModalBottomSheet(

@@ -477,8 +477,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         children: [
           Text("全部", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           Spacer(),
-          //FIXME 少了一个icon
-          AppIcon.getAppIcon(AppIcon.time_16, 16, color: AppColor.textHint),
+          AppIcon.getAppIcon(AppIcon.completed_16, 16, color: AppColor.textHint),
           SizedBox(width: 2),
           Text("$countString次", style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
           SizedBox(width: 12),

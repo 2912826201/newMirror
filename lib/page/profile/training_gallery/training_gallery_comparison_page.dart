@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/shared_image_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -15,6 +14,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:intl/intl.dart';
 
@@ -45,7 +45,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
         titleString: "制作对比图",
         actions: [
           Container(
-            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+            padding:
+                const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
             child: CustomRedButton(
               "完成",
               CustomRedButton.buttonStateNormal,
@@ -109,9 +110,9 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                       });
                     }
                   },
-                  child: Icon(
-                    Icons.view_agenda_outlined,
-                    size: 24,
+                  child: AppIcon.getAppIcon(
+                    AppIcon.layout_vertical,
+                    24,
                     color: _orientation == Axis.vertical ? AppColor.textPrimary2 : AppColor.textSecondary,
                   ),
                 ),
@@ -126,13 +127,10 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                       });
                     }
                   },
-                  child: Transform.rotate(
-                    angle: pi / 2,
-                    child: Icon(
-                      Icons.view_agenda_outlined,
-                      size: 24,
-                      color: _orientation == Axis.horizontal ? AppColor.textPrimary2 : AppColor.textSecondary,
-                    ),
+                  child: AppIcon.getAppIcon(
+                    AppIcon.layout_horizontal,
+                    24,
+                    color: _orientation == Axis.horizontal ? AppColor.textPrimary2 : AppColor.textSecondary,
                   ),
                 ),
               ],
