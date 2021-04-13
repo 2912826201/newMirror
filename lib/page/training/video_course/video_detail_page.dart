@@ -139,6 +139,7 @@ class VideoDetailPageState extends XCState {
     context.read<FeedFlowDataNotifier>().clear();
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal = context.read<MachineNotifier>().machine != null;
+    print("bindingTerminal:$bindingTerminal");
 
     //如果已登录且有关联的机器 发送指令让机器跳转页面
     if(isLoggedIn && Application.machine != null){
@@ -321,19 +322,35 @@ class VideoDetailPageState extends XCState {
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if (!isLoggedIn && notifier.isLoggedIn) {
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              reload(() {});
+        if(notifier.isLoggedIn){
+          if(!isLoggedIn){
+            isLoggedIn=true;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
             }
-          });
-          getDataAction();
-          //如果已登录且有关联的机器 发送指令让机器跳转页面
-          if(Application.machine != null){
-            openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
+          }
+        }else{
+          if(isLoggedIn){
+            isLoggedIn=false;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
+            }
           }
         }
-        isLoggedIn = notifier.isLoggedIn;
         return child;
       },
       child: Container(),
@@ -344,15 +361,26 @@ class VideoDetailPageState extends XCState {
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if (!bindingTerminal && notifier.machine != null) {
-          bindingTerminal = true;
-          Future.delayed(Duration(milliseconds: 300), () {
-            if (mounted) {
-              reload(() {});
-            }
-          });
-        } else {
-          bindingTerminal = false;
+        if(notifier.machine != null){
+          if(!bindingTerminal){
+            bindingTerminal=true;
+            print("bindingTerminal1:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
+        }else{
+          if(bindingTerminal){
+            bindingTerminal=false;
+            print("bindingTerminal2:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
         }
         return child;
       },
@@ -657,17 +685,16 @@ class VideoDetailPageState extends XCState {
           onTap: onJudgeIsDownLoadCompleteVideo,
         ));
 
+        print("videoModel.priceType:${videoModel.priceType}");
+
         if (videoModel.priceType == 0 || (videoModel.priceType == 1 && isVip)) {
+          print("bindingTerminal4:$bindingTerminal");
           if (bindingTerminal) {
             childrenArray.add(Expanded(
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("绑定了终端");
-                  // ToastShow.show(msg: "使用终端训练", context: context);
-                  startVideoCourse(Application.machine.machineId, videoCourseId);
-                },
+                onTap: _useTerminal,
               ),
             )));
           } else {
@@ -686,13 +713,7 @@ class VideoDetailPageState extends XCState {
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return VipNotOpenPage(
-                      type: VipState.NOTOPEN,
-                    );
-                  }));
-                },
+                onTap: _openVip,
               ),
             )));
           } else {
@@ -712,20 +733,14 @@ class VideoDetailPageState extends XCState {
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return VipNotOpenPage(
-                      type: VipState.NOTOPEN,
-                    );
-                  }));
-                },
+                onTap: _openVip,
               ),
             )));
           } else {
             childrenArray.add(Expanded(
                 child: SizedBox(
               child: GestureDetector(
-                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                child: getBtnUi(false, "登陆终端使用终端播放3", textStyle, double.infinity, 40, margin_32),
                 onTap: _loginTerminalBtn,
               ),
             )));
@@ -1016,4 +1031,22 @@ class VideoDetailPageState extends XCState {
     containerHeight = containerWidth / containerRatio;
     return containerHeight;
   }
+
+  //开通vip
+  void _openVip() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return ChangeNotifierProvider(
+        create: (_)=>VipTitleChangeNotifier(),
+        child:VipNotOpenPage(
+          type: VipState.NOTOPEN,
+        ),);
+    }));
+  }
+
+  //使用终端进行训练
+  void _useTerminal() {
+    print("绑定了终端");
+    startVideoCourse(Application.machine.machineId, videoCourseId);
+  }
+
 }

@@ -166,7 +166,7 @@ class VideoCourseListPageState extends XCState {
               children: [
                 Text(
                   _titleItemString[i],
-                  style: AppStyle.textMedium15,
+                  style: AppStyle.textRegular15,
                 ),
                 SizedBox(
                   width: 1,
@@ -579,7 +579,6 @@ class VideoCourseListPageState extends XCState {
     var childrenArray = <Widget>[];
     var wrapArray = <Widget>[];
 
-    var titleStyle = const TextStyle(fontSize: 14, color: AppColor.textSecondary);
     var marginTitleFirst = const EdgeInsets.only(top: 16, bottom: 12);
     var marginTitleCommon = const EdgeInsets.only(top: 0, bottom: 12);
 
@@ -589,7 +588,7 @@ class VideoCourseListPageState extends XCState {
         width: double.infinity,
         child: Text(
           title,
-          style: titleStyle,
+          style: AppStyle.textSecondaryRegular14,
         ),
         margin: index == 0 ? marginTitleFirst : (showScreenTitlePosition == 3 ? marginTitleCommon : marginTitleFirst),
       ),
@@ -914,7 +913,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
             width: double.infinity,
             child: Text(
               value.title ?? "",
-              style: AppStyle.textMedium15,
+              style: AppStyle.textPrimary2Medium15,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -935,17 +934,17 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                         TextSpan(
                             // ignore: null_aware_before_operator
                             text: value.levelDto?.name + " · ",
-                            style: AppStyle.textPrimary2Regular12),
+                            style: AppStyle.textSecondaryRegular12),
                         TextSpan(
                             text:
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
                             style: AppStyle.textPrimary2Medium12),
-                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: AppStyle.textPrimary2Regular12),
+                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: AppStyle.textSecondaryRegular12),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
                             style: AppStyle.textPrimary2Medium12),
-                        TextSpan(text: "千卡", style: AppStyle.textPrimary2Regular12),
+                        TextSpan(text: "千卡", style: AppStyle.textSecondaryRegular12),
                       ]),
                     ),
                     top: 0,

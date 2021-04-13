@@ -129,7 +129,7 @@ class LiveVideoModel {
   int _coursewareId;
   CoursewareDto _coursewareDto;
   int _bgmType;
-  int _priceType;
+  int _priceType;//0免费-1会员免费-2会员付费
   double _price;
   int _state;
   int _auditState;
@@ -1103,7 +1103,9 @@ class ScriptIds {
   ScriptIds.fromJson(dynamic json) {
     _startTime = json["startTime"];
     _id = json["id"];
-    _endTime = json["endTime"];
+    if(json["endTime"] is int) {
+      _endTime = json["endTime"];
+    }
   }
 
   Map<String, dynamic> toJson() {

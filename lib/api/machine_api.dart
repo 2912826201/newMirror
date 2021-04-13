@@ -114,3 +114,11 @@ Future<bool> startVideoCourse(int machineId, int courseId) async {
   data["type"] = 1;
   return _sendOrder(machineId, "Training", data);
 }
+
+//开始直播课
+Future<bool> startLiveCourse(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 0;
+  return _sendOrder(machineId, "Training", data);
+}
