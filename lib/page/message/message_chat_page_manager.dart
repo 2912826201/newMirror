@@ -43,7 +43,6 @@ import 'more_page/private_more_page.dart';
 
 ///几乎所有的消息发送添加转发页
 
-//todo 目前没有做这个限制
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
@@ -936,13 +935,11 @@ ConversationDto _convertMsgToConversation(Message msg) {
   //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
   dto.conversationId = msg.targetId;
   dto.uid = Application.profile.uid;
-  //TODO 会话内容需要转化
   dto.content = MessageManager.convertMsgContent(msg);
   dto.avatarUri = msg.content.sendUserInfo.portraitUri;
   dto.name =  msg.content.sendUserInfo.name;
   switch (msg.conversationType) {
     case RCConversationType.Private:
-    //FIXME 这里需要处理管家消息
       dto.type = PRIVATE_TYPE;
       if (msg.senderUserId == Application.profile.uid.toString()) {
         //如果发信人是自己。。。要从其他途径更新会话名字和头像
@@ -960,7 +957,6 @@ ConversationDto _convertMsgToConversation(Message msg) {
       if (msg.content?.sendUserInfo != null) {
         //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
         dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
-        //TODO 去更新群成员的本地数据库
       }
       break;
     case RCConversationType.System:
@@ -992,7 +988,6 @@ ConversationDto _convertMsgToConversation(Message msg) {
   return dto;
 }
 
-//todo 之后改为路由跳转
 //判断去拿一个更多界面
 void judgeJumpPage(
     int chatTypeId,

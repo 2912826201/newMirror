@@ -4,6 +4,7 @@ import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/training/weight_records_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -28,7 +29,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   LoadingStatus loadingStatus;
   TextEditingController _numberController = TextEditingController();
   double userWeight = 0.0;
-  Map<String, dynamic> weightDataMap = Map();
+  WeightRecordsModel weightDataModel;
 
   @override
   void initState() {
@@ -102,26 +103,26 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
 
   //底部list
   Widget listViewUi() {
-    if (weightDataMap == null || weightDataMap["recordList"] == null || weightDataMap["recordList"].length < 1) {
+    if (weightDataModel == null || weightDataModel.recordList == null || weightDataModel.recordList.length < 1) {
       return SliverToBoxAdapter();
     }
     return SliverList(
       delegate: SliverChildBuilderDelegate((content, index) {
         return getLeftDeleteUi(index);
-      }, childCount: weightDataMap["recordList"].length),
+      }, childCount: weightDataModel.recordList.length),
     );
   }
 
   //获取左滑删除
   Widget getLeftDeleteUi(int index) {
     return LeftScrollListView(
-      itemKey: weightDataMap["recordList"][index]["dateTime"],
+      itemKey: weightDataModel.recordList[index].dateTime,
       itemTag: "tag",
       itemIndex: index,
       itemChild: getItem(index),
       onClickRightBtn: () {
-        delWeight(weightDataMap["recordList"][index]["id"]);
-        weightDataMap["recordList"].removeAt(index);
+        delWeight(weightDataModel.recordList[index].id);
+        weightDataModel.recordList.removeAt(index);
         if (mounted) {
           setState(() {});
         }
@@ -132,7 +133,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
 
 //每一个listview的item
   Widget getItem(int index) {
-    DateTime dateTime = DateUtil.stringToDateTime(weightDataMap["recordList"][index]["dateTime"]);
+    DateTime dateTime = DateUtil.stringToDateTime(weightDataModel.recordList[index].dateTime);
     String date;
     try {
       date = DateUtil.formatDateString(dateTime);
@@ -156,7 +157,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                   style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
                 ),
                 Text(
-                  "${weightDataMap["recordList"][index]["weight"]} kg",
+                  "${weightDataModel.recordList[index].weight} kg",
                   style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -270,7 +271,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       );
     }
 
-    if (weightDataMap == null || weightDataMap["recordList"] == null || weightDataMap["recordList"].length < 1) {
+    if (weightDataModel == null || weightDataModel.recordList == null || weightDataModel.recordList.length < 1) {
       return SliverToBoxAdapter(
         child: Container(
           height: 224,
@@ -288,7 +289,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       );
     } else {
       return SliverToBoxAdapter(
-        child: CustomizeLineChart(weightDataMap: weightDataMap),
+        child: CustomizeLineChart(weightDataModel: weightDataModel),
       );
     }
   }
@@ -296,11 +297,11 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   //获取目标体重
   double getTargetWeight() {
     if (userWeight < 1) {
-      if (weightDataMap == null || weightDataMap["targetWeight"] == null || weightDataMap["targetWeight"] < 1) {
+      if (weightDataModel == null || weightDataModel.targetWeight == null || weightDataModel.targetWeight < 1) {
         return userWeight;
       } else {
-        userWeight = weightDataMap["targetWeight"];
-        return weightDataMap["targetWeight"];
+        userWeight = weightDataModel.targetWeight;
+        return weightDataModel.targetWeight;
       }
     } else {
       return userWeight;
@@ -356,7 +357,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = double.parse(_numberController.text);
             userWeight = formatData(userWeight);
             saveTargetWeight(userWeight.toString());
-            weightDataMap["targetWeight"] = userWeight;
+            weightDataModel.targetWeight = userWeight;
             if (mounted) {
               setState(() {});
             }
@@ -428,23 +429,24 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
 
   //将添加的体重添加到 weightDataMap 中显示
   addWeightData(double userWeight) {
-    if (weightDataMap == null) {
-      weightDataMap = Map();
+    if (weightDataModel == null) {
+      weightDataModel = new WeightRecordsModel();
     }
-    Map<String, dynamic> recordMap = Map();
-    recordMap["dateTime"] = DateUtil.formatDateString(new DateTime.now());
-    recordMap["weight"] = userWeight;
 
-    if (weightDataMap["recordList"] == null || weightDataMap["recordList"].length < 1) {
-      List<Map<String, dynamic>> recordListMap = [];
-      recordListMap.add(recordMap);
-      weightDataMap["recordList"] = recordListMap;
+    RecordData recordData=new RecordData();
+    recordData.dateTime=DateUtil.formatDateString(new DateTime.now());
+    recordData.weight=userWeight;
+
+    if (weightDataModel.recordList == null || weightDataModel.recordList.length < 1) {
+      List<RecordData> recordList = [];
+      recordList.add(recordData);
+      weightDataModel.recordList = recordList;
     } else {
-      if (DateUtil.isToday(DateUtil.stringToDateTime(weightDataMap["recordList"][0]["dateTime"]))) {
-        weightDataMap["recordList"][0]["dateTime"] = DateUtil.formatDateString(new DateTime.now());
-        weightDataMap["recordList"][0]["weight"] = userWeight;
+      if (DateUtil.isToday(DateUtil.stringToDateTime(weightDataModel.recordList[0].dateTime))) {
+        weightDataModel.recordList[0].dateTime = DateUtil.formatDateString(new DateTime.now());
+        weightDataModel.recordList[0].weight = userWeight;
       } else {
-        weightDataMap["recordList"].insert(0, recordMap);
+        weightDataModel.recordList.insert(0, recordData);
       }
     }
     if (mounted) {
@@ -454,7 +456,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
 
   //获取数据
   loadData() async {
-    weightDataMap = await getWeightRecords(1, 1000);
+    weightDataModel = await getWeightRecords(1, 1000);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     if (mounted) {
       setState(() {});
