@@ -571,7 +571,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
-    if (feedModel.data != null) {
+    if (feedModel!=null&&feedModel.data != null) {
       List<HomeFeedModel> list = [];
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);
