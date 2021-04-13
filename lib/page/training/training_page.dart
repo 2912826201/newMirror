@@ -36,6 +36,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   int _isVideoCourseLastTime;
   bool _videoCourseHasNext;
 
+  //TODO 临时变量 之后要像机器信息一样全局维护
+  bool _isPlayingCourse = false;
+
   RefreshController _refreshController = RefreshController();
 
   //hero动画的标签
@@ -147,11 +150,13 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            bottom: 0,
-            child: _buildInfoBar(),
-          ),
+          _isPlayingCourse
+              ? Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: _buildInfoBar(),
+                )
+              : Container(),
         ],
       ),
     );

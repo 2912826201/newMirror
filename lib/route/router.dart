@@ -637,11 +637,9 @@ class AppRouter {
   }
 
   //
-  //mode:模式  0-普通模式，1-直播间模式
-  //当mode=1,liveRoomId必传
-  static void navigateToMachineRemoteController(BuildContext context, {int mode = 0, int liveRoomId}) {
+  //mode:模式  liveRoomId-没有-普通模式，liveRoomId-有-直播间模式
+  static void navigateToMachineRemoteController(BuildContext context, {int liveRoomId}) {
     Map<String, dynamic> map = Map();
-    map["mode"] = mode;
     map["liveRoomId"] = liveRoomId;
     _navigateToPage(context, pathMachineRemoteController, map);
   }

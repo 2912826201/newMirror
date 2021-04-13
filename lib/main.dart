@@ -222,10 +222,10 @@ Future _initApp() async {
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
   //todo 获取视频课标签列表 其实在没有登录时无法获取
-  try {
-    Map<String, dynamic> videoCourseTagMap = await getAllTags();
+  Map<String, dynamic> videoCourseTagMap = await getAllTags();
+  if(videoCourseTagMap!=null) {
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
-  } catch (e) {}
+  }
 
   //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
   if (Application.token.anonymous == 0) {
