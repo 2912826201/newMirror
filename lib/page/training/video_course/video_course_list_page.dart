@@ -535,7 +535,7 @@ class VideoCourseListPageState extends XCState {
     var childrenArray3 = <Widget>[];
     var marginBox = const EdgeInsets.only(left: 16, right: 0);
 
-    print("videoTagModel:${videoTagModel.toJson().toString()}");
+    // print("videoTagModel:${videoTagModel.toJson().toString()}");
 
     //目标
     childrenArray1 = _filterTitleArray("目标", videoTagModel.target, 0);
