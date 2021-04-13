@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
+import 'package:mirror/data/model/training/training_record_all_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -67,7 +68,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   Map<String, int> monthModelMap = Map();
 
   //总共训练的时长-训练的数据
-  Map<String, dynamic> allDataMap = Map();
+  TrainingRecordAllModel allDataModel;
 
   //当前是第几页数据
   int pageIndex = 0;
@@ -299,10 +300,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //总-全部数据页
   Widget getAllTrainingUi() {
     String countString;
-    if (allDataMap == null || allDataMap["timesCount"] == null) {
+    if (allDataModel == null || allDataModel.timesCount == null) {
       countString = "0";
     } else {
-      countString = (allDataMap["timesCount"]).toString();
+      countString = (allDataModel.timesCount).toString();
     }
 
     return SliverToBoxAdapter(
@@ -483,8 +484,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                  Text(title, style: AppStyle.textMedium16),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -727,7 +727,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           SizedBox(height: 6),
           Text(
             getTopLearnTime(typeString),
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColor.textPrimary2),
+            style: AppStyle.textMedium36,
           ),
           SizedBox(height: 26),
           Row(
@@ -736,8 +736,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   child: SizedBox(
                 child: Column(
                   children: [
-                    Text(getTopCheckInCount(typeString),
-                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    Text(getTopCheckInCount(typeString), style: AppStyle.textPrimary2Medium23),
                     SizedBox(height: 6),
                     Text("打卡次数", style: alertTextStyle),
                   ],
@@ -749,8 +748,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                     child: SizedBox(
                   child: Column(
                     children: [
-                      Text(getTopTrainingDay(typeString),
-                          style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                      Text(getTopTrainingDay(typeString), style: AppStyle.textPrimary2Medium23),
                       SizedBox(height: 6),
                       Text("训练天数", style: alertTextStyle),
                     ],
@@ -761,8 +759,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   child: SizedBox(
                 child: Column(
                   children: [
-                    Text(getTopCalorie(typeString),
-                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    Text(getTopCalorie(typeString),style: AppStyle.textPrimary2Medium23),
                     SizedBox(height: 6),
                     Text("消耗千卡", style: alertTextStyle),
                   ],
@@ -797,11 +794,11 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //获取头部--总共学了多少分钟
   String getTopLearnTime(String typeString) {
     if (typeString == "总") {
-      if (allDataMap == null || allDataMap["msecondsCount"] == null) {
+      if (allDataModel == null || allDataModel.msecondsCount == null) {
         return "0";
       } else {
-        print("allDataMap[msecondsCount]：${allDataMap["msecondsCount"]}");
-        return (allDataMap["msecondsCount"] ~/ 1000 ~/ 60).toString();
+        print("allDataMap[msecondsCount]：${allDataModel.msecondsCount}");
+        return (allDataModel.msecondsCount ~/ 1000 ~/ 60).toString();
       }
     } else if (typeString == "月") {
       return (monthModelList[monthSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString();
@@ -815,10 +812,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //获取头部--共打卡次数
   String getTopCheckInCount(String typeString) {
     if (typeString == "总") {
-      if (allDataMap == null || allDataMap["clockCount"] == null) {
+      if (allDataModel == null || allDataModel.clockCount == null) {
         return "0";
       } else {
-        return (allDataMap["clockCount"]).toString();
+        return (allDataModel.clockCount).toString();
       }
     } else if (typeString == "月") {
       return monthModelList[monthSelectPosition].clockCount.toString();
@@ -832,10 +829,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //获取头部--训练天数
   String getTopTrainingDay(String typeString) {
     if (typeString == "总") {
-      if (allDataMap == null || allDataMap["dayCount"] == null) {
+      if (allDataModel == null || allDataModel.dayCount == null) {
         return "0";
       } else {
-        return (allDataMap["dayCount"]).toString();
+        return (allDataModel.dayCount).toString();
       }
     } else if (typeString == "月") {
       return monthModelList[monthSelectPosition].dayListIndex.length.toString();
@@ -849,10 +846,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //获取头部--消耗千卡
   String getTopCalorie(String typeString) {
     if (typeString == "总") {
-      if (allDataMap == null || allDataMap["calorieCount"] == null) {
+      if (allDataModel == null || allDataModel.calorieCount == null) {
         return "0";
       } else {
-        return IntegerUtil.formationCalorie(allDataMap["calorieCount"], isHaveCompany: false);
+        return IntegerUtil.formationCalorie(allDataModel.calorieCount, isHaveCompany: false);
       }
     } else if (typeString == "月") {
       return IntegerUtil.formationCalorie(monthModelList[monthSelectPosition].dcalorieCount, isHaveCompany: false);
@@ -932,7 +929,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     }
     _refreshController.loadComplete();
 
-    allDataMap = await getTrainingRecords();
+    allDataModel = await getTrainingRecords();
     if (mounted) {
       setState(() {
         if (null != dayModelList && dayModelList.length > 0) {

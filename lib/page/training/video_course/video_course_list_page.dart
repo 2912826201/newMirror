@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -152,7 +153,6 @@ class VideoCourseListPageState extends XCState {
 
   //顶部筛选的列表
   Widget _getScreenTitleUi() {
-    TextStyle textStyle = TextStyle(fontSize: 15, color: AppColor.textPrimary1, fontWeight: FontWeight.bold);
     var expandedArray = <Widget>[];
     for (int i = 0; i < _titleItemString.length; i++) {
       expandedArray.add(Expanded(
@@ -166,7 +166,7 @@ class VideoCourseListPageState extends XCState {
               children: [
                 Text(
                   _titleItemString[i],
-                  style: textStyle,
+                  style: AppStyle.textRegular15,
                 ),
                 SizedBox(
                   width: 1,
@@ -210,13 +210,17 @@ class VideoCourseListPageState extends XCState {
     if (filterBoxOpacity > 0) {
       filterBoxHeight = MediaQuery.of(context).size.height * 0.75 - 150;
       if (showScreenTitlePosition < 0 || showScreenTitlePosition >= 3) {
-        double itemHeight =
-            titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
-        if (itemHeight + 100 < filterBoxHeight) {
-          filterBoxHeight = itemHeight + 100;
+        if(titleItemSubSettingList[0].height>0){
+          double itemHeight =
+              titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
+          if (itemHeight + 100 < filterBoxHeight) {
+            filterBoxHeight = itemHeight + 100;
+          }
         }
       } else {
-        filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
+        if(titleItemSubSettingList[showScreenTitlePosition].height>0){
+          filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
+        }
       }
     }
 
@@ -224,6 +228,7 @@ class VideoCourseListPageState extends XCState {
       filterBoxHeight = 100;
     }
 
+    print("showScreenTitlePosition:$showScreenTitlePosition");
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -254,14 +259,11 @@ class VideoCourseListPageState extends XCState {
                   AnimatedContainer(
                     height: filterBoxHeight,
                     duration: Duration(milliseconds: 300),
-                    child: Opacity(
-                      opacity: 1.0,
-                      child: Container(
-                        height: filterBoxHeight,
-                        width: double.infinity,
-                        color: AppColor.white,
-                        child: _filterBox(),
-                      ),
+                    child: Container(
+                      height: filterBoxHeight,
+                      width: double.infinity,
+                      color: AppColor.white,
+                      child: _filterBox(),
                     ),
                   ),
                   Expanded(
@@ -533,7 +535,7 @@ class VideoCourseListPageState extends XCState {
     var childrenArray3 = <Widget>[];
     var marginBox = const EdgeInsets.only(left: 16, right: 0);
 
-    print("videoTagModel:${videoTagModel.toJson().toString()}");
+    // print("videoTagModel:${videoTagModel.toJson().toString()}");
 
     //目标
     childrenArray1 = _filterTitleArray("目标", videoTagModel.target, 0);
@@ -577,7 +579,6 @@ class VideoCourseListPageState extends XCState {
     var childrenArray = <Widget>[];
     var wrapArray = <Widget>[];
 
-    var titleStyle = const TextStyle(fontSize: 14, color: AppColor.textSecondary);
     var marginTitleFirst = const EdgeInsets.only(top: 16, bottom: 12);
     var marginTitleCommon = const EdgeInsets.only(top: 0, bottom: 12);
 
@@ -587,7 +588,7 @@ class VideoCourseListPageState extends XCState {
         width: double.infinity,
         child: Text(
           title,
-          style: titleStyle,
+          style: AppStyle.textSecondaryRegular14,
         ),
         margin: index == 0 ? marginTitleFirst : (showScreenTitlePosition == 3 ? marginTitleCommon : marginTitleFirst),
       ),
@@ -828,7 +829,11 @@ class VideoCourseListPageState extends XCState {
     //获取每一个筛序组的高度
     for (int j = 0; j < titleItemSubSettingList.length; j++) {
       if (titleItemSubSettingList[j].height < 1) {
-        titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
+        try{
+          titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
+        }catch (e){
+          titleItemSubSettingList[j].height = 0;
+        }
       }
     }
 
@@ -848,21 +853,9 @@ class VideoCourseListPageState extends XCState {
         }
       }
     } else {
-      if (titleItemSubSettingList[0].height < 1 ||
-          titleItemSubSettingList[1].height < 1 ||
-          titleItemSubSettingList[2].height < 1) {
-        filterBoxOpacity = 0.0;
-        if (mounted) {
-          reload(() {});
-        }
-        Future.delayed(Duration(milliseconds: 100), () {
-          _screenTitleOnclick(index, isSecond: true);
-        });
-      } else {
-        filterBoxOpacity = 1.0;
-        if (mounted) {
-          reload(() {});
-        }
+      filterBoxOpacity = 1.0;
+      if (mounted) {
+        reload(() {});
       }
     }
   }
@@ -909,9 +902,6 @@ Widget buildVideoCourseItemLeftImageUi(LiveVideoModel value, Object heroTag) {
 
 //获取右边数据的ui
 Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bool isMine) {
-  TextStyle textStyleBold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColor.textPrimary2);
-  TextStyle textStyleNormal = TextStyle(fontSize: 12, color: AppColor.textSecondary);
-
   return Expanded(
       child: SizedBox(
     child: Container(
@@ -923,11 +913,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
             width: double.infinity,
             child: Text(
               value.title ?? "",
-              style: TextStyle(
-                fontSize: 15,
-                color: AppColor.textPrimary1,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyle.textPrimary2Medium15,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -943,22 +929,22 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                   Positioned(
                     child: RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: value.levelDto?.ename, style: textStyleBold),
+                        TextSpan(text: value.levelDto?.ename, style: AppStyle.textPrimary2Medium12),
                         // ignore: null_aware_before_operator
                         TextSpan(
                             // ignore: null_aware_before_operator
                             text: value.levelDto?.name + " · ",
-                            style: textStyleNormal),
+                            style: AppStyle.textSecondaryRegular12),
                         TextSpan(
                             text:
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
-                            style: textStyleBold),
-                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: textStyleNormal),
+                            style: AppStyle.textPrimary2Medium12),
+                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: AppStyle.textSecondaryRegular12),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
-                            style: textStyleBold),
-                        TextSpan(text: "千卡", style: textStyleNormal),
+                            style: AppStyle.textPrimary2Medium12),
+                        TextSpan(text: "千卡", style: AppStyle.textSecondaryRegular12),
                       ]),
                     ),
                     top: 0,
@@ -967,7 +953,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                   Positioned(
                     child: Text(
                       isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.practiceAmount) + "人练过",
-                      style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
+                      style: AppStyle.textPrimary2Regular12,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

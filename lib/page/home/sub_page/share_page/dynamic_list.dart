@@ -177,7 +177,16 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
        },
         // child:
       );*/
-      return FeedVideoPlayer(
+      return widget.isHero?Hero(
+        tag: widget.pageName + "${widget.model.id}${widget.index}",
+        child: FeedVideoPlayer(
+          videos.first.url,
+          sizeInfo,
+          ScreenUtil.instance.width,
+          durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
+          isInListView: true,
+        ),
+      ):FeedVideoPlayer(
         videos.first.url,
         sizeInfo,
         ScreenUtil.instance.width,

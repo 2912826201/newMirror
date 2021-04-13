@@ -219,9 +219,13 @@ class Application {
     //TODO 其他的provider还需整理出来清掉
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
+    chatDataList.clear();
+    postChatDataModelList.clear();
     queryNoPromptUidList.clear();
     chatGroupUserInformationMap.clear();
     postChatDataModelList.clear();
+    unreadMessageNumber=0;
+    unreadNoticeNumber=0;
 
   }
 }

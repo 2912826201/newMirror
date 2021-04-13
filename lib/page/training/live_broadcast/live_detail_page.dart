@@ -8,6 +8,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -86,9 +87,6 @@ class LiveDetailPageState extends XCState {
   LoadingStatus loadingStatus;
   LoadingStatus recommendLoadingStatus;
 
-  //title文字的样式
-  var titleTextStyle = TextStyle(
-      fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -277,8 +275,8 @@ class LiveDetailPageState extends XCState {
           getTitleWidget(liveModel,context,globalKeyList[1]),
           getCoachItem(liveModel,context,onClickAttention,onClickCoach,globalKeyList[2]),
           getLineView(),
-          getTrainingEquipmentUi(liveModel, context, titleTextStyle,globalKeyList[3]),
-          getActionUiLive(liveModel,context,titleTextStyle,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
+          getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18,globalKeyList[3]),
+          getActionUiLive(liveModel,context,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -317,6 +315,8 @@ class LiveDetailPageState extends XCState {
 
     //todo 判断用户是不是vip缺少开通vip的回调
     bool isVip = Application.profile.isVip==1;
+
+    print("isVip:$isVip");
 
     var textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     var textStyleEnd = const TextStyle(color: AppColor.black, fontSize: 16);
@@ -385,7 +385,10 @@ class LiveDetailPageState extends XCState {
 
             //判断我是不是需要开通vip才能观看
             //todo 判断这个课程是不是vip直播
-            if (liveModel.playType == 1) {
+            if (liveModel.priceType == 0) {
+              //不再需要开通vip
+              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+            } else if (liveModel.priceType == 1) {
               if (isVip) {
                 //不再需要开通vip
                 childrenArray.add(
@@ -394,12 +397,9 @@ class LiveDetailPageState extends XCState {
                 //需要开通vip
                 childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
               }
-            } else if (liveModel.playType == 2) {
+            } else {
               //todo 付费课程--目前写的是开通vip
               childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
-            } else {
-              //不再需要开通vip
-              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
             }
           } else {
             //没有绑定终端
@@ -481,20 +481,37 @@ class LiveDetailPageState extends XCState {
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(!isLoggedIn&&notifier.isLoggedIn){
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              reload(() {});
-            }
-          });
-          getDataAction();
+        if(notifier.isLoggedIn){
+          if(!isLoggedIn){
+            isLoggedIn=true;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
 
-          //如果已登录且有关联的机器 发送指令让机器跳转页面
-          if(Application.machine != null){
-            openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            }
+          }
+        }else{
+          if(isLoggedIn){
+            isLoggedIn=false;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
+
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            }
           }
         }
-        isLoggedIn=notifier.isLoggedIn;
         return child;
       },
       child: Container(),
@@ -504,15 +521,26 @@ class LiveDetailPageState extends XCState {
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.machine!=null){
-          bindingTerminal=true;
-          Future.delayed(Duration(milliseconds: 300),(){
-            if(mounted){
-              reload(() {});
-            }
-          });
+        if(notifier.machine != null){
+          if(!bindingTerminal){
+            bindingTerminal=true;
+            print("bindingTerminal1:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
         }else{
-          bindingTerminal=false;
+          if(bindingTerminal){
+            bindingTerminal=false;
+            print("bindingTerminal2:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
         }
         return child;
       },
@@ -738,7 +766,10 @@ class LiveDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,callback:(dynamic result){
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,avatarUrl:liveModel.coachDto?.avatarUri,
+        userName:liveModel.coachDto?.nickName,callback:
+        (dynamic
+        result){
       print("result:$result");
       if(null!=result && result is bool) {
         liveModel.coachDto.relation = result?0:1;
@@ -874,6 +905,7 @@ class LiveDetailPageState extends XCState {
   //使用终端进行训练
   void _useTerminal() {
     ToastShow.show(msg: "使用终端进行训练", context: context);
+    startVideoCourse(Application.machine.machineId, liveCourseId);
   }
 
   //登陆终端进行训练
@@ -889,9 +921,11 @@ class LiveDetailPageState extends XCState {
   //开通vip
   void _openVip() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return VipNotOpenPage(
-        type: VipState.NOTOPEN,
-      );
+      return ChangeNotifierProvider(
+        create: (_)=>VipTitleChangeNotifier(),
+        child:VipNotOpenPage(
+          type: VipState.NOTOPEN,
+        ),);
     }));
   }
 

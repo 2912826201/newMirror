@@ -321,7 +321,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
+                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,avatarUrl:context
+                          .read<ProfileNotifier>().profile.avatarUri,userName:context.read<ProfileNotifier>().profile
+                          .nickName);
                     },
                     child: _textAndNumber(
                         "动态",
@@ -343,7 +345,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
         onTap: () {
-          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
+          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,avatarUrl:context
+              .read<ProfileNotifier>().profile.avatarUri,userName:context.read<ProfileNotifier>().profile.nickName);
         },
         child: Stack(
           children: [
@@ -454,15 +457,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      /* if (userModel.isVip != 0) {*/
-      /*   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return ChangeNotifierProvider(
-              create: (_) => VipTitleChangeNotifier(),
-          child: VipNotOpenPage(type: VipState.NOTOPEN));
-        }));*/
-      /*  } else {
-        AppRouter.navigateToVipOpenPage(context);
-      }*/
+        AppRouter.navigateToVipPage(context,VipState.RENEW,openOrNot: true);
+
     }
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
+import 'package:mirror/data/model/training/training_record_all_model.dart';
+import 'package:mirror/data/model/training/weight_records_model.dart';
 import '../api.dart';
 
 // 获取训练记录列表
@@ -39,7 +41,7 @@ Future<List<TrainingRecordModel>> getTrainingRecordsList({@required String start
 
 // 获取训练记录总体信息
 //不传查询全部
-Future<Map> getTrainingRecords({String startTime, String endTime}) async {
+Future<TrainingRecordAllModel> getTrainingRecords({String startTime, String endTime}) async {
   Map<String, dynamic> params = {};
   if (startTime != null) {
     params["startTime"] = startTime;
@@ -49,7 +51,7 @@ Future<Map> getTrainingRecords({String startTime, String endTime}) async {
   }
   BaseResponseModel responseModel = await requestApi(GETTRAININGRECORDS, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    return TrainingRecordAllModel.fromJson(responseModel.data);
   } else {
     return null;
   }
@@ -84,13 +86,13 @@ Future<Map> saveWeight(String weight) async {
 }
 
 // 获取体重
-Future<Map> getWeightRecords(int page, int size) async {
+Future<WeightRecordsModel> getWeightRecords(int page, int size) async {
   Map<String, dynamic> params = {};
   params["page"] = page;
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(GETWEIGHTRECORDS, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    return WeightRecordsModel.fromJson(responseModel.data);
   } else {
     return null;
   }
@@ -98,6 +100,9 @@ Future<Map> getWeightRecords(int page, int size) async {
 
 // 删除体重
 Future<Map> delWeight(int id) async {
+  if(id==null){
+    return null;
+  }
   Map<String, dynamic> params = {};
   params["id"] = id;
   BaseResponseModel responseModel = await requestApi(DELWEIGHT, params);

@@ -199,12 +199,16 @@ class AppRouter {
   // 封装了入参，无论入参是什么格式都转成map
   //TODO 需要统一页面切换的过场效果
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false, int duration = 250,
-        RouteTransitionsBuilder builder}) {
+      {Function(dynamic result) callback, bool replace = false, int duration = 250, RouteTransitionsBuilder builder}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (Application.pagePopRouterName == null) {
       Application.pagePopRouterName = [];
+    }
+    if(Application.pagePopRouterName.length!=0){
+      if(Application.pagePopRouterName.last==uri){
+        return ;
+      }
     }
     if (Application.pagePopRouterName.contains(uri)) {
       for (int i = 0; i < Application.pagePopRouterName.length; i++) {
@@ -217,15 +221,17 @@ class AppRouter {
     }
     Application.pagePopRouterName.add(uri);
 
-    Application.router.navigateTo(
+    Application.router
+        .navigateTo(
       context,
       uri,
       replace: replace,
       transitionDuration: Duration(milliseconds: duration),
-      transition: builder==null?TransitionType.cupertino:TransitionType.custom,
+      transition: builder == null ? TransitionType.cupertino : TransitionType.custom,
       transitionBuilder: builder,
-    ).then((value) {
-      if (Application.pagePopRouterName.isNotEmpty&&Application.pagePopRouterName.contains(uri)) {
+    )
+        .then((value) {
+      if (Application.pagePopRouterName.isNotEmpty && Application.pagePopRouterName.contains(uri)) {
         Application.pagePopRouterName.remove(uri);
       }
       if (callback != null) {
@@ -415,7 +421,7 @@ class AppRouter {
     _navigateToPage(context, pathVideoDetail, map, callback: callback);
   }
 
-  static void navigateToScanCodePage(BuildContext context,{bool showMyCode = false}) {
+  static void navigateToScanCodePage(BuildContext context, {bool showMyCode = false}) {
     Map<String, dynamic> map = Map();
     map["showMyCode"] = showMyCode;
     _navigateToPage(context, pathScanCode, map);
@@ -502,24 +508,26 @@ class AppRouter {
     _navigateToPage(context, pathLike, map);
   }
 
-  static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
+  static void navigateToMineDetail(BuildContext context, int uId,
+      {String avatarUrl, String userName, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
+    if (userName != null) {
+      map["userName"] = userName;
+    }
+    if (avatarUrl != null) {
+      map["imageUrl"] = avatarUrl;
+    }
+
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
-  static void removeMineDtailRouterName(BuildContext context, int uid) {
+  static void navigateToVipPage(BuildContext context,int vipState, {bool openOrNot = true}) {
     Map<String, dynamic> map = Map();
-    map["userId"] = uid;
-    String uri = pathProfileDetails + "?$paramData=" + Uri.encodeComponent(json.encode(map));
-    if (Application.pagePopRouterName.contains(uri)) {
-      Application.pagePopRouterName.remove(uri);
+    if(vipState!=null){
+      map["vipState"] = vipState;
     }
-  }
-
-  static void navigateToVipOpenPage(BuildContext context) {
-    Map<String, dynamic> map = Map();
-    _navigateToPage(context, pathVipOpenPage, map);
+    _navigateToPage(context, openOrNot?pathVipOpenPage:pathVipNotOpenPage, map);
   }
 
   static void navigateToVipNamePlatePage(BuildContext context, int index) {
@@ -562,11 +570,11 @@ class AppRouter {
 
   static void navigateToChatPage(
       {@required BuildContext context,
-        @required ConversationDto conversation,
-        @required List<ChatDataModel> chatDataModelList,
-        String systemLastTime,
-        int systemPage=0,
-        Message shareMessage}) {
+      @required ConversationDto conversation,
+      @required List<ChatDataModel> chatDataModelList,
+      String systemLastTime,
+      int systemPage = 0,
+      Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
       map["conversation"] = conversation.toMap();
@@ -637,11 +645,9 @@ class AppRouter {
   }
 
   //
-  //mode:模式  0-普通模式，1-直播间模式
-  //当mode=1,liveRoomId必传
-  static void navigateToMachineRemoteController(BuildContext context, {int mode = 0, int liveRoomId}) {
+  //mode:模式  liveRoomId-没有-普通模式，liveRoomId-有-直播间模式
+  static void navigateToMachineRemoteController(BuildContext context, {int liveRoomId}) {
     Map<String, dynamic> map = Map();
-    map["mode"] = mode;
     map["liveRoomId"] = liveRoomId;
     _navigateToPage(context, pathMachineRemoteController, map);
   }
@@ -713,8 +719,8 @@ class AppRouter {
     map["pullFeedType"] = pullFeedType;
     map["initScrollHeight"] = initScrollHeight;
     RouteTransitionsBuilder builder;
-    if(duration>0){
-      builder=getFadeTransitionBuilder();
+    if (duration > 0) {
+      builder = getFadeTransitionBuilder();
     }
     _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, builder: builder);
   }
@@ -823,7 +829,7 @@ class AppRouter {
   }
 
   //去直播间
-  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel,{Function(int relation) callback}) {
+  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel, {Function(int relation) callback}) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LiveRoomVideoPage(liveCourseId: liveModel.id, coachId: liveModel.coachId.toString());
     }));
@@ -837,7 +843,7 @@ class AppRouter {
             coachUrl: liveModel.coachDto.avatarUri,
             coachRelation: liveModel.coachDto.relation,
             startTime: liveModel.startTime,
-            callback:callback,
+            callback: callback,
             coachId: liveModel.coachDto.uid);
       },
     ));

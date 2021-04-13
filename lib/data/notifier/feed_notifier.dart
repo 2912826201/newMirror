@@ -20,6 +20,9 @@ class FeedMap {
   // 点击评论图标记录此动态的Id用于请求评论列表
   int _feedId;
 
+  bool _showImageDetails = false;
+
+  bool get showImageDetails => _showImageDetails;
   int get feedId => _feedId;
 
   List<CommentDtoModel> _commentList = [];
@@ -81,7 +84,12 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     value._childModel = model;
     notifyListeners();
   }
-
+  void changeImageDetailsStatus(bool openOrNot,{needNotify = true}) {
+    value._showImageDetails = openOrNot;
+    if(needNotify){
+      notifyListeners();
+    }
+  }
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {

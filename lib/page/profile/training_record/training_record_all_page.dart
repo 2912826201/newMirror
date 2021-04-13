@@ -5,6 +5,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
+import 'package:mirror/data/model/training/training_record_all_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -43,7 +44,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   Map<String, int> monthAllModelMap = Map();
 
   //总数据的记录
-  Map<String, dynamic> allDataMap = Map();
+  TrainingRecordAllModel allDataModel;
 
   int pageIndex = 0;
   int startTime = 0;
@@ -449,22 +450,22 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   //获取顶部显示数据
   Widget getTopUi() {
     String countString;
-    if (allDataMap == null || allDataMap["timesCount"] == null) {
+    if (allDataModel == null || allDataModel.timesCount == null) {
       countString = "0";
     } else {
-      countString = (allDataMap["timesCount"]).toString();
+      countString = (allDataModel.timesCount).toString();
     }
     String timeString;
-    if (allDataMap == null || allDataMap["msecondsCount"] == null) {
+    if (allDataModel == null || allDataModel.msecondsCount == null) {
       timeString = "0";
     } else {
-      timeString = (allDataMap["msecondsCount"] ~/ 1000 ~/ 60).toString();
+      timeString = (allDataModel.msecondsCount ~/ 1000 ~/ 60).toString();
     }
     String calorieCount;
-    if (allDataMap == null || allDataMap["calorieCount"] == null) {
+    if (allDataModel == null || allDataModel.calorieCount == null) {
       calorieCount = "0";
     } else {
-      calorieCount = (allDataMap["calorieCount"]).toString();
+      calorieCount = (allDataModel.calorieCount).toString();
     }
 
     return Container(
@@ -532,7 +533,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     _refreshController.loadComplete();
 
     if (isGetAllData) {
-      allDataMap = await getTrainingRecords();
+      allDataModel = await getTrainingRecords();
     }
     if (mounted) {
       setState(() {

@@ -150,6 +150,8 @@ var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
+    userName: data["userName"]!=null?data["userName"]:null,
+    imageUrl: data["imageUrl"]!=null?data["imageUrl"]:null,
   );
 });
 
@@ -212,7 +214,8 @@ var handlerVipNotOpen = Handler(handlerFunc: (BuildContext context, Map<String, 
   return VipNotOpenPage(type: data["vipState"]);
 });
 var handlerVipOpen = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return VipOpenPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VipOpenPage(vipState: data["vipState"],);
 });
 var handlerVipNamePlatePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -406,7 +409,6 @@ var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return RemoteControllerPage(
-    mode: data["mode"]??0,
     liveRoomId: data["liveRoomId"],
   );
 });

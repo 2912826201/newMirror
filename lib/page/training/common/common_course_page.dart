@@ -1,8 +1,10 @@
 //当没有加载完成或者没有加载成功时的title
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
@@ -88,7 +90,7 @@ Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey
               children: [
                 Text(
                   titleArray[i] ?? "",
-                  style: TextStyle(fontSize: 23, color: AppColor.black, fontWeight: FontWeight.bold),
+                  style: AppStyle.textPrimary2Medium23,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -145,9 +147,11 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
       onTap: onClickCoach,
       child: Container(
         key: globalKey,
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
+        padding: const EdgeInsets.only(left: 16),
+        margin: const EdgeInsets.only(bottom: 12),
         color: Colors.white,
         width: double.infinity,
+        height: 48.0,
         child: Row(
           children: [
             Container(
@@ -170,14 +174,10 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               width: 12,
             ),
             Container(
-              child: Column(
-                children: [
-                  Text(
-                    // ignore: null_aware_before_operator
-                    videoModel.coachDto?.nickName ?? "",
-                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary2, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                // ignore: null_aware_before_operator
+                videoModel.coachDto?.nickName ?? "",
+                style: AppStyle.textPrimary2Medium14,
               ),
             ),
             Expanded(child: SizedBox()),
@@ -185,7 +185,8 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               onTap: onClickAttention,
               child: Container(
                 color: Colors.transparent,
-                height: 32.0 + 16.0 + 16.0,
+                height: 48.0,
+                padding: EdgeInsets.only(right: 16),
                 child: UnconstrainedBox(
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
@@ -265,6 +266,7 @@ Widget getTrainingEquipmentUi(
     List<String> terminalPicUrlList = getTerminalPicUrlList(videoModel.equipmentDtos);
     for (int i = 0; i < terminalPicUrlList.length; i++) {
       widgetList.add(Container(
+        color: AppColor.color707070.withOpacity(0.05),
         margin: const EdgeInsets.all(8),
         child: Image.network(
           terminalPicUrlList[i] ?? "",
@@ -407,7 +409,7 @@ Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextSty
 }
 
 //获取动作的ui
-Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, TextStyle titleTextStyle, GlobalKey globalKey,
+Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, GlobalKey globalKey,
     bool isShowAllItem, Function onClick) {
   if (liveModel == null ||
       liveModel.coursewareDto == null ||
@@ -416,7 +418,6 @@ Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, TextStyle
     return SliverToBoxAdapter();
   }
 
-  TextStyle titleTextStyle1 = const TextStyle(fontSize: 18, color: AppColor.textPrimary2);
 
   var widgetArray = <Widget>[];
   widgetArray.add(Container(
@@ -424,7 +425,7 @@ Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, TextStyle
     width: double.infinity,
     child: Text(
       "动作${liveModel.coursewareDto?.actionMapList?.length}个",
-      style: titleTextStyle,
+      style: AppStyle.textMedium18,
     ),
   ));
 
@@ -465,11 +466,11 @@ Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, TextStyle
           children: [
             Text(
               liveModel.coursewareDto?.actionMapList[i]["name"] ?? "未知动作",
-              style: titleTextStyle1,
+              style: AppStyle.textPrimary2Regular16,
             ),
             Text(
               timeString,
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              style: AppStyle.textSecondaryRegular14,
             ),
           ],
         ),
@@ -639,11 +640,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按热度",
-            style: TextStyle(
-              fontSize: 14,
-              color: isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:isHotOrTime?AppStyle.textMedium14:AppStyle.textSecondaryRegular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onHotClickBtn,
@@ -662,11 +659,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按时间",
-            style: TextStyle(
-              fontSize: 14,
-              color: !isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:!isHotOrTime?AppStyle.textMedium14:AppStyle.textSecondaryRegular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onTimeClickBtn,
@@ -699,7 +692,7 @@ Widget getCourseTopEdit(Function editClick) {
               borderRadius: BorderRadius.all(Radius.circular(14)),
               color: AppColor.bgWhite.withOpacity(0.65),
             ),
-            child: Text("说点什么吧~", style: TextStyle(fontSize: 14, color: AppColor.textHint)),
+            child: Text("说点什么吧", style: TextStyle(fontSize: 14, color: AppColor.textHint)),
           ),
           onTap: editClick,
         ),

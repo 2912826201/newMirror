@@ -334,7 +334,10 @@ class scanCodePageState extends State<ScanCodePage> {
         case "if://userProfile":
           int uid = int.parse(params["uid"]);
           Navigator.pop(context);
-          AppRouter.navigateToMineDetail(context, uid);
+          print('--------------------------uid----$uid-');
+          getUserInfo(uid: uid).then((value){
+            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+          });
           break;
         default:
           ScanCodeResultModel model = ScanCodeResultModel();

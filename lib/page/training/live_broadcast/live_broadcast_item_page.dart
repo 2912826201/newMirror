@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -218,7 +219,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
             width: double.infinity,
             child: Text(
               "今日可回放课程",
-              style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+              style: AppStyle.textMedium18,
             ),
           ),
         ],
@@ -350,11 +351,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
                   width: double.infinity,
                   child: Text(
                     value.title ?? "",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColor.textPrimary1,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppStyle.textMedium15,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

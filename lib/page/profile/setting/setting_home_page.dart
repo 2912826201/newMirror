@@ -145,6 +145,9 @@ class _SettingHomePageState extends State<SettingHomePage> {
       onTap: () async {
         // 清空曝光过的listKey
         ExposureDetectorController.instance.signOutClearHistory();
+        //清楚通知的数量
+        Application.unreadMessageNumber=0;
+        Application.unreadNoticeNumber=0;
         await Application.appLogout();
       },
       child: Container(

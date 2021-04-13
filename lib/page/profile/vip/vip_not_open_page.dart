@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -11,18 +13,20 @@ import 'package:mirror/widget/vip/vip_grid_list.dart';
 import 'package:mirror/widget/vip/vip_horizontal_list.dart';
 import 'package:provider/provider.dart';
 
-enum VipState {
+class VipState {
   //续费
-  RENEW,
+  static int RENEW = 1;
+
   //未开通
-  NOTOPEN,
+  static int NOTOPEN = 2;
+
   //已过期
-  EXPIRED
+  static int EXPIRED = 3;
 }
 
 //会员未开通页
 class VipNotOpenPage extends StatefulWidget {
-  VipState type;
+  int type;
 
   VipNotOpenPage({this.type});
 
@@ -40,16 +44,16 @@ class _VipPageState extends State<VipNotOpenPage> {
       "付款：自动续费商品包括“连续包年/连续包月”，您确认购买后，会从您的偏账号账户扣费； 取消续订：如果需要续订，请在当前订阅周期前24小时以前，手动关闭自动续费功能，到期前24小时内取消，将会收取订阅费用。";
   int lastTime = 12123434545455;
   bool wacthOffset = true;
-
+  StreamController<double> streamController = StreamController<double>();
   @override
   void initState() {
     super.initState();
     controller.addListener(() {
       print("controller.offset：${controller.offset}");
       if (controller.offset >= 88) {
-        context.read<VipTitleChangeNotifier>().changeOpacity(1);
+        streamController.sink.add(1);
       } else {
-        context.read<VipTitleChangeNotifier>().changeOpacity(controller.offset * (1 / 88));
+        streamController.sink.add(controller.offset * (1 / 88));
       }
     });
   }
@@ -63,39 +67,43 @@ class _VipPageState extends State<VipNotOpenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          appBar: CustomAppBar(
-            backgroundColor: AppColor.black,
-            brightness: Brightness.dark,
-            titleWidget: Opacity(
-              opacity: context.watch<VipTitleChangeNotifier>().opacity,
-              child: Container(
-                height: CustomAppBar.appBarHeight,
+      appBar: CustomAppBar(
+        backgroundColor: AppColor.black,
+        brightness: Brightness.dark,
+        titleWidget: StreamBuilder<double>(
+            initialData: 0,
+            stream: streamController.stream,
+            builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+              return Opacity(
+          opacity: snapshot.data,
+          child: Container(
+            height: CustomAppBar.appBarHeight,
+            width: 28,
+            alignment: Alignment.center,
+            child: ClipOval(
+              child: CachedNetworkImage(
+                height: 28,
                 width: 28,
-                alignment: Alignment.center,
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    height: 28,
-                    width: 28,
-                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                imageUrl: context.read<ProfileNotifier>().profile.avatarUri,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-          backgroundColor: AppColor.white,
-          body: Container(
-            height: ScreenUtil.instance.height,
-            width: ScreenUtil.instance.screenWidthDp,
-            child: Stack(
-              children: [_body(), Positioned(bottom: 0, child: _bottomButton())],
-            ),
-          ),
-        );
+        );}),
+      ),
+      backgroundColor: AppColor.white,
+      body: Container(
+        height: ScreenUtil.instance.height,
+        width: ScreenUtil.instance.screenWidthDp,
+        child: Stack(
+          children: [_body(), Positioned(bottom: 0, child: _bottomButton())],
+        ),
+      ),
+    );
   }
 
   Widget _bottomButton() {
@@ -302,11 +310,3 @@ class _VipPageState extends State<VipNotOpenPage> {
   }
 }
 
-class VipTitleChangeNotifier extends ChangeNotifier {
-  double opacity = 0;
-
-  void changeOpacity(double op) {
-    opacity = op;
-    notifyListeners();
-  }
-}

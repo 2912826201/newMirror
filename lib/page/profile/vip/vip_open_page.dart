@@ -16,6 +16,8 @@ import 'package:provider/provider.dart';
 
 //会员已开通页
 class VipOpenPage extends StatefulWidget {
+  int vipState;
+  VipOpenPage({this.vipState});
   @override
   State<StatefulWidget> createState() {
     return _VipOpenPage();
@@ -25,12 +27,13 @@ class VipOpenPage extends StatefulWidget {
 class _VipOpenPage extends State<VipOpenPage> {
   double textWidth;
   int lastTime = 1432121322112;
-  VipState vipState = VipState.EXPIRED;
+  int vipState = VipState.EXPIRED;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    vipState =widget.vipState;
     TextPainter testSize =
         calculateTextWidth(context.read<ProfileNotifier>().profile.nickName, AppStyle.whiteMedium15, 150, 1);
     textWidth = testSize.width;
@@ -178,13 +181,7 @@ class _VipOpenPage extends State<VipOpenPage> {
         Spacer(),
         InkWell(
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return ChangeNotifierProvider(
-                create: (_)=>VipTitleChangeNotifier(),
-                child:VipNotOpenPage(
-                type: VipState.EXPIRED,
-              ),);
-            }));
+           AppRouter.navigateToVipPage(context,vipState,openOrNot: false);
           },
           child: Container(
             height: 31,

@@ -5,7 +5,8 @@ import 'dart:ui' as ui show TextStyle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/page/image_preview/image_preview_view.dart';
+import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/weight_records_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -16,10 +17,10 @@ import 'monotonx.dart';
 
 ///自定义的折线图
 class CustomizeLineChart extends StatefulWidget {
-  final Map<String, dynamic> weightDataMap;
+  final WeightRecordsModel weightDataModel;
 
   CustomizeLineChart({
-    this.weightDataMap,
+    this.weightDataModel,
   });
 
   @override
@@ -55,9 +56,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
     valueList.clear();
     xValue.clear();
-    for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
-      valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
-      xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
+    for (int i = 0; i < widget.weightDataModel.recordList.length; i++) {
+      valueList.add(widget.weightDataModel.recordList[i].weight);
+      xValue.add(widget.weightDataModel.recordList[i].dateTime);
     }
 
     if (valueList.length >= 5) {
@@ -71,9 +72,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
     valueList.clear();
     xValue.clear();
-    for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
-      valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
-      xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
+    for (int i = 0; i < widget.weightDataModel.recordList.length; i++) {
+      valueList.add(widget.weightDataModel.recordList[i].weight);
+      xValue.add(widget.weightDataModel.recordList[i].dateTime);
     }
     if (valueList.length >= 5) {
       pageSize = 5;
@@ -81,11 +82,11 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       pageSize = valueList.length;
     }
 
-    if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
+    if (widget.weightDataModel.targetWeight == null || widget.weightDataModel.targetWeight < 1) {
       benchmarkValue = -1;
       benchmarkValueText = "目标0";
     } else {
-      benchmarkValue = widget.weightDataMap["targetWeight"];
+      benchmarkValue = widget.weightDataModel.targetWeight;
       benchmarkValueText = "目标$benchmarkValue";
     }
   }
@@ -571,14 +572,13 @@ class MyPainter extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.bold));
+    pb.pushStyle(ui.TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.w500));
     if (valueList == null || positionSelect >= valueList.length) {
       return;
     } else {
       pb.addText("${valueList[positionSelect]}kg");
     }
-    TextStyle textStyle = TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.bold);
-    double textWidth = getTextSize("${valueList[positionSelect]}kg", textStyle, 1).width;
+    double textWidth = getTextSize("${valueList[positionSelect]}kg", AppStyle.textMedium14, 1).width;
     ParagraphConstraints pc = ParagraphConstraints(width: textWidth);
     Paragraph paragraph = pb.build()..layout(pc);
     double xValue = x + width / 2 - textWidth / 2;
@@ -802,7 +802,7 @@ class MyPainterBenchMarkLine extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.bold));
+    pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.w500));
     pb.addText(benchmarkValueText);
     ParagraphConstraints pc = ParagraphConstraints(width: 60);
     Paragraph paragraph = pb.build()

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -118,9 +120,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //评论加载状态
   LoadingStatus loadingStatusComment;
-
-  //title文字的样式
-  var titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //用户评论的的一些动画参数
   var commentListSubSettingList = <CommentListSubSetting>[];
@@ -226,7 +225,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
     var widgetArray = <Widget>[];
     if (widget.isShowHotOrTime) {
-      widgetArray.add(getCourseTopText(titleTextStyle));
+      widgetArray.add(getCourseTopText(AppStyle.textMedium18));
       widgetArray.add(getCourseTopNumber(isHotOrTime, count, onHotCommentTitleClickBtn, onTimeCommentTitleClickBtn));
       widgetArray.add(SizedBox(height: 12));
       widgetArray.add(getCourseTopEdit(onEditBoxClickBtn));
@@ -247,7 +246,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     widgetArray.add(SizedBox(
       height: 23,
     ));
-    print("loadingStatusComment:${loadingStatusComment}");
+    print("loadingStatusComment:$loadingStatusComment");
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else if (loadingStatusComment == LoadingStatus.STATUS_COMPLETED) {
@@ -446,7 +445,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                     GestureDetector(
                       child: getUserImage(value.avatarUrl, isSubComment ? 32 : 42, isSubComment ? 32 : 42),
                       onTap: () {
-                        AppRouter.navigateToMineDetail(context, value.uid);
+                        AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName: value.name);
                       },
                     ),
                     SizedBox(width: 15),
@@ -668,14 +667,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       text: "${value.name}  ",
       recognizer: new TapGestureRecognizer()
         ..onTap = () {
-          AppRouter.navigateToMineDetail(context, value.uid);
+          AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName: value.name);
         },
-      style: TextStyle(
-        fontSize: 15,
-        color: AppColor.textPrimary1,
-        fontWeight: FontWeight.bold,
-      ),
-    ));
+      style: AppStyle.textMedium15));
     if (isSubComment) {
       if (value.replyId != null && value.replyId > 0) {
         textSpanList.add(TextSpan(
@@ -690,13 +684,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           text: "${value.replyName}  ",
           recognizer: new TapGestureRecognizer()
             ..onTap = () {
-              AppRouter.navigateToMineDetail(context, value.replyId);
+              AppRouter.navigateToMineDetail(context, value.replyId,avatarUrl:value.avatarUrl,userName: value.replyName);
             },
-          style: TextStyle(
-            fontSize: 15,
-            color: AppColor.textPrimary1,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppStyle.textMedium15,
         ));
       }
     }
@@ -745,9 +735,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       textSpanList.add(TextSpan(
         text: contentArray[i],
         recognizer: new TapGestureRecognizer()
-          ..onTap = () {
+          ..onTap = () async {
             if (userMap[(i).toString()] != null) {
-              AppRouter.navigateToMineDetail(context, userMap[(i).toString()]);
+              print('--------------------------userMap[(i).toString()]----${userMap[(i).toString()]}-');
+              getUserInfo(uid: userMap[(i).toString()]).then((value){
+                AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+              });
+
             }
           },
         style: TextStyle(

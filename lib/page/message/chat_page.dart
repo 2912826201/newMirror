@@ -1383,7 +1383,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         _textController.selection = setCursor;
       }
       if (Platform.isAndroid && isClickAtUser) {
-        print("at位置&${atIndex}");
+        print("at位置&$atIndex");
         var setCursor = TextSelection(
           baseOffset: atIndex,
           extentOffset: atIndex,
@@ -1918,7 +1918,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: _context);
       _messageInputBodyClick();
-      AppRouter.navigateToMineDetail(context, map["uid"],callback:(dynamic result){
+      AppRouter.navigateToMineDetail(context, map["uid"],avatarUrl:map["avatarUri"],userName:map["nikeName"],callback:
+          (dynamic result){
         print("result:$result");
         getRelation();
       });
@@ -1983,7 +1984,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       ChatDataModel v = chatDataList[i];
       if (v.msg != null) {
         String msgType = v.msg.objectName;
-        print("消息类型：${msgType}");
+        print("消息类型：$msgType");
         if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           TextMessage textMessage = ((v.msg.content) as TextMessage);
           try {

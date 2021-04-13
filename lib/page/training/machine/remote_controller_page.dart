@@ -29,10 +29,9 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class RemoteControllerPage extends StatefulWidget {
   //模式  0-普通模式，1-直播间模式
-  final int mode;
   final int liveRoomId;
 
-  RemoteControllerPage({this.mode = 0, this.liveRoomId});
+  RemoteControllerPage({this.liveRoomId});
 
   @override
   _RemoteControllerState createState() => _RemoteControllerState();
@@ -57,7 +56,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   @override
   void dispose() {
     super.dispose();
-    if (widget.mode == 1 && widget.liveRoomId != null) {
+    if (widget.liveRoomId != null) {
       //退出聊天室
       Application.rongCloud.quitChatRoom(widget.liveRoomId.toString());
     }
@@ -72,7 +71,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _luminance = context.read<MachineNotifier>().machine?.luminance;
     _status = context.read<MachineNotifier>().machine?.status;
 
-    if (widget.mode == 1 && widget.liveRoomId != null) {
+    if (widget.liveRoomId != null) {
       //加入聊天室
       Application.rongCloud.joinChatRoom(widget.liveRoomId.toString());
     }
@@ -116,7 +115,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           titleString: _title,
           actions: [
             Visibility(
-              visible: widget.mode == 1 && widget.liveRoomId != null,
+              visible: widget.liveRoomId != null,
               child: CustomAppBarIconButton(
                   icon: Icons.menu_book_rounded,
                   iconColor: AppColor.black,

@@ -176,7 +176,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
         ),
       ),
       onTap: (){
-        AppRouter.navigateToMineDetail(context, buddyModel.uid);
+        AppRouter.navigateToMineDetail(context, buddyModel.uid,avatarUrl: buddyModel.avatarUri,userName: buddyModel.nickName);
       },
     );
   }

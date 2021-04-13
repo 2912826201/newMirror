@@ -11,7 +11,7 @@ enum VipType { NOTOPEN, OPEN }
 
 class VipGridList extends StatefulWidget{
   VipType vipType;
-  VipState vipState;
+  int vipState;
   VipGridList({this.vipType,this.vipState});
   @override
   State<StatefulWidget> createState() {
