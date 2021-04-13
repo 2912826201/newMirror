@@ -406,7 +406,6 @@ var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return RemoteControllerPage(
-    mode: data["mode"]??0,
     liveRoomId: data["liveRoomId"],
   );
 });
