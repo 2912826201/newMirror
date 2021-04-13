@@ -67,6 +67,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
           feedIdListController.sink.add(feedIdList);
+          print('-------------------------model.list.isNotEmpty');
         }
         _refreshController.refreshCompleted();
       } else {
@@ -119,14 +120,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    EventBus.getDefault().unRegister(registerName:EVENTBUS_PROFILE_DELETE_FEED,pageName:EVENTBUS_PROFILE_PAGE);
+    EventBus.getDefault().unRegister(registerName: EVENTBUS_PROFILE_DELETE_FEED, pageName: EVENTBUS_PROFILE_PAGE);
   }
+
   @override
   void initState() {
     super.initState();
     print('-----------------------------profileDetailsListInit');
-    EventBus.getDefault()
-        .registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE, registerName: EVENTBUS_PROFILE_DELETE_FEED);
+    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
+        registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"
         : widget.type == 2
@@ -134,9 +136,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             : hintText = "你还没有喜欢的内容~去逛逛吧";
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(Duration(milliseconds: 250), () {
-        _getDynamicData();
-      });
+      _getDynamicData();
     });
   }
 
@@ -155,9 +155,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
+    return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
+
       ///刷新控件
       child: StreamBuilder<List<int>>(
           initialData: feedIdList,
@@ -185,7 +186,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   Widget _showDataUi(AsyncSnapshot<List<int>> snapshot) {
     var list = ListView.builder(
         shrinkWrap: true,
-        padding: EdgeInsets.only(top: 10),//解决无限高度问题
+        padding: EdgeInsets.only(top: 10),
+        //解决无限高度问题
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: snapshot.data.length,
         itemBuilder: (context, index) {
@@ -198,29 +200,29 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               print(e);
             }
           }
-            return ExposureDetector(
-              key: widget.type == 2
-                  ? Key('profile_feed_${snapshot.data[index]}')
-                  : Key('profile_like_${snapshot.data[index]}'),
-              child: DynamicListLayout(
-                  index: index,
-                  pageName: "profileDetails",
-                  isShowRecommendUser: false,
-                  isShowConcern: false,
-                  model: model,
-                  isMySelf: widget.isMySelf,
-                  mineDetailId: widget.id,
-                  key: GlobalObjectKey("attention$index"),
-                  removeFollowChanged: (model) {},
-                  deleteFeedChanged: (feedId) {}),
-              onExposure: (visibilityInfo) {
-                // 如果没有显示
-                if (model.isShowInputBox) {
-                  context.read<FeedMapNotifier>().showInputBox(model.id);
-                }
-                print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-              },
-            );
+          return ExposureDetector(
+            key: widget.type == 2
+                ? Key('profile_feed_${snapshot.data[index]}')
+                : Key('profile_like_${snapshot.data[index]}'),
+            child: DynamicListLayout(
+                index: index,
+                pageName: "profileDetails",
+                isShowRecommendUser: false,
+                isShowConcern: false,
+                model: model,
+                isMySelf: widget.isMySelf,
+                mineDetailId: widget.id,
+                key: GlobalObjectKey("attention$index"),
+                removeFollowChanged: (model) {},
+                deleteFeedChanged: (feedId) {}),
+            onExposure: (visibilityInfo) {
+              // 如果没有显示
+              if (model.isShowInputBox) {
+                context.read<FeedMapNotifier>().showInputBox(model.id);
+              }
+              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+            },
+          );
         });
     var noDataUi = Container(
         padding: EdgeInsets.only(top: 12),
