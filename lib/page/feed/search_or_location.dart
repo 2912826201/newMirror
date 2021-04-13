@@ -130,7 +130,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                     ? SmartRefresher(
                         enablePullUp: true,
                         enablePullDown: false,
-                        footer: SmartRefresherHeadFooter.init().getHeader(),
+                        footer: SmartRefresherHeadFooter.init().getFooter(),
                         controller: _refreshController,
                         onLoading: onLoadMore,
                         // child: MediaQuery.removePadding(
