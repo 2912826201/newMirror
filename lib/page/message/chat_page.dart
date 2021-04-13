@@ -1383,7 +1383,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         _textController.selection = setCursor;
       }
       if (Platform.isAndroid && isClickAtUser) {
-        print("at位置&${atIndex}");
+        print("at位置&$atIndex");
         var setCursor = TextSelection(
           baseOffset: atIndex,
           extentOffset: atIndex,
@@ -1983,7 +1983,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       ChatDataModel v = chatDataList[i];
       if (v.msg != null) {
         String msgType = v.msg.objectName;
-        print("消息类型：${msgType}");
+        print("消息类型：$msgType");
         if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           TextMessage textMessage = ((v.msg.content) as TextMessage);
           try {

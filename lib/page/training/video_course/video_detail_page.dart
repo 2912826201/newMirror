@@ -87,8 +87,6 @@ class VideoDetailPageState extends XCState {
   LoadingStatus loadingStatus;
   LoadingStatus recommendLoadingStatus;
 
-  //title文字的样式
-  var titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -291,10 +289,10 @@ class VideoDetailPageState extends XCState {
           getTitleWidget(videoModel, context, globalKeyList[1]),
           getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
           getLineView(),
-          getTrainingEquipmentUi(videoModel, context, titleTextStyle, globalKeyList[3]),
-          getActionUiVideo(videoModel, context, titleTextStyle),
+          getTrainingEquipmentUi(videoModel, context, AppStyle.textMedium18, globalKeyList[3]),
+          getActionUiVideo(videoModel, context, AppStyle.textMedium18),
           getOtherUsersUi(
-              recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[4], pageName),
+              recommendTopicList, context, AppStyle.textMedium18, onClickOtherComplete, globalKeyList[4], pageName),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(

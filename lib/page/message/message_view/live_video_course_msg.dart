@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -291,10 +292,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
                     child: Center(
                       child: Text(
                         liveVideoModel.title ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: AppColor.textPrimary1,
-                            fontWeight: FontWeight.bold),
+                        style: AppStyle.textMedium14,
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,

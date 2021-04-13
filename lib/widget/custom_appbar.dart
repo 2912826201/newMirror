@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 
 import 'icon.dart';
 
@@ -84,6 +85,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ? Text(
                       titleString,
                       style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
+                      textAlign: TextAlign.center,
                     )
                         : titleWidget,
                   ),

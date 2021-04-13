@@ -483,8 +483,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                  Text(title, style: AppStyle.textMedium16),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -727,7 +726,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           SizedBox(height: 6),
           Text(
             getTopLearnTime(typeString),
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColor.textPrimary2),
+            style: AppStyle.textMedium36,
           ),
           SizedBox(height: 26),
           Row(
@@ -736,8 +735,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   child: SizedBox(
                 child: Column(
                   children: [
-                    Text(getTopCheckInCount(typeString),
-                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    Text(getTopCheckInCount(typeString), style: AppStyle.textPrimary2Medium23),
                     SizedBox(height: 6),
                     Text("打卡次数", style: alertTextStyle),
                   ],
@@ -749,8 +747,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                     child: SizedBox(
                   child: Column(
                     children: [
-                      Text(getTopTrainingDay(typeString),
-                          style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                      Text(getTopTrainingDay(typeString), style: AppStyle.textPrimary2Medium23),
                       SizedBox(height: 6),
                       Text("训练天数", style: alertTextStyle),
                     ],
@@ -761,8 +758,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   child: SizedBox(
                 child: Column(
                   children: [
-                    Text(getTopCalorie(typeString),
-                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    Text(getTopCalorie(typeString),style: AppStyle.textPrimary2Medium23),
                     SizedBox(height: 6),
                     Text("消耗千卡", style: alertTextStyle),
                   ],

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
@@ -88,7 +89,7 @@ Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey
               children: [
                 Text(
                   titleArray[i] ?? "",
-                  style: TextStyle(fontSize: 23, color: AppColor.black, fontWeight: FontWeight.bold),
+                  style: AppStyle.textPrimary2Medium23,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -175,7 +176,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
                   Text(
                     // ignore: null_aware_before_operator
                     videoModel.coachDto?.nickName ?? "",
-                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary2, fontWeight: FontWeight.bold),
+                    style: AppStyle.textPrimary2Medium14,
                   ),
                 ],
               ),
@@ -639,11 +640,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按热度",
-            style: TextStyle(
-              fontSize: 14,
-              color: isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:isHotOrTime?AppStyle.textMedium14:AppStyle.textPrimary2Regular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onHotClickBtn,
@@ -662,11 +659,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按时间",
-            style: TextStyle(
-              fontSize: 14,
-              color: !isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:!isHotOrTime?AppStyle.textMedium14:AppStyle.textPrimary2Regular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onTimeClickBtn,

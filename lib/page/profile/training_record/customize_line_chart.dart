@@ -5,6 +5,7 @@ import 'dart:ui' as ui show TextStyle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -571,14 +572,13 @@ class MyPainter extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.bold));
+    pb.pushStyle(ui.TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.w500));
     if (valueList == null || positionSelect >= valueList.length) {
       return;
     } else {
       pb.addText("${valueList[positionSelect]}kg");
     }
-    TextStyle textStyle = TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.bold);
-    double textWidth = getTextSize("${valueList[positionSelect]}kg", textStyle, 1).width;
+    double textWidth = getTextSize("${valueList[positionSelect]}kg", AppStyle.textMedium14, 1).width;
     ParagraphConstraints pc = ParagraphConstraints(width: textWidth);
     Paragraph paragraph = pb.build()..layout(pc);
     double xValue = x + width / 2 - textWidth / 2;
@@ -802,7 +802,7 @@ class MyPainterBenchMarkLine extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.bold));
+    pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.w500));
     pb.addText(benchmarkValueText);
     ParagraphConstraints pc = ParagraphConstraints(width: 60);
     Paragraph paragraph = pb.build()

@@ -7,6 +7,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -124,7 +125,7 @@ class ChatPageUtil{
                     children: [
                       Icon(Icons.add, size: 16, color: AppColor.textPrimary1),
                       Text("关注",
-                          style: TextStyle(color: AppColor.textPrimary1, fontSize: 14, fontWeight: FontWeight.bold)),
+                          style: AppStyle.textMedium14),
                       SizedBox(width: 2),
                     ],
                   ),

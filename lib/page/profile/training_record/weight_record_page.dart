@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
@@ -156,7 +157,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                 ),
                 Text(
                   "${weightDataMap["recordList"][index]["weight"]} kg",
-                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -180,7 +181,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.centerLeft,
           child:
-              Text("体重记录", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+              Text("体重记录", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.w500)),
         ),
       ),
     );
@@ -207,11 +208,11 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                 SizedBox(
                   width: 16,
                 ),
-                Text("目标体重", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                Text("目标体重", style: AppStyle.textMedium16),
                 Expanded(child: SizedBox()),
                 Text(
                   getTargetWeight() < 1 ? "未设置" : getTargetWeight().toString() + "kg",
-                  style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                  style: AppStyle.textSecondaryRegular16,
                 ),
                 SizedBox(
                   width: 17,
@@ -341,7 +342,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                style: AppStyle.textSecondaryRegular16,
               ),
             ],
           ),
@@ -400,7 +401,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                style: AppStyle.textSecondaryRegular16,
               ),
             ],
           ),
