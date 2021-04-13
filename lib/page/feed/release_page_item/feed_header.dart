@@ -226,42 +226,30 @@ class FeedHeader extends StatelessWidget {
             onTap: () {
               // 读取输入框最新的值
               var inputText = controller.text;
-              // context.read<ReleaseFeedInputNotifier>().inputText;
 
               // 获取输入框内的规则
               var rules = context.read<ReleaseFeedInputNotifier>().rules;
 
               // 获取选择的地址
               var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
-              print("点击生效");
-              print(poi.toString());
+
               // 获取用户Id
               var uid = context.read<ProfileNotifier>().profile.uid;
               pulishFeed(context, inputText, uid, rules, poi);
             },
-            // child: IgnorePointer(
-            // // 监听输入框的值==""使外层点击不生效。非""手势生效。
-            // ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
             child: Container(
-                // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                 height: 28,
                 width: 60,
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     // 监听输入框的值动态改变样式
-                    color:
-                        // context.watch<ReleaseFeedInputNotifier>().isPostFeed
-                        //     ?
-                        AppColor.mainRed
-                    // : AppColor.mainRed.withOpacity(0.65),
-                    ),
+                    color: AppColor.mainRed),
                 child: Center(
                   child: const Text(
                     "发布",
                     style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
                   ),
                 )),
-            // )
           ),
           const SizedBox(
             width: 16,

@@ -22,51 +22,59 @@ class AttentionUserState extends State<AttentionUser> {
     "3",
     "4",
     "5",
-    "6",
-    "7",
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Offstage(
-      offstage: list.length == 0,
-      child: Container(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(left: 16, right: 16, top: 18),
-              height: 25,
-              width: ScreenUtil.instance.screenWidthDp,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "为你推荐",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
-                  ),
-                  const Spacer(),
-                  Container(
-                    width: getTextSize("查看全部", TextStyle(fontSize: 14), 1).width + 20,
-                    child: Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 4),
-                          child: const Text(
-                            "查看全部",
-                            style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
-                          ),
-                        ),
-                        AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
-                      ],
+    return AnimatedContainer(
+      width: ScreenUtil.instance.width,
+      height: list.length == 0 ? 0 : 251,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.linear,
+      //NOTE 此用list布局不用Column是因为使用AnimatedContainer动态改变高度时Column的高度不受限制会导致界面UI底部溢出
+      child: ListView.builder(
+          itemCount: 2,
+          physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Container(
+                margin: const EdgeInsets.only(left: 16, right: 16, top: 18),
+                height: 25,
+                width: ScreenUtil.instance.width,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "为你推荐",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            attentionList(),
-          ],
-        ),
-      ),
+                    const Spacer(),
+                    Container(
+                        width: getTextSize("查看全部", TextStyle(fontSize: 14), 1).width + 20,
+                        child: GestureDetector(
+                          onTap: () {
+                            list.clear();
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 4),
+                                child: const Text(
+                                  "查看全部",
+                                  style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+                                ),
+                              ),
+                              AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
+                            ],
+                          ),
+                        )),
+                  ],
+                ),
+              );
+            } else {
+              return attentionList();
+            }
+          }),
     );
   }
 
@@ -78,6 +86,7 @@ class AttentionUserState extends State<AttentionUser> {
       child: attentionUserAnimateList(
         itemCount: list.length,
         lists: list,
+        shrinkWrap: true,
         onActionFinished: (index) {
           list.removeAt(index);
           if (list.length == 0) {
@@ -160,6 +169,7 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
   void removeTargetItem(int index) {
     setState(() {
       widget.itemCount = widget.onActionFinished(index);
+      print("widget.itemCount::${widget.itemCount}");
     });
   }
 }
@@ -187,9 +197,12 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
   Size _size;
   AnimationController _slideController;
   AnimationController _sizeController;
+  AnimationController _opacityController;
 
   Animation<Offset> _slideAnimation;
   Animation<double> _sizeAnimation;
+  Animation<double> _opacityAnimation;
+  static final _opacityTween = new Tween<double>(begin: 0.1, end: 1.0);
 
   @override
   void initState() {
@@ -205,13 +218,14 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback(onAfterRender);
   }
 
-  // 从上向下的动画
+  // 从右到左的平移动画
   void initSlideAnimation() {
     _slideController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
-    _slideAnimation = Tween(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.0))
+    _slideAnimation = Tween(begin: Offset(0.0, 0.0), end: Offset(-1.0, 0.0))
         .animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
   }
 
+  //
   void initSizeAnimation() {
     _sizeController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
     _sizeAnimation =
@@ -238,135 +252,124 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
 
   Widget itemBuilder(BuildContext context) {
     return AnimatedOpacity(
-      opacity: _opacity,
-      onEnd: () {
-        _slideController.forward().whenComplete(() {
-          _opacity = 1.0;
-          setState(() {
-            _slideEnd = true;
-            _sizeController.forward().whenComplete(() {
-              _sizeEnd = true;
-              // 通知list 进行数据刷新操作
-              widget.onAnimateFinished(widget.index);
+        opacity: _opacity,
+        onEnd: () {
+          _slideController.forward().whenComplete(() {
+            _opacity = 1.0;
+            setState(() {
+              _slideEnd = true;
+              _sizeController.forward().whenComplete(() {
+                _sizeEnd = true;
+                // 通知list 进行数据刷新操作
+                widget.onAnimateFinished(widget.index);
+              });
             });
           });
-        });
-      },
-      duration: Duration(milliseconds: 250),
-      child: Container(
-        height: 190,
-        width: 151,
-        decoration: BoxDecoration(
-          //背景
-          color: Colors.white,
-          //设置四周圆角 角度
-          borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-          //设置四周边框
-          border: new Border.all(width: 0.5, color: AppColor.bgWhite),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: 0,
-              child: AppIconButton(
-                svgName: AppIcon.close_18,
-                iconSize: 18,
-                buttonWidth: 30,
-                buttonHeight: 30,
-                iconColor: AppColor.textHint,
-                onTap: () {
-                  // _slideController.forward().whenComplete(() {
-                  //   setState(() {
-                  //     _slideEnd = true;
-                  //     _sizeController.forward().whenComplete(() {
-                  //       _sizeEnd = true;
-                  //       // 通知list 进行数据刷新操作
-                  //       widget.onAnimateFinished(widget.index);
-                  //     });
-                  //   });
-                  // });
-                  setState(() {
-                    _opacity = 0;
-                  });
-                },
+        },
+        duration: Duration(milliseconds: 250),
+        child: Container(
+          height: 190,
+          width: 151,
+          decoration: BoxDecoration(
+            //背景
+            color: Colors.white,
+            //设置四周圆角 角度
+            borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+            //设置四周边框
+            border: new Border.all(width: 0.5, color: AppColor.bgWhite),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: 0,
+                child: AppIconButton(
+                  svgName: AppIcon.close_18,
+                  iconSize: 18,
+                  buttonWidth: 30,
+                  buttonHeight: 30,
+                  iconColor: AppColor.textHint,
+                  onTap: () {
+                    setState(() {
+                      _opacity = 0;
+                    });
+                  },
+                ),
               ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 18),
-              width: 151,
-              height: 172,
-              // child: Expanded(
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
-                    backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                    maxRadius: 23.5,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      "金卡卡西${widget.str}",
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+              Container(
+                margin: const EdgeInsets.only(top: 18),
+                width: 151,
+                height: 172,
+                // child: Expanded(
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
+                      backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                      maxRadius: 23.5,
                     ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 2, bottom: 12),
-                    width: 100,
-                    child: Text(
-                      "夕柚和其他2位用户关注了",
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
-                    ),
-                  ),
-                  Container(
-                    width: 119,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: isToggle ? AppColor.textHint : Colors.black,
-                      borderRadius: const BorderRadius.all(Radius.circular(16)),
-                    ),
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        toggleutton();
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            isToggle
-                                ? AppIcon.getAppIcon(AppIcon.check_follow, 16)
-                                : AppIcon.getAppIcon(AppIcon.add_follow, 16),
-                            const SizedBox(
-                              width: 4,
-                            ),
-                            Container(
-                              child: Text(
-                                isToggle ? "已关注" : "关注",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColor.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        "金卡卡西${widget.str}",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                       ),
                     ),
-                  )
-                ],
-              ),
-              // ),
-            )
-          ],
-        ),
-      ),
-    );
+                    Container(
+                      margin: const EdgeInsets.only(top: 2, bottom: 12),
+                      width: 100,
+                      child: Text(
+                        "夕柚和其他2位用户关注了",
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
+                      ),
+                    ),
+                    Container(
+                      width: 119,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: isToggle ? AppColor.textHint : Colors.black,
+                        borderRadius: const BorderRadius.all(Radius.circular(16)),
+                      ),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          toggleutton();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              isToggle
+                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16)
+                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Container(
+                                child: Text(
+                                  isToggle ? "已关注" : "关注",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColor.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                // ),
+              )
+            ],
+          ),
+        ));
   }
 
   @override
