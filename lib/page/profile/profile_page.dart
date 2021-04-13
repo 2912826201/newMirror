@@ -455,11 +455,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
       /* if (userModel.isVip != 0) {*/
-      /*   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return ChangeNotifierProvider(
               create: (_) => VipTitleChangeNotifier(),
           child: VipNotOpenPage(type: VipState.NOTOPEN));
-        }));*/
+        }));
       /*  } else {
         AppRouter.navigateToVipOpenPage(context);
       }*/

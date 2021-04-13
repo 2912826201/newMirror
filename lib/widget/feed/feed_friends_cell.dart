@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import '../icon.dart';
+
 typedef FriendsCallback = void Function(String name, int userId, int type, BuildContext context);
 
 // ignore: must_be_immutable
@@ -18,16 +20,17 @@ class FriendsCell extends StatelessWidget {
   final bool isSelectSingleChoice;
   int noBottomIndex = 0;
 
-  FriendsCell({this.imageUrl,
-    this.name,
-    this.imageAssets,
-    this.groupTitle,
-    this.noBottomIndex = 0,
-    this.friendsCallback,
-    this.isShowTitle = true,
-    this.isShowSingleChoice = true,
-    this.isSelectSingleChoice = false,
-    this.userId}); //首字母大写
+  FriendsCell(
+      {this.imageUrl,
+      this.name,
+      this.imageAssets,
+      this.groupTitle,
+      this.noBottomIndex = 0,
+      this.friendsCallback,
+      this.isShowTitle = true,
+      this.isShowSingleChoice = true,
+      this.isSelectSingleChoice = false,
+      this.userId}); //首字母大写
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +66,9 @@ class FriendsCell extends StatelessWidget {
         color: AppColor.bgWhite,
         child: groupTitle != null
             ? Text(
-          groupTitle,
-          style: const TextStyle(fontSize: 14, color: AppColor.textPrimary3),
-        )
+                groupTitle,
+                style: const TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+              )
             : null,
       ),
     );
@@ -73,7 +76,7 @@ class FriendsCell extends StatelessWidget {
 
   //item-ui
   Widget itemUi(BuildContext context) {
-    if(isShowSingleChoice && groupTitle == "群成员"){
+    if (isShowSingleChoice && groupTitle == "群成员") {
       return Opacity(
         opacity: 0.2,
         child: Container(
@@ -92,7 +95,7 @@ class FriendsCell extends StatelessWidget {
           ),
         ),
       );
-    }else{
+    } else {
       return Container(
         color: Colors.white,
         height: 48,
@@ -109,7 +112,6 @@ class FriendsCell extends StatelessWidget {
         ),
       );
     }
-
   }
 
   //单选按钮
@@ -121,16 +123,8 @@ class FriendsCell extends StatelessWidget {
         // color: Colors.lightGreen,
         width: 24,
         height: 24,
-        decoration: !isSelectSingleChoice
-            ? BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(width: 0.5, color: AppColor.textHint),
-        )
-            : BoxDecoration(
-          color: AppColor.mainRed,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        child:
+            AppIcon.getAppIcon(isSelectSingleChoice ? AppIcon.selection_selected : AppIcon.selection_not_selected, 24),
       ),
     );
   }
