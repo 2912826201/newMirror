@@ -210,13 +210,17 @@ class VideoCourseListPageState extends XCState {
     if (filterBoxOpacity > 0) {
       filterBoxHeight = MediaQuery.of(context).size.height * 0.75 - 150;
       if (showScreenTitlePosition < 0 || showScreenTitlePosition >= 3) {
-        double itemHeight =
-            titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
-        if (itemHeight + 100 < filterBoxHeight) {
-          filterBoxHeight = itemHeight + 100;
+        if(titleItemSubSettingList[0].height>0){
+          double itemHeight =
+              titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
+          if (itemHeight + 100 < filterBoxHeight) {
+            filterBoxHeight = itemHeight + 100;
+          }
         }
       } else {
-        filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
+        if(titleItemSubSettingList[showScreenTitlePosition].height>0){
+          filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
+        }
       }
     }
 
@@ -224,6 +228,7 @@ class VideoCourseListPageState extends XCState {
       filterBoxHeight = 100;
     }
 
+    print("showScreenTitlePosition:$showScreenTitlePosition");
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -254,14 +259,11 @@ class VideoCourseListPageState extends XCState {
                   AnimatedContainer(
                     height: filterBoxHeight,
                     duration: Duration(milliseconds: 300),
-                    child: Opacity(
-                      opacity: 1.0,
-                      child: Container(
-                        height: filterBoxHeight,
-                        width: double.infinity,
-                        color: AppColor.white,
-                        child: _filterBox(),
-                      ),
+                    child: Container(
+                      height: filterBoxHeight,
+                      width: double.infinity,
+                      color: AppColor.white,
+                      child: _filterBox(),
                     ),
                   ),
                   Expanded(
@@ -828,7 +830,11 @@ class VideoCourseListPageState extends XCState {
     //获取每一个筛序组的高度
     for (int j = 0; j < titleItemSubSettingList.length; j++) {
       if (titleItemSubSettingList[j].height < 1) {
-        titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
+        try{
+          titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
+        }catch (e){
+          titleItemSubSettingList[j].height = 0;
+        }
       }
     }
 
@@ -848,21 +854,9 @@ class VideoCourseListPageState extends XCState {
         }
       }
     } else {
-      if (titleItemSubSettingList[0].height < 1 ||
-          titleItemSubSettingList[1].height < 1 ||
-          titleItemSubSettingList[2].height < 1) {
-        filterBoxOpacity = 0.0;
-        if (mounted) {
-          reload(() {});
-        }
-        Future.delayed(Duration(milliseconds: 100), () {
-          _screenTitleOnclick(index, isSecond: true);
-        });
-      } else {
-        filterBoxOpacity = 1.0;
-        if (mounted) {
-          reload(() {});
-        }
+      filterBoxOpacity = 1.0;
+      if (mounted) {
+        reload(() {});
       }
     }
   }
