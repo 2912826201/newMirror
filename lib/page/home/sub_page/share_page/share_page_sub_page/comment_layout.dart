@@ -28,7 +28,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.name + ":"}",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.uid);
+            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));
@@ -38,7 +38,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.replyName}  ",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.replyId);
+            AppRouter.navigateToMineDetail(context, value.replyId,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));
@@ -51,7 +51,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.name + ":"}",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.uid);
+            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));

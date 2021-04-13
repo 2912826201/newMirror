@@ -337,7 +337,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             onTap: () {
               if (context.read<TokenNotifier>().isLoggedIn) {
                 if (liveVideoModel[index].coachDto.isLiving == 0) {
-                  AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
+                  AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid,
+                      avatarUrl:liveVideoModel[index]
+                      .coachDto.avatarUri,userName:liveVideoModel[index].coachDto.nickName);
                 } else {
                   AppRouter.navigateLiveRoomPage(context, liveVideoModel[index]);
                 }

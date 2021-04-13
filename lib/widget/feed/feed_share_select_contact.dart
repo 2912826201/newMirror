@@ -544,7 +544,7 @@ class _FriendsPageState extends State<FriendsPage> {
     init();
   }
 
-  void _friendsCallback(String name, int userId, int type, BuildContext context) async {
+  void _friendsCallback(String name, int userId, String avatar,int type, BuildContext context) async {
     if (widget.type == 2 || widget.type == 3) {
       //----------------------------------------添加人进入群聊或者将人移除群聊------------------
       if (widget.type == 2 && userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
@@ -559,7 +559,7 @@ class _FriendsPageState extends State<FriendsPage> {
     } else if (widget.type == 1) {
       //-----------------------------------------------查看群成员的个人信息------------
       Navigator.of(context).pop();
-      AppRouter.navigateToMineDetail(context, userId);
+      AppRouter.navigateToMineDetail(context, userId,avatarUrl: avatar,userName: name);
     } else if (widget.type == 4) {
       //--------------------------------------------分享消息到群聊---------------
       if (await jumpShareMessage(

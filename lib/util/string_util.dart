@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
@@ -486,7 +487,10 @@ class StringUtil {
           ..onTap = () async {
             if (userMap[(i).toString()] != null) {
               if (contentArray[i].type == "@") {
-                AppRouter.navigateToMineDetail(context, userMap[i.toString()]);
+                print('---------------------userMap[(i)]----${userMap[(i).toString()]}--');
+                getUserInfo(uid: userMap[(i).toString()]).then((value){
+                  AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+                });
               } else if (contentArray[i].type == "#") {
                 if (topicId == userMap[i.toString()]) {
                   return;

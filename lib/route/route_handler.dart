@@ -150,6 +150,8 @@ var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
+    userName: data["userName"]!=null?data["userName"]:null,
+    imageUrl: data["imageUrl"]!=null?data["imageUrl"]:null,
   );
 });
 

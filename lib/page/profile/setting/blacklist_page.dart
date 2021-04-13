@@ -109,7 +109,9 @@ class _BlackListState extends State<BlackListPage> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, blackList[index].uid, callback: (result) {
+              AppRouter.navigateToMineDetail(context, blackList[index].uid,avatarUrl:blackList[index].avatarUri,
+                  userName:blackList[index].nickName, callback:
+                  (result) {
                 if (context.read<UserInteractiveNotifier>().removeId != null) {
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {

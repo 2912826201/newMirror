@@ -321,7 +321,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
+                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,avatarUrl:context
+                          .read<ProfileNotifier>().profile.avatarUri,userName:context.read<ProfileNotifier>().profile
+                          .nickName);
                     },
                     child: _textAndNumber(
                         "动态",
@@ -343,7 +345,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
         onTap: () {
-          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
+          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,avatarUrl:context
+              .read<ProfileNotifier>().profile.avatarUri,userName:context.read<ProfileNotifier>().profile.nickName);
         },
         child: Stack(
           children: [

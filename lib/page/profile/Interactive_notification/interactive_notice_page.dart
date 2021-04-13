@@ -384,7 +384,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId);
+              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId,avatarUrl:widget.msgModel
+                  .senderAvatarUrl,userName:widget
+                  .msgModel.senderName);
             },
             child: Container(
                 alignment: Alignment.topLeft,

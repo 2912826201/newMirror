@@ -297,7 +297,7 @@ class GroupMorePageState extends State<GroupMorePage> {
         if (!(await isContinue())) {
           return;
         }
-        AppRouter.navigateToMineDetail(context, userModel.uid);
+        AppRouter.navigateToMineDetail(context,userModel.uid,avatarUrl:userModel.avatarUri,userName:userModel.nickName);
       },
       child: Container(
         child: Column(

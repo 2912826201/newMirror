@@ -5,7 +5,8 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../icon.dart';
 
-typedef FriendsCallback = void Function(String name, int userId, int type, BuildContext context);
+typedef FriendsCallback = void Function(String name, int userId,String avatar, int type, BuildContext
+context);
 
 // ignore: must_be_immutable
 class FriendsCell extends StatelessWidget {
@@ -40,7 +41,7 @@ class FriendsCell extends StatelessWidget {
       ),
       onTap: () {
         if (friendsCallback != null) {
-          friendsCallback(name, userId, RCConversationType.Private, context);
+          friendsCallback(name, userId,imageUrl, RCConversationType.Private, context);
         }
       },
     );

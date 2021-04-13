@@ -736,7 +736,10 @@ class LiveDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,callback:(dynamic result){
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,avatarUrl:liveModel.coachDto?.avatarUri,
+        userName:liveModel.coachDto?.nickName,callback:
+        (dynamic
+        result){
       print("result:$result");
       if(null!=result && result is bool) {
         liveModel.coachDto.relation = result?0:1;

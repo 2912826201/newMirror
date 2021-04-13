@@ -1918,7 +1918,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: _context);
       _messageInputBodyClick();
-      AppRouter.navigateToMineDetail(context, map["uid"],callback:(dynamic result){
+      AppRouter.navigateToMineDetail(context, map["uid"],avatarUrl:map["avatarUri"],userName:map["nikeName"],callback:
+          (dynamic result){
         print("result:$result");
         getRelation();
       });

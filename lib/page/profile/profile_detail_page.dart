@@ -34,8 +34,9 @@ import 'package:toast/toast.dart';
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
-
-  ProfileDetailPage({this.userId});
+  final String imageUrl;
+  final String userName;
+  ProfileDetailPage({this.userId,this.userName,this.imageUrl});
 
   @override
   _ProfileDetailState createState() {
@@ -89,6 +90,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    if(widget.userName!=null){
+      _textName = widget.userName;
+    }
+    if(widget.imageUrl!=null){
+      _avatar = widget.imageUrl;
+    }
     print('==============================个人主页initState');
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
