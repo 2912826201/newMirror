@@ -43,7 +43,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     color: AppColor.textPrimary1,
   );
   String toastShow = "手指上滑,取消发送";
-  String voiceIco = "images/voice_volume_1.png";
 
   bool isHide = true;
   int costTime = 0;
