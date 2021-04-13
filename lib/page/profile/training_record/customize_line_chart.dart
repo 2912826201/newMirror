@@ -45,7 +45,6 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   int pageSize = 5;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-
   @override
   void initState() {
     super.initState();
@@ -53,7 +52,6 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   }
 
   void initPageSize() {
-
     valueList.clear();
     xValue.clear();
     for (int i = 0; i < widget.weightDataModel.recordList.length; i++) {
@@ -68,8 +66,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     }
   }
 
-  void initData(){
-
+  void initData() {
     valueList.clear();
     xValue.clear();
     for (int i = 0; i < widget.weightDataModel.recordList.length; i++) {
@@ -125,7 +122,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                       footer: SmartRefresherHeadFooter.init().getFooterContainer(),
                       controller: _refreshController,
                       onLoading: () {
-                        Future.delayed(Duration(milliseconds: 200),(){
+                        Future.delayed(Duration(milliseconds: 200), () {
                           _refreshController.loadComplete();
                           if (pageSize + 5 >= valueList.length) {
                             pageSize = valueList.length;
@@ -133,7 +130,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                             pageSize = pageSize + 5;
                           }
                           print("pageSize:$pageSize");
-                          if(mounted) {
+                          if (mounted) {
                             setState(() {});
                           }
                         });
@@ -170,7 +167,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     if (notification is ScrollStartNotification) {
       if (isPositionSelectShow) {
         isPositionSelectShow = false;
-        if(mounted){
+        if (mounted) {
           setState(() {});
         }
       }
@@ -188,9 +185,8 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     return false;
   }
 
-
   //基准线的ui 折线
-  Widget getBenchMarkLineUi(double canvasWidth){
+  Widget getBenchMarkLineUi(double canvasWidth) {
     return Container(
       width: canvasWidth,
       height: double.infinity,
@@ -207,9 +203,8 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     );
   }
 
-
   //折线图的ui
-  Widget getPolylineUi(double canvasWidth){
+  Widget getPolylineUi(double canvasWidth) {
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -231,13 +226,13 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   }
 
   //折线图上层的点击层item
-  Widget getPolylineClickItemUi(double canvasWidth){
+  Widget getPolylineClickItemUi(double canvasWidth) {
     double itemWidth = canvasWidth / 4;
     return Container(
       child: Transform.translate(
         offset: Offset(-4, 0),
         child: Container(
-            width: pageSize==1?itemWidth:double.infinity,
+            width: pageSize == 1 ? itemWidth : double.infinity,
             height: double.infinity,
             alignment: Alignment.topCenter,
             child: ListView.builder(
@@ -245,35 +240,32 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
               itemCount: pageSize,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                double itemWidthContainer=itemWidth;
-                if(pageSize!=1&&index==0){
-                  itemWidthContainer/=2;
+                double itemWidthContainer = itemWidth;
+                if (pageSize != 1 && index == 0) {
+                  itemWidthContainer /= 2;
                 }
                 return UnconstrainedBox(
                   child: GestureDetector(
                     child: Container(
                       height: height,
                       width: itemWidthContainer,
-                      color:AppColor.transparent,
+                      color: AppColor.transparent,
                     ),
                     onTap: () {
                       print("点击了$index");
                       positionSelect = index;
                       isPositionSelectShow = true;
-                      if(mounted){
+                      if (mounted) {
                         setState(() {});
                       }
                     },
                   ),
                 );
               },
-            )
-        ),
+            )),
       ),
     );
   }
-
-
 
   List<double> getValueList() {
     List<double> valueArray = <double>[];
@@ -348,11 +340,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       }
     }
 
-
     if (benchmarkValue > maxValue) {
       maxValue = benchmarkValue;
     }
-
 
     if (maxValue <= 100) {
       return 100.0;
@@ -524,8 +514,8 @@ class MyPainter extends CustomPainter {
       lineX -= pointRadius / 2;
     }
 
-    if (points.length<5&&positionSelect != 0&&positionSelect != points.length - 1) {
-      lineX-=2;
+    if (points.length < 5 && positionSelect != 0 && positionSelect != points.length - 1) {
+      lineX -= 2;
     }
 
     double y = points[positionSelect].y - 28 - pointRadius / 2 - 8;
@@ -625,7 +615,7 @@ class MyPainter extends CustomPainter {
     if (newValue == null) {
       return "";
     }
-    try{
+    try {
       DateTime newTime = DateUtil.stringToDateTime(newValue);
       if (lastValue != null) {
         DateTime lastTime = DateUtil.stringToDateTime(lastValue);
@@ -637,7 +627,7 @@ class MyPainter extends CustomPainter {
       } else {
         return "${newTime.month}.${newTime.day}";
       }
-    }catch(e){
+    } catch (e) {
       return "";
     }
   }
@@ -805,8 +795,7 @@ class MyPainterBenchMarkLine extends CustomPainter {
     pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.w500));
     pb.addText(benchmarkValueText);
     ParagraphConstraints pc = ParagraphConstraints(width: 60);
-    Paragraph paragraph = pb.build()
-      ..layout(pc);
+    Paragraph paragraph = pb.build()..layout(pc);
     double xValue = size.width - 60;
     Offset offset = Offset(xValue, getPointHeight(benchmarkValue, size) - 23);
     canvas.drawParagraph(paragraph, offset); /**/

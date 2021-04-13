@@ -15,8 +15,7 @@ class LiveBroadcastTitlePage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return LiveBroadcastTitlePageState(dates,
-        setCall: setCall, itemClick: itemClick);
+    return LiveBroadcastTitlePageState(dates, setCall: setCall, itemClick: itemClick);
   }
 }
 
@@ -65,13 +64,11 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
 
     //计算_controller应该滚动的偏移量
     double offset = _controller.offset - rlOffset;
-    _controller.animateTo(offset,
-        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+    _controller.animateTo(offset, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
   Widget initItemView(BuildContext context, DateTime dateTime, int pos) {
-    var containerWidth =
-        (MediaQuery.of(context).size.width - 32) / dates.length;
+    var containerWidth = (MediaQuery.of(context).size.width - 32) / dates.length;
     return Container(
       //将key设置进去，后面通过key获取指定item的位置和尺寸
       key: keys[pos],
@@ -91,16 +88,11 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
             children: [
               Text(
                 DateUtil.getStringWeekDayStartZero(dateTime.weekday - 1),
-                style: TextStyle(
-                    color: curItem == pos ? AppColor.white : Color(0xffCCCCCC),
-                    fontSize: 14),
+                style: TextStyle(color: curItem == pos ? AppColor.white : Color(0xffCCCCCC), fontSize: 14),
               ),
               Text(
                 DateUtil.getDateDayStringJin(dateTime),
-                style: TextStyle(
-                    color:
-                        curItem == pos ? AppColor.white : AppColor.textPrimary2,
-                    fontSize: 14),
+                style: TextStyle(color: curItem == pos ? AppColor.white : AppColor.textPrimary2, fontSize: 14),
               ),
             ],
           ),
@@ -113,9 +105,7 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
     return Container(
       height: 72,
       margin: const EdgeInsets.only(left: 16, right: 16),
-      decoration: BoxDecoration(
-          color: AppColor.bgWhite.withOpacity(0.35),
-          borderRadius: BorderRadius.circular(3)),
+      decoration: BoxDecoration(color: AppColor.bgWhite.withOpacity(0.35), borderRadius: BorderRadius.circular(3)),
       child: ScrollConfiguration(
         behavior: NoBlueEffectBehavior(),
         child: ListView.builder(

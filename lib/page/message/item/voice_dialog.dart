@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
@@ -83,9 +82,8 @@ class _VoiceDialogState extends State<VoiceDialog> {
             ],
           ),
         ),
-        onTap: (){},
+        onTap: () {},
       ),
     );
   }
-
 }

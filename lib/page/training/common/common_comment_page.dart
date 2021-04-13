@@ -445,7 +445,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                     GestureDetector(
                       child: getUserImage(value.avatarUrl, isSubComment ? 32 : 42, isSubComment ? 32 : 42),
                       onTap: () {
-                        AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName: value.name);
+                        AppRouter.navigateToMineDetail(context, value.uid,
+                            avatarUrl: value.avatarUrl, userName: value.name);
                       },
                     ),
                     SizedBox(width: 15),
@@ -664,12 +665,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment) {
     var textSpanList = <TextSpan>[];
     textSpanList.add(TextSpan(
-      text: "${value.name}  ",
-      recognizer: new TapGestureRecognizer()
-        ..onTap = () {
-          AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName: value.name);
-        },
-      style: AppStyle.textMedium15));
+        text: "${value.name}  ",
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () {
+            AppRouter.navigateToMineDetail(context, value.uid, avatarUrl: value.avatarUrl, userName: value.name);
+          },
+        style: AppStyle.textMedium15));
     if (isSubComment) {
       if (value.replyId != null && value.replyId > 0) {
         textSpanList.add(TextSpan(
@@ -684,7 +685,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           text: "${value.replyName}  ",
           recognizer: new TapGestureRecognizer()
             ..onTap = () {
-              AppRouter.navigateToMineDetail(context, value.replyId,avatarUrl:value.avatarUrl,userName: value.replyName);
+              AppRouter.navigateToMineDetail(context, value.replyId,
+                  avatarUrl: value.avatarUrl, userName: value.replyName);
             },
           style: AppStyle.textMedium15,
         ));
@@ -738,10 +740,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           ..onTap = () async {
             if (userMap[(i).toString()] != null) {
               print('--------------------------userMap[(i).toString()]----${userMap[(i).toString()]}-');
-              getUserInfo(uid: userMap[(i).toString()]).then((value){
-                AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+              getUserInfo(uid: userMap[(i).toString()]).then((value) {
+                AppRouter.navigateToMineDetail(context, value.uid,
+                    avatarUrl: value.avatarUri, userName: value.nickName);
               });
-
             }
           },
         style: TextStyle(

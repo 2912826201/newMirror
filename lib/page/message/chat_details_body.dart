@@ -33,49 +33,48 @@ class ChatDetailsBody extends StatefulWidget {
 
   ChatDetailsBody(
       {Key key,
-        this.scrollController,
-        this.chatDataList,
-        this.chatId,
-        this.conversationDtoType,
-        this.loadStatus,
-        this.isShowChatUserName,
-        this.isHaveAtMeMsg,
-        this.firstEndCallback,
-        this.vsync,
-        this.chatName,
-        this.onTap,
-        this.isPersonalButler = false,
-        this.voidMessageClickCallBack,
-        this.onAtUiClickListener,
-        this.chatTopAtMarkChildKey,
-        this.voidItemLongClickCallBack}):super(key: key);
+      this.scrollController,
+      this.chatDataList,
+      this.chatId,
+      this.conversationDtoType,
+      this.loadStatus,
+      this.isShowChatUserName,
+      this.isHaveAtMeMsg,
+      this.firstEndCallback,
+      this.vsync,
+      this.chatName,
+      this.onTap,
+      this.isPersonalButler = false,
+      this.voidMessageClickCallBack,
+      this.onAtUiClickListener,
+      this.chatTopAtMarkChildKey,
+      this.voidItemLongClickCallBack})
+      : super(key: key);
 
   @override
   ChatDetailsBodyState createState() => ChatDetailsBodyState(loadStatus);
 }
 
 class ChatDetailsBodyState extends State<ChatDetailsBody> {
-
   LoadingStatus loadStatus;
   bool isShowTop;
   bool isShowHaveAnimation;
-  
+
   ChatDetailsBodyState(this.loadStatus);
 
   bool isScroll = false;
-  bool isHaveLoadAnimation=true;
+  bool isHaveLoadAnimation = true;
 
   Widget loadStatusWidget;
 
-  int atItemMessagePosition=-1;
-
+  int atItemMessagePosition = -1;
 
   AnimationController _animationController;
   Animation _animation;
 
   @override
   void setState(fn) {
-    if(mounted){
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -83,7 +82,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   @override
   void dispose() {
     super.dispose();
-    if(_animationController!=null){
+    if (_animationController != null) {
       _animationController.dispose();
     }
   }
@@ -158,7 +157,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   }
 
   Widget getListView() {
-    int childCount=getChildCount();
+    int childCount = getChildCount();
     return ListView.custom(
       physics: BouncingScrollPhysics(),
       controller: widget.scrollController,
@@ -166,22 +165,22 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
       reverse: true,
       shrinkWrap: isShowTop,
       childrenDelegate: FirstEndItemChildrenDelegate(
-            (BuildContext context, int index) {
-          if (index == childCount-1 && isHaveLoadAnimation) {
+        (BuildContext context, int index) {
+          if (index == childCount - 1 && isHaveLoadAnimation) {
             return loadStatusWidget;
-          } else if(index == 0 && widget.isPersonalButler){
+          } else if (index == 0 && widget.isPersonalButler) {
             return Container(
               width: double.infinity,
               height: 48,
               color: AppColor.transparent,
             );
-          }else{
+          } else {
             return Container(
               margin: index == 0
                   ? const EdgeInsets.only(bottom: 16)
                   : (index == childCount - 1)
-                  ? const EdgeInsets.only(top: 8)
-                  : null,
+                      ? const EdgeInsets.only(top: 8)
+                      : null,
               child: judgeStartAnimation(getChatDataListIndex(index)),
             );
           }
@@ -191,52 +190,51 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
             widget.firstEndCallback(firstIndex, lastIndex);
           }
         },
-        childCount:childCount,
+        childCount: childCount,
       ),
       dragStartBehavior: DragStartBehavior.down,
     );
   }
 
-  int getChatDataListIndex(int childCountIndex){
-    if(widget.isPersonalButler){
-      return childCountIndex-1;
-    }else{
+  int getChatDataListIndex(int childCountIndex) {
+    if (widget.isPersonalButler) {
+      return childCountIndex - 1;
+    } else {
       return childCountIndex;
     }
   }
 
-  int getChildCount(){
-    return widget.chatDataList.length+(widget.isPersonalButler?1:0)+(isHaveLoadAnimation?1:0);
+  int getChildCount() {
+    return widget.chatDataList.length + (widget.isPersonalButler ? 1 : 0) + (isHaveLoadAnimation ? 1 : 0);
   }
 
   Widget getLoadingUi() {
     return Container(
-      height: loadStatus != LoadingStatus.STATUS_COMPLETED?40.0:0.0,
+      height: loadStatus != LoadingStatus.STATUS_COMPLETED ? 40.0 : 0.0,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
-              visible: loadStatus != LoadingStatus.STATUS_COMPLETED ? true : false,
-              child: SizedBox(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
-                  // loading 大小
-                  strokeWidth: 2,
-                ),
-                width: 12.0,
-                height: 12.0,
-              ))
+            visible: loadStatus != LoadingStatus.STATUS_COMPLETED ? true : false,
+            child: SizedBox(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
+                // loading 大小
+                strokeWidth: 2,
+              ),
+              width: 12.0,
+              height: 12.0,
+            ),
+          )
         ],
       ),
     );
   }
 
-
-
   //判断有没有动画
   Widget judgeStartAnimation(int position) {
-    ChatDataModel model=widget.chatDataList[position];
+    ChatDataModel model = widget.chatDataList[position];
     if (model.isHaveAnimation && isShowHaveAnimation) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 100),
@@ -247,79 +245,76 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
       });
       model.isHaveAnimation = false;
       return SizeTransition(
-          sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
-          axisAlignment: 0.0,
-          child: Container(
-            child: getBodyAtItem(model, position),
-          ));
+        sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        axisAlignment: 0.0,
+        child: Container(
+          child: getBodyAtItem(model, position),
+        ),
+      );
     } else {
       return getBodyAtItem(model, position);
     }
   }
 
-
   //获取每一个item
   Widget getBodyAtItem(ChatDataModel model, int position) {
-    if(atItemMessagePosition==position){
-      _animationController =
-          AnimationController(duration: Duration(seconds: 2), vsync:  widget.vsync);
-      _animation = DecorationTween(begin: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            AppColor.transparent,
-            AppColor.textHint,
-            AppColor.transparent,
-          ],
-        ),
-      ), end: BoxDecoration(
-        color: AppColor.transparent,
-      ))
-          .animate(_animationController);
+    if (atItemMessagePosition == position) {
+      _animationController = AnimationController(duration: Duration(seconds: 2), vsync: widget.vsync);
+      _animation = DecorationTween(
+          begin: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppColor.transparent,
+                AppColor.textHint,
+                AppColor.transparent,
+              ],
+            ),
+          ),
+          end: BoxDecoration(
+            color: AppColor.transparent,
+          )).animate(_animationController);
       Future.delayed(Duration(milliseconds: 500), () {
         _animationController.forward();
       });
-      atItemMessagePosition=-1;
-      return DecoratedBoxTransition(
-          decoration: _animation,
-          child: getBodyItem(model,position));
-    }else{
-      return getBodyItem(model,position);
+      atItemMessagePosition = -1;
+      return DecoratedBoxTransition(decoration: _animation, child: getBodyItem(model, position));
+    } else {
+      return getBodyItem(model, position);
     }
   }
 
-  Widget getBodyItem(ChatDataModel model, int position){
-    return SendMessageView(model, widget.chatId, position,
-        widget.voidMessageClickCallBack, widget.voidItemLongClickCallBack, widget.chatName,
-        widget.isShowChatUserName, widget.conversationDtoType);
+  Widget getBodyItem(ChatDataModel model, int position) {
+    return SendMessageView(model, widget.chatId, position, widget.voidMessageClickCallBack,
+        widget.voidItemLongClickCallBack, widget.chatName, widget.isShowChatUserName, widget.conversationDtoType);
   }
 
-  _initData(){
-    isShowHaveAnimation=MessageItemHeightUtil.init().
-      judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
-    isShowTop=!isShowHaveAnimation;
-    if(isShowTop){
-      loadStatus=LoadingStatus.STATUS_COMPLETED;
-    }else if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
-      isHaveLoadAnimation=true;
+  _initData() {
+    isShowHaveAnimation = MessageItemHeightUtil.init()
+        .judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
+    isShowTop = !isShowHaveAnimation;
+    if (isShowTop) {
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+    } else if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
+      isHaveLoadAnimation = true;
     }
   }
 
-  _initWidget(){
-    loadStatusWidget=getLoadingUi();
+  _initWidget() {
+    loadStatusWidget = getLoadingUi();
   }
 
-  resetChatMessageCount(){
+  resetChatMessageCount() {
     _initData();
     setState(() {});
   }
 
-  setLoadStatus(LoadingStatus loadStatus){
-    this.loadStatus=loadStatus;
+  setLoadStatus(LoadingStatus loadStatus) {
+    this.loadStatus = loadStatus;
     if (loadStatus != LoadingStatus.STATUS_COMPLETED && !isShowTop) {
-      if(!isHaveLoadAnimation){
-        isHaveLoadAnimation=true;
+      if (!isHaveLoadAnimation) {
+        isHaveLoadAnimation = true;
         setState(() {});
         return;
       }
@@ -327,19 +322,17 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     _resetLoadStatus();
   }
 
-  setAtItemMessagePosition(int atItemMessagePosition){
-    this.atItemMessagePosition=atItemMessagePosition;
-    if(atItemMessagePosition>0){
+  setAtItemMessagePosition(int atItemMessagePosition) {
+    this.atItemMessagePosition = atItemMessagePosition;
+    if (atItemMessagePosition > 0) {
       setState(() {});
     }
   }
 
-
-
-  _resetLoadStatus(){
+  _resetLoadStatus() {
     Element e = findChild(context as Element, loadStatusWidget);
     if (e != null) {
-      loadStatusWidget=getLoadingUi();
+      loadStatusWidget = getLoadingUi();
       e.owner.lockState(() {
         e.update(loadStatusWidget);
       });
@@ -354,8 +347,8 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
       else
         element.visitChildren(visit);
     }
+
     visit(e);
     return child;
   }
 }
-

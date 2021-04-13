@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -24,65 +22,58 @@ class ChatBottomSettingBox extends StatefulWidget {
   final Function() onSubmitClick;
   final ScrollController textScrollController;
 
-
-  ChatBottomSettingBox({
-    Key key,
-    this.bottomSettingPanelState,
-    this.emojiState,
-    this.textController,
-    this.callBackCursorIndexPr,
-    this.changTextLen,
-    this.deleteEditText,
-    this.onSubmitClick,
-    this.textScrollController
-  }): super(key: key);
+  ChatBottomSettingBox(
+      {Key key,
+      this.bottomSettingPanelState,
+      this.emojiState,
+      this.textController,
+      this.callBackCursorIndexPr,
+      this.changTextLen,
+      this.deleteEditText,
+      this.onSubmitClick,
+      this.textScrollController})
+      : super(key: key);
 
   @override
-  ChatBottomSettingBoxState createState() => ChatBottomSettingBoxState(bottomSettingPanelState,emojiState);
-
-
+  ChatBottomSettingBoxState createState() => ChatBottomSettingBoxState(bottomSettingPanelState, emojiState);
 }
 
 class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   bool bottomSettingPanelState;
   bool emojiState;
-  int cursorIndexPr=0;
+  int cursorIndexPr = 0;
 
-  List<EmojiModel> emojiModelList=[];
+  List<EmojiModel> emojiModelList = [];
 
-  ChatBottomSettingBoxState(this.bottomSettingPanelState,this.emojiState);
-
-
+  ChatBottomSettingBoxState(this.bottomSettingPanelState, this.emojiState);
 
   @override
   void initState() {
-    EventBus.getDefault().registerNoParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().registerNoParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
     super.initState();
     _initData();
   }
+
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
-  _resetPostBtn(){
-    if(mounted){
-      setState(() {
 
-      });
+  _resetPostBtn() {
+    if (mounted) {
+      setState(() {});
     }
   }
-  
-  _initData()async{
+
+  _initData() async {
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    if(mounted){
-      setState(() {
-        
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -97,22 +88,23 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   //表情框
   Widget emoji(double keyboardHeight) {
-    double height=emojiState ? keyboardHeight : 0.0;
+    double height = emojiState ? keyboardHeight : 0.0;
     return AnimatedContainer(
-      duration: height>0?Duration.zero:Duration(milliseconds: 40),
+      duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),
       height: height,
       child: Container(
         height: height,
         width: double.infinity,
         color: AppColor.white,
-        child: emojiState?emojiList(keyboardHeight):Container(),
+        child: emojiState ? emojiList(keyboardHeight) : Container(),
       ),
     );
   }
-  Widget bottomSettingPanel(double keyboardHeight){
-    double height=bottomSettingPanelState ? keyboardHeight : 0.0;
+
+  Widget bottomSettingPanel(double keyboardHeight) {
+    double height = bottomSettingPanelState ? keyboardHeight : 0.0;
     return AnimatedContainer(
-      duration: height>0?Duration.zero:Duration(milliseconds: 40),
+      duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),
       height: height,
       child: Container(
         height: height,
@@ -158,7 +150,6 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     }
   }
 
-
   //表情的bar
   Widget _emojiBottomBox() {
     return Container(
@@ -187,26 +178,25 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             svgName: AppIcon.message_delete,
             buttonWidth: 44,
             buttonHeight: 44,
-            onTap: (){
-              if(widget.deleteEditText!=null){
+            onTap: () {
+              if (widget.deleteEditText != null) {
                 widget.deleteEditText();
               }
             },
           ),
           //表情面板发送按钮
           AppIconButton(
-            iconSize: 24,
-            svgName: widget.textController.text == null || widget.textController.text.isEmpty
-                ? AppIcon.message_cant_send
-                : AppIcon.message_send,
-            buttonWidth: 44,
-            buttonHeight: 44,
-            onTap: (){
-              if(widget.onSubmitClick!=null){
-                widget.onSubmitClick();
-              }
-            }
-          ),
+              iconSize: 24,
+              svgName: widget.textController.text == null || widget.textController.text.isEmpty
+                  ? AppIcon.message_cant_send
+                  : AppIcon.message_send,
+              buttonWidth: 44,
+              buttonHeight: 44,
+              onTap: () {
+                if (widget.onSubmitClick != null) {
+                  widget.onSubmitClick();
+                }
+              }),
         ],
       ),
     );
@@ -221,7 +211,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -251,8 +241,8 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
             if (widget.textController.text == null || widget.textController.text.length < 1) {
               widget.textController.text = "";
-              cursorIndexPr=0;
-              if(widget.callBackCursorIndexPr!=null){
+              cursorIndexPr = 0;
+              if (widget.callBackCursorIndexPr != null) {
                 widget.callBackCursorIndexPr(cursorIndexPr);
               }
             }
@@ -263,7 +253,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             } else {
               widget.textController.text += emojiModel.code;
             }
-            if(widget.changTextLen!=null) {
+            if (widget.changTextLen != null) {
               widget.changTextLen(widget.textController.text);
             }
             if (rules.isNotEmpty) {
@@ -279,13 +269,13 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
               }
             }
             cursorIndexPr += emojiModel.code.length;
-            if(widget.callBackCursorIndexPr!=null){
+            if (widget.callBackCursorIndexPr != null) {
               widget.callBackCursorIndexPr(cursorIndexPr);
             }
             // 替换
             context.read<ChatEnterNotifier>().replaceRules(rules);
             Future.delayed(Duration(milliseconds: 100), () {
-              if(widget.textScrollController!=null) {
+              if (widget.textScrollController != null) {
                 widget.textScrollController.jumpTo(widget.textScrollController.position.maxScrollExtent);
               }
             });
@@ -293,14 +283,12 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
         ));
   }
 
-
-
-  double getKeyBoardHeight(){
+  double getKeyBoardHeight() {
     double keyboardHeight = 300.0;
 
     if (Application.keyboardHeightChatPage > 0) {
       keyboardHeight = Application.keyboardHeightChatPage;
-    }else if(Application.keyboardHeightIfPage>0){
+    } else if (Application.keyboardHeightIfPage > 0) {
       Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
       keyboardHeight = Application.keyboardHeightChatPage;
     }
@@ -310,40 +298,33 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     return keyboardHeight;
   }
 
-
-
-  setCursorIndexPr(int cursorIndexPr){
-    this.cursorIndexPr=cursorIndexPr;
+  setCursorIndexPr(int cursorIndexPr) {
+    this.cursorIndexPr = cursorIndexPr;
   }
-  setBottomSettingPanelState(bool bottomSettingPanelState){
-    this.bottomSettingPanelState=bottomSettingPanelState;
-    if(mounted){
-      setState(() {
 
-      });
-    }
-  }
-  setEmojiState(bool emojiState){
-    this.emojiState=emojiState;
-    if(mounted){
-      setState(() {
-
-      });
+  setBottomSettingPanelState(bool bottomSettingPanelState) {
+    this.bottomSettingPanelState = bottomSettingPanelState;
+    if (mounted) {
+      setState(() {});
     }
   }
 
-  setData({bool bottomSettingPanelState,bool emojiState}){
-    if(bottomSettingPanelState!=null) {
+  setEmojiState(bool emojiState) {
+    this.emojiState = emojiState;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  setData({bool bottomSettingPanelState, bool emojiState}) {
+    if (bottomSettingPanelState != null) {
       this.bottomSettingPanelState = bottomSettingPanelState;
     }
-    if(emojiState!=null) {
+    if (emojiState != null) {
       this.emojiState = emojiState;
     }
-    if(mounted){
-      setState(() {
-
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
-
 }

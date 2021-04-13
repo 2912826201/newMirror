@@ -154,9 +154,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 重新登录替换布局
   _againLoginReplaceLayout() {
     // 调用关注接口替换
-    if (!isRequestInterface) {
-      getRecommendFeed();
-    }
+    getRecommendFeed();
   }
 
   // 请求关注接口
@@ -310,7 +308,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 未登录状态不需要刷新
     if (status == Status.notLoggedIn) {
       return Container(
-        height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
+        height: ScreenUtil.instance.height -
+            48 -
+            44 -
+            ScreenUtil.instance.bottomBarHeight -
+            ScreenUtil.instance.statusBarHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -349,7 +351,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     return Container(
       child: SmartRefresher(
           enablePullUp: status == Status.concern ? true : false,
-          enablePullDown: true ,
+          enablePullDown: true,
           footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
           header: SmartRefresherHeadFooter.init().getHeader(),
           controller: _refreshController,
@@ -413,7 +415,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     switch (status) {
       case Status.noConcern:
         return Container(
-          height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
+          height: ScreenUtil.instance.height -
+              48 -
+              44 -
+              ScreenUtil.instance.bottomBarHeight -
+              ScreenUtil.instance.statusBarHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

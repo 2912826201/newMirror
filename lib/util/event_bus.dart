@@ -51,7 +51,7 @@ class EventBus {
 
   //注册广播的方法-回调的方法-需要广播的界面-广播的类型
   //单个参数
-  void registerSingleParameter<T>(Function(T event) listener,String pageName, {String registerName}) {
+  void registerSingleParameter<T>(Function(T event) listener, String pageName, {String registerName}) {
     if (null == registerName) {
       registerName = defName;
     }
@@ -63,9 +63,9 @@ class EventBus {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
     _registerMap[registerName][pageName].stream.listen((msg) {
-      if(null == msg){
+      if (null == msg) {
         print("EventBus:post广播需要一个参数!!!--目前没有参数,不进行广播");
-      }else{
+      } else {
         listener(msg);
       }
     });
@@ -73,7 +73,7 @@ class EventBus {
 
   //注册广播的方法-回调的方法-需要广播的界面-广播的类型
   //无参数
-  void registerNoParameter(Function() listener,String pageName, {String registerName}) {
+  void registerNoParameter(Function() listener, String pageName, {String registerName}) {
     if (null == registerName) {
       registerName = defName;
     }
@@ -85,9 +85,9 @@ class EventBus {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
     _registerMap[registerName][pageName].stream.listen((msg) {
-      if(null == msg){
+      if (null == msg) {
         listener();
-      }else{
+      } else {
         print("EventBus:post广播不需要参数!!!--请不要传参进入");
         listener();
       }
@@ -105,7 +105,7 @@ class EventBus {
         _registerMap.remove(registerName);
       }
     } else {
-      if (_registerMap[registerName]!=null&&_registerMap[registerName][pageName] != null) {
+      if (_registerMap[registerName] != null && _registerMap[registerName][pageName] != null) {
         _registerMap[registerName][pageName].close();
         _registerMap[registerName].remove(pageName);
       }

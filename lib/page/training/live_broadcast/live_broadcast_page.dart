@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -13,7 +12,6 @@ import 'live_room_video_operation_page.dart';
 
 /// 直播日程页--框架页
 class LiveBroadcastPage extends StatefulWidget {
-
   @override
   createState() => new LiveBroadcastPageState();
 }
@@ -36,8 +34,7 @@ class LiveBroadcastPageState extends XCState {
 
   //标题被点击时回调  滚动body页面
   void _titleItemClickCall(int pos) {
-    _pageController.animateToPage(pos,
-        duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+    _pageController.animateToPage(pos, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
   }
 
   void _pageChange(int pos) {
@@ -52,7 +49,7 @@ class LiveBroadcastPageState extends XCState {
 
     return Scaffold(
       appBar: CustomAppBar(
-        hasDivider:false,
+        hasDivider: false,
         titleString: "直播课",
       ),
       body: _buildSuggestions(),
@@ -64,7 +61,9 @@ class LiveBroadcastPageState extends XCState {
       color: AppColor.white,
       child: Column(
         children: [
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Container(
             width: double.infinity,
             child: LiveBroadcastTitlePage(
@@ -73,21 +72,21 @@ class LiveBroadcastPageState extends XCState {
               itemClick: _titleItemClickCall,
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Expanded(
               child: SizedBox(
-                child: BodyPage(
-                  dates: stringDateList,
-                  controller: _pageController,
-                  pageChangeCall: _pageChange,
-                ),
-              )
-          )
+            child: BodyPage(
+              dates: stringDateList,
+              controller: _pageController,
+              pageChangeCall: _pageChange,
+            ),
+          ))
         ],
       ),
     );
   }
-
 
   //设置头部日期数据
   void getTopCalendarDate() {
@@ -98,9 +97,7 @@ class LiveBroadcastPageState extends XCState {
       stringDateList.add(fiftyDaysFromNow);
     }
   }
-
 }
-
 
 // ignore: must_be_immutable
 class BodyPage extends StatelessWidget {
@@ -135,7 +132,9 @@ class BodyPage extends StatelessWidget {
   void _getPageViewItemList() {
     if (pageViewItemList.length < 1) {
       for (var value in dates) {
-        pageViewItemList.add(LiveBroadcastItemPage(dataDate: value,));
+        pageViewItemList.add(LiveBroadcastItemPage(
+          dataDate: value,
+        ));
       }
     }
   }

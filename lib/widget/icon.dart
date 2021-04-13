@@ -123,6 +123,9 @@ class AppIcon {
   static const String share_browser_circle = "assets/svg/share_browser_circle.svg";
   static const String share_weibo_circle = "assets/svg/share_weibo_circle.svg";
   static const String share_download_circle = "assets/svg/share_download_circle.svg";
+  static const String voice_microphone = "assets/svg/voice_microphone.svg";
+  static const String voice_error = "assets/svg/voice_error.svg";
+  static const String voice_cancel = "assets/svg/voice_cancel.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

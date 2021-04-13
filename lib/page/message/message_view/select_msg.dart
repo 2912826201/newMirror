@@ -65,8 +65,7 @@ class SelectMsg extends StatelessWidget {
 //选择难度的box
   Widget getMainBox(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: getBody(context),
     );
   }
@@ -139,7 +138,7 @@ class SelectMsg extends StatelessWidget {
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
     ];
     if (isMyself) {
@@ -190,10 +189,7 @@ class SelectMsg extends StatelessWidget {
   //长按事件
   Widget textContentBoxLongClick(BuildContext context) {
     List<String> longClickStringList =
-        getLongClickStringList(
-            isMySelf: isMyself,
-            sendTime: sendTime,
-            contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
+        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(
@@ -207,8 +203,8 @@ class SelectMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      contentHeight: MessageItemHeightUtil.init().
-        getSelectMsgDataHeight(selectListString, isShowChatUserName,isOnlyContentHeight: true),
+      contentHeight: MessageItemHeightUtil.init()
+          .getSelectMsgDataHeight(selectListString, isShowChatUserName, isOnlyContentHeight: true),
       child: textContentBox(context),
     );
   }
@@ -220,12 +216,9 @@ class SelectMsg extends StatelessWidget {
       stateImg = "images/test/icon_black_message_bugle.png";
     }
     return Container(
-      margin: isMyself ? const EdgeInsets.only(right: 2.0)
-          : const EdgeInsets.only(left: 2.0),
+      margin: isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
       child: Stack(
-        alignment: isMyself
-            ? AlignmentDirectional.topEnd
-            : AlignmentDirectional.topStart,
+        alignment: isMyself ? AlignmentDirectional.topEnd : AlignmentDirectional.topStart,
         children: [
           Container(
             margin: const EdgeInsets.only(top: 9.0),
@@ -237,9 +230,7 @@ class SelectMsg extends StatelessWidget {
             ),
           ),
           Container(
-              margin: isMyself
-                  ? const EdgeInsets.only(right: 7.0)
-                  : const EdgeInsets.only(left: 7.0),
+              margin: isMyself ? const EdgeInsets.only(right: 7.0) : const EdgeInsets.only(left: 7.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(
@@ -247,8 +238,7 @@ class SelectMsg extends StatelessWidget {
                     color: isMyself ? AppColor.textPrimary2 : AppColor.white,
                     child: new InkWell(
                       child: getRichTextBox(context),
-                      splashColor:
-                          isMyself ? AppColor.textPrimary1 : AppColor.textHint,
+                      splashColor: isMyself ? AppColor.textPrimary1 : AppColor.textHint,
                       onTap: () {},
                     )),
               )),
@@ -265,9 +255,7 @@ class SelectMsg extends StatelessWidget {
       padding: const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
       child: Text(
         text,
-        style: TextStyle(
-            color: !isMyself ? AppColor.textPrimary2 : AppColor.white,
-            fontSize: 15),
+        style: TextStyle(color: !isMyself ? AppColor.textPrimary2 : AppColor.white, fontSize: 15),
       ),
     );
   }

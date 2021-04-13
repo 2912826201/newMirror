@@ -13,17 +13,12 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 typedef VoidMessageClickCallBack = void Function(
     {String contentType, String content, Map<String, dynamic> map, bool isUrl, String msgId, int position});
 typedef VoidItemLongClickCallBack = void Function(
-    {int position,
-    String settingType,
-    Map<String, dynamic> map,
-    String contentType,
-    String content});
+    {int position, String settingType, Map<String, dynamic> map, String contentType, String content});
 
 //获取用户的头像
 Widget getUserImage(String imageUrl, double height, double width) {
   if (imageUrl == null || imageUrl == "") {
-    imageUrl =
-        "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
+    imageUrl = "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
   }
   return ClipRRect(
     borderRadius: BorderRadius.circular(height / 2),
@@ -52,7 +47,8 @@ Widget getUserImage(String imageUrl, double height, double width) {
 //   static const int Received = 40; //对方已接收
 //   static const int Read = 50; //对方已阅读
 //isRead我是否阅读这个消息
-Widget getMessageState(int status, {bool isRead = true, bool isMyself,int position,VoidMessageClickCallBack voidMessageClickCallBack}) {
+Widget getMessageState(int status,
+    {bool isRead = true, bool isMyself, int position, VoidMessageClickCallBack voidMessageClickCallBack}) {
   if (status == RCSentStatus.Sending) {
     //发送中
     return Container(
@@ -77,11 +73,9 @@ Widget getMessageState(int status, {bool isRead = true, bool isMyself,int positi
           color: Colors.red,
         ),
       ),
-      onTap: (){
-        if(voidMessageClickCallBack!=null&&position!=null){
-          voidMessageClickCallBack(
-              contentType: ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN,
-              position:position);
+      onTap: () {
+        if (voidMessageClickCallBack != null && position != null) {
+          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN, position: position);
         }
       },
     );
@@ -155,11 +149,10 @@ Widget getLiveStateUi() {
 }
 
 //获取长按操作的选项框
-List<String> getLongClickStringList(
-    {@required bool isMySelf, @required String contentType,@required int sendTime}) {
+List<String> getLongClickStringList({@required bool isMySelf, @required String contentType, @required int sendTime}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
-  if (isMySelf&&DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime))) {
+  if (isMySelf && DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime))) {
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
@@ -167,5 +160,3 @@ List<String> getLongClickStringList(
   }
   return longClickStringList;
 }
-
-

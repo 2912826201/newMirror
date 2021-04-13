@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -338,8 +339,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               if (context.read<TokenNotifier>().isLoggedIn) {
                 if (liveVideoModel[index].coachDto.isLiving == 0) {
                   AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid,
-                      avatarUrl:liveVideoModel[index]
-                      .coachDto.avatarUri,userName:liveVideoModel[index].coachDto.nickName);
+                      avatarUrl: liveVideoModel[index].coachDto.avatarUri,
+                      userName: liveVideoModel[index].coachDto.nickName);
                 } else {
                   AppRouter.navigateLiveRoomPage(context, liveVideoModel[index]);
                 }
@@ -359,22 +360,25 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 children: [
                   liveVideoModel[index].coachDto.isLiving == 1
                       ? Stack(
+                          // 显示超出Stack显示空间的子组件
+                          overflow: Overflow.visible,
                           alignment: Alignment(0, -1),
                           children: [
                             Container(
                               height: 53,
                               width: 53,
                               decoration: BoxDecoration(
+                                  color: AppColor.mainRed,
                                   // 渐变色
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomLeft,
-                                    colors: [
-                                      Color.fromRGBO(0xFD, 0x86, 0x8A, 1.0),
-                                      Color.fromRGBO(0xFE, 0x56, 0x68, 1.0),
-                                      AppColor.mainRed,
-                                    ],
-                                  ),
+                                  // gradient: const LinearGradient(
+                                  //   begin: Alignment.topLeft,
+                                  //   end: Alignment.bottomLeft,
+                                  //   colors: [
+                                  //     Color.fromRGBO(0xFD, 0x86, 0x8A, 1.0),
+                                  //     Color.fromRGBO(0xFE, 0x56, 0x68, 1.0),
+                                  //     AppColor.mainRed,
+                                  //   ],
+                                  // ),
                                   borderRadius: BorderRadius.circular((26.5))),
                               child: Center(
                                 child: Container(
@@ -398,51 +402,25 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                 ),
                               ),
                             ),
-                            Positioned(
-                                bottom: 0,
-                                child: Container(
-                                    height: 17,
-                                    width: 43.5,
-                                    decoration: BoxDecoration(
-                                        color: AppColor.white, borderRadius: BorderRadius.circular((8.5))),
-                                    child: Center(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height: 14,
-                                        width: 40.5,
-                                        decoration: BoxDecoration(
-                                            // 渐变色
-                                            gradient: const LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.topRight,
-                                              colors: [
-                                                Color.fromRGBO(0xFD, 0x86, 0x8A, 1.0),
-                                                Color.fromRGBO(0xFE, 0x56, 0x68, 1.0),
-                                                AppColor.mainRed,
-                                              ],
-                                            ),
-                                            borderRadius: new BorderRadius.circular((8.5))),
-                                        child: const Text(
-                                          "LIVE",
-                                          style: TextStyle(
-                                              fontSize: 10, fontWeight: FontWeight.w500, color: AppColor.white),
-                                        ),
-                                      ),
-                                    )))
+                            Positioned(bottom: -2.5, child: LiveLabelWidget(isWhiteBorder: true))
                           ],
                         )
                       : Container(
                           height: 53,
                           width: 53,
-                          decoration: BoxDecoration(
-                            // color: Colors.redAccent,
-                            image: DecorationImage(
-                                image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
-                            // image
-                            borderRadius: BorderRadius.all(Radius.circular(26.5)),
-                          ),
+                          child: Container(
+                              height: 47,
+                              width: 47,
+                              decoration: BoxDecoration(
+                                // color: Colors.redAccent,
+                                image: DecorationImage(
+                                    image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
+                                // image
+                                borderRadius: BorderRadius.all(Radius.circular(23.5)),
+                              )),
                         ),
                   Container(
+                    margin: EdgeInsets.only(top: 8),
                     width: 53,
                     child: Center(
                       child: Text(

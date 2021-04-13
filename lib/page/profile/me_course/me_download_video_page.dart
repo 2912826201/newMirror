@@ -144,8 +144,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                   children: [
                     AppIcon.getAppIcon(isAllSelect ? AppIcon.selection_selected : AppIcon.selection_not_selected, 24),
                     SizedBox(width: 12),
-                    Text("全选",
-                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
+                    Text("全选", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
                     Expanded(child: SizedBox()),
                     Text("删除${selectDeleteIndexList.length < 1 ? "" : "(${selectDeleteIndexList.length})"}",
                         style: TextStyle(

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -29,7 +28,6 @@ import 'dialog/live_room_setting_dialog.dart';
 import 'dialog/live_room_online_man_number_dialog.dart';
 import 'live_room_page_common.dart';
 
-
 class LiveRoomVideoOperationPage extends StatefulWidget {
   final int liveCourseId;
   final int coachId;
@@ -47,56 +45,54 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
     @required this.startTime,
     @required this.coachRelation,
     @required this.callback,
-    @required this.coachId,}) : super(key: key);
+    @required this.coachId,
+  }) : super(key: key);
 
   @override
-  _LiveRoomVideoOperationPageState createState() => 
-      _LiveRoomVideoOperationPageState(coachRelation);
+  _LiveRoomVideoOperationPageState createState() => _LiveRoomVideoOperationPageState(coachRelation);
 }
 
 class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> {
-
   _LiveRoomVideoOperationPageState(this.coachRelation);
 
   //与教练的关系
   int coachRelation;
 
-
-  List<UserMessageModel> messageChatList=[];
+  List<UserMessageModel> messageChatList = [];
 
   ///输入框的监听
   TextEditingController _textController = TextEditingController();
+
   ///输入框的焦点
   FocusNode _focusNode = new FocusNode();
 
-  bool isShowEditPlan=false;
-  bool isShowEmojiBtn=true;
+  bool isShowEditPlan = false;
+  bool isShowEmojiBtn = true;
 
   //是否显示弹幕消息
-  bool isShowMessage=true;
+  bool isShowMessage = true;
 
   //清洁模式
-  bool isCleaningMode=false;
+  bool isCleaningMode = false;
 
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
   List<BuddyModel> onlineManList = <BuddyModel>[];
   List<int> onlineManUidList = <int>[];
 
-  bool _emojiState=false;
-  bool _bottomSettingPanelState=false;
+  bool _emojiState = false;
+  bool _bottomSettingPanelState = false;
 
+  int cursorIndexPr = -1;
 
-  int cursorIndexPr=-1;
-
-  int onlineUserNumber=2;
+  int onlineUserNumber = 2;
   Timer timer;
   Widget timeText;
   Widget onlineMenNumberText;
 
-  List<String> urlImageList= <String>[];
+  List<String> urlImageList = <String>[];
 
-  bool bottomBarHeightColorIsWhite=false;
+  bool bottomBarHeightColorIsWhite = false;
 
   StreamController<int> userImageOnlineStream = StreamController.broadcast();
   StreamController<int> messageListStream = StreamController.broadcast();
@@ -106,29 +102,30 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     super.initState();
     print("开播时间是:${widget.startTime},${widget.coachId}");
 
-    EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
-    EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
 
     urlImageList.add("");
     urlImageList.add(widget.coachUrl);
     urlImageList.add(Application.profile.avatarUri);
 
-    timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
-    onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(onlineUserNumber);
+    timeText = LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
+    onlineMenNumberText = LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(onlineUserNumber);
 
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
-    messageChatList.insert(0, UserMessageModel(
-      name: Application.profile.nickName,
-      uId: Application.profile.uid.toString(),
-      messageContent: "进入了直播",
-      isJoinLiveRoomMessage: true,
-    ));
-
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
+    messageChatList.insert(
+        0,
+        UserMessageModel(
+          name: Application.profile.nickName,
+          uId: Application.profile.uid.toString(),
+          messageContent: "进入了直播",
+          isJoinLiveRoomMessage: true,
+        ));
 
     _focusNode.addListener(() {
-      cursorIndexPr=_textController.selection.baseOffset;
+      cursorIndexPr = _textController.selection.baseOffset;
     });
     initData();
     _initTimeDuration();
@@ -148,7 +145,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   getTopUi(),
-                  (!isCleaningMode)?getHaveMessageBottomPlan():getNoMessageBottomPlan(),
+                  (!isCleaningMode) ? getHaveMessageBottomPlan() : getNoMessageBottomPlan(),
                 ],
               ),
             ),
@@ -159,9 +156,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         onWillPop: _requestPop);
   }
 
-  Widget getTopUi(){
+  Widget getTopUi() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight+8.0),
+      margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight + 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -171,10 +168,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             visible: !isCleaningMode,
             child: GestureDetector(
               child: otherUserUi(),
-              onTap: ()=>openBottomOnlineManNumberDialog(
-                buildContext:context,
+              onTap: () => openBottomOnlineManNumberDialog(
+                buildContext: context,
                 liveRoomId: widget.coachId,
-                onlineManList:onlineManList,
+                onlineManList: onlineManList,
               ),
             ),
           )
@@ -183,8 +180,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-  Widget getHaveMessageBottomPlan(){
+  Widget getHaveMessageBottomPlan() {
     return Container(
       color: AppColor.transparent,
       alignment: Alignment.bottomCenter,
@@ -192,7 +188,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-  Widget getNoMessageBottomPlan(){
+  Widget getNoMessageBottomPlan() {
     return Container(
       height: 48.0 + ScreenUtil.instance.bottomBarHeight,
       padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
@@ -213,37 +209,36 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
   //其他用户-一起运动
-  Widget otherUserUi(){
+  Widget otherUserUi() {
     return Container(
       height: 36.0,
       width: 120.0,
       decoration: BoxDecoration(
         color: AppColor.white.withOpacity(0.06),
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(24),bottomLeft: Radius.circular(24)),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(24), bottomLeft: Radius.circular(24)),
       ),
       child: Row(
         children: [
           Expanded(child: SizedBox()),
           Container(
-            width: 21.0*3-12.0,
+            width: 21.0 * 3 - 12.0,
             height: 21.0,
             child: StreamBuilder(
               stream: userImageOnlineStream.stream,
-              builder: (context,snapshot){
+              builder: (context, snapshot) {
                 return Stack(
                   children: [
                     Positioned(
-                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[2], 21, 21),
                       right: 0,
                     ),
                     Positioned(
-                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[1], 21, 21),
                       right: 12,
                     ),
                     Positioned(
-                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
+                      child: LiveRoomPageCommon.init().getUserImage(urlImageList[0], 21, 21),
                       right: 24,
                     ),
                   ],
@@ -252,17 +247,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             ),
           ),
           SizedBox(width: 6),
-          Text("一起运动",style: TextStyle(fontSize: 10,color: AppColor.white.withOpacity(0.85))),
+          Text("一起运动", style: TextStyle(fontSize: 10, color: AppColor.white.withOpacity(0.85))),
           SizedBox(width: 16),
         ],
       ),
     );
   }
 
-
-
-
-  Widget getTopInformationUi(){
+  Widget getTopInformationUi() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -275,10 +267,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-  Widget getCoachNameUi(){
+  Widget getCoachNameUi() {
     return UnconstrainedBox(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         decoration: BoxDecoration(
           color: AppColor.white.withOpacity(0.06),
           borderRadius: BorderRadius.circular(24),
@@ -286,12 +278,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            LiveRoomPageCommon.init().getUserImage(widget.coachUrl,28,28),
+            LiveRoomPageCommon.init().getUserImage(widget.coachUrl, 28, 28),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
+                Text(widget.coachName, style: TextStyle(fontSize: 11, color: AppColor.white.withOpacity(0.85))),
                 onlineMenNumberText,
               ],
             ),
@@ -303,9 +295,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-  Widget getFollowBtn(){
-    if(coachRelation == 1 || coachRelation == 3){
+  Widget getFollowBtn() {
+    if (coachRelation == 1 || coachRelation == 3) {
       return Container();
     }
     return GestureDetector(
@@ -318,10 +309,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         child: Text(
           coachRelation == 1 || coachRelation == 3 ? "已关注" : "关注",
           style: TextStyle(
-              color: coachRelation == 1 || coachRelation == 3
-                  ? AppColor.textHint
-                  : AppColor.white,
-              fontSize: 11),
+              color: coachRelation == 1 || coachRelation == 3 ? AppColor.textHint : AppColor.white, fontSize: 11),
         ),
       ),
       onTap: _onClickAttention,
@@ -329,19 +317,18 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   //训练
-  Widget trainingTimeUi(){
+  Widget trainingTimeUi() {
     return Container(
       child: Column(
         children: [
           timeText,
-          Text("训练时长",style: TextStyle(fontSize: 10,color: AppColor.white.withOpacity(0.35))),
+          Text("训练时长", style: TextStyle(fontSize: 10, color: AppColor.white.withOpacity(0.35))),
         ],
       ),
     );
   }
 
-
-  Widget getBottomPlan(){
+  Widget getBottomPlan() {
     return Column(
       children: [
         ShaderMask(
@@ -357,7 +344,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 Colors.black,
                 // Colors.transparent,
               ],
-            ).createShader(Rect.fromLTRB(0,0, bounds.width,bounds.height));
+            ).createShader(Rect.fromLTRB(0, 0, bounds.width, bounds.height));
           },
           blendMode: BlendMode.dstIn,
           child: Container(
@@ -375,15 +362,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           ),
         ),
         Container(
-          color: (_focusNode.hasFocus||isShowEditPlan||_emojiState||bottomBarHeightColorIsWhite)
-              ?AppColor.white:AppColor.transparent,
+          color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
+              ? AppColor.white
+              : AppColor.transparent,
           child: Column(
             children: [
               bottomSettingBox(),
               Container(
-                height: ScreenUtil.instance.bottomBarHeight+10,
-                color: (_focusNode.hasFocus||isShowEditPlan||_emojiState||bottomBarHeightColorIsWhite)
-                    ?AppColor.white:AppColor.transparent,
+                height: ScreenUtil.instance.bottomBarHeight + 10,
+                color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
+                    ? AppColor.white
+                    : AppColor.transparent,
               ),
             ],
           ),
@@ -392,18 +381,16 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-
-  Widget getListView(){
+  Widget getListView() {
     return Visibility(
       visible: isShowMessage,
       child: StreamBuilder(
         stream: messageListStream.stream,
-        builder: (context,snapshot){
+        builder: (context, snapshot) {
           return ListView.builder(
             reverse: true,
             physics: BouncingScrollPhysics(),
-            itemBuilder: (context,index){
+            itemBuilder: (context, index) {
               return getListViewItem(index);
             },
             itemCount: messageChatList.length,
@@ -413,18 +400,16 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-
-  Widget getListViewItem(int index){
+  Widget getListViewItem(int index) {
     return Container(
-      margin: const EdgeInsets.only(left: 16,right: 28,bottom: 4,top: 4),
+      margin: const EdgeInsets.only(left: 16, right: 28, bottom: 4, top: 4),
       child: UnconstrainedBox(
         alignment: Alignment.centerLeft,
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: ScreenUtil.instance.width-16-28,
+            maxWidth: ScreenUtil.instance.width - 16 - 28,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
           decoration: BoxDecoration(
             color: AppColor.bgWhite.withOpacity(0.06),
             borderRadius: BorderRadius.circular(11.5),
@@ -435,24 +420,23 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-  Widget getBottomBarAnimatedContainer(){
+  Widget getBottomBarAnimatedContainer() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
-      height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
+      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState) ? 48.0 : 0.0,
       child: getBottomBarEditTextPanel(),
     );
   }
 
-  Widget getBottomBarEditTextPanel(){
+  Widget getBottomBarEditTextPanel() {
     return Container(
-      height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
+      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState) ? 48.0 : 0.0,
       // height: 48.0,
       child: SingleChildScrollView(
         child: Container(
           color: AppColor.white,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: AppColor.bgWhite.withOpacity(0.65),
               borderRadius: BorderRadius.circular(16),
@@ -466,25 +450,25 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                   padding: EdgeInsets.only(left: 10),
                   child: AppIconButton(
                     onTap: () {
-                      if(ClickUtil.isFastClick()){
+                      if (ClickUtil.isFastClick()) {
                         return;
                       }
-                      if(isShowEmojiBtn){
-                        if(_focusNode.hasFocus){
+                      if (isShowEmojiBtn) {
+                        if (_focusNode.hasFocus) {
                           _focusNode.unfocus();
                         }
-                      }else{
+                      } else {
                         FocusScope.of(context).requestFocus(_focusNode);
                       }
-                      _emojiState=isShowEmojiBtn;
-                      isShowEditPlan=false;
-                      isShowEmojiBtn=!isShowEmojiBtn;
+                      _emojiState = isShowEmojiBtn;
+                      isShowEditPlan = false;
+                      isShowEmojiBtn = !isShowEmojiBtn;
                       setState(() {});
                     },
                     iconSize: 24,
                     buttonWidth: 36,
                     buttonHeight: 36,
-                    svgName: isShowEmojiBtn?AppIcon.input_emotion:AppIcon.input_keyboard,
+                    svgName: isShowEmojiBtn ? AppIcon.input_emotion : AppIcon.input_keyboard,
                   ),
                 ),
               ],
@@ -497,13 +481,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //键盘与表情的框
   Widget bottomSettingBox() {
-    List<Widget> widgetList=[];
+    List<Widget> widgetList = [];
 
     double keyboardHeight = 300.0;
 
     if (Application.keyboardHeightChatPage > 0) {
       keyboardHeight = Application.keyboardHeightChatPage;
-    }else if(Application.keyboardHeightIfPage>0){
+    } else if (Application.keyboardHeightIfPage > 0) {
       Application.keyboardHeightChatPage = Application.keyboardHeightIfPage;
       keyboardHeight = Application.keyboardHeightChatPage;
     }
@@ -513,8 +497,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
     widgetList.add(bottomSettingPanel(keyboardHeight));
 
-
-    if((_emojiState ? keyboardHeight : 0.0)>0){
+    if ((_emojiState ? keyboardHeight : 0.0) > 0) {
       widgetList.add(emojiPlan(keyboardHeight));
     }
 
@@ -525,7 +508,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-  Widget bottomSettingPanel(double keyboardHeight){
+  Widget bottomSettingPanel(double keyboardHeight) {
     print("bottomSettingPanel:$_bottomSettingPanelState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
@@ -538,15 +521,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-
   //表情框
   Widget emojiPlan(double keyboardHeight) {
-    return  AnimatedContainer(
+    return AnimatedContainer(
       duration: Duration(milliseconds: 50),
-      height: _emojiState?keyboardHeight:0.0,
+      height: _emojiState ? keyboardHeight : 0.0,
       child: Container(
-        height: _emojiState?keyboardHeight:0.0,
+        height: _emojiState ? keyboardHeight : 0.0,
         width: double.infinity,
         color: AppColor.white,
         child: emojiList(keyboardHeight),
@@ -593,14 +574,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   //获取表情头部的 内嵌的表情
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: keyboardHeight-45.0,
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10,top: 0),
+      height: keyboardHeight - 45.0,
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
       child: GridView.builder(
         padding: const EdgeInsets.only(top: 10),
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -624,21 +605,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             ),
           ),
           onTap: () {
-            if( _textController.text==null|| _textController.text.length<1){
-              _textController.text="";
-              cursorIndexPr=0;
+            if (_textController.text == null || _textController.text.length < 1) {
+              _textController.text = "";
+              cursorIndexPr = 0;
             }
-            if(cursorIndexPr>=0) {
-              _textController.text = _textController.text.substring(0, cursorIndexPr) + emojiModel.code +
+            if (cursorIndexPr >= 0) {
+              _textController.text = _textController.text.substring(0, cursorIndexPr) +
+                  emojiModel.code +
                   _textController.text.substring(cursorIndexPr, _textController.text.length);
-            }else{
+            } else {
               _textController.text += emojiModel.code;
             }
-            cursorIndexPr+=emojiModel.code.length;
+            cursorIndexPr += emojiModel.code.length;
           },
         ));
   }
-
 
   //表情的bar
   Widget _emojiBottomBox() {
@@ -676,7 +657,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 : AppIcon.message_send,
             buttonWidth: 44,
             buttonHeight: 44,
-            onTap: (){
+            onTap: () {
               _onSubmitClick(_textController.text);
             },
           ),
@@ -685,23 +666,22 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
   //输入框bar内的edit
   Widget edit() {
     return TextSpanField(
-      onTap: (){
-        pageHeightStopCanvas=true;
-        oldKeyboardHeight=-1;
-        isShowEmojiBtn=true;
-        _emojiState=false;
+      onTap: () {
+        pageHeightStopCanvas = true;
+        oldKeyboardHeight = -1;
+        isShowEmojiBtn = true;
+        _emojiState = false;
         setState(() {});
       },
-      onLongTap: (){
-        pageHeightStopCanvas=true;
-        oldKeyboardHeight=-1;
-        _bottomSettingPanelState=true;
-        isShowEmojiBtn=true;
-        _emojiState=false;
+      onLongTap: () {
+        pageHeightStopCanvas = true;
+        oldKeyboardHeight = -1;
+        _bottomSettingPanelState = true;
+        isShowEmojiBtn = true;
+        _emojiState = false;
         setState(() {});
       },
       controller: _textController,
@@ -716,7 +696,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       scrollPadding: EdgeInsets.all(0),
       style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
       //内容改变的回调
-      onChanged: (text){},
+      onChanged: (text) {},
       textInputAction: TextInputAction.send,
       onSubmitted: _onSubmitClick,
       // 装饰器修改外观
@@ -734,8 +714,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-  Widget getBottomBarShowTextPanel(){
+  Widget getBottomBarShowTextPanel() {
     return Container(
       height: 48.0,
       alignment: Alignment.centerLeft,
@@ -745,21 +724,20 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         children: [
           Expanded(child: SizedBox(child: getTextEditUi())),
           AppIconButton(
-            svgName: isCleaningMode?AppIcon.danmaku_on:AppIcon.danmaku_off,
+            svgName: isCleaningMode ? AppIcon.danmaku_on : AppIcon.danmaku_off,
             iconColor: AppColor.white,
             iconSize: 24,
             bgColor: AppColor.white.withOpacity(0.06),
             isCircle: true,
             buttonWidth: 32,
             buttonHeight: 32,
-            onTap: (){
+            onTap: () {
               setState(() {
-                isCleaningMode=!isCleaningMode;
+                isCleaningMode = !isCleaningMode;
               });
             },
           ),
           SizedBox(width: 12),
-
           AppIconButton(
             svgName: AppIcon.settings_24,
             iconColor: AppColor.white,
@@ -768,8 +746,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             isCircle: true,
             buttonWidth: 32,
             buttonHeight: 32,
-            onTap: (){
-              openBottomSetDialog(buildContext:context,voidCallback:_isCleaningMode);
+            onTap: () {
+              openBottomSetDialog(buildContext: context, voidCallback: _isCleaningMode);
             },
           ),
           SizedBox(width: 12),
@@ -788,17 +766,16 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-  void _isCleaningMode(bool isCleaningMode){
+  void _isCleaningMode(bool isCleaningMode) {
     print("isCleaningMode:$isCleaningMode");
-    Future.delayed(Duration(milliseconds: 50),(){
+    Future.delayed(Duration(milliseconds: 50), () {
       setState(() {
-        this.isCleaningMode=isCleaningMode;
+        this.isCleaningMode = isCleaningMode;
       });
     });
   }
 
-  Widget getTextEditUi(){
+  Widget getTextEditUi() {
     return GestureDetector(
       child: Container(
         height: 32,
@@ -809,21 +786,19 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           color: AppColor.bgWhite.withOpacity(0.06),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Text("说点什么吧...",style: TextStyle(color: AppColor.white.withOpacity(0.35),fontSize: 14)),
+        child: Text("说点什么吧...", style: TextStyle(color: AppColor.white.withOpacity(0.35), fontSize: 14)),
       ),
-      onTap: (){
-        if(ClickUtil.isFastClick()){
+      onTap: () {
+        if (ClickUtil.isFastClick()) {
           return;
         }
-        if(isMuteJudge()){
-          ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
+        if (isMuteJudge()) {
+          ToastShow.show(msg: "您已被禁言请稍后再发", context: context, gravity: 1);
           return;
         }
-        isShowEditPlan=true;
-        setState(() {
-
-        });
-        Future.delayed(Duration(milliseconds: 80),(){
+        isShowEditPlan = true;
+        setState(() {});
+        Future.delayed(Duration(milliseconds: 80), () {
           FocusScope.of(context).requestFocus(_focusNode);
           setState(() {});
         });
@@ -831,59 +806,57 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     );
   }
 
-
-
-  bool isMuteJudge(){
-    List list=AppPrefs.getLiveRoomMute(widget.coachId.toString());
-    if(list[0]){
-      int seconds=DateUtil.twoDateTimeSeconds(DateUtil.getDateTimeByMs(list[1]),DateTime.now());
+  bool isMuteJudge() {
+    List list = AppPrefs.getLiveRoomMute(widget.coachId.toString());
+    if (list[0]) {
+      int seconds = DateUtil.twoDateTimeSeconds(DateUtil.getDateTimeByMs(list[1]), DateTime.now());
       print("seconds:$seconds,list[2]:${list[2]}");
-      if(list[2]<0){
-        return !(seconds>3600);
-      }else{
-        return list[2]>seconds;
+      if (list[2] < 0) {
+        return !(seconds > 3600);
+      } else {
+        return list[2] > seconds;
       }
     }
     return false;
   }
 
-
   //获取底部评论列表的高度
-  double getBottomMessageHeight(){
-    return (ScreenUtil.instance.height-
-        ScreenUtil.instance.statusBarHeight-
-        ScreenUtil.instance.bottomBarHeight-48.0)*0.25;
+  double getBottomMessageHeight() {
+    return (ScreenUtil.instance.height -
+            ScreenUtil.instance.statusBarHeight -
+            ScreenUtil.instance.bottomBarHeight -
+            48.0) *
+        0.25;
   }
 
-
-  void initData()async{
+  void initData() async {
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 3);
-    if(null!=map["data"]["total"]){
+    Map<String, dynamic> map = await roomInfo(widget.coachId, count: 3);
+    if (null != map["data"]["total"]) {
       resetOnlineUserNumber(map["data"]["total"]);
     }
-    if(null!=map["data"]["userList"]){
+    if (null != map["data"]["userList"]) {
       map["data"]["userList"].forEach((v) {
-        BuddyModel buddyModel=BuddyModel.fromJson(v);
+        BuddyModel buddyModel = BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));
         onlineManUidList.add(buddyModel.uid);
       });
     }
-    getAllOnlineUserNumber(onlineUserNumber+1);
+    getAllOnlineUserNumber(onlineUserNumber + 1);
     resetOnlineUserImage();
   }
 
   //获取所有的在线人数
-  void getAllOnlineUserNumber(int number)async{
-    Future.delayed(Duration(seconds: 1),()async{
+  void getAllOnlineUserNumber(int number) async {
+    Future.delayed(Duration(seconds: 1), () async {
       print("number:$number");
-      Map<String, dynamic> map = await roomInfo(widget.coachId,count: number);
-      if(null!=map["data"]["userList"]){
+      Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
+      if (null != map["data"]["userList"]) {
         onlineManList.clear();
         onlineManUidList.clear();
         map["data"]["userList"].forEach((v) {
-          BuddyModel buddyModel=BuddyModel.fromJson(v);
+          BuddyModel buddyModel = BuddyModel.fromJson(v);
           onlineManList.add(buddyModel);
           onlineManUidList.add(buddyModel.uid);
         });
@@ -892,14 +865,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     });
   }
 
-
   //监听动画是否开始
   void _initTimeDuration() {
-    timer=Timer.periodic(Duration(seconds: 1), (timer) {
-      if(mounted) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
         Element e = findChild(context as Element, timeText);
         if (e != null) {
-          timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
+          timeText = LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
           e.owner.lockState(() {
             e.update(timeText);
           });
@@ -909,16 +881,16 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   //刷新人数
-  void resetOnlineUserNumber(number){
+  void resetOnlineUserNumber(number) {
     print("刷新人数");
-    if(null==number||!(number is int)||number<2){
+    if (null == number || !(number is int) || number < 2) {
       return;
     }
-    onlineUserNumber=number;
-    if(mounted) {
+    onlineUserNumber = number;
+    if (mounted) {
       Element e = findChild(context as Element, onlineMenNumberText);
       if (e != null) {
-        onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(number);
+        onlineMenNumberText = LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(number);
         e.owner.lockState(() {
           e.update(onlineMenNumberText);
         });
@@ -927,36 +899,35 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   //加入直播间
-  void addLiveRoom(TextMessage textMessage){
-    BuddyModel buddyModel=new BuddyModel();
-    buddyModel.uid=int.parse(textMessage.sendUserInfo.userId);
-    buddyModel.avatarUri=textMessage.sendUserInfo.portraitUri;
-    buddyModel.nickName=textMessage.sendUserInfo.name;
-    buddyModel.time=new DateTime.now().millisecondsSinceEpoch;
-    onlineManList.insert(0,buddyModel);
-    onlineManUidList.insert(0,buddyModel.uid);
+  void addLiveRoom(TextMessage textMessage) {
+    BuddyModel buddyModel = new BuddyModel();
+    buddyModel.uid = int.parse(textMessage.sendUserInfo.userId);
+    buddyModel.avatarUri = textMessage.sendUserInfo.portraitUri;
+    buddyModel.nickName = textMessage.sendUserInfo.name;
+    buddyModel.time = new DateTime.now().millisecondsSinceEpoch;
+    onlineManList.insert(0, buddyModel);
+    onlineManUidList.insert(0, buddyModel.uid);
     EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    if(onlineManList.length<3){
+    if (onlineManList.length < 3) {
       resetOnlineUserImage();
     }
   }
 
-
   //离开直播间
-  void subLiveRoom(TextMessage textMessage,{bool isReset=true}){
-    for(int i=0;i<onlineManList.length;i++){
-      if(onlineManList[i].uid.toString()==textMessage.sendUserInfo.userId.toString()){
+  void subLiveRoom(TextMessage textMessage, {bool isReset = true}) {
+    for (int i = 0; i < onlineManList.length; i++) {
+      if (onlineManList[i].uid.toString() == textMessage.sendUserInfo.userId.toString()) {
         onlineManList.removeAt(i);
         break;
       }
     }
-    for(int i=0;i<onlineManUidList.length;i++){
-      if(onlineManUidList[i].toString()==textMessage.sendUserInfo.userId.toString()){
+    for (int i = 0; i < onlineManUidList.length; i++) {
+      if (onlineManUidList[i].toString() == textMessage.sendUserInfo.userId.toString()) {
         onlineManUidList.removeAt(i);
         break;
       }
     }
-    if(isReset) {
+    if (isReset) {
       EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
       if (onlineManList.length < 3) {
         resetOnlineUserImage();
@@ -964,32 +935,29 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-
-
   //刷新头像
-  void resetOnlineUserImage(){
-    if(onlineManList.length>0){
+  void resetOnlineUserImage() {
+    if (onlineManList.length > 0) {
       urlImageList.clear();
-      if(onlineManList.length>2){
-        for(int i=0;i<3;i++){
+      if (onlineManList.length > 2) {
+        for (int i = 0; i < 3; i++) {
           urlImageList.add(onlineManList[i].avatarUri);
         }
-      }else{
+      } else {
         onlineManList.forEach((element) {
           urlImageList.add(element.avatarUri);
         });
         urlImageList.add(widget.coachUrl);
-        for(int i=0;i<3;i++){
+        for (int i = 0; i < 3; i++) {
           urlImageList.add("");
         }
       }
       print("11111:${urlImageList.toString()}");
-      if(mounted) {
+      if (mounted) {
         userImageOnlineStream.sink.add(0);
       }
     }
   }
-
 
   // 监听返回事件
   Future<bool> _requestPop() {
@@ -998,24 +966,20 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   //退出界面
-  _exitPageListener(){
+  _exitPageListener() {
     showAppDialog(context,
         info: "课程还未结束,确认退出吗？",
         topImageUrl: "",
-        barrierDismissible:false,
+        barrierDismissible: false,
         cancel: AppDialogButton("仍要退出", () {
           EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-          EventBus.getDefault().unRegister(
-            pageName:EVENTBUS_ROOM_OPERATION_PAGE,
-            registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
-          );
-          EventBus.getDefault().unRegister(
-            pageName:EVENTBUS_ROOM_OPERATION_PAGE,
-            registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
-          );
-          if(timer!=null){
+          EventBus.getDefault()
+              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+          EventBus.getDefault()
+              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+          if (timer != null) {
             timer.cancel();
-            timer=null;
+            timer = null;
           }
           if (timerBottomHeight != null) {
             timerBottomHeight.cancel();
@@ -1034,29 +998,25 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(
-        pageName:EVENTBUS_ROOM_OPERATION_PAGE,
-        registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
-    );
-    EventBus.getDefault().unRegister(
-        pageName:EVENTBUS_ROOM_OPERATION_PAGE,
-        registerName: EVENTBUS_ROOM_RECEIVE_NOTICE
-    );
-    if(timer!=null){
+    EventBus.getDefault()
+        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    EventBus.getDefault()
+        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+    if (timer != null) {
       timer.cancel();
-      timer=null;
+      timer = null;
     }
     userImageOnlineStream.close();
     messageListStream.close();
   }
 
   //接收直播间系统通知消息
-  void _receiveNoticeMessage(List list){
-    if(list[0] is int){
+  void _receiveNoticeMessage(List list) {
+    if (list[0] is int) {
       switch (list[0]) {
         case 2:
           //2-直播禁言
-          _liveMuteMessage(list[1],list[2],list[3]);
+          _liveMuteMessage(list[1], list[2], list[3]);
           break;
         default:
           break;
@@ -1064,71 +1024,68 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-
-  void _liveMuteMessage(String liveRoomId,List list,Message msg){
+  void _liveMuteMessage(String liveRoomId, List list, Message msg) {
     print("liveRoomId,网络:$liveRoomId,本地:${widget.coachId}");
-    if(liveRoomId!=widget.coachId.toString()){
+    if (liveRoomId != widget.coachId.toString()) {
       Application.rongCloud.quitChatRoom(msg.targetId);
       return;
     }
-    bool isHaveMeUid=false;
-    for(dynamic element in list){
-      if(element.toString()==Application.profile.uid.toString()){
-        isHaveMeUid=true;
+    bool isHaveMeUid = false;
+    for (dynamic element in list) {
+      if (element.toString() == Application.profile.uid.toString()) {
+        isHaveMeUid = true;
         break;
       }
     }
-    if(!isHaveMeUid){
+    if (!isHaveMeUid) {
       print("有人被禁言了:${list.toString()}");
       return;
     }
     print("接收到${widget.coachId}系统通知:${msg.originContentMap}");
     Map<String, dynamic> contentMap = json.decode(msg.originContentMap["data"]);
     print("接收到${contentMap.toString()}");
-    if(null!=contentMap&&null!=contentMap["isMute"]){
+    if (null != contentMap && null != contentMap["isMute"]) {
       bool isMute;
-      int minutes=-1;
-      if(contentMap["isMute"]==0){
+      int minutes = -1;
+      if (contentMap["isMute"] == 0) {
         print("解除禁言");
-        isMute=false;
-      }else{
+        isMute = false;
+      } else {
         print("禁言");
-        isMute=true;
-        if(null!=contentMap["minutes"]){
+        isMute = true;
+        if (null != contentMap["minutes"]) {
           print("禁言时长：${contentMap["minutes"]}");
-          minutes=contentMap["minutes"];
-        }else{
+          minutes = contentMap["minutes"];
+        } else {
           print("禁言时长：-1");
         }
       }
       print("直播间${widget.coachId}：是否禁言:$isMute,时长：$minutes");
-      AppPrefs.setLiveRoomMute(widget.coachId.toString(), minutes*60, isMute);
-      if(isMute&&mounted){
-        ToastShow.show(msg: "您已被禁言${minutes>0?"$minutes分钟":""}", context: context);
-      }else{
+      AppPrefs.setLiveRoomMute(widget.coachId.toString(), minutes * 60, isMute);
+      if (isMute && mounted) {
+        ToastShow.show(msg: "您已被禁言${minutes > 0 ? "$minutes分钟" : ""}", context: context);
+      } else {
         print("你已被解除禁言");
       }
     }
   }
 
-
-
   //接收直播间弹幕消息
-  void _receiveBarrageMessage(Message msg){
+  void _receiveBarrageMessage(Message msg) {
     print("message:${msg.targetId},${widget.coachId}");
-    if(msg.targetId!=widget.coachId.toString()){
+    if (msg.targetId != widget.coachId.toString()) {
       Application.rongCloud.quitChatRoom(msg.targetId);
       return;
     }
-    TextMessage textMessage=(msg.content as TextMessage);
+    TextMessage textMessage = (msg.content as TextMessage);
     Map<String, dynamic> contentMap = json.decode(textMessage.content);
-    if(null!=contentMap){
+    if (null != contentMap) {
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
-          _judgeSysMessage(contentMap["name"],contentMap,textMessage);
+          _judgeSysMessage(contentMap["name"], contentMap, textMessage);
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
-          _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId,contentMap["data"]);
+          _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId, contentMap["data"]);
           break;
         default:
           break;
@@ -1136,21 +1093,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-  void _judgeSysMessage(String type,Map<String, dynamic> contentMap,TextMessage textMessage){
-    if(null==type){
+  void _judgeSysMessage(String type, Map<String, dynamic> contentMap, TextMessage textMessage) {
+    if (null == type) {
       return;
     }
-    switch(type){
+    switch (type) {
       case "joinLiveRoom":
         //加入直播间
-        if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+        if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
           print("有这个人");
-          subLiveRoom(textMessage,isReset: false);
-        }else {
+          subLiveRoom(textMessage, isReset: false);
+        } else {
           print("没有这个人");
           resetOnlineUserNumber(++onlineUserNumber);
         }
-        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
         addLiveRoom(textMessage);
         break;
       case "quitLiveRoom":
@@ -1169,138 +1126,134 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-
-
-  void _onDoubleClickBodyListener(){
+  void _onDoubleClickBodyListener() {
     print("双击");
-
   }
 
   //界面空白处点击事件
-  void _onClickBodyListener(){
-    if(isCleaningMode){
+  void _onClickBodyListener() {
+    if (isCleaningMode) {
       print("显示弹幕列表");
       setState(() {
-        isCleaningMode=!isCleaningMode;
+        isCleaningMode = !isCleaningMode;
       });
       return;
     }
-    bottomBarHeightColorIsWhite=false;
-    if(_focusNode.hasFocus){
+    bottomBarHeightColorIsWhite = false;
+    if (_focusNode.hasFocus) {
       _focusNode.unfocus();
-      _bottomSettingPanelState=false;
-      bottomBarHeightColorIsWhite=true;
+      _bottomSettingPanelState = false;
+      bottomBarHeightColorIsWhite = true;
     }
-    isShowEmojiBtn=true;
-    isShowEditPlan=false;
-    if(_emojiState){
-      _emojiState=!_emojiState;
-      bottomBarHeightColorIsWhite=true;
+    isShowEmojiBtn = true;
+    isShowEditPlan = false;
+    if (_emojiState) {
+      _emojiState = !_emojiState;
+      bottomBarHeightColorIsWhite = true;
       setState(() {});
-      _bottomSettingPanelState=false;
+      _bottomSettingPanelState = false;
     }
-    if(bottomBarHeightColorIsWhite){
-      Future.delayed(Duration(milliseconds: 50),(){
-        bottomBarHeightColorIsWhite=false;
-        if(mounted){
+    if (bottomBarHeightColorIsWhite) {
+      Future.delayed(Duration(milliseconds: 50), () {
+        bottomBarHeightColorIsWhite = false;
+        if (mounted) {
           setState(() {});
         }
       });
     }
-    if(bottomBarHeightColorIsWhite){
+    if (bottomBarHeightColorIsWhite) {
       print("处理点击事件");
-    }else{
+    } else {
       print("普通点击");
     }
   }
 
   ///这是关注的方法
-  _onClickAttention()async {
+  _onClickAttention() async {
     if (!(coachRelation == 1 || coachRelation == 3)) {
-      int attntionResult = await ProfileAddFollow(widget.coachId,type: 1);
+      int attntionResult = await ProfileAddFollow(widget.coachId, type: 1);
       print('关注监听=========================================$attntionResult');
       if (attntionResult == 1 || attntionResult == 3) {
         coachRelation = 1;
-        if(mounted){
-          setState(() {
-
-          });
+        if (mounted) {
+          setState(() {});
         }
       }
-      if(widget.callback!=null){
+      if (widget.callback != null) {
         widget.callback(coachRelation);
       }
     }
   }
 
-
   //点击删除输入框
   _deleteEditText() {
-    if(_textController.text==null||_textController.text.length<1||cursorIndexPr<=0){
+    if (_textController.text == null || _textController.text.length < 1 || cursorIndexPr <= 0) {
       return;
     }
-    String editString=_textController.text;
-    List<String> listString=editString.characters.toList();
-    editString="";
-    int textLength=0;
-    int deleteTextLength=0;
-    for(int i=1;i<listString.length+1;i++){
-      textLength+=listString[i-1].length;
-      if(cursorIndexPr!=textLength){
-        editString += listString[i-1];
-      }else{
-        deleteTextLength=listString[i-1].length;
+    String editString = _textController.text;
+    List<String> listString = editString.characters.toList();
+    editString = "";
+    int textLength = 0;
+    int deleteTextLength = 0;
+    for (int i = 1; i < listString.length + 1; i++) {
+      textLength += listString[i - 1].length;
+      if (cursorIndexPr != textLength) {
+        editString += listString[i - 1];
+      } else {
+        deleteTextLength = listString[i - 1].length;
       }
     }
-    cursorIndexPr-=deleteTextLength;
-    _textController.text=editString;
+    cursorIndexPr -= deleteTextLength;
+    _textController.text = editString;
   }
 
   //发送按钮点击事件
   _onSubmitClick(text) {
-    if(null==text||text.length<1){
+    if (null == text || text.length < 1) {
       return;
     }
-    if(isMuteJudge()){
-      ToastShow.show(msg: "您已被禁言请稍后再发", context: context,gravity:1);
-    }else{
+    if (isMuteJudge()) {
+      ToastShow.show(msg: "您已被禁言请稍后再发", context: context, gravity: 1);
+    } else {
       _sendChatRoomMsg(text);
       _onSubmitLiveRoomMessage(Application.profile.nickName, Application.profile.uid.toString(), text);
     }
     _textController.text = "";
-    if(!_emojiState) {
+    if (!_emojiState) {
       FocusScope.of(context).requestFocus(_focusNode);
-
     }
   }
 
-
   //加入普通消息
-  _onSubmitLiveRoomMessage(String name,String userId,String content){
-    messageChatList.insert(0, UserMessageModel(
-      name: name,
-      uId: userId,
-      messageContent: content,
-    ));
-    if(messageChatList.length>100){
-      messageChatList=messageChatList.sublist(0,99);
+  _onSubmitLiveRoomMessage(String name, String userId, String content) {
+    messageChatList.insert(
+        0,
+        UserMessageModel(
+          name: name,
+          uId: userId,
+          messageContent: content,
+        ));
+    if (messageChatList.length > 100) {
+      messageChatList = messageChatList.sublist(0, 99);
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 
   //加入进入直播间的消息
-  _onSubmitJoinLiveRoomMessage(String name,String userId){
-    messageChatList.insert(0, UserMessageModel(
-      name: name,
-      uId: userId,
-      messageContent: "进入了直播",
-      isJoinLiveRoomMessage: true,
-    ));
-    if(messageChatList.length>100){
-      messageChatList=messageChatList.sublist(0,99);
+  _onSubmitJoinLiveRoomMessage(String name, String userId) {
+    messageChatList.insert(
+        0,
+        UserMessageModel(
+          name: name,
+          uId: userId,
+          messageContent: "进入了直播",
+          isJoinLiveRoomMessage: true,
+        ));
+    if (messageChatList.length > 100) {
+      messageChatList = messageChatList.sublist(0, 99);
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 
@@ -1322,26 +1275,20 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     await Application.rongCloud.sendChatRoomMessage(widget.coachId.toString(), msg);
   }
 
-
   //显示dialog-训练感受
-  _showFeelingDialog(dynamic mapList){
+  _showFeelingDialog(dynamic mapList) {
     var contentMap = json.decode(mapList.toString());
-    showAppDialog(context,
-        title: "训练感受",
-        info: "请问训练感觉怎么样呢？",
-        barrierDismissible: false,
-        buttonList: [
-          for(Map<String,dynamic> map in contentMap)
-            AppDialogButton(map["content"]??"", () {
-              print("${map["content"]},${map["id"]}");
-              if(null!=map["id"]) {
-                feeling(widget.liveCourseId, map["id"].toString());
-              }
-              return true;
-            }),
-        ]);
+    showAppDialog(context, title: "训练感受", info: "请问训练感觉怎么样呢？", barrierDismissible: false, buttonList: [
+      for (Map<String, dynamic> map in contentMap)
+        AppDialogButton(map["content"] ?? "", () {
+          print("${map["content"]},${map["id"]}");
+          if (null != map["id"]) {
+            feeling(widget.liveCourseId, map["id"].toString());
+          }
+          return true;
+        }),
+    ]);
   }
-
 
   static Element findChild(Element e, Widget w) {
     Element child;
@@ -1351,21 +1298,19 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       else
         element.visitChildren(visit);
     }
+
     visit(e);
     return child;
   }
 
-
   @override
   void endCanvasPage() {
     print("停止改变屏幕高度");
-    if(MediaQuery.of(this.context).viewInsets.bottom>0){
-      if(Application.keyboardHeightChatPage!=MediaQuery.of(this.context).viewInsets.bottom){
-        Application.keyboardHeightChatPage=MediaQuery.of(this.context).viewInsets.bottom;
+    if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
+      if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
+        Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
         if (mounted) {
-          setState(() {
-
-          });
+          setState(() {});
         }
       }
     }
@@ -1373,8 +1318,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   @override
   void startCanvasPage(bool isOpen) {
-    print("开始改变屏幕高度:${isOpen?"打开":"关闭"}");
-    if(MediaQuery.of(this.context).viewInsets.bottom>0) {
+    print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
+    if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
       _bottomSettingPanelState = isOpen;
       if (mounted) {
         setState(() {});
@@ -1384,9 +1329,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   @override
   void keyBoardHeightThanZero() {
-    if(MediaQuery.of(this.context).viewInsets.bottom>0&&!_bottomSettingPanelState){
+    if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
       _focusNode.unfocus();
     }
   }
-
 }

@@ -25,9 +25,6 @@ import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
 
-
-
-
 // ignore: must_be_immutable
 class SendMessageView extends StatefulWidget {
   final ChatDataModel model;
@@ -39,16 +36,8 @@ class SendMessageView extends StatefulWidget {
   final int conversationDtoType;
   final bool isShowChatUserName;
 
-  SendMessageView(
-      this.model,
-      this.chatId,
-      this.position,
-      this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack,
-      this.chatUserName,
-      this.isShowChatUserName,
-      this.conversationDtoType);
-
+  SendMessageView(this.model, this.chatId, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
+      this.chatUserName, this.isShowChatUserName, this.conversationDtoType);
 
   @override
   State<StatefulWidget> createState() {
@@ -56,15 +45,11 @@ class SendMessageView extends StatefulWidget {
   }
 }
 
-
 ///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
-class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAliveClientMixin {
-
+class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
-
 
   bool isMyself;
   String userUrl;
@@ -88,7 +73,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   //设置一些基础信息
-  void setSettingData(){
+  void setSettingData() {
     userUrl = getChatUserUrl(sendChatUserId, Application.profile.avatarUri);
     sendChatUserId = Application.profile.uid.toString();
     name = getChatUserName(sendChatUserId, Application.profile.nickName);
@@ -100,10 +85,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
     } else if (Application.profile.uid.toString() == widget.model.msg.senderUserId) {
       isMyself = true;
-      sendTime=widget.model.msg.sentTime;
+      sendTime = widget.model.msg.sentTime;
       status = widget.model.msg.sentStatus;
     } else {
-      sendTime=widget.model.msg.sentTime;
+      sendTime = widget.model.msg.sentTime;
       isMyself = false;
       status = widget.model.msg.sentStatus;
       sendChatUserId = widget.model.msg.senderUserId;
@@ -120,43 +105,30 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         try {
           userUrl = getChatUserUrl(sendChatUserId, widget.model.msg.content.sendUserInfo?.portraitUri);
           name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     }
   }
-
-
 
   //临时消息
   Widget temporaryData() {
     //普通消息
     if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-
       // -----------------------------------------------文字消息-临时----------------------------------------------
       return getTextMsg(text: widget.model.content, mentionedInfo: widget.model.mentionedInfo);
-
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-
       // -----------------------------------------------图片消息-临时----------------------------------------------
       return getImgVideoMsg(isTemporary: true, isImg: true, mediaFileModel: widget.model.mediaFileModel);
-
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-
       // -----------------------------------------------视频消息-临时----------------------------------------------
       return getImgVideoMsg(isTemporary: true, isImg: false, mediaFileModel: widget.model.mediaFileModel);
-
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
-
       // -----------------------------------------------语音消息-临时----------------------------------------------
-      String playMd5String=StringUtil.generateMd5(widget.model.chatVoiceModel.filePath);
+      String playMd5String = StringUtil.generateMd5(widget.model.chatVoiceModel.filePath);
       return getVoiceMsgData(null, widget.model.chatVoiceModel.toJson(), true, playMd5String);
-
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-
       // -----------------------------------------------可选择的列表-临时----------------------------------------------
       return getSelectMsgData(widget.model.content);
-
     } else {
       print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       return getTextMsg(text: "版本过低请升级版本!");
@@ -173,35 +145,27 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     String msgType = msg.objectName;
 
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-
       // -----------------------------------------------自定义的-消息类型----------------------------------------------
       return getTextMessage(msg);
-
     } else if (msgType == VoiceMessage.objectName) {
       // -----------------------------------------------语音-消息----------------------------------------------
 
       return getVoiceMessage(msg);
     } else if (msgType == RecallNotificationMessage.objectName) {
-
       // -----------------------------------------------撤回-消息-----------------------------------------------
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
-
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-
       // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
-
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_CMD) {
-
       // -----------------------------------------------通知-私聊-----------------------------------------------
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
-
     }
 
     //-------------------------------------------------消息类型未知--------------------------------------------
@@ -212,63 +176,50 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     }
   }
 
-
   //自定义的消息类型解析
-  Widget getTextMessage(Message msg,){
+  Widget getTextMessage(
+    Message msg,
+  ) {
     TextMessage textMessage = ((msg.content) as TextMessage);
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
       if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-
         //-------------------------------------------------文字消息--------------------------------------------
         return getTextMsg(text: mapModel["data"], mentionedInfo: msg.content.mentionedInfo);
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
-
         //-------------------------------------------------动态消息--------------------------------------------
         return getFeedMsgData(json.decode(mapModel["data"]));
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_USER) {
-
         //-------------------------------------------------名片消息--------------------------------------------
         return getUserMsgData(json.decode(mapModel["data"]));
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-
         //-------------------------------------------------图片消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
-        map["isTemporary"]=mapModel["isTemporary"]??false;
+        map["isTemporary"] = mapModel["isTemporary"] ?? false;
         map["messageId"] = msg.messageId;
-        return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
-
+        return getImgVideoMsg(
+            isTemporary: false, isImg: true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-
         //-------------------------------------------------视频消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
-        map["isTemporary"]=mapModel["isTemporary"]??false;
-        map["messageId"] =  msg.messageId;
-        return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
-
+        map["isTemporary"] = mapModel["isTemporary"] ?? false;
+        map["messageId"] = msg.messageId;
+        return getImgVideoMsg(
+            isTemporary: false, isImg: false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
-
         //-------------------------------------------------直播课程消息--------------------------------------------
         Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
         return getLiveVideoCourseMsg(liveVideoModelMap, true, msg.messageUId);
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
-
         //-------------------------------------------------视频课程消息--------------------------------------------
         Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
         return getLiveVideoCourseMsg(liveVideoModelMap, false, msg.messageUId);
-
       } else if (getIsAlertMessage(mapModel["subObjectName"])) {
         //-------------------------------------------------提示消息--------------------------------------------
         return getAlertMsg(map: mapModel);
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
         //-------------------------------------------------可选择的列表--------------------------------------------
         return getSelectMsgData(mapModel["data"]);
-
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
         //-------------------------------------------------群通知消息-第二种-------------------------------------------
         Map<String, dynamic> map = Map();
@@ -292,7 +243,6 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     }
   }
 
-
   //判断这个消息是不是提示消息
   bool getIsAlertMessage(String chatTypeModel) {
     if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
@@ -311,12 +261,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     return false;
   }
 
-
-
-
-
   //************************获取消息模块的方法 ----start
-
 
   //语音信息
   Widget getVoiceMessage(Message msg) {
@@ -341,13 +286,13 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
-      String userName = ((Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
-      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-      if(userName==null||userName.length<1){
-        userName =(Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
-        [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+      String userName = ((Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+          Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+      if (userName == null || userName.length < 1) {
+        userName = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+            Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
       }
-      if(userName==null||userName.length<1){
+      if (userName == null || userName.length < 1) {
         return name;
       } else {
         return userName;
@@ -357,8 +302,8 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   String getChatUserUrl(String uId, String url) {
-    String userUrl = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
-      [GROUP_CHAT_USER_INFORMATION_USER_IMAGE];
+    String userUrl = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+        Map())[GROUP_CHAT_USER_INFORMATION_USER_IMAGE];
     if (userUrl == null) {
       return url;
     } else {
@@ -431,10 +376,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   //获取语音
   Widget getVoiceMsgData(
-      String messageUId,
-      Map<String, dynamic> chatVoiceModelMap,
-      bool isTemporary,
-      String playMd5String) {
+      String messageUId, Map<String, dynamic> chatVoiceModelMap, bool isTemporary, String playMd5String) {
     ChatVoiceModel chatVoiceModel = ChatVoiceModel.fromJson(chatVoiceModelMap);
     // chatVoiceModel.read = 1;
     return VoiceMsg(
@@ -493,11 +435,12 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   //获取图片和视频的模块
-  Widget getImgVideoMsg({bool isTemporary,
-    bool isImg,
-    MediaFileModel mediaFileModel,
-    ImageMessage imageMessage,
-    Map<String, dynamic> sizeInfoMap}) {
+  Widget getImgVideoMsg(
+      {bool isTemporary,
+      bool isImg,
+      MediaFileModel mediaFileModel,
+      ImageMessage imageMessage,
+      Map<String, dynamic> sizeInfoMap}) {
     return ImgVideoMsg(
       isMyself: isMyself,
       userUrl: userUrl,
@@ -518,10 +461,8 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     );
   }
 
-
   //提示消息
-  Widget getAlertMsg({Map<String,
-      dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
+  Widget getAlertMsg({Map<String, dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
     return AlertMsg(
       position: widget.position,
       chatUserName: name,
@@ -535,5 +476,3 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
 //***************************************获取每一个消息的模块-----end
 }
-
-
