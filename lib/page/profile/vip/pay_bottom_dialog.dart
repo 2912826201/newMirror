@@ -156,7 +156,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
               widget.titleText,
               style: AppStyle.textMedium16,
             ),
-            Expanded(child: SizedBox())
+            Spacer()
           ],
         ),
       ),
@@ -172,7 +172,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
           width: ScreenUtil.instance.screenWidthDp * 0.91,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [AppColor.lightGreen, AppColor.textVipPrimary1],
+                colors: [AppColor.bgVip1, AppColor.bgVip2],
                 begin: FractionalOffset(0.6, 0),
                 end: FractionalOffset(1, 0.6)),
             borderRadius: BorderRadius.all(Radius.circular(20)),

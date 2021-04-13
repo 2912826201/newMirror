@@ -69,6 +69,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   int userStatus;
 
+  double _opcation = 0;
+
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
@@ -78,6 +80,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   StreamController<Color> streamController = StreamController<Color>();
   StreamController<bool> loadingStreamController = StreamController<bool>();
+  StreamController<double> appBarStreamController = StreamController<double>();
+  StreamController<double> appBarHeightStreamController = StreamController<double>();
 
   @override
   void initState() {
@@ -114,11 +118,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
         if (!isScroll) {
+          appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + 44);
+          appBarStreamController.sink.add(1);
           streamController.sink.add(AppColor.black);
           canOnClick = false;
           isScroll = true;
         }
       } else {
+        if (scrollController.offset <= ScreenUtil.instance.statusBarHeight + 44) {
+          ///这里是因为快速滑动会出现负的offset，会报size.height<0为true的错
+          if (scrollController.offset > 0) {
+            appBarHeightStreamController.sink.add(scrollController.offset);
+          } else {
+            appBarHeightStreamController.sink.add(0);
+          }
+        }
+        if (scrollController.offset >= 0) {
+          double offset = scrollController.offset / (ScreenUtil.instance.height * 0.33 + _signatureHeight);
+          appBarStreamController.sink.add(offset);
+        }
         if (isScroll) {
           streamController.sink.add(AppColor.transparent);
           canOnClick = true;
@@ -207,8 +225,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
     return WillPopScope(
         child: Scaffold(
-          appBar: null,
-          body: _minehomeBody(width, height),
+          body: Container(
+              height: height,
+              width: width,
+              child: Stack(
+                children: [_minehomeBody(width, height), Positioned(top: 0, child: appBar(height, width))],
+              )),
         ),
         onWillPop: _requestPop);
   }
@@ -227,76 +249,22 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           print('=====================innerBoxIsScrolled$innerBoxIsScrolled');
           return <Widget>[
             ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
-            SliverAppBar(
-              brightness: Brightness.light,
-              pinned: true,
-              forceElevated: false,
-              elevation: 0.5,
-              centerTitle: true,
-              title: StreamBuilder<Color>(
-                  initialData: AppColor.transparent,
-                  stream: streamController.stream,
-                  builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
-                    return Text(
-                      "$_textName",
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
-                    );
-                  }),
-              leading: CustomAppBarIconButton(
-                svgName: AppIcon.nav_return,
-                iconColor: AppColor.black,
-                onTap: () {
-                  Navigator.pop(this.context,
-                      context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
-                },
-              ),
-              actions: [
-                CustomAppBarIconButton(
-                  svgName: AppIcon.nav_share,
-                  iconColor: AppColor.black,
-                  onTap: () {
-                    openShareBottomSheet(
-                        context: context,
-                        map: userModel.toJson(),
-                        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                        sharedType: 1);
-                  },
-                ),
-                !isMselfId
-                    ? Container()
-                    : SizedBox(
-                        width: 8,
-                      ),
-                !isMselfId
-                    ? CustomAppBarIconButton(
-                        svgName: AppIcon.nav_more,
-                        iconColor: AppColor.black,
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                            return ProfileDetailsMore(
-                              userId: widget.userId,
-                              userName: _textName,
-                            );
-                          })).then((value) {
-                            _getFollowCount(id: widget.userId);
-                          });
-                        },
-                      )
-                    : Container(),
-                !isMselfId
-                    ? SizedBox(
-                        width: 8,
-                      )
-                    : Container(),
-              ],
-              backgroundColor: AppColor.white,
-              expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + _signatureHeight,
-
-              ///这里是资料展示页,写在这个里面相当于是appBar的背景板
-              flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                child: mineHomeData(height, width),
-              )),
+            StreamBuilder<double>(
+                initialData: 0,
+                stream: appBarHeightStreamController.stream,
+                builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                  return SliverPersistentHeader(
+                    pinned: true,
+                    delegate: fillingContainerDelegate(
+                        height: snapshot.data,
+                        color: AppColor.transparent,
+                        child: Container(
+                          height: snapshot.data,
+                        )),
+                  );
+                }),
+            SliverToBoxAdapter(
+              child: profileDetailData(height, width),
             ),
 
             ///根据布尔值返回视图
@@ -317,10 +285,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         indicator: RoundUnderlineTabIndicator(
                             insets: EdgeInsets.only(bottom: 0),
                             wantWidth: 20,
-                            borderSide: BorderSide(
-                              width: 2,
-                              color: AppColor.black,
-                            )),
+                            borderSide: BorderSide(width: 2, color: AppColor.black)),
                         tabs: <Widget>[
                           Tab(text: '动态'),
                           Tab(text: '喜欢'),
@@ -384,8 +349,85 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 )));
   }
 
+  Widget appBar(double height, double width) {
+    return StreamBuilder<double>(
+        initialData: 0,
+        stream: appBarStreamController.stream,
+        builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+          return Container(
+            color: AppColor.white.withOpacity(snapshot.data),
+            height: 44 + ScreenUtil.instance.statusBarHeight,
+            width: width,
+            padding: EdgeInsets.only(left: 16, right: 16, top: ScreenUtil.instance.statusBarHeight),
+            child: Center(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CustomAppBarIconButton(
+                    svgName: AppIcon.nav_return,
+                    iconColor: AppColor.black,
+                    onTap: () {
+                      Navigator.pop(this.context,
+                          context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+                    },
+                  ),
+                  Spacer(),
+                  StreamBuilder<Color>(
+                      initialData: AppColor.transparent,
+                      stream: streamController.stream,
+                      builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
+                        return Text(
+                          "$_textName",
+                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
+                        );
+                      }),
+                  Spacer(),
+                  CustomAppBarIconButton(
+                    svgName: AppIcon.nav_share,
+                    iconColor: AppColor.black,
+                    onTap: () {
+                      openShareBottomSheet(
+                          context: context,
+                          map: userModel.toJson(),
+                          chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                          sharedType: 1);
+                    },
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  !isMselfId
+                      ? CustomAppBarIconButton(
+                    svgName: AppIcon.nav_more,
+                    iconColor: AppColor.black,
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return ProfileDetailsMore(
+                          userId: widget.userId,
+                          userName: _textName,
+                        );
+                      })).then((value) {
+                        _getFollowCount(id: widget.userId);
+                      });
+                    },
+                  )
+                      : Container(
+                          width: 0,
+                        ),
+                  !isMselfId
+                      ? SizedBox(
+                          width: 15.5,
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   ///高斯模糊
-  Widget mineHomeData(double height, double width) {
+  Widget profileDetailData(double height, double width) {
     return Container(
       height: height * 0.41 + _signatureHeight,
       color: AppColor.white,
@@ -438,7 +480,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: ScreenUtil.instance.statusBarHeight + height * 0.07,
+              height: ScreenUtil.instance.statusBarHeight + 44,
             ),
 
             ///头像和按钮
@@ -530,7 +572,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             Spacer(),
             Container(
               color: AppColor.bgWhite.withOpacity(0.65),
-              height: height * 0.01,
+              height: 12,
               width: width,
             )
           ],
@@ -558,8 +600,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   jumpChatPageUser(context, userModel);
                 }
               }
-            } else {
-              return false;
             }
           },
           child: Container(
