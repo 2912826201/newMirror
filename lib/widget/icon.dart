@@ -115,6 +115,14 @@ class AppIcon {
   static const String collection_course = "assets/svg/collection_course.svg";
   static const String remocon_stop_74 = "assets/svg/remocon_stop_74.svg";
   static const String remocon_play_74 = "assets/svg/remocon_play_74.svg";
+  static const String share_qq_circle = "assets/svg/share_qq_circle.svg";
+  static const String share_qzone_circle = "assets/svg/share_qzone_circle.svg";
+  static const String share_wechat_circle = "assets/svg/share_wechat_circle.svg";
+  static const String share_moment_circle = "assets/svg/share_moment_circle.svg";
+  static const String share_friend_circle = "assets/svg/share_friend_circle.svg";
+  static const String share_browser_circle = "assets/svg/share_browser_circle.svg";
+  static const String share_weibo_circle = "assets/svg/share_weibo_circle.svg";
+  static const String share_download_circle = "assets/svg/share_download_circle.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {
