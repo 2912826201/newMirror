@@ -1103,7 +1103,9 @@ class ScriptIds {
   ScriptIds.fromJson(dynamic json) {
     _startTime = json["startTime"];
     _id = json["id"];
-    _endTime = json["endTime"];
+    if(json["endTime"] is int) {
+      _endTime = json["endTime"];
+    }
   }
 
   Map<String, dynamic> toJson() {

@@ -481,20 +481,37 @@ class LiveDetailPageState extends XCState {
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(!isLoggedIn&&notifier.isLoggedIn){
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              reload(() {});
-            }
-          });
-          getDataAction();
+        if(notifier.isLoggedIn){
+          if(!isLoggedIn){
+            isLoggedIn=true;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
 
-          //如果已登录且有关联的机器 发送指令让机器跳转页面
-          if(Application.machine != null){
-            openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            }
+          }
+        }else{
+          if(isLoggedIn){
+            isLoggedIn=false;
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+            getDataAction();
+
+            //如果已登录且有关联的机器 发送指令让机器跳转页面
+            if(Application.machine != null){
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            }
           }
         }
-        isLoggedIn=notifier.isLoggedIn;
         return child;
       },
       child: Container(),
@@ -504,15 +521,26 @@ class LiveDetailPageState extends XCState {
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.machine!=null){
-          bindingTerminal=true;
-          Future.delayed(Duration(milliseconds: 300),(){
-            if(mounted){
-              reload(() {});
-            }
-          });
+        if(notifier.machine != null){
+          if(!bindingTerminal){
+            bindingTerminal=true;
+            print("bindingTerminal1:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
         }else{
-          bindingTerminal=false;
+          if(bindingTerminal){
+            bindingTerminal=false;
+            print("bindingTerminal2:$bindingTerminal");
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                reload(() {});
+              }
+            });
+          }
         }
         return child;
       },
@@ -874,6 +902,7 @@ class LiveDetailPageState extends XCState {
   //使用终端进行训练
   void _useTerminal() {
     ToastShow.show(msg: "使用终端进行训练", context: context);
+    startVideoCourse(Application.machine.machineId, liveCourseId);
   }
 
   //登陆终端进行训练
