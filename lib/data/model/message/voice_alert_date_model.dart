@@ -1,17 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/widget/icon.dart';
 
-
-//todo 录音icon
-
 //手指上滑-取消发送
-String moveUpCancelPostImageString=AppIcon.avatar_live;
+String moveUpCancelPostImageString=AppIcon.voice_microphone;
 
 //说话时间太短
-String speckTimeTooShortImageString=AppIcon.avatar_training;
+String speckTimeTooShortImageString=AppIcon.voice_error;
 
 //松开手指-取消发送
-String letGoOfYourFingerCancelPostImageString=AppIcon.avatar_system;
+String letGoOfYourFingerCancelPostImageString=AppIcon.voice_cancel;
 
 class VoiceAlertData extends ChangeNotifier {
 

@@ -412,6 +412,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   svgName: AppIcon.pause_28,
                   onTap: () {
                     print("暂停");
+                    // _showPauseDialog();
                   },
                   buttonHeight: 44,
                   buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
