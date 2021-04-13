@@ -328,7 +328,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   getCourse() {
     return Container(
       margin: const EdgeInsets.only(top: 24, bottom: 18),
-      height: 80,
+      height: 88,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
