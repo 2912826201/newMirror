@@ -46,7 +46,6 @@ import 'more_page/private_more_page.dart';
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
-
 //去对应的聊天界面
 //目前是从用户详情页的私聊过来的
 void jumpChatPageUser(
@@ -82,26 +81,26 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
     print("给$name分享了直播课程");
-    message = await postMessageManagerLiveCourse(conversation.conversationId,
-        map, conversation.getType() == RCConversationType.Private);
+    message = await postMessageManagerLiveCourse(
+        conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
     print("给$name分享了视频课程");
-    message = await postMessageManagerVideoCourse(conversation.conversationId,
-        map, conversation.getType() == RCConversationType.Private);
+    message = await postMessageManagerVideoCourse(
+        conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
     print("给$name分享了图片");
-    MediaFileModel mediaFileModel=new MediaFileModel();
-    SizeInfo sizeInfo=new SizeInfo();
-    sizeInfo.height=map["height"];
-    sizeInfo.width=map["width"];
-    mediaFileModel.sizeInfo=sizeInfo;
-    UploadResultModel uploadResultModel=await onPostImgOrVideoSinge(new File(map["file"]));
+    MediaFileModel mediaFileModel = new MediaFileModel();
+    SizeInfo sizeInfo = new SizeInfo();
+    sizeInfo.height = map["height"];
+    sizeInfo.width = map["width"];
+    mediaFileModel.sizeInfo = sizeInfo;
+    UploadResultModel uploadResultModel = await onPostImgOrVideoSinge(new File(map["file"]));
     message = await postMessageManagerImgOrVideo(
-        conversation.conversationId,
-        true,
-        mediaFileModel,
-        uploadResultModel,
-        conversation.getType() == RCConversationType.Private,
+      conversation.conversationId,
+      true,
+      mediaFileModel,
+      uploadResultModel,
+      conversation.getType() == RCConversationType.Private,
     );
   } else {
     chatType = ChatTypeModel.NULL_COMMENT;
@@ -113,8 +112,7 @@ Future<bool> jumpShareMessage(
   }
   if (message == null) {
     message = await postMessageManagerText(
-        conversation.conversationId,
-        map.toString(), null, conversation.type == RCConversationType.Private);
+        conversation.conversationId, map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
   return true;
@@ -122,35 +120,32 @@ Future<bool> jumpShareMessage(
 }
 
 //去聊天界面
-void jumpChatPageConversationDto(
-    BuildContext context, ConversationDto conversation) {
-  _jumpJudgeChatPage(
-      context: context, conversation: conversation, shareMessage: null);
+void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation) {
+  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null);
 }
 
 //去群聊界面
-void jumpGroupPage(BuildContext context,String name,int groupId){
+void jumpGroupPage(BuildContext context, String name, int groupId) {
   ConversationDto conversation = new ConversationDto();
   conversation.name = name;
   conversation.conversationId = groupId.toString();
   conversation.uid = Application.profile.uid;
   conversation.type = GROUP_TYPE;
-  jumpChatPageConversationDto(context,conversation);
+  jumpChatPageConversationDto(context, conversation);
 }
 
 //去测试界面
 void jumpChatPageTest(BuildContext context) {
-  _jumpJudgeChatPage(
-      context: context, conversation: getConversationDto(), shareMessage: null);
+  _jumpJudgeChatPage(context: context, conversation: getConversationDto(), shareMessage: null);
 }
 
 //跳转界面-去聊天界面-先获取群成员
-void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async{
+void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async {
   context.read<GroupUserProfileNotifier>().clearAllUser();
 
   _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage);
 
-  if(conversation.type==GROUP_TYPE) {
+  if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
     if (null == groupManNumber || groupManNumber < 1) {
       ToastShow.show(msg: "未获取到群信息", context: context);
@@ -160,37 +155,36 @@ void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Mes
   }
 }
 
-
 //跳转界面-去聊天界面
-void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async{
+void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async {
   List<ChatDataModel> chatDataModelList;
-  int systemPage=0;
+  int systemPage = 0;
   String systemLastTime;
   if (conversation.getType() != RCConversationType.System) {
-    chatDataModelList=await ChatPageUtil.init(context).getChatMessageList(conversation, shareMessage);
+    chatDataModelList = await ChatPageUtil.init(context).getChatMessageList(conversation, shareMessage);
   } else {
-    List list=await ChatPageUtil.init(context).getSystemInformationNet(conversation);
-    chatDataModelList=list[0];
-    systemLastTime=list[1];
-    systemPage=list[2];
+    List list = await ChatPageUtil.init(context).getSystemInformationNet(conversation);
+    chatDataModelList = list[0];
+    systemLastTime = list[1];
+    systemPage = list[2];
   }
   AppRouter.navigateToChatPage(
     context: context,
     conversation: conversation,
     chatDataModelList: chatDataModelList,
     shareMessage: shareMessage,
-    systemPage:systemPage,
-    systemLastTime:systemLastTime,
+    systemPage: systemPage,
+    systemLastTime: systemLastTime,
   );
 }
 
 //todo 目前没有自定义的所以差不多都是使用的是TextMessage 等有了自定义再改
 
 //发送文本消息
-Future<Message> postMessageManagerText(String targetId, String text,
-    MentionedInfo mentionedInfo, bool isPrivate) async {
+Future<Message> postMessageManagerText(
+    String targetId, String text, MentionedInfo mentionedInfo, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   if (mentionedInfo != null && mentionedInfo.userIdList != null && mentionedInfo.userIdList.length > 0) {
     msg.mentionedInfo = mentionedInfo;
   }
@@ -205,13 +199,10 @@ Future<Message> postMessageManagerText(String targetId, String text,
   return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
-
-
 //发送可选择的消息
-Future<Message> postMessageManagerSelect(String targetId, String text,
-    bool isPrivate) async {
+Future<Message> postMessageManagerSelect(String targetId, String text, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   // msg.content = text;
   Map<String, dynamic> selectMap = Map();
   selectMap["fromUserId"] = msg.sendUserInfo.userId.toString();
@@ -224,10 +215,9 @@ Future<Message> postMessageManagerSelect(String targetId, String text,
 }
 
 //发送动态
-Future<Message> postMessageManagerFeed(String targetId,
-    Map<String, dynamic> map, bool isPrivate) async {
+Future<Message> postMessageManagerFeed(String targetId, Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> feedMap = Map();
   feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   feedMap["toUserId"] = targetId;
@@ -235,18 +225,14 @@ Future<Message> postMessageManagerFeed(String targetId,
   feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_FEED_NAME;
   feedMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(feedMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
-
 //发送图片视频
-Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
-    MediaFileModel mediaFileModel, UploadResultModel uploadResultModel,
-    bool isPrivate) async {
+Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo, MediaFileModel mediaFileModel,
+    UploadResultModel uploadResultModel, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> imgOrVideoMap = Map();
   imgOrVideoMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   imgOrVideoMap["toUserId"] = targetId;
@@ -256,19 +242,16 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
   sizeMap["showImageUrl"] = uploadResultModel.url;
   imgOrVideoMap["data"] = jsonEncode(sizeMap);
   msg.content = jsonEncode(imgOrVideoMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
 //发送音频
-Future<Message> postMessageManagerVoice(String targetId,
-    ChatVoiceModel chatVoiceModel, int conversationType) async {
+Future<Message> postMessageManagerVoice(String targetId, ChatVoiceModel chatVoiceModel, int conversationType) async {
   VoiceMessage msg = new VoiceMessage();
   msg.localPath = chatVoiceModel.filePath;
   msg.extra = jsonEncode(chatVoiceModel.toJson());
   msg.duration = chatVoiceModel.longTime;
-  msg.sendUserInfo = getChatUserInfo(groupId:conversationType==RCConversationType.Group?targetId:null);
+  msg.sendUserInfo = getChatUserInfo(groupId: conversationType == RCConversationType.Group ? targetId : null);
   Message message = new Message();
   message.conversationType = conversationType;
   message.senderUserId = Application.profile.uid.toString();
@@ -284,10 +267,9 @@ Future<Message> postMessageManagerVoice(String targetId,
 }
 
 //发送用户名片
-Future<Message> postMessageManagerUser(String targetId,
-    Map<String, dynamic> map, bool isPrivate) async {
+Future<Message> postMessageManagerUser(String targetId, Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> userMap = Map();
   userMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   userMap["toUserId"] = targetId;
@@ -295,16 +277,13 @@ Future<Message> postMessageManagerUser(String targetId,
   userMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_NAME;
   userMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(userMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
 //发送直播课程
-Future<Message> postMessageManagerLiveCourse(String targetId,
-    Map<String, dynamic> map, bool isPrivate) async {
+Future<Message> postMessageManagerLiveCourse(String targetId, Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> liveCourseMap = Map();
   liveCourseMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   liveCourseMap["toUserId"] = targetId;
@@ -312,16 +291,13 @@ Future<Message> postMessageManagerLiveCourse(String targetId,
   liveCourseMap["name"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE_NAME;
   liveCourseMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(liveCourseMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
 //发送视频课程
-Future<Message> postMessageManagerVideoCourse(String targetId,
-    Map<String, dynamic> map, bool isPrivate) async {
+Future<Message> postMessageManagerVideoCourse(String targetId, Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> videoCourseMap = Map();
   videoCourseMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   videoCourseMap["toUserId"] = targetId;
@@ -329,29 +305,21 @@ Future<Message> postMessageManagerVideoCourse(String targetId,
   videoCourseMap["name"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE_NAME;
   videoCourseMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(videoCourseMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
 //发送消息--私聊
-Future<Message> postPrivateMessageManager(String targetId,
-    MessageContent messageContent) async {
-  return await Application.rongCloud.sendPrivateMessage(
-      targetId, messageContent);
+Future<Message> postPrivateMessageManager(String targetId, MessageContent messageContent) async {
+  return await Application.rongCloud.sendPrivateMessage(targetId, messageContent);
 }
 
 //发送消息--群聊
-Future<Message> postGroupMessageManager(String targetId,
-    MessageContent messageContent) async {
+Future<Message> postGroupMessageManager(String targetId, MessageContent messageContent) async {
   return await Application.rongCloud.sendGroupMessage(targetId, messageContent);
 }
 
 //插入撤回的消息
-void postMessageManagerReset(String chatTypeModel,
-    String chatTypeModelName,
-    String content,
-    String targetId,
+void postMessageManagerReset(String chatTypeModel, String chatTypeModelName, String content, String targetId,
     int conversationType, Function(Message msg, int code) finished,
     {int sendTime = -1}) {
   TextMessage msg = TextMessage();
@@ -380,11 +348,10 @@ void insertExitGroupMsg(Message message, String targetId, Function(Message msg, 
 }
 
 //插入临时的发送失败的图片以及视频
-Future<void> insertTemporaryImage(String targetId,bool isPrivate,bool isImgOrVideo,
-    ChatDataModel chatDataModel,int position,
-    Function(Message msg, int code) finished)async {
+Future<void> insertTemporaryImage(String targetId, bool isPrivate, bool isImgOrVideo, ChatDataModel chatDataModel,
+    int position, Function(Message msg, int code) finished) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
   Map<String, dynamic> imgOrVideoMap = Map();
   imgOrVideoMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   imgOrVideoMap["isTemporary"] = true;
@@ -393,20 +360,18 @@ Future<void> insertTemporaryImage(String targetId,bool isPrivate,bool isImgOrVid
   imgOrVideoMap["name"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE_NAME : ChatTypeModel.MESSAGE_TYPE_VIDEO_NAME;
   Map sizeMap = chatDataModel.mediaFileModel.sizeInfo.toJson();
   sizeMap["showImageUrl"] = chatDataModel.mediaFileModel.file.path;
-  if(!isImgOrVideo){
+  if (!isImgOrVideo) {
     Uint8List thumb = await VideoThumbnail.thumbnailData(
         video: chatDataModel.mediaFileModel.file.path, imageFormat: ImageFormat.JPEG, quality: 100);
-    File videoFile = await FileUtil().writeImageDataToFile(thumb,
-          DateTime.now().millisecondsSinceEpoch.toString() + position.toString());
-    sizeMap["videoFilePath"]=videoFile.path;
+    File videoFile = await FileUtil()
+        .writeImageDataToFile(thumb, DateTime.now().millisecondsSinceEpoch.toString() + position.toString());
+    sizeMap["videoFilePath"] = videoFile.path;
   }
   imgOrVideoMap["data"] = jsonEncode(sizeMap);
   msg.content = jsonEncode(imgOrVideoMap);
   Application.rongCloud.insertOutgoingMessage(
-      isPrivate?RCConversationType.Private:RCConversationType.Group,
-      targetId, msg, finished,
-      sendTime: new DateTime.now().millisecondsSinceEpoch,
-      sendStatus: RCSentStatus.Failed);
+      isPrivate ? RCConversationType.Private : RCConversationType.Group, targetId, msg, finished,
+      sendTime: new DateTime.now().millisecondsSinceEpoch, sendStatus: RCSentStatus.Failed);
 }
 
 //获取用户数据
@@ -415,7 +380,7 @@ UserInfo getChatUserInfo({String groupId}) {
   userInfo.userId = Application.profile.uid.toString();
   userInfo.name = Application.profile.nickName;
   userInfo.portraitUri = Application.profile.avatarUri;
-  if(groupId!=null) {
+  if (groupId != null) {
     Map<String, dynamic> extraMap = Map();
     extraMap[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME] =
         getChatUserName(groupId, Application.profile.uid.toString(), Application.profile.nickName);
@@ -460,18 +425,14 @@ ConversationDto getConversationDto() {
 }
 
 //发送字符串的model
-void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId,
-    MentionedInfo mentionedInfo,
+void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId, MentionedInfo mentionedInfo,
     VoidCallback voidCallback) async {
   chatDataModel.msg = await postMessageManagerText(
-      targetId, chatDataModel.content, mentionedInfo,
-      chatTypeId == RCConversationType.Private);
+      targetId, chatDataModel.content, mentionedInfo, chatTypeId == RCConversationType.Private);
   chatDataModel.isTemporary = false;
   // print(chatDataModel.msg.toString());
   voidCallback();
 }
-
-
 
 //生成消息的model
 ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
@@ -481,13 +442,17 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
   return chatDataModel;
 }
 
-
 //插入撤回消息
 void getReChatDataModel(
-    {String targetId, int conversationType, int chatTypeId, int sendTime,String text, Function(Message msg, int code) finished}) async {
-  postMessageManagerReset(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
-      text, targetId,
-      conversationType, finished, sendTime: sendTime);
+    {String targetId,
+    int conversationType,
+    int chatTypeId,
+    int sendTime,
+    String text,
+    Function(Message msg, int code) finished}) async {
+  postMessageManagerReset(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME, text, targetId,
+      conversationType, finished,
+      sendTime: sendTime);
 }
 
 //封装时间戳
@@ -541,52 +506,44 @@ void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {
   chatDataModel.msg.content = voiceMessage;
   Map<String, dynamic> expansionDic = Map();
   expansionDic["read"] = "1";
-  Application.rongCloud.updateMessage(
-      expansionDic, chatDataModel.msg.messageUId, finished);
+  Application.rongCloud.updateMessage(expansionDic, chatDataModel.msg.messageUId, finished);
 }
 
 //发送有选项的model
-void postSelectMessage(ChatDataModel chatDataModel, String targetId,
-    int chatTypeId,
-    VoidCallback voidCallback) async {
+void postSelectMessage(ChatDataModel chatDataModel, String targetId, int chatTypeId, VoidCallback voidCallback) async {
   chatDataModel.msg =
-  await postMessageManagerSelect(targetId, chatDataModel.content,
-      chatTypeId == RCConversationType.Private);
+      await postMessageManagerSelect(targetId, chatDataModel.content, chatTypeId == RCConversationType.Private);
   chatDataModel.isTemporary = false;
   voidCallback();
 }
 
-
 //发送图片或者视频
-void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
-    int chatTypeId,
-    VoidCallback voidCallback) async {
-  modelList=modelList.reversed.toList();
+void postImgOrVideo(
+    List<ChatDataModel> modelList, String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
+  modelList = modelList.reversed.toList();
   List<UploadResultModel> uploadResultModelList = await onPostImgOrVideo(modelList, type);
 
-  int count=0;
-  Timer timer = new Timer.periodic(Duration(seconds: 1), (Timer timer)async {
-    int end=count+1;
-    if(end>modelList.length){
-      end=modelList.length;
+  int count = 0;
+  Timer timer = new Timer.periodic(Duration(seconds: 1), (Timer timer) async {
+    int end = count + 1;
+    if (end > modelList.length) {
+      end = modelList.length;
     }
-    await postImage(count,end,uploadResultModelList,modelList,targetId,type,chatTypeId,voidCallback);
-    count=end;
-    if(count>=modelList.length){
+    await postImage(count, end, uploadResultModelList, modelList, targetId, type, chatTypeId, voidCallback);
+    count = end;
+    if (count >= modelList.length) {
       timer.cancel();
     }
   });
 }
 
-Future<void> postImage(int start,int end,List<UploadResultModel> uploadResultModelList,
-    List<ChatDataModel> modelList, String targetId, String type, int chatTypeId,
-    VoidCallback voidCallback)async{
+Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultModelList, List<ChatDataModel> modelList,
+    String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
   for (int i = start; i < end; i++) {
     print("发送图片：$i");
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
-      if (uploadResultModelList[j].filePath ==
-          modelList[i].mediaFileModel.file.path) {
+      if (uploadResultModelList[j].filePath == modelList[i].mediaFileModel.file.path) {
         uploadResultModelIndex = j;
         break;
       }
@@ -599,55 +556,52 @@ Future<void> postImage(int start,int end,List<UploadResultModel> uploadResultMod
           uploadResultModelList[uploadResultModelIndex],
           chatTypeId == RCConversationType.Private);
       modelList[i].isTemporary = false;
-      modelList[i].status=RCSentStatus.Sent;
+      modelList[i].status = RCSentStatus.Sent;
       print("----------成功：modelList[i].msg：${modelList[i].msg.toString()}");
     } else {
       //插入临时消息
-      await insertTemporaryImage(targetId,chatTypeId == RCConversationType.Private,
-          type == mediaTypeKeyImage,modelList[i],i,(Message msg, int code){
-            if(msg!=null){
-              print("--------------插入成功");
-              modelList[i].msg=msg;
-              modelList[i].isTemporary = false;
-            }else{
-              print("--------------插入失败");
-            }
-            modelList[i].status=RCSentStatus.Failed;
-          });
+      await insertTemporaryImage(
+          targetId, chatTypeId == RCConversationType.Private, type == mediaTypeKeyImage, modelList[i], i,
+          (Message msg, int code) {
+        if (msg != null) {
+          print("--------------插入成功");
+          modelList[i].msg = msg;
+          modelList[i].isTemporary = false;
+        } else {
+          print("--------------插入失败");
+        }
+        modelList[i].status = RCSentStatus.Failed;
+      });
       print("--------------上传图片失败");
     }
   }
   voidCallback();
 }
 
-
-
-
 //发送语音
-void postVoice(ChatDataModel chatDataModel, String targetId,
-    int conversationType, int chatTypeId,
+void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType, int chatTypeId,
     VoidCallback voidCallback) async {
-  chatDataModel.msg =
-  await postMessageManagerVoice(
-      targetId, chatDataModel.chatVoiceModel, conversationType);
+  chatDataModel.msg = await postMessageManagerVoice(targetId, chatDataModel.chatVoiceModel, conversationType);
   chatDataModel.isTemporary = false;
   voidCallback();
 }
+
 //重新发送消息
 void resetPostMessage(ChatDataModel chatDataModel, VoidCallback voidCallback) async {
-  Message msg =await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
-  if(chatDataModel.msg.messageId!=msg.messageId){
-    RongCloud.init().deleteMessageById(chatDataModel.msg,null);
+  Message msg = await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  if (chatDataModel.msg.messageId != msg.messageId) {
+    RongCloud.init().deleteMessageById(chatDataModel.msg, null);
   }
   // print("重新发送消息:${chatDataModel.msg.messageId},${msg.messageId}");
-  chatDataModel.msg=msg;
+  chatDataModel.msg = msg;
   chatDataModel.isTemporary = false;
   voidCallback();
 }
-Future<UploadResultModel> onPostImgOrVideoSinge(File file)async{
+
+Future<UploadResultModel> onPostImgOrVideoSinge(File file) async {
   List<File> fileList = [];
   fileList.add(file);
-  UploadResults  results = await FileUtil().uploadPics(fileList, (percent) {});
+  UploadResults results = await FileUtil().uploadPics(fileList, (percent) {});
   List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
   for (int i = 0; i < results.resultMap.length; i++) {
     UploadResultModel model = results.resultMap.values.elementAt(i);
@@ -661,10 +615,8 @@ Future<UploadResultModel> onPostImgOrVideoSinge(File file)async{
   return uploadResultModelList[0];
 }
 
-
 //上传图片和视频
-Future<List<UploadResultModel>> onPostImgOrVideo(
-    List<ChatDataModel> modelList, String type) async {
+Future<List<UploadResultModel>> onPostImgOrVideo(List<ChatDataModel> modelList, String type) async {
   List<File> fileList = [];
   List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
   UploadResults results;
@@ -676,8 +628,9 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
         fileList.add(element.mediaFileModel.file);
       } else {
         i++;
-        File imageFile = await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
-        element.mediaFileModel.file=imageFile;
+        File imageFile =
+            await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
+        element.mediaFileModel.file = imageFile;
         fileList.add(imageFile);
       }
     });
@@ -731,8 +684,6 @@ int getRCConversationType(int type) {
   }
 }
 
-
-
 //获取群成员信息
 Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) async {
   Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
@@ -741,15 +692,17 @@ Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) 
   // print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
-      ChatGroupUserModel model=ChatGroupUserModel.fromJson(v);
+      ChatGroupUserModel model = ChatGroupUserModel.fromJson(v);
       chatGroupUserModelList.add(model);
-      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
+      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model, groupId: groupChatId);
     });
-    Future.delayed(Duration(milliseconds: 150),(){
-      Application.appContext.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
+    Future.delayed(Duration(milliseconds: 150), () {
+      Application.appContext
+          .read<GroupUserProfileNotifier>()
+          .addAll(chatGroupUserModelList, chatGroupUserModelList.length);
     });
   } else {
-    Future.delayed(Duration(milliseconds: 150),(){
+    Future.delayed(Duration(milliseconds: 150), () {
       Application.appContext.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
     });
   }
@@ -766,9 +719,9 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
   print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
-      ChatGroupUserModel model=ChatGroupUserModel.fromJson(v);
+      ChatGroupUserModel model = ChatGroupUserModel.fromJson(v);
       chatGroupUserModelList.add(model);
-      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
+      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model, groupId: groupChatId);
     });
     context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
   } else {
@@ -778,51 +731,50 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
   print("------len:${chatGroupUserModelList.length}");
 }
 
-
-
-String getChatUserName(String groupId,String userId, String name) {
-  String userName = ((Application.chatGroupUserInformationMap["${groupId}_$userId"]??Map())
-  [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-  if(userName==null||userName.length<1){
-    userName =(Application.chatGroupUserInformationMap["${groupId}_$userId"]??Map())
-    [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+String getChatUserName(String groupId, String userId, String name) {
+  String userName = ((Application.chatGroupUserInformationMap["${groupId}_$userId"] ??
+      Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+  if (userName == null || userName.length < 1) {
+    userName =
+        (Application.chatGroupUserInformationMap["${groupId}_$userId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
   }
-  if(userName==null||userName.length<1){
+  if (userName == null || userName.length < 1) {
     return name;
   } else {
     return userName;
   }
 }
 
-
-String getChatTypeModel(ChatDataModel chatDataModel){
-  if(chatDataModel==null){
+String getChatTypeModel(ChatDataModel chatDataModel) {
+  if (chatDataModel == null) {
     return "";
-  }else if(chatDataModel.type!=null){
+  } else if (chatDataModel.type != null) {
     return chatDataModel.type;
-  }else if(chatDataModel.msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+  } else if (chatDataModel.msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
     TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
     Map<String, dynamic> mapModel = json.decode(textMessage.content);
     return mapModel["subObjectName"];
-  }else{
+  } else {
     return chatDataModel.msg.objectName;
   }
 }
 
 //加入时间提示
-void getTimeAlert(List<ChatDataModel> chatDataList,String chatId) {
+void getTimeAlert(List<ChatDataModel> chatDataList, String chatId) {
   if (chatDataList != null && chatDataList.length > 0) {
     for (int i = chatDataList.length - 1; i >= 0; i--) {
       if (i == chatDataList.length - 1) {
-        chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
-      } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-        chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
+        chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+      } else if (chatDataList[i].msg != null &&
+          (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
+        chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
       }
     }
   }
 }
+
 //获取时间戳
-ChatDataModel getTimeAlertModel(int sentTime,String chatId) {
+ChatDataModel getTimeAlertModel(int sentTime, String chatId) {
   ChatDataModel dataModel = new ChatDataModel();
   dataModel.msg = getAlertTimeMsg(
       time: sentTime, sendTime: sentTime, targetId: chatId, conversationType: RCConversationType.Private);
@@ -830,24 +782,24 @@ ChatDataModel getTimeAlertModel(int sentTime,String chatId) {
 }
 
 //将发送的临时消息加入全局
-addTemporaryMessage(ChatDataModel chatDataModel,ConversationDto conversation){
-  if(Application.postChatDataModelList[conversation.id]==null){
-    List<ChatDataModel> modelList=<ChatDataModel>[];
+addTemporaryMessage(ChatDataModel chatDataModel, ConversationDto conversation) {
+  if (Application.postChatDataModelList[conversation.id] == null) {
+    List<ChatDataModel> modelList = <ChatDataModel>[];
     modelList.add(chatDataModel);
-    Application.postChatDataModelList[conversation.id]=modelList;
-  }else{
+    Application.postChatDataModelList[conversation.id] = modelList;
+  } else {
     Application.postChatDataModelList[conversation.id].add(chatDataModel);
   }
 }
 
 //从全局的临时消息中删除发送完成的消息
-deletePostCompleteMessage(ConversationDto conversation){
-  if(Application.postChatDataModelList[conversation.id]==null
-      ||Application.postChatDataModelList[conversation.id].length<1){
+deletePostCompleteMessage(ConversationDto conversation) {
+  if (Application.postChatDataModelList[conversation.id] == null ||
+      Application.postChatDataModelList[conversation.id].length < 1) {
     return;
-  }else{
-    for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
-      if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+  } else {
+    for (int i = 0; i < Application.postChatDataModelList[conversation.id].length; i++) {
+      if (!Application.postChatDataModelList[conversation.id][i].isTemporary) {
         Application.postChatDataModelList[conversation.id].removeAt(i);
       }
     }
@@ -855,14 +807,14 @@ deletePostCompleteMessage(ConversationDto conversation){
 }
 
 //当删除消息时，修改外部提示
-void updateMessagePageAlert(ConversationDto conversation,BuildContext context)async{
+void updateMessagePageAlert(ConversationDto conversation, BuildContext context) async {
   List msgList = new List();
   msgList = await RongCloud.init().getHistoryMessages(
       conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 1, 0);
-  if(msgList!=null&&msgList.length>0){
-    MessageManager.updateConversationByMessageContent(context,conversation.id,msg:msgList[0]);
-  }else{
-    MessageManager.updateConversationByMessageContent(context,conversation.id);
+  if (msgList != null && msgList.length > 0) {
+    MessageManager.updateConversationByMessageContent(context, conversation.id, msg: msgList[0]);
+  } else {
+    MessageManager.updateConversationByMessageContent(context, conversation.id);
   }
 }
 
@@ -879,19 +831,21 @@ List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
   }
   return result.length == 0 ? null : result;
 }
+
 //是否继续
-Future<bool> isContinue(BuildContext context)async{
+Future<bool> isContinue(BuildContext context) async {
   if (ClickUtil.isFastClick()) {
     print("快速点击");
     return false;
   }
-  if(await isOffline()){
+  if (await isOffline()) {
     ToastShow.show(msg: "请检查网络!", context: context);
     return false;
   }
   return true;
 }
-Future<bool> isOffline()async{
+
+Future<bool> isOffline() async {
   ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
   if (connectivityResult == ConnectivityResult.mobile) {
     return false;
@@ -903,25 +857,27 @@ Future<bool> isOffline()async{
 }
 
 // 请求动态详情页数据
-getFeedDetail(int feedId,BuildContext context) async {
+getFeedDetail(int feedId, BuildContext context) async {
   BaseResponseModel feedModel = await feedDetail(id: feedId);
-  if(feedModel.data!=null){
+  if (feedModel.data != null) {
     List<HomeFeedModel> list = [];
     list.add(HomeFeedModel.fromJson(feedModel.data));
     context.read<FeedMapNotifier>().updateFeedMap(list);
   }
   // print("----------feedModel:${feedModel.toJson().toString()}");
   // 跳转动态详情页
-  if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
-    AppRouter.navigateFeedDetailPage(context: context, model:feedModel.data!=null?HomeFeedModel.fromJson(feedModel
-        .data):null, type: 1,
+  if (feedModel.code == CODE_SUCCESS || feedModel.code == CODE_NO_DATA) {
+    AppRouter.navigateFeedDetailPage(
+        context: context,
+        model: feedModel.data != null ? HomeFeedModel.fromJson(feedModel.data) : null,
+        type: 1,
         errorCode: feedModel.code);
   }
 }
 
 ConversationDto _convertMsgToConversation(Message msg) {
   //只处理以下几个ObjectName的消息
-  if(msg==null){
+  if (msg == null) {
     return null;
   }
   if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
@@ -937,7 +893,7 @@ ConversationDto _convertMsgToConversation(Message msg) {
   dto.uid = Application.profile.uid;
   dto.content = MessageManager.convertMsgContent(msg);
   dto.avatarUri = msg.content.sendUserInfo.portraitUri;
-  dto.name =  msg.content.sendUserInfo.name;
+  dto.name = msg.content.sendUserInfo.name;
   switch (msg.conversationType) {
     case RCConversationType.Private:
       dto.type = PRIVATE_TYPE;
@@ -948,15 +904,14 @@ ConversationDto _convertMsgToConversation(Message msg) {
         dto.avatarUri = msg.content.sendUserInfo.portraitUri;
         dto.name = msg.content.sendUserInfo.name;
         //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
-        dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
-      } else {
-      }
+        dto.senderUid = msg.content.sendUserInfo.userId == null ? null : int.parse(msg.content.sendUserInfo.userId);
+      } else {}
       break;
     case RCConversationType.Group:
       dto.type = GROUP_TYPE;
       if (msg.content?.sendUserInfo != null) {
         //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
-        dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
+        dto.senderUid = msg.content.sendUserInfo.userId == null ? null : int.parse(msg.content.sendUserInfo.userId);
       }
       break;
     case RCConversationType.System:
@@ -975,7 +930,7 @@ ConversationDto _convertMsgToConversation(Message msg) {
       }
       break;
     default:
-    //其他情况暂时不处理
+      //其他情况暂时不处理
       return null;
   }
   //需要额外获取的信息
@@ -989,15 +944,8 @@ ConversationDto _convertMsgToConversation(Message msg) {
 }
 
 //判断去拿一个更多界面
-void judgeJumpPage(
-    int chatTypeId,
-    String chatUserId,
-    int chatType,
-    BuildContext context,
-    String name,
-    listener,
-    exitGroupListener,
-    Message message) {
+void judgeJumpPage(int chatTypeId, String chatUserId, int chatType, BuildContext context, String name, listener,
+    exitGroupListener, Message message) {
   if (chatTypeId == RCConversationType.Group) {
     jumpPage(
         GroupMorePage(
@@ -1013,24 +961,24 @@ void judgeJumpPage(
   } else {
     jumpPage(
         PrivateMorePage(
-          chatUserId: chatUserId,
-          chatType: chatType,
-          name: name,
-          listener: listener,
-          dto: _convertMsgToConversation(message)),
+            chatUserId: chatUserId,
+            chatType: chatType,
+            name: name,
+            listener: listener,
+            dto: _convertMsgToConversation(message)),
         false,
         AppRouter.pathPrivateMorePage,
         context);
   }
 }
 
-void jumpPage(var page, bool isCloseNewPage, String name,BuildContext context) {
+void jumpPage(var page, bool isCloseNewPage, String name, BuildContext context) {
   if (isCloseNewPage) {
     //跳转并关闭当前页面
     Navigator.pushAndRemoveUntil(
       context,
       new MaterialPageRoute(builder: (context) => page),
-          (route) => route == null,
+      (route) => route == null,
     );
   } else {
     //跳转不关闭当前页面
@@ -1044,6 +992,3 @@ void jumpPage(var page, bool isCloseNewPage, String name,BuildContext context) {
     );
   }
 }
-
-
-

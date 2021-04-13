@@ -54,7 +54,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((call) {
       try {
-        if (context != null&&context.size!=null) {
+        if (context != null && context.size != null) {
           width = context.size.width;
           height = context.size.height;
           button = context.findRenderObject();
@@ -78,18 +78,18 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
         child: widget.child,
         onTap: () {
           if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
-            if(button==null){
+            if (button == null) {
               print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
-            }else{
+            } else {
               onTap();
             }
           }
         },
         onLongPress: () {
           if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
-            if(button==null){
+            if (button == null) {
               print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
-            }else{
+            } else {
               onTap();
             }
           }
@@ -100,24 +100,11 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
 
   void onTap() {
     Widget menuWidget = _MenuPopWidget(
-      context,
-      height,
-      width,
-      widget.actions,
-      widget.pageMaxChildCount,
-      widget.backgroundColor,
-      button,
-      overlay,
-      (index) {
-        if (index != -1) widget.onValueChanged(index);
-        removeOverlay();
-      },
-      widget.contentWidth,
-      widget.contentType,
-      widget.isMySelf,
-      widget.leftAndRightWidth,
-      widget.contentHeight
-    );
+        context, height, width, widget.actions, widget.pageMaxChildCount, widget.backgroundColor, button, overlay,
+        (index) {
+      if (index != -1) widget.onValueChanged(index);
+      removeOverlay();
+    }, widget.contentWidth, widget.contentType, widget.isMySelf, widget.leftAndRightWidth, widget.contentHeight);
 
     entry = OverlayEntry(builder: (context) {
       return menuWidget;
@@ -189,7 +176,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
   @override
   void initState() {
     super.initState();
-    try{
+    try {
       position = RelativeRect.fromRect(
         Rect.fromPoints(
           widget.button.localToGlobal(Offset.zero, ancestor: widget.overlay),
@@ -197,25 +184,22 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
         ),
         Offset.zero & widget.overlay.size,
       );
-    }catch(e){}
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if(position==null){
+    if (position == null) {
       print("位置信息为空！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
       return Container();
     }
 
-
     menuWidth = 57.0 * widget.actions?.length;
 
     // 这里计算出来 当前页的 child 一共有多少个
-    int _curPageChildCount =
-        (_curPage + 1) * widget._pageMaxChildCount > widget.actions.length
-            ? widget.actions.length % widget._pageMaxChildCount
-            : widget._pageMaxChildCount;
+    int _curPageChildCount = (_curPage + 1) * widget._pageMaxChildCount > widget.actions.length
+        ? widget.actions.length % widget._pageMaxChildCount
+        : widget._pageMaxChildCount;
 
     double _curArrowWidth = 0;
     int _curArrowCount = 0; // 一共几个箭头
@@ -232,7 +216,6 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
         _curArrowCount = 2;
       }
     }
-
 
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -257,21 +240,24 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                 removeRight: true,
                 child: Builder(
                   builder: (BuildContext context) {
-                    var isInverted1 = position==null?false:position.top-ScreenUtil.instance.statusBarHeight-44< 80;
+                    var isInverted1 =
+                        position == null ? false : position.top - ScreenUtil.instance.statusBarHeight - 44 < 80;
 
                     return CustomSingleChildLayout(
                       // 这里计算偏移量
                       delegate: _PopupMenuRouteLayout(
-                          position,
-                          menuHeight + 13, //这里是间距的高度
-                          Directionality.of(widget.btnContext),
-                          widget._width,
-                          menuWidth,
-                          widget._height,
-                          widget.contentHeight,
-                          widget.contentWidth,
-                          isInverted1,
-                          widget.isMySelf,),
+                        position,
+                        menuHeight + 13,
+                        //这里是间距的高度
+                        Directionality.of(widget.btnContext),
+                        widget._width,
+                        menuWidth,
+                        widget._height,
+                        widget.contentHeight,
+                        widget.contentWidth,
+                        isInverted1,
+                        widget.isMySelf,
+                      ),
                       child: Container(
                         alignment: widget.isMySelf ? Alignment.topRight : Alignment.topLeft,
                         height: menuHeight + _triangleHeight,
@@ -291,18 +277,13 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                             child: UnconstrainedBox(
                                               child: Container(
                                                 child: CustomPaint(
-                                                  size: Size(menuWidth,
-                                                      _triangleHeight),
+                                                  size: Size(menuWidth, _triangleHeight),
                                                   painter: TrianglePainter(
-                                                    color:
-                                                    widget.backgroundColor,
+                                                    color: widget.backgroundColor,
                                                     position: position,
                                                     isInverted: true,
                                                     size: widget.button.size,
-                                                    screenWidth:
-                                                        MediaQuery.of(context)
-                                                            .size
-                                                            .width,
+                                                    screenWidth: MediaQuery.of(context).size.width,
                                                   ),
                                                 ),
                                               ),
@@ -314,8 +295,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                       child: Stack(
                                         children: <Widget>[
                                           ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5)),
+                                            borderRadius: BorderRadius.all(Radius.circular(5)),
                                             child: Container(
                                               color: widget.backgroundColor,
                                               height: menuHeight,
@@ -356,11 +336,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                                     ),
 
                                               // 中间是ListView
-                                              _buildList(
-                                                  _curPageChildCount,
-                                                  menuWidth,
-                                                  _curArrowWidth,
-                                                  _curArrowCount),
+                                              _buildList(_curPageChildCount, menuWidth, _curArrowWidth, _curArrowCount),
 
                                               // 右箭头：判断是否有箭头，如果有就显示，没有就不显示
                                               _curArrowCount > 0
@@ -375,11 +351,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                               _curArrowCount > 0
                                                   ? InkWell(
                                                       onTap: () {
-                                                        if ((_curPage + 1) *
-                                                                widget
-                                                                    ._pageMaxChildCount <
-                                                            widget
-                                                                .actions.length)
+                                                        if ((_curPage + 1) * widget._pageMaxChildCount <
+                                                            widget.actions.length)
                                                           setState(() {
                                                             _curPage++;
                                                           });
@@ -388,11 +361,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                                         width: _arrowWidth,
                                                         height: menuHeight,
                                                         child: Image.asset(
-                                                          (_curPage + 1) *
-                                                                      widget
-                                                                          ._pageMaxChildCount >=
-                                                                  widget.actions
-                                                                      .length
+                                                          (_curPage + 1) * widget._pageMaxChildCount >=
+                                                                  widget.actions.length
                                                               ? 'images/right_gray.png'
                                                               : 'images/right_white.png',
                                                           fit: BoxFit.none,
@@ -414,26 +384,20 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                     isInverted1
                                         ? Container()
                                         : Container(
-                                        child: UnconstrainedBox(
-                                          child: Container(
-                                            width: menuWidth,
-                                            child: CustomPaint(
-                                              size: Size(menuWidth,
-                                                  _triangleHeight),
-                                              painter: TrianglePainter(
-                                                color:
-                                                widget.backgroundColor,
-                                                position: position,
-                                                size: widget.button.size,
-                                                screenWidth:
-                                                MediaQuery
-                                                        .of(context)
-                                                        .size
-                                                        .width,
-                                                  ),
+                                            child: UnconstrainedBox(
+                                            child: Container(
+                                              width: menuWidth,
+                                              child: CustomPaint(
+                                                size: Size(menuWidth, _triangleHeight),
+                                                painter: TrianglePainter(
+                                                  color: widget.backgroundColor,
+                                                  position: position,
+                                                  size: widget.button.size,
+                                                  screenWidth: MediaQuery.of(context).size.width,
                                                 ),
                                               ),
-                                            ))
+                                            ),
+                                          ))
                                   ],
                                 ),
                               ),
@@ -450,8 +414,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
         ));
   }
 
-  Widget _buildList(int _curPageChildCount, double _curPageWidth,
-      double _curArrowWidth, int _curArrowCount) {
+  Widget _buildList(int _curPageChildCount, double _curPageWidth, double _curArrowWidth, int _curArrowCount) {
     return ListView.separated(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -464,10 +427,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
           },
           onTapDown: (v) {},
           child: SizedBox(
-            width: (_curPageWidth -
-                    _curArrowWidth -
-                    (_curPageChildCount - 1 + _curArrowCount) *
-                        _separatorWidth) /
+            width: (_curPageWidth - _curArrowWidth - (_curPageChildCount - 1 + _curArrowCount) * _separatorWidth) /
                 _curPageChildCount,
             height: menuHeight,
             child: Center(
@@ -491,9 +451,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
 
 // Positioning of the menu on the screen.
 class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
-  _PopupMenuRouteLayout(this.position, this.selectedItemOffset,
-      this.textDirection, this.width, this.menuWidth, this.height
-      ,this.contentHeight,this.contentWidth,this.isInverted,this.isMySelf);
+  _PopupMenuRouteLayout(this.position, this.selectedItemOffset, this.textDirection, this.width, this.menuWidth,
+      this.height, this.contentHeight, this.contentWidth, this.isInverted, this.isMySelf);
 
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
@@ -522,8 +481,8 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
     // The menu can be at most the size of the overlay minus 8.0 pixels in each
     // direction.
-    return BoxConstraints.loose(constraints.biggest -
-        const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0));
+    return BoxConstraints.loose(
+        constraints.biggest - const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0));
   }
 
   @override
@@ -533,8 +492,6 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // getConstraintsForChild.
 
     // Find the ideal vertical position.
-
-
 
     // print("contentHeight:${contentHeight}");
     // print("contentWidth:${contentWidth}");
@@ -550,30 +507,26 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // print("isInverted:$isInverted");
     // print("menuWidth:$menuWidth");
 
+    double y = 0;
+    double x = 0;
 
+    y = position.top;
 
-    double y=0;
-    double x=0;
-
-
-    y=position.top;
-
-    double length=0.0;
-    if(contentWidth>menuWidth){
-      length=(contentWidth-menuWidth)/2;
+    double length = 0.0;
+    if (contentWidth > menuWidth) {
+      length = (contentWidth - menuWidth) / 2;
     }
 
-    if(isMySelf) {
-      x = -48.0-length+2;
-    }else{
-      x= 48.0+16.0+length;
+    if (isMySelf) {
+      x = -48.0 - length + 2;
+    } else {
+      x = 48.0 + 16.0 + length;
     }
 
-
-    if(isInverted){
-      y+=contentHeight+11;
-    }else{
-      y-=selectedItemOffset;
+    if (isInverted) {
+      y += contentHeight + 11;
+    } else {
+      y -= selectedItemOffset;
     }
 
     // print("x:$x");

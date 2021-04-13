@@ -20,7 +20,7 @@ class FeedFlowPage extends StatefulWidget {
   final double initScrollHeight;
   final String pageName;
 
-  FeedFlowPage({this.pageName,this.onCallback, this.pullFeedType, this.pullFeedTargetId, this.initScrollHeight=0.0});
+  FeedFlowPage({this.pageName, this.onCallback, this.pullFeedType, this.pullFeedTargetId, this.initScrollHeight = 0.0});
 
   @override
   _FeedFlowPageState createState() => _FeedFlowPageState();
@@ -69,7 +69,6 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     );
   }
 
-
   Widget getSmartRefresher() {
     return SmartRefresher(
       enablePullDown: true,
@@ -89,15 +88,18 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
       physics: BouncingScrollPhysics(),
       childrenDelegate: FirstEndItemChildrenDelegate(
         (BuildContext context, int index) {
-          if(index==context.watch<FeedFlowDataNotifier>().homeFeedModelList.length){
-            return Container(color: Colors.transparent, height: 20,);
+          if (index == context.watch<FeedFlowDataNotifier>().homeFeedModelList.length) {
+            return Container(
+              color: Colors.transparent,
+              height: 20,
+            );
           }
           bool isHero = index == context.watch<FeedFlowDataNotifier>().pageSelectPosition;
 
           return autoScrollTag(index, context.watch<FeedFlowDataNotifier>().homeFeedModelList[index], isHero);
         },
         firstEndCallback: firstEndCallbackListView,
-        childCount: context.watch<FeedFlowDataNotifier>().homeFeedModelList.length+1,
+        childCount: context.watch<FeedFlowDataNotifier>().homeFeedModelList.length + 1,
       ),
       dragStartBehavior: DragStartBehavior.down,
     );
@@ -155,16 +157,16 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   }
 
   void _onRefresh() async {
-    _onLoading(isRefresh:true);
+    _onLoading(isRefresh: true);
   }
 
-  void _onLoading({bool isRefresh=false}) async {
+  void _onLoading({bool isRefresh = false}) async {
     int pageSize = context.read<FeedFlowDataNotifier>().pageSize;
     int lastTime = context.read<FeedFlowDataNotifier>().pageLastTime;
 
-    if(isRefresh){
-      pageSize=0;
-      lastTime=null;
+    if (isRefresh) {
+      pageSize = 0;
+      lastTime = null;
     }
 
     if (pageSize > 0 && lastTime == null) {
@@ -174,7 +176,7 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     }
     DataResponseModel model =
         await getPullList(type: widget.pullFeedType, size: 20, targetId: widget.pullFeedTargetId, lastTime: lastTime);
-    if(isRefresh){
+    if (isRefresh) {
       context.read<FeedFlowDataNotifier>().clear();
     }
     if (model != null && model.list != null && model.list.length > 0) {

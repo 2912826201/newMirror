@@ -10,7 +10,6 @@ import 'commom_button.dart';
 //发送和图片按钮--消息界面底部
 
 class ChatMoreIcon extends StatefulWidget {
-
   final bool isMore;
   final bool isComMomButton;
   final VoidCallback onTap;
@@ -30,31 +29,27 @@ class ChatMoreIcon extends StatefulWidget {
 }
 
 class _ChatMoreIconState extends State<ChatMoreIcon> {
-
   bool isComMomButton;
-
 
   _ChatMoreIconState(this.isComMomButton);
 
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().registerNoParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
-  _resetMoreBtn(){
-    isComMomButton=StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0;
-    if(mounted){
-      setState(() {
-
-      });
+  _resetMoreBtn() {
+    isComMomButton = StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0;
+    if (mounted) {
+      setState(() {});
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE,registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   @override
@@ -66,7 +61,7 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
           height: 32,
           style: TextStyle(color: Colors.white),
           width: 50.0,
-          margin: EdgeInsets.only(left:6,right: 16),
+          margin: EdgeInsets.only(left: 6, right: 16),
           radius: 4.0,
           onTap: () {
             if (widget.onTap != null) {
@@ -79,7 +74,7 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
       return Container(
         margin: EdgeInsets.only(right: 10),
         child: AppIconButton(
-          onTap: (){
+          onTap: () {
             if (widget.moreTap != null) {
               widget.moreTap();
             }
@@ -93,4 +88,3 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
     }
   }
 }
-

@@ -1,5 +1,3 @@
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +11,9 @@ class FeedFlowItem extends StatefulWidget {
   final int itemIndex;
   final HomeFeedModel model;
 
-
   FeedFlowItem({
-    this.isHero=false,
-    this.itemIndex=-1,
+    this.isHero = false,
+    this.itemIndex = -1,
     this.model,
   });
 
@@ -27,11 +24,12 @@ class FeedFlowItem extends StatefulWidget {
 class _FeedFlowItemState extends State<FeedFlowItem> {
   @override
   Widget build(BuildContext context) {
-    return widget.isHero?
-    Hero(
-      tag:"TwoColumnFeedPage" + "${widget.model.id}${widget.itemIndex}",
-      child: getItem(),
-    ):getItem();
+    return widget.isHero
+        ? Hero(
+            tag: "TwoColumnFeedPage" + "${widget.model.id}${widget.itemIndex}",
+            child: getItem(),
+          )
+        : getItem();
   }
 
   // 宽高比
@@ -43,20 +41,19 @@ class _FeedFlowItemState extends State<FeedFlowItem> {
     }
   }
 
-  Widget getItem(){
+  Widget getItem() {
     return Container(
         width: ScreenUtil.instance.width,
-        height:setAspectRatio(widget.model.picUrls[0].height.toDouble()) ,
+        height: setAspectRatio(widget.model.picUrls[0].height.toDouble()),
         child: CachedNetworkImage(
           fit: BoxFit.cover,
           placeholder: (context, url) => new Container(
               child: new Center(
-                child: new CircularProgressIndicator(),
-              )),
-          imageUrl:  widget.model.picUrls[0].url != null ?  widget.model.picUrls[0].url : "",
+            child: new CircularProgressIndicator(),
+          )),
+          imageUrl: widget.model.picUrls[0].url != null ? widget.model.picUrls[0].url : "",
           errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-        )
-    );
+        ));
     //   Container(
     //   color: getColor(widget.itemIndex),
     //   height: 300,
@@ -66,15 +63,14 @@ class _FeedFlowItemState extends State<FeedFlowItem> {
     // );
   }
 
-
   Color getColor(int index) {
-    if (index % 5 ==1) {
+    if (index % 5 == 1) {
       return Colors.red;
-    } else if (index % 5 ==2) {
+    } else if (index % 5 == 2) {
       return Colors.lightGreen;
-    } else if (index % 5 ==3) {
+    } else if (index % 5 == 3) {
       return Colors.amberAccent;
-    } else if (index % 5 ==4) {
+    } else if (index % 5 == 4) {
       return Colors.tealAccent;
     } else {
       return Colors.deepPurpleAccent;

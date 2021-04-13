@@ -183,14 +183,14 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
           videos.first.url,
           sizeInfo,
           ScreenUtil.instance.width,
-          durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
+          durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
           isInListView: true,
         ),
       ):FeedVideoPlayer(
         videos.first.url,
         sizeInfo,
         ScreenUtil.instance.width,
-        durationString: DateUtil.formatSecondToStringNum2(videos.first.duration),
+        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
         isInListView: true,
       );
     }

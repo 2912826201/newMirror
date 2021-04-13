@@ -36,29 +36,31 @@ class TrianglePainter extends CustomPainter {
       if (position.left + this.size.width / 2 > position.right) {
         if (screenWidth - (position.left + this.size.width) > size.width / 2 + _kMenuScreenPadding) {
           path.moveTo(size.width / 2, isInverted ? 0 : size.height);
-          path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height+1 : -1);
-          path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height+1 : -1);
+          path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height + 1 : -1);
+          path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height + 1 : -1);
         } else {
           path.moveTo(size.width - this.size.width + this.size.width / 2, isInverted ? 0 : size.height);
-          path.lineTo(size.width - this.size.width + this.size.width / 2 - radius / 2, isInverted ? size.height+1 : -1);
-          path.lineTo(size.width - this.size.width + this.size.width / 2 + radius / 2, isInverted ? size.height+1 : -1);
+          path.lineTo(
+              size.width - this.size.width + this.size.width / 2 - radius / 2, isInverted ? size.height + 1 : -1);
+          path.lineTo(
+              size.width - this.size.width + this.size.width / 2 + radius / 2, isInverted ? size.height + 1 : -1);
         }
       } else {
         // 靠左
         if (position.left > size.width / 2 + _kMenuScreenPadding) {
           path.moveTo(size.width / 2, isInverted ? 0 : size.height);
-          path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height+1 : -1);
-          path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height+1 :-1);
+          path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height + 1 : -1);
+          path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height + 1 : -1);
         } else {
           path.moveTo(this.size.width / 2, isInverted ? 0 : size.height);
-          path.lineTo(this.size.width / 2 - radius / 2, isInverted ? size.height+1 : -1);
-          path.lineTo(this.size.width / 2 + radius / 2, isInverted ? size.height+1 : -1);
+          path.lineTo(this.size.width / 2 - radius / 2, isInverted ? size.height + 1 : -1);
+          path.lineTo(this.size.width / 2 + radius / 2, isInverted ? size.height + 1 : -1);
         }
       }
     } else {
       path.moveTo(size.width / 2, isInverted ? 0 : size.height);
-      path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height+1 : -1);
-      path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height+1 : -1);
+      path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height + 1 : -1);
+      path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height + 1 : -1);
     }
 
     path.close();

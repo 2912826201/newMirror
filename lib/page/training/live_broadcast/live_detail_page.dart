@@ -43,15 +43,16 @@ import 'live_room_video_operation_page.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage({
-    Key key,
-    @required this.liveCourseId,
-    this.heroTag,
-    this.commentDtoModel,
-    this.fatherComment,
-    this.liveModel,
-    this.isHaveStartTime,
-    this.isInteractive}) : super(key: key);
+  const LiveDetailPage(
+      {Key key,
+      @required this.liveCourseId,
+      this.heroTag,
+      this.commentDtoModel,
+      this.fatherComment,
+      this.liveModel,
+      this.isHaveStartTime,
+      this.isInteractive})
+      : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
@@ -60,18 +61,30 @@ class LiveDetailPage extends StatefulWidget {
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
   final bool isInteractive;
+
   @override
   createState() {
-    return LiveDetailPageState(liveModel: liveModel,heroTag:heroTag,
-        liveCourseId:liveCourseId,commentDtoModel:commentDtoModel,
-        fatherComment:fatherComment,isHaveStartTime: isHaveStartTime,isInteractive:isInteractive);
+    return LiveDetailPageState(
+        liveModel: liveModel,
+        heroTag: heroTag,
+        liveCourseId: liveCourseId,
+        commentDtoModel: commentDtoModel,
+        fatherComment: fatherComment,
+        isHaveStartTime: isHaveStartTime,
+        isInteractive: isInteractive);
   }
 }
 
 class LiveDetailPageState extends XCState {
-  LiveDetailPageState({Key key, this.liveModel,this.heroTag,
-    this.liveCourseId,this.isHaveStartTime,this.commentDtoModel,this.fatherComment,this.isInteractive});
-
+  LiveDetailPageState(
+      {Key key,
+      this.liveModel,
+      this.heroTag,
+      this.liveCourseId,
+      this.isHaveStartTime,
+      this.commentDtoModel,
+      this.fatherComment,
+      this.isInteractive});
 
   String heroTag;
   int liveCourseId;
@@ -87,10 +100,8 @@ class LiveDetailPageState extends XCState {
   LoadingStatus loadingStatus;
   LoadingStatus recommendLoadingStatus;
 
-
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-
 
   //是否可以回弹
   bool isBouncingScrollPhysics = false;
@@ -103,10 +114,12 @@ class LiveDetailPageState extends XCState {
 
   //控制评论布局的滑动
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
+
   //评论子布局用来获取这个界面的高度
-  List<GlobalKey> globalKeyList=<GlobalKey>[];
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
+
   //是否全部展示动作的item
-  bool isShowAllItemAction=false;
+  bool isShowAllItemAction = false;
 
   //判断用户登陆没有
   bool isLoggedIn;
@@ -117,20 +130,20 @@ class LiveDetailPageState extends XCState {
   @override
   void initState() {
     super.initState();
-    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
-    bindingTerminal=context.read<MachineNotifier>().machine!=null;
+    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    bindingTerminal = context.read<MachineNotifier>().machine != null;
 
-    if(liveModel==null) {
+    if (liveModel == null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
-    }else{
+    } else {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       //如果已登录且有关联的机器 发送指令让机器跳转页面
-      if(isLoggedIn && Application.machine != null){
-        openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+      if (isLoggedIn && Application.machine != null) {
+        openLiveCourseDetailPage(Application.machine.machineId, liveCourseId, liveModel.startTime);
       }
     }
-    recommendLoadingStatus=LoadingStatus.STATUS_LOADING;
-    getDataAction(openLiveCourse: liveModel==null);
+    recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
+    getDataAction(openLiveCourse: liveModel == null);
   }
 
   @override
@@ -149,32 +162,32 @@ class LiveDetailPageState extends XCState {
       return _buildSuggestionsComplete();
     } else {
       widgetArray.add(SizedBox(height: 40));
-      widgetArray.add(getNoCompleteTitle(context,"直播课程详情页"));
+      widgetArray.add(getNoCompleteTitle(context, "直播课程详情页"));
       //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )));
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )));
       } else {
         //加载失败
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: GestureDetector(
-                  child: Text("加载失败"),
-                  onTap: () {
-                    loadingStatus = LoadingStatus.STATUS_LOADING;
-                    if(mounted){
-                      reload(() {});
-                    }
-                    getDataAction();
-                  },
-                ),
-              ),
-            )));
+          child: Center(
+            child: GestureDetector(
+              child: Text("加载失败"),
+              onTap: () {
+                loadingStatus = LoadingStatus.STATUS_LOADING;
+                if (mounted) {
+                  reload(() {});
+                }
+                getDataAction();
+              },
+            ),
+          ),
+        )));
       }
       return Container(
         child: Column(children: widgetArray),
@@ -194,18 +207,18 @@ class LiveDetailPageState extends XCState {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
+              height: MediaQuery.of(context).size.height - 50 - ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: _onDragNotification,
-                  child:getSmartRefresher(),
+                  child: getSmartRefresher(),
                 ),
               ),
             ),
             Container(
               width: double.infinity,
-              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              height: 50.0 + ScreenUtil.instance.bottomBarHeight,
               padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
@@ -229,13 +242,13 @@ class LiveDetailPageState extends XCState {
   }
 
   //获取上拉下拉加载
-  Widget getSmartRefresher(){
+  Widget getSmartRefresher() {
     globalKeyList.clear();
-    GlobalKey globalKey0=new GlobalKey();
-    GlobalKey globalKey1=new GlobalKey();
-    GlobalKey globalKey2=new GlobalKey();
-    GlobalKey globalKey3=new GlobalKey();
-    GlobalKey globalKey4=new GlobalKey();
+    GlobalKey globalKey0 = new GlobalKey();
+    GlobalKey globalKey1 = new GlobalKey();
+    GlobalKey globalKey2 = new GlobalKey();
+    GlobalKey globalKey3 = new GlobalKey();
+    GlobalKey globalKey4 = new GlobalKey();
     globalKeyList.add(globalKey0);
     globalKeyList.add(globalKey1);
     globalKeyList.add(globalKey2);
@@ -244,17 +257,17 @@ class LiveDetailPageState extends XCState {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
-      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false,isShowAddMore: false),
+      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false, isShowAddMore: false),
       controller: _refreshController,
-      onLoading: (){
-        if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
+      onLoading: () {
+        if (childKey == null || childKey.currentState == null || childKey.currentState.onLoading == null) {
           return;
         }
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
         controller: scrollController,
-        physics: isBouncingScrollPhysics?BouncingScrollPhysics():ClampingScrollPhysics(),
+        physics: isBouncingScrollPhysics ? BouncingScrollPhysics() : ClampingScrollPhysics(),
         slivers: <Widget>[
           // header,
           SliverPersistentHeader(
@@ -272,38 +285,40 @@ class LiveDetailPageState extends XCState {
               globalKey: globalKeyList[0],
             ),
           ),
-          getTitleWidget(liveModel,context,globalKeyList[1]),
-          getCoachItem(liveModel,context,onClickAttention,onClickCoach,globalKeyList[2]),
+          getTitleWidget(liveModel, context, globalKeyList[1]),
+          getCoachItem(liveModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
           getLineView(),
-          getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18,globalKeyList[3]),
-          getActionUiLive(liveModel,context,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
+          getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18, globalKeyList[3]),
+          getActionUiLive(liveModel, context, globalKeyList[4], isShowAllItemAction, onClickShowAllAction),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
-            child: SizedBox(height: 15,),
+            child: SizedBox(
+              height: 15,
+            ),
           )
         ],
       ),
     );
   }
 
-  Widget _getCourseCommentUi(){
+  Widget _getCourseCommentUi() {
     return SliverToBoxAdapter(
       child: Visibility(
-        visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
+        visible: recommendLoadingStatus == LoadingStatus.STATUS_COMPLETED,
         child: CommonCommentPage(
-          key:childKey,
+          key: childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
-          fatherComment:fatherComment,
-          targetId:liveModel.id,
-          targetType:1,
-          isInteractiveIn:isInteractive,
-          pageCommentSize:20,
-          pageSubCommentSize:3,
-          isShowHotOrTime:true,
-          commentDtoModel:commentDtoModel,
-          isShowAt:false,
+          fatherComment: fatherComment,
+          targetId: liveModel.id,
+          targetType: 1,
+          isInteractiveIn: isInteractive,
+          pageCommentSize: 20,
+          pageSubCommentSize: 3,
+          isShowHotOrTime: true,
+          commentDtoModel: commentDtoModel,
+          isShowAt: false,
           globalKeyList: globalKeyList,
         ),
       ),
@@ -312,9 +327,8 @@ class LiveDetailPageState extends XCState {
 
   //获取底部按钮
   Widget _getBottomBar() {
-
     //todo 判断用户是不是vip缺少开通vip的回调
-    bool isVip = Application.profile.isVip==1;
+    bool isVip = Application.profile.isVip == 1;
 
     print("isVip:$isVip");
 
@@ -326,7 +340,6 @@ class LiveDetailPageState extends XCState {
     var marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);
     var marginRight32 = const EdgeInsets.only(right: 32);
     var marginRight16 = const EdgeInsets.only(right: 16);
-
 
     Widget widget3 = Container(
       width: 60,
@@ -352,14 +365,18 @@ class LiveDetailPageState extends XCState {
 
     var childrenArray = <Widget>[];
 
-
-    if(liveModel.endState!=null&&liveModel.endState==0||(liveModel.getGetPlayType()=="已结束")){
+    if (liveModel.endState != null && liveModel.endState == 0 || (liveModel.getGetPlayType() == "已结束")) {
       //已结束
-      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget7, onTap: (){
-        print("liveModel.endState:${liveModel.endState},${liveModel.getGetPlayType()},${liveModel.liveCourseState}");
-        ToastShow.show(msg: "直播已结束", context: context);
-      }))));
-    }else {
+      childrenArray.add(Expanded(
+          child: SizedBox(
+              child: GestureDetector(
+                  child: widget7,
+                  onTap: () {
+                    print(
+                        "liveModel.endState:${liveModel.endState},${liveModel.getGetPlayType()},${liveModel.liveCourseState}");
+                    ToastShow.show(msg: "直播已结束", context: context);
+                  }))));
+    } else {
       if (!isLoggedIn) {
         //没有登录
         childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap: _login))));
@@ -369,8 +386,11 @@ class LiveDetailPageState extends XCState {
         //判断是不是需要预约或者是已预约的课程
         if (liveModel.playType == 2 || liveModel.playType == 4) {
           //判断是不是需要预约
-          childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap:
-              () => _judgeBookOrCancelBook(bindingTerminal: bindingTerminal, isVip: isVip)))));
+          childrenArray.add(Expanded(
+              child: SizedBox(
+                  child: GestureDetector(
+                      child: widget6,
+                      onTap: () => _judgeBookOrCancelBook(bindingTerminal: bindingTerminal, isVip: isVip)))));
         } else {
           if (liveModel.playType == 3) {
             //回放
@@ -391,8 +411,8 @@ class LiveDetailPageState extends XCState {
             } else if (liveModel.priceType == 1) {
               if (isVip) {
                 //不再需要开通vip
-                childrenArray.add(
-                    Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+                childrenArray
+                    .add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
               } else {
                 //需要开通vip
                 childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
@@ -410,10 +430,7 @@ class LiveDetailPageState extends XCState {
     }
 
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       height: 50,
       child: Row(
         children: childrenArray,
@@ -421,16 +438,15 @@ class LiveDetailPageState extends XCState {
     );
   }
 
-
   Widget getBtnUi(bool isVip, String text, var textStyle, double width1, double height1, var marginData) {
     var colors = <Color>[];
     if (isVip) {
       colors.add(AppColor.bgVip1);
       colors.add(AppColor.bgVip2);
-    } else if(text=="已结束"){
+    } else if (text == "已结束") {
       colors.add(AppColor.bgWhite);
       colors.add(AppColor.bgWhite);
-    }else{
+    } else {
       colors.add(AppColor.textPrimary1);
       colors.add(AppColor.textPrimary1);
     }
@@ -447,12 +463,13 @@ class LiveDetailPageState extends XCState {
         ),
       ),
       child: Center(
-        child: Text(text == "去上课" ? "试听" : text, style: textStyle,),
+        child: Text(
+          text == "去上课" ? "试听" : text,
+          style: textStyle,
+        ),
       ),
     );
   }
-
-
 
   //这个直播是否有预约的回调
   Widget judgeResetPage() {
@@ -464,10 +481,14 @@ class LiveDetailPageState extends XCState {
           context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
           if (message != null) {
             Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-            if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
-                mapGroupModel["startTime"]!=null&&mapGroupModel["startTime"] is String
-                &&mapGroupModel["courseId"] is int&&mapGroupModel["handleType"] is int){
-              updateBookState(mapGroupModel["courseId"],mapGroupModel["handleType"],mapGroupModel["startTime"]);
+            if (mapGroupModel != null &&
+                mapGroupModel["courseId"] != null &&
+                mapGroupModel["handleType"] != null &&
+                mapGroupModel["startTime"] != null &&
+                mapGroupModel["startTime"] is String &&
+                mapGroupModel["courseId"] is int &&
+                mapGroupModel["handleType"] is int) {
+              updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
             }
           }
         }
@@ -476,14 +497,13 @@ class LiveDetailPageState extends XCState {
     );
   }
 
-
   //当用户登陆成功后需要刷新数据
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.isLoggedIn){
-          if(!isLoggedIn){
-            isLoggedIn=true;
+        if (notifier.isLoggedIn) {
+          if (!isLoggedIn) {
+            isLoggedIn = true;
             Future.delayed(Duration(milliseconds: 100), () {
               if (mounted) {
                 reload(() {});
@@ -492,13 +512,13 @@ class LiveDetailPageState extends XCState {
             getDataAction();
 
             //如果已登录且有关联的机器 发送指令让机器跳转页面
-            if(Application.machine != null){
-              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            if (Application.machine != null) {
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId, liveModel.startTime);
             }
           }
-        }else{
-          if(isLoggedIn){
-            isLoggedIn=false;
+        } else {
+          if (isLoggedIn) {
+            isLoggedIn = false;
             Future.delayed(Duration(milliseconds: 100), () {
               if (mounted) {
                 reload(() {});
@@ -507,8 +527,8 @@ class LiveDetailPageState extends XCState {
             getDataAction();
 
             //如果已登录且有关联的机器 发送指令让机器跳转页面
-            if(Application.machine != null){
-              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+            if (Application.machine != null) {
+              openLiveCourseDetailPage(Application.machine.machineId, liveCourseId, liveModel.startTime);
             }
           }
         }
@@ -517,13 +537,14 @@ class LiveDetailPageState extends XCState {
       child: Container(),
     );
   }
+
   //当用户绑定设备后
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.machine != null){
-          if(!bindingTerminal){
-            bindingTerminal=true;
+        if (notifier.machine != null) {
+          if (!bindingTerminal) {
+            bindingTerminal = true;
             print("bindingTerminal1:$bindingTerminal");
             Future.delayed(Duration(milliseconds: 300), () {
               if (mounted) {
@@ -531,9 +552,9 @@ class LiveDetailPageState extends XCState {
               }
             });
           }
-        }else{
-          if(bindingTerminal){
-            bindingTerminal=false;
+        } else {
+          if (bindingTerminal) {
+            bindingTerminal = false;
             print("bindingTerminal2:$bindingTerminal");
             Future.delayed(Duration(milliseconds: 300), () {
               if (mounted) {
@@ -549,50 +570,51 @@ class LiveDetailPageState extends XCState {
   }
 
   //修改直播课程预约的状态
-  void updateBookState(int courseId,int bookState,String startTime){
-    if(liveModel==null||liveModel.id==null){
+  void updateBookState(int courseId, int bookState, String startTime) {
+    if (liveModel == null || liveModel.id == null) {
       return;
     }
-    if(liveModel.id==courseId){
-      if(liveModel.playType==4&&bookState==0){
-        liveModel.playType=2;
-        liveModel.isBooked=0;
-        deleteAlertEvents(courseId,startTime);
-        Future.delayed(Duration(milliseconds: 50),(){
-          if(mounted){reload(() {
-          });}
+    if (liveModel.id == courseId) {
+      if (liveModel.playType == 4 && bookState == 0) {
+        liveModel.playType = 2;
+        liveModel.isBooked = 0;
+        deleteAlertEvents(courseId, startTime);
+        Future.delayed(Duration(milliseconds: 50), () {
+          if (mounted) {
+            reload(() {});
+          }
         });
-      }else if(liveModel.playType==2&&bookState==1){
-        liveModel.playType=4;
-        liveModel.isBooked=1;
-        Future.delayed(Duration(milliseconds: 50),(){
-          if(mounted){reload(() {
-          });}
+      } else if (liveModel.playType == 2 && bookState == 1) {
+        liveModel.playType = 4;
+        liveModel.isBooked = 1;
+        Future.delayed(Duration(milliseconds: 50), () {
+          if (mounted) {
+            reload(() {});
+          }
         });
       }
       return;
     }
   }
 
-
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
-    if(childKey==null||childKey.currentState==null||childKey.currentState.scrollHeightOld==null){
+    if (childKey == null || childKey.currentState == null || childKey.currentState.scrollHeightOld == null) {
       return false;
     }
-    childKey.currentState.scrollHeightOld=metrics.pixels;
+    childKey.currentState.scrollHeightOld = metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       }
@@ -601,8 +623,8 @@ class LiveDetailPageState extends XCState {
   }
 
   //分享的点击事件
-  void _shareBtnClick()async {
-    if(await isOffline()){
+  void _shareBtnClick() async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
@@ -610,38 +632,37 @@ class LiveDetailPageState extends XCState {
         context: context,
         map: liveModel.toJson(),
         chatTypeModel: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
-    sharedType: 1);
+        sharedType: 1);
   }
-
-
-
 
   ///预约流程
   ///
 
-  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar,{bool bindingTerminal=false}) async {
-    int valuePlayType=value.playType;
+  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar,
+      {bool bindingTerminal = false}) async {
+    int valuePlayType = value.playType;
     print(value.getGetPlayType());
-    Map<String, dynamic> mapBook = await bookLiveCourse(
-        courseId: value.id, startTime: value.startTime, isBook: valuePlayType == 2);
-    if(mapBook!=null&&mapBook["code"]==200) {
+    Map<String, dynamic> mapBook =
+        await bookLiveCourse(courseId: value.id, startTime: value.startTime, isBook: valuePlayType == 2);
+    if (mapBook != null && mapBook["code"] == 200) {
       if (isAddCalendar) {
         onClickMakeAnAppointment(value, "", valuePlayType == 2);
       }
-      if (mapBook["state"] != null&&mapBook["state"]&&bindingTerminal) {showAppDialog(context,
-          title: "报名",
-          info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
-          cancel: AppDialogButton("仅上课", () {
-            return true;
-          }),
-          confirm: AppDialogButton("我要报名", () {
-            applyTerminalTrainingPr();
-            return true;
-          }));
+      if (mapBook["state"] != null && mapBook["state"] && bindingTerminal) {
+        showAppDialog(context,
+            title: "报名",
+            info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
+            cancel: AppDialogButton("仅上课", () {
+              return true;
+            }),
+            confirm: AppDialogButton("我要报名", () {
+              applyTerminalTrainingPr();
+              return true;
+            }));
       }
-    }else if(mapBook!=null&&mapBook["code"]==321){
+    } else if (mapBook != null && mapBook["code"] == 321) {
       ToastShow.show(msg: "预约失败:-时间不对", context: context);
-    }else{
+    } else {
       getDataAction();
     }
     return;
@@ -656,7 +677,10 @@ class LiveDetailPageState extends XCState {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
+      var result = await _deviceCalendarPlugin.createCalendar(
+        "iF",
+        localAccountName: "iF——1",
+      );
       if (result.isSuccess) {
         if (isBook) {
           createEvent(result.data, _deviceCalendarPlugin, value, alert);
@@ -668,20 +692,23 @@ class LiveDetailPageState extends XCState {
       if (isBook) {
         createEvent(_calendars[0].id, _deviceCalendarPlugin, value, alert);
       } else {
-        _deleteAlertEvents(_calendars[0].id,  value.startTime);
+        _deleteAlertEvents(_calendars[0].id, value.startTime);
       }
     }
   }
 
   //删除已经预约的日历提醒
-  void deleteAlertEvents(int courseId,String startTime) async {
+  void deleteAlertEvents(int courseId, String startTime) async {
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
+      var result = await _deviceCalendarPlugin.createCalendar(
+        "iF",
+        localAccountName: "iF——1",
+      );
       if (result.isSuccess) {
         _deleteAlertEvents(result.data, startTime);
       }
@@ -691,8 +718,8 @@ class LiveDetailPageState extends XCState {
   }
 
   //创建提醒
-  void createEvent(String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin,
-      LiveVideoModel value, String alert) async {
+  void createEvent(
+      String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin, LiveVideoModel value, String alert) async {
     Event _event = new Event(calendarId);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
@@ -701,7 +728,7 @@ class LiveDetailPageState extends XCState {
     _reminders.add(new Reminder(minutes: howEarlyToRemind));
     _event.end = endTime;
     _event.title = "IF:${value.title ?? "直播课程预约"}";
-    _event.description = "您预约的直播课${value.title!=null?"${value.title}":""}即将开始,快加入吧!";
+    _event.description = "您预约的直播课${value.title != null ? "${value.title}" : ""}即将开始,快加入吧!";
     _event.reminders = _reminders;
     await _deviceCalendarPlugin.createOrUpdateEvent(_event);
   }
@@ -717,8 +744,7 @@ class LiveDetailPageState extends XCState {
     _calendars = calendarsResult?.data;
     if (_calendars != null && _calendars.length > 0) {
       var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
-          _calendars[0].id,
-          RetrieveEventsParams(startDate: startDate, endDate: endDate));
+          _calendars[0].id, RetrieveEventsParams(startDate: startDate, endDate: endDate));
       calendarEvents = calendarEventsResult?.data;
     }
     if (calendarEvents.length > 0) {
@@ -733,13 +759,13 @@ class LiveDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention()async {
-    if(!(mounted&&isLoggedIn)){
+  onClickAttention() async {
+    if (!(mounted && isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
-    if(await isOffline()){
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return false;
     }
@@ -754,92 +780,93 @@ class LiveDetailPageState extends XCState {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       liveModel.coachDto?.relation = 1;
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     }
   }
 
   ///点击了教练
-  onClickCoach()async {
-    if(await isOffline()){
+  onClickCoach() async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,avatarUrl:liveModel.coachDto?.avatarUri,
-        userName:liveModel.coachDto?.nickName,callback:
-        (dynamic
-        result){
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,
+        avatarUrl: liveModel.coachDto?.avatarUri, userName: liveModel.coachDto?.nickName, callback: (dynamic result) {
       print("result:$result");
-      if(null!=result && result is bool) {
-        liveModel.coachDto.relation = result?0:1;
+      if (null != result && result is bool) {
+        liveModel.coachDto.relation = result ? 0 : 1;
         if (mounted) {
           reload(() {});
         }
       }
     });
   }
+
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
     // AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
   }
 
-  bool isOfflineBool=false;
-  Future<bool> isOffline()async{
+  bool isOfflineBool = false;
+
+  Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      if(isOfflineBool){
-        isOfflineBool=false;
+      if (isOfflineBool) {
+        isOfflineBool = false;
         getDataAction();
       }
       return false;
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      if(isOfflineBool){
-        isOfflineBool=false;
+      if (isOfflineBool) {
+        isOfflineBool = false;
         getDataAction();
       }
       return false;
     } else {
-      isOfflineBool=true;
+      isOfflineBool = true;
       return true;
     }
   }
+
   //显示全部的动作
-  onClickShowAllAction(){
-    isShowAllItemAction=true;
+  onClickShowAllAction() {
+    isShowAllItemAction = true;
     reload(() {});
   }
 
   //加载网络数据
-  void getDataAction({bool openLiveCourse=false}) async {
-    if(await isOffline()){
-      recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
-      if(mounted){
+  void getDataAction({bool openLiveCourse = false}) async {
+    if (await isOffline()) {
+      recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
+      if (mounted) {
         reload(() {});
       }
       return;
     }
-    recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
+    recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
     //加载数据
-    Map<String, dynamic> model = await (isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: liveCourseId);
+    Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       });
     } else {
       liveModel = LiveVideoModel.fromJson(model);
-      if(openLiveCourse){
+      if (openLiveCourse) {
         //如果已登录且有关联的机器 发送指令让机器跳转页面
-        if(isLoggedIn && Application.machine != null){
-          openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+        if (isLoggedIn && Application.machine != null) {
+          openLiveCourseDetailPage(Application.machine.machineId, liveCourseId, liveModel.startTime);
         }
       }
       print("liveCourseState:${liveModel.liveCourseState}");
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     }
@@ -854,21 +881,20 @@ class LiveDetailPageState extends XCState {
     AppRouter.navigateToLoginPage(context);
   }
 
-
   //判断是预约还是取消预约
-  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip})async {
-    if(await isOffline()){
+  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip}) async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
     print("---------------------------");
     if (liveModel.playType == 2) {
-      _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
+      _bookLiveCourse(liveModel, 0, true, bindingTerminal: bindingTerminal);
     } else {
       showAppDialog(context,
           title: "取消预约",
           info: "确认取消预约吗？",
-          barrierDismissible:false,
+          barrierDismissible: false,
           cancel: AppDialogButton("取消", () {
             print("点了取消");
             return true;
@@ -892,15 +918,14 @@ class LiveDetailPageState extends XCState {
   }
 
   //去直播页
-  void gotoLiveVideoRoomPage(){
-    AppRouter.navigateLiveRoomPage(context,liveModel,callback:(int coachRelation){
-      liveModel.coachDto.relation=coachRelation;
-      if(mounted){
+  void gotoLiveVideoRoomPage() {
+    AppRouter.navigateLiveRoomPage(context, liveModel, callback: (int coachRelation) {
+      liveModel.coachDto.relation = coachRelation;
+      if (mounted) {
         reload(() {});
       }
     });
   }
-
 
   //使用终端进行训练
   void _useTerminal() {
@@ -920,7 +945,7 @@ class LiveDetailPageState extends XCState {
 
   //开通vip
   void _openVip() {
-    AppRouter.navigateToVipPage(context, VipState.NOTOPEN,openOrNot: false);
+    AppRouter.navigateToVipPage(context, VipState.NOTOPEN, openOrNot: false);
   }
 
   //报名终端
@@ -929,7 +954,6 @@ class LiveDetailPageState extends XCState {
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 
-
-///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------
+  ///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------
 
 }

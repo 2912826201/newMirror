@@ -15,7 +15,6 @@ import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
-
 ///语音消息
 // ignore: must_be_immutable
 class VoiceMsg extends StatefulWidget {
@@ -38,7 +37,7 @@ class VoiceMsg extends StatefulWidget {
   VoiceMsg(
       {this.chatVoiceModel,
       this.isMyself,
-        this.sendTime,
+      this.sendTime,
       this.messageUId,
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
@@ -77,7 +76,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // if (urlMd5String == null) {
-      _getUrlMd5String();
+    _getUrlMd5String();
     // }
 
     return getContentBoxItem(context);
@@ -89,8 +88,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-            widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -102,16 +100,17 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-        widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
       Container(
         margin: widget.isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
         child: getMessageState(widget.status,
-            isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself
-            ,position: widget.position,voidMessageClickCallBack: widget.voidMessageClickCallBack),
+            isRead: widget.chatVoiceModel.read != 0,
+            isMyself: widget.isMyself,
+            position: widget.position,
+            voidMessageClickCallBack: widget.voidMessageClickCallBack),
       ),
       Spacer(),
     ];
@@ -175,11 +174,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
   //长按事件
   Widget _getVoiceUiLongClick() {
-    List<String> longClickStringList =
-        getLongClickStringList(
-            isMySelf: widget.isMyself,
-            sendTime: widget.sendTime,
-            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: widget.isMyself, sendTime: widget.sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         widget.voidItemLongClickCallBack(
@@ -193,8 +189,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       isMySelf: widget.isMyself,
       actions: longClickStringList,
       contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
-      contentHeight: MessageItemHeightUtil.init().
-        getVoiceMsgDataHeight(widget.isShowChatUserName,isOnlyContentHeight: true),
+      contentHeight:
+          MessageItemHeightUtil.init().getVoiceMsgDataHeight(widget.isShowChatUserName, isOnlyContentHeight: true),
       child: _getVoiceUi(context),
     );
   }
@@ -208,9 +204,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     return Container(
       margin: widget.isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
       child: Stack(
-        alignment: widget.isMyself
-            ? AlignmentDirectional.topEnd
-            : AlignmentDirectional.topStart,
+        alignment: widget.isMyself ? AlignmentDirectional.topEnd : AlignmentDirectional.topStart,
         children: [
           Container(
             margin: const EdgeInsets.only(top: 9.0),
@@ -221,30 +215,23 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
               fit: BoxFit.fill,
             ),
           ),
-
           Container(
-              margin: widget.isMyself
-                  ? const EdgeInsets.only(right: 7.0)
-                  : const EdgeInsets.only(left: 7.0),
+              margin: widget.isMyself ? const EdgeInsets.only(right: 7.0) : const EdgeInsets.only(left: 7.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(
                     borderRadius: BorderRadius.all(Radius.circular(6)),
-                    color: widget.isMyself ? AppColor.textPrimary2 : AppColor
-                        .white,
+                    color: widget.isMyself ? AppColor.textPrimary2 : AppColor.white,
                     child: new InkWell(
                       child: _getShowTextBox(),
-                      splashColor: widget.isMyself
-                          ? AppColor.textPrimary1
-                          : AppColor.textHint,
+                      splashColor: widget.isMyself ? AppColor.textPrimary1 : AppColor.textHint,
                       onTap: () {
-                        if(ClickUtil.isFastClick(time: 300)){
+                        if (ClickUtil.isFastClick(time: 300)) {
                           return;
                         }
 
                         widget.voidMessageClickCallBack(
-                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
-                            position: widget.position);
+                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE, position: widget.position);
 
                         // if (widget.chatVoiceModel.read == 0) {
                         //   widget.chatVoiceModel.read = 1;
@@ -255,14 +242,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                         // }
 
                         // ToastShow.show(msg: "点击了语音播放", context: context);
-                        context
-                            .read<VoiceSettingNotifier>()
-                            .judgePlayModel(urlString, context, urlMd5String);
+                        context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, urlMd5String);
                       },
-                    )
-                ),
-              )
-          ),
+                    )),
+              )),
         ],
       ),
     );
@@ -271,15 +254,13 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   Widget _getShowTextBox() {
     return Container(
       width: getNowWidth(context, widget.chatVoiceModel.longTime),
-      padding:
-      const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
+      padding: const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
       child: _getShowText(),
     );
   }
-
 
   //底部文字
   Widget _getShowText() {
@@ -290,9 +271,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       ),
       Text(
         widget.chatVoiceModel.longTime.toString(),
-        style: TextStyle(
-            color: widget.isMyself ? AppColor.white : AppColor.textPrimary1,
-            fontSize: 16),
+        style: TextStyle(color: widget.isMyself ? AppColor.white : AppColor.textPrimary1, fontSize: 16),
       ),
       Expanded(child: SizedBox()),
     ];
@@ -305,8 +284,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
     return Container(
       child: Row(
-        mainAxisAlignment:
-            widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: body,
       ),
     );
@@ -458,9 +436,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     duration = Duration(milliseconds: 300);
     Timer.periodic(duration, (timer) {
       try {
-        if (context
-            .read<VoiceSettingNotifier>()
-            .getIsPlaying(idMd5String: urlMd5String)) {
+        if (context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String: urlMd5String)) {
           getWidgetArrayState++;
           if (getWidgetArrayState > 3) {
             getWidgetArrayState = 0;
@@ -475,8 +451,6 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     });
   }
 
-
-
   @override
   void dispose() {
     super.dispose();
@@ -486,5 +460,3 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     }
   }
 }
-
-

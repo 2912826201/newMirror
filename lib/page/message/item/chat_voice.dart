@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 
 import 'voice_dialog.dart';
 
-
 ///底部语音按钮
 typedef VoiceFile = void Function(String path, int time);
 
@@ -59,8 +58,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   Timer _timer;
 
-  bool automaticPost=false;
-
+  bool automaticPost = false;
 
   @override
   void initState() {
@@ -109,13 +107,13 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   showVoiceView() async {
     print("55555555555555555");
-    if(this.automaticPost){
+    if (this.automaticPost) {
       return;
     }
     print("444444444444444");
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(
-        showDataTime: DateUtil.formatSecondToStringNum(costTime),
+        showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime),
         imageIconString: moveUpCancelPostImageString,
         alertText: "手指上滑,取消发送");
 
@@ -145,11 +143,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   hideVoiceView(bool automaticPost) async {
-    if(this.automaticPost){
-      this.automaticPost=automaticPost;
+    if (this.automaticPost) {
+      this.automaticPost = automaticPost;
       return;
     }
-    this.automaticPost=automaticPost;
+    this.automaticPost = automaticPost;
     // print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
@@ -158,22 +156,21 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
     stopRecorder();
 
-
     if (_timer != null) {
       // costTime = _timer.tick + 1;
       _timer.cancel();
       _timer = null;
     }
-    if (costTime < minRecordVoiceDuration+1) {
+    if (costTime < minRecordVoiceDuration + 1) {
       context.read<VoiceAlertData>().changeCallback(
-        alertText: "说话时间太短",
-        imageIconString: speckTimeTooShortImageString,
-      );
+            alertText: "说话时间太短",
+            imageIconString: speckTimeTooShortImageString,
+          );
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
         await outputFile.delete();
       }
-      Future.delayed(Duration(milliseconds: 600),(){
+      Future.delayed(Duration(milliseconds: 600), () {
         if (overlayEntry != null) {
           overlayEntry.remove();
           overlayEntry = null;
@@ -186,7 +183,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       }
       if (isUp) {
         print("取消发送");
-        if(records.length>0) {
+        if (records.length > 0) {
           records.removeLast();
         }
       } else {
@@ -202,36 +199,37 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     print("moveVoiceView");
     String textShow;
     isUp = startY - offset > 80 ? true : false;
-    if(this.automaticPost){
+    if (this.automaticPost) {
       textShow = "按住说话";
-    }else if (isUp) {
+    } else if (isUp) {
       textShow = "松开手指,取消发送";
     } else {
       textShow = "松开发送";
     }
-    if(textShow!=this.textShow){
+    if (textShow != this.textShow) {
       setState(() {
-        if(this.automaticPost){
+        if (this.automaticPost) {
           this.textShow = "按住说话";
           toastShow = "手指上滑,取消发送";
           context.read<VoiceAlertData>().changeCallback(
-              alertText: "手指上滑,取消发送",
-              imageIconString: moveUpCancelPostImageString,
-          );
-        }if (isUp) {
+                alertText: "手指上滑,取消发送",
+                imageIconString: moveUpCancelPostImageString,
+              );
+        }
+        if (isUp) {
           this.textShow = "松开手指,取消发送";
           toastShow = textShow;
           context.read<VoiceAlertData>().changeCallback(
-            alertText: "松开手指,取消发送",
-            imageIconString: letGoOfYourFingerCancelPostImageString,
-          );
+                alertText: "松开手指,取消发送",
+                imageIconString: letGoOfYourFingerCancelPostImageString,
+              );
         } else {
           this.textShow = "松开发送";
           toastShow = "手指上滑,取消发送";
           context.read<VoiceAlertData>().changeCallback(
-            alertText: "手指上滑,取消发送",
-            imageIconString: moveUpCancelPostImageString,
-          );
+                alertText: "手指上滑,取消发送",
+                imageIconString: moveUpCancelPostImageString,
+              );
         }
       });
     }
@@ -244,12 +242,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         // startY = details.globalPosition.dy;
         // showVoiceView();
       },
-      onVerticalDragDown: (details)async {
+      onVerticalDragDown: (details) async {
         var status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
           throw RecordingPermissionException('Microphone permission not granted');
-        }else {
-          if(ClickUtil.isFastClick()){
+        } else {
+          if (ClickUtil.isFastClick()) {
             return;
           }
           startY = details.globalPosition.dy;
@@ -265,10 +263,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       child: new Container(
         height: 28.0,
         alignment: Alignment.center,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         decoration: textShow == "按住说话" ? noSelectBoxUiStyle : selectBoxUiStyle,
         child: Text(
           textShow,
@@ -300,24 +295,26 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    if(context==null){
+    if (context == null) {
       return;
     }
     costTime = 0;
-    context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime),);
+    context.read<VoiceAlertData>().changeCallback(
+          showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime),
+        );
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if(mounted){
+      if (mounted) {
         setState(() {
-          if(costTime+1>maxRecordVoiceDuration){
+          if (costTime + 1 > maxRecordVoiceDuration) {
             _timer.cancel();
-            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime+1));
+            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime + 1));
             hideVoiceView(true);
-          }else{
+          } else {
             costTime++;
-            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
+            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime));
           }
         });
-      }else{
+      } else {
         if (_timer != null) {
           _timer.cancel();
           _timer = null;

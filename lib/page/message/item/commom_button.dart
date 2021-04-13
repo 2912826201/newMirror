@@ -55,9 +55,7 @@ class ComMomButton extends StatelessWidget {
               ? BoxDecoration(
                   gradient: gradient,
                   boxShadow: boxShadow,
-                  border: isBorder
-                      ? Border.all(width: 0.5, color: Color(borderColor))
-                      : null,
+                  border: isBorder ? Border.all(width: 0.5, color: Color(borderColor)) : null,
                   borderRadius: BorderRadius.all(
                     Radius.circular(radius),
                   ),
@@ -65,18 +63,14 @@ class ComMomButton extends StatelessWidget {
               : BoxDecoration(
                   color: color,
                   boxShadow: boxShadow,
-                  border: isBorder
-                      ? Border.all(width: 0.5, color: Color(borderColor))
-                      : null,
+                  border: isBorder ? Border.all(width: 0.5, color: Color(borderColor)) : null,
                   borderRadius: BorderRadius.all(
                     Radius.circular(radius),
                   ),
                 ),
           child: new Text(
             '$text',
-            style: style != null
-                ? style
-                : TextStyle(fontSize: 15.0, color: _color),
+            style: style != null ? style : TextStyle(fontSize: 15.0, color: _color),
           ),
         ),
         onTap: () {

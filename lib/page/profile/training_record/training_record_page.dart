@@ -759,7 +759,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   child: SizedBox(
                 child: Column(
                   children: [
-                    Text(getTopCalorie(typeString),style: AppStyle.textPrimary2Medium23),
+                    Text(getTopCalorie(typeString), style: AppStyle.textPrimary2Medium23),
                     SizedBox(height: 6),
                     Text("消耗千卡", style: alertTextStyle),
                   ],

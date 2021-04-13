@@ -42,11 +42,11 @@ import 'package:mirror/constant/constants.dart';
 class VideoDetailPage extends StatefulWidget {
   const VideoDetailPage(
       {Key key,
-        @required this.videoCourseId,
-        this.heroTag,
-        this.commentDtoModel,
-        this.fatherComment,
-        this.videoModel,
+      @required this.videoCourseId,
+      this.heroTag,
+      this.commentDtoModel,
+      this.fatherComment,
+      this.videoModel,
       this.isInteractive})
       : super(key: key);
 
@@ -56,6 +56,7 @@ class VideoDetailPage extends StatefulWidget {
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
   final bool isInteractive;
+
   @override
   createState() {
     return VideoDetailPageState(
@@ -70,13 +71,20 @@ class VideoDetailPage extends StatefulWidget {
 
 class VideoDetailPageState extends XCState {
   VideoDetailPageState(
-      {Key key, this.videoModel, this.heroTag, this.videoCourseId, this.commentDtoModel, this.fatherComment,this.isInteractive});
+      {Key key,
+      this.videoModel,
+      this.heroTag,
+      this.videoCourseId,
+      this.commentDtoModel,
+      this.fatherComment,
+      this.isInteractive});
 
   String heroTag;
   int videoCourseId;
   CommentDtoModel commentDtoModel;
   CommentDtoModel fatherComment;
   bool isInteractive;
+
   //当前视频课程的model
   LiveVideoModel videoModel;
 
@@ -86,7 +94,6 @@ class VideoDetailPageState extends XCState {
   //加载状态
   LoadingStatus loadingStatus;
   LoadingStatus recommendLoadingStatus;
-
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -142,7 +149,7 @@ class VideoDetailPageState extends XCState {
     print("bindingTerminal:$bindingTerminal");
 
     //如果已登录且有关联的机器 发送指令让机器跳转页面
-    if(isLoggedIn && Application.machine != null){
+    if (isLoggedIn && Application.machine != null) {
       openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
     }
 
@@ -257,10 +264,10 @@ class VideoDetailPageState extends XCState {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
-      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false,isShowAddMore: false),
+      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false, isShowAddMore: false),
       controller: _refreshController,
       onLoading: () {
-        if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
+        if (childKey == null || childKey.currentState == null || childKey.currentState.onLoading == null) {
           return;
         }
         childKey.currentState.onLoading();
@@ -322,9 +329,9 @@ class VideoDetailPageState extends XCState {
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.isLoggedIn){
-          if(!isLoggedIn){
-            isLoggedIn=true;
+        if (notifier.isLoggedIn) {
+          if (!isLoggedIn) {
+            isLoggedIn = true;
             Future.delayed(Duration(milliseconds: 100), () {
               if (mounted) {
                 reload(() {});
@@ -332,13 +339,13 @@ class VideoDetailPageState extends XCState {
             });
             getDataAction();
             //如果已登录且有关联的机器 发送指令让机器跳转页面
-            if(Application.machine != null){
+            if (Application.machine != null) {
               openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
             }
           }
-        }else{
-          if(isLoggedIn){
-            isLoggedIn=false;
+        } else {
+          if (isLoggedIn) {
+            isLoggedIn = false;
             Future.delayed(Duration(milliseconds: 100), () {
               if (mounted) {
                 reload(() {});
@@ -346,7 +353,7 @@ class VideoDetailPageState extends XCState {
             });
             getDataAction();
             //如果已登录且有关联的机器 发送指令让机器跳转页面
-            if(Application.machine != null){
+            if (Application.machine != null) {
               openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
             }
           }
@@ -361,9 +368,9 @@ class VideoDetailPageState extends XCState {
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.machine != null){
-          if(!bindingTerminal){
-            bindingTerminal=true;
+        if (notifier.machine != null) {
+          if (!bindingTerminal) {
+            bindingTerminal = true;
             print("bindingTerminal1:$bindingTerminal");
             Future.delayed(Duration(milliseconds: 300), () {
               if (mounted) {
@@ -371,9 +378,9 @@ class VideoDetailPageState extends XCState {
               }
             });
           }
-        }else{
-          if(bindingTerminal){
-            bindingTerminal=false;
+        } else {
+          if (bindingTerminal) {
+            bindingTerminal = false;
             print("bindingTerminal2:$bindingTerminal");
             Future.delayed(Duration(milliseconds: 300), () {
               if (mounted) {
@@ -407,7 +414,7 @@ class VideoDetailPageState extends XCState {
           commentDtoModel: commentDtoModel,
           isShowAt: false,
           globalKeyList: globalKeyList,
-          isVideoCoursePage:true,
+          isVideoCoursePage: true,
         ),
       ),
     );
@@ -487,7 +494,7 @@ class VideoDetailPageState extends XCState {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
-    if(childKey==null||childKey.currentState==null||childKey.currentState.scrollHeightOld==null){
+    if (childKey == null || childKey.currentState == null || childKey.currentState.scrollHeightOld == null) {
       return false;
     }
     childKey.currentState.scrollHeightOld = metrics.pixels;
@@ -510,8 +517,8 @@ class VideoDetailPageState extends XCState {
   }
 
   //分享的点击事件
-  void _shareBtnClick()async {
-    if(await isOffline()){
+  void _shareBtnClick() async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
@@ -529,11 +536,11 @@ class VideoDetailPageState extends XCState {
 
   //收藏按钮
   void _favorBtnClick() async {
-    if(await isOffline()){
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    if (!(mounted &&isLoggedIn)) {
+    if (!(mounted && isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -585,7 +592,7 @@ class VideoDetailPageState extends XCState {
 
   //判断有没有完整的下载好视频
   void onJudgeIsDownLoadCompleteVideo() async {
-    if(await isOffline()){
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
@@ -646,7 +653,7 @@ class VideoDetailPageState extends XCState {
   //获取底部按钮
   Widget _getBottomBar() {
     //todo 判断用户是不是vip缺少开通vip的回调
-    bool isVip = Application.profile.isVip==1;
+    bool isVip = Application.profile.isVip == 1;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
@@ -690,74 +697,95 @@ class VideoDetailPageState extends XCState {
         if (videoModel.priceType == 0 || (videoModel.priceType == 1 && isVip)) {
           print("bindingTerminal4:$bindingTerminal");
           if (bindingTerminal) {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
-                onTap: _useTerminal,
+                  child: GestureDetector(
+                    child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
+                    onTap: _useTerminal,
+                  ),
+                ),
               ),
-            )));
+            );
           } else {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: _loginTerminalBtn,
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    onTap: _loginTerminalBtn,
+                  ),
+                ),
               ),
-            )));
+            );
           }
         } else if (videoModel.priceType == 2) {
           //todo 付费视频--目前是开通vip
           if (bindingTerminal) {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                onTap: _openVip,
+                  child: GestureDetector(
+                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                    onTap: _openVip,
+                  ),
+                ),
               ),
-            )));
+            );
           } else {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: _loginTerminalBtn,
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    onTap: _loginTerminalBtn,
+                  ),
+                ),
               ),
-            )));
+            );
           }
         } else {
           //需要开通vip
 
           if (bindingTerminal) {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                onTap: _openVip,
+                  child: GestureDetector(
+                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                    onTap: _openVip,
+                  ),
+                ),
               ),
-            )));
+            );
           } else {
-            childrenArray.add(Expanded(
+            childrenArray.add(
+              Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "登陆终端使用终端播放3", textStyle, double.infinity, 40, margin_32),
-                onTap: _loginTerminalBtn,
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放3", textStyle, double.infinity, 40, margin_32),
+                    onTap: _loginTerminalBtn,
+                  ),
+                ),
               ),
-            )));
+            );
           }
         }
       }
     } else {
-      childrenArray.add(Expanded(
+      childrenArray.add(
+        Expanded(
           child: SizedBox(
-        child: GestureDetector(
-          child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
-          onTap: () {
-            print("下载中");
-            ToastShow.show(msg: "下载中", context: context);
-          },
+            child: GestureDetector(
+              child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
+              onTap: () {
+                print("下载中");
+                ToastShow.show(msg: "下载中", context: context);
+              },
+            ),
+          ),
         ),
-      )));
+      );
     }
 
     return Container(
@@ -774,8 +802,7 @@ class VideoDetailPageState extends XCState {
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
-
-    if(await isOffline()){
+    if (await isOffline()) {
       recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
       if (mounted) {
         reload(() {});
@@ -807,7 +834,7 @@ class VideoDetailPageState extends XCState {
     //获取视频详情数据
     //加载数据
     Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
-    if (model["code"]!=null&&model["code"]==CODE_SUCCESS && model["dataMap"]!=null) {
+    if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
       videoModel = LiveVideoModel.fromJson(model["dataMap"]);
       if (videoModel.isInMyCourseList != null) {
         isFavor = videoModel.isInMyCourseList == 1;
@@ -816,7 +843,7 @@ class VideoDetailPageState extends XCState {
       if (mounted) {
         reload(() {});
       }
-    }else{
+    } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
         if (mounted) {
@@ -827,8 +854,8 @@ class VideoDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention()async {
-    if(await isOffline()){
+  onClickAttention() async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
@@ -855,18 +882,16 @@ class VideoDetailPageState extends XCState {
   }
 
   ///点击了教练
-  onClickCoach() async{
-    if(await isOffline()){
+  onClickCoach() async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,avatarUrl:videoModel.coachDto?.avatarUri,
-        userName: videoModel.coachDto?.nickName,
-        callback:(dynamic
-        result){
+    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,
+        avatarUrl: videoModel.coachDto?.avatarUri, userName: videoModel.coachDto?.nickName, callback: (dynamic result) {
       print("result:$result");
-      if(null!=result && result is bool) {
-        videoModel.coachDto.relation = result?0:1;
+      if (null != result && result is bool) {
+        videoModel.coachDto.relation = result ? 0 : 1;
         if (mounted) {
           reload(() {});
         }
@@ -875,8 +900,8 @@ class VideoDetailPageState extends XCState {
   }
 
   ///点击了他人刚刚训练完成
-  onClickOtherComplete(int onClickPosition) async{
-    if(await isOffline()){
+  onClickOtherComplete(int onClickPosition) async {
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
@@ -886,7 +911,7 @@ class VideoDetailPageState extends XCState {
   }
 
   //登陆终端按钮
-  void _loginTerminalBtn(){
+  void _loginTerminalBtn() {
     if (Application.token.anonymous == 0) {
       AppRouter.navigateToScanCodePage(context);
     } else {
@@ -894,28 +919,28 @@ class VideoDetailPageState extends XCState {
     }
   }
 
+  bool isOfflineBool = false;
 
-
-  bool isOfflineBool=false;
-  Future<bool> isOffline()async{
+  Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      if(isOfflineBool){
-        isOfflineBool=false;
+      if (isOfflineBool) {
+        isOfflineBool = false;
         getDataAction();
       }
       return false;
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      if(isOfflineBool){
-        isOfflineBool=false;
+      if (isOfflineBool) {
+        isOfflineBool = false;
         getDataAction();
       }
       return false;
     } else {
-      isOfflineBool=true;
+      isOfflineBool = true;
       return true;
     }
   }
+
   //计算高度
   double specifyItemHeight(int onClickPosition) {
     if (onClickPosition < 1) {
@@ -1034,7 +1059,7 @@ class VideoDetailPageState extends XCState {
 
   //开通vip
   void _openVip() {
-    AppRouter.navigateToVipPage(context, VipState.NOTOPEN,openOrNot: false);
+    AppRouter.navigateToVipPage(context, VipState.NOTOPEN, openOrNot: false);
   }
 
   //使用终端进行训练
@@ -1042,5 +1067,4 @@ class VideoDetailPageState extends XCState {
     print("绑定了终端");
     startVideoCourse(Application.machine.machineId, videoCourseId);
   }
-
 }

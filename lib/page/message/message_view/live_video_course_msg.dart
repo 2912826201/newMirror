@@ -8,7 +8,6 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
-import 'package:mirror/util/date_util.dart';
 
 import 'currency_msg.dart';
 
@@ -34,7 +33,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       {this.liveVideoModel,
       this.isMyself,
       this.userUrl,
-        this.sendTime,
+      this.sendTime,
       this.msgId,
       this.name,
       this.status,
@@ -57,8 +56,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -70,14 +68,13 @@ class LiveVideoCourseMsg extends StatelessWidget {
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
       Spacer(),
     ];
@@ -96,7 +93,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
         child: getUserImage(userUrl, 38, 38),
         onTap: () {
           if (isCanLongClick) {
-            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_USER,
                 map: new UserModel(uid: int.parse(sendChatUserId)).toJson());
           }
         },
@@ -156,19 +154,18 @@ class LiveVideoCourseMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().
-        getLiveVideoCourseMsgHeight(isShowChatUserName,isOnlyContentHeight: true),
+      contentHeight:
+          MessageItemHeightUtil.init().getLiveVideoCourseMsgHeight(isShowChatUserName, isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getLiveVideoCourseUi(),
         onTap: () {
           if (isLiveOrVideo) {
             // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
-            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
-                map: liveVideoModel.toJson(), msgId: msgId);
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE, map: liveVideoModel.toJson(), msgId: msgId);
           } else {
             voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
-                map: liveVideoModel.toJson(), msgId: msgId);
+                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE, map: liveVideoModel.toJson(), msgId: msgId);
             // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
           }
         },
@@ -214,29 +211,25 @@ class LiveVideoCourseMsg extends StatelessWidget {
             child: Container(
               color: AppColor.white,
               child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(3), topLeft: Radius.circular(3)),
+                borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
                 child: CachedNetworkImage(
                   height: double.infinity,
                   width: double.infinity,
                   imageUrl: imageUrl == null ? "" : imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Image.asset(
-                        "images/test/bg.png",
-                        fit: BoxFit.cover,
-                      ),
-                  errorWidget: (context, url, error) =>
-                      Image.asset(
-                        "images/test/bg.png",
-                        fit: BoxFit.cover,
-                      ),
+                  placeholder: (context, url) => Image.asset(
+                    "images/test/bg.png",
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    "images/test/bg.png",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
             tag: msgId,
           ),
-
           Offstage(
             offstage: !isLiveOrVideo,
             child: Container(
@@ -306,8 +299,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           Container(
             width: double.infinity,
             // ignore: null_aware_before_operator
-            child: Text(liveVideoModel.coursewareDto?.levelDto?.name +
-                "·${((liveVideoModel.times??0) ~/ 60000)}分钟"),
+            child: Text(liveVideoModel.coursewareDto?.levelDto?.name + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
           ),
         ],
       ),

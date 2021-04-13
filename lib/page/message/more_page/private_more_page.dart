@@ -11,22 +11,20 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
+
 ///私人聊天-更多界面--管家-系统消息
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;
   final String name;
-  final Function(int type,String name) listener;
+  final Function(int type, String name) listener;
   final ConversationDto dto;
 
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
@@ -84,32 +82,31 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   }
 
   //点击事件的box
-  Widget item(int type, bool isOpen, String title,
-      {bool isCupertinoSwitchShow = true}) {
+  Widget item(int type, bool isOpen, String title, {bool isCupertinoSwitchShow = true}) {
     return Material(
-        color: AppColor.white,
-        child: new InkWell(
-          child: _switchRow(type, isOpen, title, isCupertinoSwitchShow),
-          splashColor: AppColor.textHint,
-          onTap: () {
-            if(mounted) {
-              setState(() {
-                if (type == 1) {
-                  onClickItem(disturbTheNews, title);
-                } else if (type == 2) {
-                  onClickItem(topChat, title);
-                } else {
-                  onClickItem(isOpen, title);
-                }
-              });
-            }
-          },
-        ));
+      color: AppColor.white,
+      child: new InkWell(
+        child: _switchRow(type, isOpen, title, isCupertinoSwitchShow),
+        splashColor: AppColor.textHint,
+        onTap: () {
+          if (mounted) {
+            setState(() {
+              if (type == 1) {
+                onClickItem(disturbTheNews, title);
+              } else if (type == 2) {
+                onClickItem(topChat, title);
+              } else {
+                onClickItem(isOpen, title);
+              }
+            });
+          }
+        },
+      ),
+    );
   }
 
   //选项
-  Widget _switchRow(
-      int type, bool isOpen, String title, isCupertinoSwitchShow) {
+  Widget _switchRow(int type, bool isOpen, String title, isCupertinoSwitchShow) {
     return Container(
       height: 48,
       width: MediaQuery.of(context).size.width,
@@ -137,7 +134,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
                     } else {
                       onClickItem(isOpen, title);
                     }
-                    if(mounted) {
+                    if (mounted) {
                       setState(() {});
                     }
                   },
@@ -160,40 +157,38 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     );
   }
 
-
   //设置消息是否置顶
   void setTopChatApi() async {
     topChat = !topChat;
-    Map<String, dynamic> map = await (topChat ? stickChat : cancelTopChat)(
-        targetId: int.parse(widget.chatUserId), type: 0);
+    Map<String, dynamic> map =
+        await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatUserId), type: 0);
     print(map.toString());
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
-      if(topChat){
+      if (topChat) {
         Application.topChatModelList.add(topChatModel);
         topChatIndex = Application.topChatModelList.length - 1;
-        topChat=true;
-        if(null!=widget.dto) {
-          widget.dto.isTop=1;
+        topChat = true;
+        if (null != widget.dto) {
+          widget.dto.isTop = 1;
           context.read<ConversationNotifier>().insertTop(widget.dto);
         }
-      }else{
-        if(topChatIndex>=0) {
+      } else {
+        if (topChatIndex >= 0) {
           Application.topChatModelList.removeAt(topChatIndex);
         }
         topChatIndex = -1;
-        topChat=false;
-        if(null!=widget.dto) {
-          widget.dto.isTop=0;
+        topChat = false;
+        if (null != widget.dto) {
+          widget.dto.isTop = 0;
           context.read<ConversationNotifier>().insertCommon(widget.dto);
         }
       }
     } else {
       topChat = !topChat;
     }
-    if(mounted) {
-      setState(() {
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -204,24 +199,23 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(widget.chatUserId), type: widget.chatType);
     if (map != null && map["state"] != null && map["state"]) {
-      NoPromptUidModel model=NoPromptUidModel(type: widget.chatType,targetId: int.parse(widget.chatUserId));
-      if(disturbTheNews){
+      NoPromptUidModel model = NoPromptUidModel(type: widget.chatType, targetId: int.parse(widget.chatUserId));
+      if (disturbTheNews) {
         Application.queryNoPromptUidList.add(model);
         disturbTheNewsIndex = Application.queryNoPromptUidList.length - 1;
-        disturbTheNews=true;
-      }else{
-        if(disturbTheNewsIndex>=0) {
+        disturbTheNews = true;
+      } else {
+        if (disturbTheNewsIndex >= 0) {
           Application.queryNoPromptUidList.removeAt(disturbTheNewsIndex);
         }
         disturbTheNewsIndex = -1;
-        disturbTheNews=false;
+        disturbTheNews = false;
       }
     } else {
       disturbTheNews = !disturbTheNews;
     }
-    if(mounted) {
-      setState(() {
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -254,7 +248,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
       }
     }
-    if(mounted) {
+    if (mounted) {
       setState(() {});
     }
     //融云检测有没有开启免打扰
@@ -267,7 +261,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     //       }
     //     });
   }
-
 
   //获取是否在黑名单内
   void getBlackListStatus() async {
@@ -289,29 +282,28 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //拉黑了这个人
   void addToBlackList() async {
     showProgressDialog();
-    Future.delayed(Duration(milliseconds: 300),()async{
-      if(await isOffline()){
+    Future.delayed(Duration(milliseconds: 300), () async {
+      if (await isOffline()) {
         ToastShow.show(msg: "请检查网络!", context: context);
         dismissProgressDialog();
         return;
       }
       bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
-      if (blackStatus!=null&&blackStatus) {
+      if (blackStatus != null && blackStatus) {
         isBlackList = true;
         ToastShow.show(msg: "已拉黑", context: context);
-        if(widget.listener!=null){
-          widget.listener(2,"拉黑");
+        if (widget.listener != null) {
+          widget.listener(2, "拉黑");
         }
-        if(mounted) {
+        if (mounted) {
           setState(() {
             dismissProgressDialog();
           });
         }
-        if(context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
+        if (context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
           print('====================================个人主页的方法进了');
           context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
-          context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId),
-              false);
+          context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId), false);
         }
         print('====================================个人主页的方法完了');
       } else {
@@ -324,8 +316,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //解除了拉黑
   void removeFromBlackList() async {
     showProgressDialog();
-    Future.delayed(Duration(milliseconds: 300),()async{
-      if(await isOffline()){
+    Future.delayed(Duration(milliseconds: 300), () async {
+      if (await isOffline()) {
         ToastShow.show(msg: "请检查网络!", context: context);
         dismissProgressDialog();
         return;
@@ -334,7 +326,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       if (blackStatus) {
         isBlackList = false;
         ToastShow.show(msg: "已解除拉黑", context: context);
-        if(mounted) {
+        if (mounted) {
           setState(() {
             dismissProgressDialog();
           });
@@ -346,27 +338,26 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     });
   }
 
-
   //点击事件
-  void onClickItem(bool isTrue, String title) async{
+  void onClickItem(bool isTrue, String title) async {
     if (ClickUtil.isFastClick()) {
       print("快速点击");
       return;
     }
-    if(await isOffline()){
+    if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
     if (title == "拉黑") {
       showAppDialog(context,
-          barrierDismissible : false,
+          barrierDismissible: false,
           title: "拉黑",
           info: "确定需要将此人拉黑吗？",
           cancel: AppDialogButton("取消", () {
             return true;
           }),
           confirm: AppDialogButton("拉黑", () {
-            Future.delayed(Duration(milliseconds: 100),(){
+            Future.delayed(Duration(milliseconds: 100), () {
               addToBlackList();
             });
             return true;
@@ -380,17 +371,21 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
   }
 
-  showProgressDialog({Widget progress,
-    Color bgColor,}) {
+  showProgressDialog({
+    Widget progress,
+    Color bgColor,
+  }) {
     if (_dialogLoadingController == null) {
       _dialogLoadingController = DialogLoadingController();
       Navigator.of(context).push(PageRouteBuilder(
           opaque: false,
           pageBuilder: (ctx, animation, secondAnimation) {
-            return LoadingProgress(controller: _dialogLoadingController,
-              progress: progress, bgColor: bgColor,);
-          }
-      ));
+            return LoadingProgress(
+              controller: _dialogLoadingController,
+              progress: progress,
+              bgColor: bgColor,
+            );
+          }));
     }
   }
 
@@ -398,7 +393,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     _dialogLoadingController?.dismissDialog();
     _dialogLoadingController = null;
   }
-  Future<bool> isOffline()async{
+
+  Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       return false;
