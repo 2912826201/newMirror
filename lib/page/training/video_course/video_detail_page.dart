@@ -1034,13 +1034,7 @@ class VideoDetailPageState extends XCState {
 
   //开通vip
   void _openVip() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return ChangeNotifierProvider(
-        create: (_)=>VipTitleChangeNotifier(),
-        child:VipNotOpenPage(
-          type: VipState.NOTOPEN,
-        ),);
-    }));
+    AppRouter.navigateToVipPage(context, VipState.NOTOPEN,openOrNot: false);
   }
 
   //使用终端进行训练
