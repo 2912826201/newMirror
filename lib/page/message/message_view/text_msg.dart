@@ -37,7 +37,7 @@ class TextMsg extends StatelessWidget {
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
       this.sendChatUserId,
-        this.sendTime,
+      this.sendTime,
       this.name,
       this.status,
       this.mentionedInfo,
@@ -65,8 +65,7 @@ class TextMsg extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -74,19 +73,17 @@ class TextMsg extends StatelessWidget {
     );
   }
 
-
   //最外层body 加载状态和消息结构
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
     ];
     if (isMyself) {
@@ -146,10 +143,7 @@ class TextMsg extends StatelessWidget {
   //获取长按事件
   Widget textContentBoxUiLongClick(BuildContext context) {
     List<String> longClickStringList =
-        getLongClickStringList(
-            isMySelf: isMyself,
-            sendTime: sendTime,
-            contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(
@@ -163,9 +157,8 @@ class TextMsg extends StatelessWidget {
       contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
       isMySelf: isMyself,
       actions: longClickStringList,
-      contentWidth: getTextSize(text, textStyle, 10,ScreenUtil.instance.width - (16 + 7 + 38 + 2) * 2).width + 22.0,
-      contentHeight: MessageItemHeightUtil.init().
-        getTextMsgHeight(text, isShowChatUserName,isOnlyContentHeight: true),
+      contentWidth: getTextSize(text, textStyle, 10, ScreenUtil.instance.width - (16 + 7 + 38 + 2) * 2).width + 22.0,
+      contentHeight: MessageItemHeightUtil.init().getTextMsgHeight(text, isShowChatUserName, isOnlyContentHeight: true),
       child: textContentBox(context),
     );
   }
@@ -179,9 +172,7 @@ class TextMsg extends StatelessWidget {
     return Container(
       margin: isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
       child: Stack(
-        alignment: isMyself
-            ? AlignmentDirectional.topEnd
-            : AlignmentDirectional.topStart,
+        alignment: isMyself ? AlignmentDirectional.topEnd : AlignmentDirectional.topStart,
         children: [
           Container(
             margin: const EdgeInsets.only(top: 9.0),
@@ -193,9 +184,7 @@ class TextMsg extends StatelessWidget {
             ),
           ),
           Container(
-              margin: isMyself
-                  ? const EdgeInsets.only(right: 7.0)
-                  : const EdgeInsets.only(left: 7.0),
+              margin: isMyself ? const EdgeInsets.only(right: 7.0) : const EdgeInsets.only(left: 7.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(
@@ -203,15 +192,10 @@ class TextMsg extends StatelessWidget {
                     color: isMyself ? AppColor.textPrimary2 : AppColor.white,
                     child: new InkWell(
                       child: getRichTextBox(context),
-                      splashColor: isMyself ? AppColor.textPrimary1 : AppColor
-                          .textHint,
-                      onTap: () {
-
-                      },
-                    )
-                ),
-              )
-          ),
+                      splashColor: isMyself ? AppColor.textPrimary1 : AppColor.textHint,
+                      onTap: () {},
+                    )),
+              )),
         ],
       ),
     );
@@ -220,14 +204,9 @@ class TextMsg extends StatelessWidget {
   Widget getRichTextBox(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxWidth:
-        MediaQuery
-            .of(context)
-            .size
-            .width - (16 + 7 + 38 + 2) * 2,
+        maxWidth: MediaQuery.of(context).size.width - (16 + 7 + 38 + 2) * 2,
       ),
-      padding:
-      const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
+      padding: const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
       child: RichText(
           maxLines: 100,
           text: TextSpan(
@@ -245,8 +224,7 @@ class TextMsg extends StatelessWidget {
       var contentArray = content.split(" ");
       for (int i = 0; i < contentArray.length; i++) {
         if (contentArray[i] != null && contentArray[i].length > 0) {
-          textSpanArray.addAll(judgeIsAtUser(contentArray[i], isMyself, i,
-              isUrl: StringUtil.isURL(contentArray[i])));
+          textSpanArray.addAll(judgeIsAtUser(contentArray[i], isMyself, i, isUrl: StringUtil.isURL(contentArray[i])));
         }
       }
     }
@@ -258,17 +236,16 @@ class TextMsg extends StatelessWidget {
         text: ("${index > 0 ? " " : ""}$content"),
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
-                content: content,
-                isUrl: isUrl);
+            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: content, isUrl: isUrl);
           },
         style: TextStyle(
-          color: isUrlColor ? AppColor.urlText :
-          !isUrl ? (!isMyself ? AppColor.textPrimary2 : AppColor.white) : AppColor.urlText,
+          color: isUrlColor
+              ? AppColor.urlText
+              : !isUrl
+                  ? (!isMyself ? AppColor.textPrimary2 : AppColor.white)
+                  : AppColor.urlText,
         ));
   }
-
 
 //判断at用户的颜色
   List<TextSpan> judgeIsAtUser(String content, bool isMyself, int index, {bool isUrl = false}) {
@@ -283,14 +260,13 @@ class TextMsg extends StatelessWidget {
       } else if ("@" + atUserNameList[index] == content) {
         textSpanArray.add(getNullContent(content, isMyself, index, false, isUrlColor: true));
       } else {
-        textSpanArray.add(getNullContent(
-            content.replaceAll("@" + atUserNameList[index], ""), isMyself, index, false, isUrlColor: false));
+        textSpanArray.add(getNullContent(content.replaceAll("@" + atUserNameList[index], ""), isMyself, index, false,
+            isUrlColor: false));
         textSpanArray.add(getNullContent("@" + atUserNameList[index], isMyself, index, false, isUrlColor: true));
       }
     }
     return textSpanArray;
   }
-
 
   //判断要绘制的字符串 里面有没有 at的人名
   int isHaveAtName(String content) {
@@ -302,7 +278,6 @@ class TextMsg extends StatelessWidget {
     }
     return -1;
   }
-
 
   //初始化那些人是at了
   void initAtUser() {
@@ -317,6 +292,4 @@ class TextMsg extends StatelessWidget {
       atUserNameList.removeAt(atUserNameList.length - 1);
     }
   }
-
-
 }

@@ -354,7 +354,7 @@ Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextSty
               longTime = 0;
             }
             if (longTime > 0) {
-              timeString = DateUtil.formatSecondToStringNum1(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+              timeString = DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
             }
             return Container(
               width: 136,
@@ -409,15 +409,14 @@ Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextSty
 }
 
 //获取动作的ui
-Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, GlobalKey globalKey,
-    bool isShowAllItem, Function onClick) {
+Widget getActionUiLive(
+    LiveVideoModel liveModel, BuildContext context, GlobalKey globalKey, bool isShowAllItem, Function onClick) {
   if (liveModel == null ||
       liveModel.coursewareDto == null ||
       liveModel.coursewareDto.actionMapList == null ||
       liveModel.coursewareDto.actionMapList.length < 1) {
     return SliverToBoxAdapter();
   }
-
 
   var widgetArray = <Widget>[];
   widgetArray.add(Container(
@@ -453,7 +452,7 @@ Widget getActionUiLive(LiveVideoModel liveModel, BuildContext context, GlobalKey
       longTime = 0;
     }
     if (longTime > 0) {
-      timeString = DateUtil.formatSecondToStringNum1(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+      timeString = DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
     }
 
     widgetArray.add(
@@ -640,7 +639,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按热度",
-            style:isHotOrTime?AppStyle.textMedium14:AppStyle.textSecondaryRegular14,
+            style: isHotOrTime ? AppStyle.textMedium14 : AppStyle.textSecondaryRegular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onHotClickBtn,
@@ -659,7 +658,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按时间",
-            style:!isHotOrTime?AppStyle.textMedium14:AppStyle.textSecondaryRegular14,
+            style: !isHotOrTime ? AppStyle.textMedium14 : AppStyle.textSecondaryRegular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onTimeClickBtn,

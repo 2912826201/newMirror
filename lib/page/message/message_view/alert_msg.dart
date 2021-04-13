@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
-
 class AlertMsg extends StatefulWidget {
   final RecallNotificationMessage recallNotificationMessage;
   final int position;
@@ -49,7 +48,7 @@ class _AlertMsgState extends State<AlertMsg> {
   List<Color> colorArray = [];
 
   Timer timer;
-  int timeCount=0;
+  int timeCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +57,7 @@ class _AlertMsgState extends State<AlertMsg> {
 
   Widget getContentBoxItem(BuildContext context) {
     return GestureDetector(
-      onTap: (){},
+      onTap: () {},
       child: Container(
         alignment: Alignment.bottomCenter,
         width: MediaQuery.of(context).size.width,
@@ -82,21 +81,23 @@ class _AlertMsgState extends State<AlertMsg> {
       if (isMyself) {
         textArray.add("你撤回了一条消息 ");
         isChangColorArray.add(false);
-        if (new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime < 5 * 60 * 1000) {
-          print("开始判断时间1${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
+        if (new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime <
+            5 * 60 * 1000) {
+          print(
+              "开始判断时间1${new DateTime.now().millisecondsSinceEpoch - widget.recallNotificationMessage.recallActionTime}");
           try {
-            if (json.decode(widget.recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
+            if (json.decode(widget.recallNotificationMessage.recallContent)["subObjectName"] ==
+                TextMessage.objectName) {
               textArray.add("重新编辑");
               isChangColorArray.add(true);
-              timer=Timer.periodic(Duration(seconds: 1), (timer) {
+              timer = Timer.periodic(Duration(seconds: 1), (timer) {
                 timeCount++;
-                if(timeCount>60){
-                  timeCount=0;
+                if (timeCount > 60) {
+                  timeCount = 0;
                   timer.cancel();
-                  timer=null;
-                  if(mounted) {
-                    setState(() {
-                    });
+                  timer = null;
+                  if (mounted) {
+                    setState(() {});
                   }
                 }
               });
@@ -138,27 +139,27 @@ class _AlertMsgState extends State<AlertMsg> {
       Map<String, dynamic> mapGroupModel = json.decode(widget.map["data"]["data"]);
       if (mapGroupModel["subType"] == 5) {
         getGroupEntryByQRCode(mapGroupModel, context);
-      }else if (mapGroupModel["subType"] == 4) {
+      } else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
-        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
+        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
           ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid!=Application.profile.uid) {
+          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
             textArray.clear();
           } else {
-            if(mapGroupModel["subType"] == 0&&widget.map["data"]["name"]=="Entry"){
+            if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
               textArray.clear();
-            }else {
+            } else {
               getGroupText(mapGroupModel, context);
             }
           }
-        }else{
+        } else {
           if (mapGroupModel["subType"] == 1) {
             textArray.clear();
           } else {
-            if(mapGroupModel["subType"] == 0&&widget.map["data"]["name"]=="Entry"){
+            if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
               textArray.clear();
-            }else {
+            } else {
               getGroupText(mapGroupModel, context);
             }
           }
@@ -174,7 +175,7 @@ class _AlertMsgState extends State<AlertMsg> {
   }
 
   //修改群名
-  void updateGroupName(Map<String, dynamic> mapGroupModel, BuildContext context){
+  void updateGroupName(Map<String, dynamic> mapGroupModel, BuildContext context) {
     colorArray.add(AppColor.textSecondary);
     colorArray.add(AppColor.textPrimary1);
 
@@ -193,7 +194,6 @@ class _AlertMsgState extends State<AlertMsg> {
     isChangColorArray.add(false);
   }
 
-
   //判断是加入群聊还是退出群聊
   void getGroupText(Map<String, dynamic> mapGroupModel, BuildContext context) {
     colorArray.add(AppColor.textSecondary);
@@ -201,7 +201,7 @@ class _AlertMsgState extends State<AlertMsg> {
 
     int userCount = 0;
 
-    bool isHaveUserSelf=false;
+    bool isHaveUserSelf = false;
 
     List<dynamic> users = mapGroupModel["users"];
     if (users == null || users.length < 1) {
@@ -216,7 +216,7 @@ class _AlertMsgState extends State<AlertMsg> {
       if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
-        isHaveUserSelf=true;
+        isHaveUserSelf = true;
       } else {
         textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
@@ -229,7 +229,7 @@ class _AlertMsgState extends State<AlertMsg> {
       if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
         textArray.add("你将");
         isChangColorArray.add(false);
-        isHaveUserSelf=true;
+        isHaveUserSelf = true;
       } else {
         textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
@@ -244,7 +244,7 @@ class _AlertMsgState extends State<AlertMsg> {
         if (d != null) {
           if (d["uid"] == Application.profile.uid) {
             textArray.add("你${userCount > users.length ? " " : "、"}");
-            isHaveUserSelf=true;
+            isHaveUserSelf = true;
           } else {
             if (mapGroupModel["subType"] == 3) {
               textArray.add("${d["currentMasterName"]}${userCount > users.length ? " " : "、"}");
@@ -269,29 +269,29 @@ class _AlertMsgState extends State<AlertMsg> {
       textArray.add("加入群聊");
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
-      if(!isHaveUserSelf){
-        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
-            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList!=null&&
-            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0) {
+      if (!isHaveUserSelf) {
+        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED &&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList != null &&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
           ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-          if(chatGroupUserModel.uid!=Application.profile.uid){
+          if (chatGroupUserModel.uid != Application.profile.uid) {
             textArray.clear();
           }
-        }else{
+        } else {
           textArray.clear();
         }
       }
     } else if (mapGroupModel["subType"] == 2) {
       textArray.add("移出了群聊");
-      if(!isHaveUserSelf){
-        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
-            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList!=null&&
-            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0) {
+      if (!isHaveUserSelf) {
+        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED &&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList != null &&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
           ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-          if(chatGroupUserModel.uid!=Application.profile.uid){
+          if (chatGroupUserModel.uid != Application.profile.uid) {
             textArray.clear();
           }
-        }else{
+        } else {
           textArray.clear();
         }
       }
@@ -314,22 +314,22 @@ class _AlertMsgState extends State<AlertMsg> {
       return;
     }
 
-    bool isMe=false;
-    String name="";
+    bool isMe = false;
+    String name = "";
     for (dynamic d in users) {
       if (d != null) {
         if (d["uid"] == Application.profile.uid) {
-          isMe=true;
+          isMe = true;
           break;
         } else {
-          name=d["groupNickName"];
+          name = d["groupNickName"];
         }
       }
     }
-    if(isMe){
+    if (isMe) {
       textArray.add("你通过二维码扫描加入群聊");
       isChangColorArray.add(false);
-    }else{
+    } else {
       textArray.add(name);
       isChangColorArray.add(true);
       textArray.add(" 通过扫描 ");
@@ -344,7 +344,6 @@ class _AlertMsgState extends State<AlertMsg> {
       isChangColorArray.add(false);
     }
   }
-
 
   //获取消息
   Widget alertText() {
@@ -384,13 +383,7 @@ class _AlertMsgState extends State<AlertMsg> {
                 contentType: RecallNotificationMessage.objectName, map: map, position: widget.position);
           }
         },
-      style: TextStyle(
-          color: isChangeColor ? colorArray[1] : colorArray[0],
-          fontSize: 14
-      ),
+      style: TextStyle(color: isChangeColor ? colorArray[1] : colorArray[0], fontSize: 14),
     );
   }
 }
-
-
-

@@ -25,7 +25,6 @@ import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
 import '../message_chat_page_manager.dart';
@@ -297,7 +296,8 @@ class GroupMorePageState extends State<GroupMorePage> {
         if (!(await isContinue())) {
           return;
         }
-        AppRouter.navigateToMineDetail(context,userModel.uid,avatarUrl:userModel.avatarUri,userName:userModel.nickName);
+        AppRouter.navigateToMineDetail(context, userModel.uid,
+            avatarUrl: userModel.avatarUri, userName: userModel.nickName);
       },
       child: Container(
         child: Column(

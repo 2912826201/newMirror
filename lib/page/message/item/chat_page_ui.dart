@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
@@ -20,21 +17,22 @@ import 'package:provider/provider.dart';
 
 import '../message_chat_page_manager.dart';
 
-class ChatPageUtil{
+class ChatPageUtil {
   static ChatPageUtil _chatPageUi;
   BuildContext context;
 
-  static ChatPageUtil init(BuildContext context){
-    if(_chatPageUi==null){
-      _chatPageUi=ChatPageUtil();
+  static ChatPageUtil init(BuildContext context) {
+    if (_chatPageUi == null) {
+      _chatPageUi = ChatPageUtil();
     }
-    _chatPageUi.context=context;
+    _chatPageUi.context = context;
     return _chatPageUi;
   }
 
   //获取appbar
-  Widget getAppBar(ConversationDto conversation,Function() _topMoreBtnClick) {
-    Widget action=CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
+  Widget getAppBar(ConversationDto conversation, Function() _topMoreBtnClick) {
+    Widget action =
+        CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
     String chatName;
     if (conversation.name == null || conversation.name.trim().length < 1) {
       chatName = conversation.conversationId;
@@ -42,19 +40,20 @@ class ChatPageUtil{
       chatName = conversation.name;
     }
     if (conversation.getType() == RCConversationType.Group) {
-      if(context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length>0) {
+      if (context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
         if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
           action = Container();
         }
-      }else{
-        if(Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"]==null){
+      } else {
+        if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+            null) {
           action = Container();
         }
       }
       int userCount;
-      if(context.read<GroupUserProfileNotifier>().isNoHaveMe()){
-        userCount=0;
-      }else {
+      if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
+        userCount = 0;
+      } else {
         userCount = context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
       }
       return CustomAppBar(
@@ -70,12 +69,9 @@ class ChatPageUtil{
     }
   }
 
-
   //获取关注按钮条
-  Widget getTopAttentionUi(bool isShowTopAttentionUi,
-      int conversationType,
-      Function() _attntionOnClick,
-      Function(bool isShow) _showTopAttentionUi){
+  Widget getTopAttentionUi(bool isShowTopAttentionUi, int conversationType, Function() _attntionOnClick,
+      Function(bool isShow) _showTopAttentionUi) {
     if (conversationType != PRIVATE_TYPE) {
       isShowTopAttentionUi = false;
     }
@@ -98,7 +94,7 @@ class ChatPageUtil{
                   child: Icon(Icons.close, size: 16, color: AppColor.colorb9b9b9),
                 ),
                 onTap: () {
-                  if(_showTopAttentionUi!=null){
+                  if (_showTopAttentionUi != null) {
                     _showTopAttentionUi(false);
                   }
                 },
@@ -106,11 +102,11 @@ class ChatPageUtil{
               Expanded(
                   child: SizedBox(
                       child: Text(
-                        "点击关注,及时看到对方动态",
-                        style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ))),
+                "点击关注,及时看到对方动态",
+                style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ))),
               GestureDetector(
                 child: Container(
                   width: 60,
@@ -124,8 +120,7 @@ class ChatPageUtil{
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add, size: 16, color: AppColor.textPrimary1),
-                      Text("关注",
-                          style: AppStyle.textMedium14),
+                      Text("关注", style: AppStyle.textMedium14),
                       SizedBox(width: 2),
                     ],
                   ),
@@ -139,21 +134,13 @@ class ChatPageUtil{
     );
   }
 
-
   //清聊天未读数
-  clearUnreadCount(ConversationDto conversation){
-    MessageManager.clearUnreadCount(
-        context,
-        conversation.conversationId,
-        Application.profile.uid,
-        conversation.type
-    );
+  clearUnreadCount(ConversationDto conversation) {
+    MessageManager.clearUnreadCount(context, conversation.conversationId, Application.profile.uid, conversation.type);
   }
 
-
-
   //加入发送未完成的消息
-  addPostNoCompleteMessage(ConversationDto conversation,List<ChatDataModel> chatDataList) {
+  addPostNoCompleteMessage(ConversationDto conversation, List<ChatDataModel> chatDataList) {
     if (Application.postChatDataModelList[conversation.id] == null ||
         Application.postChatDataModelList[conversation.id].length < 1) {
       return;
@@ -177,25 +164,25 @@ class ChatPageUtil{
   }
 
   //加入时间提示
-  void getTimeAlert(List<ChatDataModel> chatDataList,String chatId) {
+  void getTimeAlert(List<ChatDataModel> chatDataList, String chatId) {
     if (chatDataList != null && chatDataList.length > 0) {
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
-          chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
-        } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-          chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
+          chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+        } else if (chatDataList[i].msg != null &&
+            (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
+          chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
         }
       }
     }
   }
 
   //获取普通消息
-  Future<List<ChatDataModel>> getChatMessageList(ConversationDto conversation,Message shareMessage)async{
+  Future<List<ChatDataModel>> getChatMessageList(ConversationDto conversation, Message shareMessage) async {
     List msgList = new List();
     List<ChatDataModel> chatDataList = <ChatDataModel>[];
-    msgList = await RongCloud.init().getHistoryMessages(
-        conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch,
-        chatAddHistoryMessageCount, 0);
+    msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
+        new DateTime.now().millisecondsSinceEpoch, chatAddHistoryMessageCount, 0);
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
         chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
@@ -203,7 +190,7 @@ class ChatPageUtil{
     }
 
     //添加没有发生完成的消息
-    addPostNoCompleteMessage(conversation,chatDataList);
+    addPostNoCompleteMessage(conversation, chatDataList);
 
     if (shareMessage != null && chatDataList.length > 0) {
       chatDataList[0].isHaveAnimation = true;
@@ -215,14 +202,12 @@ class ChatPageUtil{
     return chatDataList;
   }
 
-
   //获取系统消息
   Future<List> getSystemInformationNet(ConversationDto conversation) async {
     String systemLastTime;
     int systemPage = 0;
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    Map<String, dynamic> dataListMap =
-    await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
+    Map<String, dynamic> dataListMap = await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -233,6 +218,6 @@ class ChatPageUtil{
       });
     }
     getTimeAlert(dataList, conversation.conversationId);
-    return [dataList,systemLastTime,systemPage];
+    return [dataList, systemLastTime, systemPage];
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-
 ///
 /// 三次贝塞尔曲线的路径算法
 class MonotoneX {
@@ -74,14 +73,7 @@ class MonotoneX {
       });
     } else {
       arr.forEach((f) {
-        _point(
-            path,
-            f[0],
-            f[1],
-            f[2],
-            f[3],
-            f[4],
-            f[5]);
+        _point(path, f[0], f[1], f[2], f[3], f[4], f[5]);
       });
     }
     return path;

@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/widget/icon.dart';
@@ -7,12 +6,7 @@ class ChatTopAtMark extends StatefulWidget {
   final Function() onAtUiClickListener;
   final bool isHaveAtMeMsg;
 
-
-  ChatTopAtMark({
-    Key key,
-    this.onAtUiClickListener,
-    this.isHaveAtMeMsg
-  }):super(key: key);
+  ChatTopAtMark({Key key, this.onAtUiClickListener, this.isHaveAtMeMsg}) : super(key: key);
 
   @override
   ChatTopAtMarkState createState() => ChatTopAtMarkState(isHaveAtMeMsg);
@@ -21,20 +15,16 @@ class ChatTopAtMark extends StatefulWidget {
 class ChatTopAtMarkState extends State<ChatTopAtMark> {
   bool isHaveAtMeMsg;
 
-
-
-  setIsHaveAtMeMs(bool isHaveAtMeMsg){
-    this.isHaveAtMeMsg=isHaveAtMeMsg;
-    setState(() {
-
-    });
+  setIsHaveAtMeMs(bool isHaveAtMeMsg) {
+    this.isHaveAtMeMsg = isHaveAtMeMsg;
+    setState(() {});
   }
 
   ChatTopAtMarkState(this.isHaveAtMeMsg);
 
   @override
   Widget build(BuildContext context) {
-    return isHaveAtMeMsg?getAtUi():Container();
+    return isHaveAtMeMsg ? getAtUi() : Container();
   }
 
   //获取at的视图

@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -32,7 +31,7 @@ class UserMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
-        this.sendTime,
+      this.sendTime,
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
       this.sendChatUserId,
@@ -51,8 +50,7 @@ class UserMsg extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -64,14 +62,13 @@ class UserMsg extends StatelessWidget {
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
       Spacer(),
     ];
@@ -109,7 +106,6 @@ class UserMsg extends StatelessWidget {
     return body;
   }
 
-
   //判断有没有名字
   Widget getNameAndContentUi() {
     return Container(
@@ -136,10 +132,7 @@ class UserMsg extends StatelessWidget {
 //长按事件
   Widget _getUserUiLongClick() {
     List<String> longClickStringList =
-        getLongClickStringList(
-            isMySelf: isMyself,
-            sendTime: sendTime,
-            contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(
@@ -151,8 +144,7 @@ class UserMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().
-        getUserMsgDataHeight(isShowChatUserName,isOnlyContentHeight: true),
+      contentHeight: MessageItemHeightUtil.init().getUserMsgDataHeight(isShowChatUserName, isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getUserUi(),
         onTap: () {
@@ -199,9 +191,7 @@ class UserMsg extends StatelessWidget {
                 width: double.infinity,
                 height: 70,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(3),
-                      topLeft: Radius.circular(3)),
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
                   child: Image.asset(
                     "images/test/bg.png",
                     fit: BoxFit.cover,
@@ -249,9 +239,7 @@ class UserMsg extends StatelessWidget {
                 height: 4,
               ),
               Text(
-                userModel.description != null
-                    ? userModel.description
-                    : "",
+                userModel.description != null ? userModel.description : "",
                 style: AppStyle.textSecondaryRegular13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

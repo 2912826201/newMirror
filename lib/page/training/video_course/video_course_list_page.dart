@@ -210,7 +210,7 @@ class VideoCourseListPageState extends XCState {
     if (filterBoxOpacity > 0) {
       filterBoxHeight = MediaQuery.of(context).size.height * 0.75 - 150;
       if (showScreenTitlePosition < 0 || showScreenTitlePosition >= 3) {
-        if(titleItemSubSettingList[0].height>0){
+        if (titleItemSubSettingList[0].height > 0) {
           double itemHeight =
               titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
           if (itemHeight + 100 < filterBoxHeight) {
@@ -218,7 +218,7 @@ class VideoCourseListPageState extends XCState {
           }
         }
       } else {
-        if(titleItemSubSettingList[showScreenTitlePosition].height>0){
+        if (titleItemSubSettingList[showScreenTitlePosition].height > 0) {
           filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
         }
       }
@@ -829,9 +829,9 @@ class VideoCourseListPageState extends XCState {
     //获取每一个筛序组的高度
     for (int j = 0; j < titleItemSubSettingList.length; j++) {
       if (titleItemSubSettingList[j].height < 1) {
-        try{
+        try {
           titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
-        }catch (e){
+        } catch (e) {
           titleItemSubSettingList[j].height = 0;
         }
       }
@@ -940,7 +940,9 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
                             style: AppStyle.textPrimary2Medium12),
-                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: AppStyle.textSecondaryRegular12),
+                        TextSpan(
+                            text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ",
+                            style: AppStyle.textSecondaryRegular12),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
                             style: AppStyle.textPrimary2Medium12),

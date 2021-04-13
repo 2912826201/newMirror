@@ -1,10 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/chat_voice.dart';
-import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
 
 typedef VoiceFile = void Function(String path, int time);
@@ -32,7 +29,7 @@ class MessageInputBar extends StatefulWidget {
     this.onEmojio,
     this.value,
     this.voiceFile,
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MessageInputBarState(isVoice);
@@ -41,12 +38,10 @@ class MessageInputBar extends StatefulWidget {
 class MessageInputBarState extends State<MessageInputBar> {
   bool isVoice;
 
-  setIsVoice(bool isVoice){
-    this.isVoice=isVoice;
-    if(mounted){
-      setState(() {
-
-      });
+  setIsVoice(bool isVoice) {
+    this.isVoice = isVoice;
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -90,18 +85,17 @@ class MessageInputBarState extends State<MessageInputBar> {
                       svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
                     ),
                   ),
-                  Expanded(child: SizedBox(
+                  Expanded(
+                      child: SizedBox(
                     child: Container(
                       constraints: BoxConstraints(
                         minHeight: 32.0,
-                        maxHeight: 5*16.0,
+                        maxHeight: 5 * 16.0,
                       ),
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
-                          color: AppColor.bgWhite.withOpacity(0.65),
-                          borderRadius: BorderRadius.circular(16.0)
-                      ),
-                      child: isVoice?ChatVoice(voiceFile: widget.voiceFile): LayoutBuilder(builder: widget.edit),
+                          color: AppColor.bgWhite.withOpacity(0.65), borderRadius: BorderRadius.circular(16.0)),
+                      child: isVoice ? ChatVoice(voiceFile: widget.voiceFile) : LayoutBuilder(builder: widget.edit),
                     ),
                   )),
                   Container(

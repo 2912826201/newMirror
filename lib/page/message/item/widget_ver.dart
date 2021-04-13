@@ -60,7 +60,7 @@ class _WidgetVerState extends State<WidgetVer> {
   //监听动画是否开始
   void _initTimeDuration() {
     duration = Duration(milliseconds: 200);
-    timer=Timer.periodic(duration, (timer) {
+    timer = Timer.periodic(duration, (timer) {
       try {
         double temp;
         temp = intLenArray[0];

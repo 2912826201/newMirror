@@ -33,20 +33,18 @@ class MessageInputBody extends StatelessWidget {
             ),
           )
         : new Container(
-      color: color,
-      height: double.infinity,
-      width: double.infinity,
-      child: new GestureDetector(
-        child: child,
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          if (onTap != null) {
-            onTap();
-          }
-        },
-      ),
-    );
+            color: color,
+            height: double.infinity,
+            width: double.infinity,
+            child: new GestureDetector(
+              child: child,
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                if (onTap != null) {
+                  onTap();
+                }
+              },
+            ),
+          );
   }
-
 }
-

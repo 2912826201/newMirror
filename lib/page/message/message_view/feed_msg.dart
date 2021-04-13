@@ -11,9 +11,7 @@ import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 
-
 import 'currency_msg.dart';
-
 
 ///动态消息
 // ignore: must_be_immutable
@@ -61,8 +59,7 @@ class FeedMsg extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -80,7 +77,7 @@ class FeedMsg extends StatelessWidget {
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
       Spacer(),
     ];
@@ -144,9 +141,9 @@ class FeedMsg extends StatelessWidget {
   //获取动态的长按事件
   Widget _getFeedUiLongClickUi() {
     List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself,
-        contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-        sendTime: sendTime,
+      isMySelf: isMyself,
+      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+      sendTime: sendTime,
     );
     return LongClickPopupMenu(
       onValueChanged: (int value) {
@@ -159,8 +156,8 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().
-        getFeedMsgDataHeight(homeFeedMode.toJson(), isShowChatUserName,isOnlyContentHeight: true),
+      contentHeight: MessageItemHeightUtil.init()
+          .getFeedMsgDataHeight(homeFeedMode.toJson(), isShowChatUserName, isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getFeedUi(),
         onTap: () {
@@ -195,9 +192,8 @@ class FeedMsg extends StatelessWidget {
     if (isPicOrVideo < 0) {
       return Container();
     } else {
-      String showUrl = (isPicOrVideo == 0
-          ? homeFeedMode.picUrls[0].url
-          : FileUtil.getVideoFirstPhoto(homeFeedMode.videos[0].url));
+      String showUrl =
+          (isPicOrVideo == 0 ? homeFeedMode.picUrls[0].url : FileUtil.getVideoFirstPhoto(homeFeedMode.videos[0].url));
 
       int ms = 0;
       if (isPicOrVideo == 1) {
@@ -209,8 +205,7 @@ class FeedMsg extends StatelessWidget {
           child: Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(3), topLeft: Radius.circular(3)),
+                borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
                 child: CachedNetworkImage(
                   height: double.infinity,
                   width: double.infinity,
@@ -250,7 +245,7 @@ class FeedMsg extends StatelessWidget {
                   offstage: isPicOrVideo == 0,
                   child: Container(
                     child: Text(
-                      DateUtil.formatSecondToStringNum(ms),
+                      DateUtil.formatSecondToStringNumShowMinute(ms),
                       style: TextStyle(fontSize: 11, color: AppColor.white),
                     ),
                   ),
@@ -318,9 +313,7 @@ class FeedMsg extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 child: Text(homeFeedMode.content,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppStyle.textPrimary2Regular16),
+                    maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textPrimary2Regular16),
               ),
             ),
           )),
@@ -332,8 +325,7 @@ class FeedMsg extends StatelessWidget {
   //获取动态的高度
   double _getFeedHeight() {
     if (isPicOrVideo == 0) {
-      double value =
-          homeFeedMode.picUrls[0].width / homeFeedMode.picUrls[0].height;
+      double value = homeFeedMode.picUrls[0].width / homeFeedMode.picUrls[0].height;
       if (value == 1) {
         return 180.0 + 75.0;
       } else if (value == 0.8) {
@@ -342,8 +334,7 @@ class FeedMsg extends StatelessWidget {
         return 95.0 + 75.0;
       }
     } else if (isPicOrVideo == 1) {
-      double value =
-          homeFeedMode.videos[0].width / homeFeedMode.videos[0].height;
+      double value = homeFeedMode.videos[0].width / homeFeedMode.videos[0].height;
       if (value == 1) {
         return 180.0 + 75.0;
       } else if (value == 0.8) {

@@ -35,8 +35,7 @@ class LiveBroadcastItemPage extends StatefulWidget {
   createState() => new LiveBroadcastItemPageState(dataDate: dataDate);
 }
 
-class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
-    with AutomaticKeepAliveClientMixin {
+class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with AutomaticKeepAliveClientMixin {
   DateTime dataDate;
 
   LiveBroadcastItemPageState({
@@ -71,7 +70,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   @override
   void initState() {
     super.initState();
-    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
+    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     //获取本地日历已经预约的课程
     loadingStatus = LoadingStatus.STATUS_LOADING;
     liveModelArray.clear();
@@ -108,7 +107,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               child: nullDataUi(),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
-                if(mounted) {
+                if (mounted) {
                   setState(() {});
                 }
                 liveModelArray.clear();
@@ -165,40 +164,38 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     ));
 
     //判断用户登陆了
-    widgetArray.add(
-      Offstage(
-        offstage: true,
-        child: userLoginComplete(),
-      ));
+    widgetArray.add(Offstage(
+      offstage: true,
+      child: userLoginComplete(),
+    ));
 
     return Column(
       children: [
         Expanded(
             child: SizedBox(
-              child: ScrollConfiguration(
-                behavior: NoBlueEffectBehavior(),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: widgetArray,
-                  ),
-                ),
+          child: ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: SingleChildScrollView(
+              child: Column(
+                children: widgetArray,
               ),
-            ))
+            ),
+          ),
+        ))
       ],
     );
   }
-
 
   //当用户登陆成功后需要刷新数据
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(!isLoggedIn&&notifier.isLoggedIn){
+        if (!isLoggedIn && notifier.isLoggedIn) {
           liveModelOldArray.clear();
           liveModelArray.clear();
           getLiveModelData();
         }
-        isLoggedIn=notifier.isLoggedIn;
+        isLoggedIn = notifier.isLoggedIn;
         return child;
       },
       child: Container(),
@@ -241,14 +238,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           margin: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
           child: Row(
             children: [
-              _getItemLeftImageUi(
-                  liveList[i], imageWidth, imageHeight, isOld, i),
+              _getItemLeftImageUi(liveList[i], imageWidth, imageHeight, isOld, i),
               _getRightDataUi(liveList[i], imageWidth, imageHeight, isOld, i),
             ],
           ),
         ),
         onTap: () {
-          onClickItem(liveList[i], i,isOld);
+          onClickItem(liveList[i], i, isOld);
         },
       ));
     }
@@ -321,8 +317,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               padding: const EdgeInsets.only(top: 3, bottom: 3),
               child: Text(
                 "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.startTime))}"
-                    "-"
-                    "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.endTime))}",
+                "-"
+                "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.endTime))}",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColor.white,
@@ -342,113 +338,108 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   Widget _getRightDataUi(LiveVideoModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     return Expanded(
         child: SizedBox(
-          child: Container(
-            margin: const EdgeInsets.only(left: 12),
-            height: imageHeight.toDouble(),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.title ?? "",
-                    style: AppStyle.textMedium15,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Expanded(
-                    child: SizedBox(
+      child: Container(
+        margin: const EdgeInsets.only(left: 12),
+        height: imageHeight.toDouble(),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              child: Text(
+                value.title ?? "",
+                style: AppStyle.textMedium15,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Expanded(
+                child: SizedBox(
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    //数据
+                    Expanded(
+                        child: SizedBox(
                       child: Container(
+                        padding: const EdgeInsets.only(top: 6),
                         width: double.infinity,
-                        child: Row(
+                        height: double.infinity,
+                        child: Stack(
                           children: [
-                            //数据
-                            Expanded(
-                                child: SizedBox(
-                                  child: Container(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                //类型
-                                                child: Text(
-                                                  value.coursewareDto?.targetDto?.name,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: AppColor.textPrimary1,
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.only(
-                                                    top: 1, bottom: 1, left: 5, right: 5),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(1),
-                                                  color:
-                                                  AppColor.textHint.withOpacity(0.34),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  "${IntegerUtil.formationCalorie(value.coursewareDto?.calories)}",
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: AppColor.textPrimary1,
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.only(
-                                                    top: 1, bottom: 1, left: 5, right: 5),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(1),
-                                                  color:
-                                                  AppColor.textHint.withOpacity(0.34),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          top: 0,
-                                          left: 0,
-                                        ),
-                                        Positioned(
-                                          child: Text(
-                                            value.coachDto?.nickName,
-                                            style: TextStyle(
-                                                fontSize: 12, color: AppColor.textPrimary2),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          bottom: 0,
-                                          left: 0,
-                                          right: 8,
-                                        )
-                                      ],
+                            Positioned(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    //类型
+                                    child: Text(
+                                      value.coursewareDto?.targetDto?.name,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColor.textPrimary1,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(1),
+                                      color: AppColor.textHint.withOpacity(0.34),
                                     ),
                                   ),
-                                )),
-                            //按钮
-                            Container(
-                              height: double.infinity,
-                              child: Stack(
-                                alignment: AlignmentDirectional.bottomStart,
-                                children: [
-                                  _getButton(value, isOld, index),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "${IntegerUtil.formationCalorie(value.coursewareDto?.calories)}",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColor.textPrimary1,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(1),
+                                      color: AppColor.textHint.withOpacity(0.34),
+                                    ),
+                                  ),
                                 ],
                               ),
+                              top: 0,
+                              left: 0,
                             ),
+                            Positioned(
+                              child: Text(
+                                value.coachDto?.nickName,
+                                style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              bottom: 0,
+                              left: 0,
+                              right: 8,
+                            )
                           ],
                         ),
                       ),
                     )),
-              ],
-            ),
-          ),
-        ));
+                    //按钮
+                    Container(
+                      height: double.infinity,
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomStart,
+                        children: [
+                          _getButton(value, isOld, index),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )),
+          ],
+        ),
+      ),
+    ));
   }
 
   //按钮 去上课 预约 已预约 回放
@@ -463,23 +454,18 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         width: 72,
         child: Text(
           value.getGetPlayType(),
-          style: TextStyle(
-              color: value.playType == 4
-                  ? noAlreadyOrderBgColor
-                  : alreadyOrderBgColor,
-              fontSize: 12),
+          style: TextStyle(color: value.playType == 4 ? noAlreadyOrderBgColor : alreadyOrderBgColor, fontSize: 12),
           textAlign: TextAlign.center,
         ),
         decoration: BoxDecoration(
-          color:
-          value.playType == 4 ? alreadyOrderBgColor : noAlreadyOrderBgColor,
+          color: value.playType == 4 ? alreadyOrderBgColor : noAlreadyOrderBgColor,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(width: 0.5, color: noAlreadyOrderBgColor),
         ),
         padding: const EdgeInsets.only(top: 5, bottom: 5),
       ),
       onTap: () {
-        onClickItem(value, index,isOld);
+        onClickItem(value, index, isOld);
       },
     );
   }
@@ -504,7 +490,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           SizedBox(
             height: 14,
           ),
-          Text(string + "暂无直播课程，去看看其他的吧~",
+          Text(
+            string + "暂无直播课程，去看看其他的吧~",
             style: TextStyle(
               fontSize: 14,
               color: AppColor.textSecondary,
@@ -521,7 +508,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   ///以上ui-------------------------------------------------------
   ///
 
-
   //判断是否退出界面加入群聊
   Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
@@ -533,10 +519,14 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           context.watch<ChatMessageProfileNotifier>().isResetCoursePageItem = false;
           if (message != null) {
             Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-            if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
-                mapGroupModel["startTime"]!=null&&mapGroupModel["startTime"] is String
-              &&mapGroupModel["courseId"] is int&&mapGroupModel["handleType"] is int){
-              updateBookState(mapGroupModel["courseId"],mapGroupModel["handleType"],mapGroupModel["startTime"]);
+            if (mapGroupModel != null &&
+                mapGroupModel["courseId"] != null &&
+                mapGroupModel["handleType"] != null &&
+                mapGroupModel["startTime"] != null &&
+                mapGroupModel["startTime"] is String &&
+                mapGroupModel["courseId"] is int &&
+                mapGroupModel["handleType"] is int) {
+              updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
             }
           }
         }
@@ -546,24 +536,28 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //修改直播课程预约的状态
-  void updateBookState(int courseId,int bookState,String startTime){
-    if(liveModelArray==null||liveModelArray.length<1){
+  void updateBookState(int courseId, int bookState, String startTime) {
+    if (liveModelArray == null || liveModelArray.length < 1) {
       return;
     }
     liveModelArray.forEach((element) {
-      if(element.id==courseId){
-        if(element.playType==4&&bookState==0){
-          element.playType=2;
-          element.isBooked=0;
-          deleteAlertEvents(courseId,startTime);
-          Future.delayed(Duration(milliseconds: 100),(){
-            if(mounted){setState(() {});}
+      if (element.id == courseId) {
+        if (element.playType == 4 && bookState == 0) {
+          element.playType = 2;
+          element.isBooked = 0;
+          deleteAlertEvents(courseId, startTime);
+          Future.delayed(Duration(milliseconds: 100), () {
+            if (mounted) {
+              setState(() {});
+            }
           });
-        }else if(element.playType==2&&bookState==1){
-          element.playType=4;
-          element.isBooked=1;
-          Future.delayed(Duration(milliseconds: 100),(){
-            if(mounted){setState(() {});}
+        } else if (element.playType == 2 && bookState == 1) {
+          element.playType = 4;
+          element.isBooked = 1;
+          Future.delayed(Duration(milliseconds: 100), () {
+            if (mounted) {
+              setState(() {});
+            }
           });
         }
         return;
@@ -571,16 +565,18 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     });
   }
 
-
   //删除日历预约提醒
-  void deleteAlertEvents(int courseId,String startTime) async {
+  void deleteAlertEvents(int courseId, String startTime) async {
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar("iF", localAccountName: "iF——1",);
+      var result = await _deviceCalendarPlugin.createCalendar(
+        "iF",
+        localAccountName: "iF——1",
+      );
       if (result.isSuccess) {
         _deleteAlertEvents(result.data, startTime);
       }
@@ -600,8 +596,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     _calendars = calendarsResult?.data;
     if (_calendars != null && _calendars.length > 0) {
       var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
-          _calendars[0].id,
-          RetrieveEventsParams(startDate: startDate, endDate: endDate));
+          _calendars[0].id, RetrieveEventsParams(startDate: startDate, endDate: endDate));
       calendarEvents = calendarEventsResult?.data;
     }
     if (calendarEvents.length > 0) {
@@ -637,13 +632,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     print("直播当日的的数量：${liveModelArray.length}");
     if (liveModelArray.length > 0) {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      if(mounted) {
+      if (mounted) {
         setState(() {});
       }
     } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(milliseconds: 300), () {
-        if(mounted){
+        if (mounted) {
           setState(() {});
         }
       });
@@ -658,23 +653,28 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {
-      String string =
-          "heroTag_live_${DateUtil.getNowDateMs()}_${Random().nextInt(
-          100000)}_${liveModel.id}_$index";
+      String string = "heroTag_live_${DateUtil.getNowDateMs()}_${Random().nextInt(100000)}_${liveModel.id}_$index";
       heroTagArray.add(string);
       return string;
     }
   }
 
-  void getRelation(LiveVideoModel value)async{
+  void getRelation(LiveVideoModel value) async {
     UserModel userModel = await getUserInfo(uid: value.coachId);
-    value.coachDto.relation=userModel.relation;
+    value.coachDto.relation = userModel.relation;
   }
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveVideoModel value, int index,bool isOld){
+  void onClickItem(LiveVideoModel value, int index, bool isOld) {
     print("index$index,liveModelArray.length：${liveModelArray.length},isOld:$isOld");
-    gotoNavigateToLiveDetail(value, index+(isOld?liveModelArray!=null?liveModelArray.length:0:0));
+    gotoNavigateToLiveDetail(
+        value,
+        index +
+            (isOld
+                ? liveModelArray != null
+                    ? liveModelArray.length
+                    : 0
+                : 0));
     getRelation(value);
   }
 

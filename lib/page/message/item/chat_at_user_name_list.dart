@@ -15,7 +15,6 @@ import '../message_chat_page_manager.dart';
 
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
-
 ///群聊聊天-用户@界面
 class ChatAtUserList extends StatefulWidget {
   final bool isShow;
@@ -36,20 +35,18 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(_resetChatAtPanel, EVENTBUS_CHAT_PAGE,registerName: CHAT_AT_GROUP_PANEL);
+    EventBus.getDefault().registerNoParameter(_resetChatAtPanel, EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
   }
 
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE,registerName: CHAT_AT_GROUP_PANEL);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
   }
 
-  _resetChatAtPanel(){
-    isShow=context.read<ChatEnterNotifier>().keyWord == "@";
-    setState(() {
-
-    });
+  _resetChatAtPanel() {
+    isShow = context.read<ChatEnterNotifier>().keyWord == "@";
+    setState(() {});
   }
 
   @override
@@ -70,10 +67,8 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
           onTap: () {
             print("取消艾特功能1");
             context.read<ChatEnterNotifier>().openAtCallback("");
-            isShow=false;
-            setState(() {
-
-            });
+            isShow = false;
+            setState(() {});
           },
         ),
       );
@@ -85,24 +80,35 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
   //动画部分
   Widget getAnimatedContainer() {
     return Consumer<GroupUserProfileNotifier>(
-        builder: (context, notifier, child) {
-          int count=context.watch<GroupUserProfileNotifier>().getSearchUserModelList().length;
-          return AnimatedContainer(
-            height: isShow ? (count<2?2:count>5?5:count)*48.0 : 0.0,
-            duration: Duration(milliseconds: 300),
-            child: Container(
-              height: (count<2?2:count>5?5:count)*48.0,
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                color: AppColor.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6), topRight: Radius.circular(6)),
-              ),
-              child: listViewUi(),
+      builder: (context, notifier, child) {
+        int count = context.watch<GroupUserProfileNotifier>().getSearchUserModelList().length;
+        return AnimatedContainer(
+          height: isShow
+              ? (count < 2
+                      ? 2
+                      : count > 5
+                          ? 5
+                          : count) *
+                  48.0
+              : 0.0,
+          duration: Duration(milliseconds: 300),
+          child: Container(
+            height: (count < 2
+                    ? 2
+                    : count > 5
+                        ? 5
+                        : count) *
+                48.0,
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              color: AppColor.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6)),
             ),
-          );
-        },
+            child: listViewUi(),
+          ),
+        );
+      },
     );
   }
 

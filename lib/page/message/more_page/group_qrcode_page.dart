@@ -11,7 +11,6 @@ import 'package:flutter/widgets.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/shared_image_model.dart';
 import 'package:mirror/util/date_util.dart';
@@ -101,31 +100,32 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
       body: RepaintBoundary(
         key: rootWidgetKey,
         child: Container(
-            height: ScreenUtil.instance.height,
-            width: ScreenUtil.instance.screenWidthDp,
-            child: Stack(
-              alignment: AlignmentDirectional.center,
-              children: [
-                //背景图
-                Container(
-                  height: ScreenUtil.instance.height,
-                  width: ScreenUtil.instance.screenWidthDp,
-                  color: AppColor.bgWhite,
+          height: ScreenUtil.instance.height,
+          width: ScreenUtil.instance.screenWidthDp,
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              //背景图
+              Container(
+                height: ScreenUtil.instance.height,
+                width: ScreenUtil.instance.screenWidthDp,
+                color: AppColor.bgWhite,
+              ),
+              Positioned(
+                child: UnconstrainedBox(
+                  child: _centerQr(),
                 ),
-                Positioned(
-                  child: UnconstrainedBox(
-                    child: _centerQr(),
-                  ),
-                ),
-                // Positioned(
-                //     top: ScreenUtil.instance.height * 0.73,
-                //     child: Container(
-                //       width: 120,
-                //       height: 30,
-                //       color: AppColor.black,
-                //     ))
-              ],
-            )),
+              ),
+              // Positioned(
+              //     top: ScreenUtil.instance.height * 0.73,
+              //     child: Container(
+              //       width: 120,
+              //       height: 30,
+              //       color: AppColor.black,
+              //     ))
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -165,9 +165,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                       right: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            //这里的边框颜色需要随背景变化
-                            border: Border.all(width: 0, color: AppColor.white)),
+                          shape: BoxShape.circle,
+                          //这里的边框颜色需要随背景变化
+                          border: Border.all(width: 0, color: AppColor.white),
+                        ),
                         child: ClipOval(
                           child: CachedNetworkImage(
                             height: 32,
@@ -184,7 +185,8 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                             ),
                           ),
                         ),
-                      ))
+                      ),
+                    )
                   : Container(),
           avatarList.length > 1
               ? Positioned(
@@ -221,43 +223,44 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
 
   Widget _centerQr() {
     return Container(
-        width: MediaQuery.of(context).size.width - (37.5 * 2),
-        margin: const EdgeInsets.only(left: 37.5, right: 37.5, bottom: 50),
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+      width: MediaQuery.of(context).size.width - (37.5 * 2),
+      margin: const EdgeInsets.only(left: 37.5, right: 37.5, bottom: 50),
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 15),
+            getUserImagePr(),
+            SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.only(left: 24, right: 24),
+              child: Text(
+                widget.name,
+                style: AppStyle.textMedium18,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(height: 16),
+            QrImage(
+              data: qrImageString == null ? "用户${widget.groupId}" : qrImageString,
+              size: ScreenUtil.instance.height * 0.49 * 0.57,
+              padding: EdgeInsets.zero,
+              backgroundColor: AppColor.white,
+              version: QrVersions.auto,
+            ),
+            SizedBox(height: 16),
+            Text("此二维码${DateUtil.formatSecondToDay(expirationTime)}内有效"),
+            SizedBox(height: 24),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 15),
-              getUserImagePr(),
-              SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.only(left: 24, right: 24),
-                child: Text(
-                  widget.name,
-                  style: AppStyle.textMedium18,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              SizedBox(height: 16),
-              QrImage(
-                data: qrImageString == null ? "用户${widget.groupId}" : qrImageString,
-                size: ScreenUtil.instance.height * 0.49 * 0.57,
-                padding: EdgeInsets.zero,
-                backgroundColor: AppColor.white,
-                version: QrVersions.auto,
-              ),
-              SizedBox(height: 16),
-              Text("此二维码${DateUtil.formatSecondToDay(expirationTime)}内有效"),
-              SizedBox(height: 24),
-            ],
-          ),
-        ));
+      ),
+    );
   }
 
   void loadData() async {

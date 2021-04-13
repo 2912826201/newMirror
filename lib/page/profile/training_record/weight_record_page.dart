@@ -15,8 +15,6 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/precision_limit_formatter.dart';
 import 'package:provider/provider.dart';
-import '../profile_detail_page.dart';
-import '../profile_detail_page.dart';
 import 'customize_line_chart.dart';
 
 ///体重记录页--我的体重
@@ -433,9 +431,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       weightDataModel = new WeightRecordsModel();
     }
 
-    RecordData recordData=new RecordData();
-    recordData.dateTime=DateUtil.formatDateString(new DateTime.now());
-    recordData.weight=userWeight;
+    RecordData recordData = new RecordData();
+    recordData.dateTime = DateUtil.formatDateString(new DateTime.now());
+    recordData.weight = userWeight;
 
     if (weightDataModel.recordList == null || weightDataModel.recordList.length < 1) {
       List<RecordData> recordList = [];

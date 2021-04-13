@@ -4,18 +4,9 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 
-
 ///管家界面-底部可操作列表
 class ChatSystemBottomBar extends StatelessWidget {
-  final List<String> alertList = [
-    "获取个人数据",
-    "获取食谱",
-    "获取今日课件",
-    "其他操作",
-    "其他操作",
-    "其他操作",
-    "其他操作"
-  ];
+  final List<String> alertList = ["获取个人数据", "获取食谱", "获取今日课件", "其他操作", "其他操作", "其他操作", "其他操作"];
 
   final VoidMessageClickCallBack voidMessageClickCallBack;
 
@@ -48,15 +39,11 @@ class ChatSystemBottomBar extends StatelessWidget {
 
   //每一个item
   Widget getItem(String text, int index, int len) {
-    var firstMargin =
-        const EdgeInsets.only(left: 15.5, top: 8, bottom: 8, right: 4);
-    var commandMargin =
-        const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 4);
-    var endMargin =
-        const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 15.5);
+    var firstMargin = const EdgeInsets.only(left: 15.5, top: 8, bottom: 8, right: 4);
+    var commandMargin = const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 4);
+    var endMargin = const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 15.5);
     return Container(
-      margin:
-          index == 0 ? firstMargin : (index == len ? endMargin : commandMargin),
+      margin: index == 0 ? firstMargin : (index == len ? endMargin : commandMargin),
       height: 32,
       child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
@@ -75,13 +62,9 @@ class ChatSystemBottomBar extends StatelessWidget {
                 ),
                 splashColor: AppColor.textHint,
                 onTap: () {
-                  voidMessageClickCallBack(
-                      content: text,
-                      contentType: ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR);
+                  voidMessageClickCallBack(content: text, contentType: ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR);
                 },
               ))),
     );
   }
-
-
 }
