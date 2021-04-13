@@ -214,7 +214,8 @@ var handlerVipNotOpen = Handler(handlerFunc: (BuildContext context, Map<String, 
   return VipNotOpenPage(type: data["vipState"]);
 });
 var handlerVipOpen = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return VipOpenPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VipOpenPage(vipState: data["vipState"],);
 });
 var handlerVipNamePlatePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);

@@ -62,7 +62,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///用户信息
   UserModel userModel;
 
-  int isBlack = 0;
 
   bool isScroll = false;
 
@@ -70,7 +69,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   int userStatus;
 
-  double _opcation = 0;
 
   final double width = ScreenUtil.instance.screenWidthDp;
   final double height = ScreenUtil.instance.height;
@@ -128,14 +126,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
         if (!isScroll) {
-          appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + 44);
+          appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight);
           appBarStreamController.sink.add(1);
           streamController.sink.add(AppColor.black);
           canOnClick = false;
           isScroll = true;
         }
       } else {
-        if (scrollController.offset <= ScreenUtil.instance.statusBarHeight + 44) {
+        if (scrollController.offset <= ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight) {
           ///这里是因为快速滑动会出现负的offset，会报size.height<0为true的错
           if (scrollController.offset > 0) {
             appBarHeightStreamController.sink.add(scrollController.offset);
@@ -145,7 +143,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         }
         if (scrollController.offset >= 0) {
           double offset = scrollController.offset / (ScreenUtil.instance.height * 0.33 + _signatureHeight);
-          appBarStreamController.sink.add(offset);
+          if(scrollController.offset<ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight){
+            appBarStreamController.sink.add(0);
+          }else{
+            appBarStreamController.sink.add(offset);
+          }
         }
         if (isScroll) {
           streamController.sink.add(AppColor.transparent);
@@ -363,7 +365,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return Container(
             color: AppColor.white.withOpacity(snapshot.data),
-            height: 44 + ScreenUtil.instance.statusBarHeight,
+            height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
             width: width,
             padding: EdgeInsets.only( top: ScreenUtil.instance.statusBarHeight),
             child: Center(
@@ -485,7 +487,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: ScreenUtil.instance.statusBarHeight + 44,
+              height: ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight,
             ),
 
             ///头像和按钮

@@ -522,9 +522,12 @@ class AppRouter {
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
-  static void navigateToVipOpenPage(BuildContext context) {
+  static void navigateToVipPage(BuildContext context,int vipState, {bool openOrNot = true}) {
     Map<String, dynamic> map = Map();
-    _navigateToPage(context, pathVipOpenPage, map);
+    if(vipState!=null){
+      map["vipState"] = vipState;
+    }
+    _navigateToPage(context, openOrNot?pathVipOpenPage:pathVipNotOpenPage, map);
   }
 
   static void navigateToVipNamePlatePage(BuildContext context, int index) {

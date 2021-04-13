@@ -229,10 +229,6 @@ class HeadViewState extends State<HeadView> {
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-         /* print('头部点击响应-------头部点击响应--------------${widget.model.pushId}');
-          if (widget.mineDetailId == widget.model.pushId) {
-            return false;
-          }*/
           if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           } else {
