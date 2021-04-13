@@ -142,19 +142,10 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                 color: AppColor.white,
                 child: Row(
                   children: [
-                    Container(
-                      width: 18,
-                      height: 18,
-                      margin: const EdgeInsets.only(top: 1),
-                      decoration: BoxDecoration(
-                        color: isAllSelect ? AppColor.mainRed : AppColor.white,
-                        border: Border.all(width: isAllSelect ? 0 : 1, color: AppColor.textHint),
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                    ),
+                    AppIcon.getAppIcon(isAllSelect ? AppIcon.selection_selected : AppIcon.selection_not_selected, 24),
                     SizedBox(width: 12),
                     Text("全选",
-                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
                     Expanded(child: SizedBox()),
                     Text("删除${selectDeleteIndexList.length < 1 ? "" : "(${selectDeleteIndexList.length})"}",
                         style: TextStyle(
@@ -302,7 +293,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   }
 
   //每一个item的点击事件
-  void onItemCLick(int index)async {
+  void onItemCLick(int index) async {
     if (topText == "取消") {
       if (selectDeleteIndexList.contains(index)) {
         selectDeleteIndexList.remove(index);
@@ -317,12 +308,12 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       //获取视频详情数据
       //加载数据
       Map<String, dynamic> model = await getVideoCourseDetail(courseId: courseVideoModelList[index].courseId);
-      if (model["code"]!=null&&model["code"]==CODE_SUCCESS && model["dataMap"]!=null) {
+      if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
         LiveVideoModel videoModel = LiveVideoModel.fromJson(model["dataMap"]);
-        AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId,videoModel: videoModel);
-      }else if(model["code"]!=null&&model["code"]==CODE_NO_DATA){
+        AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId, videoModel: videoModel);
+      } else if (model["code"] != null && model["code"] == CODE_NO_DATA) {
         ToastShow.show(msg: "该课程已失效!", context: context);
-      }else{
+      } else {
         ToastShow.show(msg: "请求课程失败!", context: context);
       }
     }
@@ -340,14 +331,14 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
               Visibility(
                 visible: topText == "取消",
                 child: Container(
-                  width: 18,
-                  height: 18,
-                  margin: const EdgeInsets.only(top: 1, right: 12),
-                  decoration: BoxDecoration(
-                    color: selectDeleteIndexList.contains(index) ? AppColor.mainRed : AppColor.white,
-                    border: Border.all(width: selectDeleteIndexList.contains(index) ? 0 : 1, color: AppColor.textHint),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
+                  width: 24,
+                  height: 24,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: AppIcon.getAppIcon(
+                      selectDeleteIndexList.contains(index)
+                          ? AppIcon.selection_selected
+                          : AppIcon.selection_not_selected,
+                      24),
                 ),
               ),
               Expanded(
@@ -358,7 +349,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                       SizedBox(height: 18),
                       Text(
                         courseVideoDto.courseName,
-                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -467,7 +458,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
     loadData();
   }
 
-  Future<bool> isOffline()async{
+  Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       return false;

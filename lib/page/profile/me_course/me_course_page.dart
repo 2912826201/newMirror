@@ -111,14 +111,15 @@ class _MeCoursePageState extends State<MeCoursePage> {
           Row(
             children: [
               Expanded(
-                  child: SizedBox(
-                child: Text(
-                  videoModel.title,
-                  style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: SizedBox(
+                  child: Text(
+                    videoModel.title,
+                    style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              )),
+              ),
               SizedBox(width: 15),
               Text(
                 "总时长${videoModel.times ~/ 1000 ~/ 60}分钟  ${IntegerUtil.formationCalorie(videoModel.calories)}",
