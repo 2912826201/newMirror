@@ -6,17 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
-import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
@@ -30,12 +26,11 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
-enum StateResult { HAVERESULT, RESULTNULL }
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
@@ -49,9 +44,6 @@ class ProfileDetailPage extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
-  final String _imgShared = "images/test/分享.png";
-  final String _imgMore = "images/test/ic_big_dynamic_more.png";
-
   ///昵称
   String _textName;
 
@@ -371,19 +363,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  InkWell(
+                  CustomAppBarIconButton(
+                    svgName: AppIcon.nav_return,
+                    iconColor: AppColor.black,
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(this.context,
+                          context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
                     },
-                    child: Container(
-                      height: 24,
-                      width: 24,
-                      child: Image.asset(
-                        "images/test/back.png",
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
                   ),
                   Spacer(),
                   StreamBuilder<Color>(
@@ -396,7 +382,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         );
                       }),
                   Spacer(),
-                  InkWell(
+                  CustomAppBarIconButton(
+                    svgName: AppIcon.nav_share,
+                    iconColor: AppColor.black,
                     onTap: () {
                       openShareBottomSheet(
                           context: context,
@@ -404,33 +392,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
                           sharedType: 1);
                     },
-                    child: Image.asset(
-                      _imgShared,
-                      width: 24,
-                      height: 24,
-                    ),
                   ),
                   SizedBox(
                     width: 16,
                   ),
                   !isMselfId
-                      ? InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                              return ProfileDetailsMore(
-                                userId: widget.userId,
-                                userName: _textName,
-                              );
-                            })).then((value) {
-                              _getFollowCount(id: widget.userId);
-                            });
-                          },
-                          child: Image.asset(
-                            _imgMore,
-                            width: 24,
-                            height: 24,
-                          ),
-                        )
+                      ? CustomAppBarIconButton(
+                    svgName: AppIcon.nav_more,
+                    iconColor: AppColor.black,
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return ProfileDetailsMore(
+                          userId: widget.userId,
+                          userName: _textName,
+                        );
+                      })).then((value) {
+                        _getFollowCount(id: widget.userId);
+                      });
+                    },
+                  )
                       : Container(
                           width: 0,
                         ),

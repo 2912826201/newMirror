@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
@@ -65,8 +66,6 @@ String getCourseShowImage(LiveVideoModel courseModel) {
   return imageUrl;
 }
 
-
-
 //获取训练数据ui
 Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey globalKey) {
   var widgetArray = <Widget>[];
@@ -90,7 +89,7 @@ Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey
               children: [
                 Text(
                   titleArray[i] ?? "",
-                  style: TextStyle(fontSize: 23, color: AppColor.black, fontWeight: FontWeight.bold),
+                  style: AppStyle.textPrimary2Medium23,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -177,7 +176,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
                   Text(
                     // ignore: null_aware_before_operator
                     videoModel.coachDto?.nickName ?? "",
-                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary2, fontWeight: FontWeight.bold),
+                    style: AppStyle.textPrimary2Medium14,
                   ),
                 ],
               ),
@@ -187,7 +186,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               onTap: onClickAttention,
               child: Container(
                 color: Colors.transparent,
-                height: 32.0+16.0+16.0,
+                height: 32.0 + 16.0 + 16.0,
                 child: UnconstrainedBox(
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
@@ -203,7 +202,9 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(100)),
                               border: Border.all(
-                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? 1 : 0.0,
+                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                                      ? 1
+                                      : 0.0,
                                   color: AppColor.textHint),
                             ),
                             padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
@@ -576,10 +577,7 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList, BuildContext cont
                     ),
                     Container(
                       padding: const EdgeInsets.only(right: 16),
-                      child: Icon(
-                        Icons.chevron_right,
-                        color: AppColor.textHint,
-                      ),
+                      child: AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textHint),
                     ),
                   ],
                 ),
@@ -642,11 +640,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按热度",
-            style: TextStyle(
-              fontSize: 14,
-              color: isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:isHotOrTime?AppStyle.textMedium14:AppStyle.textPrimary2Regular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onHotClickBtn,
@@ -665,11 +659,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
         InkWell(
           child: Text(
             "按时间",
-            style: TextStyle(
-              fontSize: 14,
-              color: !isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
-              fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
-            ),
+            style:!isHotOrTime?AppStyle.textMedium14:AppStyle.textPrimary2Regular14,
           ),
           splashColor: AppColor.textHint1,
           onTap: onTimeClickBtn,

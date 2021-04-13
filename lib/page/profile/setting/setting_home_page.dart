@@ -1,21 +1,18 @@
 import 'dart:io';
 import 'package:mirror/config/shared_preferences.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
-import 'package:provider/provider.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/version_model.dart';
-import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:toast/toast.dart';
 
@@ -35,111 +32,112 @@ class _SettingHomePageState extends State<SettingHomePage> {
   bool haveNewVersion = false;
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
   String content;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getNewVersion();
   }
+
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
-    if(model!=null){
-      if(model.version!=AppConfig.version){
+    if (model != null) {
+      if (model.version != AppConfig.version) {
         haveNewVersion = true;
         content = model.description;
         url = model.url;
-        if(mounted){
-          setState(() {
-          });
+        if (mounted) {
+          setState(() {});
         }
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return  Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: CustomAppBar(
-        titleString: "设置",
-      ),
-      body:Container(
-        height: height - ScreenUtil.instance.statusBarHeight,
-        width: width,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 12,
-            ),
-            InkWell(
-              child: _rowItem(width, "账户与安全"),
-              onTap: () {
-                AppRouter.navigateToSettingAccountSecurity(context);
-              },
-            ),
-            InkWell(
-              onTap: () {
-                 AppRouter.navigateToSettingBlackList(context);
-              },
-              child: _rowItem(width, "黑名单"),
-            ),
-            Container(
-              height: 12,
-              color: AppColor.bgWhite,
-              width: width,
-            ),
-            InkWell(
-              onTap: () {
-                AppRouter.navigateToSettingNoticeSetting(context);
-              },
-              child: _rowItem(width, "通知设置"),
-            ),
-            InkWell(
-              onTap: () {
-                showAppDialog(
-                  context,
-                  confirm: AppDialogButton("清除", () {
-                    //清掉拍照截图、录制视频、录制语言的文件夹内容
-                    _clearCache(AppConfig.getAppPicDir());
-                    _clearCache(AppConfig.getAppVideoDir());
-                    _clearCache(AppConfig.getAppVoiceDir());
-                    _clearCache(AppConfig.getAppDownloadDir());
-                    AppPrefs.clearDownLadTask();
-                    //下载的视频课内容不在这里清，在专门管理课程的地方清
-                    return true;
-                  }),
-                  cancel: AppDialogButton("取消", () {
-                    return true;
-                  }),
-                  title: "清除缓存",
-                  info: "你确定要清除缓存么",
-                );
-              },
-              child: _rowItem(width, "清除缓存"),
-            ),
-            InkWell(
-              onTap: () {
-                AppRouter.navigateToSettingFeedBack(context);
-              },
-              child: _rowItem(width, "意见反馈"),
-            ),
-            InkWell(
-              child: _rowItem(width, "关于"),
-              onTap: () {
-                AppRouter.navigateToSettingAbout(context, url, haveNewVersion,content);
-              },
-            ),
-            Container(
-              height: 12,
-              color: AppColor.bgWhite,
-              width: width,
-            ),
-            _signOutRow(width)
-          ],
+    return Scaffold(
+        backgroundColor: AppColor.white,
+        appBar: CustomAppBar(
+          titleString: "设置",
         ),
-      )
-    );
+        body: Container(
+          height: height - ScreenUtil.instance.statusBarHeight,
+          width: width,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 12,
+              ),
+              InkWell(
+                child: _rowItem(width, "账户与安全"),
+                onTap: () {
+                  AppRouter.navigateToSettingAccountSecurity(context);
+                },
+              ),
+              InkWell(
+                onTap: () {
+                  AppRouter.navigateToSettingBlackList(context);
+                },
+                child: _rowItem(width, "黑名单"),
+              ),
+              Container(
+                height: 12,
+                color: AppColor.bgWhite,
+                width: width,
+              ),
+              InkWell(
+                onTap: () {
+                  AppRouter.navigateToSettingNoticeSetting(context);
+                },
+                child: _rowItem(width, "通知设置"),
+              ),
+              InkWell(
+                onTap: () {
+                  showAppDialog(
+                    context,
+                    confirm: AppDialogButton("清除", () {
+                      //清掉拍照截图、录制视频、录制语言的文件夹内容
+                      _clearCache(AppConfig.getAppPicDir());
+                      _clearCache(AppConfig.getAppVideoDir());
+                      _clearCache(AppConfig.getAppVoiceDir());
+                      _clearCache(AppConfig.getAppDownloadDir());
+                      AppPrefs.clearDownLadTask();
+                      //下载的视频课内容不在这里清，在专门管理课程的地方清
+                      return true;
+                    }),
+                    cancel: AppDialogButton("取消", () {
+                      return true;
+                    }),
+                    title: "清除缓存",
+                    info: "你确定要清除缓存么",
+                  );
+                },
+                child: _rowItem(width, "清除缓存"),
+              ),
+              InkWell(
+                onTap: () {
+                  AppRouter.navigateToSettingFeedBack(context);
+                },
+                child: _rowItem(width, "意见反馈"),
+              ),
+              InkWell(
+                child: _rowItem(width, "关于"),
+                onTap: () {
+                  AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
+                },
+              ),
+              Container(
+                height: 12,
+                color: AppColor.bgWhite,
+                width: width,
+              ),
+              _signOutRow(width)
+            ],
+          ),
+        ));
   }
 
   Widget _signOutRow(double width) {
@@ -179,23 +177,32 @@ class _SettingHomePageState extends State<SettingHomePage> {
             style: AppStyle.textRegular16,
           ),
           Spacer(),
-        text=="关于"&&haveNewVersion?ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child:Container(
-          width: 64,
-          height: 18,
-          color: AppColor.mainRed,
-          child: Center(child: Text("有新版本",style: AppStyle.whiteRegular12,),),
-        ),
-        ):Container(),
-          SizedBox(width: 12,),
+          text == "关于" && haveNewVersion
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: 64,
+                    height: 18,
+                    color: AppColor.mainRed,
+                    child: Center(
+                      child: Text(
+                        "有新版本",
+                        style: AppStyle.whiteRegular12,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          SizedBox(
+            width: 12,
+          ),
           Container(
             height: 18,
             width: 18,
             alignment: Alignment.centerRight,
-            child: Icon(
-              Icons.arrow_forward_ios,
-              size: 18,
+            child: AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              18,
               color: AppColor.textHint,
             ),
           )
@@ -224,13 +231,13 @@ class _SettingHomePageState extends State<SettingHomePage> {
       if (file is Directory) {
         print('=========================================if');
         final List<FileSystemEntity> children = file.listSync();
-        if(children.isNotEmpty){
+        if (children.isNotEmpty) {
           print('=====================${children.first.path}');
           for (final FileSystemEntity child in children) {
             await delDir(child);
           }
         }
-      }else{
+      } else {
         //只清理子文件
         print('=========================================else');
         await file.delete(recursive: false);

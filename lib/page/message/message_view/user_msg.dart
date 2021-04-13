@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
@@ -230,12 +231,6 @@ class UserMsg extends StatelessWidget {
 
   //底部文字
   Widget _getBottomText() {
-    var titleStyle = const TextStyle(
-        fontSize: 15,
-        color: AppColor.textPrimary2,
-        fontWeight: FontWeight.bold);
-    var subtitleStyle =
-        const TextStyle(fontSize: 13, color: AppColor.textSecondary);
     return Expanded(
       child: SizedBox(
         child: Container(
@@ -246,7 +241,7 @@ class UserMsg extends StatelessWidget {
             children: [
               Text(
                 userModel.nickName != null ? userModel.nickName : "",
-                style: titleStyle,
+                style: AppStyle.textPrimary2Medium15,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -257,7 +252,7 @@ class UserMsg extends StatelessWidget {
                 userModel.description != null
                     ? userModel.description
                     : "",
-                style: subtitleStyle,
+                style: AppStyle.textSecondaryRegular13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

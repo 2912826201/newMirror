@@ -502,11 +502,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                   padding: const EdgeInsets.all(6),
                                   alignment: Alignment.bottomRight,
                                   color: AppColor.textPrimary2.withOpacity(0.35),
-                                  child: Icon(
-                                    Icons.remove_circle,
-                                    color: AppColor.mainRed,
-                                    size: 24,
-                                  ),
+                                  child: AppIcon.getAppIcon(AppIcon.selection_remove, 24),
                                 )
                               ],
                             ),
@@ -539,11 +535,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                   padding: const EdgeInsets.all(6),
                                   alignment: Alignment.bottomRight,
                                   color: AppColor.textPrimary2.withOpacity(0.35),
-                                  child: Icon(
-                                    Icons.remove_circle,
-                                    color: AppColor.mainRed,
-                                    size: 24,
-                                  ),
+                                  child: AppIcon.getAppIcon(AppIcon.selection_remove, 24),
                                 )
                               ],
                             ),

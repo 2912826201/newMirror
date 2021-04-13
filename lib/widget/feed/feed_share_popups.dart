@@ -15,6 +15,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:provider/provider.dart';
 
+import '../icon.dart';
 import 'feed_friends_cell.dart';
 
 // import '../bottom_sheet.dart';
@@ -46,37 +47,39 @@ class FeedSharePopups extends StatelessWidget {
 
   FeedSharePopups({this.map, this.chatTypeModel, this.sharedType});
 
-  List<FeedViewModel> feedViewModel = [];
+  List<ShareViewModel> shareViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
-  List<String> image = [
-    "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2623955494.webp",
-    "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2615992304.webp",
-    "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2615642201.webp",
-    "https://img2.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2599858573.webp",
-    "https://img1.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620104689.webp",
-    "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620161520.webp",
+  List<String> icon = [
+    AppIcon.share_friend_circle,
+    AppIcon.share_wechat_circle,
+    AppIcon.share_moment_circle,
+    AppIcon.share_weibo_circle,
+    AppIcon.share_qq_circle,
+    AppIcon.share_qzone_circle,
   ];
 
   Widget build(BuildContext context) {
     for (var i = 0; i < name.length; i++) {
-      FeedViewModel a = new FeedViewModel(name: name[i], image: image[i]);
-      feedViewModel.add(a);
+      ShareViewModel a = ShareViewModel(name: name[i], icon: icon[i]);
+      shareViewModel.add(a);
     }
     if (sharedType != 1) {
-      FeedViewModel a = new FeedViewModel(
-          name: "保存本地", image: "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620161520.webp");
-      feedViewModel.insert(0, a);
+      ShareViewModel a = ShareViewModel(
+        name: "保存本地",
+        icon: AppIcon.share_download_circle,
+      );
+      shareViewModel.insert(0, a);
     }
-    if(sharedType==3){
-      feedViewModel.removeWhere((element){
-        return element.name=="站内好友";
+    if (sharedType == 3) {
+      shareViewModel.removeWhere((element) {
+        return element.name == "站内好友";
       });
     }
     print('map===================${map.toString()}');
     return Container(
       color: AppColor.white,
       width: ScreenUtil.instance.screenWidthDp,
-      height: 48 + 89 + ScreenUtil.instance.bottomHeight+49,
+      height: 48 + 89 + ScreenUtil.instance.bottomHeight + 49,
       child: Column(
         children: [
           Container(
@@ -93,12 +96,12 @@ class FeedSharePopups extends StatelessWidget {
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                itemCount: feedViewModel.length,
+                itemCount: shareViewModel.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () async {
-                      print("点击了￥${feedViewModel[index].name}");
-                      switch (feedViewModel[index].name) {
+                      print("点击了￥${shareViewModel[index].name}");
+                      switch (shareViewModel[index].name) {
                         case "站内好友":
                           if (!(context != null && context.read<TokenNotifier>().isLoggedIn)) {
                             ToastShow.show(msg: "请先登陆app!", context: context);
@@ -106,7 +109,7 @@ class FeedSharePopups extends StatelessWidget {
                             return;
                           }
                           Navigator.of(context).pop(1);
-                          showSharePopup(context,map,chatTypeModel);
+                          showSharePopup(context, map, chatTypeModel);
                           // AppRouter.navigateFriendsPage(context: context,shareMap: map,chatTypeModel: chatTypeModel);
                           break;
                         case "保存本地":
@@ -143,28 +146,22 @@ class FeedSharePopups extends StatelessWidget {
                           Container(
                             margin: EdgeInsets.only(
                                 left: index > 0 ? 32 : 16,
-                                right: index == feedViewModel.length - 1 ? 16 : 0,
+                                right: index == shareViewModel.length - 1 ? 16 : 0,
                                 top: 8,
                                 bottom: 8),
                             height: 48,
                             width: 48,
-                            decoration: BoxDecoration(
-                              // color: Colors.redAccent,
-                              image:
-                                  DecorationImage(image: NetworkImage(feedViewModel[index].image), fit: BoxFit.cover),
-                              // image
-                              borderRadius: BorderRadius.all(Radius.circular(24)),
-                            ),
+                            child: AppIcon.getAppIcon(shareViewModel[index].icon, 48),
                           ),
                           Container(
                             width: 48,
                             margin: EdgeInsets.only(
                               left: index > 0 ? 32 : 16,
-                              right: index == feedViewModel.length - 1 ? 16 : 0,
+                              right: index == shareViewModel.length - 1 ? 16 : 0,
                             ),
                             child: Center(
                               child: Text(
-                                feedViewModel[index].name,
+                                shareViewModel[index].name,
                                 style: AppStyle.textRegular12,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -183,25 +180,30 @@ class FeedSharePopups extends StatelessWidget {
             color: AppColor.bgWhite,
           ),
           InkWell(
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
             child: Container(
-            height: 48,
-            width: ScreenUtil.instance.screenWidthDp,
-            child: Center(
-              child: Text("取消",style: AppStyle.textMedium18,),
+              height: 48,
+              width: ScreenUtil.instance.screenWidthDp,
+              child: Center(
+                //TODO 没有UI 需要定下字号
+                child: Text(
+                  "取消",
+                  style: AppStyle.textMedium18,
+                ),
+              ),
             ),
-          ),)
+          )
         ],
       ),
     );
   }
 }
 
-class FeedViewModel {
+class ShareViewModel {
   String name;
-  String image;
+  String icon;
 
-  FeedViewModel({this.name, this.image});
+  ShareViewModel({this.name, this.icon});
 }

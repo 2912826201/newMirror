@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
@@ -9,6 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/precision_limit_formatter.dart';
 import 'package:provider/provider.dart';
@@ -120,13 +122,14 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       onClickRightBtn: () {
         delWeight(weightDataMap["recordList"][index]["id"]);
         weightDataMap["recordList"].removeAt(index);
-        if(mounted){
+        if (mounted) {
           setState(() {});
         }
         context.read<ProfileNotifier>().setWeight(0);
       },
     );
   }
+
 //每一个listview的item
   Widget getItem(int index) {
     DateTime dateTime = DateUtil.stringToDateTime(weightDataMap["recordList"][index]["dateTime"]);
@@ -154,7 +157,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                 ),
                 Text(
                   "${weightDataMap["recordList"][index]["weight"]} kg",
-                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -178,7 +181,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.centerLeft,
           child:
-              Text("体重记录", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+              Text("体重记录", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.w500)),
         ),
       ),
     );
@@ -205,11 +208,11 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                 SizedBox(
                   width: 16,
                 ),
-                Text("目标体重", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                Text("目标体重", style: AppStyle.textMedium16),
                 Expanded(child: SizedBox()),
                 Text(
                   getTargetWeight() < 1 ? "未设置" : getTargetWeight().toString() + "kg",
-                  style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                  style: AppStyle.textSecondaryRegular16,
                 ),
                 SizedBox(
                   width: 17,
@@ -218,9 +221,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                   height: 48,
                   padding: const EdgeInsets.only(top: 3),
                   alignment: Alignment.center,
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 15,
+                  child: AppIcon.getAppIcon(
+                    AppIcon.arrow_right_16,
+                    16,
                     color: AppColor.textHint,
                   ),
                 ),
@@ -324,7 +327,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
                       // hintText: userWeight > 0.0 ? userWeight.toString() : "",
-                      hintText:"",
+                      hintText: "",
                       labelStyle: TextStyle(color: Color(0x99000000)),
                       hintMaxLines: 1,
                       // 主要添加以下代码
@@ -339,7 +342,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                style: AppStyle.textSecondaryRegular16,
               ),
             ],
           ),
@@ -354,7 +357,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveTargetWeight(userWeight.toString());
             weightDataMap["targetWeight"] = userWeight;
-            if(mounted){
+            if (mounted) {
               setState(() {});
             }
           } catch (e) {
@@ -376,29 +379,29 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             children: [
               Expanded(
                   child: SizedBox(
-                    child: Container(
-                      height: 28,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        controller: _numberController,
-                        inputFormatters: [PrecisionLimitFormatter(2)],
-                        decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Color(0x99000000)),
-                          hintMaxLines: 1,
-                          // 主要添加以下代码
-                          enabledBorder: new UnderlineInputBorder(
-                            // 不是焦点的时候颜色
-                            borderSide: BorderSide(color: Color(0x19000000)),
-                          ),
-                        ),
+                child: Container(
+                  height: 28,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    controller: _numberController,
+                    inputFormatters: [PrecisionLimitFormatter(2)],
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Color(0x99000000)),
+                      hintMaxLines: 1,
+                      // 主要添加以下代码
+                      enabledBorder: new UnderlineInputBorder(
+                        // 不是焦点的时候颜色
+                        borderSide: BorderSide(color: Color(0x19000000)),
                       ),
                     ),
-                  )),
+                  ),
+                ),
+              )),
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+                style: AppStyle.textSecondaryRegular16,
               ),
             ],
           ),
@@ -444,7 +447,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         weightDataMap["recordList"].insert(0, recordMap);
       }
     }
-    if(mounted){
+    if (mounted) {
       setState(() {});
     }
   }
@@ -453,7 +456,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   loadData() async {
     weightDataMap = await getWeightRecords(1, 1000);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    if(mounted){
+    if (mounted) {
       setState(() {});
     }
   }

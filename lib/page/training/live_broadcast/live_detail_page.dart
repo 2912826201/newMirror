@@ -8,6 +8,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -86,9 +87,6 @@ class LiveDetailPageState extends XCState {
   LoadingStatus loadingStatus;
   LoadingStatus recommendLoadingStatus;
 
-  //title文字的样式
-  var titleTextStyle = TextStyle(
-      fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -277,8 +275,8 @@ class LiveDetailPageState extends XCState {
           getTitleWidget(liveModel,context,globalKeyList[1]),
           getCoachItem(liveModel,context,onClickAttention,onClickCoach,globalKeyList[2]),
           getLineView(),
-          getTrainingEquipmentUi(liveModel, context, titleTextStyle,globalKeyList[3]),
-          getActionUiLive(liveModel,context,titleTextStyle,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
+          getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18,globalKeyList[3]),
+          getActionUiLive(liveModel,context,AppStyle.textMedium18,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(

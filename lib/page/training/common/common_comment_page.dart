@@ -119,9 +119,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //评论加载状态
   LoadingStatus loadingStatusComment;
 
-  //title文字的样式
-  var titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
-
   //用户评论的的一些动画参数
   var commentListSubSettingList = <CommentListSubSetting>[];
 
@@ -165,7 +162,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
-        Future.delayed(Duration.zero, () async {
+        Future.delayed(Duration(milliseconds: 300), () {
           getDataAction();
         });
       } else {
@@ -226,7 +223,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
     var widgetArray = <Widget>[];
     if (widget.isShowHotOrTime) {
-      widgetArray.add(getCourseTopText(titleTextStyle));
+      widgetArray.add(getCourseTopText(AppStyle.textMedium18));
       widgetArray.add(getCourseTopNumber(isHotOrTime, count, onHotCommentTitleClickBtn, onTimeCommentTitleClickBtn));
       widgetArray.add(SizedBox(height: 12));
       widgetArray.add(getCourseTopEdit(onEditBoxClickBtn));
@@ -247,7 +244,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     widgetArray.add(SizedBox(
       height: 23,
     ));
-    print("loadingStatusComment:${loadingStatusComment}");
+    print("loadingStatusComment:$loadingStatusComment");
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else if (loadingStatusComment == LoadingStatus.STATUS_COMPLETED) {
@@ -670,12 +667,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         ..onTap = () {
           AppRouter.navigateToMineDetail(context, value.uid);
         },
-      style: TextStyle(
-        fontSize: 15,
-        color: AppColor.textPrimary1,
-        fontWeight: FontWeight.bold,
-      ),
-    ));
+      style: AppStyle.textMedium15));
     if (isSubComment) {
       if (value.replyId != null && value.replyId > 0) {
         textSpanList.add(TextSpan(
@@ -692,11 +684,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             ..onTap = () {
               AppRouter.navigateToMineDetail(context, value.replyId);
             },
-          style: TextStyle(
-            fontSize: 15,
-            color: AppColor.textPrimary1,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppStyle.textMedium15,
         ));
       }
     }
@@ -1237,8 +1225,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //获取子评论
-  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment,bool isOnClick)
-  async {
+  _getSubComment(
+      int targetId, int replyLength, int replyCount, int pullNumber, int positionComment, bool isOnClick) async {
     int subCommentPageSize = 3;
     if (replyLength == 0) {
       (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = null;
@@ -1307,8 +1295,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = commentModel.lastId;
 
           for (CommentDtoModel dtoModel in commentDtoModelList) {
-
-            dtoModel.isHaveAnimation = isOnClick?true:false;
+            dtoModel.isHaveAnimation = isOnClick ? true : false;
           }
 
           if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
@@ -1434,7 +1421,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         if (mounted) {
           setState(() {});
         }
-        _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index,isOnClickListener);
+        _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index, isOnClickListener);
       }
     }
   }

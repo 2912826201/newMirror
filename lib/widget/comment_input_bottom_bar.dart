@@ -577,7 +577,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
               ),
             ),
             Container(
-                width: ScreenUtil.instance.screenWidthDp,
+                width: ScreenUtil.instance.width,
                 padding: EdgeInsets.only(
                   top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
                   bottom: returnInputOffset(context.watch<CommentEnterNotifier>().emojiState),
@@ -589,8 +589,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                   children: [
                     Container(
                       width: Platform.isIOS
-                          ? ScreenUtil.instance.screenWidthDp - 32
-                          : ScreenUtil.instance.screenWidthDp - 32 - (widget.isShowPostBtn ? 52 - 12 : 0),
+                          ? ScreenUtil.instance.width - 32
+                          : ScreenUtil.instance.width - 32 - (widget.isShowPostBtn ? 52 + 12 : 0),
                       margin: const EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -607,7 +607,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     : ScreenUtil.instance.screenWidthDp -
                                         32 -
                                         76 -
-                                        (widget.isShowPostBtn ? 52 - 12 : 0)),
+                                        (widget.isShowPostBtn ? 52 + 12 : 0)),
                             child: TextSpanField(
                               controller: _textEditingController,
                               focusNode: commentFocus,

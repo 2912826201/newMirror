@@ -1,21 +1,40 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/widget/icon.dart';
+
+
+//todo 录音icon
+
+//手指上滑-取消发送
+String moveUpCancelPostImageString=AppIcon.avatar_live;
+
+//说话时间太短
+String speckTimeTooShortImageString=AppIcon.avatar_training;
+
+//松开手指-取消发送
+String letGoOfYourFingerCancelPostImageString=AppIcon.avatar_system;
 
 class VoiceAlertData extends ChangeNotifier {
-  VoiceAlertData(
-      {this.alertText = "手指上滑,取消发送",
-      this.imageString = "images/chat/voice_volume_2.webp",
-      this.showDataTime = "0:00"});
+
+  VoiceAlertData();
 
   String alertText = "手指上滑,取消发送";
-  String imageString = "images/chat/voice_volume_2.webp";
+  Widget imageIconWidget = AppIconButton(
+    svgName: AppIcon.like_24,
+    iconSize: 48,
+    onTap: () {},
+  );
   String showDataTime = "0:00";
 
-  changeCallback({String alertText, String imageString, String showDataTime}) {
+  changeCallback({String alertText, String imageIconString, String showDataTime}) {
     if (alertText != null) {
       this.alertText = alertText;
     }
-    if (imageString != null) {
-      this.imageString = imageString;
+    if (imageIconString != null) {
+      this.imageIconWidget = AppIconButton(
+        svgName: imageIconString,
+        iconSize: 48,
+        onTap: () {},
+      );
     }
     if (showDataTime != null) {
       this.showDataTime = showDataTime;

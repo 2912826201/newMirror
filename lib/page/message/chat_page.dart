@@ -48,6 +48,7 @@ import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
@@ -57,6 +58,8 @@ import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/should_build_keyboard.dart';
+
+import 'message_view/message_item_height_util.dart';
 
 ////////////////////////////////
 //
@@ -595,6 +598,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
+    // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
@@ -628,8 +632,72 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
   }
 
+  void onAtUiClickListener()async{
+    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
+    if(isHaveAtMeMsgIndex<0) {
+      while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
+        //print("chatDataList.len:${chatDataList.length}");
+        List msgList = new List();
+        msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
+            chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
+        List<ChatDataModel> dataList = <ChatDataModel>[];
+        if (msgList != null && msgList.length > 0) {
+          for (int i = 1; i < msgList.length; i++) {
+            dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+          }
+
+          if (dataList != null && dataList.length > 0) {
+            getTimeAlert(dataList, conversation.conversationId);
+            print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+            if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
+              chatDataList.removeAt(chatDataList.length - 1);
+            }
+            chatDataList.addAll(dataList);
+          }
+
+          judgeNowChatIsHaveAt();
+        } else {
+          isHaveAtMeMsgIndex = -1;
+          isHaveAtMeMsg = false;
+          isHaveAtMeMsgPr = false;
+          Application.atMesGroupModel.remove(atMeMsg);
+          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          return;
+        }
+        if (isHaveAtMeMsgIndex > 0) {
+          break;
+        }
+      }
+    }
+
+    if(!isHaveAtMeMsg){
+      return;
+    }
+
+    List<ChatDataModel> list = [];
+    for (int i = 0; i < isHaveAtMeMsgIndex; i++) {
+      list.add(chatDataList[i]);
+    }
+    bool isShowName = conversation.getType() == RCConversationType.Group;
+    double messageHeight = MessageItemHeightUtil.init().getMessageHeight(list, isShowName);
+    print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
+
+    chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+    Future.delayed(Duration(milliseconds: 100),(){
+      _animateToTopHeight(scrollExtent: messageHeight-50);
+      Future.delayed(Duration(milliseconds: 200),(){
+        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(isHaveAtMeMsgIndex);
+        isHaveAtMeMsgIndex = -1;
+        isHaveAtMeMsg = false;
+        isHaveAtMeMsgPr = false;
+        Application.atMesGroupModel.remove(atMeMsg);
+        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      });
+    });
+  }
+
   //点击了at标识
-  void onAtUiClickListener() async {
+  void onAtUiClickListener1() async {
     //print("点击了at标识1");
     if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
       //print("滚动到第$isHaveAtMeMsgIndex个item位置");
@@ -789,6 +857,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       if (mounted) {
         _textController.text = "";
+        _resetEditText();
+        context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
         if(chatDataList.length>100){
           List<ChatDataModel> list=[];
@@ -804,6 +874,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
+      _textController.text = "";
+      _resetEditText();
       // List list=[];
       // list.add(0);
       // list.add(chatDataModel.id);
@@ -1311,7 +1383,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         _textController.selection = setCursor;
       }
       if (Platform.isAndroid && isClickAtUser) {
-        print("at位置&${atIndex}");
+        print("at位置&$atIndex");
         var setCursor = TextSelection(
           baseOffset: atIndex,
           extentOffset: atIndex,
@@ -1413,6 +1485,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       oldMaxScrollExtent += 100.0;
     }
     _scrollController.animateTo(oldMaxScrollExtent,
+        duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
+  }
+  //向上滚动
+  void _animateToTopHeight({int milliseconds = 200,double scrollExtent}) {
+    _scrollController.animateTo(scrollExtent,
         duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
   }
 
@@ -1764,7 +1841,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // 加载完毕
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus,isResetPage: true);
+    chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+    chatDetailsBodyChildKey.currentState.resetChatMessageCount();
   }
 
   //加载更多的系统消息
@@ -1828,7 +1906,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
-      ToastShow.show(msg: "跳转网页地址: $content", context: _context);
+      _launchUrl(content);
+      // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"], context);
@@ -1904,7 +1983,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       ChatDataModel v = chatDataList[i];
       if (v.msg != null) {
         String msgType = v.msg.objectName;
-        print("消息类型：${msgType}");
+        print("消息类型：$msgType");
         if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           TextMessage textMessage = ((v.msg.content) as TextMessage);
           try {
@@ -1958,7 +2037,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       return DemoImageItem(sourceEntity);
     }
   }
-
+  _launchUrl(String url) async {
+    if(!(url.contains("http://")||url.contains("https://"))){
+      url="https://"+url;
+    }
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
   @override
   void endCanvasPage() {
     print("停止改变屏幕高度");

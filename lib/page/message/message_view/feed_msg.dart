@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -266,11 +267,6 @@ class FeedMsg extends StatelessWidget {
 
   //底部文字
   Widget _getBottomText() {
-    var textStyle = TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColor.textPrimary1);
-    var textStyle1 = TextStyle(fontSize: 16, color: AppColor.textPrimary2);
     return Container(
       width: double.infinity,
       height: 75.0,
@@ -301,13 +297,13 @@ class FeedMsg extends StatelessWidget {
                       children: [
                         Container(
                           child: Text(homeFeedMode.name ?? "",
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: textStyle),
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textMedium16),
                           constraints: BoxConstraints(
                             maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),
                         ),
                         Container(
-                          child: Text(" 的动态", style: textStyle),
+                          child: Text(" 的动态", style: AppStyle.textMedium16),
                         )
                       ],
                     ),
@@ -324,7 +320,7 @@ class FeedMsg extends StatelessWidget {
                 child: Text(homeFeedMode.content,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: textStyle1),
+                    style: AppStyle.textPrimary2Regular16),
               ),
             ),
           )),

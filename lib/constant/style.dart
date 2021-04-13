@@ -14,6 +14,7 @@ class AppStyle {
   static const textRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
 
   // Medium主体文字黑色
+  static const textMedium36 = TextStyle(fontSize: 36, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
@@ -66,10 +67,23 @@ class AppStyle {
       TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
 
   // Medium primary2 黑色
+  static const textPrimary2Medium23 =
+      TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
   static const textPrimary2Medium16 =
       TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+  static const textPrimary2Medium15 =
+      TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
   static const textPrimary2Medium14 =
-      TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+    TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+  static const textPrimary2Medium12 =
+    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+
+  static const textPrimary2Regular16 =
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textPrimary2);
+  static const textPrimary2Regular14 =
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary2);
+  static const textPrimary2Regular12 =
+      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary2);
 
   //红色
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);

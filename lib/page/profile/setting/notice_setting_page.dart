@@ -11,6 +11,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
 
@@ -218,7 +219,11 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
               SizedBox(
                 width: 12,
               ),
-              Icon(Icons.arrow_forward_ios)
+              AppIcon.getAppIcon(
+                AppIcon.arrow_right_18,
+                18,
+                color: AppColor.black,
+              ),
             ],
           ),
         ));

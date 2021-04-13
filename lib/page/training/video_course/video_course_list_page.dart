@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -152,7 +153,6 @@ class VideoCourseListPageState extends XCState {
 
   //顶部筛选的列表
   Widget _getScreenTitleUi() {
-    TextStyle textStyle = TextStyle(fontSize: 15, color: AppColor.textPrimary1, fontWeight: FontWeight.bold);
     var expandedArray = <Widget>[];
     for (int i = 0; i < _titleItemString.length; i++) {
       expandedArray.add(Expanded(
@@ -166,7 +166,7 @@ class VideoCourseListPageState extends XCState {
               children: [
                 Text(
                   _titleItemString[i],
-                  style: textStyle,
+                  style: AppStyle.textMedium15,
                 ),
                 SizedBox(
                   width: 1,
@@ -909,9 +909,6 @@ Widget buildVideoCourseItemLeftImageUi(LiveVideoModel value, Object heroTag) {
 
 //获取右边数据的ui
 Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bool isMine) {
-  TextStyle textStyleBold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColor.textPrimary2);
-  TextStyle textStyleNormal = TextStyle(fontSize: 12, color: AppColor.textSecondary);
-
   return Expanded(
       child: SizedBox(
     child: Container(
@@ -923,11 +920,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
             width: double.infinity,
             child: Text(
               value.title ?? "",
-              style: TextStyle(
-                fontSize: 15,
-                color: AppColor.textPrimary1,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyle.textMedium15,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -943,22 +936,22 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                   Positioned(
                     child: RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: value.levelDto?.ename, style: textStyleBold),
+                        TextSpan(text: value.levelDto?.ename, style: AppStyle.textPrimary2Medium12),
                         // ignore: null_aware_before_operator
                         TextSpan(
                             // ignore: null_aware_before_operator
                             text: value.levelDto?.name + " · ",
-                            style: textStyleNormal),
+                            style: AppStyle.textPrimary2Regular12),
                         TextSpan(
                             text:
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
-                            style: textStyleBold),
-                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: textStyleNormal),
+                            style: AppStyle.textPrimary2Medium12),
+                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: AppStyle.textPrimary2Regular12),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
-                            style: textStyleBold),
-                        TextSpan(text: "千卡", style: textStyleNormal),
+                            style: AppStyle.textPrimary2Medium12),
+                        TextSpan(text: "千卡", style: AppStyle.textPrimary2Regular12),
                       ]),
                     ),
                     top: 0,
@@ -967,7 +960,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                   Positioned(
                     child: Text(
                       isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.practiceAmount) + "人练过",
-                      style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
+                      style: AppStyle.textPrimary2Regular12,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

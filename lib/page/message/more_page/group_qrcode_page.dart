@@ -239,7 +239,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                 padding: const EdgeInsets.only(left: 24, right: 24),
                 child: Text(
                   widget.name,
-                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                  style: AppStyle.textMedium18,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

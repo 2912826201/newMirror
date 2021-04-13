@@ -55,10 +55,9 @@ class _VoiceDialogState extends State<VoiceDialog> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Container(
-                          child: Image.asset(
-                              context.watch<VoiceAlertData>().imageString,
-                              width: 46,
-                              height: 60),
+                          width: 60,
+                          height: 60,
+                          child: context.watch<VoiceAlertData>().imageIconWidget,
                         ),
                         Text(
                           context.watch<VoiceAlertData>().showDataTime,

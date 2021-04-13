@@ -44,11 +44,11 @@ class HomeFeedModel {
   List<CommentDtoModel> hotComment = [];
   String address;
 
-
   // 添加字段
   int totalCount = -1;
   bool isShowInputBox = true;
   SelectedMediaFiles selectedMediaFiles;
+
   HomeFeedModel({
     this.id,
     this.type,
@@ -77,13 +77,19 @@ class HomeFeedModel {
     this.isShowInputBox,
     this.selectedMediaFiles,
   });
+
   // 转换model
-  HomeFeedModel conversionModel(PostFeedModel postFeedModel,BuildContext context,{bool isRefresh = false}) {
+  HomeFeedModel conversionModel(PostFeedModel postFeedModel, BuildContext context, {bool isRefresh = false}) {
     HomeFeedModel homeFeedModel = HomeFeedModel();
     // 发布model转换动态model展示
-    homeFeedModel.name = isRefresh ? context.read<ProfileNotifier>().profile.nickName : context.watch<ProfileNotifier>().profile.nickName;
-    homeFeedModel.avatarUrl = isRefresh ? context.read<ProfileNotifier>().profile.avatarUri : context.watch<ProfileNotifier>().profile.avatarUri;
-    homeFeedModel.pushId = isRefresh ? context.read<ProfileNotifier>().profile.uid : context.watch<ProfileNotifier>().profile.uid;
+    homeFeedModel.name = isRefresh
+        ? context.read<ProfileNotifier>().profile.nickName
+        : context.watch<ProfileNotifier>().profile.nickName;
+    homeFeedModel.avatarUrl = isRefresh
+        ? context.read<ProfileNotifier>().profile.avatarUri
+        : context.watch<ProfileNotifier>().profile.avatarUri;
+    homeFeedModel.pushId =
+        isRefresh ? context.read<ProfileNotifier>().profile.uid : context.watch<ProfileNotifier>().profile.uid;
     homeFeedModel.createTime = postFeedModel.currentTimestamp;
     homeFeedModel.content = postFeedModel.content;
     homeFeedModel.address = postFeedModel.address;
@@ -124,6 +130,7 @@ class HomeFeedModel {
     }
     return homeFeedModel;
   }
+
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     type = json["type"];
@@ -141,45 +148,45 @@ class HomeFeedModel {
     readCount = json["readCount"];
     if (json["picUrls"] != null) {
       json["picUrls"].forEach((v) {
-        if(v is PicUrlsModel){
+        if (v is PicUrlsModel) {
           picUrls.add(v);
-        }else{
+        } else {
           picUrls.add(PicUrlsModel.fromJson(v));
         }
       });
     }
     if (json["videos"] != null) {
       json["videos"].forEach((v) {
-        if(v is VideosModel){
+        if (v is VideosModel) {
           videos.add(v);
-        }else{
+        } else {
           videos.add(VideosModel.fromJson(v));
         }
       });
     }
     if (json["comments"] != null) {
       json["comments"].forEach((v) {
-        if(v is CommentDtoModel){
+        if (v is CommentDtoModel) {
           comments.add(v);
-        }else {
+        } else {
           comments.add(CommentDtoModel.fromJson(v));
         }
       });
     }
     if (json["atUsers"] != null) {
       json["atUsers"].forEach((v) {
-        if(v is AtUsersModel){
+        if (v is AtUsersModel) {
           atUsers.add(v);
-        }else{
+        } else {
           atUsers.add(AtUsersModel.fromJson(v));
         }
       });
     }
     if (json["topics"] != null) {
       json["topics"].forEach((v) {
-        if(v is TopicDtoModel){
+        if (v is TopicDtoModel) {
           topics.add(v);
-        }else{
+        } else {
           topics.add(TopicDtoModel.fromJson(v));
         }
       });
@@ -196,7 +203,6 @@ class HomeFeedModel {
     isFollow = json["isFollow"];
     address = json["address"];
   }
-
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -278,10 +284,21 @@ class VideosModel {
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   bool isPlay = false;
+
   // 播放器控制器
   VideoPlayerController controller;
-  VideosModel({this.url, this.hlsUrl, this.duration, this.coverUrl, this.height, this.width, this.videoCroppedRatio,
-    this.offsetRatioX, this.offsetRatioY,this.controller});
+
+  VideosModel(
+      {this.url,
+      this.hlsUrl,
+      this.duration,
+      this.coverUrl,
+      this.height,
+      this.width,
+      this.videoCroppedRatio,
+      this.offsetRatioX,
+      this.offsetRatioY,
+      this.controller});
 
   VideosModel.fromJson(Map<String, dynamic> json) {
     url = json["url"];
@@ -456,10 +473,10 @@ class CourseDtoModel {
   int creatorId; // 创建人Id
   int coachId;
 
-  UserModel coachDto;           // 教练dto
+  UserModel coachDto; // 教练dto
   int coursewareId;
 
-  CoursewareDto coursewareDto;      // 课件dto
+  CoursewareDto coursewareDto; // 课件dto
   String videoUrl;
   String startTime; // 开始时间
   String endTime; // 结束时间
@@ -473,26 +490,27 @@ class CourseDtoModel {
   int createTime;
   int updateTime;
 
-  CourseDtoModel({this.id,
-    this.courseId,
-    this.name,
-    this.creatorId,
-    this.coachId,
-    this.coursewareId,
-    this.videoUrl,
-    this.startTime,
-    this.endTime,
-    this.videoSeconds,
-    this.isBooked,
-    this.totalTrainingTime,
-    this.totalTrainingAmount,
-    this.totalCalories,
-    this.finishAmount,
-    this.dataState,
-    this.createTime,
-    this.updateTime,
-    this.coachDto,
-    this.coursewareDto});
+  CourseDtoModel(
+      {this.id,
+      this.courseId,
+      this.name,
+      this.creatorId,
+      this.coachId,
+      this.coursewareId,
+      this.videoUrl,
+      this.startTime,
+      this.endTime,
+      this.videoSeconds,
+      this.isBooked,
+      this.totalTrainingTime,
+      this.totalTrainingAmount,
+      this.totalCalories,
+      this.finishAmount,
+      this.dataState,
+      this.createTime,
+      this.updateTime,
+      this.coachDto,
+      this.coursewareDto});
 
   CourseDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -572,11 +590,12 @@ class CommentDtoModel {
   String replyName;
   int delete;
   int pullNumber = 0;
-  bool isHaveAnimation=false;
-  List<int> screenOutIds=<int>[];
+  bool isHaveAnimation = false;
+  List<int> screenOutIds = <int>[];
 
   //是否选中
   bool itemChose = false;
+
 // 是否显示隐藏按钮
   bool isShowHiddenButtons = false;
 
@@ -594,24 +613,26 @@ class CommentDtoModel {
 
   //
   int index = 0;
-  CommentDtoModel({this.id,
-    this.targetId,
-    this.type,
-    this.content,
-    this.createTime,
-    this.uid,
-    this.name,
-    this.avatarUrl,
-    this.replyCount,
-    this.laudCount,
-    this.isLaud,
-    this.top,
-    this.replyId,
-    this.replyName,
-    this.delete,
-    this.picUrls,
-    this.atUsers,
-    this.replys});
+
+  CommentDtoModel(
+      {this.id,
+      this.targetId,
+      this.type,
+      this.content,
+      this.createTime,
+      this.uid,
+      this.name,
+      this.avatarUrl,
+      this.replyCount,
+      this.laudCount,
+      this.isLaud,
+      this.top,
+      this.replyId,
+      this.replyName,
+      this.delete,
+      this.picUrls,
+      this.atUsers,
+      this.replys});
 
   CommentDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -638,9 +659,9 @@ class CommentDtoModel {
         if (picUrls == null) {
           picUrls = <PicUrlsModel>[];
         }
-        if(v is PicUrlsModel){
+        if (v is PicUrlsModel) {
           picUrls.add(v);
-        }else{
+        } else {
           picUrls.add(PicUrlsModel.fromJson(v));
         }
       });
@@ -650,9 +671,9 @@ class CommentDtoModel {
         if (atUsers == null) {
           atUsers = <AtUsersModel>[];
         }
-        if(v is AtUsersModel){
+        if (v is AtUsersModel) {
           atUsers.add(v);
-        }else{
+        } else {
           atUsers.add(AtUsersModel.fromJson(v));
         }
       });
@@ -662,9 +683,9 @@ class CommentDtoModel {
         if (replys == null) {
           replys = <CommentDtoModel>[];
         }
-        if(v is CommentDtoModel){
+        if (v is CommentDtoModel) {
           replys.add(v);
-        }else{
+        } else {
           replys.add(CommentDtoModel.fromJson(v));
         }
       });

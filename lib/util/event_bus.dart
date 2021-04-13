@@ -148,7 +148,9 @@ const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 // 底部bar
 const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 // 关注页
-const String EVENTBUS_ATTENTION_Page = "AttentionPage";
+const String EVENTBUS_ATTENTION_PAGE = "AttentionPage";
+// 推荐页
+const String EVENTBUS_RECOMMEND_PAGE = "recommendpage";
 //聊天界面
 const String EVENTBUS_CHAT_PAGE = "eventbus_chat_page";
 // 视频页
@@ -191,3 +193,5 @@ const String CHAT_GET_MSG = "chat_get_msg";
 const String CHAT_AT_GROUP_PANEL = "eventbus_chat_at_group_panel";
 //聊天界面的输入框旁边的发送按钮和图片按钮
 const String CHAT_BOTTOM_MORE_BTN = "eventbus_chat_bottom_more_btn";
+// 重新登录替换关注页布局
+const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
 
 typedef OnItemClickListener = void Function(PayTheWay pay);
 enum PayTheWay { WECHAT, ZHIFUBAO }
@@ -86,6 +87,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
             },
             child: _payButton("支付宝", zhifuBao),
           ),
+          SizedBox(height: 12,),
           InkWell(
             onTap: () {
               if (weChat) {
@@ -101,49 +103,29 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
     );
   }
 
-  Widget _payButton(String text, bool chose) {
+  Widget _payButton(String text, bool isChosen) {
     return Container(
       height: 48,
       child: Center(
         child: Row(
           children: [
             Container(
-              width: 23,
-              height: 20,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
                 color: AppColor.urlText,
                 borderRadius: BorderRadius.all(Radius.circular(14)),
               ),
             ),
             SizedBox(
-              width: 16.5,
+              width: 12,
             ),
             Text(
               text,
               style: AppStyle.textMedium16,
             ),
             Spacer(),
-            chose
-                ? Container(
-                    height: 24,
-                    width: 24,
-                    child: Image.asset(
-                      "images/resource/2.0x/chose_pay@2x.png",
-                    ),
-                  )
-                : Container(
-                    height: 24,
-                    width: 24,
-                    child: Center(
-                      child: Container(
-                        height: 19,
-                        width: 19,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(14)),
-                            border: Border.all(width: 1, color: AppColor.textHint)),
-                      ),
-                    ),
-                  )
+            AppIcon.getAppIcon(isChosen ? AppIcon.selection_selected : AppIcon.selection_not_selected, 24),
           ],
         ),
       ),
