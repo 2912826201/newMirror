@@ -34,8 +34,9 @@ import 'package:toast/toast.dart';
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
-
-  ProfileDetailPage({this.userId});
+  final String imageUrl;
+  final String userName;
+  ProfileDetailPage({this.userId,this.userName,this.imageUrl});
 
   @override
   _ProfileDetailState createState() {
@@ -71,6 +72,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   double _opcation = 0;
 
+  final double width = ScreenUtil.instance.screenWidthDp;
+  final double height = ScreenUtil.instance.height;
+
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
@@ -86,6 +90,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    if(widget.userName!=null){
+      _textName = widget.userName;
+    }
+    if(widget.imageUrl!=null){
+      _avatar = widget.imageUrl;
+    }
     print('==============================个人主页initState');
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
@@ -220,16 +230,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
-
     return WillPopScope(
         child: Scaffold(
           body: Container(
               height: height,
               width: width,
               child: Stack(
-                children: [_minehomeBody(width, height), Positioned(top: 0, child: appBar(height, width))],
+                children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
               )),
         ),
         onWillPop: _requestPop);
@@ -242,7 +249,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///这是个人页面，使用TabBarView
-  Widget _minehomeBody(double width, double height) {
+  Widget _minehomeBody() {
     return NestedScrollView(
         controller: scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -264,7 +271,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   );
                 }),
             SliverToBoxAdapter(
-              child: profileDetailData(height, width),
+              child: profileDetailData(),
             ),
 
             ///根据布尔值返回视图
@@ -349,7 +356,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 )));
   }
 
-  Widget appBar(double height, double width) {
+  Widget appBar() {
     return StreamBuilder<double>(
         initialData: 0,
         stream: appBarStreamController.stream,
@@ -358,7 +365,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             color: AppColor.white.withOpacity(snapshot.data),
             height: 44 + ScreenUtil.instance.statusBarHeight,
             width: width,
-            padding: EdgeInsets.only(left: 16, right: 16, top: ScreenUtil.instance.statusBarHeight),
+            padding: EdgeInsets.only( top: ScreenUtil.instance.statusBarHeight),
             child: Center(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -393,9 +400,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           sharedType: 1);
                     },
                   ),
-                  SizedBox(
-                    width: 16,
-                  ),
+
                   !isMselfId
                       ? CustomAppBarIconButton(
                     svgName: AppIcon.nav_more,
@@ -427,7 +432,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///高斯模糊
-  Widget profileDetailData(double height, double width) {
+  Widget profileDetailData() {
     return Container(
       height: height * 0.41 + _signatureHeight,
       color: AppColor.white,
@@ -463,7 +468,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           ClipRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: _mineDetailsData(height, width),
+              child: _mineDetailsData(),
             ),
           ),
         ],
@@ -472,7 +477,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///资料展示
-  Widget _mineDetailsData(double height, double width) {
+  Widget _mineDetailsData() {
     return Container(
         height: height * 0.41 + _signatureHeight,
         width: width,
@@ -488,7 +493,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width,
               child: Stack(
-                children: [_mineAvatar(height), Positioned(right: 0, top: 24, child: _mineButton(height))],
+                children: [_mineAvatar(), Positioned(right: 0, top: 24, child: _mineButton())],
               ),
             ),
             Spacer(),
@@ -529,8 +534,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: _textAndNumber(
                           "关注",
                           StringUtil.getNumber(
-                              notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount),
-                          height),
+                              notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                           return QueryFollowList(
@@ -555,16 +559,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: _textAndNumber(
                           "粉丝",
                           StringUtil.getNumber(
-                              notifier.profileUiChangeModel[widget.userId].attentionModel.followerCount),
-                          height),
+                              notifier.profileUiChangeModel[widget.userId].attentionModel.followerCount)),
                     ),
                     SizedBox(
                       width: 61,
                     ),
                     _textAndNumber(
                         "获赞",
-                        StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId].attentionModel.laudedCount),
-                        height),
+                        StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId].attentionModel.laudedCount)),
                   ],
                 ),
               );
@@ -580,7 +582,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///关注，编辑资料，私聊按钮
-  Widget _mineButton(double height) {
+  Widget _mineButton() {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
       return GestureDetector(
           onTap: () {
@@ -676,7 +678,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///头像
-  Widget _mineAvatar(double height) {
+  Widget _mineAvatar() {
     return Container(
       child: ClipOval(
         child: CachedNetworkImage(
@@ -698,7 +700,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///这是关注粉丝获赞
-  Widget _textAndNumber(String text, String number, double height) {
+  Widget _textAndNumber(String text, String number) {
     return Container(
         child: Column(
       children: [
@@ -707,7 +709,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           style: AppStyle.textMedium18,
         ),
         SizedBox(
-          height: height * 0.008,
+          height: 2.5,
         ),
         Text(
           text,

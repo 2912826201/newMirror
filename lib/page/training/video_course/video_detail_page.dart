@@ -860,7 +860,10 @@ class VideoDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,callback:(dynamic result){
+    AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,avatarUrl:videoModel.coachDto?.avatarUri,
+        userName: videoModel.coachDto?.nickName,
+        callback:(dynamic
+        result){
       print("result:$result");
       if(null!=result && result is bool) {
         videoModel.coachDto.relation = result?0:1;

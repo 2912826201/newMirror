@@ -384,7 +384,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId);
+              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId,avatarUrl:widget.msgModel
+                  .senderAvatarUrl,userName:widget
+                  .msgModel.senderName);
             },
             child: Container(
                 alignment: Alignment.topLeft,
@@ -571,7 +573,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
-    if (feedModel.data != null) {
+    if (feedModel!=null&&feedModel.data != null) {
       List<HomeFeedModel> list = [];
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);
