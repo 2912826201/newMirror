@@ -124,10 +124,13 @@ class _SlideBannerState extends State<SlideBanner> {
       PicUrlsModel item = widget.model.picUrls[indexs];
       // 查看大图设置
       if (widget.isDynamicDetails) {
-        cupertinoButtons.add(CupertinoButton(
+        cupertinoButtons.add(
+            CupertinoButton(
           borderRadius: BorderRadius.zero,
           padding: EdgeInsets.zero,
           onPressed: () {
+            print('---------------------------------大图预览');
+            context.read<FeedMapNotifier>().changeImageDetailsStatus(true);
             ImagePreview.preview(
               context,
               initialIndex: indexs,
@@ -142,7 +145,9 @@ class _SlideBannerState extends State<SlideBanner> {
                   tag: widget.model.picUrls[index].url + "$indexs",
                 );
               }),
-            );
+            ).then((value){
+              context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
+            });
           },
           child: ImagePreviewHero(
             tag: item.url + "$indexs",
@@ -351,7 +356,9 @@ class _SlideBannerState extends State<SlideBanner> {
                           }
                         }
                       },
-                      onTap: (index) {},
+                      onTap: (index) {
+
+                      },
                     )),
               ),
               Positioned(
