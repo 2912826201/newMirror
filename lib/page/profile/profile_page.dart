@@ -454,15 +454,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      /* if (userModel.isVip != 0) {*/
-         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return ChangeNotifierProvider(
-              create: (_) => VipTitleChangeNotifier(),
-          child: VipNotOpenPage(type: VipState.NOTOPEN));
-        }));
-      /*  } else {
-        AppRouter.navigateToVipOpenPage(context);
-      }*/
+       // if (userModel.isVip != 0) {
+        //  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        //   return ChangeNotifierProvider(
+        //       create: (_) => VipTitleChangeNotifier(),
+        //   child: VipNotOpenPage(type: VipState.NOTOPEN));
+        // }));
+      //   } else {
+      //   AppRouter.navigateToVipOpenPage(context);
+      // }
     }
   }
 }
