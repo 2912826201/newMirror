@@ -54,6 +54,7 @@ class AppColor {
   static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
   static const textVipSemibold = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const colorb9b9b9 = Color.fromRGBO(0xB9, 0xB9, 0xB9, 1.0);
+  static const color707070 = Color.fromRGBO(0x70, 0x70, 0x70, 1.0);
   static const colorfcb6bf = Color.fromRGBO(0xFC, 0xB6, 0xBF, 1.0);
   static const loadbackGround = Color.fromRGBO(0xD8, 0xD8, 0xD8, 1.0);
   static const orange = Color.fromRGBO(0xFF, 0x7F, 0x46, 1.0);
