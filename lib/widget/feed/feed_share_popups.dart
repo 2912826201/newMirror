@@ -88,7 +88,7 @@ class FeedSharePopups extends StatelessWidget {
     return Container(
       color: AppColor.white,
       width: ScreenUtil.instance.screenWidthDp,
-      height: 48 + 89 + ScreenUtil.instance.bottomHeight + 49,
+      height: 48 + 88 + 8 + 48 + ScreenUtil.instance.bottomHeight,
       child: Column(
         children: [
           Container(
@@ -101,7 +101,7 @@ class FeedSharePopups extends StatelessWidget {
             ),
           ),
           Container(
-            height: 89,
+            height: 88,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,

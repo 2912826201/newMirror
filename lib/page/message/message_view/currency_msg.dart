@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/page/message/item/widget_ver.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -108,44 +107,6 @@ Widget getMessageState(int status,
     //未知
     return Container();
   }
-}
-
-//获取直播课标识动态效果
-Widget getLiveStateUi() {
-  return Container(
-    height: 17,
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color(0xffFD868A),
-          Color(0xffFE5668),
-          Color(0xffFF4059),
-        ],
-      ),
-      borderRadius: BorderRadius.circular(17 / 2),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          width: 5,
-        ),
-        WidgetVer(),
-        SizedBox(
-          width: 3,
-        ),
-        Text(
-          "LIVE",
-          style: TextStyle(fontSize: 10, color: Colors.white),
-        ),
-        SizedBox(
-          width: 5,
-        ),
-      ],
-    ),
-  );
 }
 
 //获取长按操作的选项框
