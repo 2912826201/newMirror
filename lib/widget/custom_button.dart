@@ -417,6 +417,7 @@ class _CustomRedButtonState extends State<CustomRedButton> {
 enum FollowButtonType { FANS, FOLLOW, SERCH, TOPIC }
 
 class FollowButton extends StatefulWidget {
+  static double FOLLOW_BUTTON_WIDTH = 56;
   bool isFollow;
   int id;
   FollowButtonType buttonType;

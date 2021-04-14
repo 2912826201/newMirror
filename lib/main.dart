@@ -26,6 +26,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:package_info/package_info.dart';
@@ -191,6 +192,7 @@ Future _initApp() async {
   //初始化融云IM
   Application.rongCloud = RongCloud.init();
 
+
   //初始化页面路由
   final router = FluroRouter();
   AppRouter.configureRouter(router);
@@ -282,6 +284,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  Connectivity connectivity = Connectivity();
   @override
   void initState() {
     //需要APP环境的初始化

@@ -117,7 +117,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   @override
   void dispose() {
     _controller.dispose();
-    EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_RECOMMEND_PAGE);
+    // EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_RECOMMEND_PAGE);
     super.dispose();
   }
 
