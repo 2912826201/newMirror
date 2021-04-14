@@ -75,6 +75,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   GlobalKey globalKey = GlobalKey();
   String hintText;
   bool showNoMore = true;
+
   ///获取关注列表
   _getFollowList() async {
     if (listPage > 1 && hasNext == 0) {
@@ -165,7 +166,7 @@ class _QueryFollowState extends State<QueryFollowList> {
       _refreshController.refreshCompleted();
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
-            hasNext = model.hasNext;
+        hasNext = model.hasNext;
         if (model.list != null) {
           model.list.forEach((element) {
             searchModel.clear();
@@ -229,7 +230,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     } else if (listPage > 1 && _lastTime != null) {
       print('lastTime================================$_lastTime');
       if (model != null) {
-          hasNext = model.hasNext;
+        hasNext = model.hasNext;
         _lastTime = model.lastTime;
         if (model.list.isNotEmpty) {
           model.list.forEach((element) {
@@ -241,7 +242,7 @@ class _QueryFollowState extends State<QueryFollowList> {
       } else {
         _refreshController.loadFailed();
       }
-    }else{
+    } else {
       _refreshController.loadNoData();
     }
     if (mounted) {
@@ -512,10 +513,10 @@ class _QueryFollowState extends State<QueryFollowList> {
                               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                               header: SmartRefresherHeadFooter.init().getHeader(),
                               onRefresh: __onRefresh,
-                              onLoading:(){
-                                  setState(() {
-                                    showNoMore = IntegerUtil.showNoMore(globalKey,lastItemToTop: true);
-                                  });
+                              onLoading: () {
+                                setState(() {
+                                  showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                                });
                                 _onLoading();
                               },
                               child: ListView.builder(
@@ -550,8 +551,12 @@ class _QueryFollowState extends State<QueryFollowList> {
                                             width: width,
                                             userId: widget.userId,
                                             isMySelf: isMySelf,
-                                            globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
-                                                : topicList.length-1)?globalKey:null,
+                                            globalKey: index ==
+                                                    (widget.type == 1 || widget.type == 2
+                                                        ? buddyList.length - 1
+                                                        : topicList.length - 1)
+                                                ? globalKey
+                                                : null,
                                           );
                                         } else {
                                           return Container();
@@ -565,8 +570,12 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           width: width,
                                           userId: widget.userId,
                                           isMySelf: isMySelf,
-                                          globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
-                                              : topicList.length-1)?globalKey:null);
+                                          globalKey: index ==
+                                                  (widget.type == 1 || widget.type == 2
+                                                      ? buddyList.length - 1
+                                                      : topicList.length - 1)
+                                              ? globalKey
+                                              : null);
                                     } else {
                                       return QueryFollowItem(
                                         type: widget.type,
@@ -574,8 +583,12 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         width: width,
                                         userId: widget.userId,
                                         isMySelf: isMySelf,
-                                          globalKey: index==( widget.type == 1 || widget.type == 2 ? buddyList.length-1
-                                              : topicList.length-1)?globalKey:null,
+                                        globalKey: index ==
+                                                (widget.type == 1 || widget.type == 2
+                                                    ? buddyList.length - 1
+                                                    : topicList.length - 1)
+                                            ? globalKey
+                                            : null,
                                         topicDeleteCallBack: () {
                                           print('=========================话题详情返回');
                                           if (context.read<UserInteractiveNotifier>().removeId != null) {
@@ -627,18 +640,16 @@ class _QueryFollowState extends State<QueryFollowList> {
       width: width,
       child: Row(
         children: [
-          Center(
-            child: Image.asset("images/resource/searchGroup.png"),
-          ),
+          AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38),
           SizedBox(
-            width: 21,
+            width: 12,
           ),
           Text(
-            isMySelf ? "这里是我关注的所有话题" : "这里是他关注的所有话题",
+            isMySelf ? "这里是我关注的所有话题" : "这里是TA关注的所有话题",
             style: AppStyle.textMedium15,
           ),
           Spacer(),
-          Image.asset("images/resource/news_icon_arrow-red.png")
+          AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textHint),
         ],
       ),
     );
@@ -663,8 +674,14 @@ class QueryFollowItem extends StatefulWidget {
   GlobalKey globalKey;
 
   QueryFollowItem(
-      {this.width, this.buddyModel, this.tpcModel, this.type, this.userId, this.isMySelf, this.topicDeleteCallBack,
-        this.globalKey});
+      {this.width,
+      this.buddyModel,
+      this.tpcModel,
+      this.type,
+      this.userId,
+      this.isMySelf,
+      this.topicDeleteCallBack,
+      this.globalKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -732,7 +749,7 @@ class _FollowItemState extends State<QueryFollowItem> {
           InkWell(
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
-                  AppRouter.navigateToMineDetail(context, uid,avatarUrl:avatarUrl,userName:userName);
+                  AppRouter.navigateToMineDetail(context, uid, avatarUrl: avatarUrl, userName: userName);
                 } else {
                   TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
                   AppRouter.navigateToTopicDetailPage(context, topicModel, isTopicList: true, callback: (result) {
@@ -747,11 +764,11 @@ class _FollowItemState extends State<QueryFollowItem> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: widget.type == 3
-                        ? Image.asset("images/resource/searchGroup.png")
+                        ? AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38)
                         : ClipOval(
                             child: CachedNetworkImage(
-                              height: widget.width * 0.1,
-                              width: widget.width * 0.1,
+                              height: 38,
+                              width: 38,
                               imageUrl: avatarUrl,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Image.asset(
@@ -762,7 +779,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                           ),
                   ),
                   SizedBox(
-                    width: 11,
+                    width: 12,
                   ),
                   Center(
                     child: Container(

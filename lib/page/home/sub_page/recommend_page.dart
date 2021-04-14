@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -408,16 +409,18 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       : Container(
                           height: 53,
                           width: 53,
-                          child: Container(
-                              height: 47,
-                              width: 47,
-                              decoration: BoxDecoration(
-                                // color: Colors.redAccent,
-                                image: DecorationImage(
-                                    image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
-                                // image
-                                borderRadius: BorderRadius.all(Radius.circular(23.5)),
-                              )),
+                          child: Center(
+                            child: Container(
+                                height: 47,
+                                width: 47,
+                                decoration: BoxDecoration(
+                                  // color: Colors.redAccent,
+                                  image: DecorationImage(
+                                      image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
+                                  // image
+                                  borderRadius: BorderRadius.all(Radius.circular(23.5)),
+                                )),
+                          ),
                         ),
                   Container(
                     margin: EdgeInsets.only(top: 8),
