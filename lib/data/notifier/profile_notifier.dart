@@ -23,6 +23,7 @@ class ProfileNotifier with ChangeNotifier {
     weight = model.weight;
     albumNum = model.albumNum;
     trainingSeconds = model.trainingSeconds;
+    notifyListeners();
   }
   void setWeight(double weights) {
     weight = weights;

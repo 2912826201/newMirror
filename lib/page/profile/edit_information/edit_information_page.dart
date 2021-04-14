@@ -197,14 +197,9 @@ class _EditInformationState extends State<EditInformation> {
                         }
                         String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
                         if (model.croppedImageData != null) {
-                          print('==================================model.croppedImageData!=null');
                           File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
-                          print('imageFile==============================$imageFile');
                           fileList.add(imageFile);
-                          print('===============================${fileList.length}');
                         }
-                        print('model.croppedImageData 2===========================${model.croppedImageData}');
-                        // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
                         setState(() {
                           imageData = model.croppedImageData;
                         });
@@ -408,8 +403,25 @@ class _EditInformationState extends State<EditInformation> {
       context,
       pickerTheme: DateTimePickerTheme(
         showTitle: true,
-        confirm: Text('确定', style: AppStyle.redRegular16),
-        cancel: Text('取消', style: AppStyle.textHintRegular16),
+        title: Container(
+          height: 44,
+          width: ScreenUtil.instance.screenWidthDp,
+          padding: EdgeInsets.only(left: 16,right: 16),
+          decoration: BoxDecoration(
+              color: AppColor.white,
+              borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10) )
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('取消', style: AppStyle.textHintRegular16),
+              Spacer(),
+              Text('确定', style: AppStyle.redRegular16),
+            ],
+          ),
+        ),
+      /*  confirm: Text('确定', style: AppStyle.redRegular16),
+        cancel: Text('取消', style: AppStyle.textHintRegular16),*/
       ),
       minDateTime: DateTime.parse("1900-01-01"),
       //选择器上可选择的最早时间
@@ -434,23 +446,16 @@ class _EditInformationState extends State<EditInformation> {
 
   _upDataUserInfo() async {
     if (fileList.isNotEmpty) {
-      print('avataruri   1=====================================$avataruri');
-      print('=============================开始上传图片');
       var results = await FileUtil().uploadPics(fileList, (percent) {
-        print('===========================正在上传');
       });
       avataruri = results.resultMap.values.first.url;
     }
-    print('avataruri   2=====================================$avataruri');
-    print('================================开始请求接口');
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
         description: _introduction,
         sex: userSex,
         birthday: userBirthday,
         cityCode: context.read<AddressPickerNotifier>().cityCode);
-    print('model==============================================${model.uid}');
     if (model != null) {
-      print('=========================资料修改成功！=========================');
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
@@ -464,7 +469,6 @@ class _EditInformationState extends State<EditInformation> {
       setState(() {
         buttonState = CustomRedButton.buttonStateNormal;
       });
-     /* Loading.hideLoading(context);*/
       Toast.show(
         "资料修改失败",
         context,

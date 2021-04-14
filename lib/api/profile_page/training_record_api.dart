@@ -50,7 +50,7 @@ Future<TrainingRecordAllModel> getTrainingRecords({String startTime, String endT
     params["endTime"] = endTime;
   }
   BaseResponseModel responseModel = await requestApi(GETTRAININGRECORDS, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.code==200) {
     return TrainingRecordAllModel.fromJson(responseModel.data);
   } else {
     return null;
@@ -91,7 +91,7 @@ Future<WeightRecordsModel> getWeightRecords(int page, int size) async {
   params["page"] = page;
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(GETWEIGHTRECORDS, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.code==200) {
     return WeightRecordsModel.fromJson(responseModel.data);
   } else {
     return null;
