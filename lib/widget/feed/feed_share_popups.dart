@@ -86,9 +86,14 @@ class FeedSharePopups extends StatelessWidget {
     }
     print('map===================${map.toString()}');
     return Container(
-      color: AppColor.white,
       width: ScreenUtil.instance.screenWidthDp,
       height: 48 + 88 + 8 + 48 + ScreenUtil.instance.bottomHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
       child: Column(
         children: [
           Container(

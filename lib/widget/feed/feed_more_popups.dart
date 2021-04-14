@@ -18,8 +18,8 @@ Future openMoreBottomSheet({
       // 圆角
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(isFillet ? 10 : 0),
-          topRight: Radius.circular(isFillet ? 10 : 0),
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
         ),
       ),
       builder: (BuildContext context) {
@@ -169,6 +169,10 @@ class BottomopupState extends State<BottomPopup> {
     if (listLength == 1) {
       decoration = const BoxDecoration(
         color: AppColor.white, // 底色
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
       );
     } else if (listLength > 1) {
       // 除开取消的最后一个

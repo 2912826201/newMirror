@@ -228,7 +228,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                           ),
                           width: ScreenUtil.instance.width,
                           height: 40,
-                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          padding: const EdgeInsets.only(left: 4, right: 16),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -238,21 +238,27 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                                   stream: streamController.stream,
                                   builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
                                     return GestureDetector(
-                                      onTap: () {
-                                        isMute = !isMute;
-                                        streamController.sink.add(isMute);
-                                        if (isMute == false) {
-                                          listController.setVolume(0.0);
-                                        } else {
-                                          listController.setVolume(1.0);
-                                        }
-                                      },
-                                      child: Icon(
-                                        snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
-                                        size: 16,
-                                        color: AppColor.white,
-                                      ),
-                                    );
+                                        behavior:HitTestBehavior.opaque,
+                                        onTap: () {
+                                          isMute = !isMute;
+                                          streamController.sink.add(isMute);
+                                          if (isMute == false) {
+                                            listController.setVolume(0.0);
+                                          } else {
+                                            listController.setVolume(1.0);
+                                          }
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          child: Center(
+                                            child: Icon(
+                                              snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
+                                              size: 16,
+                                              color: AppColor.white,
+                                            ),
+                                          ),
+                                        ));
                                   }),
                               Spacer(),
                               Text(
