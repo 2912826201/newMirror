@@ -31,7 +31,7 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends XCState {
   int currentIndex;
-  final pageController = PageController();
+  PageController pageController = PageController();
   //关注未读数
   int _unReadFeedCount = 0;
   @override
@@ -46,6 +46,7 @@ class MainPageState extends XCState {
 
   @override
   void dispose() {
+    print('--------------------mainpage dispose');
     super.dispose();
   }
   _feedUnreadCallBack(int unread) {

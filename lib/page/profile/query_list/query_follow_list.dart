@@ -12,6 +12,7 @@ import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -75,7 +76,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   GlobalKey globalKey = GlobalKey();
   String hintText;
   bool showNoMore = true;
-
+  String defaultImage = DefaultImage.nodata;
   ///获取关注列表
   _getFollowList() async {
     if (listPage > 1 && hasNext == 0) {
@@ -99,6 +100,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
       //这是插入的作为话题入口的假数据
@@ -225,6 +227,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
@@ -274,6 +277,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
@@ -322,6 +326,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastScore != null) {
@@ -615,13 +620,13 @@ class _QueryFollowState extends State<QueryFollowList> {
                           Container(
                             width: 285,
                             height: 285,
-                            color: AppColor.bgWhite,
+                            child: Image.asset(defaultImage),
                           ),
                           SizedBox(
                             height: 12,
                           ),
                           Text(
-                            "静悄悄的,什么都没有",
+                            hintText,
                             style: AppStyle.textHintRegular14,
                           ),
                           Spacer(),
