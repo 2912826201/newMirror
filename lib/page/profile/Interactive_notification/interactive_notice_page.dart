@@ -14,6 +14,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -48,6 +49,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   List<QueryModel> msgList = [];
   bool haveData = false;
   String hintText;
+  String defaultImage = DefaultImage.nodata;
   int timeStamp;
   ScrollController scrollController  = ScrollController();
   String footerText = "没有更多了";
@@ -80,6 +82,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       } else {
         haveData = false;
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         controller.refreshFailed();
       }
     } else if (listPage > 1 && lastTime != null) {
@@ -220,15 +223,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               height: height * 0.22,
                             ),
                             Container(
-                              height: width * 0.59,
-                              width: width * 0.59,
-                              color: AppColor.bgWhite,
+                              width: 285,
+                              height: 285,
+                              child: Image.asset(defaultImage),
                             ),
                             SizedBox(
                               height: 16,
                             ),
                             Text(
-                              "这里什么都没有呢",
+                              hintText,
                               style: AppStyle.textPrimary3Regular14,
                             )
                           ],

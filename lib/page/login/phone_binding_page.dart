@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
@@ -191,10 +192,10 @@ class _PhoneBindingPageState extends State<PhoneBindingPage> {
           suffixIconConstraints: BoxConstraints(minWidth: 1, maxHeight: 1),
           isDense: true,
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Color.fromRGBO(243, 243, 243, 1), width: 0.5),
+            borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
           ),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Color.fromRGBO(243, 243, 243, 1), width: 0.5),
+            borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
           ),
         ));
     return Container(

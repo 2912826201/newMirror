@@ -541,7 +541,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         list.add("复制");
         openMoreBottomSheet(
           context: context,
-          isFillet: true,
           lists: list,
           onItemClickListener: (index) {
             if (list[index] == "复制") {

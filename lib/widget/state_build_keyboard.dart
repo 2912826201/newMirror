@@ -24,14 +24,20 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
           _timerBottomHeightCount++;
           if(_timerBottomHeightCount>200){
             _timerBottomHeightCount=0;
-            if(!pageHeightStopCanvas) {
-              pageHeightStopCanvas = true;
-              endCanvasPage();
-              print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
+            if(MediaQuery.of(this.context).viewInsets.bottom>90) {
+              if (!pageHeightStopCanvas) {
+                pageHeightStopCanvas = true;
+                endCanvasPage();
+                print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery
+                    .of(this.context)
+                    .viewInsets
+                    .bottom}");
+              }
             }
           }
         }else{
-          if(pageHeightStopCanvas&&MediaQuery.of(this.context).viewInsets.bottom>0) {
+          print("pageHeightStopCanvas:$pageHeightStopCanvas,${MediaQuery.of(this.context).viewInsets.bottom}");
+          if(pageHeightStopCanvas) {
             startCanvasPage(oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom);
             print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
             pageHeightStopCanvas = false;
@@ -43,6 +49,12 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
         }
       }
     });
+  }
+
+  startOpenKeyBoardHeight(){
+    startCanvasPage(oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom);
+    print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
+    pageHeightStopCanvas = false;
   }
 
 
@@ -60,6 +72,7 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
     }
     debugPrint("XCState dispose");
   }
+
 
   void keyBoardHeightThanZero();
 }

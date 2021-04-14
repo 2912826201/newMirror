@@ -11,6 +11,7 @@ import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -46,7 +47,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   bool refreshOver = false;
   String lastString;
   RefreshController _refreshController = new RefreshController();
-
+  String defaultImage = DefaultImage.nodata;
   @override
   void initState() {
     super.initState();
@@ -94,25 +95,31 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if (model != null && model.list.isNotEmpty) {
+      if(model != null){
+        hashNext = model.hasNext;
+      if (model.list.isNotEmpty) {
         noData = false;
+        modelList.clear();
+        _lastTime = model.lastTime;
         if (modelList == model.list) {
           _refreshController.refreshToIdle();
           return;
         } else {
-          modelList.clear();
           print('===================== =============model有值');
-          hashNext = model.hasNext;
           model.list.forEach((element) {
             print('model================ ${element.relation}');
             modelList.add(element);
           });
-          _lastTime = model.lastTime;
           _refreshController.refreshToIdle();
         }
         _refreshController.refreshCompleted();
       } else {
         noData = true;
+        defaultImage = DefaultImage.nodata;
+      }
+      }else{
+        noData = true;
+        defaultImage = DefaultImage.error;
       }
     } else if (dataPage > 1 && hashNext == 1) {
       _refreshController.isLoading;
@@ -167,9 +174,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
               children: [
                 const Spacer(),
                 Container(
-                  height: ScreenUtil.instance.screenWidthDp * 0.59,
-                  width: ScreenUtil.instance.screenWidthDp * 0.59,
-                  color: AppColor.color246,
+                  height: 224,
+                  width: 224,
+                  child: Image.asset(defaultImage),
                 ),
                 const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
                 const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),

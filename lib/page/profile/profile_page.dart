@@ -22,6 +22,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'profile_detail_page.dart';
 
+class DefaultImage{
+ static String  nodata = "assets/png/default_no_data.png";
+ static String  error = "assets/png/default_error.png";
+ static String  offline = "assets/png/default_offline.png";
+}
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
 

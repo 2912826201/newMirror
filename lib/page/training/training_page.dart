@@ -499,10 +499,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           SizedBox(
             height: 16,
           ),
-          Container(
+          Image.asset(
+            "assets/png/default_no_data.png",
             height: 224,
             width: 224,
-            color: AppColor.bgWhite,
+            fit: BoxFit.cover,
           ),
           SizedBox(
             height: 16,

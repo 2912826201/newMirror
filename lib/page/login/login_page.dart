@@ -53,12 +53,13 @@ class _LoginPageState extends State<LoginPage> {
   //背景图片
   Widget _backImage() {
     return Container(
-        child: Image.asset(
-      "images/test/bg.png",
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-    ));
+      child: Image.asset(
+        "assets/png/login_bg.png",
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      ),
+    );
   }
 
   //可选登录选项

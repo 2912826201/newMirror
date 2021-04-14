@@ -177,7 +177,33 @@ class LiveDetailPageState extends XCState {
             child: SizedBox(
           child: Center(
             child: GestureDetector(
-              child: Text("加载失败"),
+              child: Container(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 224,
+                      height: 224,
+                      child: Image.asset(
+                        "assets/png/default_no_data.png",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 14,
+                    ),
+                    Text(
+                      "暂无直播课程数据，去看看其他的吧~",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColor.textSecondary,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 100,
+                    ),
+                  ],
+                ),
+              ),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 if (mounted) {

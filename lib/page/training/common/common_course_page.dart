@@ -706,7 +706,7 @@ Widget getCommentNoData() {
     child: Column(
       children: [
         Image.asset(
-          "images/test/bg.png",
+          "assets/png/default_no_data.png",
           fit: BoxFit.cover,
           width: 224,
           height: 224,

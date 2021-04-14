@@ -885,7 +885,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             child: Container(
               width: 224.0,
               height: 224.0,
-              child: Image.asset("images/test/bg.png", fit: BoxFit.cover),
+              child: Image.asset("assets/png/default_no_data.png", fit: BoxFit.cover),
             ),
           ),
           Positioned(

@@ -108,13 +108,7 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
         }else{
           print("pageHeightStopCanvas:$pageHeightStopCanvas,${MediaQuery.of(this.context).viewInsets.bottom}");
           if(pageHeightStopCanvas) {
-            bool isOpen;
-            if(oldKeyboardHeight<0){
-              isOpen=true;
-            }else{
-              isOpen=oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom;
-            }
-            startCanvasPage(isOpen, MediaQuery.of(this.context).viewInsets.bottom);
+            startCanvasPage(oldKeyboardHeight<MediaQuery.of(this.context).viewInsets.bottom);
             print("oldKeyboardHeight:$oldKeyboardHeight,${MediaQuery.of(this.context).viewInsets.bottom}");
             pageHeightStopCanvas = false;
           }
@@ -169,7 +163,7 @@ abstract class XCState<T> extends State with WidgetsBindingObserver{
     });
   }
 
-  void startCanvasPage(bool isOpen,double keyBoardHeight);
+  void startCanvasPage(bool isOpen);
 
   void endCanvasPage();
 

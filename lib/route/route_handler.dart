@@ -154,7 +154,13 @@ var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
     imageUrl: data["imageUrl"]!=null?data["imageUrl"]:null,
   );
 });
-
+var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return QueryFollowList(
+    userId: data["userId"],
+    type: data["type"],
+  );
+});
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ProfileDetailsMore();
 });
