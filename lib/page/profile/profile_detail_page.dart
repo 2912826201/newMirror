@@ -46,6 +46,18 @@ class ProfileDetailPage extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
+  //头像size
+  final double avatarSize = 71;
+
+  //昵称Id区域高度
+  final double nameIdHeight = 53.5;
+
+  //关注,粉丝,点赞高度
+  final double followFansHeight = 44;
+
+  //资料板高度
+  double userDetailBoardHeight = 0;
+
   ///昵称
   String _textName;
 
@@ -123,7 +135,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       });
     });
     scrollController.addListener(() {
-      if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
+      if (scrollController.offset >= userDetailBoardHeight) {
         appBarOpacityStreamController.sink.add(1);
         if (!isScroll) {
           appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight);
@@ -140,14 +152,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           }
         }
         if (scrollController.offset >= ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight &&
-            scrollController.offset < ScreenUtil.instance.height * 0.33 + _signatureHeight) {
+            scrollController.offset < userDetailBoardHeight) {
           double offset =
               (scrollController.offset - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight)) /
-                  (ScreenUtil.instance.height * 0.33 +
-                      _signatureHeight -
+                  (userDetailBoardHeight -
                       (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight));
           appBarOpacityStreamController.sink.add(offset);
-
         } else {
           appBarOpacityStreamController.sink.add(0);
         }
@@ -233,6 +243,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');
+    //资料板高度，各部分高度加间距
+    userDetailBoardHeight = ScreenUtil.instance.statusBarHeight +
+        CustomAppBar.appBarHeight +
+        avatarSize +
+        nameIdHeight +
+        _signatureHeight +
+        followFansHeight +
+        12 +
+        16.5 +
+        16 +
+        6 +
+        16 +
+        5;
     return WillPopScope(
         child: Scaffold(
           body: Container(
@@ -274,7 +297,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   );
                 }),
             SliverToBoxAdapter(
-              child: profileDetailData(),
+              child: profileDetailData(userDetailBoardHeight),
             ),
 
             ///根据布尔值返回视图
@@ -382,17 +405,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     },
                   ),
                   Spacer(),
-                  /*   StreamBuilder<double>(
-                      initialData: 0,
-                      stream: titleStreamController.stream,
-                      builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                        return*/
                   Text(
                     "$_textName",
                     style: TextStyle(
                         fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.black.withOpacity(snapshot.data)),
                   ),
-                  /*}),*/
                   Spacer(),
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_share,
@@ -436,43 +453,43 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///高斯模糊
-  Widget profileDetailData() {
+  Widget profileDetailData(double backGroundHeight) {
     return Container(
-      height: height * 0.41 + _signatureHeight,
+      height: backGroundHeight,
       color: AppColor.white,
       child: Stack(
         children: [
-          Container(
-            height: height * 0.33,
+           Container(
+            height: backGroundHeight-followFansHeight-28.5,
             width: width,
-            child: CachedNetworkImage(
-              height: height * 0.33,
-              width: height * 0.33,
-              imageUrl: _avatar != null ? _avatar : "",
+            child:
+          CachedNetworkImage(
+            height: backGroundHeight - followFansHeight - 28.5,
+            width: backGroundHeight - followFansHeight - 28.5,
+            imageUrl: _avatar != null ? _avatar : "",
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Image.asset(
+              "images/test.png",
               fit: BoxFit.cover,
-              placeholder: (context, url) => Image.asset(
-                "images/test.png",
-                fit: BoxFit.cover,
-              ),
-              /* errorWidget: (context, url, e) {
+            ),
+            /* errorWidget: (context, url, e) {
                 return Image.asset(
                   "images/test.png",
                   fit: BoxFit.cover,
                 );
               },*/
-            ),
-          ),
+          )),
           Positioned(
               top: 0,
               child: Container(
                 width: width,
-                height: height * 0.33,
+                height: backGroundHeight - followFansHeight - 28.5,
                 color: AppColor.white.withOpacity(0.6),
               )),
           ClipRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: _mineDetailsData(),
+              child: _mineDetailsData(backGroundHeight),
             ),
           ),
         ],
@@ -481,9 +498,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///资料展示
-  Widget _mineDetailsData() {
+  Widget _mineDetailsData(double containerHeight) {
     return Container(
-        height: height * 0.41 + _signatureHeight,
+        height: containerHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -496,28 +513,35 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width,
-              child: Stack(
-                children: [_mineAvatar(), Positioned(right: 0, top: 24, child: _mineButton())],
+              height: avatarSize,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [_mineAvatar(), Spacer(), _mineButton()],
               ),
             ),
-            Spacer(),
-
-            ///昵称
+            SizedBox(
+              height: 16,
+            ),
             Container(
+              height: nameIdHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
-              child: Text(
-                _textName != null ? _textName : "  ",
-                style: AppStyle.textMedium18,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ///昵称
+                  Text(
+                    _textName != null ? _textName : "  ",
+                    style: AppStyle.textMedium18,
+                  ),
+                  Spacer(),
+                  ///id
+                  Text("ID: ${widget.userId}"),
+                ],
               ),
             ),
-            Spacer(),
-
-            ///id
-            Container(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              child: Text("ID: ${widget.userId}"),
+            SizedBox(
+              height: 6,
             ),
-            Spacer(),
 
             ///签名
             Container(
@@ -526,11 +550,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ", softWrap: true, style: AppStyle.textRegular14),
             ),
-            Spacer(),
+            SizedBox(
+              height: 16,
+            ),
 
             ///关注，获赞，粉丝
             Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
               return Container(
+                height: followFansHeight,
                 padding: EdgeInsets.only(left: 16, right: 16),
                 child: Row(
                   children: [
@@ -540,12 +567,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           StringUtil.getNumber(
                               notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                          return QueryFollowList(
-                            type: 1,
-                            userId: widget.userId,
-                          );
-                        }));
+                        AppRouter.navigateToProfileFollowListPage(context,widget.userId,1);
                       },
                     ),
                     SizedBox(
@@ -553,12 +575,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                          return QueryFollowList(
-                            type: 2,
-                            userId: widget.userId,
-                          );
-                        }));
+                        AppRouter.navigateToProfileFollowListPage(context,widget.userId,2);
                       },
                       child: _textAndNumber(
                           "粉丝",
@@ -574,7 +591,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ),
               );
             }),
-            Spacer(),
+            SizedBox(
+              height: 16,
+            ),
             Container(
               color: AppColor.bgWhite.withOpacity(0.65),
               height: 12,
@@ -685,8 +704,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     return Container(
       child: ClipOval(
         child: CachedNetworkImage(
-          height: height * 0.09,
-          width: height * 0.09,
+          height: avatarSize,
+          width: avatarSize,
           useOldImageOnUrlChange: true,
           imageUrl: _avatar != null ? _avatar : "",
           fit: BoxFit.cover,

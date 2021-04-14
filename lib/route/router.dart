@@ -56,6 +56,7 @@ class AppRouter {
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
+  static String pathProfileFollowListPage = "/profile/followlistpage";
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
@@ -146,6 +147,7 @@ class AppRouter {
     router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
     router.define(pathVideoCourseResult, handler: handlerVideoCourseResult);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
+    router.define(pathProfileFollowListPage, handler: handlerProfileFollowList);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
@@ -440,7 +442,12 @@ class AppRouter {
   static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
-
+  static void navigateToProfileFollowListPage(BuildContext context, int userId,int type) {
+    Map<String, dynamic> map = Map();
+    map["userId"] = userId;
+    map["type"] = type;
+    _navigateToPage(context, pathProfileFollowListPage, map);
+  }
   static void navigateToEditInfomation(BuildContext context, Function(dynamic result) callback) {
     _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
