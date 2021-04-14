@@ -294,6 +294,7 @@ class HeadViewState extends State<HeadView> {
                       // ignore: missing_return
                       openMoreBottomSheet(
                           context: context,
+                          isFillet: true,
                           lists: context
                               .read<UserInteractiveNotifier>()
                               .profileUiChangeModel[widget.model.pushId]
