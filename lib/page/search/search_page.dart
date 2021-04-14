@@ -355,8 +355,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
         return GestureDetector(
           onTap: () async{
-            TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
-            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => StickyDemo(model: topicModel,)));
+            // TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
+            // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => StickyDemo(model: topicModel,)));
           },
           child: Container(
             height: 48,
