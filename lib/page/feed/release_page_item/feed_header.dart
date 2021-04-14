@@ -122,15 +122,11 @@ class FeedHeader extends StatelessWidget {
         feedModel.selectedMediaFiles = selectedMediaFiles;
         postprogressModel.postFeedModel = feedModel;
         print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
-        // // 存入数据
-        // AppPrefs.setPublishFeedLocalInsertData(
-        //     "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-        //     jsonEncode(postprogressModel.toJson()));
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
-        // EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
-        // EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
         print('--------------Navigator------Navigator-------------Navigator------');
+        // 传入发布动态model
+        EventBus.getDefault().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
         Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
         print("打印结束");
       } else {
@@ -183,9 +179,12 @@ class FeedHeader extends StatelessWidget {
       // EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
       print('--------------Navigator------Navigator-------------Navigator------');
     }
+    print("postprogressModel:::${postprogressModel.toString()}");
+
+    Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+    print("5555455555");
     // 传入发布动态model
     EventBus.getDefault().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-    Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
   }
 
   @override

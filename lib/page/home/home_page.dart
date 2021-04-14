@@ -58,25 +58,23 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   @override
   void dispose() {
     controller.dispose();
-    EventBus.getDefault().unRegister(registerName: EVENTBUS_GET_FAILURE_MODEL, pageName: EVENTBUS_HOME_PAGE);
-    EventBus.getDefault().unRegister(registerName: EVENTBUS_POST_PORGRESS_VIEW, pageName: EVENTBUS_HOME_PAGE);
+    print("关闭homePage");
+    // EventBus.getDefault().unRegister(registerName: EVENTBUS_GET_FAILURE_MODEL, pageName: EVENTBUS_HOME_PAGE);
+    // EventBus.getDefault().unRegister(registerName: EVENTBUS_POST_PORGRESS_VIEW, pageName: EVENTBUS_HOME_PAGE);
     super.dispose();
   }
 
   @override
   initState() {
     super.initState();
+    print("homePage初始化");
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-
     // 登录页重新登录获取发布失败model通知
     EventBus.getDefault()
         .registerNoParameter(postModelAssignment, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_GET_FAILURE_MODEL);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // 发布动态页发送发布model通知
-      EventBus.getDefault()
-          .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-    });
+    // 发布动态页发送发布model通知
+    EventBus.getDefault()
+        .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
     _initConnectivity();
   }
 
@@ -162,6 +160,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   // 发布动态
   pulishFeed(PostprogressModel postprogress, {isPostPageJump = true}) async {
+    print("进来了绿绿绿绿绿绿绿");
     if (mounted) {
       postprogressModel = postprogress;
       // 才从发布动态页跳转回来时

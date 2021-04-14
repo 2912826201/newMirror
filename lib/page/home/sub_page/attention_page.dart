@@ -97,8 +97,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   void dispose() {
     print("关注页面销毁了");
     _controller.dispose();
-    EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_PAGE);
-    EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_PAGE);
+    // EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_PAGE);
+    // EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_PAGE);
     super.dispose();
   }
 
@@ -254,9 +254,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     attentionModelList.insert(0, model);
     print(attentionIdList.toString());
     // // 更新全局监听
-    new Future.delayed(Duration.zero, () {
+    // new Future.delayed(Duration.zero, () {
       context.read<FeedMapNotifier>().insertFeedMap(model);
-    });
+    // });
     setState(() {});
     status = Status.concern;
   }
@@ -295,7 +295,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
-    print("关注页");
+    print("AttentionPage_______build");
     print("当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
     var isLogged = context.watch<TokenNotifier>().isLoggedIn;
     print(isLogged);
