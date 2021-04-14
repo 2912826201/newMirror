@@ -9,7 +9,7 @@ Future openMoreBottomSheet({
   @required BuildContext context,
   @required OnItemClickListener onItemClickListener,
   @required List<String> lists,
-  bool isFillet = false,
+  bool isFillet = true,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
@@ -17,15 +17,18 @@ Future openMoreBottomSheet({
       backgroundColor: AppColor.white,
       // 圆角
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(isFillet ? 10 : 0), topRight: Radius.circular(isFillet ? 10 : 0))),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(isFillet ? 10 : 0),
+          topRight: Radius.circular(isFillet ? 10 : 0),
+        ),
+      ),
       builder: (BuildContext context) {
         return SingleChildScrollView(
             child: BottomPopup(
-              list: lists,
-              isFillet: isFillet,
-              onItemClickListener: onItemClickListener,
-            ));
+          list: lists,
+          isFillet: isFillet,
+          onItemClickListener: onItemClickListener,
+        ));
       });
 }
 
@@ -62,10 +65,7 @@ class BottomopupState extends State<BottomPopup> {
   @override
   Widget build(BuildContext context) {
     // 获取设备的宽度
-    var deviceWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    var deviceWidth = MediaQuery.of(context).size.width;
     // print("宽度$deviceWidth");
     /*
     区分刘海屏
@@ -91,8 +91,8 @@ class BottomopupState extends State<BottomPopup> {
           children: [
             // 取消上面的分割块
             Container(
-              height: 12,
-              color: const Color.fromRGBO(243, 243, 243, 1),
+              height: 8,
+              color: AppColor.bgWhite,
             ),
             Container(
               height: 50,
@@ -109,12 +109,7 @@ class BottomopupState extends State<BottomPopup> {
                 child: Center(
                   child: const Text(
                     "取消",
-                    style: TextStyle(
-                        fontFamily: 'Robot',
-                        fontWeight: FontWeight.normal,
-                        decoration: TextDecoration.none,
-                        color: Color(0xff333333),
-                        fontSize: 18),
+                    style: TextStyle(color: AppColor.black, fontSize: 17),
                   ),
                 ),
               ),
@@ -182,7 +177,7 @@ class BottomopupState extends State<BottomPopup> {
           border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
           color: AppColor.white, // 底色
         );
-      } else if(index >= 1) {
+      } else if (index >= 1) {
         decoration = const BoxDecoration(
           color: AppColor.white, // 底色
           border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
