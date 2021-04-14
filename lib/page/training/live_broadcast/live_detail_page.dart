@@ -33,6 +33,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:toast/toast.dart';
 
 import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
@@ -944,7 +945,11 @@ class LiveDetailPageState extends XCState {
   }
 
   //去直播页
-  void gotoLiveVideoRoomPage() {
+  void gotoLiveVideoRoomPage()async {
+    if(!(await judgeIsStart())){
+      ToastShow.show(msg: "没有开始直播", context: context);
+      return;
+    }
     AppRouter.navigateLiveRoomPage(context, liveModel, callback: (int coachRelation) {
       liveModel.coachDto.relation = coachRelation;
       if (mounted) {
@@ -954,13 +959,21 @@ class LiveDetailPageState extends XCState {
   }
 
   //使用终端进行训练
-  void _useTerminal() {
+  void _useTerminal() async{
+    if(!(await judgeIsStart())){
+      ToastShow.show(msg: "没有开始直播", context: context);
+      return;
+    }
     ToastShow.show(msg: "使用终端进行训练", context: context);
     startVideoCourse(Application.machine.machineId, liveCourseId);
   }
 
   //登陆终端进行训练
-  void _loginTerminal() {
+  void _loginTerminal() async{
+    if(!(await judgeIsStart())){
+      ToastShow.show(msg: "没有开始直播", context: context);
+      return;
+    }
     print("登陆终端进行训练");
     if (Application.token.anonymous == 0) {
       AppRouter.navigateToScanCodePage(context);
@@ -978,6 +991,16 @@ class LiveDetailPageState extends XCState {
   void applyTerminalTrainingPr() async {
     applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
+  }
+
+  Future<bool> judgeIsStart()async{
+    //加载数据
+    Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
+    if(model!=null){
+      LiveVideoModel liveModel = LiveVideoModel.fromJson(model);
+      return liveModel.liveCourseState==1;
+    }
+    return false;
   }
 
   ///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------
