@@ -31,9 +31,11 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends XCState {
   int currentIndex;
-  PageController pageController = PageController();
+  final pageController = PageController();
+
   //关注未读数
   int _unReadFeedCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -46,12 +48,13 @@ class MainPageState extends XCState {
 
   @override
   void dispose() {
-    print('--------------------mainpage dispose');
     super.dispose();
   }
+
   _feedUnreadCallBack(int unread) {
     _unReadFeedCount = unread;
   }
+
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
       if (attentionModel != null) {
@@ -66,7 +69,7 @@ class MainPageState extends XCState {
     getUnReadFeedCount().then((value) {
       if (value != null) {
         _unReadFeedCount = value;
-        EventBus.getDefault().post(msg: _unReadFeedCount ,registerName:EVENTBUS__FEED_UNREAD);
+        EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);
       }
     });
   }
@@ -78,11 +81,16 @@ class MainPageState extends XCState {
         bottomNavigationBar: IFTabBar(
           tabBarClickListener: (index) {
             if (currentIndex == index) {
+              print("范慧慧");
               return;
             }
-            pageController.jumpToPage(index);
-            currentIndex = index;
-            if(_unReadFeedCount == 0) {
+            print("跳转111111");
+            if (pageController.hasClients) {
+              print("跳转222222");
+              pageController.jumpToPage(index);
+              currentIndex = index;
+            }
+            if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
             switch (index) {
