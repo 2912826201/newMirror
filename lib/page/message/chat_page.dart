@@ -366,12 +366,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
             _bottomSettingPanelState = true;
             bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            Future.delayed(Duration(milliseconds: 100),(){
-              if(MediaQuery.of(this.context).viewInsets.bottom<1){
-                _bottomSettingPanelState = false;
-                bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-              }
-            });
+            // Future.delayed(Duration(milliseconds: 200),(){
+            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+            //     _bottomSettingPanelState = false;
+            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+            //   }
+            // });
           }else{
             pageHeightStopCanvas = true;
             oldKeyboardHeight = 0;
@@ -384,12 +384,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
             _bottomSettingPanelState = true;
             bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            Future.delayed(Duration(milliseconds: 100),(){
-              if(MediaQuery.of(this.context).viewInsets.bottom<1){
-                _bottomSettingPanelState = false;
-                bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-              }
-            });
+            // Future.delayed(Duration(milliseconds: 200),(){
+            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+            //     _bottomSettingPanelState = false;
+            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+            //   }
+            // });
           }else{
             pageHeightStopCanvas = true;
             oldKeyboardHeight = 0;

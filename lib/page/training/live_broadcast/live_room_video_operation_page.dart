@@ -486,12 +486,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                         isShowEmojiBtn = !isShowEmojiBtn;
                         _bottomSettingPanelState=!_emojiState;
                         FocusScope.of(context).requestFocus(_focusNode);
-                        Future.delayed(Duration(milliseconds: 100),(){
-                          if(MediaQuery.of(this.context).viewInsets.bottom<1){
-                            _bottomSettingPanelState = false;
-                            setState(() {});
-                          }
-                        });
+                        // Future.delayed(Duration(milliseconds: 100),(){
+                        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+                        //     _bottomSettingPanelState = false;
+                        //     setState(() {});
+                        //   }
+                        // });
                       }
                     },
                     iconSize: 24,
@@ -714,16 +714,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
         _emojiState = false;
+        _bottomSettingPanelState = true;
         print("_bottomSettingPanelState:设置true");
         startOpenKeyBoardHeight();
-        Future.delayed(Duration(milliseconds: 100),(){
-          if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            _bottomSettingPanelState = false;
-          }else{
-            _bottomSettingPanelState = true;
-          }
-          setState(() {});
-        });
+        // Future.delayed(Duration(milliseconds: 100),(){
+        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+        //     _bottomSettingPanelState = false;
+        //   }else{
+        //     _bottomSettingPanelState = true;
+        //   }
+        //   setState(() {});
+        // });
         // setState(() {});
       },
       onLongTap: () {
@@ -731,16 +732,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
         _emojiState = false;
+        _bottomSettingPanelState = true;
         print("_bottomSettingPanelState:设置true");
         startOpenKeyBoardHeight();
-        Future.delayed(Duration(milliseconds: 100),(){
-          if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            _bottomSettingPanelState = false;
-          }else{
-            _bottomSettingPanelState = true;
-          }
-          setState(() {});
-        });
+        // Future.delayed(Duration(milliseconds: 100),(){
+        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+        //     _bottomSettingPanelState = false;
+        //   }else{
+        //     _bottomSettingPanelState = true;
+        //   }
+        //   setState(() {});
+        // });
         // setState(() {});
       },
       controller: _textController,
