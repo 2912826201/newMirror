@@ -11,6 +11,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 ///个人主页更多
@@ -29,7 +30,8 @@ class ProfileDetailsMore extends StatefulWidget {
 
 class _DetailsMoreState extends State<ProfileDetailsMore> {
   bool isBlack = false;
-
+  final double width = ScreenUtil.instance.screenWidthDp;
+  final double height = ScreenUtil.instance.height;
   @override
   void initState() {
     super.initState();
@@ -51,8 +53,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
     return Scaffold(
         appBar: CustomAppBar(
           titleString: "更多",
@@ -60,11 +60,11 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
             Navigator.pop(this.context);
           },
         ),
-        body: Container(height: height, width: width, color: AppColor.white, child: _columnLayOut(width)));
+        body: Container(height: height, width: width, color: AppColor.white, child: _columnLayOut()));
   }
 
   ///关注的布局
-  Widget _columnLayOut(double width) {
+  Widget _columnLayOut() {
     return Column(
       children: [
         Container(
@@ -80,7 +80,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
               )
             : Container(),
         InkWell(
-          child: _itemSelect(width, AppStyle.textRegular16, "举报"),
+          child: _itemSelect( AppStyle.textRegular16, "举报"),
           onTap: () {
             _showDialog(1);
           },
@@ -94,12 +94,13 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         InkWell(
           onTap: () {
             if (isBlack) {
+              Loading.showLoading(context);
               _cancelBlack();
             } else {
               _showDialog(2);
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
         ),
         !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
             ? Container(
@@ -111,9 +112,10 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
             ? InkWell(
                 onTap: () {
+                  Loading.showLoading(context);
                   _cancelFollow();
                 },
-                child: _itemSelect(width, AppStyle.redRegular16, "取消关注"),
+                child: _itemSelect( AppStyle.redRegular16, "取消关注"),
               )
             : Container(),
         Container(
@@ -156,7 +158,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     );
   }
 
-  Widget _itemSelect(double width, TextStyle style, String text) {
+  Widget _itemSelect( TextStyle style, String text) {
     return Container(
       height: 48,
       width: width,
@@ -176,6 +178,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
+      Loading.hideLoading(context);
       Navigator.pop(context);
     }
   }
@@ -209,6 +212,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         ToastShow.show(msg: "操作失败", context: context);
       }
     }
+    Loading.hideLoading(context);
   }
 
   ///举报

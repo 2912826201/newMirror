@@ -22,6 +22,12 @@ Future openaddressPickerBottomSheet({
   await showModalBottomSheet(
     isScrollControlled: true,
     context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
     builder: (BuildContext context) {
       return SingleChildScrollView(
         child: AddressPicker(provinceMap:provinceMap,cityMap: cityMap,),
@@ -103,13 +109,16 @@ class _AddressPickerState extends State<AddressPicker>{
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
           return Container(
-            height: height * 0.33,
+            height: 259.5+ScreenUtil.instance.bottomBarHeight,
             width: width,
-            color: AppColor.white,
+            decoration: BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10) )
+            ),
             child: Column(
               children: [
                 Container(
-                  height: height*0.05,
+                  height: 42,
                   padding: EdgeInsets.only(left: 30, right: 30),
                   child: Row(
                     children: [
@@ -146,10 +155,11 @@ class _AddressPickerState extends State<AddressPicker>{
                     ],
                   ),
                 ),
+                Container(width: ScreenUtil.instance.screenWidthDp,height: 0.5,color: AppColor.bgWhite,),
                 Stack(
                   children: [
                     Container(
-                      height: height * 0.32 - height*0.05,
+                      height: 217,
                       width: width,
                       child: Row(
                         children: [
@@ -169,7 +179,7 @@ class _AddressPickerState extends State<AddressPicker>{
                       child: IgnorePointer(
                         child: Container(
                         width: width,
-                        height: (height * 0.32 - height*0.05) / 2 - 15,
+                        height: 217 / 2 - 15,
                         color: AppColor.white.withOpacity(0.5),
                       ),)),
                     Positioned(
@@ -177,12 +187,12 @@ class _AddressPickerState extends State<AddressPicker>{
                       child:  IgnorePointer(
                           child: Container(
                         width: width,
-                        height: (height * 0.32 - height*0.05) / 2 - 15,
+                        height: 217 / 2 - 15,
                         color: AppColor.white.withOpacity(0.5),
                       ))),
                     Positioned(
                       left: width / 2 * 0.15,
-                      top: (height * 0.32 - height*0.05) / 2 - 15,
+                      top: 217 / 2 - 15,
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
@@ -190,7 +200,7 @@ class _AddressPickerState extends State<AddressPicker>{
                       )),
                     Positioned(
                       left: width / 2 * 0.15,
-                      bottom:(height * 0.32 - height*0.05) / 2 - 15,
+                      bottom:217 / 2 - 15,
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
@@ -198,7 +208,7 @@ class _AddressPickerState extends State<AddressPicker>{
                       )),
                     Positioned(
                       right: width / 2 * 0.15,
-                      top: (height * 0.32 - height*0.05) / 2 - 15,
+                      top: 217 / 2 - 15,
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
@@ -206,7 +216,7 @@ class _AddressPickerState extends State<AddressPicker>{
                       )),
                     Positioned(
                       right: width / 2 * 0.15,
-                      bottom: (height * 0.32 - height*0.05) / 2 - 15,
+                      bottom: 217 / 2 - 15,
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
