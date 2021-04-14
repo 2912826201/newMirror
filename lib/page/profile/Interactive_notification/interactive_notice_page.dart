@@ -14,6 +14,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -48,12 +49,14 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   List<QueryModel> msgList = [];
   bool haveData = false;
   String hintText;
+  String defaultImage = DefaultImage.nodata;
   int timeStamp;
-  ScrollController scrollController  = ScrollController();
+  ScrollController scrollController = ScrollController();
   String footerText = "没有更多了";
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
+
   ///获取互动通知列表
   _getMsgList(int type, {bool isRefreash = false}) async {
     if (listPage > 1 && lastTime == null) {
@@ -69,17 +72,18 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         msgList.clear();
         if (model.list != null) {
           haveData = true;
-            model.list.forEach((element) {
-              if (isRefreash) {
-                element.isRead = 1;
-              }
-              msgList.add(element);
-            });
+          model.list.forEach((element) {
+            if (isRefreash) {
+              element.isRead = 1;
+            }
+            msgList.add(element);
+          });
         }
         controller.refreshCompleted();
       } else {
         haveData = false;
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         controller.refreshFailed();
       }
     } else if (listPage > 1 && lastTime != null) {
@@ -192,15 +196,16 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                           header: SmartRefresherHeadFooter.init().getHeader(),
                           onRefresh: _onRefresh,
-                          onLoading: (){
+                          onLoading: () {
                             setState(() {
-                              showNoMore = IntegerUtil.showNoMore(globalKey,lastItemToTop: true);
+                              showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
                             });
                             _onLoading();
                           },
-                          child:ListView.builder(
+                          child: ListView.builder(
                               controller: scrollController,
-                              shrinkWrap: true, //解决无限高度问题
+                              shrinkWrap: true,
+                              //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
                               itemCount: snapshot.data.length,
                               itemBuilder: (context, index) {
@@ -208,7 +213,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
-                                  globalKey: listPage==1&&index==snapshot.data.length-1?globalKey:null,
+                                  globalKey: listPage == 1 && index == snapshot.data.length - 1 ? globalKey : null,
                                 );
                               }),
                         ))
@@ -220,15 +225,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               height: height * 0.22,
                             ),
                             Container(
-                              height: width * 0.59,
-                              width: width * 0.59,
-                              color: AppColor.bgWhite,
+                              width: 285,
+                              height: 285,
+                              child: Image.asset(defaultImage),
                             ),
                             SizedBox(
                               height: 16,
                             ),
                             Text(
-                              "这里什么都没有呢",
+                              hintText,
                               style: AppStyle.textPrimary3Regular14,
                             )
                           ],
@@ -247,7 +252,8 @@ class InteractiveNoticeItem extends StatefulWidget {
   bool isFrist = true;
   int index;
   GlobalKey globalKey;
-  InteractiveNoticeItem({this.type, this.msgModel, this.index,this.globalKey});
+
+  InteractiveNoticeItem({this.type, this.msgModel, this.index, this.globalKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -324,7 +330,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   List<TextSpan> _atText(BuildContext context) {
     var textSpanList = <TextSpan>[];
     if ((atUserList != null && atUserList.length > 0)) {
-      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment,atUsers: atUserList));
+      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment, atUsers: atUserList));
     } else {
       textSpanList.add(TextSpan(
         text: comment,
@@ -384,9 +390,8 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId,avatarUrl:widget.msgModel
-                  .senderAvatarUrl,userName:widget
-                  .msgModel.senderName);
+              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId,
+                  avatarUrl: widget.msgModel.senderAvatarUrl, userName: widget.msgModel.senderName);
             },
             child: Container(
                 alignment: Alignment.topLeft,
@@ -443,17 +448,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   ),
                   !commentIsDelete
                       ? RichText(text: TextSpan(children: _atText(context)))
-                  // MyRichTextWidget(
-                  //         Text(
-                  //           "$comment",
-                  //           style: AppStyle.textRegular13,
-                  //         ),
-                  //         maxLines: 3,
-                  //         textOverflow: TextOverflow.ellipsis,
-                  //         richTexts: _atText(context),
-                  //         headText: commentState,
-                  //         headStyle: AppStyle.textMedium13,
-                  //       )
                       : Text(
                           "该评论已删除",
                           style: AppStyle.textHintRegular13,
@@ -573,7 +567,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
-    if (feedModel!=null&&feedModel.data != null) {
+    if (feedModel != null && feedModel.data != null) {
       List<HomeFeedModel> list = [];
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);

@@ -18,6 +18,7 @@ import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
+import 'package:mirror/page/training/test_appvar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
@@ -352,41 +353,47 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
   // 热门课程推荐类容Item
   List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
-        return Container(
-          height: 48,
-          width: (ScreenUtil.instance.width - 48) / 2,
-          padding: const EdgeInsets.only(top: 5, bottom: 4),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "${index + 1}",
-                style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.redMedium14,
-              ),
-              const Spacer(),
-              Container(
-                // height: 38,
-                width: ((ScreenUtil.instance.width - 48) / 2) - 40,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(liveVideoList[index].title,
-                        style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    const Spacer(),
-                    Text(
-                      liveVideoList[index].description,
-                      style: AppStyle.textSecondaryRegular12,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  ],
+        return GestureDetector(
+          onTap: () async{
+            // TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
+            // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => StickyDemo(model: topicModel,)));
+          },
+          child: Container(
+            height: 48,
+            width: (ScreenUtil.instance.width - 48) / 2,
+            padding: const EdgeInsets.only(top: 5, bottom: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "${index + 1}",
+                  style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.redMedium14,
                 ),
-              ),
-              const SizedBox(
-                width: 22,
-              )
-            ],
+                const Spacer(),
+                Container(
+                  // height: 38,
+                  width: ((ScreenUtil.instance.width - 48) / 2) - 40,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(liveVideoList[index].title,
+                          style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      const Spacer(),
+                      Text(
+                        liveVideoList[index].description,
+                        style: AppStyle.textSecondaryRegular12,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 22,
+                )
+              ],
+            ),
           ),
         );
       });

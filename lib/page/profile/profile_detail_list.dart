@@ -10,6 +10,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -43,6 +44,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   String hintText;
   int followDataPage = 1;
   int followlastTime;
+  String defaultImage = DefaultImage.nodata;
   RefreshController _refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
   bool refreshOver = false;
@@ -66,12 +68,20 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
-          feedIdListController.sink.add(feedIdList);
           print('-------------------------model.list.isNotEmpty');
+        }else{
+          widget.type == 3
+              ? hintText = "这个人很懒，什么都没发"
+              : widget.type == 2
+              ? hintText = "发布动态，增加人气哦"
+              : hintText = "你还没有喜欢的内容~去逛逛吧";
+          defaultImage = DefaultImage.nodata;
         }
+        feedIdListController.sink.add(feedIdList);
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
+        defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
       refreshOver = true;
@@ -139,6 +149,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       _getDynamicData();
     });
   }
+
 
   _deleteFeedCallBack(int id) {
     print('--------$feedIdList------------------删除回调$id');
@@ -233,7 +244,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               child: Container(
                 width: 224,
                 height: 224,
-                color: AppColor.bgWhite.withOpacity(0.65),
+               child: Image.asset(defaultImage),
               ),
             ),
             SizedBox(

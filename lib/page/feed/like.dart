@@ -173,7 +173,7 @@ class LikeListViewItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: ScreenUtil.instance.width-32.0-38.0-16.0-4.0,
+                width: ScreenUtil.instance.width - 32.0 - 38.0 - 16.0 - 4.0,
                 child: Text(
                   "${model.nickName}",
                   // '用户昵称显示',
