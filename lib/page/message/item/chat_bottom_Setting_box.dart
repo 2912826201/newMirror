@@ -102,6 +102,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   }
 
   Widget bottomSettingPanel(double keyboardHeight) {
+    print("bottomSettingPanelState:$bottomSettingPanelState");
     double height = bottomSettingPanelState ? keyboardHeight : 0.0;
     return AnimatedContainer(
       duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),

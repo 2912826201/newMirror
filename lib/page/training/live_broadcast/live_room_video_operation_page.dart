@@ -1408,7 +1408,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
     print("_bottomSettingPanelState:是$_bottomSettingPanelState");
     if(!_emojiStateOld) {
-      if (!(_bottomSettingPanelState == isOpen)) {
+      if (_bottomSettingPanelState != isOpen) {
         _bottomSettingPanelState = isOpen;
         print("_bottomSettingPanelState:是$_bottomSettingPanelState");
         if (mounted) {
@@ -1416,6 +1416,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             print("setState-bbbbbbbbbbbbbbbbbbbbbbbb");});
         }
       }
+    }
+    if(isOpen){
+      _emojiStateOld=false;
     }
   }
 

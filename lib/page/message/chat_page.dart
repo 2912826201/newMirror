@@ -2041,11 +2041,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
+    print("_bottomSettingPanelState:$_bottomSettingPanelState");
     if(!_emojiStateOld){
-      if (!(_bottomSettingPanelState == isOpen)) {
+      if (_bottomSettingPanelState != isOpen) {
         _bottomSettingPanelState = isOpen;
         bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
       }
+    }
+    if(isOpen){
+      _emojiStateOld=false;
     }
   }
 
