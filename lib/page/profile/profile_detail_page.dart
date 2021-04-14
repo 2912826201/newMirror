@@ -155,8 +155,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             scrollController.offset < userDetailBoardHeight) {
           double offset =
               (scrollController.offset - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight)) /
-                  (userDetailBoardHeight -
-                      (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight));
+                  (userDetailBoardHeight - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight));
           appBarOpacityStreamController.sink.add(offset);
         } else {
           appBarOpacityStreamController.sink.add(0);
@@ -308,22 +307,22 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     delegate: StickyTabBarDelegate(
                       width: width,
                       child: TabBar(
-                        unselectedLabelStyle: AppStyle.textHintRegular16,
-                        unselectedLabelColor: AppColor.textSecondary,
-                        labelStyle: AppStyle.textMedium18,
-                        labelColor: AppColor.black,
-                        indicatorColor: AppColor.black,
-                        controller: _mController,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        indicator: RoundUnderlineTabIndicator(
-                            insets: EdgeInsets.only(bottom: 0),
-                            wantWidth: 20,
-                            borderSide: BorderSide(width: 2, color: AppColor.black)),
-                        tabs: <Widget>[
-                          Tab(text: '动态'),
-                          Tab(text: '喜欢'),
-                        ],
-                      ),
+                            unselectedLabelStyle: AppStyle.textHintRegular16,
+                            unselectedLabelColor: AppColor.textSecondary,
+                            labelStyle: AppStyle.textMedium18,
+                            labelColor: AppColor.black,
+                            indicatorColor: AppColor.black,
+                            controller: _mController,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            indicator: RoundUnderlineTabIndicator(
+                                insets: EdgeInsets.only(bottom: 0),
+                                wantWidth: 20,
+                                borderSide: BorderSide(width: 2, color: AppColor.black)),
+                            tabs: <Widget>[
+                              Tab(text: '动态'),
+                              Tab(text: '喜欢'),
+                            ],
+                          ),
                     ),
                   )
                 : SliverToBoxAdapter(
@@ -356,7 +355,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       ),
                     ],
                   )
-                : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
+                : MediaQuery.removePadding(
+                    context: context, child: ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId))
             : Container(
                 padding: EdgeInsets.only(top: 12),
                 color: AppColor.white,
@@ -459,26 +459,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       color: AppColor.white,
       child: Stack(
         children: [
-           Container(
-            height: backGroundHeight-followFansHeight-28.5,
-            width: width,
-            child:
-          CachedNetworkImage(
-            height: backGroundHeight - followFansHeight - 28.5,
-            width: backGroundHeight - followFansHeight - 28.5,
-            imageUrl: _avatar != null ? _avatar : "",
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
-            ),
-            /* errorWidget: (context, url, e) {
+          Container(
+              height: backGroundHeight - followFansHeight - 28.5,
+              width: width,
+              child: CachedNetworkImage(
+                height: backGroundHeight - followFansHeight - 28.5,
+                width: backGroundHeight - followFansHeight - 28.5,
+                imageUrl: _avatar != null ? _avatar : "",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset(
+                  "images/test.png",
+                  fit: BoxFit.cover,
+                ),
+                /* errorWidget: (context, url, e) {
                 return Image.asset(
                   "images/test.png",
                   fit: BoxFit.cover,
                 );
               },*/
-          )),
+              )),
           Positioned(
               top: 0,
               child: Container(
@@ -534,6 +533,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     style: AppStyle.textMedium18,
                   ),
                   Spacer(),
+
                   ///id
                   Text("ID: ${widget.userId}"),
                 ],
@@ -567,7 +567,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           StringUtil.getNumber(
                               notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
                       onTap: () {
-                        AppRouter.navigateToProfileFollowListPage(context,widget.userId,1);
+                        AppRouter.navigateToProfileFollowListPage(context, widget.userId, 1);
                       },
                     ),
                     SizedBox(
@@ -575,7 +575,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     ),
                     InkWell(
                       onTap: () {
-                        AppRouter.navigateToProfileFollowListPage(context,widget.userId,2);
+                        AppRouter.navigateToProfileFollowListPage(context, widget.userId, 2);
                       },
                       child: _textAndNumber(
                           "粉丝",
@@ -591,9 +591,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ),
               );
             }),
-            SizedBox(
-              height: 16,
-            ),
+            Spacer(),
             Container(
               color: AppColor.bgWhite.withOpacity(0.65),
               height: 12,
