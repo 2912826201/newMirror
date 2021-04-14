@@ -781,11 +781,11 @@ class _FollowItemState extends State<QueryFollowItem> {
                   SizedBox(
                     width: 12,
                   ),
-                  Center(
-                    child: Container(
-                      width: widget.width * 0.59,
+                   Container(
+                      width: ScreenUtil.instance.screenWidthDp-(FollowButton.FOLLOW_BUTTON_WIDTH+38+32+11),
                       height: 48,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Spacer(),
                           Container(
@@ -815,10 +815,9 @@ class _FollowItemState extends State<QueryFollowItem> {
                         ],
                       ),
                     ),
-                  ),
                 ],
               )),
-          Spacer(),
+          SizedBox(width: 16,),
           FollowButton(
             id: uid,
             isFollow: isFollow,
