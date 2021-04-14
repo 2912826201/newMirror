@@ -787,7 +787,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                     width: 12,
                   ),
                    Container(
-                      width: ScreenUtil.instance.screenWidthDp-(FollowButton.FOLLOW_BUTTON_WIDTH+38+32+11),
+                      width: ScreenUtil.instance.screenWidthDp-(FollowButton.FOLLOW_BUTTON_WIDTH+66+32),
                       height: 48,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

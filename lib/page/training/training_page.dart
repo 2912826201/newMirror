@@ -5,6 +5,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/live_label_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -397,11 +398,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      height: 16,
-                                      width: 44,
-                                      color: AppColor.mainRed,
-                                    ),
+                                    LiveLabelWidget(isWhiteBorder: false),
                                     SizedBox(
                                       width: 8,
                                     ),
