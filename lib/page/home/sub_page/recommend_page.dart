@@ -308,7 +308,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                   Container(
                                     width: 224,
                                     height: 224,
-                                    color: AppColor.color246,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                                    ),
                                     margin: const EdgeInsets.only(bottom: 16),
                                   ),
                                   const Text(

@@ -196,7 +196,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                 Container(
                   width: 224,
                   height: 224,
-                  color: AppColor.color246,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                  ),
                   margin: const EdgeInsets.only(bottom: 16),
                 ),
                 const Text(

@@ -255,7 +255,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print(attentionIdList.toString());
     // // 更新全局监听
     // new Future.delayed(Duration.zero, () {
-      context.read<FeedMapNotifier>().insertFeedMap(model);
+    context.read<FeedMapNotifier>().insertFeedMap(model);
     // });
     setState(() {});
     status = Status.concern;
@@ -322,7 +322,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             Container(
               width: 224,
               height: 224,
-              color: AppColor.color246,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+              ),
               margin: const EdgeInsets.only(bottom: 16),
             ),
             const Text(
@@ -429,7 +431,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               Container(
                 width: 224,
                 height: 224,
-                color: AppColor.color246,
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                ),
                 margin: const EdgeInsets.only(bottom: 16),
               ),
               const Text(

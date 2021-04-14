@@ -174,9 +174,12 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
               children: [
                 const Spacer(),
                 Container(
-                  height: 224,
                   width: 224,
-                  child: Image.asset(defaultImage),
+                  height: 224,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                  ),
+                  margin: const EdgeInsets.only(bottom: 16),
                 ),
                 const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
                 const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),

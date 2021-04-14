@@ -220,8 +220,10 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                 Container(
                   width: 224,
                   height: 224,
-                  color: AppColor.color246,
-                  // margin: EdgeInsets.only(bottom: 16, top: 188),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                  ),
+                  margin: const EdgeInsets.only(bottom: 16),
                 ),
                 const Text(
                   "你的放大镜陨落星辰了",
