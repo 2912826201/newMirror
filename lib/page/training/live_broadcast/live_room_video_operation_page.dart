@@ -1407,14 +1407,25 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
     print("_bottomSettingPanelState:是$_bottomSettingPanelState");
-    if(!_emojiStateOld) {
-      if (_bottomSettingPanelState != isOpen) {
-        _bottomSettingPanelState = isOpen;
-        print("_bottomSettingPanelState:是$_bottomSettingPanelState");
-        if (mounted) {
-          setState(() {
-            print("setState-bbbbbbbbbbbbbbbbbbbbbbbb");});
+    if(isOpen) {
+      if (!_emojiStateOld) {
+        if (_bottomSettingPanelState != isOpen) {
+          _bottomSettingPanelState = isOpen;
+          print("_bottomSettingPanelState:是$_bottomSettingPanelState");
+          if (mounted) {
+            setState(() {
+              print("setState-bbbbbbbbbbbbbbbbbbbbbbbb");
+            });
+          }
         }
+      }
+    }else{
+      _bottomSettingPanelState = false;
+      print("_bottomSettingPanelState:是$_bottomSettingPanelState");
+      if (mounted) {
+        setState(() {
+          print("setState-bbbbbbbbbbbbbbbbbbbbbbbb");
+        });
       }
     }
     if(isOpen){

@@ -361,6 +361,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       child: TextSpanField(
         onTap: () {
           _emojiStateOld=_emojiState;
+          print("_emojiStateOld2:$_emojiStateOld");
           if (_emojiState) {
             _emojiState = !_emojiState;
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
@@ -379,6 +380,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         },
         onLongTap: () {
           _emojiStateOld=_emojiState;
+          print("_emojiStateOld3:$_emojiStateOld");
           if (_emojiState) {
             _emojiState = !_emojiState;
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
@@ -1502,6 +1504,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   _messageInputBodyClick() {
     print("_messageInputBodyClick");
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
+      _emojiStateOld=false;
+      print("_emojiStateOld1:$_emojiStateOld");
       if (MediaQuery.of(context).viewInsets.bottom > 0) {
         FocusScope.of(context).requestFocus(new FocusNode());
       }
@@ -2041,12 +2045,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
-    print("_bottomSettingPanelState:$_bottomSettingPanelState");
-    if(!_emojiStateOld){
-      if (_bottomSettingPanelState != isOpen) {
-        _bottomSettingPanelState = isOpen;
-        bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    print("_bottomSettingPanelState:$_bottomSettingPanelState,_emojiStateOld:$_emojiStateOld");
+    if(isOpen){
+      if(!_emojiStateOld){
+        if (_bottomSettingPanelState != isOpen) {
+          _bottomSettingPanelState = isOpen;
+          bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+        }
       }
+    }else{
+      _bottomSettingPanelState = false;
+      bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
     }
     if(isOpen){
       _emojiStateOld=false;
