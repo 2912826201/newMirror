@@ -160,7 +160,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
         margin: const EdgeInsets.only(top: 40),
         child: Column(
           children: [
-            Image.asset("images/test/bg.png", width: 224, height: 224, fit: BoxFit.cover),
+            Image.asset("assets/png/default_no_data.png", width: 224, height: 224, fit: BoxFit.cover),
             SizedBox(height: 16),
             Text("您还没有收藏过任何课程呢，快去添加吧！", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
           ],

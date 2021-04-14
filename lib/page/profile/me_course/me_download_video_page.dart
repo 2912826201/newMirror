@@ -402,7 +402,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset("images/test/bg.png", width: 224, height: 224, fit: BoxFit.cover),
+          Image.asset("assets/png/default_no_data.png", width: 224, height: 224, fit: BoxFit.cover),
           SizedBox(height: 16),
           Text("您还没有下载过任何视频", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
         ],

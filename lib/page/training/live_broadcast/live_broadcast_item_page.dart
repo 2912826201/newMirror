@@ -483,7 +483,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
             width: 224,
             height: 224,
             child: Image.asset(
-              "images/test/bg.png",
+              "assets/png/default_no_data.png",
               fit: BoxFit.cover,
             ),
           ),
