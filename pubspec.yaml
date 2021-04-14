@@ -201,6 +201,9 @@ flutter:
   assets:
     - assets/emoji.json
     - assets/svg/
+    - assets/png/
+    - assets/png/2.0x/
+    - assets/png/3.0x/
     - images/
     - images/resource/
     - images/resource/2.0x/
@@ -212,7 +215,6 @@ flutter:
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
-    - images/chat/
     - images/resource/2.0x/vip_open_icon@2x.png
     - images/resource/2.0x/vip_notopen_icon@2x.png
     - images/resource/2.0x/chose_pay@2x.png

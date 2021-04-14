@@ -14,6 +14,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -23,8 +24,10 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -173,18 +176,17 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                           return SliverAppBar(
                             expandedHeight: sliverAppBarHeight(),
                             pinned: true,
+                            titleSpacing: 0,
                             title: Text(
-                              "${widget.model.name}",
+                              "#${widget.model.name}",
                               style:
                                   TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data.titleColor),
                             ),
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios,
-                                color: snapshot.data.iconColor,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
+                            leading: CustomAppBarIconButton(
+                              svgName: AppIcon.nav_return,
+                              iconColor: snapshot.data.iconColor,
+                              onTap: () {
+                                Navigator.pop(context);
                               },
                             ),
                             actions: <Widget>[
@@ -192,17 +194,23 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   ? Container(
                                       width: 60,
                                       padding: EdgeInsets.only(top: 14, bottom: 14),
+                                      margin: EdgeInsets.only(right: 8),
                                       child: _followButton(),
                                     )
                                   : Container(),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.wysiwyg,
-                                  color: snapshot.data.iconColor,
-                                ),
-                                onPressed: () {
-                                  openShareBottomSheet(context: context, map: widget.model.toJson(), sharedType: 3);
+                              CustomAppBarIconButton(
+                                svgName: AppIcon.nav_share,
+                                iconColor: snapshot.data.iconColor,
+                                onTap: () {
+                                  openShareBottomSheet(
+                                      context: context,
+                                      map: widget.model.toJson(),
+                                      sharedType: 3,
+                                      chatTypeModel: ChatTypeModel.NULL_COMMENT);
                                 },
+                              ),
+                              SizedBox(
+                                width: 8,
                               )
                             ],
                             backgroundColor: AppColor.white,

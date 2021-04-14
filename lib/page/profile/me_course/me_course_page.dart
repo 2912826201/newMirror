@@ -179,10 +179,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(23.0),
-              child: Image.asset("images/test/bg.png", width: 46, height: 46, fit: BoxFit.cover),
-            ),
+            Image.asset("assets/png/course_favorite.png", width: 45, height: 45, fit: BoxFit.cover),
             SizedBox(width: 12),
             Expanded(
                 child: SizedBox(
@@ -218,10 +215,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
           margin: const EdgeInsets.only(left: 16, top: 12, right: 16),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(23.0),
-                child: Image.asset("images/test/bg.png", width: 46, height: 46, fit: BoxFit.cover),
-              ),
+              Image.asset("assets/png/course_downloaded.png", width: 45, height: 45, fit: BoxFit.cover),
               getLineView1(width: 12),
               Text("下载课程", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
               Expanded(child: SizedBox()),

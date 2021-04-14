@@ -384,7 +384,8 @@ Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore})
   }
 }
 ///健身信息录入
-Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,List<int> keyParts,int timesOfWeek}) async {
+Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,String keyParts,int
+timesOfWeek}) async {
   Map<String,dynamic> map = Map();
   map["height"] =height;
   map["weight"] = weight;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -6,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/loading.dart';
@@ -135,14 +138,16 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         bodyType: Application.fitnessEntryModel.bodyType,
         target: Application.fitnessEntryModel.target,
         level: Application.fitnessEntryModel.hard,
-        keyParts: Application.fitnessEntryModel.keyParts,
+        keyParts: Application.fitnessEntryModel.keyParts.toString(),
         timesOfWeek: Application.fitnessEntryModel.timesOfWeek);
     if (getModel != null) {
       Loading.hideLoading(context);
-      print('===============================健身信息录入成功');
+      ToastShow.show(msg: "健身信息录入成功", context: context);
       AppRouter.popToBeforeLogin(context);
     } else {
+      ToastShow.show(msg: "数据上传失败了，尝试联系客服修改吧~", context: context);
       Loading.hideLoading(context);
+      AppRouter.popToBeforeLogin(context);
       print('================================健身信息录入失败');
     }
   }

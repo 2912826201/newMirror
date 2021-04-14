@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -119,6 +120,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                       },
                       child: ListView.builder(
                           itemCount: recommendTopicList.length,
+                          shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return ExposureDetector(
                               key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
@@ -185,14 +187,17 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
             // )
             )
         : Container(
+            width: double.infinity,
+            height: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: 224,
                   height: 224,
                   color: AppColor.color246,
-                  margin: const EdgeInsets.only(bottom: 16, top: 188),
+                  margin: const EdgeInsets.only(bottom: 16),
                 ),
                 const Text(
                   "这里空空如也，去推荐看看吧",

@@ -135,11 +135,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     // 上拉加载
     super.initState();
+    // 重新登录替换关注页布局
+    EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
+        registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
-      // 重新登录替换关注页布局
-      EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
-          registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       // 动态未读数
       EventBus.getDefault()
           .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);
@@ -154,9 +154,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 重新登录替换布局
   _againLoginReplaceLayout() {
     // 调用关注接口替换
-    if (!isRequestInterface) {
-      getRecommendFeed();
-    }
+    getRecommendFeed();
   }
 
   // 请求关注接口
@@ -174,6 +172,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         setState(() {
           print("dataPage:  ￥￥$dataPage");
           if (dataPage == 1) {
+            print("第一页");
             //fixme model.list为空 null 会报错
             if (model.list != null && model.list.isNotEmpty) {
               model.list.forEach((v) {
@@ -188,6 +187,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             }
             _refreshController.refreshCompleted();
           } else if (dataPage > 1 && lastTime != null) {
+            print("第二页");
             if (model.list.isNotEmpty) {
               model.list.forEach((v) {
                 attentionIdList.add(HomeFeedModel.fromJson(v).id);
@@ -310,7 +310,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 未登录状态不需要刷新
     if (status == Status.notLoggedIn) {
       return Container(
-        height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
+        height: ScreenUtil.instance.height -
+            48 -
+            44 -
+            ScreenUtil.instance.bottomBarHeight -
+            ScreenUtil.instance.statusBarHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -349,7 +353,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     return Container(
       child: SmartRefresher(
           enablePullUp: status == Status.concern ? true : false,
-          enablePullDown: true ,
+          enablePullDown: true,
           footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
           header: SmartRefresherHeadFooter.init().getHeader(),
           controller: _refreshController,
@@ -413,7 +417,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     switch (status) {
       case Status.noConcern:
         return Container(
-          height: ScreenUtil.instance.height - 48 - 44 - ScreenUtil.instance.bottomBarHeight - ScreenUtil.instance.statusBarHeight,
+          height: ScreenUtil.instance.height -
+              48 -
+              44 -
+              ScreenUtil.instance.bottomBarHeight -
+              ScreenUtil.instance.statusBarHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

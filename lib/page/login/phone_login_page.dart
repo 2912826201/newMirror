@@ -276,7 +276,6 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         ],
       ),
       margin: const EdgeInsets.only(top: 38, bottom: 32),
-      width: 293,
       height: 44,
     );
     return encapsulateBoxArea;

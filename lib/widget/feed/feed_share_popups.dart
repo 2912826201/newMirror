@@ -27,17 +27,26 @@ Future openShareBottomSheet({
   @required int sharedType,
 }) async {
   await showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: FeedSharePopups(
-            map: map,
-            chatTypeModel: chatTypeModel,
-            sharedType: sharedType,
-          ),
-        );
-      });
+    isScrollControlled: true,
+    context: context,
+    backgroundColor: AppColor.white,
+    // 圆角
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: FeedSharePopups(
+          map: map,
+          chatTypeModel: chatTypeModel,
+          sharedType: sharedType,
+        ),
+      );
+    },
+  );
 }
 
 class FeedSharePopups extends StatelessWidget {
@@ -176,7 +185,7 @@ class FeedSharePopups extends StatelessWidget {
           ),
           Container(
             width: ScreenUtil.instance.screenWidthDp,
-            height: 1,
+            height: 8,
             color: AppColor.bgWhite,
           ),
           InkWell(
@@ -187,10 +196,9 @@ class FeedSharePopups extends StatelessWidget {
               height: 48,
               width: ScreenUtil.instance.screenWidthDp,
               child: Center(
-                //TODO 没有UI 需要定下字号
                 child: Text(
                   "取消",
-                  style: AppStyle.textMedium18,
+                  style: TextStyle(fontSize: 17, color: AppColor.black),
                 ),
               ),
             ),
