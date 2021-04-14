@@ -403,7 +403,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                 ),
                               ),
                             ),
-                            Positioned(bottom: -2.5, child: LiveLabelWidget(isWhiteBorder: true))
+                            Positioned(bottom: -3, child: LiveLabelWidget(isWhiteBorder: true))
                           ],
                         )
                       : Container(
