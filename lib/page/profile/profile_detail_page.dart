@@ -36,7 +36,8 @@ class ProfileDetailPage extends StatefulWidget {
   final int userId;
   final String imageUrl;
   final String userName;
-  ProfileDetailPage({this.userId,this.userName,this.imageUrl});
+
+  ProfileDetailPage({this.userId, this.userName, this.imageUrl});
 
   @override
   _ProfileDetailState createState() {
@@ -62,13 +63,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///用户信息
   UserModel userModel;
 
-
   bool isScroll = false;
 
   bool canOnClick = true;
 
   int userStatus;
-
 
   final double width = ScreenUtil.instance.screenWidthDp;
   final double height = ScreenUtil.instance.height;
@@ -80,18 +79,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
-  StreamController<Color> streamController = StreamController<Color>();
+  StreamController<double> titleStreamController = StreamController<double>();
   StreamController<bool> loadingStreamController = StreamController<bool>();
-  StreamController<double> appBarStreamController = StreamController<double>();
+  StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();
 
   @override
   void initState() {
     super.initState();
-    if(widget.userName!=null){
+    if (widget.userName != null) {
       _textName = widget.userName;
     }
-    if(widget.imageUrl!=null){
+    if (widget.imageUrl != null) {
       _avatar = widget.imageUrl;
     }
     print('==============================个人主页initState');
@@ -125,10 +124,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
+        appBarOpacityStreamController.sink.add(1);
         if (!isScroll) {
           appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight);
-          appBarStreamController.sink.add(1);
-          streamController.sink.add(AppColor.black);
           canOnClick = false;
           isScroll = true;
         }
@@ -141,16 +139,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             appBarHeightStreamController.sink.add(0);
           }
         }
-        if (scrollController.offset >= 0) {
-          double offset = scrollController.offset / (ScreenUtil.instance.height * 0.33 + _signatureHeight);
-          if(scrollController.offset<ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight){
-            appBarStreamController.sink.add(0);
-          }else{
-            appBarStreamController.sink.add(offset);
-          }
+        if (scrollController.offset >= ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight &&
+            scrollController.offset < ScreenUtil.instance.height * 0.33 + _signatureHeight) {
+          double offset =
+              (scrollController.offset - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight)) /
+                  (ScreenUtil.instance.height * 0.33 +
+                      _signatureHeight -
+                      (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight));
+          appBarOpacityStreamController.sink.add(offset);
+
+        } else {
+          appBarOpacityStreamController.sink.add(0);
         }
         if (isScroll) {
-          streamController.sink.add(AppColor.transparent);
           canOnClick = true;
           isScroll = false;
         }
@@ -361,13 +362,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget appBar() {
     return StreamBuilder<double>(
         initialData: 0,
-        stream: appBarStreamController.stream,
+        stream: appBarOpacityStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return Container(
             color: AppColor.white.withOpacity(snapshot.data),
             height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
             width: width,
-            padding: EdgeInsets.only( top: ScreenUtil.instance.statusBarHeight),
+            padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
             child: Center(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -381,15 +382,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     },
                   ),
                   Spacer(),
-                  StreamBuilder<Color>(
-                      initialData: AppColor.transparent,
-                      stream: streamController.stream,
-                      builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
-                        return Text(
-                          "$_textName",
-                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
-                        );
-                      }),
+                  /*   StreamBuilder<double>(
+                      initialData: 0,
+                      stream: titleStreamController.stream,
+                      builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                        return*/
+                  Text(
+                    "$_textName",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.black.withOpacity(snapshot.data)),
+                  ),
+                  /*}),*/
                   Spacer(),
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_share,
@@ -402,22 +405,21 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           sharedType: 1);
                     },
                   ),
-
                   !isMselfId
                       ? CustomAppBarIconButton(
-                    svgName: AppIcon.nav_more,
-                    iconColor: AppColor.black,
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return ProfileDetailsMore(
-                          userId: widget.userId,
-                          userName: _textName,
-                        );
-                      })).then((value) {
-                        _getFollowCount(id: widget.userId);
-                      });
-                    },
-                  )
+                          svgName: AppIcon.nav_more,
+                          iconColor: AppColor.black,
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                              return ProfileDetailsMore(
+                                userId: widget.userId,
+                                userName: _textName,
+                              );
+                            })).then((value) {
+                              _getFollowCount(id: widget.userId);
+                            });
+                          },
+                        )
                       : Container(
                           width: 0,
                         ),
@@ -566,8 +568,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     SizedBox(
                       width: 61,
                     ),
-                    _textAndNumber(
-                        "获赞",
+                    _textAndNumber("获赞",
                         StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId].attentionModel.laudedCount)),
                   ],
                 ),
