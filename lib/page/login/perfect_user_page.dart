@@ -20,6 +20,7 @@ import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -281,7 +282,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
     MessageManager.loadConversationListFromDatabase(context);
     //一些非关键数据获取
     _getMoreInfo();
-
+    EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     AppRouter.navigateToLoginSucess(context);
   }
 
