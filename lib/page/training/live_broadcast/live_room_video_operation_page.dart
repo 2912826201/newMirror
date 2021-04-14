@@ -710,6 +710,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget edit() {
     return TextSpanField(
       onTap: () {
+        _emojiStateOld=_emojiState;
         pageHeightStopCanvas = true;
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
@@ -728,6 +729,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         // setState(() {});
       },
       onLongTap: () {
+        _emojiStateOld=_emojiState;
         pageHeightStopCanvas = true;
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
