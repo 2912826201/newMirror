@@ -310,6 +310,7 @@ class _LiveRoomVideoPageState extends XCState {
 
   _showAppDialog(String title, String subtitle) {
     if (context != null) {
+      EventBus.getDefault().post(registerName: EVENTBUS_ON_CLICK_BODY);
       showAppDialog(context,
           title: title,
           info: subtitle,

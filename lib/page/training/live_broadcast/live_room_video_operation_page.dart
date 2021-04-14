@@ -108,6 +108,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
     EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+    EventBus.getDefault().registerNoParameter(_onClickBodyListener, EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ON_CLICK_BODY);
 
     urlImageList.add("");
     urlImageList.add(widget.coachUrl);
@@ -1033,8 +1035,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   // 监听返回事件
   Future<bool> _requestPop() {
-    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-    return new Future.value(true);
+    if(_emojiState){
+      _emojiStateOld=false;
+      _onClickBodyListener();
+      return new Future.value(false);
+    }else {
+      EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
+      return new Future.value(true);
+    }
   }
 
   //退出界面
@@ -1049,6 +1057,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
           EventBus.getDefault()
               .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+          EventBus.getDefault()
+              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
           if (timer != null) {
             timer.cancel();
             timer = null;
@@ -1075,6 +1085,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+    EventBus.getDefault()
+        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -1363,6 +1375,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //显示dialog-训练感受
   _showFeelingDialog(dynamic mapList) {
+    EventBus.getDefault().post(registerName: EVENTBUS_ON_CLICK_BODY);
     var contentMap = json.decode(mapList.toString());
     showAppDialog(context, title: "训练感受", info: "请问训练感觉怎么样呢？", barrierDismissible: false, buttonList: [
       for (Map<String, dynamic> map in contentMap)
