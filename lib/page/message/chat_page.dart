@@ -107,6 +107,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //是否显示表情
   bool _emojiState = false;
+  bool _emojiStateOld=false;
   bool _bottomSettingPanelState = false;
 
   //是不是显示语音按钮
@@ -359,19 +360,39 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
-          pageHeightStopCanvas = true;
-          oldKeyboardHeight = -1;
+          _emojiStateOld=_emojiState;
           if (_emojiState) {
             _emojiState = !_emojiState;
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
+            _bottomSettingPanelState = true;
+            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            Future.delayed(Duration(milliseconds: 100),(){
+              if(MediaQuery.of(this.context).viewInsets.bottom<1){
+                _bottomSettingPanelState = false;
+                bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+              }
+            });
+          }else{
+            pageHeightStopCanvas = true;
+            oldKeyboardHeight = 0;
           }
         },
         onLongTap: () {
-          pageHeightStopCanvas = true;
-          oldKeyboardHeight = -1;
+          _emojiStateOld=_emojiState;
           if (_emojiState) {
             _emojiState = !_emojiState;
             bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
+            _bottomSettingPanelState = true;
+            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+            Future.delayed(Duration(milliseconds: 100),(){
+              if(MediaQuery.of(this.context).viewInsets.bottom<1){
+                _bottomSettingPanelState = false;
+                bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+              }
+            });
+          }else{
+            pageHeightStopCanvas = true;
+            oldKeyboardHeight = 0;
           }
         },
         scrollController: textScrollController,
@@ -2018,18 +2039,25 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   @override
-  void startCanvasPage(bool isOpen, double keyBoardHeight) {
+  void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
-    if (!(_bottomSettingPanelState == isOpen)) {
-      _bottomSettingPanelState = isOpen;
-      bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+    if(!_emojiStateOld){
+      if (!(_bottomSettingPanelState == isOpen)) {
+        _bottomSettingPanelState = isOpen;
+        bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+      }
     }
   }
 
   @override
   void keyBoardHeightThanZero() {
-    if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
-      _focusNode.unfocus();
+    if(!_emojiStateOld) {
+      if (MediaQuery
+          .of(this.context)
+          .viewInsets
+          .bottom > 0 && !_bottomSettingPanelState) {
+        _focusNode.unfocus();
+      }
     }
   }
 
