@@ -68,9 +68,16 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
-          feedIdListController.sink.add(feedIdList);
           print('-------------------------model.list.isNotEmpty');
+        }else{
+          widget.type == 3
+              ? hintText = "这个人很懒，什么都没发"
+              : widget.type == 2
+              ? hintText = "发布动态，增加人气哦"
+              : hintText = "你还没有喜欢的内容~去逛逛吧";
+          defaultImage = DefaultImage.nodata;
         }
+        feedIdListController.sink.add(feedIdList);
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
