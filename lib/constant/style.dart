@@ -106,7 +106,6 @@ class AppStyle {
   static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
 
   //不在规范内style
-  static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
   static const textDeleteHintRegular12 = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -114,6 +113,6 @@ class AppStyle {
     decoration: TextDecoration.lineThrough,
     decorationColor: AppColor.textHint,
   );
-  static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
+  static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipPrimary1);
   static const textAddressText = TextStyle(color: Color(0xFF000046), fontSize: 16.0, fontWeight: FontWeight.w500);
 }

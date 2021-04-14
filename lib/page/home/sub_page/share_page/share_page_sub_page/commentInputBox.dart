@@ -77,13 +77,11 @@ class CommentInputBoxState extends State<CommentInputBox> {
                         ? context.watch<ProfileNotifier>().profile.avatarUri
                         : "",
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: AppColor.bgWhite,
                     ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColor.bgWhite,
                     ),
                   ),
                 ),

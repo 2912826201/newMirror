@@ -233,8 +233,8 @@ class HeadViewState extends State<HeadView> {
             AppRouter.navigateToLoginPage(context);
           } else {
             FocusScope.of(context).requestFocus(FocusNode());
-            AppRouter.navigateToMineDetail(context, widget.model.pushId,avatarUrl:widget.model.avatarUrl,userName:widget
-                .model.name);
+            AppRouter.navigateToMineDetail(context, widget.model.pushId,
+                avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
           }
         },
         child: Container(
@@ -249,7 +249,9 @@ class HeadViewState extends State<HeadView> {
                     backgroundImage: widget.model.avatarUrl != null
                         ? NetworkImage(
                             isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
-                        : NetworkImage("images/test.png"),
+                        : Container(
+                            color: AppColor.bgWhite,
+                          ),
                     maxRadius: 19,
                   ),
                 ),

@@ -312,9 +312,8 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                 width: 32,
                 imageUrl: _avatarUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
               ),
             ),

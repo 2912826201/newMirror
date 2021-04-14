@@ -403,9 +403,8 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                         width: 38,
                         imageUrl: senderAvatarUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
                         ),
                       ),
                     ),
@@ -478,9 +477,8 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                         width: 38,
                         imageUrl: coverImage != null ? coverImage : "",
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
                         ),
                       ),
                     ),

@@ -43,19 +43,14 @@ class AppColor {
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
   //不在规范中颜色
-  //边框
-  static const urlText = Color.fromRGBO(0x18, 0x77, 0xF2, 1.0);
+  static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
+  static const orange = Color.fromRGBO(0xFF, 0x7F, 0x46, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
   static const bgVip3 = Color.fromRGBO(0x80, 0x80, 0x80, 1.0);
-  static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
-  static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
-  static const textVipSemibold = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const colorb9b9b9 = Color.fromRGBO(0xB9, 0xB9, 0xB9, 1.0);
   static const color707070 = Color.fromRGBO(0x70, 0x70, 0x70, 1.0);
   static const colorfcb6bf = Color.fromRGBO(0xFC, 0xB6, 0xBF, 1.0);
-  static const loadbackGround = Color.fromRGBO(0xD8, 0xD8, 0xD8, 1.0);
-  static const orange = Color.fromRGBO(0xFF, 0x7F, 0x46, 1.0);
 }

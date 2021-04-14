@@ -297,6 +297,9 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             child: CachedNetworkImage(
               imageUrl: imageModel.url,
               fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: AppColor.bgWhite,
+              ),
             ),
           ),
           isSelected
@@ -496,6 +499,9 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                   child: CachedNetworkImage(
                                     imageUrl: _selectedImageList[0].url,
                                     fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      color: AppColor.bgWhite,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -529,6 +535,9 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                   child: CachedNetworkImage(
                                     imageUrl: _selectedImageList[1].url,
                                     fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      color: AppColor.bgWhite,
+                                    ),
                                   ),
                                 ),
                                 Container(

@@ -58,9 +58,6 @@ class ImgVideoMsg extends StatelessWidget {
   double width = 200.0;
   double height = 200.0;
 
-  //占位图
-  String placeholderMapImage = "images/test/bg.png";
-
   @override
   Widget build(BuildContext context) {
     intData();
@@ -238,11 +235,11 @@ class ImgVideoMsg extends StatelessWidget {
           return getImageFile(videoImageFile);
         } else {
           //print("文件缩略图失效");
-          return getImageAsset(placeholderMapImage);
+          return getImagePlaceHolder();
         }
       } else {
         //print("文件失效");
-        return getImageAsset(placeholderMapImage);
+        return getImagePlaceHolder();
       }
     } else {
       return getCachedNetworkImage(FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]));
@@ -254,7 +251,7 @@ class ImgVideoMsg extends StatelessWidget {
     if (mediaFileModel != null && mediaFileModel.thumb != null) {
       return getImageMemory(mediaFileModel.thumb);
     } else {
-      return getImageAsset(placeholderMapImage);
+      return getImagePlaceHolder();
     }
   }
 
@@ -270,7 +267,7 @@ class ImgVideoMsg extends StatelessWidget {
           return getImageFile(imageFile);
         } else {
           //print("文件失效");
-          return getImageAsset(placeholderMapImage);
+          return getImagePlaceHolder();
         }
       } else {
         return getCachedNetworkImage(sizeInfoMap["showImageUrl"] + "?imageslim");
@@ -308,6 +305,14 @@ class ImgVideoMsg extends StatelessWidget {
     );
   }
 
+  Widget getImagePlaceHolder() {
+    return Container(
+      width: width,
+      height: height,
+      color: AppColor.bgWhite,
+    );
+  }
+
   Widget getCachedNetworkImage(String imageUrl) {
     //print("imageUrl:${imageUrl}");
     return CachedNetworkImage(
@@ -328,13 +333,13 @@ class ImgVideoMsg extends StatelessWidget {
             ? getImageFile(mediaFileModel.file)
             : getImageMemory(mediaFileModel.croppedImageData);
       } else {
-        return getImageAsset(placeholderMapImage);
+        return getImagePlaceHolder();
       }
     } else if (sizeInfoMap["videoFilePath"] != null) {
       File videoImageFile = File(sizeInfoMap["videoFilePath"]);
       return getImageFile(videoImageFile);
     } else {
-      return getImageAsset(placeholderMapImage);
+      return getImagePlaceHolder();
     }
   }
 

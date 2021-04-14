@@ -100,6 +100,12 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
                 width: videoSize.width,
                 height: videoSize.height,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: AppColor.bgWhite,
+                ),
               ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
@@ -238,7 +244,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                                   stream: streamController.stream,
                                   builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
                                     return GestureDetector(
-                                        behavior:HitTestBehavior.opaque,
+                                        behavior: HitTestBehavior.opaque,
                                         onTap: () {
                                           isMute = !isMute;
                                           streamController.sink.add(isMute);

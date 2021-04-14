@@ -776,9 +776,8 @@ class _FollowItemState extends State<QueryFollowItem> {
                               width: 38,
                               imageUrl: avatarUrl,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: AppColor.bgWhite,
                               ),
                             ),
                           ),

@@ -389,6 +389,12 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                             width: _screenWidth,
                             height: _screenWidth * 151 / 343,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.bgWhite,
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColor.bgWhite,
+                            ),
                           ),
                           Container(
                             padding: const EdgeInsets.all(12),

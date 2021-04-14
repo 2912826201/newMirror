@@ -113,7 +113,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColor.urlText,
+                color: AppColor.mainBlue,
                 borderRadius: BorderRadius.all(Radius.circular(14)),
               ),
             ),

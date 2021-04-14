@@ -375,13 +375,12 @@ class _EditInformationState extends State<EditInformation> {
                       fit: BoxFit.cover,
                     )
                   : CachedNetworkImage(
-                      height: 71,
-                      width: 71,
+                      height: 72,
+                      width: 72,
                       imageUrl: avataruri,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: AppColor.bgWhite,
                       ),
                     ),
             ),

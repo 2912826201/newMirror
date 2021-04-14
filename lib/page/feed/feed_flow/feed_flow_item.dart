@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -47,12 +48,14 @@ class _FeedFlowItemState extends State<FeedFlowItem> {
         height: setAspectRatio(widget.model.picUrls[0].height.toDouble()),
         child: CachedNetworkImage(
           fit: BoxFit.cover,
-          placeholder: (context, url) => new Container(
-              child: new Center(
-            child: new CircularProgressIndicator(),
+          placeholder: (context, url) => Container(
+              child: Center(
+            child: CircularProgressIndicator(),
           )),
           imageUrl: widget.model.picUrls[0].url != null ? widget.model.picUrls[0].url : "",
-          errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+          errorWidget: (context, url, error) => Container(
+            color: AppColor.bgWhite,
+          ),
         ));
     //   Container(
     //   color: getColor(widget.itemIndex),

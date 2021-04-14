@@ -131,9 +131,8 @@ class _BlackListState extends State<BlackListPage> {
                 width: 38,
                 imageUrl: blackList[index].avatarUri,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
               ),
             ),

@@ -240,10 +240,10 @@ class TextMsg extends StatelessWidget {
           },
         style: TextStyle(
           color: isUrlColor
-              ? AppColor.urlText
+              ? AppColor.mainBlue
               : !isUrl
                   ? (!isMyself ? AppColor.textPrimary2 : AppColor.white)
-                  : AppColor.urlText,
+                  : AppColor.mainBlue,
         ));
   }
 

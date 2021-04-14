@@ -86,9 +86,8 @@ class _VipPageState extends State<VipNotOpenPage> {
                 width: 28,
                 imageUrl: context.read<ProfileNotifier>().profile.avatarUri,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
               ),
             ),
@@ -264,9 +263,8 @@ class _VipPageState extends State<VipNotOpenPage> {
                 child: CachedNetworkImage(
                   imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
                   ),
                 ),
               ),

@@ -129,9 +129,8 @@ class _VipOpenPage extends State<VipOpenPage> {
             width: 38,
             imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
             ),
           ),
         ),

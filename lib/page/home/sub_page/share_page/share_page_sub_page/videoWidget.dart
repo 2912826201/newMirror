@@ -122,88 +122,98 @@ class _VideoWidgetState extends State<VideoWidget> {
       child: Stack(
         children: [
           Positioned(
-              left: offsetX,
-              top: offsetY,
-              child: GestureDetector(
-                  onTap: () {
-                    streamHeight.sink.add(40.0);
-                    // 延迟器:
-                    new Future.delayed(Duration(seconds: 3), () {
-                      streamHeight.sink.add(0.0);
-                    });
-                  },
-                  child: SizedBox(
-                    width: videoSize.width,
-                    height: videoSize.height,
-                    child: widget.feedModel.videos.first.controller.value.initialized
-                        ? VideoPlayer(widget.feedModel.videos.first.controller)
-                        : CachedNetworkImage(
-                      imageUrl: widget.feedModel.videos.first.coverUrl,
-                      fit: BoxFit.fitWidth,
-                    ),
-                    // Center(
-                    //         child: CupertinoActivityIndicator(radius: 30),
-                    //       ),
-                  ))),
-          widget.feedModel.videos.first.controller.value.initialized ? Positioned(
-              bottom: 0,
-              child: StreamBuilder<double>(
-                  initialData: initHeight,
-                  stream: streamHeight.stream,
-                  builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                    return AnimatedContainer(
-                        height: snapshot.data,
-                        width: ScreenUtil.instance.width,
-                        duration: Duration(milliseconds: 100),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // 渐变色
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomLeft,
-                              colors: [
-                                AppColor.transparent,
-                                AppColor.black.withOpacity(0.5),
-                              ],
-                            ),
-                          ),
-                          width: ScreenUtil.instance.width,
-                          height: 40,
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              StreamBuilder<bool>(
-                                  initialData: widget.feedModel.videos.first.controller.value.volume > 0,
-                                  stream: streamController.stream,
-                                  builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        if (widget.feedModel.videos.first.controller.value.volume > 0) {
-                                          widget.feedModel.videos.first.controller.setVolume(0.0);
-                                        } else {
-                                          widget.feedModel.videos.first.controller.setVolume(1.0);
-                                        }
-                                        streamController.sink
-                                            .add(widget.feedModel.videos.first.controller.value.volume > 0);
-                                      },
-                                      child: Icon(
-                                        snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
-                                        size: 16,
-                                        color: AppColor.white,
-                                      ),
-                                    );
-                                  }),
-                              Spacer(),
-                              Text(
-                                widget.durationString ?? "00 : 00",
-                                style: const TextStyle(fontSize: 11, color: AppColor.white),
+            left: offsetX,
+            top: offsetY,
+            child: GestureDetector(
+              onTap: () {
+                streamHeight.sink.add(40.0);
+                // 延迟器:
+                new Future.delayed(Duration(seconds: 3), () {
+                  streamHeight.sink.add(0.0);
+                });
+              },
+              child: SizedBox(
+                width: videoSize.width,
+                height: videoSize.height,
+                child: widget.feedModel.videos.first.controller.value.initialized
+                    ? VideoPlayer(widget.feedModel.videos.first.controller)
+                    : CachedNetworkImage(
+                        imageUrl: widget.feedModel.videos.first.coverUrl,
+                        fit: BoxFit.fitWidth,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColor.bgWhite,
+                        ),
+                      ),
+                // Center(
+                //         child: CupertinoActivityIndicator(radius: 30),
+                //       ),
+              ),
+            ),
+          ),
+          widget.feedModel.videos.first.controller.value.initialized
+              ? Positioned(
+                  bottom: 0,
+                  child: StreamBuilder<double>(
+                      initialData: initHeight,
+                      stream: streamHeight.stream,
+                      builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                        return AnimatedContainer(
+                            height: snapshot.data,
+                            width: ScreenUtil.instance.width,
+                            duration: Duration(milliseconds: 100),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                // 渐变色
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomLeft,
+                                  colors: [
+                                    AppColor.transparent,
+                                    AppColor.black.withOpacity(0.5),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ));
-                  })) : Container()
+                              width: ScreenUtil.instance.width,
+                              height: 40,
+                              padding: const EdgeInsets.only(left: 16, right: 16),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  StreamBuilder<bool>(
+                                      initialData: widget.feedModel.videos.first.controller.value.volume > 0,
+                                      stream: streamController.stream,
+                                      builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (widget.feedModel.videos.first.controller.value.volume > 0) {
+                                              widget.feedModel.videos.first.controller.setVolume(0.0);
+                                            } else {
+                                              widget.feedModel.videos.first.controller.setVolume(1.0);
+                                            }
+                                            streamController.sink
+                                                .add(widget.feedModel.videos.first.controller.value.volume > 0);
+                                          },
+                                          child: Icon(
+                                            snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
+                                            size: 16,
+                                            color: AppColor.white,
+                                          ),
+                                        );
+                                      }),
+                                  Spacer(),
+                                  Text(
+                                    widget.durationString ?? "00 : 00",
+                                    style: const TextStyle(fontSize: 11, color: AppColor.white),
+                                  ),
+                                ],
+                              ),
+                            ));
+                      }))
+              : Container()
         ],
       ),
     );

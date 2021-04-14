@@ -174,7 +174,9 @@ class _SlideBannerState extends State<SlideBanner> {
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
                   imageUrl: item.url != null ? item.url : "",
-                  errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColor.bgWhite,
+                  ),
                 ))
             : Hero(
                 tag: widget.pageName + "${widget.model.id}${widget.index}",
@@ -187,7 +189,9 @@ class _SlideBannerState extends State<SlideBanner> {
                       useOldImageOnUrlChange: true,
                       fit: BoxFit.cover,
                       imageUrl: item.url != null ? item.url : "",
-                      errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColor.bgWhite,
+                      ),
                     )),
               ));
       }

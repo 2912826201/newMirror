@@ -145,13 +145,11 @@ class FriendsCell extends StatelessWidget {
                     width: 38,
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: AppColor.bgWhite,
                     ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColor.bgWhite,
                     ),
                   ),
                 )
@@ -165,13 +163,11 @@ class FriendsCell extends StatelessWidget {
                           width: 28,
                           imageUrl: avatarList.first,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColor.bgWhite,
                           ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColor.bgWhite,
                           ),
                         ),
                       ))
@@ -190,13 +186,11 @@ class FriendsCell extends StatelessWidget {
                         width: 28,
                         imageUrl: avatarList[1],
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
                         ),
-                        errorWidget: (context, url, error) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColor.bgWhite,
                         ),
                       ),
                     ),

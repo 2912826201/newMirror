@@ -99,7 +99,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
           Container(
             width: 224,
             height: 224,
-            color: AppColor.color246,
+            color: AppColor.bgWhite,
             margin: EdgeInsets.only(bottom: 16, top: 188),
           ),
           Text(
@@ -329,12 +329,14 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
               height: setAspectRatio(height.toDouble(), width.toDouble(), index),
               width: double.infinity,
               fit: BoxFit.cover,
-              placeholder: (context, url) => new Container(
-                  child: new Center(
-                child: new CircularProgressIndicator(),
+              placeholder: (context, url) => Container(
+                  child: Center(
+                child: CircularProgressIndicator(),
               )),
               imageUrl: url,
-              errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.bgWhite,
+              ),
             ),
           ),
           Positioned(

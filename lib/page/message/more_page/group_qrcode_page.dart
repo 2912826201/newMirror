@@ -149,13 +149,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                     width: 50,
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: AppColor.bgWhite,
                     ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColor.bgWhite,
                     ),
                   ),
                 )
@@ -175,13 +173,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                             width: 32,
                             imageUrl: avatarList.first,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Image.asset(
-                              "images/test.png",
-                              fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.bgWhite,
                             ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              "images/test.png",
-                              fit: BoxFit.cover,
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColor.bgWhite,
                             ),
                           ),
                         ),
@@ -202,13 +198,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                         width: 32,
                         imageUrl: avatarList[1],
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
                         ),
-                        errorWidget: (context, url, error) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColor.bgWhite,
                         ),
                       ),
                     ),

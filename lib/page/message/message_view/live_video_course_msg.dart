@@ -218,13 +218,11 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   width: double.infinity,
                   imageUrl: imageUrl == null ? "" : imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset(
-                    "images/test/bg.png",
-                    fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
                   ),
-                  errorWidget: (context, url, error) => Image.asset(
-                    "images/test/bg.png",
-                    fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColor.bgWhite,
                   ),
                 ),
               ),

@@ -93,9 +93,8 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
             width: ScreenUtil.instance.width-32,
             imageUrl: imageList[index],
             fit: BoxFit.cover,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
             ),
           ),
         ),

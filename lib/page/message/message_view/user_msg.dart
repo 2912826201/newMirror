@@ -192,9 +192,8 @@ class UserMsg extends StatelessWidget {
                 height: 70,
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
-                  child: Image.asset(
-                    "images/test/bg.png",
-                    fit: BoxFit.cover,
+                  child: Container(
+                    color: AppColor.bgWhite,
                   ),
                 ),
               ),

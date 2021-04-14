@@ -114,6 +114,9 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
         child: CachedNetworkImage(
           imageUrl: _imageList[index].url,
           fit: BoxFit.contain,
+          placeholder: (context, url) => Container(
+            color: AppColor.bgWhite,
+          ),
         ),
       ),
     );

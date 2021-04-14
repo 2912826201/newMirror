@@ -172,13 +172,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             width: width,
             imageUrl: avatar != null ? avatar : "",
             fit: BoxFit.cover,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
             ),
-            errorWidget: (context, url, error) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            errorWidget: (context, url, error) => Container(
+              color: AppColor.bgWhite,
             ),
           );
         }, selector: (context, notifier) {
@@ -365,13 +363,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       width: height * 0.11,
                       imageUrl: avatar == null ? "" : avatar,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: AppColor.bgWhite,
                       ),
-                      errorWidget: (context, url, error) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColor.bgWhite,
                       ),
                     ),
                   ));

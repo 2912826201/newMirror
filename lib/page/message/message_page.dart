@@ -581,13 +581,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           width: 45,
           imageUrl: avatarList.first,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Image.asset(
-            "images/test.png",
-            fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: AppColor.bgWhite,
           ),
-          errorWidget: (context, url, error) => Image.asset(
-            "images/test.png",
-            fit: BoxFit.cover,
+          errorWidget: (context, url, error) => Container(
+            color: AppColor.bgWhite,
           ),
         ),
       );
@@ -603,13 +601,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 width: 28,
                 imageUrl: avatarList.first,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
-                errorWidget: (context, url, error) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                errorWidget: (context, url, error) => Container(
+                  color: AppColor.bgWhite,
                 ),
               ),
             ),
@@ -627,13 +623,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   width: 28,
                   imageUrl: avatarList[1],
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
                   ),
-                  errorWidget: (context, url, error) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColor.bgWhite,
                   ),
                 ),
               ),

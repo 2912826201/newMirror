@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
@@ -73,7 +74,9 @@ class _DemoImageItemState extends State<DemoImageItem> {
               useOldImageOnUrlChange: true,
               fit: BoxFit.cover,
               imageUrl: widget.source.url != null ? widget.source.url : "",
-              errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.bgWhite,
+              ),
             ),
             // child: CachedNetworkImage(
             //   imageUrl: widget.source.url,

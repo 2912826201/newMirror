@@ -115,9 +115,8 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
             width: 86,
             height: 86,
             imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
             ),
           ),
         ),

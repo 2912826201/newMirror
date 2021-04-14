@@ -275,7 +275,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
             Container(
               width: 224,
               height: 224,
-              color: AppColor.color246,
+              color: AppColor.bgWhite,
               // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
             const Text(
@@ -412,12 +412,14 @@ class SearchFeeditemState extends State<SearchFeeditem> {
         height: setAspectRatio(1.0 * model.picUrls[0].height, 1.0 * model.picUrls[0].width),
         // width: ((ScreenUtil.instance.screenWidthDp) / 2),
         fit: BoxFit.cover,
-        placeholder: (context, url) => new Container(
-            child: new Center(
-          child: new CircularProgressIndicator(),
+        placeholder: (context, url) => Container(
+            child: Center(
+          child: CircularProgressIndicator(),
         )),
         imageUrl: model.picUrls[0].url != null ? model.picUrls[0].url : "",
-        errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+        errorWidget: (context, url, error) => Container(
+          color: AppColor.bgWhite,
+        ),
       ),
     );
   }

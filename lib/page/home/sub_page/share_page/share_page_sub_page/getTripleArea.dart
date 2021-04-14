@@ -228,14 +228,12 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             width: 21,
             imageUrl: url != null ? url : "",
             fit: BoxFit.cover,
-            placeholder: (context, url) => Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
             ),
             errorWidget: (context, url, e) {
-              return Image.asset(
-                "images/test.png",
-                fit: BoxFit.cover,
+              return Container(
+                color: AppColor.bgWhite,
               );
             },
           ) ??

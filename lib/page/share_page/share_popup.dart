@@ -179,9 +179,8 @@ class _SharePopupState extends State<_SharePopup> {
                 width: 32,
                 imageUrl: _friendList[index].avatarUri,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
               ),
             ),
@@ -405,13 +404,11 @@ class _SharePopupState extends State<_SharePopup> {
                       width: 32,
                       imageUrl: avatarList.first,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: AppColor.bgWhite,
                       ),
-                      errorWidget: (context, url, error) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColor.bgWhite,
                       ),
                     ),
                   )
@@ -425,13 +422,11 @@ class _SharePopupState extends State<_SharePopup> {
                           width: 20,
                           imageUrl: avatarList.first,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColor.bgWhite,
                           ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColor.bgWhite,
                           ),
                         ),
                       ))
@@ -448,13 +443,11 @@ class _SharePopupState extends State<_SharePopup> {
                           width: 20,
                           imageUrl: avatarList[1],
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColor.bgWhite,
                           ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            "images/test.png",
-                            fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColor.bgWhite,
                           ),
                         ),
                       ),

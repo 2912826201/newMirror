@@ -180,7 +180,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
             Container(
               width: 224,
               height: 224,
-              color: AppColor.color246,
+              color: AppColor.bgWhite,
               // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
             const Text(

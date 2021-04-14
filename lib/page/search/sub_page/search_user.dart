@@ -243,9 +243,8 @@ class _SearchState extends State<SearchUserItem> {
                         width: 38,
                         imageUrl: widget.model.avatarUri,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
                         ),
                       ),
                     ),

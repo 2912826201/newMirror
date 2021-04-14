@@ -467,9 +467,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 width: backGroundHeight - followFansHeight - 28.5,
                 imageUrl: _avatar != null ? _avatar : "",
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
                 /* errorWidget: (context, url, e) {
                 return Image.asset(
