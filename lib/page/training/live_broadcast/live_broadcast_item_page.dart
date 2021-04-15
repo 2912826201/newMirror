@@ -16,6 +16,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -68,6 +69,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   bool get wantKeepAlive => true;
 
   @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE+"${DateUtil.formatDateString(dataDate)}",
+        registerName: LIVE_COURSE_BOOK_LIVE);
+  }
+
+  @override
   void initState() {
     super.initState();
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -75,9 +83,12 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
     loadingStatus = LoadingStatus.STATUS_LOADING;
     liveModelArray.clear();
     getLiveModelData();
+
+    EventBus.getDefault()
+        .registerSingleParameter(_judgeLiveBook, EVENTBUS_LIVE_COURSE_PAGE+"${DateUtil.formatDateString(dataDate)}",
+        registerName: LIVE_COURSE_BOOK_LIVE);
     // _retrieveCalendarEvents();
   }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -157,11 +168,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
       height: 65,
     ));
 
-    //判断有没有接收到预约或者取消预约直播课的消息-要改变ui
-    widgetArray.add(Offstage(
-      offstage: true,
-      child: judgeResetPage(),
-    ));
 
     //判断用户登陆了
     widgetArray.add(Offstage(
@@ -506,31 +512,20 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   ///以上ui-------------------------------------------------------
   ///
 
-  //判断是否退出界面加入群聊
-  Widget judgeResetPage() {
-    return Consumer<ChatMessageProfileNotifier>(
-      builder: (context, notifier, child) {
-        bool isResetCoursePageItem = context.select((ChatMessageProfileNotifier value) => value.isResetCoursePageItem);
-        if (isResetCoursePageItem) {
-          Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
-          context.watch<ChatMessageProfileNotifier>().isResetPage = false;
-          context.watch<ChatMessageProfileNotifier>().isResetCoursePageItem = false;
-          if (message != null) {
-            Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-            if (mapGroupModel != null &&
-                mapGroupModel["courseId"] != null &&
-                mapGroupModel["handleType"] != null &&
-                mapGroupModel["startTime"] != null &&
-                mapGroupModel["startTime"] is String &&
-                mapGroupModel["courseId"] is int &&
-                mapGroupModel["handleType"] is int) {
-              updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
-            }
-          }
-        }
-        return Container();
-      },
-    );
+  //这个直播是否有预约的回调
+  void _judgeLiveBook(Message message) {
+    if (message != null) {
+      Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+      if (mapGroupModel != null &&
+          mapGroupModel["courseId"] != null &&
+          mapGroupModel["handleType"] != null &&
+          mapGroupModel["startTime"] != null &&
+          mapGroupModel["startTime"] is String &&
+          mapGroupModel["courseId"] is int &&
+          mapGroupModel["handleType"] is int) {
+        updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
+      }
+    }
   }
 
   //修改直播课程预约的状态

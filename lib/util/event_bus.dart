@@ -157,6 +157,8 @@ const String EVENTBUS_CHAT_PAGE = "eventbus_chat_page";
 const String EVENTBUS_VIDEOWIGET_PAGE = "videoWigetPage";
 // 直播页
 const String EVENTBUS_LIVE_COURSE_PAGE = "live_course_page";
+// 直播列表页
+const String EVENTBUS_LIVE_COURSE_LIST_PAGE = "live_course_list_page";
 
 ///广播类型
 //发布动态
@@ -193,6 +195,8 @@ const String CHAT_JOIN_EXIT = "eventbus_chat_bar";
 const String RESET_MSG_STATUS = "reset_msg_status";
 //聊天界面的接收消息
 const String CHAT_GET_MSG = "chat_get_msg";
+//聊天界面的撤回消息
+const String CHAT_WITHDRAW_MSG = "chat_withdraw_msg";
 //聊天界面的at群成员
 const String CHAT_AT_GROUP_PANEL = "eventbus_chat_at_group_panel";
 //聊天界面的输入框旁边的发送按钮和图片按钮
@@ -201,3 +205,5 @@ const String CHAT_BOTTOM_MORE_BTN = "eventbus_chat_bottom_more_btn";
 const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";
 // 直播状态变化
 const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";
+// 直播预约
+const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";

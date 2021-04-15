@@ -371,7 +371,7 @@ class MessageManager {
           break;
         case 7:
           //7-预约直播
-          Application.appContext.read<ChatMessageProfileNotifier>().bookLive(message);
+          EventBus.getDefault().post(msg: message,registerName: LIVE_COURSE_BOOK_LIVE);
           break;
         case 8:
           //8-遥控器变化
@@ -418,6 +418,10 @@ class MessageManager {
 
       Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
       switch (dataMap["subType"]) {
+        case 1:
+        case 2:
+          GroupChatUserInformationDBHelper().removeMessageGroup(message);
+          break;
         case 4:
           //修改群名
           print("修改了群名");
@@ -430,11 +434,11 @@ class MessageManager {
         default:
           break;
       }
-      Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
-      Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
     }
   }
 
