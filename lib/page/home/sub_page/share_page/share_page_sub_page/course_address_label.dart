@@ -110,7 +110,7 @@ class CourseAddressLabel extends StatelessWidget {
             child: tags[index].type == feed_tag_type_location
                 ? AppIcon.getAppIcon(AppIcon.tag_location, 16)
                 : tags[index].type == feed_tag_type_course
-                    ? AppIcon.getAppIcon(AppIcon.tag_course, 16)
+                    ? AppIcon.getAppIcon(AppIcon.tag_course_black, 16)
                     : Container(
                         width: 16,
                       ),
