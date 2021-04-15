@@ -57,19 +57,23 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     }
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
+    setState(() {
+
+
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
         followlastTime = model.lastTime;
         followModel.clear();
         feedIdList.clear();
-        if (model.list.isNotEmpty) {
+        if (model.list!=null&&model.list.length!=0) {
           listNoData = false;
           model.list.forEach((result) {
+            print('---------------------${HomeFeedModel.fromJson(result).id}');
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
-          print('-------------------------model.list.isNotEmpty');
+          print('-------------------------model.list.isNotEmpty${feedIdList.toString()}');
         } else {
           widget.type == 3
               ? hintText = "这个人很懒，什么都没发"
@@ -101,9 +105,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         _refreshController.loadFailed();
       }
     }
-    if (mounted) {
-      setState(() {});
-    }
+    });
     Future.delayed(Duration.zero, () {
       List<HomeFeedModel> feedList = [];
       context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
@@ -144,7 +146,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         : widget.type == 2
             ? hintText = "发布动态，增加人气哦"
             : hintText = "你还没有喜欢的内容~去逛逛吧";
-    WidgetsBinding.instance.addObserver(this);
   }
 
   _deleteFeedCallBack(int id) {
@@ -153,6 +154,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       feedIdList.removeWhere((element) {
         return element == id;
       });
+    }
+    if(feedIdList.length==0){
+      listNoData = true;
     }
     setState(() {});
     if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
@@ -172,7 +176,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
           child: SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
-              footer: SmartRefresherHeadFooter.init().getFooter(),
+              footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore:listNoData?false:true),
               header: SmartRefresherHeadFooter.init().getHeader(),
               controller: _refreshController,
               onLoading: () {
@@ -221,10 +225,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 },
               );
             })
-        : Container(
-            padding: EdgeInsets.only(top: 12),
-            color: AppColor.white,
-            child: Column(
+        :  ListView(
               children: [
                 Center(
                   child: Container(
@@ -243,7 +244,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   ),
                 )
               ],
-            ));
+            );
   }
 
   @override
