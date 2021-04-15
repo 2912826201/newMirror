@@ -277,7 +277,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           margin: const EdgeInsets.only(top: 16, bottom: 16),
           child: UnconstrainedBox(
             child: Image.asset(
-              "images/test/bg.png",
+              "assets/png/default_no_data.png",
               fit: BoxFit.cover,
               width: 224,
               height: 224,

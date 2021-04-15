@@ -207,3 +207,5 @@ const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";
 const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";
 // 直播预约
 const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";
+// 主页跳转界面功能
+const String MAIN_PAGE_JUMP_PAGE = "main_page_jump_page";
