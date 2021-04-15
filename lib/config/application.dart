@@ -50,6 +50,7 @@ class Application {
 
   //记录路由名称
   static List<String> pagePopRouterName;
+
   //当前token
   static TokenDto token;
 
@@ -69,12 +70,14 @@ class Application {
   static TabController ifPageController;
 
   static Connectivity connectivity;
+
   //相机列表
   static List<CameraDescription> cameras;
   static bool isCameraInUse = false;
 
   // 动态model
   static HomeFeedModel feedModel;
+
   // 是否唤起键盘上方输入框
   static bool isArouse = false;
 
@@ -97,6 +100,7 @@ class Application {
   static int smsCodeSendTime;
 
   static Dio dio;
+
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 
@@ -128,16 +132,15 @@ class Application {
   //用户所登录的机器
   static MachineModel machine;
 
-
   //聊天群的群成员信息
   static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
 
   //发送消息的临时列表
   //key是:用户id_会话id_会话类型
-  static Map<String,List<ChatDataModel>> postChatDataModelList=Map();
+  static Map<String, List<ChatDataModel>> postChatDataModelList = Map();
 
   //进入聊天界面前先获取的消息列表
-  static  List<ChatDataModel> chatDataList=<ChatDataModel>[];
+  static List<ChatDataModel> chatDataList = <ChatDataModel>[];
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
@@ -155,24 +158,26 @@ class Application {
   // static final int insertFeedId = -2;
 
   // 话题model的map
-  static Map<int, TopicDtoModel> topicMap= {};
+  static Map<int, TopicDtoModel> topicMap = {};
 
   //未读数-消息
-  static int unreadMessageNumber=0;
+  static int unreadMessageNumber = 0;
+
   //未读数-通知
-  static int unreadNoticeNumber=0;
+  static int unreadNoticeNumber = 0;
 
   //发布失败动态key
-  static String postFailurekey  = "postFailureFeed";
+  static String postFailurekey = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
+
   //公共登出方法
   static appLogout({bool isKicked = false}) async {
     //先取个匿名token
     BaseResponseModel responseModel = await login("anonymous", null, null, null);
-    if (responseModel != null&&responseModel.code==200) {
+    if (responseModel != null && responseModel.code == 200) {
       TokenModel tokenModel = TokenModel.fromJson(responseModel.data);
       TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
-      if (token.anonymous == 0) {
+      if (token != null && token.anonymous == 0) {
         print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了登录用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
         bool result = await logout();
         //TODO 这里先不处理登出接口的结果
@@ -224,8 +229,7 @@ class Application {
     queryNoPromptUidList.clear();
     chatGroupUserInformationMap.clear();
     postChatDataModelList.clear();
-    unreadMessageNumber=0;
-    unreadNoticeNumber=0;
-
+    unreadMessageNumber = 0;
+    unreadNoticeNumber = 0;
   }
 }
