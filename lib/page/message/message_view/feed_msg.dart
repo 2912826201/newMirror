@@ -219,10 +219,22 @@ class FeedMsg extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: AppColor.black.withOpacity(0.15),
+              Offstage(
+                offstage: isPicOrVideo == 0,
+                child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColor.textPrimary1.withOpacity(0),
+                          AppColor.textPrimary1.withOpacity(0.35),
+                        ],
+                      ),
+                    )
+                ),
               ),
               Offstage(
                 offstage: isPicOrVideo == 0,
