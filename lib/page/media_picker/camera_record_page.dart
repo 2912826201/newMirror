@@ -145,12 +145,12 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
             ),
             body: (_controller == null || !_controller.value.isInitialized)
                 ? Container(
-                    color: Colors.grey,
+                    // color: Colors.grey,
                   )
                 : Column(
                     children: [
                       Container(
-                        color: AppColor.mainBlue,
+                        // color: AppColor.mainBlue,
                         width: _previewSize,
                         height: _previewSize,
                         child: Stack(
