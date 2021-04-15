@@ -155,6 +155,8 @@ const String EVENTBUS_RECOMMEND_PAGE = "recommendpage";
 const String EVENTBUS_CHAT_PAGE = "eventbus_chat_page";
 // 视频页
 const String EVENTBUS_VIDEOWIGET_PAGE = "videoWigetPage";
+// 直播页
+const String EVENTBUS_LIVE_COURSE_PAGE = "live_course_page";
 
 ///广播类型
 //发布动态
@@ -197,3 +199,5 @@ const String CHAT_AT_GROUP_PANEL = "eventbus_chat_at_group_panel";
 const String CHAT_BOTTOM_MORE_BTN = "eventbus_chat_bottom_more_btn";
 // 重新登录替换关注页布局
 const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";
+// 直播状态变化
+const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";

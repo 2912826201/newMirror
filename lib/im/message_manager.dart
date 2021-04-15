@@ -450,7 +450,10 @@ class MessageManager {
         case 0:
           //0-直播开始
           print("直播开始");
-
+          List list=[];
+          list.add(0);
+          list.add(dataMap["courseId"]);
+          EventBus.getDefault().post(msg:list,registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         case 1:
           //1-心跳
@@ -465,6 +468,14 @@ class MessageManager {
           list.add(dataMap["users"]);
           list.add(message);
           EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          break;
+        case 3:
+        //3-直播结束
+          print("直播结束");
+          List list=[];
+          list.add(3);
+          list.add(dataMap["courseId"]);
+          EventBus.getDefault().post(msg:list,registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         default:
           break;

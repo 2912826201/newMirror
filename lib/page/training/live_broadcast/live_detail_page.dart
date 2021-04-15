@@ -21,6 +21,7 @@ import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -129,10 +130,18 @@ class LiveDetailPageState extends XCState {
   bool bindingTerminal;
 
   @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE,registerName: LIVE_COURSE_LIVE_START_OR_END);
+  }
+
+  @override
   void initState() {
     super.initState();
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal = context.read<MachineNotifier>().machine != null;
+
+    EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_LIVE_COURSE_PAGE,registerName: LIVE_COURSE_LIVE_START_OR_END);
 
     if (liveModel == null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
@@ -145,6 +154,25 @@ class LiveDetailPageState extends XCState {
     }
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
     getDataAction(openLiveCourse: liveModel == null);
+  }
+
+  void _liveCourseStatus(List list){
+    if(list!=null&&liveModel!=null&&list[1]==liveModel.id){
+      switch(list[0]){
+        case 0:
+        //0-直播开始
+          print("直播开始");
+          getDataAction();
+          break;
+        case 3:
+        //0-直播结束
+          print("直播结束");
+          getDataAction();
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   @override
@@ -946,7 +974,7 @@ class LiveDetailPageState extends XCState {
 
   //去直播页
   void gotoLiveVideoRoomPage()async {
-    if(!(await judgeIsStart())){
+    if(!(judgeIsStart())){
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -960,7 +988,7 @@ class LiveDetailPageState extends XCState {
 
   //使用终端进行训练
   void _useTerminal() async{
-    if(!(await judgeIsStart())){
+    if(!(judgeIsStart())){
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -970,7 +998,7 @@ class LiveDetailPageState extends XCState {
 
   //登陆终端进行训练
   void _loginTerminal() async{
-    if(!(await judgeIsStart())){
+    if(!(judgeIsStart())){
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -993,14 +1021,15 @@ class LiveDetailPageState extends XCState {
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 
-  Future<bool> judgeIsStart()async{
-    //加载数据
-    Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
-    if(model!=null){
-      LiveVideoModel liveModel = LiveVideoModel.fromJson(model);
-      return liveModel.liveCourseState==1;
-    }
-    return false;
+  bool judgeIsStart(){
+    // //加载数据
+    // Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
+    // if(model!=null){
+    //   LiveVideoModel liveModel = LiveVideoModel.fromJson(model);
+    //   return liveModel.liveCourseState==1;
+    // }
+    return liveModel.liveCourseState==1;
+    // return true;
   }
 
   ///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------
