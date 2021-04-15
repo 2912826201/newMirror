@@ -52,9 +52,6 @@ class AttentionUserState extends State<AttentionUser> {
                     Container(
                         width: getTextSize("查看全部", TextStyle(fontSize: 14), 1).width + 20,
                         child: GestureDetector(
-                          onTap: () {
-                            list.clear();
-                          },
                           child: Row(
                             children: [
                               Container(
