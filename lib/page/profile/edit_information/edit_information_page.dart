@@ -419,8 +419,6 @@ class _EditInformationState extends State<EditInformation> {
             ],
           ),
         ),
-      /*  confirm: Text('确定', style: AppStyle.redRegular16),
-        cancel: Text('取消', style: AppStyle.textHintRegular16),*/
       ),
       minDateTime: DateTime.parse("1900-01-01"),
       //选择器上可选择的最早时间

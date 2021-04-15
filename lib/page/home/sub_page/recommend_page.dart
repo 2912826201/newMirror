@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -309,7 +310,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                     width: 224,
                                     height: 224,
                                     decoration: BoxDecoration(
-                                      image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                                      image: DecorationImage(
+                                          image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
                                     ),
                                     margin: const EdgeInsets.only(bottom: 16),
                                   ),
@@ -390,18 +392,24 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                   decoration: new BoxDecoration(
                                       color: AppColor.white, borderRadius: BorderRadius.circular((25))),
                                   child: Center(
-                                    child: Container(
-                                        height: 47,
-                                        width: 47,
-                                        decoration: BoxDecoration(
-                                          // color: Colors.redAccent,
-                                          image: DecorationImage(
-                                              image: NetworkImage(liveVideoModel[index].coachDto.avatarUri),
-                                              fit: BoxFit.cover),
-                                          // image
-                                          borderRadius: BorderRadius.all(Radius.circular(23.5)),
-                                        )),
-                                  ),
+                                      child: ClipOval(
+                                    child: CachedNetworkImage(
+                                      height: 47,
+                                      width: 47,
+                                      useOldImageOnUrlChange: true,
+                                      imageUrl: liveVideoModel[index].coachDto.avatarUri != null
+                                          ? liveVideoModel[index].coachDto.avatarUri
+                                          : "",
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => CircularProgressIndicator(),
+                                      errorWidget: (context, url, e) {
+                                        return Image.asset(
+                                          "images/test.png",
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                    ),
+                                  )),
                                 ),
                               ),
                             ),

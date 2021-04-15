@@ -707,12 +707,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           imageUrl: _avatar != null ? _avatar : "",
           fit: BoxFit.cover,
           placeholder: (context, url) => CircularProgressIndicator(),
-          /*errorWidget:(context, url, e) {
+          errorWidget:(context, url, e) {
             return Image.asset(
               "images/test.png",
               fit: BoxFit.cover,
             );
-          },*/
+          },
         ),
       ),
     );
