@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 
 class LiveLabelWidget extends StatelessWidget {
@@ -37,9 +38,19 @@ class LiveLabelWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: _AnimatedBars(),
           ),
-          Text(
-            "LIVE",
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColor.white),
+          //NOTE Android上垂直居中会偏上一点。。。所以单独处理一下 加个margin
+          Container(
+            height: Application.platform == 0 ? 15 : 16,
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(top: Application.platform == 0 ? 1 : 0),
+            child: Text(
+              "LIVE",
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: AppColor.white,
+              ),
+            ),
           ),
           SizedBox(
             width: 2,

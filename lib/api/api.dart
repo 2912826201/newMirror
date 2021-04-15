@@ -139,7 +139,7 @@ Dio _getDioGetInstance() {
 //TODO 每次请求时都要设置headers是否会降低网络请求效率有待测试对比
 //FIXME 如果token已过期或即将过期则需要做刷新token或重新获取token的操作
 void _setHeaders(int authType, Dio dio) {
-  //TODO 操作系统和版本号渠道号暂时写死
+  //TODO 渠道号暂时写死
   dio.options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;

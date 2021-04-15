@@ -93,7 +93,7 @@ void main() {
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
-            ChangeNotifierProvider(create: (_)=>AddressPickerNotifier()),
+            ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
           ],
           child: MyApp(),
         ),
@@ -146,52 +146,8 @@ Future _initApp() async {
   //初始化数据库
   await DBHelper.instance.initDB();
 
-  //从数据库获取已登录的用户token或匿名用户token
-  TokenDto token = await TokenDBHelper().queryToken();
-  bool isTokenValid = false;
-  if (token == null ||
-      (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
-      DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
-    //如果token是空的 或者token非匿名但未完善资料
-    isTokenValid = false;
-  } else {
-    //通过一个小接口校验token是否可用（已过期或被清除时需要视为未登录，重新获取匿名token）
-    //无论是否有效 先赋值 不然请求是不会带上token的
-    Application.token = token;
-    isTokenValid = await checkToken();
-  }
-  if (!isTokenValid) {
-    Application.token = null;
-    BaseResponseModel responseModel = await login("anonymous", null, null, null);
-    if (responseModel != null&&responseModel.code==200) {
-      TokenModel tokenModel = TokenModel.fromJson(responseModel.data);
-      token = TokenDto.fromTokenModel(tokenModel);
-      bool result = await TokenDBHelper().insertToken(token);
-    } else {
-      //TODO 如果失败的情况下 需要重试 也可以让流程先走下去 在下次网络请求时重试
-    }
-  }
-  print("token:${token.accessToken}");
-  Application.token = token;
-
-  //如果token不是匿名用户则需要从库里取出保存的用户信息 库里没有的话从接口中取
-  ProfileDto profile;
-  if (token.anonymous == 0) {
-    profile = await ProfileDBHelper().queryProfile(token.uid);
-    if (profile == null) {
-      UserModel user = await getUserInfo();
-      profile = ProfileDto.fromUserModel(user);
-      await ProfileDBHelper().insertProfile(profile);
-    }
-  } else {
-    //匿名用户时 给个uid为-1的其他信息为空的用户
-    profile = ProfileDto.fromUserModel(UserModel());
-  }
-  Application.profile = profile;
-
   //初始化融云IM
   Application.rongCloud = RongCloud.init();
-
 
   //初始化页面路由
   final router = FluroRouter();
@@ -223,9 +179,55 @@ Future _initApp() async {
 
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
+  //FIXME 需要检测网络连接 确认有网后再进行以下操作 不然会报错卡住流程 没有网则需要跳转至初始无网络的引导页面
+
+  //从数据库获取已登录的用户token或匿名用户token
+  TokenDto token = await TokenDBHelper().queryToken();
+  bool isTokenValid = false;
+  if (token == null ||
+      (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
+      DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
+    //如果token是空的 或者token非匿名但未完善资料
+    isTokenValid = false;
+  } else {
+    //通过一个小接口校验token是否可用（已过期或被清除时需要视为未登录，重新获取匿名token）
+    //无论是否有效 先赋值 不然请求是不会带上token的
+    Application.token = token;
+    isTokenValid = await checkToken();
+  }
+  if (!isTokenValid) {
+    Application.token = null;
+    BaseResponseModel responseModel = await login("anonymous", null, null, null);
+    if (responseModel != null && responseModel.code == 200) {
+      TokenModel tokenModel = TokenModel.fromJson(responseModel.data);
+      token = TokenDto.fromTokenModel(tokenModel);
+      bool result = await TokenDBHelper().insertToken(token);
+    } else {
+      //FIXME 如果失败的情况下 流程无法走通 则需要一样跳转至初始无网络的引导页面
+      return;
+    }
+  }
+  print("token:${token.accessToken}");
+  Application.token = token;
+
+  //如果token不是匿名用户则需要从库里取出保存的用户信息 库里没有的话从接口中取
+  ProfileDto profile;
+  if (token.anonymous == 0) {
+    profile = await ProfileDBHelper().queryProfile(token.uid);
+    if (profile == null) {
+      UserModel user = await getUserInfo();
+      profile = ProfileDto.fromUserModel(user);
+      await ProfileDBHelper().insertProfile(profile);
+    }
+  } else {
+    //匿名用户时 给个uid为-1的其他信息为空的用户
+    profile = ProfileDto.fromUserModel(UserModel());
+  }
+  Application.profile = profile;
+
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   Map<String, dynamic> videoCourseTagMap = await getAllTags();
-  if(videoCourseTagMap!=null) {
+  if (videoCourseTagMap != null) {
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
   }
 
@@ -285,6 +287,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   Connectivity connectivity = Connectivity();
+
   @override
   void initState() {
     //需要APP环境的初始化

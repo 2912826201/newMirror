@@ -74,7 +74,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   // 下一页
   int lastTime;
-
+  // 是否显示缺省图
+  bool isShowDefaultMap;
   @override
   void dispose() {
     _scrollController.dispose();
@@ -165,6 +166,11 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
       context.read<FeedMapNotifier>().updateFeedMap(feedList);
     }
+    if(liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0) {
+      isShowDefaultMap = false;
+    } else {
+      isShowDefaultMap = true;
+    }
     if (mounted) {
       setState(() {});
     }
@@ -211,7 +217,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
-    return liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0
+    return isShowDefaultMap == null ? Container() : !isShowDefaultMap
         ? Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

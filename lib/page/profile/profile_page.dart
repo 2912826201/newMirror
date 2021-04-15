@@ -227,7 +227,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 iconColor: AppColor.black,
                 onTap: () {
                   Permission.camera.request().then((value) {
-                    if (value != null) {
+                    if (value.isGranted) {
                       AppRouter.navigateToScanCodePage(context, showMyCode: true);
                     }
                   });
