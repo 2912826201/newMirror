@@ -255,23 +255,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         6 +
         16 +
         5;
-    return WillPopScope(
-        child: Scaffold(
+    return Scaffold(
           body: Container(
               height: height,
               width: width,
               child: Stack(
                 children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
               )),
-        ),
-        onWillPop: _requestPop);
+        );
   }
 
-  // 监听返回事件
-  Future<bool> _requestPop() {
-    Navigator.pop(this.context, context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
-    return new Future.value(false);
-  }
 
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody() {
@@ -355,8 +348,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       ),
                     ],
                   )
-                : MediaQuery.removePadding(
-                    context: context, child: ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId))
+                :  ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
             : Container(
                 padding: EdgeInsets.only(top: 12),
                 color: AppColor.white,
