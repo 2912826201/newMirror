@@ -126,6 +126,8 @@ class AppIcon {
   static const String voice_microphone = "assets/svg/voice_microphone.svg";
   static const String voice_error = "assets/svg/voice_error.svg";
   static const String voice_cancel = "assets/svg/voice_cancel.svg";
+  static const String volume_on_16 = "assets/svg/volume_on_16.svg";
+  static const String volume_off_16 = "assets/svg/volume_off_16.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {
