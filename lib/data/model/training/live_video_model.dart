@@ -48,7 +48,7 @@ import 'package:mirror/util/string_util.dart';
 /// vipprice : 0
 
 class LiveVideoModel {
-  int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约 5已结束
+  int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约 5已结束 6未开播-没有做
 
   String getGetPlayType() {
     if (this.playType == 2) {

@@ -9,18 +9,15 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// 直播日程页--每一个item界面
@@ -62,8 +59,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   //状态
   LoadingStatus loadingStatus;
 
-  //判断用户登陆没有
-  bool isLoggedIn;
 
   @override
   bool get wantKeepAlive => true;
@@ -78,7 +73,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   @override
   void initState() {
     super.initState();
-    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     //获取本地日历已经预约的课程
     loadingStatus = LoadingStatus.STATUS_LOADING;
     liveModelArray.clear();
@@ -169,12 +163,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
     ));
 
 
-    //判断用户登陆了
-    widgetArray.add(Offstage(
-      offstage: true,
-      child: userLoginComplete(),
-    ));
-
     return Column(
       children: [
         Expanded(
@@ -189,22 +177,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
           ),
         ))
       ],
-    );
-  }
-
-  //当用户登陆成功后需要刷新数据
-  Widget userLoginComplete() {
-    return Consumer<TokenNotifier>(
-      builder: (context, notifier, child) {
-        if (!isLoggedIn && notifier.isLoggedIn) {
-          liveModelOldArray.clear();
-          liveModelArray.clear();
-          getLiveModelData();
-        }
-        isLoggedIn = notifier.isLoggedIn;
-        return child;
-      },
-      child: Container(),
     );
   }
 
@@ -450,9 +422,9 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   Widget _getButton(LiveVideoModel value, bool isOld, index) {
     var alreadyOrderBgColor = AppColor.white;
     var noAlreadyOrderBgColor = AppColor.textPrimary1;
-    if (isOld) {
-      value.playType = 3;
-    }
+    // if (isOld) {
+    //   value.playType = 3;
+    // }
     return GestureDetector(
       child: Container(
         width: 72,
