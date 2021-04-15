@@ -17,6 +17,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
@@ -358,7 +359,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: Container(
                         width: 224,
                         height: 224,
-                        color: AppColor.bgWhite.withOpacity(0.65),
+                        child:Image.asset(DefaultImage.error),
                       ),
                     ),
                     SizedBox(
