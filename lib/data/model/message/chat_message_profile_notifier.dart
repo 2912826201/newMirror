@@ -20,43 +20,6 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   ///对话用户id
   String chatUserId;
 
-  ///消息
-  Message message;
-
-  ///消息
-  Message resetMessage;
-
-  //消息的id
-  int messageId;
-
-  //消息状态
-  int status;
-
-  //是否设置消息状态
-  bool isSettingStatus = false;
-
-  //是否刷新界面--消息界面
-  bool isResetPage = false;
-
-  //是否刷新界面--课程界面
-  bool isResetCoursePageItem = false;
-  //是否刷新界面--课程界面
-  bool isResetCoursePage = false;
-
-  //设置消息发送的状态
-  setIsSettingStatus({bool isSettingStatus, int messageId, int status}) {
-    this.isSettingStatus = isSettingStatus;
-    this.messageId = messageId;
-    this.status = status;
-    this.message = null;
-    notifyListeners();
-  }
-
-  //设置消息发送的状态
-  setSettingStatus(isSettingStatus) {
-    this.isSettingStatus = isSettingStatus;
-  }
-
   //设置数据
   setData(int chatTypeId, String chatUserId) {
     this.chatTypeId = chatTypeId;
@@ -66,25 +29,6 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   clear() {
     chatTypeId = -1;
     chatUserId = "";
-  }
-
-  clearMessage() {
-    this.message = null;
-  }
-
-  //课程预约或者取消预约
-  bookLive(Message message){
-    Future.delayed(Duration(milliseconds: 100),(){
-      this.isResetPage = false;
-      this.isResetCoursePageItem = false;
-      this.isResetCoursePage = true;
-      this.resetMessage = message;
-      notifyListeners();
-      Future.delayed(Duration(milliseconds: 200),(){
-        this.isResetCoursePageItem = true;
-        notifyListeners();
-      });
-    });
   }
 
   //移除群聊
@@ -124,24 +68,6 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     }
   }
 
-  //撤回消息
-  withdrawMessage(Message message){
-    if (this.chatUserId==message.targetId) {
-      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
-    }
-  }
-
-
-  //获取新的消息--判断是不是当前会话的消息
-  judgeConversationMessage(Message message) {
-    if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
-      if (message.conversationType != RCConversationType.System) {
-        EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
-      }
-    }
-    //判断是不是群通知-移除群成员的消息
-    GroupChatUserInformationDBHelper().removeMessageGroup(message);
-  }
 
   //插入被移除群聊或者加入群聊的消息
   void insertExitGroupMsg(Message message, String targetId) {

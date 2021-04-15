@@ -23,9 +23,6 @@ Widget getNoCompleteTitle(BuildContext context, String text) {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        SizedBox(
-          width: CustomAppBar.appBarHorizontalPadding,
-        ),
         CustomAppBarIconButton(
           svgName: AppIcon.nav_return,
           iconColor: AppColor.black,
@@ -45,9 +42,6 @@ Widget getNoCompleteTitle(BuildContext context, String text) {
           onTap: () {
             ToastShow.show(msg: "当前数据没有加载完毕！", context: context);
           },
-        ),
-        SizedBox(
-          width: CustomAppBar.appBarHorizontalPadding,
         ),
       ],
     ),

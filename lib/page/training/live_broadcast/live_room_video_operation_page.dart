@@ -110,6 +110,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
     EventBus.getDefault().registerNoParameter(_onClickBodyListener, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: LIVE_COURSE_LIVE_START_OR_END);
+
 
     urlImageList.add("");
     urlImageList.add(widget.coachUrl);
@@ -133,6 +136,25 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     });
     initData();
     _initTimeDuration();
+  }
+
+  void _liveCourseStatus(List list){
+    if(list!=null&&list[1]==widget.liveCourseId){
+      switch(list[0]){
+        case 0:
+        //0-直播开始
+          print("直播开始");
+          break;
+        case 3:
+        //0-直播结束
+          print("直播结束");
+          ToastShow.show(msg: "直播已结束", context: context);
+          _exitPage();
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   // getTopUi(),
@@ -1040,7 +1062,6 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       _onClickBodyListener();
       return new Future.value(false);
     }else {
-      EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
       return new Future.value(true);
     }
   }
@@ -1052,25 +1073,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         topImageUrl: "",
         barrierDismissible: false,
         cancel: AppDialogButton("仍要退出", () {
-          EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-          EventBus.getDefault()
-              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
-          EventBus.getDefault()
-              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
-          EventBus.getDefault()
-              .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
-          if (timer != null) {
-            timer.cancel();
-            timer = null;
-          }
-          if (timerBottomHeight != null) {
-            timerBottomHeight.cancel();
-            timerBottomHeight = null;
-          }
-          userImageOnlineStream.close();
-          messageCantSendStream.close();
-          messageListStream.close();
-          Navigator.of(context).pop();
+          _exitPage();
           return true;
         }),
         confirm: AppDialogButton("继续训练", () {
@@ -1078,15 +1081,21 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         }));
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void _exitPage(){
+    Navigator.of(context).pop();
+  }
+
+
+  _closeData(){
+    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.getDefault()
+        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -1094,6 +1103,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     userImageOnlineStream.close();
     messageListStream.close();
     messageCantSendStream.close();
+  }
+
+  @override
+  void dispose() {
+    _closeData();
+    super.dispose();
   }
 
   //接收直播间系统通知消息

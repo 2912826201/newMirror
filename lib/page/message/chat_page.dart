@@ -184,7 +184,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     super.initState();
 
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
-    context.read<ChatMessageProfileNotifier>().isResetPage = false;
 
     if (conversation.getType() == RCConversationType.Group) {
       EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
@@ -193,6 +192,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     EventBus.getDefault()
         .registerSingleParameter(resetSettingStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
     EventBus.getDefault().registerSingleParameter(getReceiveMessages, EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
+    EventBus.getDefault().registerSingleParameter(withdrawMessage, EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
     if (conversation.getType() != RCConversationType.System) {
       initSetData();
       initTextController();
@@ -243,6 +243,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
 
     deletePostCompleteMessage(conversation);
   }
@@ -1204,8 +1205,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
   }
 
-  //接收消息
-  void getReceiveMessages(Message message) {
+  void withdrawMessage(Message message){
     if (message.targetId != conversation.conversationId) {
       return;
     }
@@ -1219,36 +1219,42 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           break;
         }
       }
-    } else {
-      //不是撤回消息
+    }
+    ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+  }
 
-      //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
-      if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
-        return;
+  //接收消息
+  void getReceiveMessages(Message message) {
+    if (message.targetId != conversation.conversationId&&message.conversationType == conversation.getType()) {
+      return;
+    }
+
+    //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
+    if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
+      return;
+    }
+    ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
+    print("scrollPositionPixels：$scrollPositionPixels");
+    judgeAddAlertTime();
+    chatDataList.insert(0, chatDataModel);
+    insertSourceList(chatDataModel);
+    //判断是不是群通知
+    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF &&
+        conversation.getType() == RCConversationType.Group) {
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
+        case 4:
+          conversation.name = dataMap["groupChatName"];
+          break;
+        default:
+          getChatGroupUserModelList1(conversation.conversationId, context);
+          break;
       }
-      ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
-      print("scrollPositionPixels：$scrollPositionPixels");
-      judgeAddAlertTime();
-      chatDataList.insert(0, chatDataModel);
-      insertSourceList(chatDataModel);
-      //判断是不是群通知
-      if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF &&
-          conversation.getType() == RCConversationType.Group) {
-        Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
-        switch (dataMap["subType"]) {
-          case 4:
-            conversation.name = dataMap["groupChatName"];
-            break;
-          default:
-            getChatGroupUserModelList1(conversation.conversationId, context);
-            break;
-        }
-      }
-      isHaveReceiveChatDataList = true;
-      if (scrollPositionPixels < 500) {
-        isHaveReceiveChatDataList = false;
-        chatDetailsBodyChildKey.currentState.resetChatMessageCount();
-      }
+    }
+    isHaveReceiveChatDataList = true;
+    if (scrollPositionPixels < 500) {
+      isHaveReceiveChatDataList = false;
+      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
     }
     //清聊天未读数
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -1607,12 +1613,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //录音按钮的点击事件
   _voiceOnTapClick() async {
     await [Permission.microphone].request();
-    _focusNode.unfocus();
-    _isVoiceState = !_isVoiceState;
-    messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
-    if (_emojiState) {
-      _emojiState = false;
-      bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+    bool isGranted = (await Permission.microphone.status)?.isGranted;
+    if(isGranted) {
+      _focusNode.unfocus();
+      _isVoiceState = !_isVoiceState;
+      messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+      if (_emojiState) {
+        _emojiState = false;
+        bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+      }
     }
   }
 
