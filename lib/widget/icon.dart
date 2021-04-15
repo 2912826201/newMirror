@@ -69,6 +69,7 @@ class AppIcon {
   static const String volume = "assets/svg/volume.svg";
   static const String luminance = "assets/svg/luminance.svg";
   static const String filter = "assets/svg/filter.svg";
+  static const String play_28 = "assets/svg/play_28.svg";
   static const String play_48 = "assets/svg/play_48.svg";
   static const String pause_28 = "assets/svg/pause_28.svg";
   static const String pause_48 = "assets/svg/pause_48.svg";
@@ -92,6 +93,7 @@ class AppIcon {
   static const String selection_remove = "assets/svg/selection_remove.svg";
   static const String group_chat_24 = "assets/svg/group_chat_24.svg";
   static const String at_16 = "assets/svg/at_16.svg";
+  static const String message_send_error = "assets/svg/message_send_error.svg";
   static const String message_send = "assets/svg/message_send.svg";
   static const String message_delete = "assets/svg/message_delete.svg";
   static const String message_cant_send = "assets/svg/message_cant_send.svg";
