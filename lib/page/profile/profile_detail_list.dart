@@ -45,9 +45,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   int followDataPage = 1;
   int followlastTime;
   String defaultImage = DefaultImage.nodata;
-  RefreshController _refreshController = RefreshController();
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
   ScrollController scrollController = ScrollController();
   bool refreshOver = false;
+  bool listNoData = false;
   StreamController<List<int>> feedIdListController = StreamController<List<int>>();
 
   _getDynamicData() async {
@@ -64,6 +65,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         followModel.clear();
         feedIdList.clear();
         if (model.list.isNotEmpty) {
+          listNoData = false;
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
@@ -76,10 +78,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               ? hintText = "发布动态，增加人气哦"
               : hintText = "你还没有喜欢的内容~去逛逛吧";
           defaultImage = DefaultImage.nodata;
+          listNoData = true;
         }
-        feedIdListController.sink.add(feedIdList);
         _refreshController.refreshCompleted();
+        feedIdListController.sink.add(feedIdList);
       } else {
+        listNoData = true;
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
@@ -145,9 +149,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             ? hintText = "发布动态，增加人气哦"
             : hintText = "你还没有喜欢的内容~去逛逛吧";
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _getDynamicData();
-    });
   }
 
 
@@ -171,13 +172,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       color: AppColor.white,
 
       ///刷新控件
-      child: StreamBuilder<List<int>>(
-          initialData: feedIdList,
-          stream: feedIdListController.stream,
-          builder: (BuildContext stramContext, AsyncSnapshot<List<int>> snapshot) {
-            return ScrollConfiguration(
+      child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
-                child: SmartRefresher(
+                child:StreamBuilder<List<int>>(
+                    initialData: feedIdList,
+                    stream: feedIdListController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<List<int>> snapshot) {
+                      return  SmartRefresher(
                     enablePullUp: true,
                     enablePullDown: true,
                     footer: SmartRefresherHeadFooter.init().getFooter(),
@@ -189,13 +190,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                       }
                     },
                     onRefresh: _onRefresh,
-                    child: _showDataUi(snapshot)));
-          }),
+                    child: _showDataUi(snapshot));})),
     );
   }
 
   Widget _showDataUi(AsyncSnapshot<List<int>> snapshot) {
-    var list = ListView.builder(
+   return !listNoData? ListView.builder(
         shrinkWrap: true,
         padding: EdgeInsets.only(top: 10),
         //解决无限高度问题
@@ -203,14 +203,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         itemCount: snapshot.data.length,
         itemBuilder: (context, index) {
           HomeFeedModel model;
-          if (index > 0) {
-            try {
-              int id = snapshot.data[index];
-              model = context.read<FeedMapNotifier>().value.feedMap[id];
-            } catch (e) {
-              print(e);
-            }
-          }
+          int id = snapshot.data[index];
+          model = context.read<FeedMapNotifier>().value.feedMap[id];
           return ExposureDetector(
             key: widget.type == 2
                 ? Key('profile_feed_${snapshot.data[index]}')
@@ -234,8 +228,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
             },
           );
-        });
-    var noDataUi = Container(
+        }):Container(
         padding: EdgeInsets.only(top: 12),
         color: AppColor.white,
         child: Column(
@@ -258,11 +251,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             )
           ],
         ));
-    if (snapshot.data.length < 1) {
-      return noDataUi;
-    } else {
-      return list;
-    }
   }
 
   @override
