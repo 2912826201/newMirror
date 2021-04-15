@@ -239,18 +239,15 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0x40000000),
-                    Color(0x00000000),
+                    AppColor.textPrimary1.withOpacity(0.35),
+                    AppColor.textPrimary1.withOpacity(0),
                   ],
                 ),
               ),
             ),
           ),
           Positioned(
-            child: Offstage(
-              offstage: !isLiveOrVideo,
-              child: LiveLabelWidget(isWhiteBorder: false),
-            ),
+            child: isLiveOrVideo?LiveLabelWidget(isWhiteBorder: false):Container(),
             top: 13,
             left: 12,
           ),
