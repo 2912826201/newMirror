@@ -139,12 +139,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                       child: ScrollConfiguration(
                           behavior: OverScrollBehavior(),
                           child: SmartRefresher(
-                              enablePullDown: false,
+                              enablePullDown: true,
                               enablePullUp: true,
                               footer: footerWidget(),
                               controller: _refreshController,
                               onLoading: () {
                                 childKey.currentState.onLoading();
+                              },
+                              onRefresh: (){
+                                childKey.currentState.onRefresh();
                               },
                               child: CustomScrollView(
                                   physics: ClampingScrollPhysics(),

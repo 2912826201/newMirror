@@ -16,7 +16,6 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
-import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -1089,16 +1088,24 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //加载网络数据
-  void getDataAction({bool isFold = false}) async {
+  void getDataAction({bool isFold = false,bool isRefresh=false}) async {
     if (await isOffline()) {
       loadingStatusComment = LoadingStatus.STATUS_IDEL;
-      widget.refreshController.loadNoData();
+      if(isRefresh){
+        widget.refreshController.refreshCompleted();
+      }else{
+        widget.refreshController.loadNoData();
+      }
       courseCommentHot = null;
       courseCommentTime = null;
       if (mounted) {
         setState(() {});
       }
       return;
+    }
+    if(isRefresh){
+      courseCommentHot = null;
+      courseCommentTime = null;
     }
     try {
       print("courseCommentHot：${courseCommentHot.list.length}");
@@ -1204,9 +1211,18 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           /*   _getSubComment(courseCommentHot.list[choseIndex].id, courseCommentHot.list[choseIndex].replys?.length, courseCommentHot.list[choseIndex].replyCount, courseCommentHot.list[choseIndex].pullNumber, choseIndex);*/
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex, false);
         }
-        widget.refreshController.loadComplete();
+
+        if(isRefresh){
+          widget.refreshController.refreshCompleted();
+        }else{
+          widget.refreshController.loadComplete();
+        }
       } else {
-        widget.refreshController.loadNoData();
+        if(isRefresh){
+          widget.refreshController.refreshCompleted();
+        }else{
+          widget.refreshController.loadNoData();
+        }
       }
     } else {
       Map<String, dynamic> commentModel = await queryListByTime(
@@ -1218,9 +1234,18 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         courseCommentTime = CommentModel.fromJson(commentModel);
         courseCommentPageTime++;
         setCommentListSubSetting(courseCommentTime, isFold: isFold);
-        widget.refreshController.loadComplete();
+
+        if(isRefresh){
+          widget.refreshController.loadComplete();
+        }else{
+          widget.refreshController.loadNoData();
+        }
       } else {
-        widget.refreshController.loadNoData();
+        if(isRefresh){
+          widget.refreshController.refreshCompleted();
+        }else{
+          widget.refreshController.loadNoData();
+        }
       }
     }
 
@@ -1325,10 +1350,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
   }
 
+  void onRefresh(){
+    onLoading(isRefresh:true);
+  }
+
   //加载更多的评论
-  void onLoading() async {
-    if ((isHotOrTime ? courseCommentHot : courseCommentTime) == null) {
-      getDataAction();
+  void onLoading({bool isRefresh=false}) async {
+    if ((isHotOrTime ? courseCommentHot : courseCommentTime) == null||isRefresh) {
+      getDataAction(isRefresh:isRefresh);
       return;
     }
     Future.delayed(Duration.zero, () async {
