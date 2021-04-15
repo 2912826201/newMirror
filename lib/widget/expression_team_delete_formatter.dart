@@ -8,7 +8,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     print('------------------------------formatEditUpdate');
-    if (newValue.text.length > oldValue.text.length&&maxLength!=null) {
+    if (newValue.text.length > oldValue.text.length&&maxLength!=null&&newValue.isComposingRangeValid) {
       if (newValue.text.length>maxLength&&oldValue.text.length<maxLength) {
         ///还可以输入多少字符
         int needCount =maxLength-oldValue.text.length;

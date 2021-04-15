@@ -154,8 +154,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         return element == id;
       });
     }
-    setState(() {
-    });
+    setState(() {});
     if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
       context.read<FeedMapNotifier>().deleteFeed(id);
     }
@@ -182,7 +181,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 }
               },
               onRefresh: _onRefresh,
-              child:  _showDataUi())),
+              child: _showDataUi())),
     );
   }
 
