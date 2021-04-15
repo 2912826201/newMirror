@@ -706,12 +706,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           useOldImageOnUrlChange: true,
           imageUrl: _avatar != null ? _avatar : "",
           fit: BoxFit.cover,
-          placeholder: (context, url) => CircularProgressIndicator(),
+          placeholder: (context, url) =>Container(color: AppColor.bgWhite,),
           errorWidget:(context, url, e) {
-            return Image.asset(
-              "images/test.png",
-              fit: BoxFit.cover,
-            );
+            return Container(color: AppColor.bgWhite,);
           },
         ),
       ),
