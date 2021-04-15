@@ -26,6 +26,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/data/dto/token_dto.dart';
@@ -190,6 +191,9 @@ class _PerfectUserState extends State<PerfectUserPage> {
           suffixText: "$textLength/$maxTextLength",
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
+          inputFormatters: [
+            ExpressionTeamDeleteFormatter(maxLength: 15)
+            ],
       onChanged: (value) {
         setState(() {
           textLength = value.length;
