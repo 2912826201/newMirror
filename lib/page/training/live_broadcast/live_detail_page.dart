@@ -216,6 +216,7 @@ class LiveDetailPageState extends XCState {
                 child: GestureDetector(
                   child: Container(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           width: 224,
