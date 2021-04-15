@@ -4,12 +4,23 @@ import 'dart:io';
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-
+import 'package:mirror/util/toast_util.dart';
+import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 /// feed_video_player
 /// Created by yangjiayi on 2021/1/11.
 
@@ -21,9 +32,9 @@ class FeedVideoPlayer extends StatefulWidget {
   final bool isFile;
   final String thumbPath;
   final String durationString;
-
+  final HomeFeedModel model;
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
-      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString})
+      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString,this.model})
       : super(key: key);
 
   @override
@@ -35,6 +46,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   Size videoSize;
   double offsetX;
   double offsetY;
+
   bool isMute = false;
 
   // 控件显示
@@ -171,7 +183,28 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     print("销毁更好的播放器页面了");
     super.dispose();
   }
-
+// 点赞
+  setUpLuad() async {
+    bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    if (isLoggedIn) {
+      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      print('===================================model.code==${model.code}');
+      // 点赞/取消赞成功
+      if (model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+      } else {
+        context
+            .read<FeedMapNotifier>()
+            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        context
+            .read<UserInteractiveNotifier>()
+            .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+      }
+    } else {
+      // 去登录
+      AppRouter.navigateToLoginPage(context);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -193,6 +226,15 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                   new Future.delayed(Duration(seconds: 3), () {
                     streamHeight.sink.add(0.0);
                   });
+                },
+                // 双击
+                onDoubleTap: () {
+                  // 获取是否点赞
+                  int isLaud = widget.model.isLaud;
+                  print("isLaud:::$isLaud");
+                  if (isLaud != 1) {
+                    setUpLuad();
+                  }
                 },
                 child: SizedBox(
                   width: videoSize.width,

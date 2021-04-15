@@ -166,8 +166,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });
-              _refreshController.refreshCompleted();
             }
+            _refreshController.refreshCompleted();
             hasNext = dataModel.hasNext;
           } else {
             _refreshController.refreshCompleted();

@@ -177,22 +177,26 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
        },
         // child:
       );*/
-      return widget.isHero?Hero(
-        tag: widget.pageName + "${widget.model.id}${widget.index}",
-        child: FeedVideoPlayer(
-          videos.first.url,
-          sizeInfo,
-          ScreenUtil.instance.width,
-          durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-          isInListView: true,
-        ),
-      ):FeedVideoPlayer(
-        videos.first.url,
-        sizeInfo,
-        ScreenUtil.instance.width,
-        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-        isInListView: true,
-      );
+      return widget.isHero
+          ? Hero(
+              tag: widget.pageName + "${widget.model.id}${widget.index}",
+              child: FeedVideoPlayer(
+                videos.first.url,
+                sizeInfo,
+                ScreenUtil.instance.width,
+                model: feedModel,
+                durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+                isInListView: true,
+              ),
+            )
+          : FeedVideoPlayer(
+              videos.first.url,
+              sizeInfo,
+              ScreenUtil.instance.width,
+              model: feedModel,
+              durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+              isInListView: true,
+            );
     }
   }
 
