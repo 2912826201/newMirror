@@ -49,7 +49,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   ScrollController scrollController = ScrollController();
   bool refreshOver = false;
   bool listNoData = false;
-  StreamController<List<int>> feedIdListController = StreamController<List<int>>();
 
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -71,17 +70,16 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
           print('-------------------------model.list.isNotEmpty');
-        }else{
+        } else {
           widget.type == 3
               ? hintText = "这个人很懒，什么都没发"
               : widget.type == 2
-              ? hintText = "发布动态，增加人气哦"
-              : hintText = "你还没有喜欢的内容~去逛逛吧";
+                  ? hintText = "发布动态，增加人气哦"
+                  : hintText = "你还没有喜欢的内容~去逛逛吧";
           defaultImage = DefaultImage.nodata;
           listNoData = true;
         }
         _refreshController.refreshCompleted();
-        feedIdListController.sink.add(feedIdList);
       } else {
         listNoData = true;
         hintText = "内容君在来的路上出了点状况...";
@@ -97,14 +95,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             followModel.add(HomeFeedModel.fromJson(result));
             feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
-          feedIdListController.sink.add(feedIdList);
         }
         _refreshController.loadComplete();
       } else {
         _refreshController.loadFailed();
       }
     }
-
     if (mounted) {
       setState(() {});
     }
@@ -151,7 +147,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     WidgetsBinding.instance.addObserver(this);
   }
 
-
   _deleteFeedCallBack(int id) {
     print('--------$feedIdList------------------删除回调$id');
     if (feedIdList.contains(id)) {
@@ -159,10 +154,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         return element == id;
       });
     }
+    setState(() {});
     if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
       context.read<FeedMapNotifier>().deleteFeed(id);
     }
-    feedIdListController.sink.add(feedIdList);
   }
 
   @override
@@ -173,84 +168,82 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
       ///刷新控件
       child: ScrollConfiguration(
-                behavior: OverScrollBehavior(),
-                child:StreamBuilder<List<int>>(
-                    initialData: feedIdList,
-                    stream: feedIdListController.stream,
-                    builder: (BuildContext stramContext, AsyncSnapshot<List<int>> snapshot) {
-                      return  SmartRefresher(
-                    enablePullUp: true,
-                    enablePullDown: true,
-                    footer: SmartRefresherHeadFooter.init().getFooter(),
-                    header: SmartRefresherHeadFooter.init().getHeader(),
-                    controller: _refreshController,
-                    onLoading: () {
-                      if (refreshOver) {
-                        _onLoadding();
-                      }
-                    },
-                    onRefresh: _onRefresh,
-                    child: _showDataUi(snapshot));})),
+          behavior: OverScrollBehavior(),
+          child: SmartRefresher(
+              enablePullUp: true,
+              enablePullDown: true,
+              footer: SmartRefresherHeadFooter.init().getFooter(),
+              header: SmartRefresherHeadFooter.init().getHeader(),
+              controller: _refreshController,
+              onLoading: () {
+                if (refreshOver) {
+                  _onLoadding();
+                }
+              },
+              onRefresh: _onRefresh,
+              child: _showDataUi())),
     );
   }
 
-  Widget _showDataUi(AsyncSnapshot<List<int>> snapshot) {
-   return !listNoData? ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.only(top: 10),
-        //解决无限高度问题
-        physics: AlwaysScrollableScrollPhysics(),
-        itemCount: snapshot.data.length,
-        itemBuilder: (context, index) {
-          HomeFeedModel model;
-          int id = snapshot.data[index];
-          model = context.read<FeedMapNotifier>().value.feedMap[id];
-          return ExposureDetector(
-            key: widget.type == 2
-                ? Key('profile_feed_${snapshot.data[index]}')
-                : Key('profile_like_${snapshot.data[index]}'),
-            child: DynamicListLayout(
-                index: index,
-                pageName: "profileDetails",
-                isShowRecommendUser: false,
-                isShowConcern: false,
-                model: model,
-                isMySelf: widget.isMySelf,
-                mineDetailId: widget.id,
-                key: GlobalObjectKey("attention$index"),
-                removeFollowChanged: (model) {},
-                deleteFeedChanged: (feedId) {}),
-            onExposure: (visibilityInfo) {
-              // 如果没有显示
-              if (model.isShowInputBox) {
-                context.read<FeedMapNotifier>().showInputBox(model.id);
-              }
-              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-            },
-          );
-        }):Container(
-        padding: EdgeInsets.only(top: 12),
-        color: AppColor.white,
-        child: Column(
-          children: [
-            Center(
-              child: Container(
-                width: 224,
-                height: 224,
-               child: Image.asset(defaultImage),
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Center(
-              child: Text(
-                hintText,
-                style: AppStyle.textPrimary3Regular14,
-              ),
-            )
-          ],
-        ));
+  Widget _showDataUi() {
+    return !listNoData
+        ? ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 10),
+            //解决无限高度问题
+            physics: AlwaysScrollableScrollPhysics(),
+            itemCount: feedIdList.length,
+            itemBuilder: (context, index) {
+              HomeFeedModel model;
+              int id = feedIdList[index];
+              model = context.read<FeedMapNotifier>().value.feedMap[id];
+              return ExposureDetector(
+                key: widget.type == 2
+                    ? Key('profile_feed_${feedIdList[index]}')
+                    : Key('profile_like_${feedIdList[index]}'),
+                child: DynamicListLayout(
+                    index: index,
+                    pageName: "profileDetails",
+                    isShowRecommendUser: false,
+                    isShowConcern: false,
+                    model: model,
+                    isMySelf: widget.isMySelf,
+                    mineDetailId: widget.id,
+                    key: GlobalObjectKey("attention$index"),
+                    removeFollowChanged: (model) {},
+                    deleteFeedChanged: (feedId) {}),
+                onExposure: (visibilityInfo) {
+                  // 如果没有显示
+                  if (model.isShowInputBox) {
+                    context.read<FeedMapNotifier>().showInputBox(model.id);
+                  }
+                  print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                },
+              );
+            })
+        : Container(
+            padding: EdgeInsets.only(top: 12),
+            color: AppColor.white,
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    width: 224,
+                    height: 224,
+                    child: Image.asset(defaultImage),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Center(
+                  child: Text(
+                    hintText,
+                    style: AppStyle.textPrimary3Regular14,
+                  ),
+                )
+              ],
+            ));
   }
 
   @override

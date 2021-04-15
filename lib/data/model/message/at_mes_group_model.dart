@@ -54,7 +54,7 @@ void initAtMesGroupModel() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String content = prefs.getString("at_mes_group_model");
   if (content != null) {
-    AtMesGroupModel atMesGroupModel = new AtMesGroupModel();
+    AtMesGroupModel atMesGroupModel = AtMesGroupModel();
     atMesGroupModel.atMsgMap = json.decode(content);
     Application.atMesGroupModel = atMesGroupModel;
   }
