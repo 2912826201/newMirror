@@ -200,6 +200,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
+        backgroundColor:AppColor.white,
         resizeToAvoidBottomInset: false,
         body: ChangeNotifierProvider(
           create: (_) => ReleaseFeedInputNotifier(
