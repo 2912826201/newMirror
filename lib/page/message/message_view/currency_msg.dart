@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 ///每一种消息 共用的方法 或者ui
@@ -64,11 +65,7 @@ Widget getMessageState(int status,
         height: 28.0,
         color: Colors.transparent,
         margin: const EdgeInsets.symmetric(horizontal: 6),
-        child: Icon(
-          Icons.sms_failed,
-          size: 28,
-          color: Colors.red,
-        ),
+        child: AppIcon.getAppIcon(AppIcon.message_send_error, 28),
       ),
       onTap: () {
         if (voidMessageClickCallBack != null && position != null) {

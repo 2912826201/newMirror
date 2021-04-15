@@ -38,7 +38,8 @@ class AppIcon {
   static const String camera_switch = "assets/svg/camera_switch.svg";
   static const String gallery_fullsize = "assets/svg/gallery_fullsize.svg";
   static const String tag_location = "assets/svg/tag_location.svg";
-  static const String tag_course = "assets/svg/tag_course.svg";
+  static const String tag_course_black = "assets/svg/tag_course_black.svg";
+  static const String tag_course_white = "assets/svg/tag_course_white.svg";
   static const String check = "assets/svg/check.svg";
   static const String check_follow = "assets/svg/check_follow.svg";
   static const String topic = "assets/svg/topic.svg";
@@ -68,6 +69,7 @@ class AppIcon {
   static const String volume = "assets/svg/volume.svg";
   static const String luminance = "assets/svg/luminance.svg";
   static const String filter = "assets/svg/filter.svg";
+  static const String play_28 = "assets/svg/play_28.svg";
   static const String play_48 = "assets/svg/play_48.svg";
   static const String pause_28 = "assets/svg/pause_28.svg";
   static const String pause_48 = "assets/svg/pause_48.svg";
@@ -91,6 +93,7 @@ class AppIcon {
   static const String selection_remove = "assets/svg/selection_remove.svg";
   static const String group_chat_24 = "assets/svg/group_chat_24.svg";
   static const String at_16 = "assets/svg/at_16.svg";
+  static const String message_send_error = "assets/svg/message_send_error.svg";
   static const String message_send = "assets/svg/message_send.svg";
   static const String message_delete = "assets/svg/message_delete.svg";
   static const String message_cant_send = "assets/svg/message_cant_send.svg";
@@ -126,6 +129,8 @@ class AppIcon {
   static const String voice_microphone = "assets/svg/voice_microphone.svg";
   static const String voice_error = "assets/svg/voice_error.svg";
   static const String voice_cancel = "assets/svg/voice_cancel.svg";
+  static const String volume_on_16 = "assets/svg/volume_on_16.svg";
+  static const String volume_off_16 = "assets/svg/volume_off_16.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

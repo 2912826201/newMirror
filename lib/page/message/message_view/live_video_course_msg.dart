@@ -8,6 +8,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 
 import 'currency_msg.dart';
@@ -239,18 +240,15 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0x40000000),
-                    Color(0x00000000),
+                    AppColor.textPrimary1.withOpacity(0.35),
+                    AppColor.textPrimary1.withOpacity(0),
                   ],
                 ),
               ),
             ),
           ),
           Positioned(
-            child: Offstage(
-              offstage: !isLiveOrVideo,
-              child: LiveLabelWidget(isWhiteBorder: false),
-            ),
+            child: isLiveOrVideo ? LiveLabelWidget(isWhiteBorder: false) : Container(),
             top: 13,
             left: 12,
           ),
@@ -271,24 +269,20 @@ class LiveVideoCourseMsg extends StatelessWidget {
             child: SizedBox(
               child: Row(
                 children: [
-                  Icon(
-                    Icons.flash_on_outlined,
-                    size: 20,
-                  ),
+                  AppIcon.getAppIcon(AppIcon.tag_course_white, 16,
+                      containerHeight: 20, containerWidth: 20, bgColor: AppColor.textPrimary2, isCircle: true),
                   SizedBox(
                     width: 4,
                   ),
                   Container(
                     height: 20,
                     width: 120.0,
-                    child: Center(
-                      child: Text(
-                        liveVideoModel.title ?? "",
-                        style: AppStyle.textMedium14,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    child: Text(
+                      liveVideoModel.title ?? "",
+                      style: AppStyle.textMedium14,
+                      maxLines: 1,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   )
                 ],

@@ -377,7 +377,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               Container(
                 width: 224,
                 height: 224,
-                color: AppColor.mainBlue,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                ),
               ),
               SizedBox(
                 height: 16,

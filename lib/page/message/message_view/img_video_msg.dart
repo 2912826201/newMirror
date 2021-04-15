@@ -13,6 +13,7 @@ import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
@@ -203,6 +204,7 @@ class ImgVideoMsg extends StatelessWidget {
         child: Stack(
           children: [
             getImageOrVideoUi(),
+            getVideoMask(),
             getVideoState(),
           ],
         ),
@@ -349,14 +351,30 @@ class ImgVideoMsg extends StatelessWidget {
       offstage: isImgOrVideo,
       child: Container(
         child: Center(
-          child: Icon(
-            Icons.play_circle_outline,
-            size: 28,
-            color: AppColor.white,
-          ),
+          child: AppIcon.getAppIcon(AppIcon.play_28, 28),
         ),
       ),
     );
+  }
+  //获取视频的标识遮罩
+  Widget getVideoMask() {
+    return Offstage(
+        offstage: isImgOrVideo,
+        child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColor.textPrimary1.withOpacity(0),
+                  AppColor.textPrimary1.withOpacity(0.35),
+                ],
+              ),
+            )
+        ),
+      );
   }
 
   //初始化数据

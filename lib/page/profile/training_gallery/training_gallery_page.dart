@@ -128,7 +128,10 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               Container(
                 height: 224,
                 width: 224,
-                color: AppColor.bgWhite,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                ),
               ),
               SizedBox(
                 height: 16,

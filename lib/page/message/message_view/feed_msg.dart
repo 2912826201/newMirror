@@ -10,6 +10,7 @@ import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/widget/icon.dart';
 
 import 'currency_msg.dart';
 
@@ -219,10 +220,22 @@ class FeedMsg extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: AppColor.black.withOpacity(0.15),
+              Offstage(
+                offstage: isPicOrVideo == 0,
+                child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColor.textPrimary1.withOpacity(0),
+                          AppColor.textPrimary1.withOpacity(0.35),
+                        ],
+                      ),
+                    )
+                ),
               ),
               Offstage(
                 offstage: isPicOrVideo == 0,
@@ -230,11 +243,7 @@ class FeedMsg extends StatelessWidget {
                   height: double.infinity,
                   width: double.infinity,
                   child: Center(
-                    child: Icon(
-                      Icons.play_circle_outline,
-                      size: 28,
-                      color: AppColor.white,
-                    ),
+                    child:  AppIcon.getAppIcon(AppIcon.play_28, 28),
                   ),
                 ),
               ),

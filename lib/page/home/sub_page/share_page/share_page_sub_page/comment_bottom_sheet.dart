@@ -52,12 +52,16 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
       child: NotificationListener<ScrollNotification>(
         onNotification: _onDragNotification,
         child: SmartRefresher(
-            enablePullDown: false,
+            enablePullDown: true,
             enablePullUp: true,
-            footer: SmartRefresherHeadFooter.init().getFooter(),
+            header: SmartRefresherHeadFooter.init().getHeader(),
+            footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore:false),
             controller: _refreshController,
             onLoading: () {
               childKey.currentState.onLoading();
+            },
+            onRefresh: (){
+              childKey.currentState.onRefresh();
             },
             child: CustomScrollView(controller: _controller, physics: ClampingScrollPhysics(), slivers: <Widget>[
               SliverToBoxAdapter(
