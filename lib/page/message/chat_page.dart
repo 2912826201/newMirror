@@ -1613,12 +1613,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //录音按钮的点击事件
   _voiceOnTapClick() async {
     await [Permission.microphone].request();
-    _focusNode.unfocus();
-    _isVoiceState = !_isVoiceState;
-    messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
-    if (_emojiState) {
-      _emojiState = false;
-      bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+    bool isGranted = (await Permission.microphone.status)?.isGranted;
+    if(isGranted) {
+      _focusNode.unfocus();
+      _isVoiceState = !_isVoiceState;
+      messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+      if (_emojiState) {
+        _emojiState = false;
+        bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+      }
     }
   }
 

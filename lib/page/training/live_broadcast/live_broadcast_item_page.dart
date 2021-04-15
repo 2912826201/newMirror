@@ -533,6 +533,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   //删除日历预约提醒
   void deleteAlertEvents(int courseId, String startTime) async {
     await [Permission.calendar].request();
+    bool isGranted = (await Permission.calendar.status)?.isGranted;
+    if(!isGranted) {
+      return;
+    }
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();

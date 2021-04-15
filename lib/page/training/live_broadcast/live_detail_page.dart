@@ -723,6 +723,10 @@ class LiveDetailPageState extends XCState {
   void onClickMakeAnAppointment(LiveVideoModel value, String alert, bool isBook) async {
     //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
+    bool isGranted = (await Permission.calendar.status)?.isGranted;
+    if(!isGranted) {
+      return;
+    }
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
@@ -751,6 +755,10 @@ class LiveDetailPageState extends XCState {
   //删除已经预约的日历提醒
   void deleteAlertEvents(int courseId, String startTime) async {
     await [Permission.calendar].request();
+    bool isGranted = (await Permission.calendar.status)?.isGranted;
+    if(!isGranted) {
+      return;
+    }
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
