@@ -99,7 +99,10 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
           Container(
             width: 224,
             height: 224,
-            color: AppColor.bgWhite,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+            ),
             margin: EdgeInsets.only(bottom: 16, top: 188),
           ),
           Text(
