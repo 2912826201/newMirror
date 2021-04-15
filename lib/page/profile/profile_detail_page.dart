@@ -17,6 +17,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
@@ -255,23 +256,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         6 +
         16 +
         5;
-    return WillPopScope(
-        child: Scaffold(
+    return Scaffold(
           body: Container(
               height: height,
               width: width,
               child: Stack(
                 children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
               )),
-        ),
-        onWillPop: _requestPop);
+        );
   }
 
-  // 监听返回事件
-  Future<bool> _requestPop() {
-    Navigator.pop(this.context, context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
-    return new Future.value(false);
-  }
 
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody() {
@@ -355,8 +349,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       ),
                     ],
                   )
-                : MediaQuery.removePadding(
-                    context: context, child: ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId))
+                :  ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
             : Container(
                 padding: EdgeInsets.only(top: 12),
                 color: AppColor.white,
@@ -366,7 +359,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: Container(
                         width: 224,
                         height: 224,
-                        color: AppColor.bgWhite.withOpacity(0.65),
+                        child:Image.asset(DefaultImage.error),
                       ),
                     ),
                     SizedBox(

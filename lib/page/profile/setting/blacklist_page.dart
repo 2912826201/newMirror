@@ -9,6 +9,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_list_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -84,7 +85,7 @@ class _BlackListState extends State<BlackListPage> {
                   Container(
                     height: 224,
                     width: 224,
-                    color: AppColor.bgWhite,
+                    child: Image.asset(DefaultImage.nodata),
                   ),
                   SizedBox(
                     height: 8,

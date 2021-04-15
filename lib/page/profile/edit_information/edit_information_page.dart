@@ -30,7 +30,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
-
 class EditInformation extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -43,8 +42,9 @@ class _EditInformationState extends State<EditInformation> {
   int userSex;
   String userSexText;
   String userBirthday;
-  String _introduction = "去编辑";
+  String _introduction;
   String avataruri;
+
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];
@@ -55,6 +55,7 @@ class _EditInformationState extends State<EditInformation> {
   OnItemClickListener onItemClickListener;
   double textHeight = 0;
   int buttonState = CustomRedButton.buttonStateNormal;
+
   @override
   void initState() {
     super.initState();
@@ -67,8 +68,8 @@ class _EditInformationState extends State<EditInformation> {
     userName = context.read<ProfileNotifier>().profile.nickName;
     userSex = context.read<ProfileNotifier>().profile.sex;
     userBirthday = context.read<ProfileNotifier>().profile.birthday;
-    if(context.read<ProfileNotifier>().profile.description!=null&&context.read<ProfileNotifier>().profile
-        .description!=""){
+    if (context.read<ProfileNotifier>().profile.description != null &&
+        context.read<ProfileNotifier>().profile.description != "") {
       _introduction = context.read<ProfileNotifier>().profile.description;
     }
     if (context.read<ProfileNotifier>().profile.cityCode != null) {
@@ -116,10 +117,11 @@ class _EditInformationState extends State<EditInformation> {
     } else {
       userSexText = " ";
     }
-      ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width * 0.66, 5);
-      textHeight = testSize.height;
-      print('textHeight==============================$textHeight');
+
+    ///判断文字的高度，动态改变
+    TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width * 0.66, 5);
+    textHeight = testSize.height;
+    print('textHeight==============================$textHeight');
     return Scaffold(
         appBar: CustomAppBar(
           backgroundColor: AppColor.white,
@@ -130,7 +132,8 @@ class _EditInformationState extends State<EditInformation> {
           titleString: "编辑资料",
           actions: [
             Container(
-              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+              padding:
+                  const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
                 "确定",
                 buttonState,
@@ -139,7 +142,7 @@ class _EditInformationState extends State<EditInformation> {
                     buttonState = CustomRedButton.buttonStateLoading;
                   });
                   if (userName != null && avataruri != null) {
-                   /* Loading.showLoading(context);*/
+                    /* Loading.showLoading(context);*/
                     _upDataUserInfo();
                   } else {
                     setState(() {
@@ -154,162 +157,161 @@ class _EditInformationState extends State<EditInformation> {
         ),
         body: Stack(
           children: [
-
-        Container(
-          color: AppColor.white,
-          height: height - ScreenUtil.instance.statusBarHeight,
-          width: width,
-          child: Column(
-            children: [
-              Container(
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              Container(
-                  margin: EdgeInsets.only(top: 16),
-                  width: 71,
-                  height: 71,
-                  child: InkWell(
-                    child: _avatar(context, height, width),
+            Container(
+              color: AppColor.white,
+              height: height - ScreenUtil.instance.statusBarHeight,
+              width: width,
+              child: Column(
+                children: [
+                  Container(
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(top: 16),
+                      width: 71,
+                      height: 71,
+                      child: InkWell(
+                        child: _avatar(context, height, width),
+                        onTap: () {
+                          AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true,
+                              (result) async {
+                            SelectedMediaFiles files = Application.selectedMediaFiles;
+                            if (result != true || files == null) {
+                              print('===============================值为空退回');
+                              return;
+                            }
+                            if (fileList.isNotEmpty) {
+                              fileList.clear();
+                            }
+                            Application.selectedMediaFiles = null;
+                            MediaFileModel model = files.list.first;
+                            print(
+                                'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
+                            if (model != null) {
+                              print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                              ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                              print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                              Uint8List picBytes = byteData.buffer.asUint8List();
+                              print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                              model.croppedImageData = picBytes;
+                            }
+                            String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+                            if (model.croppedImageData != null) {
+                              File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
+                              fileList.add(imageFile);
+                            }
+                            setState(() {
+                              imageData = model.croppedImageData;
+                            });
+                          });
+                        },
+                      )),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  InkWell(
                     onTap: () {
-                      AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true,
-                          (result) async {
-                        SelectedMediaFiles files = Application.selectedMediaFiles;
-                        if (result != true || files == null) {
-                          print('===============================值为空退回');
-                          return;
-                        }
-                        if (fileList.isNotEmpty) {
-                          fileList.clear();
-                        }
-                        Application.selectedMediaFiles = null;
-                        MediaFileModel model = files.list.first;
-                        print(
-                            'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
-                        if (model != null) {
-                          print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                          ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                          print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                          Uint8List picBytes = byteData.buffer.asUint8List();
-                          print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                          model.croppedImageData = picBytes;
-                        }
-                        String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-                        if (model.croppedImageData != null) {
-                          File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
-                          fileList.add(imageFile);
-                        }
+                      AppRouter.navigateToEditInfomationName(context, userName, (result) {
                         setState(() {
-                          imageData = model.croppedImageData;
+                          if (result != null) {
+                            userName = result;
+                          }
                         });
                       });
                     },
-                  )),
-              SizedBox(
-                height: 16,
-              ),
-              InkWell(
-                onTap: () {
-                  AppRouter.navigateToEditInfomationName(context, userName, (result) {
-                    setState(() {
-                      if (result != null) {
-                        userName = result;
-                      }
-                    });
-                  });
-                },
-                child: _rowChose(width, "昵称", userName),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                onTap: () {
-                  List<String> list = ["男", "女"];
-                  openMoreBottomSheet(
-                      context: context,
-                      onItemClickListener: (index) {
-                        if (list[index] == "男") {
-                          setState(() {
-                            userSex = 1;
-                          });
-                        } else if (list[index] == "女") {
-                          setState(() {
-                            userSex = 2;
-                          });
+                    child: _rowChose(width, "昵称", userName),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      List<String> list = ["男", "女"];
+                      openMoreBottomSheet(
+                          context: context,
+                          onItemClickListener: (index) {
+                            if (list[index] == "男") {
+                              setState(() {
+                                userSex = 1;
+                              });
+                            } else if (list[index] == "女") {
+                              setState(() {
+                                userSex = 2;
+                              });
+                            }
+                          },
+                          lists: list);
+                    },
+                    child: _rowChose(width, "性别", userSexText),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _showDatePicker();
+                    },
+                    child: _rowChose(width, "生日", userBirthday),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    child: _rowChose(width, "地区", context.watch<AddressPickerNotifier>().provinceCity),
+                    onTap: () {
+                      openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    child: _rowChose(width, "简介", _introduction),
+                    onTap: () {
+                      AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
+                        if (result != null) {
+                          _introduction = result;
+                        } else {
+                          _introduction = null;
                         }
-                      },
-                      lists: list);
-                },
-                child: _rowChose(width, "性别", userSexText),
+                        setState(() {});
+                      });
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                ],
               ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                onTap: () {
-                  _showDatePicker();
-                },
-                child: _rowChose(width, "生日", userBirthday),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                child: _rowChose(width, "地区", context.watch<AddressPickerNotifier>().provinceCity),
-                onTap: () {
-                  openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                child: _rowChose(width, "简介", _introduction),
-                onTap: () {
-                AppRouter.navigateToEditInfomationIntroduction(context, _introduction,
-                  (result) {
-                    if (result != null) {
-                      _introduction = result;
-                    } else {
-                      _introduction = null;
-                    }
-                    setState(() {});
-                  });
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-            ],
-          ),
-        ),
-            buttonState == CustomRedButton.buttonStateLoading ? Expanded(
-                child:
-                InkWell(
-                  onTap: (){
-                    return null;
-                  },
-                  child:Container(
-                ) ,)):Container()
-
-          ],));
+            ),
+            buttonState == CustomRedButton.buttonStateLoading
+                ? Expanded(
+                    child: InkWell(
+                    onTap: () {
+                      return null;
+                    },
+                    child: Container(),
+                  ))
+                : Container()
+          ],
+        ));
   }
 
   //这是每项资料的item
@@ -339,7 +341,7 @@ class _EditInformationState extends State<EditInformation> {
             child: Text(
               textContent != null ? textContent : "去编辑",
               style: AppStyle.textRegular16,
-              maxLines: title != "简介"?1:5,
+              maxLines: title != "简介" ? 1 : 5,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -390,7 +392,11 @@ class _EditInformationState extends State<EditInformation> {
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                      child: Icon(Icons.add,size: 16,color: AppColor.white,)),
+                      child: Icon(
+                    Icons.add,
+                    size: 16,
+                    color: AppColor.white,
+                  )),
                 ))
           ],
         ));
@@ -398,33 +404,47 @@ class _EditInformationState extends State<EditInformation> {
 
   ///时间选择器
   void _showDatePicker() {
+    String choseTime = "1900-01-01";
     DatePicker.showDatePicker(
       context,
       pickerTheme: DateTimePickerTheme(
-        showTitle: true,
-        title: Container(
-          height: 44,
-          width: ScreenUtil.instance.screenWidthDp,
-          padding: EdgeInsets.only(left: 16,right: 16),
-          decoration: BoxDecoration(
-              color: AppColor.white,
-              borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10) )
+          showTitle: true,
+          title: Container(
+            height: 44,
+            width: ScreenUtil.instance.screenWidthDp,
+            padding: EdgeInsets.only(left: 16, right: 16),
+            decoration: BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('取消', style: AppStyle.textHintRegular16),
+                ),
+                Spacer(),
+                InkWell(
+                    onTap: () {
+                        setState(() {
+                          userBirthday = choseTime;
+                        });
+                        Navigator.pop(context);
+                    },
+                    child: Text('确定', style: AppStyle.redRegular16)),
+              ],
+            ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('取消', style: AppStyle.textHintRegular16),
-              Spacer(),
-              Text('确定', style: AppStyle.redRegular16),
-            ],
-          ),
-        ),
-      ),
-      minDateTime: DateTime.parse("1900-01-01"),
+          confirm: Text('确定', style: AppStyle.redRegular16),
+          cancel: Text('取消', style: AppStyle.textHintRegular16)),
+
+      minDateTime: DateTime.parse(choseTime),
       //选择器上可选择的最早时间
       maxDateTime: DateTime.parse(DateUtil.formatToDayDateString()),
       //选择器上可选择的最晚时间
-      initialDateTime: DateTime.parse("1900-01-01"),
+      initialDateTime: DateTime.parse(choseTime),
       //选择器的当前选中时间
       dateFormat: "yyyy年,MM月,dd日",
       //时间格式
@@ -432,19 +452,18 @@ class _EditInformationState extends State<EditInformation> {
       //国际化配置
       onClose: () {},
       onCancel: () => print('onCancel'),
-      onChange: (dateTime, List<int> index) {},
+      onChange: (dateTime, List<int> index) {
+        choseTime = DateFormat("yyyy-MM-dd").format(dateTime);
+      },
       onConfirm: (dateTime, List<int> index) {
-        setState(() {
-          userBirthday = DateFormat("yyyy-MM-dd").format(dateTime);
-        });
+        print('-------------------------onConfirm');
       },
     );
   }
 
   _upDataUserInfo() async {
     if (fileList.isNotEmpty) {
-      var results = await FileUtil().uploadPics(fileList, (percent) {
-      });
+      var results = await FileUtil().uploadPics(fileList, (percent) {});
       avataruri = results.resultMap.values.first.url;
     }
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
