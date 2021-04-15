@@ -167,7 +167,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   Widget _buildTopView(MachineNotifier notifier) {
     return Column(
       children: [
-        _buildBanner(),
+        // _buildBanner(),
         notifier.machine == null ? _buildConnection() : _buildEquipment(notifier),
         _buildLive(),
         _buildCourseTitle(),
