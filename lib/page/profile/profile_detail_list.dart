@@ -40,7 +40,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   ///动态model
   List<HomeFeedModel> followModel = [];
-  List<int> feedIdList = [];
   String hintText;
   int followDataPage = 1;
   int followlastTime;
@@ -58,22 +57,19 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
     setState(() {
-
-
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
         followlastTime = model.lastTime;
-        followModel.clear();
-        feedIdList.clear();
+        if(followModel.isNotEmpty){
+          followModel.clear();
+        }
         if (model.list!=null&&model.list.length!=0) {
           listNoData = false;
           model.list.forEach((result) {
             print('---------------------${HomeFeedModel.fromJson(result).id}');
             followModel.add(HomeFeedModel.fromJson(result));
-            feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
-          print('-------------------------model.list.isNotEmpty${feedIdList.toString()}');
         } else {
           widget.type == 3
               ? hintText = "这个人很懒，什么都没发"
@@ -97,7 +93,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
-            feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
         }
         _refreshController.loadComplete();
@@ -149,13 +144,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   }
 
   _deleteFeedCallBack(int id) {
-    print('--------$feedIdList------------------删除回调$id');
-    if (feedIdList.contains(id)) {
-      feedIdList.removeWhere((element) {
-        return element == id;
+      followModel.removeWhere((element) {
+        return element.id == id;
       });
-    }
-    if(feedIdList.length==0){
+    if(followModel.length==0){
       listNoData = true;
     }
     setState(() {});
@@ -196,15 +188,14 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
             physics: AlwaysScrollableScrollPhysics(),
-            itemCount: feedIdList.length,
+            itemCount: followModel.length,
             itemBuilder: (context, index) {
               HomeFeedModel model;
-              int id = feedIdList[index];
-              model = context.read<FeedMapNotifier>().value.feedMap[id];
+              model = followModel[index];
               return ExposureDetector(
                 key: widget.type == 2
-                    ? Key('profile_feed_${feedIdList[index]}')
-                    : Key('profile_like_${feedIdList[index]}'),
+                    ? Key('profile_feed_${followModel[index].id}')
+                    : Key('profile_like_${followModel[index].id}'),
                 child: DynamicListLayout(
                     index: index,
                     pageName: "profileDetails",

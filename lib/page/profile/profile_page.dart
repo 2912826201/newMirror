@@ -152,8 +152,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),
+             /* _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
             ],
           ),
         ),

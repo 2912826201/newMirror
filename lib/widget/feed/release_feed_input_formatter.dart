@@ -370,38 +370,37 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         if(oldValue.text.characters.length-newValue.text.characters.length>1){
           return newValue;
         }
-
         ///这是单字符删除
         print('------------------------------删除监听${newValue.selection.baseOffset}---${oldValue.selection.baseOffset}');
         String backText = "";
-        int choseIndex;
-        for(int i = 0;i<oldValue.text.characters
-            .toList().length;i++){
-          if(oldValue.text.characters
-              .toList()[i].length+backText.length-1<newValue.selection.baseOffset){
-            backText += oldValue.text.characters
-                .toList()[i];
-            print('---------backText-----------${backText}');
-          }else if(choseIndex==null){
-            choseIndex = i;
-          }else if(choseIndex!=i){
-            backText += oldValue.text.characters.toList()[i];
-          }
-        }
-        print('---------backText--last---------${backText}');
+        String beginText = "";
+        String lastText = "";
+        try{
+          /*note 这里只处理以characters为单位的单个字符，已知删除前的光标必为老值的光标，删除后的光标不能用新值的光标(默认没删完)
+          所以用老值的光标取值再去掉最后一位，可得到删除的内容*/
+
+          beginText = oldValue.text.substring(0,oldValue.selection.baseOffset);
+          beginText  = beginText.characters.getRange(0,beginText.characters
+              .length-1).string;
+          lastText = oldValue.text.characters.getRange(beginText.characters.length+1,oldValue.text.characters.length).string;
+          backText = beginText+lastText;
+        }catch(e){
+          print('--------------------------------$e');
+      }
         return TextEditingValue(
             text:backText,
             selection: TextSelection(
-              baseOffset: oldValue.text.characters
-                  .getRange(0,choseIndex).string.length,
-              extentOffset:  oldValue.text.characters
-                  .getRange(0,choseIndex).string.length,
+              baseOffset: beginText.length,
+              extentOffset:  beginText.length,
             ));
       }
 
     // return newValue;
   }
 
+  void PositioningDeleteChar(){
+
+  }
   void clear() {
     rules.clear();
   }
