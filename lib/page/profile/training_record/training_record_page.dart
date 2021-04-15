@@ -10,6 +10,7 @@ import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/data/model/training/training_record_all_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -889,19 +890,25 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             ),
           ),
           Positioned(
-            child: Container(
-              height: 48 + ScreenUtil.instance.bottomBarHeight,
-              width: MediaQuery.of(context).size.width,
-              color: AppColor.textPrimary2,
-              alignment: Alignment.topCenter,
+            child: GestureDetector(
               child: Container(
-                height: 48,
-                alignment: Alignment.center,
-                child: Text(
-                  "立即开始训练",
-                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                height: 48 + ScreenUtil.instance.bottomBarHeight,
+                width: MediaQuery.of(context).size.width,
+                color: AppColor.textPrimary2,
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: 48,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "立即开始训练",
+                    style: TextStyle(color: AppColor.white, fontSize: 16),
+                  ),
                 ),
               ),
+              onTap: (){
+                EventBus.getDefault().post(msg: 1,registerName: MAIN_PAGE_JUMP_PAGE);
+                Navigator.of(context).pop();
+              },
             ),
             bottom: 0,
             left: 0,

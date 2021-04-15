@@ -185,28 +185,62 @@ class VideoDetailPageState extends XCState {
       widgetArray.add(getNoCompleteTitle(context, "视频课程详情页"));
       //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
-        widgetArray.add(Expanded(
+        widgetArray.add(
+          Expanded(
             child: SizedBox(
-                child: Center(
-          child: CircularProgressIndicator(),
-        ))));
-      } else {
-        //加载失败
-        widgetArray.add(Expanded(
-            child: SizedBox(
-          child: Center(
-            child: GestureDetector(
-              child: Text("加载失败"),
-              onTap: () {
-                loadingStatus = LoadingStatus.STATUS_LOADING;
-                if (mounted) {
-                  reload(() {});
-                }
-                getDataAction();
-              },
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
           ),
-        )));
+        );
+      } else {
+        //加载失败
+        widgetArray.add(
+          Expanded(
+            child: SizedBox(
+              child: Center(
+                child: GestureDetector(
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 224,
+                          height: 224,
+                          child: Image.asset(
+                            "assets/png/default_no_data.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 14,
+                        ),
+                        Text(
+                          "暂无视频课程数据，去看看其他的吧~",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    if (mounted) {
+                      reload(() {});
+                    }
+                    getDataAction();
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
       }
       return Container(
         child: Column(children: widgetArray),

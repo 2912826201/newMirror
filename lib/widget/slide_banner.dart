@@ -124,8 +124,7 @@ class _SlideBannerState extends State<SlideBanner> {
       PicUrlsModel item = widget.model.picUrls[indexs];
       // 查看大图设置
       if (widget.isDynamicDetails) {
-        cupertinoButtons.add(
-            CupertinoButton(
+        cupertinoButtons.add(CupertinoButton(
           borderRadius: BorderRadius.zero,
           padding: EdgeInsets.zero,
           onPressed: () {
@@ -145,7 +144,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   tag: widget.model.picUrls[index].url + "$indexs",
                 );
               }),
-            ).then((value){
+            ).then((value) {
               context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
             });
           },
@@ -243,10 +242,6 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-      //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-      //   // ToastShow.show(msg: "不响应", context: context);
-      // } else {
       BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
       print('===================================model.code==${model.code}');
       // 点赞/取消赞成功
@@ -260,7 +255,6 @@ class _SlideBannerState extends State<SlideBanner> {
             .read<UserInteractiveNotifier>()
             .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
       }
-      // }
     } else {
       // 去登录
       AppRouter.navigateToLoginPage(context);
@@ -360,9 +354,7 @@ class _SlideBannerState extends State<SlideBanner> {
                           }
                         }
                       },
-                      onTap: (index) {
-
-                      },
+                      onTap: (index) {},
                     )),
               ),
               Positioned(

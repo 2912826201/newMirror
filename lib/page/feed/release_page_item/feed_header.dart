@@ -125,9 +125,6 @@ class FeedHeader extends StatelessWidget {
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         print('--------------Navigator------Navigator-------------Navigator------');
-        // 传入发布动态model
-        EventBus.getDefault().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-        Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
         print("打印结束");
       } else {
         ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);

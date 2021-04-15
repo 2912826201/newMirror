@@ -21,6 +21,7 @@ import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -134,6 +135,11 @@ class LiveDetailPageState extends XCState {
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal = context.read<MachineNotifier>().machine != null;
 
+    EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_LIVE_COURSE_PAGE,
+        registerName: LIVE_COURSE_LIVE_START_OR_END);
+    EventBus.getDefault()
+        .registerSingleParameter(_judgeLiveBook, EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_BOOK_LIVE);
+
     if (liveModel == null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     } else {
@@ -145,6 +151,32 @@ class LiveDetailPageState extends XCState {
     }
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
     getDataAction(openLiveCourse: liveModel == null);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_BOOK_LIVE);
+  }
+
+  void _liveCourseStatus(List list) {
+    if (list != null && liveModel != null && list[1] == liveModel.id) {
+      switch (list[0]) {
+        case 0:
+          //0-直播开始
+          print("直播开始");
+          getDataAction();
+          break;
+        case 3:
+          //0-直播结束
+          print("直播结束");
+          getDataAction();
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   @override
@@ -166,55 +198,62 @@ class LiveDetailPageState extends XCState {
       widgetArray.add(getNoCompleteTitle(context, "直播课程详情页"));
       //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
-        widgetArray.add(Expanded(
+        widgetArray.add(
+          Expanded(
             child: SizedBox(
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        )));
-      } else {
-        //加载失败
-        widgetArray.add(Expanded(
-            child: SizedBox(
-          child: Center(
-            child: GestureDetector(
-              child: Container(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 224,
-                      height: 224,
-                      child: Image.asset(
-                        "assets/png/default_no_data.png",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 14,
-                    ),
-                    Text(
-                      "暂无直播课程数据，去看看其他的吧~",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColor.textSecondary,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 100,
-                    ),
-                  ],
-                ),
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-              onTap: () {
-                loadingStatus = LoadingStatus.STATUS_LOADING;
-                if (mounted) {
-                  reload(() {});
-                }
-                getDataAction();
-              },
             ),
           ),
-        )));
+        );
+      } else {
+        //加载失败
+        widgetArray.add(
+          Expanded(
+            child: SizedBox(
+              child: Center(
+                child: GestureDetector(
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 224,
+                          height: 224,
+                          child: Image.asset(
+                            "assets/png/default_no_data.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 14,
+                        ),
+                        Text(
+                          "暂无直播课程数据，去看看其他的吧~",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    if (mounted) {
+                      reload(() {});
+                    }
+                    getDataAction();
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
       }
       return Container(
         child: Column(children: widgetArray),
@@ -249,10 +288,6 @@ class LiveDetailPageState extends XCState {
               padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
-            ),
-            Offstage(
-              offstage: true,
-              child: judgeResetPage(),
             ),
             Offstage(
               offstage: true,
@@ -499,29 +534,19 @@ class LiveDetailPageState extends XCState {
   }
 
   //这个直播是否有预约的回调
-  Widget judgeResetPage() {
-    return Consumer<ChatMessageProfileNotifier>(
-      builder: (context, notifier, child) {
-        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetCoursePage);
-        if (isResetCoursePage) {
-          Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
-          context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
-          if (message != null) {
-            Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-            if (mapGroupModel != null &&
-                mapGroupModel["courseId"] != null &&
-                mapGroupModel["handleType"] != null &&
-                mapGroupModel["startTime"] != null &&
-                mapGroupModel["startTime"] is String &&
-                mapGroupModel["courseId"] is int &&
-                mapGroupModel["handleType"] is int) {
-              updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
-            }
-          }
-        }
-        return Container();
-      },
-    );
+  void _judgeLiveBook(Message message) {
+    if (message != null) {
+      Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+      if (mapGroupModel != null &&
+          mapGroupModel["courseId"] != null &&
+          mapGroupModel["handleType"] != null &&
+          mapGroupModel["startTime"] != null &&
+          mapGroupModel["startTime"] is String &&
+          mapGroupModel["courseId"] is int &&
+          mapGroupModel["handleType"] is int) {
+        updateBookState(mapGroupModel["courseId"], mapGroupModel["handleType"], mapGroupModel["startTime"]);
+      }
+    }
   }
 
   //当用户登陆成功后需要刷新数据
@@ -699,6 +724,10 @@ class LiveDetailPageState extends XCState {
   void onClickMakeAnAppointment(LiveVideoModel value, String alert, bool isBook) async {
     //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
+    bool isGranted = (await Permission.calendar.status)?.isGranted;
+    if(!isGranted) {
+      return;
+    }
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
@@ -727,6 +756,10 @@ class LiveDetailPageState extends XCState {
   //删除已经预约的日历提醒
   void deleteAlertEvents(int courseId, String startTime) async {
     await [Permission.calendar].request();
+    bool isGranted = (await Permission.calendar.status)?.isGranted;
+    if(!isGranted) {
+      return;
+    }
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
@@ -945,8 +978,8 @@ class LiveDetailPageState extends XCState {
   }
 
   //去直播页
-  void gotoLiveVideoRoomPage()async {
-    if(!(await judgeIsStart())){
+  void gotoLiveVideoRoomPage() async {
+    if (!(judgeIsStart())) {
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -959,8 +992,8 @@ class LiveDetailPageState extends XCState {
   }
 
   //使用终端进行训练
-  void _useTerminal() async{
-    if(!(await judgeIsStart())){
+  void _useTerminal() async {
+    if (!(judgeIsStart())) {
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -969,8 +1002,8 @@ class LiveDetailPageState extends XCState {
   }
 
   //登陆终端进行训练
-  void _loginTerminal() async{
-    if(!(await judgeIsStart())){
+  void _loginTerminal() async {
+    if (!(judgeIsStart())) {
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
     }
@@ -993,14 +1026,15 @@ class LiveDetailPageState extends XCState {
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 
-  Future<bool> judgeIsStart()async{
-    //加载数据
-    Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
-    if(model!=null){
-      LiveVideoModel liveModel = LiveVideoModel.fromJson(model);
-      return liveModel.liveCourseState==1;
-    }
-    return false;
+  bool judgeIsStart() {
+    // //加载数据
+    // Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
+    // if(model!=null){
+    //   LiveVideoModel liveModel = LiveVideoModel.fromJson(model);
+    //   return liveModel.liveCourseState==1;
+    // }
+    return liveModel.liveCourseState == 1;
+    // return true;
   }
 
   ///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------

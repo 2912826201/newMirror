@@ -116,6 +116,8 @@ class _IFTabBarState extends State<IFTabBar> {
           .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
       EventBus.getDefault()
           .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);
+      EventBus.getDefault()
+          .registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
@@ -184,6 +186,15 @@ class _IFTabBarState extends State<IFTabBar> {
     widget.tabBarClickListener(0);
     print("几次");
     streamController.sink.add(0);
+  }
+
+  _jumpPage(int pageIndex) {
+    if(widget.tabBarClickListener!=null) {
+      widget.tabBarClickListener(pageIndex);
+    }
+    if(streamController!=null) {
+      streamController.sink.add(pageIndex);
+    }
   }
 
   _feedUnreadCallBack(int unread) {

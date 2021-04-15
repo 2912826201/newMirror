@@ -88,7 +88,7 @@ Future<Map> liveCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(LIVECOURSEDETAIL, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.code==200) {
     return responseModel.data;
   } else {
     return null;
@@ -103,7 +103,7 @@ Future<Map> getLatestLiveById({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(GETLATESTLIVEBYID, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.code==200) {
     return responseModel.data;
   } else {
     return null;

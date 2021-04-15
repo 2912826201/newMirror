@@ -203,11 +203,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
       lastTime = model.lastTime;
       isRequestInterface = false;
-    } else if (AppPrefs.getPublishFeedLocalInsertData(
-        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null&&PostFeedModel.fromJson
-    (jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
-        null) {
+    } else if (context.read<ProfileNotifier>().profile != null &&
+        PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
+            null) {
       print('-""--7666666666666666666666666666666666666else if');
       status = Status.noConcern;
       _refreshController.loadNoData();
