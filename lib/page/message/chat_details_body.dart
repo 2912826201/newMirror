@@ -7,6 +7,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/item/chat_top_at_mark.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/page/message/send_message_view.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 
 import 'item/chat_system_bottom_bar.dart';
@@ -82,6 +83,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   @override
   void dispose() {
     super.dispose();
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     if (_animationController != null) {
       _animationController.dispose();
     }
@@ -92,6 +94,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     super.initState();
     _initData();
     _initWidget();
+    EventBus.getDefault().registerNoParameter(resetChatMessageCount, EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
   }
 
   @override
