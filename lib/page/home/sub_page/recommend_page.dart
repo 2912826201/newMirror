@@ -347,7 +347,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       avatarUrl: liveVideoModel[index].coachDto.avatarUri,
                       userName: liveVideoModel[index].coachDto.nickName);
                 } else {
-                  AppRouter.navigateLiveRoomPage(context, liveVideoModel[index]);
+                  AppRouter.navigateLiveRoomPage(context, liveVideoModel[index], callback: (int coachRelation) {
+                    liveVideoModel[index].coachDto.relation = coachRelation;
+                  });
                 }
               } else {
                 AppRouter.navigateToLoginPage(context);
