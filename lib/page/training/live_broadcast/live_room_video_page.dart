@@ -66,7 +66,7 @@ class _LiveRoomVideoPageState extends XCState {
           if (_timerCount < 5) {
             print("直播异常");
             player.stop();
-            _showAppDialog("直播异常", "直播异常，请稍后再来");
+            _showAppDialog("直播未开播", "直播未开播，请稍后再来");
           } else {
             // ToastShow.show(msg: "直播中断了", context: context);
             print("直播中断了");
@@ -75,7 +75,7 @@ class _LiveRoomVideoPageState extends XCState {
         } else {
           // ToastShow.show(msg: "直播异常", context: context);
           print("直播异常");
-          _showAppDialog("直播异常", "直播异常，请稍后再来");
+          _showAppDialog("直播未开播", "直播未开播，请稍后再来");
         }
       } else if (player.state == FijkState.asyncPreparing) {
         _initTimerAsyncPreparing();
@@ -174,7 +174,6 @@ class _LiveRoomVideoPageState extends XCState {
               color: AppColor.bgBlack,
               fit: FijkFit.cover,
               fsFit: FijkFit.cover,
-              cover: AssetImage("images/test/bg.png"),
             ),
           )
         ],

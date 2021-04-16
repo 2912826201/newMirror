@@ -148,8 +148,8 @@ void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Mes
   if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
     if (null == groupManNumber || groupManNumber < 1) {
-      ToastShow.show(msg: "未获取到群信息", context: context);
-      print("未获取到群信息：${conversation.toMap().toString()}");
+      // ToastShow.show(msg: "未获取到群信息", context: context);
+      // print("未获取到群信息：${conversation.toMap().toString()}");
       return;
     }
   }

@@ -208,23 +208,21 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   @override
   Widget shouldBuild(BuildContext context) {
-    return WillPopScope(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: appbarWidget,
-        body: MessageInputBody(
-          onTap: () => _messageInputBodyClick(),
-          decoration: BoxDecoration(color: AppColor.bgWhite),
-          child: Column(children: getBody()),
-        ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: appbarWidget,
+      body: MessageInputBody(
+        onTap: () => _messageInputBodyClick(),
+        decoration: BoxDecoration(color: AppColor.bgWhite),
+        child: Column(children: getBody()),
       ),
-      onWillPop: _requestPop,
     );
   }
 
   @override
   void dispose() {
     super.dispose();
+    _messageInputBodyClick();
     _scrollController.dispose();
     if (Application.appContext != null) {
       //清聊天未读数
@@ -683,7 +681,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     double messageHeight = MessageItemHeightUtil.init().getMessageHeight(list, isShowName);
     print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
 
-    chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     Future.delayed(Duration(milliseconds: 100), () {
       _animateToTopHeight(scrollExtent: messageHeight - 50);
       Future.delayed(Duration(milliseconds: 200), () {
@@ -735,7 +733,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         }
 
         if (mounted) {
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
         await Future.delayed(Duration(milliseconds: 100), () {
           try {
@@ -863,7 +861,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           chatDataList.clear();
           chatDataList.addAll(list);
         }
-        chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
       }
     }
@@ -877,7 +875,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // list.add(0);
       // list.add(chatDataModel.id);
       // EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -915,7 +913,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
       // modelList.forEach((element) {
@@ -924,10 +922,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //   list.add(0);
       //   list.add(element.id);
       //   EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
-      //   // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      //   // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       // });
 
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -953,10 +951,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postVoice(chatDataList[0], conversation.conversationId, conversation.type, conversation.getType(), () {
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -982,7 +980,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
@@ -991,7 +989,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // list.add(0);
       // list.add(chatDataModel.id);
       // EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1005,7 +1003,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       chatDataList[position].msg.content = recallNotificationMessage;
       MessageManager.updateConversationByMessageList(context, [chatDataList[position].msg]);
       if (mounted) {
-        chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     }
   }
@@ -1029,7 +1027,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         if (mounted) {
           _textController.text = "";
           isHaveTextLen = false;
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
@@ -1055,7 +1053,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           _textController.text = "";
           isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
@@ -1105,7 +1103,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     chatDataList[0].isTemporary = true;
     addTemporaryMessage(chatDataList[0], conversation);
     postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), () {
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1141,10 +1139,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     animateToBottom();
     if (mounted) {
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), () {
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1165,10 +1163,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _textController.text = "";
       isHaveTextLen = false;
       EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     resetPostMessage(chatDataList[0], () {
-      // chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1197,7 +1195,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             } else if (status == RCSentStatus.Sent) {
               getHistoryMessage(dataModel);
             }
-            chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
             return;
           }
         }
@@ -1215,7 +1213,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       for (ChatDataModel model in chatDataList) {
         if (model.msg.messageUId == message.messageUId) {
           model.msg = message;
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           break;
         }
       }
@@ -1254,7 +1252,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     isHaveReceiveChatDataList = true;
     if (scrollPositionPixels < 500) {
       isHaveReceiveChatDataList = false;
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     //清聊天未读数
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -1305,7 +1303,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           if (scrollPositionPixels < 500) {
             isHaveReceiveChatDataList = false;
 
-            chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         }
       });
@@ -1341,7 +1339,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         }
       } else if (_scrollController.position.pixels <= 0) {
         if (mounted && isHaveReceiveChatDataList) {
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       }
     });
@@ -1646,7 +1644,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
       //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       // }
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      print("修改了用户名");
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     } else if (type == 1) {
       conversation.name = name;
       //修改了群名
@@ -1831,7 +1830,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-    chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
   }
 
   //加载更多的系统消息
@@ -1866,7 +1865,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         updateMessagePageAlert(conversation, context);
         if (mounted) {
           chatDataList.removeAt(position);
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
       // ToastShow.show(msg: "删除-第$position个", context: _context);
@@ -1925,7 +1924,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // ToastShow.show(msg: "播放录音", context: _context);
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
-          chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
@@ -2090,9 +2089,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       list = chatDataList.sublist(0, 100);
       chatDataList.clear();
       chatDataList.addAll(list);
-      chatDetailsBodyChildKey.currentState.resetChatMessageCount();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
   }
 }
 
 ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///}
+
+

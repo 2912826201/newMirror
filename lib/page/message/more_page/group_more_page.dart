@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -357,19 +358,21 @@ class GroupMorePageState extends State<GroupMorePage> {
     );
   }
 
-  //获取我的群昵称
+
   String getGroupMeName() {
-    String name = "还未取名";
-    if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-      for (int i = 0; i < context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length; i++) {
-        if (context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].uid == Application.profile.uid) {
-          groupMeName = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].groupNickName;
-          return context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[i].groupNickName;
-        }
-      }
+    String userName = ((Application.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
+        Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    if (userName == null || userName.length < 1) {
+      userName = (Application.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
+          Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
-    return name;
+    if (userName == null || userName.length < 1) {
+      return Application.profile.nickName;
+    } else {
+      return userName;
+    }
   }
+
 
   //获取群信息
   void getGroupInformation() async {
@@ -424,9 +427,12 @@ class GroupMorePageState extends State<GroupMorePage> {
         chatGroupUserModel.groupNickName = groupMeName;
         chatGroupUserModel.nickName = Application.profile.nickName;
         chatGroupUserModel.avatarUri = Application.profile.avatarUri;
-        GroupChatUserInformationDBHelper().update(chatGroupUserModel: chatGroupUserModel, groupId: widget.chatGroupId);
         if (mounted) {
           setState(() {});
+        }
+        await GroupChatUserInformationDBHelper().update(chatGroupUserModel: chatGroupUserModel, groupId: widget.chatGroupId);
+        if (widget.listener != null) {
+          widget.listener(0, newName);
         }
       } else {
         ToastShow.show(msg: "修改失败", context: context);
