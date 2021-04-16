@@ -299,8 +299,13 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     isShowTop = !isShowHaveAnimation;
     if (isShowTop) {
       loadStatus = LoadingStatus.STATUS_COMPLETED;
-    } else if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
+    }else{
+      loadStatus = LoadingStatus.STATUS_IDEL;
+    }
+    if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
       isHaveLoadAnimation = true;
+    }else{
+      isHaveLoadAnimation = false;
     }
   }
 
