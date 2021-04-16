@@ -170,7 +170,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   // 大图预览组装数据
   List<DemoSourceEntity> sourceList = [];
 
-  Widget appbarWidget;
   Widget editWidget;
   Widget topAttentionUiWidget;
 
@@ -210,7 +209,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   Widget shouldBuild(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: appbarWidget,
+      appBar: ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick),
       body: MessageInputBody(
         onTap: () => _messageInputBodyClick(),
         decoration: BoxDecoration(color: AppColor.bgWhite),
@@ -764,11 +763,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //刷新appbar
   void _resetCharPageBar() {
-    Element e = findChild(context as Element, appbarWidget);
-    if (e != null) {
-      appbarWidget = ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick);
-      e.owner.lockState(() {
-        e.update(appbarWidget);
+    if(mounted){
+      Future.delayed(Duration(milliseconds: 100),(){
+        reload((){});
       });
     }
   }
@@ -1311,7 +1308,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   initWidget() {
-    appbarWidget = ChatPageUtil.init(_context).getAppBar(conversation, _topMoreBtnClick);
     topAttentionUiWidget = ChatPageUtil.init(_context)
         .getTopAttentionUi(isShowTopAttentionUi, conversation.type, _attntionOnClick, (bool isShow) {
       isShowTopAttentionUi = isShow;
@@ -1651,6 +1647,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //修改了群名
       // _postUpdateGroupName(name);
       context.read<ConversationNotifier>().updateConversationName(name, conversation);
+      EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
