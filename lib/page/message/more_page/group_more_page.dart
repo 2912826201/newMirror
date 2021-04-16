@@ -504,8 +504,9 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
       int index = TopChatModel.containsIndex(Application.topChatModelList, topChatModel);
+      print("index:$index");
       if (index >= 0) {
-        Application.topChatModelList.remove(index);
+        Application.topChatModelList.removeAt(index);
         if (null != widget.dto) {
           widget.dto.isTop = 0;
           context.read<ConversationNotifier>().insertCommon(widget.dto);
@@ -520,6 +521,11 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       topChat = !topChat;
     }
+
+    // Application.topChatModelList.forEach((element) {
+    //   print("Application.topChatModelList:${element.toJson().toString()}");
+    // });
+
     if (mounted) {
       setState(() {});
     }
@@ -552,10 +558,12 @@ class GroupMorePageState extends State<GroupMorePage> {
     //判断有没有置顶
     if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
       topChat = false;
+      print("没有置顶");
     } else {
       for (TopChatModel topChatModel in Application.topChatModelList) {
         if (topChatModel.type == 1 && topChatModel.chatId.toString() == widget.chatGroupId) {
           topChat = true;
+          print("有置顶");
           break;
         }
       }
