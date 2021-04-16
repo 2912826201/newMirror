@@ -208,23 +208,21 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   @override
   Widget shouldBuild(BuildContext context) {
-    return WillPopScope(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: appbarWidget,
-        body: MessageInputBody(
-          onTap: () => _messageInputBodyClick(),
-          decoration: BoxDecoration(color: AppColor.bgWhite),
-          child: Column(children: getBody()),
-        ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: appbarWidget,
+      body: MessageInputBody(
+        onTap: () => _messageInputBodyClick(),
+        decoration: BoxDecoration(color: AppColor.bgWhite),
+        child: Column(children: getBody()),
       ),
-      onWillPop: _requestPop,
     );
   }
 
   @override
   void dispose() {
     super.dispose();
+    _messageInputBodyClick();
     _scrollController.dispose();
     if (Application.appContext != null) {
       //清聊天未读数
@@ -2096,3 +2094,5 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 }
 
 ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///}
+
+
