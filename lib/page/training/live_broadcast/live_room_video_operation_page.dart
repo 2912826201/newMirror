@@ -1186,6 +1186,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if (null != contentMap) {
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
+          print("收到了弹幕消息------");
           _judgeSysMessage(contentMap["name"], contentMap, textMessage);
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
@@ -1198,24 +1199,34 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   void _judgeSysMessage(String type, Map<String, dynamic> contentMap, TextMessage textMessage) {
+    print("000000000000000000");
     if (null == type) {
       return;
     }
     switch (type) {
       case "joinLiveRoom":
+        print("22222222222222222:type:$type");
         //加入直播间
-        if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
-          print("有这个人");
-          subLiveRoom(textMessage, isReset: false);
+        if (textMessage.sendUserInfo.userId != null) {
+          if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
+            print("有这个人");
+            subLiveRoom(textMessage, isReset: false);
+          } else {
+            print("没有这个人");
+            resetOnlineUserNumber(++onlineUserNumber);
+          }
         } else {
+          textMessage.sendUserInfo.userId = "100";
           print("没有这个人");
           resetOnlineUserNumber(++onlineUserNumber);
+          getAllOnlineUserNumber(onlineUserNumber);
         }
+        print("33333333:type:$type");
         _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
         addLiveRoom(textMessage);
         break;
       case "quitLiveRoom":
-        //退出直播间
+      //退出直播间
         print("${textMessage.sendUserInfo.name}退出了直播间");
 
         resetOnlineUserNumber(--onlineUserNumber);
@@ -1358,6 +1369,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //加入进入直播间的消息
   _onSubmitJoinLiveRoomMessage(String name, String userId) {
+    if (userId == null) {
+      userId = "100";
+    }
     messageChatList.insert(
         0,
         UserMessageModel(
