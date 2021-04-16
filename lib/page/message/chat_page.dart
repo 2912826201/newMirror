@@ -1644,6 +1644,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
       //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       // }
+      print("修改了用户名");
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     } else if (type == 1) {
       conversation.name = name;
