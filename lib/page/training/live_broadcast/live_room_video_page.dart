@@ -174,7 +174,6 @@ class _LiveRoomVideoPageState extends XCState {
               color: AppColor.bgBlack,
               fit: FijkFit.cover,
               fsFit: FijkFit.cover,
-              cover: AssetImage("images/test/bg.png"),
             ),
           )
         ],
