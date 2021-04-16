@@ -504,10 +504,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         }
                         // 清空发布model
                         postprogressModel.postFeedModel = null;
-                        //还原进度条
-                        postprogressModel.plannedSpeed = 0.0;
                         streamController.sink.add(0.0);
                         streamProgress.sink.add(postprogressModel);
+                        new Future.delayed(Duration(milliseconds: 1500), () {
+                          //还原进度条
+                          postprogressModel.plannedSpeed = 0.0;
+                        });
                       },
                       // 重新发送
                       resendFeedChanged: () {
