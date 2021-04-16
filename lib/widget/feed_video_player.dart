@@ -21,6 +21,9 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+
+import 'icon.dart';
+
 /// feed_video_player
 /// Created by yangjiayi on 2021/1/11.
 
@@ -33,8 +36,9 @@ class FeedVideoPlayer extends StatefulWidget {
   final String thumbPath;
   final String durationString;
   final HomeFeedModel model;
+
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
-      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString,this.model})
+      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString, this.model})
       : super(key: key);
 
   @override
@@ -183,6 +187,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     print("销毁更好的播放器页面了");
     super.dispose();
   }
+
 // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -205,6 +210,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       AppRouter.navigateToLoginPage(context);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -300,12 +306,17 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                                           height: 40,
                                           width: 40,
                                           child: Center(
-                                            child: Icon(
-                                              snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
-                                              size: 16,
-                                              color: AppColor.white,
-                                            ),
-                                          ),
+                                              child: AppIconButton(
+                                            svgName:
+                                                snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
+                                            iconSize: 16,
+                                          )
+                                              // child: Icon(
+                                              //   snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
+                                              //   size: 16,
+                                              //   color: AppColor.white,
+                                              // ),
+                                              ),
                                         ));
                                   }),
                               Spacer(),
