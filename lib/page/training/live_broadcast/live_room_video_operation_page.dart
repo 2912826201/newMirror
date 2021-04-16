@@ -945,7 +945,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //获取所有的在线人数
   void getAllOnlineUserNumber(int number) async {
-    Future.delayed(Duration(seconds: 1), () async {
+    Future.delayed(Duration(seconds: 2), () async {
       print("number:$number");
       Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
       if (null != map["data"]["userList"]) {
@@ -1348,8 +1348,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         ));
     if (messageChatList.length > 100) {
       messageChatList = messageChatList.sublist(0, 99);
+      messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 
@@ -1365,8 +1365,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         ));
     if (messageChatList.length > 100) {
       messageChatList = messageChatList.sublist(0, 99);
+      messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 
