@@ -949,6 +949,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     Future.delayed(Duration(seconds: 2), () async {
       print("number:$number");
       Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
+      if (null != map["data"]["total"]) {
+        resetOnlineUserNumber(map["data"]["total"]);
+      }
       if (null != map["data"]["userList"]) {
         onlineManList.clear();
         onlineManUidList.clear();
