@@ -1183,7 +1183,6 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       return;
     }
     TextMessage textMessage = (msg.content as TextMessage);
-    textMessage.sendUserInfo.userId = msg.senderUserId;
     Map<String, dynamic> contentMap = json.decode(textMessage.content);
     if (null != contentMap) {
       switch (contentMap["subObjectName"]) {
