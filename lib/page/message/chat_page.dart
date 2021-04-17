@@ -1488,10 +1488,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       if (blackModel != null) {
         if (blackModel.inYouBlack == 1) {
           print("发送失败，你已将对方加入黑名单");
-          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: _context);
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: _context,gravity: 1);
         } else if (blackModel.inThisBlack == 1) {
           print("发送失败，你已被对方加入黑名单");
-          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: _context);
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: _context,gravity: 1);
         }
       }
     }
