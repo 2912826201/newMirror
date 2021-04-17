@@ -305,6 +305,8 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
     }
+    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
+
     return keyboardHeight;
   }
 
