@@ -406,13 +406,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               : AppColor.transparent,
           child: Column(
             children: [
-              bottomSettingBox(),
               Container(
-                height: ScreenUtil.instance.bottomBarHeight + 10,
+                height: _emojiState ? 0.0 : ScreenUtil.instance.bottomBarHeight,
                 color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
                     ? AppColor.white
                     : AppColor.transparent,
               ),
+              bottomSettingBox(),
             ],
           ),
         )
@@ -548,6 +548,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       keyboardHeight = 300.0;
     }
 
+    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
     widgetList.add(bottomSettingPanel(keyboardHeight));
 
     if ((_emojiState ? keyboardHeight : 0.0) > 0) {
@@ -1179,6 +1180,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       return;
     }
     TextMessage textMessage = (msg.content as TextMessage);
+    textMessage.sendUserInfo.userId = msg.senderUserId;
     Map<String, dynamic> contentMap = json.decode(textMessage.content);
     if (null != contentMap) {
       switch (contentMap["subObjectName"]) {
@@ -1202,7 +1204,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
     switch (type) {
       case "joinLiveRoom":
-        print("22222222222222222:type:$type");
+        print("22222222222222222:type:$type，${textMessage.sendUserInfo?.portraitUri},${textMessage.sendUserInfo
+            ?.userId}");
         //加入直播间
         if (textMessage.sendUserInfo.userId != null) {
           if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {

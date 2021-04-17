@@ -274,6 +274,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
     if (conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
+      bodyArray.add(Container(
+        height: ScreenUtil.instance.bottomBarHeight,
+        color: AppColor.white,
+      ));
       bodyArray.add(ChatBottomSettingBox(
         key: bottomSettingChildKey,
         bottomSettingPanelState: _bottomSettingPanelState,
@@ -286,10 +290,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         deleteEditText: _deleteEditText,
         onSubmitClick: _onSubmitClick,
         textScrollController: textScrollController,
-      ));
-      bodyArray.add(Container(
-        height: ScreenUtil.instance.bottomBarHeight,
-        color: AppColor.white,
       ));
     }
 
