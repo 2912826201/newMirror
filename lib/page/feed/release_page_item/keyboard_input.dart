@@ -300,7 +300,6 @@ class KeyboardInputState extends State<KeyboardInput> {
         style: TextStyle(
           fontSize: 16,
           color: AppColor.textPrimary1,
-          background: Paint()..color = AppColor.bgWhite,
         ),
         // 光标颜色
         cursorColor: const Color.fromRGBO(253, 137, 140, 1),

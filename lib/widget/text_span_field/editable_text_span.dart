@@ -113,6 +113,7 @@ class EditableTextSpan extends EditableText {
           scrollController: scrollController,
           scrollPhysics: scrollPhysics,
           toolbarOptions: toolbarOptions,
+          autocorrectionTextRectColor: selectionColor,
         );
 
   @override

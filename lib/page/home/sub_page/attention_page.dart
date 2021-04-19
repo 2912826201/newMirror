@@ -141,8 +141,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
       // 动态未读数
-      EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);
+     /* EventBus.getDefault()
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
     });
   }
 
@@ -498,13 +498,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
         ///临时的空数组
         List<int> themList = [];
-        List<HomeFeedModel> feedList = [];
-        feedMap.forEach((key, value) {
-          if (value.pushId == pushId) {
-            themList.add(key);
-            feedList.add(value);
-          }
-        });
+
         print("themList:::${themList.toString()}");
         print("attentionIdList:::${attentionIdList.toString()}");
         if (arrayDate(attentionIdList, themList).length == 0) {
@@ -518,8 +512,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           print("进入了222222");
           setState(() {
             attentionIdList = arrayDate(attentionIdList, themList);
-            // 去重
-            attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
           });

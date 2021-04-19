@@ -453,7 +453,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                       ]),
                 ),
                 Image.asset(
-                  "images/resource/2.0x/bg_topic@2x.png",
+                  "assets/png/bg_topic.png",
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 9),

@@ -554,13 +554,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 child: Row(
                   children: [
                     InkWell(
+                      onTap: () {
+                        AppRouter.navigateToProfileFollowListPage(context, widget.userId, 1);
+                      },
                       child: _textAndNumber(
                           "关注",
                           StringUtil.getNumber(
                               notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
-                      onTap: () {
-                        AppRouter.navigateToProfileFollowListPage(context, widget.userId, 1);
-                      },
                     ),
                     SizedBox(
                       width: 61,
