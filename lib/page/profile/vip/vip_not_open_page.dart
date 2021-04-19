@@ -38,13 +38,12 @@ class VipNotOpenPage extends StatefulWidget {
 
 class _VipPageState extends State<VipNotOpenPage> {
   ScrollController controller = ScrollController();
-  final String whiteBack = "images/resource/2.0x/white_return@2x.png";
-  final String blackBack = "images/resource/2.0x/return2x.png";
   final String serviceText =
       "付款：自动续费商品包括“连续包年/连续包月”，您确认购买后，会从您的偏账号账户扣费； 取消续订：如果需要续订，请在当前订阅周期前24小时以前，手动关闭自动续费功能，到期前24小时内取消，将会收取订阅费用。";
   int lastTime = 12123434545455;
   bool wacthOffset = true;
   StreamController<double> streamController = StreamController<double>();
+
   @override
   void initState() {
     super.initState();
@@ -71,28 +70,30 @@ class _VipPageState extends State<VipNotOpenPage> {
         backgroundColor: AppColor.black,
         brightness: Brightness.dark,
         titleWidget: StreamBuilder<double>(
-            initialData: 0,
-            stream: streamController.stream,
-            builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-              return Opacity(
-          opacity: snapshot.data,
-          child: Container(
-            height: CustomAppBar.appBarHeight,
-            width: 28,
-            alignment: Alignment.center,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                height: 28,
+          initialData: 0,
+          stream: streamController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+            return Opacity(
+              opacity: snapshot.data,
+              child: Container(
+                height: CustomAppBar.appBarHeight,
                 width: 28,
-                imageUrl: context.read<ProfileNotifier>().profile.avatarUri,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                alignment: Alignment.center,
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    height: 28,
+                    width: 28,
+                    imageUrl: context.read<ProfileNotifier>().profile.avatarUri,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: AppColor.bgWhite,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        );}),
+            );
+          },
+        ),
       ),
       backgroundColor: AppColor.white,
       body: Container(
@@ -307,4 +308,3 @@ class _VipPageState extends State<VipNotOpenPage> {
     );
   }
 }
-
