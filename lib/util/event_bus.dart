@@ -193,6 +193,8 @@ const String EVENTBUS_CHAT_BAR = "eventbus_chat_bar";
 const String CHAT_JOIN_EXIT = "eventbus_chat_bar";
 //聊天界面的更新消息状态
 const String RESET_MSG_STATUS = "reset_msg_status";
+//聊天界面的消息列表更新
+const String CHAT_PAGE_LIST_MESSAGE_RESET = "chat_page_list_message_reset";
 //聊天界面的接收消息
 const String CHAT_GET_MSG = "chat_get_msg";
 //聊天界面的撤回消息

@@ -63,38 +63,37 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       } catch (e) {}
     });
   }
+  @override
+  void dispose() {
+    super.dispose();
+    if (entry != null) {
+      removeOverlay();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (entry != null) {
-          removeOverlay();
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      child: widget.child,
+      onTap: () {
+        if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
+          if (button == null) {
+            print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+          } else {
+            onTap();
+          }
         }
-        return Future.value(true);
       },
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        child: widget.child,
-        onTap: () {
-          if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
-            if (button == null) {
-              print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
-            } else {
-              onTap();
-            }
+      onLongPress: () {
+        if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
+          if (button == null) {
+            print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+          } else {
+            onTap();
           }
-        },
-        onLongPress: () {
-          if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
-            if (button == null) {
-              print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
-            } else {
-              onTap();
-            }
-          }
-        },
-      ),
+        }
+      },
     );
   }
 

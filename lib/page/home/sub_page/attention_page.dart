@@ -203,17 +203,28 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
       lastTime = model.lastTime;
       isRequestInterface = false;
-    } else if (context.read<ProfileNotifier>().profile != null &&
-        PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
-            null) {
-      print('-""--7666666666666666666666666666666666666else if');
-      status = Status.noConcern;
-      _refreshController.loadNoData();
-    } else {
+    }
+    // else if (context.read<ProfileNotifier>().profile != null &&
+    //     PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+    //             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
+    //         null) {
+    //   print('-""--7666666666666666666666666666666666666else if');
+    //   status = Status.noConcern;
+    //   _refreshController.loadNoData();
+    // }
+    else {
       print('-""--7666666666666666666666666666666666666else else');
+      // 没有存在空布局时再插入
+      if (attentionIdList.first != -1) {
+        attentionIdList.insert(0, -1);
+      }
       status = Status.noConcern;
-      _refreshController.loadNoData();
+      _refreshController.refreshCompleted();
+      // _refreshController.loadNoData();
+      if (mounted) {
+        setState(() {});
+      }
+      // 这是为了加载无动态缺省布局
     }
     // 更新动态数量
     int addFeedNum = 0;

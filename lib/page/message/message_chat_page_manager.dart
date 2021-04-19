@@ -30,6 +30,7 @@ import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -115,6 +116,7 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
+  EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
   return true;
   // _jumpChatPage(context: context, conversation: conversation, shareMessage: message);
 }
@@ -148,8 +150,8 @@ void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Mes
   if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
     if (null == groupManNumber || groupManNumber < 1) {
-      ToastShow.show(msg: "未获取到群信息", context: context);
-      print("未获取到群信息：${conversation.toMap().toString()}");
+      // ToastShow.show(msg: "未获取到群信息", context: context);
+      // print("未获取到群信息：${conversation.toMap().toString()}");
       return;
     }
   }

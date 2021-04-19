@@ -40,8 +40,8 @@ class ChatPageUtil {
       chatName = conversation.name;
     }
     if (conversation.getType() == RCConversationType.Group) {
-      if (context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
-        if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
+      if (context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
+        if (context.watch<GroupUserProfileNotifier>().isNoHaveMe()) {
           action = Container();
         }
       } else {
@@ -51,10 +51,10 @@ class ChatPageUtil {
         }
       }
       int userCount;
-      if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
+      if (context.watch<GroupUserProfileNotifier>().isNoHaveMe()) {
         userCount = 0;
       } else {
-        userCount = context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
+        userCount = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length;
       }
       return CustomAppBar(
         titleString: chatName ?? "",

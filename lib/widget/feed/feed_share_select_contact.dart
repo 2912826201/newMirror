@@ -6,6 +6,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -377,7 +378,8 @@ class _FriendsPageState extends State<FriendsPage> {
     if (widget.type == 1 || widget.type == 2) {
       List<ChatGroupUserModel> chatGroupUserModelList = context.read<GroupUserProfileNotifier>().chatGroupUserModelList;
       for (int i = 0; i < chatGroupUserModelList.length; i++) {
-        addUserNameData(chatGroupUserModelList[i].groupNickName, i, userModel: chatGroupUserModelList[i]);
+        String name=getGroupMeName(widget.groupChatId.toString(),chatGroupUserModelList[i].uid.toString(),chatGroupUserModelList[i].groupNickName);
+        addUserNameData(name, i, userModel: chatGroupUserModelList[i]);
       }
     } else if (widget.type == 4) {
       for (int i = 0; i < groupMapList.length; i++) {
@@ -399,7 +401,19 @@ class _FriendsPageState extends State<FriendsPage> {
     //   }
     // }
   }
-
+  String getGroupMeName(String chatGroupId,String uid,String name) {
+    String userName = ((Application.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
+        Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    if (userName == null || userName.length < 1) {
+      userName = (Application.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
+          Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    }
+    if (userName == null || userName.length < 1) {
+      return name;
+    } else {
+      return userName;
+    }
+  }
   //排序用户列表
   void sortListDatas() {
     //排序!
@@ -484,6 +498,19 @@ class _FriendsPageState extends State<FriendsPage> {
     }
   }
 
+  //获取所有的数据
+  void getAllData() async {
+    //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 4分享群聊 其余全表示为0
+    if (widget.type == 1 || widget.type == 2) {
+      init();
+    } else if (widget.type == 4) {
+      getAllGroupList();
+    } else {
+      followListModel.list = userFollowList;
+      getNetData();
+    }
+  }
+
   //初始化
   void init() {
     //将所有的用户名按照拼音排序
@@ -495,18 +522,6 @@ class _FriendsPageState extends State<FriendsPage> {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
     });
     // setGroupOffsetMap();
-  }
-
-  //获取所有的数据
-  void getAllData() async {
-    if (widget.type == 1 || widget.type == 2) {
-      init();
-    } else if (widget.type == 4) {
-      getAllGroupList();
-    } else {
-      followListModel.list = userFollowList;
-      getNetData();
-    }
   }
 
   //获取所有的群聊
