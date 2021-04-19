@@ -161,13 +161,13 @@ class _LiveRoomVideoPageState extends XCState {
       color: AppColor.textPrimary1,
       alignment: Alignment.centerLeft,
       width: ScreenUtil.instance.width,
-      height: ScreenUtil.instance.height,
+      height: MediaQuery.of(context).size.height,
       child: SingleChildScrollView(
           child: Column(
         children: [
           Container(
             width: ScreenUtil.instance.width,
-            height: ScreenUtil.instance.height,
+            height: MediaQuery.of(context).size.height,
             child: FijkView(
               panelBuilder: fijkPanel2Builder(snapShot: true),
               player: player,

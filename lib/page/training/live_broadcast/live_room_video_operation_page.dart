@@ -406,13 +406,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
               : AppColor.transparent,
           child: Column(
             children: [
-              bottomSettingBox(),
               Container(
-                height: ScreenUtil.instance.bottomBarHeight + 10,
+                height: _emojiState ? 0.0 : ScreenUtil.instance.bottomBarHeight,
                 color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
                     ? AppColor.white
                     : AppColor.transparent,
               ),
+              bottomSettingBox(),
             ],
           ),
         )
@@ -548,6 +548,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       keyboardHeight = 300.0;
     }
 
+    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
     widgetList.add(bottomSettingPanel(keyboardHeight));
 
     if ((_emojiState ? keyboardHeight : 0.0) > 0) {
@@ -945,9 +946,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //获取所有的在线人数
   void getAllOnlineUserNumber(int number) async {
-    Future.delayed(Duration(seconds: 1), () async {
+    Future.delayed(Duration(seconds: 2), () async {
       print("number:$number");
       Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
+      if (null != map["data"]["total"]) {
+        resetOnlineUserNumber(map["data"]["total"]);
+      }
       if (null != map["data"]["userList"]) {
         onlineManList.clear();
         onlineManUidList.clear();
@@ -1183,6 +1187,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if (null != contentMap) {
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
+          print("收到了弹幕消息------");
           _judgeSysMessage(contentMap["name"], contentMap, textMessage);
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
@@ -1195,24 +1200,35 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   void _judgeSysMessage(String type, Map<String, dynamic> contentMap, TextMessage textMessage) {
+    print("000000000000000000");
     if (null == type) {
       return;
     }
     switch (type) {
       case "joinLiveRoom":
+        print("22222222222222222:type:$type，${textMessage.sendUserInfo?.portraitUri},${textMessage.sendUserInfo
+            ?.userId}");
         //加入直播间
-        if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
-          print("有这个人");
-          subLiveRoom(textMessage, isReset: false);
+        if (textMessage.sendUserInfo.userId != null) {
+          if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
+            print("有这个人");
+            subLiveRoom(textMessage, isReset: false);
+          } else {
+            print("没有这个人");
+            resetOnlineUserNumber(++onlineUserNumber);
+          }
         } else {
+          textMessage.sendUserInfo.userId = "100";
           print("没有这个人");
           resetOnlineUserNumber(++onlineUserNumber);
+          getAllOnlineUserNumber(onlineUserNumber);
         }
+        print("33333333:type:$type");
         _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
         addLiveRoom(textMessage);
         break;
       case "quitLiveRoom":
-        //退出直播间
+      //退出直播间
         print("${textMessage.sendUserInfo.name}退出了直播间");
 
         resetOnlineUserNumber(--onlineUserNumber);
@@ -1348,13 +1364,16 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         ));
     if (messageChatList.length > 100) {
       messageChatList = messageChatList.sublist(0, 99);
+      messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 
   //加入进入直播间的消息
   _onSubmitJoinLiveRoomMessage(String name, String userId) {
+    if (userId == null) {
+      userId = "100";
+    }
     messageChatList.insert(
         0,
         UserMessageModel(
@@ -1365,8 +1384,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         ));
     if (messageChatList.length > 100) {
       messageChatList = messageChatList.sublist(0, 99);
+      messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     }
-    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则" * 10));
     messageListStream.sink.add(0);
   }
 

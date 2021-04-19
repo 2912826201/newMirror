@@ -56,7 +56,12 @@ class _AboutPageState extends State<AboutPage> {
                     Container(
                       width: 64,
                       height: 64,
-                      color: AppColor.bgBlack,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage("images/test/ic_launcher.png"), fit: BoxFit.cover),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12,
                     ),
                     Text(
                       "${AppConfig.version}-${AppConfig.buildNumber}",

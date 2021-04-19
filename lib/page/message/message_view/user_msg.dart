@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -193,7 +195,27 @@ class UserMsg extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
                   child: Container(
-                    color: AppColor.bgWhite,
+                    child:  Stack(
+                      children: [
+                        Container(
+                          color: Colors.white.withOpacity(0.1),
+                          width:double.infinity,
+                          height: double.infinity,
+                          child: Image.network(
+                            userModel.avatarUri,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                          child: Container(
+                            color: Colors.white.withOpacity(0.1),
+                            width:double.infinity,
+                            height: double.infinity,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -77,10 +78,18 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Stack(
+      child: Column(
         children: [
-          bottomSettingPanel(getKeyBoardHeight()),
-          emoji(getKeyBoardHeight()),
+          Container(
+            height: emojiState ? 0.0 : ScreenUtil.instance.bottomBarHeight,
+            color: AppColor.white,
+          ),
+          Stack(
+            children: [
+              bottomSettingPanel(getKeyBoardHeight()),
+              emoji(getKeyBoardHeight()),
+            ],
+          ),
         ],
       ),
     );
@@ -296,6 +305,8 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
     }
+    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
+
     return keyboardHeight;
   }
 
