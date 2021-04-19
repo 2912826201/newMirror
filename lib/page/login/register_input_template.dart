@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 ///定时类回调任务
 typedef TimerCall = void Function();
@@ -71,9 +73,7 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
     super.initState();
     themeExplanationStyle ??= _themeExplainStyle;
     themeStyle ??= _themeStyle;
-    popButtonImage ??= _backImageUrl;
     submitTitleStyle ??= _submitTitleStyle;
-    _backButton = FlatButton(onPressed: popBack, child: Image.asset(popButtonImage));
     inputController.addListener(() {
       if (inputJudgement() == true) {
         afterValidInput();
@@ -100,20 +100,14 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   Widget build(BuildContext context) {
   }
 
-  /// 回退页面操作
-  @mustCallSuper
-  Function popBack() {
-    Navigator.of(context).pop();
-  }
-
   /// 导航栏生成
   @mustCallSuper
   Widget navigationBar() {
-    var leftbackBtn;
-    leftbackBtn = SizedBox(
-      child: _backButton,
-      height: 28,
-      width: 28,
+    var leftbackBtn = CustomAppBarIconButton(
+      svgName: AppIcon.nav_return,
+      onTap: (){
+        Navigator.pop(context);
+      },
     );
     var bag = Row(
       children: [leftbackBtn],
@@ -121,7 +115,7 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
     return Container(
       child: bag,
       height: 48,
-      padding: EdgeInsets.only(left: 16, top: 10, bottom: 10),
+      padding: EdgeInsets.only(left: 8, right: 8),
     );
   }
 
@@ -188,10 +182,6 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   @protected
   InputDecoration inputDecoration;
 
-  ///返回按钮图标路径
-  @protected
-  String popButtonImage;
-
   ///后缀控件的初始值宽高
   @protected
   List<double> suffixInitialWH;
@@ -203,10 +193,6 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   ///一键清除操作的控件的图片
   @protected
   String suffixImage;
-
-  ///返回按钮
-  @protected
-  FlatButton _backButton;
 
   /// 提交按钮的标题显示
   @protected
@@ -232,7 +218,6 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   Widget moreActionWidget;
 
   /// 私有属性
-  final _backImageUrl = "assets/images/back.png";
   final _themeExplainStyle = TextStyle(
       color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none);
   final _themeStyle =

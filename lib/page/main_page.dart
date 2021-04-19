@@ -41,8 +41,8 @@ class MainPageState extends XCState {
     super.initState();
     currentIndex = 0;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);
+    /*  EventBus.getDefault()
+          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
     });
   }
 

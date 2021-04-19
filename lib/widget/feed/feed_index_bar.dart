@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
 
+import '../icon.dart';
+
 // 通讯录索引bar
 class IndexBar extends StatefulWidget {
   //创建索引条回调
@@ -74,11 +76,7 @@ class _IndexBarState extends State<IndexBar> {
     for (int i = 0; i < _index_word.length; i++) {
       if (i == 0) {
         words.add(Expanded(
-          child: Image.asset(
-            "images/resource/2.0x/search_icon_gray@2x.png",
-            width: 12,
-            height: 12,
-          ),
+          child: AppIcon.getAppIcon(AppIcon.input_search, 12),
         ));
       } else {
         words.add(Expanded(
@@ -106,17 +104,9 @@ class _IndexBarState extends State<IndexBar> {
                   : Stack(
                       alignment: Alignment(-0.2, 0), //0, 0 是中心顶部是0，-1  左边中心是-1，0
                       children: <Widget>[
-                        Image(
-                          image: AssetImage('images/resource/2.0x/share_index_bubble@2x.png'),
-                          width: 28,
-                          height: 28,
-                        ),
+                        AppIcon.getAppIcon(AppIcon.pin_bubble_index_bar, 28),
                         _indicatorText == '🔍'
-                            ? Image.asset(
-                                "images/resource/2.0x/search_icon_gray@2x.png",
-                                width: 12,
-                                height: 12,
-                              )
+                            ? AppIcon.getAppIcon(AppIcon.input_search, 12)
                             : Text(
                                 _indicatorText,
                                 style: TextStyle(fontSize: 12, color: Colors.white),

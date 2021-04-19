@@ -145,11 +145,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
               },
               child: Container(
                 alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  "images/resource/2.0x/shut_down@2x.png",
-                  height: 18,
-                  width: 18,
-                ),
+                child: AppIcon.getAppIcon(AppIcon.close_18, 18),
               ),
             )),
             Text(

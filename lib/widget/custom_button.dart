@@ -434,7 +434,7 @@ class FollowButton extends StatefulWidget {
 
 class _FollowButtonState extends State<FollowButton> {
   bool isMySelf = false;
-
+  bool beforeFollowOver = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -452,6 +452,9 @@ class _FollowButtonState extends State<FollowButton> {
       } else {
         _getAttention(widget.id);
       }
+      setState(() {
+        beforeFollowOver = false;
+      });
     }
   }
 
@@ -510,7 +513,7 @@ class _FollowButtonState extends State<FollowButton> {
           AppRouter.navigateToLoginPage(context);
           return false;
         }
-        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow) {
+        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow&&beforeFollowOver) {
           _checkBlackStatus();
         }
       },
