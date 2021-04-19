@@ -313,11 +313,13 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                       children: [
                                         entity.type == AssetType.video
                                             ? _fileMap[entity.id] != null
-                                                ? VideoPreviewArea(
-                                                    _fileMap[entity.id],
-                                                    _previewMaxHeight,
-                                                    context.select(
-                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                                ? Center(
+                                                    child: VideoPreviewArea(
+                                                        _fileMap[entity.id],
+                                                        _previewMaxHeight,
+                                                        context.select((SelectedMapNotifier notifier) =>
+                                                            notifier.useOriginalRatio)),
+                                                  )
                                                 : Stack(
                                                     children: [
                                                       Image.memory(

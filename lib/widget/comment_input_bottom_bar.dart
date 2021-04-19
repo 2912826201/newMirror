@@ -624,7 +624,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               style: TextStyle(
                                 fontSize: 16,
                                 color: AppColor.textPrimary1,
-                                background: Paint()..color = AppColor.bgWhite,
                               ),
                               //内容改变的回调
                               onChanged: (text) {

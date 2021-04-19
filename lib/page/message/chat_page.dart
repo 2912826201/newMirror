@@ -405,7 +405,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         style: TextStyle(
           fontSize: 16,
           color: AppColor.textPrimary1,
-          background: Paint()..color = AppColor.bgWhite,
         ),
         //内容改变的回调
         onChanged: _changTextLen,

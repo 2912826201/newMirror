@@ -473,7 +473,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                           child: Center(
                             child: Row(
                               children: [
-                                AppIcon.getAppIcon(AppIcon.nav_search, 21),
+                                AppIcon.getAppIcon(AppIcon.input_search, 21),
                                 SizedBox(
                                   width: 12,
                                 ),
