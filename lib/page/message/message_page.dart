@@ -254,11 +254,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         children: [
           InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return InteractiveNoticePage(
-                  type: type,
-                );
-              })).then((result) async {
+              AppRouter.navigateToInteractivePage(context,type: type,callBack: (type) async {
                 switch (type) {
                   case 0:
                     context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0);
@@ -271,7 +267,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     break;
                 }
                 //用时间戳清空之前的未读数
-                int timeStamp = result as int;
+                int timeStamp = type as int;
                 await refreshUnreadMsg(type, timeStamp: timeStamp);
                 //然后获取新的未读数
                 _getUnreadMsgCount();

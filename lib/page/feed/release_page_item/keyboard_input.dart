@@ -297,6 +297,11 @@ class KeyboardInputState extends State<KeyboardInput> {
         keyboardType: TextInputType.multiline,
         // 不限制行数
         maxLines: null,
+        style: TextStyle(
+          fontSize: 16,
+          color: AppColor.textPrimary1,
+          background: Paint()..color = AppColor.bgWhite,
+        ),
         // 光标颜色
         cursorColor: const Color.fromRGBO(253, 137, 140, 1),
         // 装饰器修改外观

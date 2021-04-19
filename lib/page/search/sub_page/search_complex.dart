@@ -196,13 +196,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           loadStatus = LoadingStatus.STATUS_IDEL;
           loadText = "加载中...";
         }
-        // 更新全局监听
-        List<HomeFeedModel> feeds = [];
-        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
-          feeds.add(value);
-        });
-        // 只同步没有的数据
-        context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feeds));
+        // 同步数据
+        context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
       if (hasNext == 0) {
         // 加载完毕

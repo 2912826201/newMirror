@@ -402,7 +402,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         // 光标颜色
         cursorColor: Color.fromRGBO(253, 137, 140, 1),
         scrollPadding: EdgeInsets.all(0),
-        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+        style: TextStyle(
+          fontSize: 16,
+          color: AppColor.textPrimary1,
+          background: Paint()..color = AppColor.bgWhite,
+        ),
         //内容改变的回调
         onChanged: _changTextLen,
         textInputAction: TextInputAction.send,
