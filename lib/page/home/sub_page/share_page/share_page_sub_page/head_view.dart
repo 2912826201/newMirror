@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -59,7 +61,9 @@ class HeadView extends StatefulWidget {
 class HeadViewState extends State<HeadView> {
   double opacity = 0;
   bool isMySelf = false;
-
+  bool showButon = true;
+  StreamController<TextStyle> zoomStreamController = StreamController<TextStyle>();
+  StreamController<double> opacityStreamController = StreamController<double>();
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
@@ -117,11 +121,7 @@ class HeadViewState extends State<HeadView> {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
           context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, true);
           ToastShow.show(msg: "关注成功!", context: context);
-          opacity = 1;
-          Future.delayed(Duration(milliseconds: 1000), () {
-            opacity = 0;
-            setState(() {});
-          });
+          zoomStreamController.sink.add(TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1));
         } else {
           ToastShow.show(msg: "关注失败,请重试", context: context);
         }
@@ -136,6 +136,7 @@ class HeadViewState extends State<HeadView> {
           (notifier.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
+        showButon  = true;
         return GestureDetector(
           onTap: () {
             if (!context.read<TokenNotifier>().isLoggedIn) {
@@ -180,25 +181,55 @@ class HeadViewState extends State<HeadView> {
           ),
         );
       } else {
-        return AnimatedOpacity(
-          opacity: opacity,
-          duration: Duration(milliseconds: 2000),
-          child: Container(
-              margin: const EdgeInsets.only(right: 6),
-              height: 28,
-              width: 64,
-              decoration: BoxDecoration(
-                border: new Border.all(color: AppColor.textPrimary1, width: 1),
-                borderRadius: BorderRadius.circular((14.0)),
-              ),
-              child: Center(
-                child: const Text(
-                  "已关注",
-                  style: AppStyle.textRegular12,
-                ),
-              )),
-          onEnd: () {},
-        );
+        if(showButon){
+          return StreamBuilder<double>(
+              initialData: 1,
+              stream: opacityStreamController.stream,
+              builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                return AnimatedOpacity(
+                  opacity: snapshot.data,
+                  duration: Duration(milliseconds: 1200),
+                  child: Container(
+                      margin: EdgeInsets.only(right: 6),
+                      height: 28,
+                      width: 64,
+                      decoration: BoxDecoration(
+                        border: new Border.all(color: AppColor.textPrimary1, width: 1),
+                        borderRadius: BorderRadius.circular((14.0)),
+                      ),
+                      child: Center(
+                        child: StreamBuilder<TextStyle>(
+                            initialData: TextStyle(fontSize: 1, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                            stream: zoomStreamController.stream,
+                            builder: (BuildContext stramContext, AsyncSnapshot<TextStyle> snapshot) {
+                              return AnimatedDefaultTextStyle(
+                                duration: Duration(milliseconds: 200),
+                                style: snapshot.data,
+                                child: Text(
+                                  "已关注",
+                                ),
+                                onEnd: () {
+                                  opacityStreamController.sink.add(0);
+                                },
+                              );
+                            }),
+                      )),
+                  onEnd: (){
+                    setState(() {
+                      showButon = false;
+                    });
+                  },
+                );
+              });
+        }else{
+          print('---------------------stream流关闭');
+          opacityStreamController.close();
+          zoomStreamController.close();
+          opacityStreamController = StreamController<double>();
+          zoomStreamController = StreamController<TextStyle>();
+          return Container();
+        }
+
       }
     });
   }

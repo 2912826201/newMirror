@@ -59,7 +59,9 @@ class _PerfectUserState extends State<PerfectUserPage> {
   int textLength = 0;
   Uint8List imageData;
   List<File> fileList = [];
-
+  bool onClicking = false;
+  double width = ScreenUtil.instance.screenWidthDp;
+  double height = ScreenUtil.instance.height;
   @override
   void initState() {
     super.initState();
@@ -67,8 +69,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
+
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
@@ -100,7 +101,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
                   ),
 
                   ///完成按钮
-                  _perfectUserBtn(width)
+                  _perfectUserBtn()
                 ],
               ),
             ),
@@ -204,30 +205,49 @@ class _PerfectUserState extends State<PerfectUserPage> {
   }
 
   ///完成按钮
-  Widget _perfectUserBtn(double width) {
+  Widget _perfectUserBtn() {
     FocusNode blankNode = FocusNode();
-    return Container(
+    return InkWell(
+      onTap: (){
+        if (fileList.isNotEmpty && username != "") {
+          setState(() {
+            onClicking = true;
+          });
+          FocusScope.of(context).requestFocus(blankNode);
+          _upDataUserInfo();
+        } else {
+          Toast.show("昵称和头像不能为空", context);
+        }
+      },
+      child: Container(
       width: width,
-      child: ClickLineBtn(
-        title: "下一步",
-        height: 44.0,
-        width: width,
-        circular: 3.0,
-        textColor: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary,
-        fontSize: 16,
-        backColor: fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
-        color: AppColor.transparent,
-        onTap: () {
-          if (fileList.isNotEmpty && username != "") {
-            FocusScope.of(context).requestFocus(blankNode);
-            Loading.showLoading(context);
-            _upDataUserInfo();
-          } else {
-            Toast.show("昵称和头像不能为空", context);
-          }
-        },
-      ),
-    );
+      height: 44,
+      padding: EdgeInsets.only(left: 41,right: 41),
+          decoration: BoxDecoration(
+            color:fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3)),),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Spacer(),
+          onClicking
+              ?Container(
+              height: 17,
+              width: 17,
+              child: CircularProgressIndicator(
+                  valueColor:AlwaysStoppedAnimation(AppColor.black),
+                  backgroundColor: AppColor.white,
+                  strokeWidth:1.5
+              )):Container(),
+          SizedBox(width: 2.5,),
+          Text(
+            "完成",
+            style: TextStyle(fontSize: 16, color: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary),
+          ),
+          Spacer()
+        ],
+      )
+    ),);
   }
 
   _upDataUserInfo() async {
@@ -267,6 +287,9 @@ class _PerfectUserState extends State<PerfectUserPage> {
         arguments: {},
       );
     }
+    setState(() {
+      onClicking = false;
+    });
   }
 
   //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
