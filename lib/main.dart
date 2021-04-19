@@ -7,6 +7,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
@@ -17,7 +18,6 @@ import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
-import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
@@ -25,8 +25,6 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:package_info/package_info.dart';
@@ -63,41 +61,43 @@ void main() {
   //设置状态栏透明
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  _initApp().then((value) => runApp(
-        MultiProvider(
-          providers: [
-            //当前用户的token信息 无论匿名用户还是登录用户都会有值
-            ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
-            //当前用户的用户信息 如果是匿名用户则uid为-1 无其他信息
-            ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
-            //当前用户所登录的机器终端信息 如果没有则为null
-            ChangeNotifierProvider(create: (_) => MachineNotifier(Application.machine)),
-            // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(FeedMap({}))),
-            //融云的连接状态 初始值为-1
-            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
-            //用户的融云会话信息 登录后会从数据库查出来放到此provider中
-            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
-            //聊天界面用户录音的提示文字
-            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
-            //聊天界面用户用户录音的功能
-            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-            //接收融云消息-进行判断
-            ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
-            //群聊界面的@用户功能
-            ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-            //用户相关界面信息
-            ChangeNotifierProvider(create: (_) => UserInteractiveNotifier()),
-            //群成员信息
-            ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
-            //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
-            ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
-            ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
-            ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
-          ],
-          child: MyApp(),
-        ),
-      ));
+  _initApp().then((value) => FlutterBugly.postCatchedException(() {
+        runApp(
+          MultiProvider(
+            providers: [
+              //当前用户的token信息 无论匿名用户还是登录用户都会有值
+              ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
+              //当前用户的用户信息 如果是匿名用户则uid为-1 无其他信息
+              ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+              //当前用户所登录的机器终端信息 如果没有则为null
+              ChangeNotifierProvider(create: (_) => MachineNotifier(Application.machine)),
+              // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
+              ChangeNotifierProvider(create: (_) => FeedMapNotifier(FeedMap({}))),
+              //融云的连接状态 初始值为-1
+              ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+              //用户的融云会话信息 登录后会从数据库查出来放到此provider中
+              ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+              //聊天界面用户录音的提示文字
+              ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+              //聊天界面用户用户录音的功能
+              ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+              //接收融云消息-进行判断
+              ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+              //群聊界面的@用户功能
+              ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
+              //用户相关界面信息
+              ChangeNotifierProvider(create: (_) => UserInteractiveNotifier()),
+              //群成员信息
+              ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
+              //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
+              ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
+              ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
+              ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
+            ],
+            child: MyApp(),
+          ),
+        );
+      }));
 }
 
 //初始化APP
@@ -108,6 +108,8 @@ Future _initApp() async {
 
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a");
 
   //获取版本号
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {

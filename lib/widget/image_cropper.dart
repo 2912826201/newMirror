@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 
 const Color _defualtMaskColor = Color.fromARGB(160, 0, 0, 0);
 
-const double baseOutSize = 2160.0;
+const double baseOutSize = 1080.0;
 
 ///来源：https://gitee.com/wskfjt/flutterhead_clipping_control
 ///图像裁剪，适用于头像裁剪和输出固定尺寸的图片裁剪
