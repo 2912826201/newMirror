@@ -166,18 +166,16 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
 
 // //点赞
   void setLaud(int laud, String avatarUrl, int id) {
-    print("点赞了：：：：：：：：");
+    print("点赞了前：：：：：：：：$laud");
     if (laud == 0) {
-      value._feedMap[id].laudCount += 1;
-      value._feedMap[id].laudUserInfo.insert(0, avatarUrl);
-      laud = 1;
-    } else {
       value._feedMap[id].laudCount -= 1;
       value._feedMap[id].laudUserInfo.removeAt(0);
-      laud = 0;
+    } else {
+      value._feedMap[id].laudCount += 1;
+      value._feedMap[id].laudUserInfo.insert(0, avatarUrl);
     }
-
     value._feedMap[id].isLaud = laud;
+    print("点赞了后：：：：：：：：$laud");
     notifyListeners();
   }
 

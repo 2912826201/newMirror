@@ -140,16 +140,15 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         loadText = "加载中...";
       }
       List<HomeFeedModel> feedModel = [];
-      try{
+      try {
         context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
           feedModel.add(value);
         });
         // 更新全局内没有的数据
         context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feedModel));
-      }catch(e){
+      } catch (e) {
         print('-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$e');
       }
-
     }
     if (hasNext == 0) {
       // 加载完毕
@@ -644,9 +643,10 @@ class LaudItemState extends State<LaudItem> {
       } else {
         // 点赞/取消赞成功
         if (model.data["state"]) {
-          context
-              .read<FeedMapNotifier>()
-              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+          context.read<FeedMapNotifier>().setLaud(
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+              context.read<ProfileNotifier>().profile.avatarUri,
+              widget.model.id);
         } else {
           // 失败
           print("shib ");
