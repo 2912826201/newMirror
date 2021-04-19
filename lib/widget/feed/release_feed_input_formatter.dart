@@ -393,7 +393,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       // }
       //   return TextEditingValue(
       //       text:backText,
-      //       selection: TextSelection(Ω
+      //       selection: TextSelection(
       //         baseOffset: beginText.length,
       //         extentOffset:  beginText.length,
       //       ));
