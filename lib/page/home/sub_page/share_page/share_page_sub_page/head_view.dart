@@ -132,8 +132,7 @@ class HeadViewState extends State<HeadView> {
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-      if (widget.isShowConcern &&
-          (notifier.profileUiChangeModel[widget.model.pushId] == null ||
+      if ((notifier.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
         showButon  = true;
@@ -311,7 +310,7 @@ class HeadViewState extends State<HeadView> {
                     )
                   ],
                 )),
-                isShowFollowButton(context),
+                widget.isShowConcern?isShowFollowButton(context):Container(),
                 Container(
                   margin: const EdgeInsets.only(right: 16),
                   child: AppIconButton(
