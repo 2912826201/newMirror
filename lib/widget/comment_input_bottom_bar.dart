@@ -621,7 +621,11 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               readOnly: context.watch<CommentEnterNotifier>().emojiState,
                               showCursor: true,
                               scrollPadding: EdgeInsets.all(0),
-                              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColor.textPrimary1,
+                                background: Paint()..color = AppColor.bgWhite,
+                              ),
                               //内容改变的回调
                               onChanged: (text) {
                                 // 存入最新的值
