@@ -229,8 +229,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   Widget getNoMessageBottomPlan() {
     return Container(
-      height: 48.0 + ScreenUtil.instance.bottomBarHeight,
-      padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+      height: 48.0 + MediaQuery.of(context).padding.bottom,
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       margin: EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.centerRight,
       child: UnconstrainedBox(
@@ -407,7 +407,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           child: Column(
             children: [
               Container(
-                height: _emojiState ? 0.0 : ScreenUtil.instance.bottomBarHeight,
+                height: _emojiState ? 0.0 : MediaQuery
+                    .of(context)
+                    .padding
+                    .bottom,
                 color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
                     ? AppColor.white
                     : AppColor.transparent,
@@ -548,7 +551,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       keyboardHeight = 300.0;
     }
 
-    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
+    keyboardHeight -= MediaQuery
+        .of(context)
+        .padding
+        .bottom;
     widgetList.add(bottomSettingPanel(keyboardHeight));
 
     if ((_emojiState ? keyboardHeight : 0.0) > 0) {
@@ -782,7 +788,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       // 光标颜色
       cursorColor: Color.fromRGBO(253, 137, 140, 1),
       scrollPadding: EdgeInsets.all(0),
-      style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+      style: TextStyle(
+        fontSize: 14,
+        color: AppColor.textPrimary1,
+        background: Paint()
+          ..color = AppColor.bgWhite,
+      ),
       //内容改变的回调
       onChanged: (text) {
         messageCantSendStream.sink.add(0);
