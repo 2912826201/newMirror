@@ -31,6 +31,7 @@ import 'package:mirror/page/message/link_failure/network_link_failure_page.dart'
 import 'package:mirror/page/message/more_page/group_more_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/message/more_page/private_more_page.dart';
+import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
@@ -246,6 +247,10 @@ var handlerFitnesspartPage = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return BodyTypePage();
+});
+var handlerInteractiveNoticePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return InteractiveNoticePage(type: data["type"],);
 });
 var handlerTrainSeveralTimes = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);

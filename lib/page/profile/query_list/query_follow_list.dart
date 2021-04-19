@@ -96,12 +96,15 @@ class _QueryFollowState extends State<QueryFollowList> {
           model.list.forEach((element) {
             buddyList.add(element);
           });
+        }else{
+          buddyList.add(BuddyModel());
         }
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
+        buddyList.add(BuddyModel());
       }
       //这是插入的作为话题入口的假数据
       buddyList.insert(0, BuddyModel());
@@ -541,7 +544,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
-                                        if(buddyList[index].uid!=0){
+                                        if(buddyList[index].uid!=null){
                                           context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
                                               isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
                                                   ? true
@@ -569,12 +572,15 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           }
                                         }else{
                                           return Container(
+                                            key: globalKey,
+                                            height: ScreenUtil.instance.height,
+                                            width: ScreenUtil.instance.screenWidthDp,
                                             child: Center(
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
                                                 children: [
                                                   SizedBox(
-                                                    height: height * 0.22,
+                                                    height: 150,
                                                   ),
                                                   Container(
                                                     width: 285,

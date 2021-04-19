@@ -81,12 +81,8 @@ class FeedFlowState extends State<FeedFlow> {
         });
         _refreshController.loadComplete();
       }
-      List<HomeFeedModel> feedList = [];
-      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
-        feedList.add(value);
-      });
       // 更新全局内没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(widget.feedList, feedList));
+      context.read<FeedMapNotifier>().updateFeedMap(widget.feedList);
     }
     if (widget.feedHasNext == 0) {
       // 加载完毕
@@ -119,8 +115,8 @@ class FeedFlowState extends State<FeedFlow> {
     context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
       feedList.add(value);
     });
-    // 更新全局内没有的数据
-    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(widget.feedList, feedList));
+    // 更新数据
+    context.read<FeedMapNotifier>().updateFeedMap(widget.feedList);
 
     if (mounted) {
       setState(() {});
