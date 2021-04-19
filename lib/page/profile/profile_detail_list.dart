@@ -101,13 +101,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       }
     }
     });
-    Future.delayed(Duration.zero, () {
-      List<HomeFeedModel> feedList = [];
-      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
-        feedList.add(value);
-      });
-      // 只同步没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel, feedList));
+    Future.delayed(Duration.zero,(){
+      // 同步数据
+      context.read<FeedMapNotifier>().updateFeedMap(followModel);
     });
   }
 

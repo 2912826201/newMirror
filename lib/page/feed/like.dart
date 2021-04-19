@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -161,10 +162,12 @@ class LikeListViewItem extends StatelessWidget {
               height: 38,
               width: 38,
               child: ClipOval(
-                child: Image.network(
-                  model.avatarUrl,
+               child: CachedNetworkImage(
+                  /// imageUrl的淡入动画的持续时间。
+                  // fadeInDuration: Duration(milliseconds: 0),
+                  imageUrl: model.avatarUrl ?? "",
                   fit: BoxFit.cover,
-                ),
+                )
               ),
             ),
           ),
