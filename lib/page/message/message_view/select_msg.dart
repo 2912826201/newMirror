@@ -211,9 +211,9 @@ class SelectMsg extends StatelessWidget {
 
   //文字的框架
   Widget textContentBox(BuildContext context) {
-    String stateImg = "images/test/icon_white_message_bugle.png";
+    String stateImg = "assets/png/message_bubble_arrow_white.png";
     if (isMyself) {
-      stateImg = "images/test/icon_black_message_bugle.png";
+      stateImg = "assets/png/message_bubble_arrow_black.png";
     }
     return Container(
       margin: isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),

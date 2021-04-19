@@ -96,12 +96,15 @@ class _QueryFollowState extends State<QueryFollowList> {
           model.list.forEach((element) {
             buddyList.add(element);
           });
+        }else{
+          buddyList.add(BuddyModel());
         }
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
+        buddyList.add(BuddyModel());
       }
       //这是插入的作为话题入口的假数据
       buddyList.insert(0, BuddyModel());
@@ -470,7 +473,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                           child: Center(
                             child: Row(
                               children: [
-                                AppIcon.getAppIcon(AppIcon.nav_search, 21),
+                                AppIcon.getAppIcon(AppIcon.input_search, 21),
                                 SizedBox(
                                   width: 12,
                                 ),
@@ -541,30 +544,60 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
-                                        context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
-                                            isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
-                                                ? true
-                                                : false);
-                                        if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
-                                            !context
-                                                .watch<UserInteractiveNotifier>()
-                                                .profileUiChangeModel[buddyList[index].uid]
-                                                .isFollow) {
-                                          return QueryFollowItem(
-                                            type: widget.type,
-                                            buddyModel: buddyList[index],
-                                            width: width,
-                                            userId: widget.userId,
-                                            isMySelf: isMySelf,
-                                            globalKey: index ==
-                                                    (widget.type == 1 || widget.type == 2
-                                                        ? buddyList.length - 1
-                                                        : topicList.length - 1)
-                                                ? globalKey
-                                                : null,
+                                        if(buddyList[index].uid!=null){
+                                          context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
+                                              isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
+                                                  ? true
+                                                  : false);
+                                          if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
+                                              !context
+                                                  .watch<UserInteractiveNotifier>()
+                                                  .profileUiChangeModel[buddyList[index].uid]
+                                                  .isFollow) {
+                                            return QueryFollowItem(
+                                              type: widget.type,
+                                              buddyModel: buddyList[index],
+                                              width: width,
+                                              userId: widget.userId,
+                                              isMySelf: isMySelf,
+                                              globalKey: index ==
+                                                  (widget.type == 1 || widget.type == 2
+                                                      ? buddyList.length - 1
+                                                      : topicList.length - 1)
+                                                  ? globalKey
+                                                  : null,
+                                            );
+                                          } else {
+                                            return Container();
+                                          }
+                                        }else{
+                                          return Container(
+                                            key: globalKey,
+                                            height: ScreenUtil.instance.height,
+                                            width: ScreenUtil.instance.screenWidthDp,
+                                            child: Center(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 150,
+                                                  ),
+                                                  Container(
+                                                    width: 285,
+                                                    height: 285,
+                                                    child: Image.asset(defaultImage),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Text(
+                                                    hintText,
+                                                    style: AppStyle.textPrimary3Regular14,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           );
-                                        } else {
-                                          return Container();
                                         }
                                       }
                                       //type为2的时候展示粉丝

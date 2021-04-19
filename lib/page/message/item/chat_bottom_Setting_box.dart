@@ -81,7 +81,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       child: Column(
         children: [
           Container(
-            height: emojiState ? 0.0 : ScreenUtil.instance.bottomBarHeight,
+            height: emojiState ? 0.0 : MediaQuery.of(context).padding.bottom,
             color: AppColor.white,
           ),
           Stack(
@@ -305,7 +305,10 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     if (keyboardHeight < 90) {
       keyboardHeight = 300.0;
     }
-    keyboardHeight -= ScreenUtil.instance.bottomBarHeight;
+    keyboardHeight -= MediaQuery
+        .of(context)
+        .padding
+        .bottom;
 
     return keyboardHeight;
   }

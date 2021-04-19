@@ -154,8 +154,8 @@ class _VipOpenPage extends State<VipOpenPage> {
                 alignment: Alignment.topLeft,
                 child: Image.asset(
                   vipState == VipState.EXPIRED
-                      ? "images/resource/2.0x/vip_notopen_icon@2x.png"
-                      : "images/resource/2.0x/vip_open_icon@2x.png",
+                      ? "assets/png/vip_label_invalid.png"
+                      : "assets/png/vip_label_valid.png",
                   width: 43,
                   height: 16,
                 ),

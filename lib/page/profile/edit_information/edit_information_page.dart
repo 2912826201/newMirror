@@ -55,7 +55,8 @@ class _EditInformationState extends State<EditInformation> {
   OnItemClickListener onItemClickListener;
   double textHeight = 0;
   int buttonState = CustomRedButton.buttonStateNormal;
-
+  double width = ScreenUtil.instance.screenWidthDp;
+  double height = ScreenUtil.instance.height;
   @override
   void initState() {
     super.initState();
@@ -108,8 +109,6 @@ class _EditInformationState extends State<EditInformation> {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
     if (userSex == 1) {
       userSexText = "男";
     } else if (userSex == 2) {
@@ -173,7 +172,7 @@ class _EditInformationState extends State<EditInformation> {
                       width: 71,
                       height: 71,
                       child: InkWell(
-                        child: _avatar(context, height, width),
+                        child: _avatar(context),
                         onTap: () {
                           AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true,
                               (result) async {
@@ -221,7 +220,7 @@ class _EditInformationState extends State<EditInformation> {
                         });
                       });
                     },
-                    child: _rowChose(width, "昵称", userName),
+                    child: _rowChose("昵称", userName),
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 16, right: 16),
@@ -247,7 +246,7 @@ class _EditInformationState extends State<EditInformation> {
                           },
                           lists: list);
                     },
-                    child: _rowChose(width, "性别", userSexText),
+                    child: _rowChose("性别", userSexText),
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 16, right: 16),
@@ -259,7 +258,7 @@ class _EditInformationState extends State<EditInformation> {
                     onTap: () {
                       _showDatePicker();
                     },
-                    child: _rowChose(width, "生日", userBirthday),
+                    child: _rowChose("生日", userBirthday),
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 16, right: 16),
@@ -268,7 +267,7 @@ class _EditInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose(width, "地区", context.watch<AddressPickerNotifier>().provinceCity),
+                    child: _rowChose( "地区", context.watch<AddressPickerNotifier>().provinceCity),
                     onTap: () {
                       openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
                     },
@@ -280,7 +279,7 @@ class _EditInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose(width, "简介", _introduction),
+                    child: _rowChose("简介", _introduction),
                     onTap: () {
                       AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
                         if (result != null) {
@@ -302,7 +301,8 @@ class _EditInformationState extends State<EditInformation> {
               ),
             ),
             buttonState == CustomRedButton.buttonStateLoading
-                ? Expanded(
+                ? Container(
+              height: ScreenUtil.instance.height,
                     child: InkWell(
                     onTap: () {
                       return null;
@@ -315,7 +315,7 @@ class _EditInformationState extends State<EditInformation> {
   }
 
   //这是每项资料的item
-  Widget _rowChose(double width, String title, String textContent) {
+  Widget _rowChose( String title, String textContent) {
     return Container(
       height: title == "简介" ? textHeight + 25 : 48,
       width: width,
@@ -359,7 +359,7 @@ class _EditInformationState extends State<EditInformation> {
   }
 
   //选择头像
-  Widget _avatar(BuildContext context, double height, double width) {
+  Widget _avatar(BuildContext context) {
     return Container(
         height: 71,
         width: 71,

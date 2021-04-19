@@ -57,6 +57,7 @@ class AppRouter {
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
   static String pathProfileFollowListPage = "/profile/followlistpage";
+  static String pathProfileInteractiveNoticePage = "/message/interactivenoticepage";
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
@@ -181,6 +182,7 @@ class AppRouter {
     router.define(pathFitnessTargetPage, handler: handlerFitnessTargetPage);
     router.define(pathTrainSeveralPage, handler: handlerTrainSeveralTimes);
     router.define(pathBodyTypePage, handler: handlerBodyTypePage);
+    router.define(pathProfileInteractiveNoticePage, handler: handlerInteractiveNoticePage);
     router.define(pathHeightAndWeigetPage, handler: handlerHeightAndWeigetPage);
     // 话题详情页
     router.define(pathTopicDetailPage, handler: handlerTopicDetailPage);
@@ -566,7 +568,13 @@ class AppRouter {
   static void navigateToTrainSeveralPage(BuildContext context) {
     _navigateToPage(context, pathTrainSeveralPage, {});
   }
-
+  static void navigateToInteractivePage(BuildContext context, {int type,Function(dynamic result) callBack}) {
+    Map<String, dynamic> map = Map();
+    if (type != null) {
+      map["type"] = type;
+    }
+    _navigateToPage(context, pathProfileInteractiveNoticePage, map,callback: callBack);
+  }
   static void navigateToReleasePage(BuildContext context, {int topicId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
