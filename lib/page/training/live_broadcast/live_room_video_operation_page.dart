@@ -60,6 +60,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   List<UserMessageModel> messageChatList = [];
 
+  ScrollController textScrollController = ScrollController();
   ///输入框的监听
   TextEditingController _textController = TextEditingController();
 
@@ -685,6 +686,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
     cursorIndexPr += emojiModelCode.length;
     messageCantSendStream.sink.add(0);
+    Future.delayed(Duration(milliseconds: 100), () {
+      textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+    });
   }
 
   //表情的bar
@@ -779,6 +783,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         // setState(() {});
       },
       controller: _textController,
+      scrollController: textScrollController,
       focusNode: _focusNode,
       // 多行展示
       keyboardType: TextInputType.multiline,
