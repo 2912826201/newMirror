@@ -131,7 +131,7 @@ class _BlackListState extends State<BlackListPage> {
               child: CachedNetworkImage(
                 height: 38,
                 width: 38,
-                imageUrl: blackList[index].avatarUri!=null?FileUtil.getMediumImage(blackList[index].avatarUri):" ",
+                imageUrl: blackList[index].avatarUri!=null?FileUtil.getSmallImage(blackList[index].avatarUri):" ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,

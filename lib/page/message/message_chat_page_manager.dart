@@ -143,15 +143,16 @@ void jumpChatPageTest(BuildContext context) {
 
 //跳转界面-去聊天界面-先获取群成员
 void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async {
-  context.read<GroupUserProfileNotifier>().clearAllUser();
+
+  if (conversation.type == GROUP_TYPE) {
+    context.read<GroupUserProfileNotifier>().clearAllUser();
+  }
 
   _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage);
 
   if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
     if (null == groupManNumber || groupManNumber < 1) {
-      // ToastShow.show(msg: "未获取到群信息", context: context);
-      // print("未获取到群信息：${conversation.toMap().toString()}");
       return;
     }
   }

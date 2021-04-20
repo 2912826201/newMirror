@@ -6,6 +6,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -18,17 +20,28 @@ class LoginSucessPage extends StatefulWidget {
 }
 
 class _LoginSucessState extends State<LoginSucessPage> {
-  String username;
-
+  String username = "";
+  double textLeftWidth;
+  double textRightWidth;
+  double textWidth;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    //note 这里需求为固定宽度内展示文字，超过固定宽度则省略
     String name = context.read<ProfileNotifier>().profile.nickName;
-    if (name.length > 2) {
-      name = name.substring(0, 2);
-      username = name + "...";
-    } else {
+    textLeftWidth = getTextSize("欢迎回来",AppStyle.textMedium23,1,ScreenUtil.instance.width).width+41;
+    textRightWidth = calculateTextWidth(", 登陆成功!",AppStyle.textMedium23,ScreenUtil.instance.width,1).width+41;
+    textWidth = ScreenUtil.instance.width-textLeftWidth-textRightWidth;
+    if(calculateTextWidth(name,AppStyle.textMedium23,ScreenUtil.instance.width,1).width>textWidth){
+      name.characters.toList().forEach((element) {
+        if(calculateTextWidth(username+element+"...",AppStyle.textMedium23,ScreenUtil.instance.width,1)
+            .width<=textWidth){
+          username += element;
+        }
+      });
+      username+="...";
+    }else{
       username = name;
     }
   }
@@ -41,6 +54,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         hasDivider: false,
+        leading:Container(),
         actions: [
           CustomAppBarTextButton("跳过", AppColor.textPrimary2, () {
             AppRouter.popToBeforeLogin(context);
@@ -50,12 +64,12 @@ class _LoginSucessState extends State<LoginSucessPage> {
       body: Container(
         height: height,
         width: width,
-        padding: EdgeInsets.only(left: width * 0.11, right: width * 0.11),
+        padding: EdgeInsets.only(left: 41, right: 41),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: height * 0.18,
+              height: 148,
             ),
             ClipOval(
               child: CachedNetworkImage(
@@ -72,7 +86,8 @@ class _LoginSucessState extends State<LoginSucessPage> {
               height: 9,
             ),
             Text(
-              "欢迎回来$username,登陆成功!",
+              "欢迎回来$username, 登陆成功!",
+              maxLines: 1,
               style: AppStyle.textMedium23,
             ),
             SizedBox(

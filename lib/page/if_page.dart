@@ -59,6 +59,13 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
   //     context.read<FeedMapNotifier>().storageIsSwipeLeft(direction);
   //   }
   // }
+  @override
+  Future didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      FocusScope.of(context).requestFocus(FocusNode());
+    }
+  }
 
   @override
   Widget shouldBuild(BuildContext context) {

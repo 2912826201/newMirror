@@ -182,6 +182,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
 
     if (conversation.getType() == RCConversationType.Group) {
@@ -198,7 +200,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       initTextController();
       initReleaseFeedInputFormatter();
     }
-
     initWidget();
 
     initScrollController();
@@ -209,7 +210,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print("didChangeDependencies---");
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
@@ -252,9 +252,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     deletePostCompleteMessage(conversation);
   }
 
+
+  @override
+  Future didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState:$state");
+    if (state == AppLifecycleState.paused) {
+      _messageInputBodyClick();
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   ///----------------------------------------ui start---------------------------------------------///

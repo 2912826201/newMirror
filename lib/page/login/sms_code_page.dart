@@ -313,7 +313,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
         } else if (token.isPerfect == 0) {
           print("没有完善资料");
           Application.tempToken = token;
-          //FIXME 这里要去完善资料页 先写个请求完善资料接口的示例
+
           AppRouter.navigateToPerfectUserPage(context);
         } else {
           //所有都齐全的情况 登录完成
