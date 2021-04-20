@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/util/string_util.dart';
 
 class ExpressionTeamDeleteFormatter extends TextInputFormatter {
@@ -11,7 +12,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     print('------------------------------formatEditUpdate');
     print("00000000000000000");
-    if (!newValue.composing.isValid) {
+    if (Application.platform==1&&!newValue.composing.isValid) {
       return newValue;
     }
     if (newValue.text.length > oldValue.text.length && maxLength != null) {

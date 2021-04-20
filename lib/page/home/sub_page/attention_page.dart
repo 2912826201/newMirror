@@ -44,7 +44,7 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key,}) : super(key: key);
+  AttentionPage({Key key}) : super(key: key);
 
   AttentionPageState createState() => AttentionPageState();
 }
@@ -146,10 +146,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     });
   }
 
-  // 动态未读数
-  _feedUnreadCallBack(int unread) {
-    _unReadFeedCount = unread;
-  }
+
 
   // 重新登录替换布局
   _againLoginReplaceLayout() {
@@ -244,10 +241,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
     });
     if (addFeedNum != 0 && _unReadFeedCount != 0) {
-      ToastShow.show(msg: "更新了${_unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
-      _unReadFeedCount = 0;
-      EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);
-      // context.read<FeedMapNotifier>().setUnReadFeedCount(0);
+      ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
+     /* _unReadFeedCount = 0;*/
+      /*EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);*/
+      context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
     }
     // 更新全局监听
