@@ -465,7 +465,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white,
+      color: conversation.isTop == 1 ? AppColor.textHint.withOpacity(0.14) : AppColor.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
