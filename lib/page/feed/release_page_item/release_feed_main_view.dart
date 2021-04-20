@@ -34,8 +34,8 @@ class ReleaseFeedMainView extends StatefulWidget {
 }
 
 class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
-  // 选择的地址
-  String seletedAddressText = "你在哪儿";
+  // // 选择的地址
+  // String seletedAddressText = "你在哪儿";
 
   // 是否显示推荐地址列表
   bool isShowList = true;
@@ -91,7 +91,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            seletedAddressText != "你在哪儿"
+            context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
                 ? AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.mainBlue)
                 : AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.black),
             const SizedBox(
@@ -100,9 +100,12 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             Container(
               width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
               child: Text(
-                seletedAddressText,
+                context.watch<ReleaseFeedInputNotifier>().seletedAddressText,
                 style: TextStyle(
-                    fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
+                    fontSize: 16,
+                    color: context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
+                        ? AppColor.mainBlue
+                        : AppColor.textPrimary1),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -133,11 +136,13 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   childrenACallBack(PeripheralInformationPoi poi) {
     if (poi.name != "不显示所在位置") {
       isShowList = false;
-      seletedAddressText = poi.name;
+      context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;
       selectAddress = poi;
       checkIndex = 1;
+      // 选择后就不展示附近推荐
+      widget.pois.clear();
     } else {
-      seletedAddressText = "你在哪儿";
+      context.read<ReleaseFeedInputNotifier>().seletedAddressText = "你在哪儿";
       selectAddress = PeripheralInformationPoi();
       checkIndex = 0;
     }
@@ -153,11 +158,13 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     return GestureDetector(
         onTap: () {
           if (index != 6) {
-            seletedAddressText = addressText(address, index);
+            context.read<ReleaseFeedInputNotifier>().seletedAddressText = addressText(address, index);
             isShowList = false;
             selectAddress = address;
             checkIndex = 1;
             context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(address);
+            // 选择后就不展示附近推荐
+            widget.pois.clear();
             if (mounted) {
               setState(() {});
             }
