@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
 class ToastShow {
-  static show({ @required String msg, @required context,int gravity = 0} ){
+  static show({ @required String msg, @required context,int gravity = 0,int duration=1} ){
     Toast.show(
         msg, //必填
         context, //必填
-        duration: Toast.LENGTH_SHORT,
+        duration: duration,
         gravity: gravity,
 
             // .BOTTOM,

@@ -237,7 +237,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
   }
 
   void onAfterRender(Duration timeStamp) {
-    _size = context.size;
+    // _size = context.size;
   }
 
   bool isToggle = false;

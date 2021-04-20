@@ -167,6 +167,7 @@ class _SlideBannerState extends State<SlideBanner> {
             ? Container(
                 width: ScreenUtil.instance.width,
                 height: height,
+                // color: AppColor.mainRed,
                 child: CachedNetworkImage(
                   /// imageUrl的淡入动画的持续时间。
                   // fadeInDuration: Duration(milliseconds: 0),
@@ -242,7 +243,7 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      BaseResponseModel model = await laud(id: widget.model.id, laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
       print('===================================model.code==${model.code}');
       // 点赞/取消赞成功
       if (model.code == CODE_BLACKED) {
@@ -250,7 +251,7 @@ class _SlideBannerState extends State<SlideBanner> {
       } else {
         context
             .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+            .setLaud(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
         context
             .read<UserInteractiveNotifier>()
             .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
@@ -328,7 +329,7 @@ class _SlideBannerState extends State<SlideBanner> {
               GestureDetector(
                 onDoubleTap: () {
                   // 获取是否点赞
-                  int isLaud = widget.model.isLaud;
+                  int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
                   if (isLaud != 1) {
                     setUpLuad();
                   }

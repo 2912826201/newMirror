@@ -19,6 +19,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/test/BetterPlayerListVideoPlayerTest.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -60,7 +61,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
-  Function(double visibilityFraction) playerVisibilityChangedBehavior;
+  // Function(double visibilityFraction) playerVisibilityChangedBehavior;
 
   // 开启关闭音量的监听
   StreamController<bool> streamController = StreamController<bool>();
@@ -92,14 +93,13 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       }
     };
 
-    playerVisibilityChangedBehavior = (double visibility) {
-      print("打印可见度 $visibility");
-    };
+    // playerVisibilityChangedBehavior = (double visibility) {
+    //   print("打印可见度 $visibility");
+    // };
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: videoSize.width / videoSize.height,
         eventListener: eventListener,
-        playerVisibilityChangedBehavior: playerVisibilityChangedBehavior,
         autoPlay: !widget.isInListView,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
@@ -185,6 +185,9 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   @override
   void dispose() {
     print("销毁更好的播放器页面了");
+    // controller.removeEventsListener(eventListener);
+    // listController.setBetterPlayerController(controller);
+    // controller.dispose();
     super.dispose();
   }
 
@@ -198,9 +201,10 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       if (model.code == CODE_BLACKED) {
         ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
       } else {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        context.read<FeedMapNotifier>().setLaud(
+            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+            context.read<ProfileNotifier>().profile.avatarUri,
+            widget.model.id);
         context
             .read<UserInteractiveNotifier>()
             .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
@@ -221,6 +225,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
           // videoSize.width ,
           containerSize.width,
       child: Stack(
+        // overflow: Overflow.visible ,
         children: [
           Positioned(
               left: offsetX,
@@ -236,7 +241,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 // 双击
                 onDoubleTap: () {
                   // 获取是否点赞
-                  int isLaud = widget.model.isLaud;
+                  int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
                   print("isLaud:::$isLaud");
                   if (isLaud != 1) {
                     setUpLuad();
@@ -244,7 +249,9 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 },
                 child: SizedBox(
                   width: videoSize.width,
+                  // videoSize.width,
                   height: videoSize.height,
+                  // videoSize.height,
                   child: widget.isInListView
                       ? BetterPlayerListVideoPlayer(
                           dataSource,
@@ -310,13 +317,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                                             svgName:
                                                 snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
                                             iconSize: 16,
-                                          )
-                                              // child: Icon(
-                                              //   snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
-                                              //   size: 16,
-                                              //   color: AppColor.white,
-                                              // ),
-                                              ),
+                                          )),
                                         ));
                                   }),
                               Spacer(),
