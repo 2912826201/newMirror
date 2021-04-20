@@ -18,6 +18,7 @@ import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -401,7 +402,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl: senderAvatarUrl,
+                        imageUrl:senderAvatarUrl!=null?FileUtil.getMediumImage(senderAvatarUrl):" " ,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,
