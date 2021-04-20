@@ -151,7 +151,11 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    return "$imageUrl?imageslim";
+    if(imageUrl.contains("?")){
+      return "$imageUrl|imageslim";
+    }else{
+      return "$imageUrl?imageslim";
+    }
   }
 
   //获取限制尺寸的图片
@@ -159,7 +163,11 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight";
+    if(imageUrl.contains("?")){
+      return "$imageUrl|imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
+    }else{
+      return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
+    }
   }
 
   static String getSmallImage(String imageUrl){
