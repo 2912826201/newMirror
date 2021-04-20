@@ -167,6 +167,7 @@ class _SlideBannerState extends State<SlideBanner> {
             ? Container(
                 width: ScreenUtil.instance.width,
                 height: height,
+                // color: AppColor.mainRed,
                 child: CachedNetworkImage(
                   /// imageUrl的淡入动画的持续时间。
                   // fadeInDuration: Duration(milliseconds: 0),
