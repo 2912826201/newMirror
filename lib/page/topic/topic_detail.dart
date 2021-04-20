@@ -1,6 +1,7 @@
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -245,11 +246,28 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                             decoration: BoxDecoration(
                                                 // 圆角
                                                 borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(widget.model.avatarUrl ??
-                                                        "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"),
-                                                    fit: BoxFit.cover),
-                                                color: AppColor.white)),
+                                                // image: DecorationImage(
+                                                //     image: NetworkImage(widget.model.avatarUrl + "?imageslim"  ??
+                                                //         "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"+"?imageslim" ),
+                                                //     fit: BoxFit.cover),
+                                                color: AppColor.white),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: CachedNetworkImage(
+                                              // 调整磁盘缓存中图像大小
+                                              maxHeightDiskCache: 200,
+                                              maxWidthDiskCache: 200,
+                                              imageUrl: widget.model.avatarUrl != null ? widget.model.avatarUrl : "",
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => Container(
+                                                color: AppColor.bgWhite,
+                                              ),
+                                              errorWidget: (context, url, e) {
+                                                return Container(
+                                                  color: AppColor.bgWhite,
+                                                );
+                                              },
+                                            )
+                                        ),
                                       )),
                                   // 话题内容
                                   Positioned(

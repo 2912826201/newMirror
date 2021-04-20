@@ -73,6 +73,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   child: CachedNetworkImage(
                     height: 28,
                     width: 28,
+                    // 调整磁盘缓存中图像大小
+                    maxHeightDiskCache: 200,
+                    maxWidthDiskCache: 200,
                     imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
                         ? context.watch<ProfileNotifier>().profile.avatarUri
                         : "",

@@ -77,8 +77,12 @@ class LoadingView extends StatelessWidget {
 
 // 推荐
 class RecommendPage extends StatefulWidget {
-  RecommendPage({Key key, this.pc,}) : super(key: key);
+  RecommendPage({
+    Key key,
+    this.pc,
+  }) : super(key: key);
   PanelController pc = new PanelController();
+
   RecommendPageState createState() => RecommendPageState();
 }
 
@@ -406,6 +410,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                           ? liveVideoModel[index].coachDto.avatarUri
                                           : "",
                                       fit: BoxFit.cover,
+                                      // 调整磁盘缓存中图像大小
+                                      maxHeightDiskCache: 200,
+                                      maxWidthDiskCache: 200,
                                       placeholder: (context, url) => CircularProgressIndicator(),
                                       errorWidget: (context, url, e) {
                                         return Image.asset(
@@ -425,17 +432,26 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                           height: 53,
                           width: 53,
                           child: Center(
-                            child: Container(
-                                height: 47,
-                                width: 47,
-                                decoration: BoxDecoration(
-                                  // color: Colors.redAccent,
-                                  image: DecorationImage(
-                                      image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
-                                  // image
-                                  borderRadius: BorderRadius.all(Radius.circular(23.5)),
-                                )),
-                          ),
+                              child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 47,
+                              width: 47,
+                              imageUrl: liveVideoModel[index].coachDto.avatarUri != null
+                                  ? liveVideoModel[index].coachDto.avatarUri
+                                  : "",
+                              fit: BoxFit.cover,
+                              // 调整磁盘缓存中图像大小
+                              maxHeightDiskCache: 200,
+                              maxWidthDiskCache: 200,
+                              placeholder: (context, url) => CircularProgressIndicator(),
+                              errorWidget: (context, url, e) {
+                                return Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          )),
                         ),
                   Container(
                     margin: EdgeInsets.only(top: 8),

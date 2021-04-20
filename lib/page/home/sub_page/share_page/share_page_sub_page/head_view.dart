@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -63,6 +64,7 @@ class HeadViewState extends State<HeadView> {
   bool isMySelf = false;
   StreamController<TextStyle> streamController = StreamController<TextStyle>();
   Stream stream;
+
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
@@ -210,8 +212,7 @@ class HeadViewState extends State<HeadView> {
                       );
                     }),
               )),
-          onEnd: () {
-          },
+          onEnd: () {},
         );
       }
     });
@@ -259,15 +260,26 @@ class HeadViewState extends State<HeadView> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 11),
-                  child: CircleAvatar(
+                  child: ClipOval(
                     // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                    backgroundImage: widget.model.avatarUrl != null
-                        ? NetworkImage(
-                            isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
+                    child: widget.model.avatarUrl != null
+                        ? CachedNetworkImage(
+                            width: 38,
+                            height: 38,
+                            /// imageUrl的淡入动画的持续时间。
+                            // fadeInDuration: Duration(milliseconds: 0),
+                            imageUrl:
+                                isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl,
+                            fit: BoxFit.cover,
+                            // 调整磁盘缓存中图像大小
+                            maxHeightDiskCache: 200,
+                            maxWidthDiskCache: 200,
+                          )
+                        // NetworkImage(
+                        //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
                         : Container(
                             color: AppColor.bgWhite,
                           ),
-                    maxRadius: 19,
                   ),
                 ),
                 Expanded(
