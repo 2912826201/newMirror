@@ -544,7 +544,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
-                                        if(buddyList[index].uid!=null){
+                                        if(buddyList.length!=1&&buddyList[index].nickName!=null){
                                           context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
                                               isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
                                                   ? true
@@ -568,6 +568,15 @@ class _QueryFollowState extends State<QueryFollowList> {
                                                   : null,
                                             );
                                           } else {
+                                            List<BuddyModel> list = [];
+                                            for(int i = 0;i<buddyList.length;i++){
+                                              if(i!=index){
+                                                list.add(buddyList[i]);
+                                              }
+                                            }
+                                            buddyList.clear();
+                                            buddyList.addAll(list);
+                                            buddyList.insert(0, BuddyModel());
                                             return Container();
                                           }
                                         }else{

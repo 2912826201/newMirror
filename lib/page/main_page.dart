@@ -63,7 +63,7 @@ class MainPageState extends XCState {
 
   _getUnReadFeedCount() {
     getUnReadFeedCount().then((value) {
-      if (value != null) {
+      if (value != null&&value!=context.read<FeedMapNotifier>().value.unReadFeedCount) {
         context.read<FeedMapNotifier>().setUnReadFeedCount(value);
       }
     });
