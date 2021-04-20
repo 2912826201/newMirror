@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
@@ -65,7 +66,7 @@ class _DemoImageItemState extends State<DemoImageItem> {
             child: CachedNetworkImage(
               placeholder: (context, url) {
                 return Image.network(
-                  widget.source.url + "?imageslim",
+                  FileUtil.getImagesLim(widget.source.url),
                   fit: BoxFit.cover,
                 );
               },

@@ -272,7 +272,7 @@ class ImgVideoMsg extends StatelessWidget {
           return getImagePlaceHolder();
         }
       } else {
-        return getCachedNetworkImage(sizeInfoMap["showImageUrl"] + "?imageslim");
+        return getCachedNetworkImage(FileUtil.getImagesLim(sizeInfoMap["showImageUrl"]));
       }
     }
   }

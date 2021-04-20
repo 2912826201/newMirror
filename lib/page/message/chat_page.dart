@@ -1225,7 +1225,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //接收消息
   void getReceiveMessages(Message message) {
-    if (message.targetId != conversation.conversationId&&message.conversationType == conversation.getType()) {
+    if (message.targetId != conversation.conversationId) {
+      return;
+    }
+    if(message.conversationType != conversation.getType()){
       return;
     }
 
