@@ -1543,7 +1543,7 @@ Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
     double ratio = entity.width / entity.height;
     // 因为最终图片宽度会填满屏幕宽度展示 所以图片始终保证宽度为固定标准
     // ratio的double类型计算可能会增加误差 所以不重新赋值ratio时 用宽高计算
-    _outWidth = baseOutSize;
+    _outWidth = cropImageSize;
     if (ratio < minMediaRatio) {
       ratio = minMediaRatio;
       _outHeight = _outWidth / ratio;
@@ -1554,8 +1554,8 @@ Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
       _outHeight = _outWidth * entity.height / entity.width;
     }
   } else {
-    _outWidth = baseOutSize;
-    _outHeight = baseOutSize;
+    _outWidth = cropImageSize;
+    _outHeight = cropImageSize;
   }
 
   return Size(_outWidth, _outHeight);

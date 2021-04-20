@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -64,8 +65,8 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                   model.croppedImage = await _getImage();
                   model.type = mediaTypeKeyImage;
 
-                  model.sizeInfo.width = widget.fixedWidth == null ? baseOutSize.toInt() : widget.fixedWidth;
-                  model.sizeInfo.height = widget.fixedHeight == null ? baseOutSize.toInt() : widget.fixedHeight;
+                  model.sizeInfo.width = widget.fixedWidth == null ? cropImageSize.toInt() : widget.fixedWidth;
+                  model.sizeInfo.height = widget.fixedHeight == null ? cropImageSize.toInt() : widget.fixedHeight;
                   model.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
 
                   SelectedMediaFiles files = SelectedMediaFiles();
@@ -92,8 +93,8 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 FileImage(_file),
                 round: 0,
                 maskPadding: 0,
-                outWidth: widget.fixedWidth == null ? baseOutSize : widget.fixedWidth.toDouble(),
-                outHeight: widget.fixedHeight == null ? baseOutSize : widget.fixedHeight.toDouble(),
+                outWidth: widget.fixedWidth == null ? cropImageSize : widget.fixedWidth.toDouble(),
+                outHeight: widget.fixedHeight == null ? cropImageSize : widget.fixedHeight.toDouble(),
                 key: _cropperKey,
                 backBoxColor0: AppColor.transparent,
                 backBoxColor1: AppColor.transparent,
