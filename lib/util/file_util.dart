@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/qiniu_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/database/download_db_helper.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
@@ -153,11 +154,19 @@ class FileUtil {
   }
 
   //获取限制尺寸的图片
-  static String getMaxSizeImage(String imageUrl, int maxHeight, int maxWidth) {
+  static String _getMaxSizeImage(String imageUrl, int maxHeight, int maxWidth) {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
     return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight";
+  }
+
+  static String getSmallImage(String imageUrl){
+    return _getMaxSizeImage(imageUrl, maxImageSizeSmall, maxImageSizeSmall);
+  }
+
+  static String getMediumImage(String imageUrl){
+    return _getMaxSizeImage(imageUrl, maxImageSizeMedium, maxImageSizeMedium);
   }
 
   //===========================下载部分start===========================

@@ -15,3 +15,10 @@ const int chatAddHistoryMessageCount=20;
 //录音最长时长 单位秒
 const int maxRecordVoiceDuration=60;
 const int minRecordVoiceDuration=1;
+
+//缩略图尺寸
+const int maxImageSizeSmall = 150;
+const int maxImageSizeMedium = 250;
+
+//截图保存尺寸
+const double cropImageSize = 1080.0;
