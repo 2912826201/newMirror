@@ -207,6 +207,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("didChangeDependencies---");
+    context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
+  }
+
+  @override
   Widget shouldBuild(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -228,13 +235,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //清聊天未读数
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       //清其他数据
-      Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
       _textController.text = "";
       Application.appContext.read<ChatEnterNotifier>().clearRules();
     }
     if (conversation.getType() == RCConversationType.Group) {
+      Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
     }
