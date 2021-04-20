@@ -23,6 +23,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:toast/toast.dart';
 
 import 'dialog/live_room_setting_dialog.dart';
 import 'dialog/live_room_online_man_number_dialog.dart';
@@ -60,6 +61,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   List<UserMessageModel> messageChatList = [];
 
+  ScrollController textScrollController = ScrollController();
   ///输入框的监听
   TextEditingController _textController = TextEditingController();
 
@@ -148,7 +150,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         case 3:
         //0-直播结束
           print("直播结束");
-          ToastShow.show(msg: "直播已结束", context: context);
+          ToastShow.show(msg: "直播已结束", context: context,duration: Toast.LENGTH_LONG);
           _exitPage();
           break;
         default:
@@ -685,6 +687,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
     cursorIndexPr += emojiModelCode.length;
     messageCantSendStream.sink.add(0);
+    Future.delayed(Duration(milliseconds: 100), () {
+      textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+    });
   }
 
   //表情的bar
@@ -779,6 +784,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         // setState(() {});
       },
       controller: _textController,
+      scrollController: textScrollController,
       focusNode: _focusNode,
       // 多行展示
       keyboardType: TextInputType.multiline,
