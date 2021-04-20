@@ -187,7 +187,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (conversation.getType() == RCConversationType.Group) {
       EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       EventBus.getDefault().registerSingleParameter(_judgeResetPage, EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
-      EventBus.getDefault().registerNoParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE, registerName: RESET_CHAR_GROUP_USER_LIST);
+      EventBus.getDefault().registerSingleParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE, registerName: RESET_CHAR_GROUP_USER_LIST);
     }
     EventBus.getDefault()
         .registerSingleParameter(resetSettingStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
@@ -1206,7 +1206,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   void withdrawMessage(Message message){
+    if (message == null) {
+      return;
+    }
     if (message.targetId != conversation.conversationId) {
+      return;
+    }
+    if(message.conversationType != conversation.getType()){
       return;
     }
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
@@ -1225,6 +1231,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //接收消息
   void getReceiveMessages(Message message) {
+    if (message == null) {
+      return;
+    }
     if (message.targetId != conversation.conversationId) {
       return;
     }
@@ -1297,33 +1306,53 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 //判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
     print("判断是否退出群聊或者加入群聊");
-    if (message != null&&message.conversationType==RCConversationType.Group&&
-      message.targetId==conversation.conversationId) {
-      //清聊天未读数
-      _resetChatGroupUserModelList();
-      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
-      if(dataMap["subType"]==0||dataMap["subType"]==2) {
-        print("dataMap[subType]0:${dataMap["subType"]}");
-        insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
-          if (code == 0) {
-            print("scrollPositionPixels加入：$scrollPositionPixels");
-            chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
-            isHaveReceiveChatDataList = true;
-            if (scrollPositionPixels < 500) {
-              isHaveReceiveChatDataList = false;
+    if (message == null) {
+      return;
+    }
+    if (message.targetId != conversation.conversationId) {
+      return;
+    }
+    if(message.conversationType != conversation.getType()){
+      return;
+    }
+    if(message.conversationType !=RCConversationType.Group){
+      return;
+    }
+    _resetChatGroupUserModelList(message);
+    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    if(dataMap["subType"]==0||dataMap["subType"]==2) {
+      print("dataMap[subType]0:${dataMap["subType"]}");
+      insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
+        if (code == 0) {
+          print("scrollPositionPixels加入：$scrollPositionPixels");
+          chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
+          isHaveReceiveChatDataList = true;
+          if (scrollPositionPixels < 500) {
+            isHaveReceiveChatDataList = false;
 
-              EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-            }
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
-        });
-      }else{
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      }
+        }
+      });
+    }else{
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
   }
 
   //重新刷新群聊人数
-  void _resetChatGroupUserModelList(){
+  void _resetChatGroupUserModelList(Message message){
+    if (message == null) {
+      return;
+    }
+    if (message.targetId != conversation.conversationId) {
+      return;
+    }
+    if(message.conversationType != conversation.getType()){
+      return;
+    }
+    if(message.conversationType !=RCConversationType.Group){
+      return;
+    }
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     getChatGroupUserModelList(conversation.conversationId, context);
   }

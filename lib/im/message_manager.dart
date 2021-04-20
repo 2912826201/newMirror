@@ -420,12 +420,12 @@ class MessageManager {
       switch (dataMap["subType"]) {
         case 0:
           GroupChatUserInformationDBHelper().update(message: message);
-          EventBus.getDefault().post(registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.getDefault().post(msg:message,registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 1:
         case 2:
           GroupChatUserInformationDBHelper().removeMessageGroup(message);
-          EventBus.getDefault().post(registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.getDefault().post(msg:message,registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 4:
           //修改群名
