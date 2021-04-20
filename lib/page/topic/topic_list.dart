@@ -120,6 +120,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   onRefresh: () {
                     recommendTopicList.clear();
                     recommendHasNext = null;
+                    refreshController.loadComplete();
                     requestRecommendTopic(refreshOrLoading: true);
                   },
                   onLoading: () {
