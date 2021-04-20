@@ -54,6 +54,7 @@ class GroupUserProfileNotifier extends ChangeNotifier {
   }
 
   clearAllUser() {
+    print("clearAllUser");
     chatGroupUserModelList.clear();
     loadingStatus = LoadingStatus.STATUS_IDEL;
     len = -1;
