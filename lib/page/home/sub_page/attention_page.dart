@@ -237,7 +237,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0 && _unReadFeedCount != 0) {
+    if (addFeedNum != 0 &&context.read<FeedMapNotifier>().value.unReadFeedCount!=0) {
       ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
      /* _unReadFeedCount = 0;*/
       /*EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);*/

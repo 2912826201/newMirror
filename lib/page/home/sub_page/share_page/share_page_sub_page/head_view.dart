@@ -84,7 +84,7 @@ class HeadViewState extends State<HeadView> {
       removeFollowAndFollow(id, context, isCancel);
     } else {
       BlackModel blackModel = await ProfileCheckBlack(widget.model.pushId);
-      if (widget.model != null) {
+      if (blackModel != null) {
         print('inThisBlack===================${blackModel.inThisBlack}');
         print('inYouBlack===================${blackModel.inYouBlack}');
         if (blackModel.inYouBlack == 1) {
@@ -94,6 +94,8 @@ class HeadViewState extends State<HeadView> {
         } else {
           removeFollowAndFollow(id, context, isCancel);
         }
+      }else{
+        Toast.show("关注失败，请重试", context);
       }
     }
   }
