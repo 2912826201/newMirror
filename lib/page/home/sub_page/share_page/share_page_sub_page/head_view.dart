@@ -62,6 +62,7 @@ class HeadViewState extends State<HeadView> {
   double opacity = 0;
   bool isMySelf = false;
   StreamController<TextStyle> streamController = StreamController<TextStyle>();
+  Stream stream;
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
@@ -119,6 +120,7 @@ class HeadViewState extends State<HeadView> {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
           context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, true);
           ToastShow.show(msg: "关注成功!", context: context);
+          streamController.sink.add(TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1));
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
             opacity = 0;
@@ -138,6 +140,7 @@ class HeadViewState extends State<HeadView> {
           (notifier.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
+        streamController = StreamController<TextStyle>();
         return GestureDetector(
           onTap: () {
             if (!context.read<TokenNotifier>().isLoggedIn) {
@@ -184,7 +187,7 @@ class HeadViewState extends State<HeadView> {
       } else {
         return AnimatedOpacity(
           opacity: opacity,
-          duration: Duration(milliseconds: 2000),
+          duration: Duration(milliseconds: 1000),
           child: Container(
               margin: const EdgeInsets.only(right: 6),
               height: 28,
@@ -194,12 +197,21 @@ class HeadViewState extends State<HeadView> {
                 borderRadius: BorderRadius.circular((14.0)),
               ),
               child: Center(
-                child: const Text(
-                  "已关注",
-                  style: AppStyle.textRegular12,
-                ),
+                child: StreamBuilder<TextStyle>(
+                    initialData: TextStyle(fontSize: 1, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                    stream: streamController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<TextStyle> snapshot) {
+                      return AnimatedDefaultTextStyle(
+                        duration: Duration(milliseconds: 200),
+                        style: snapshot.data,
+                        child: Text(
+                          "已关注",
+                        ),
+                      );
+                    }),
               )),
-          onEnd: () {},
+          onEnd: () {
+          },
         );
       }
     });
@@ -209,6 +221,7 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
@@ -282,7 +295,7 @@ class HeadViewState extends State<HeadView> {
                     )
                   ],
                 )),
-                widget.isShowConcern?isShowFollowButton(context):Container(),
+                widget.isShowConcern ? isShowFollowButton(context) : Container(),
                 Container(
                   margin: const EdgeInsets.only(right: 16),
                   child: AppIconButton(
