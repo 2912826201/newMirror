@@ -450,7 +450,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               svgName: AppIcon.nav_search,
               iconColor: AppColor.black,
               onTap: () {
-                AppRouter.navigateSearchPage(context);
+                videoOrImagesSwith = true;
+                setState(() {});
+                // AppRouter.navigateSearchPage(context);
               }),
         ],
       ),
@@ -478,7 +480,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     AttentionPage(
                       key: attentionKey,
                     ),
-                    RecommendPage()
+                    RecommendPage(),
                     // RecommendPage()
                   ],
                 ),

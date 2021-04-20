@@ -44,7 +44,7 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key}) : super(key: key);
+  AttentionPage({Key key,}) : super(key: key);
 
   AttentionPageState createState() => AttentionPageState();
 }
@@ -141,7 +141,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
       // 动态未读数
-     /* EventBus.getDefault()
+      /* EventBus.getDefault()
           .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
     });
   }
@@ -219,7 +219,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         attentionIdList.insert(0, -1);
       }
       status = Status.noConcern;
-      _refreshController.refreshCompleted();
+      _refreshController.loadComplete();
       // _refreshController.loadNoData();
       if (mounted) {
         setState(() {});
@@ -382,6 +382,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             dataPage = 1;
             attentionIdList.clear();
             attentionModelList.clear();
+            _refreshController.loadComplete();
             lastTime = null;
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();

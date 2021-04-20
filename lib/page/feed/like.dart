@@ -52,7 +52,7 @@ class LikeState extends State<Like> {
           refreshController.loadNoData();
         }
       } else {
-        refreshController.loadFailed();
+        refreshController.loadNoData();
       }
     } else {
       if (!isFrist) {

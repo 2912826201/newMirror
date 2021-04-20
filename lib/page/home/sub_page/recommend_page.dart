@@ -77,9 +77,8 @@ class LoadingView extends StatelessWidget {
 
 // 推荐
 class RecommendPage extends StatefulWidget {
-  RecommendPage({Key key, this.pc}) : super(key: key);
+  RecommendPage({Key key, this.pc,}) : super(key: key);
   PanelController pc = new PanelController();
-
   RecommendPageState createState() => RecommendPageState();
 }
 
@@ -169,6 +168,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             }
             _refreshController.refreshCompleted();
             hasNext = dataModel.hasNext;
+            print("第一次的hasNext：：$hasNext");
           } else {
             _refreshController.refreshCompleted();
             isRequestData = false;
@@ -187,6 +187,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   getRecommendFeed() async {
     print('==================推荐页数据加载');
     DataResponseModel dataModel = DataResponseModel();
+    print("第二次的hasNext：：$hasNext");
     if (hasNext != 0) {
       // 请求推荐接口
       dataModel = await getHotList(size: 20);
@@ -195,17 +196,18 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       }
       if (dataModel != null && dataModel.list.isNotEmpty) {
         print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
-        hasNext = dataModel.hasNext;
         dataModel.list.forEach((v) {
           recommendIdList.add(HomeFeedModel.fromJson(v).id);
           recommendModelList.add(HomeFeedModel.fromJson(v));
         });
         _refreshController.loadComplete();
       }
+      hasNext = dataModel.hasNext;
     }
     if (hasNext == 0) {
       _refreshController.loadNoData();
     }
+    print("第三次的hasNext：：$hasNext");
     if (mounted) {
       setState(() {});
     }
@@ -237,6 +239,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               },
               onRefresh: () {
                 hasNext = null;
+                _refreshController.loadComplete();
                 mergeRequest();
               },
               child: CustomScrollView(

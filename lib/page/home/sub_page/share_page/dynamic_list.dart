@@ -20,20 +20,20 @@ import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
-  DynamicListLayout(
-      {Key key,
-      this.index,
-      this.isShowRecommendUser,
-      this.model,
-      this.pageName,
-      this.deleteFeedChanged,
-      this.isHero = false,
-      this.removeFollowChanged,
-      this.mineDetailId,
-      this.topicId,
-      this.isMySelf,
-      this.isShowConcern = false})
-      : super(key: key);
+  DynamicListLayout({
+    Key key,
+    this.index,
+    this.isShowRecommendUser,
+    this.model,
+    this.pageName,
+    this.deleteFeedChanged,
+    this.isHero = false,
+    this.removeFollowChanged,
+    this.mineDetailId,
+    this.topicId,
+    this.isMySelf,
+    this.isShowConcern = false,
+  }) : super(key: key);
   final index;
   bool isShowRecommendUser;
   HomeFeedModel model;
