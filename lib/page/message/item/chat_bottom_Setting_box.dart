@@ -319,9 +319,11 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   setBottomSettingPanelState(bool bottomSettingPanelState) {
     this.bottomSettingPanelState = bottomSettingPanelState;
-    if (mounted) {
-      setState(() {});
-    }
+    try{
+      if (mounted) {
+        setState(() {});
+      }
+    }catch (e){}
   }
 
   setEmojiState(bool emojiState) {
