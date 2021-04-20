@@ -72,9 +72,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
 
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: CustomAppBar(
-        hasDivider: false,
-      ),
+      appBar: null,
       body: Container(
         width: width,
         height: height,
@@ -83,7 +81,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
           children: [
             ///头像
             SizedBox(
-              height: 40,
+              height: 40+CustomAppBar.appBarHeight+ScreenUtil.instance.statusBarHeight,
             ),
             Center(
               child: _avatarWidget(),
