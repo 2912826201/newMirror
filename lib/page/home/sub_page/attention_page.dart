@@ -141,15 +141,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<FeedMapNotifier>().setBuildCallBack(true);
       // 动态未读数
-     /* EventBus.getDefault()
+      /* EventBus.getDefault()
           .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
     });
   }
 
-  // 动态未读数
-  _feedUnreadCallBack(int unread) {
-    _unReadFeedCount = unread;
-  }
+
 
   // 重新登录替换布局
   _againLoginReplaceLayout() {
@@ -219,7 +216,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         attentionIdList.insert(0, -1);
       }
       status = Status.noConcern;
-      _refreshController.refreshCompleted();
+      _refreshController.loadComplete();
       // _refreshController.loadNoData();
       if (mounted) {
         setState(() {});
@@ -243,11 +240,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0 && _unReadFeedCount != 0) {
-      ToastShow.show(msg: "更新了${_unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
-      _unReadFeedCount = 0;
-      EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);
-      // context.read<FeedMapNotifier>().setUnReadFeedCount(0);
+    if (addFeedNum != 0 &&context.read<FeedMapNotifier>().value.unReadFeedCount!=0) {
+      ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
+     /* _unReadFeedCount = 0;*/
+      /*EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);*/
+      context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
     }
     // 更新全局监听
@@ -382,6 +379,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             dataPage = 1;
             attentionIdList.clear();
             attentionModelList.clear();
+            _refreshController.loadComplete();
             lastTime = null;
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();

@@ -478,7 +478,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     AttentionPage(
                       key: attentionKey,
                     ),
-                    RecommendPage()
+                    RecommendPage(),
                     // RecommendPage()
                   ],
                 ),

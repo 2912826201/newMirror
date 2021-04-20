@@ -40,10 +40,6 @@ class MainPageState extends XCState {
   void initState() {
     super.initState();
     currentIndex = 0;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    /*  EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
-    });
   }
 
   @override
@@ -67,9 +63,8 @@ class MainPageState extends XCState {
 
   _getUnReadFeedCount() {
     getUnReadFeedCount().then((value) {
-      if (value != null) {
-        _unReadFeedCount = value;
-        EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);
+      if (value != null&&value!=context.read<FeedMapNotifier>().value.unReadFeedCount) {
+        context.read<FeedMapNotifier>().setUnReadFeedCount(value);
       }
     });
   }

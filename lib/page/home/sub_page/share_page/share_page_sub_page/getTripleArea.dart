@@ -199,7 +199,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-    print("是否点赞了￥${context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud}");
     if (isLoggedIn) {
       BaseResponseModel model = await laud(
           id: widget.model.id,
@@ -209,7 +208,8 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       } else {
         context
             .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+            .setLaud(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        // model
         context
             .read<UserInteractiveNotifier>()
             .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
