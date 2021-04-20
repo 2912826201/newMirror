@@ -157,7 +157,6 @@ class _SlideBannerState extends State<SlideBanner> {
               width: ScreenUtil.instance.width,
               height: height,
               fit: BoxFit.cover,
-              useOldImageOnUrlChange: true,
             ),
           ),
         ));
@@ -177,7 +176,8 @@ class _SlideBannerState extends State<SlideBanner> {
                   errorWidget: (context, url, error) => Container(
                     color: AppColor.bgWhite,
                   ),
-                ))
+                )
+        )
             : Hero(
                 tag: widget.pageName + "${widget.model.id}${widget.index}",
                 child: Container(
@@ -186,7 +186,6 @@ class _SlideBannerState extends State<SlideBanner> {
                     child: CachedNetworkImage(
                       /// imageUrl的淡入动画的持续时间。
                       fadeInDuration: Duration(milliseconds: 0),
-                      useOldImageOnUrlChange: true,
                       fit: BoxFit.cover,
                       imageUrl: item.url != null ? item.url : "",
                       errorWidget: (context, url, error) => Container(

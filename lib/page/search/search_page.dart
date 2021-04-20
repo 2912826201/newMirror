@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -354,7 +355,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   // 热门课程推荐类容Item
   List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
         return GestureDetector(
-          onTap: () async{
+          onTap: () async {
             // TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
             // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => StickyDemo(model: topicModel,)));
           },
@@ -500,17 +501,30 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                       itemCount: topicList[index].pics.length,
                       itemBuilder: (context, indexs) {
                         return Container(
-                          height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                          width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                          margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
-                          child: ClipRRect(
-                              //圆角图片
-                              borderRadius: BorderRadius.circular(2),
-                              child: Image.network(
-                                topicList[index].pics[indexs],
-                                fit: BoxFit.cover,
-                              )),
-                        );
+                            height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                            width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                            margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
+                            //设置背景图片
+                            decoration: new BoxDecoration(
+                              borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
+                            ),
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.antiAlias,
+                            child: CachedNetworkImage(
+                              // 调整磁盘缓存中图像大小
+                              maxHeightDiskCache: 200,
+                              maxWidthDiskCache: 200,
+                              imageUrl: topicList[index].pics[indexs] != null ? topicList[index].pics[indexs] : "",
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: AppColor.bgWhite,
+                              ),
+                              errorWidget: (context, url, e) {
+                                return Container(
+                                  color: AppColor.bgWhite,
+                                );
+                              },
+                            ));
                       }),
                 ),
               ],

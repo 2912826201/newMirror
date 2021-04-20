@@ -504,18 +504,21 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
       int index = TopChatModel.containsIndex(Application.topChatModelList, topChatModel);
-      print("index:$index");
-      if (index >= 0) {
-        Application.topChatModelList.removeAt(index);
-        if (null != widget.dto) {
-          widget.dto.isTop = 0;
-          context.read<ConversationNotifier>().insertCommon(widget.dto);
+      if(topChat){
+        if(index<0){
+          Application.topChatModelList.add(topChatModel);
+          if (null != widget.dto) {
+            widget.dto.isTop = 1;
+            context.read<ConversationNotifier>().insertTop(widget.dto);
+          }
         }
-      } else {
-        Application.topChatModelList.add(topChatModel);
-        if (null != widget.dto) {
-          widget.dto.isTop = 1;
-          context.read<ConversationNotifier>().insertTop(widget.dto);
+      }else{
+        if (index >= 0) {
+          Application.topChatModelList.removeAt(index);
+          if (null != widget.dto) {
+            widget.dto.isTop = 0;
+            context.read<ConversationNotifier>().insertCommon(widget.dto);
+          }
         }
       }
     } else {
@@ -540,10 +543,14 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE, targetId: int.parse(widget.chatGroupId));
       int index = NoPromptUidModel.containsIndex(Application.queryNoPromptUidList, model);
-      if (index >= 0) {
-        Application.queryNoPromptUidList.remove(index);
-      } else {
-        Application.queryNoPromptUidList.add(model);
+      if(disturbTheNews){
+        if (index < 0) {
+          Application.queryNoPromptUidList.add(model);
+        }
+      }else{
+        if (index >= 0) {
+          Application.queryNoPromptUidList.remove(index);
+        }
       }
     } else {
       disturbTheNews = !disturbTheNews;

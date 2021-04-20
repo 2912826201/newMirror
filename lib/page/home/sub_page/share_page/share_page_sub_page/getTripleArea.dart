@@ -226,6 +226,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       child: CachedNetworkImage(
             height: 21,
             width: 21,
+            // 调整磁盘缓存中图像大小
+            maxHeightDiskCache: 200,
+            maxWidthDiskCache: 200,
             imageUrl: url != null ? url : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(

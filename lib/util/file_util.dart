@@ -23,6 +23,7 @@ import 'string_util.dart';
 /// Created by yangjiayi on 2020/12/9.
 
 //七牛的视频第一帧是视频地址后加上?vframe/jpg/offset/1
+//七牛的瘦身图片--初级-?imageslim
 
 const String downloadPortName = "downloader_send_port";
 

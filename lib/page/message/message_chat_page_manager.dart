@@ -336,7 +336,7 @@ void postMessageManagerReset(String chatTypeModel, String chatTypeModelName, Str
   Application.rongCloud.insertOutgoingMessage(conversationType, targetId, msg, finished, sendTime: sendTime);
 }
 
-//插入被退出群提示
+//插入被移除群和邀请进入群提示
 void insertExitGroupMsg(Message message, String targetId, Function(Message msg, int code) finished) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo(groupId: targetId);
@@ -581,8 +581,7 @@ Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultM
 }
 
 //发送语音
-void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType, int chatTypeId,
-    VoidCallback voidCallback) async {
+void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType,VoidCallback voidCallback) async {
   chatDataModel.msg = await postMessageManagerVoice(targetId, chatDataModel.chatVoiceModel, conversationType);
   chatDataModel.isTemporary = false;
   voidCallback();

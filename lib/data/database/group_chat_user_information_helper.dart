@@ -88,7 +88,7 @@ class GroupChatUserInformationDBHelper {
   //移除某一个或者某几个 被移除群成员信息
   void removeMessageGroup(Message message){
     // print("移除好友");
-    if(message==null||message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+    if(message!=null||message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
       Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
       //移除
       if (mapGroupModel["subType"] == 2||mapGroupModel["subType"]==1) {
