@@ -12,10 +12,10 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     print('------------------------------formatEditUpdate');
     print("00000000000000000");
-    if (Application.platform==1&&!newValue.composing.isValid) {
+    /*if (Application.platform==1&&!newValue.composing.isValid) {
       return newValue;
-    }
-    if (newValue.text.length > oldValue.text.length && maxLength != null) {
+    }*/
+    if (newValue.text.length > oldValue.text.length && maxLength != null&&!newValue.composing.isValid) {
       print("111111111111111");
       if (newValue.text.length > maxLength && oldValue.text.length < maxLength) {
         ///还可以输入多少字符
@@ -59,7 +59,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
     print("newValue::::$newValue");
 
     ///这是删除的监听
-    if (oldValue.text.length > newValue.text.length) {
+    if (oldValue.text.length > newValue.text.length&&!newValue.composing.isValid) {
       ///这是多选删除
       if (oldValue.text.characters.length - newValue.text.characters.length > 1) {
         return newValue;
@@ -70,7 +70,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
       String backText = "";
       int choseIndex;
       for (int i = 0; i < oldValue.text.characters.toList().length; i++) {
-        if (oldValue.text.characters.toList()[i].length + backText.length - 1 < newValue.selection.baseOffset) {
+        if (oldValue.text.characters.toList()[i].length - 1 + backText.length < newValue.selection.baseOffset) {
           backText += oldValue.text.characters.toList()[i];
           print('--------------------${backText}');
         } else if (choseIndex == null) {

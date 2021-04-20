@@ -66,7 +66,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   String _signature;
 
   ///头像
-  String _avatar;
+  String _avatar = "";
 
   TabController _mController;
 
@@ -206,19 +206,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
-      _avatar = userModel.avatarUri;
-      _signature = userModel.description;
-      userStatus = userModel.status;
-      print('-------------------------userStatus = ${userModel.status}');
-      if (_signature != null) {
-        ///判断文字的高度，动态改变
-        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
-        _signatureHeight = testSize.height;
-      }
-      _textName = userModel.nickName;
-      if (mounted) {
-        setState(() {});
-      }
+      setState(() {
+        _avatar = userModel.avatarUri;
+        _signature = userModel.description;
+        userStatus = userModel.status;
+        print('-------------------------userStatus = ${userModel.status}');
+        if (_signature != null) {
+          ///判断文字的高度，动态改变
+          TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
+          _signatureHeight = testSize.height;
+        }
+        _textName = userModel.nickName;
+      });
       if (userModel.relation == 0 || userModel.relation == 2) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       } else if (userModel.relation == 1 || userModel.relation == 3) {
@@ -697,12 +696,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: avatarSize,
           width: avatarSize,
           useOldImageOnUrlChange: true,
-          imageUrl: _avatar != null ? _avatar : "",
+          imageUrl: _avatar,
           fit: BoxFit.cover,
           placeholder: (context, url) =>Container(color: AppColor.bgWhite,),
-          errorWidget:(context, url, e) {
+          /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
-          },
+          },*/
         ),
       ),
     );
