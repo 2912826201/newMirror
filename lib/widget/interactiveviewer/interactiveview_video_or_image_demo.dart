@@ -66,7 +66,7 @@ class _DemoImageItemState extends State<DemoImageItem> {
             child: CachedNetworkImage(
               placeholder: (context, url) {
                 return Image.network(
-                  FileUtil.getImagesLim(widget.source.url),
+                  FileUtil.getImageSlim(widget.source.url),
                   fit: BoxFit.cover,
                 );
               },

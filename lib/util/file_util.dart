@@ -160,13 +160,6 @@ class FileUtil {
     }
     return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight";
   }
-  //获取七牛瘦身图片
-  static String getImagesLim(String imageUrl) {
-    if (imageUrl == null || imageUrl.length < 1) {
-      return "";
-    }
-    return imageUrl + "?imageslim";
-  }
 
   //===========================下载部分start===========================
   //获取指定url文件下载后的文件路径 可用来判断是否已下载
