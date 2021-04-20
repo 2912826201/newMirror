@@ -139,9 +139,25 @@ class FileUtil {
   //获取视频第一帧的图片
   static String getVideoFirstPhoto(String videoUrl) {
     if (videoUrl == null || videoUrl.length < 1) {
-      return "";
+      return videoUrl;
     }
-    return videoUrl + "?vframe/jpg/offset/1";
+    return "$videoUrl?vframe/jpg/offset/1";
+  }
+
+  //获取瘦身后的图片
+  static String getImageSlim(String imageUrl) {
+    if (imageUrl == null || imageUrl.length < 1) {
+      return imageUrl;
+    }
+    return "$imageUrl?imageslim";
+  }
+
+  //获取限制尺寸的图片
+  static String getMaxSizeImage(String imageUrl, int maxHeight, int maxWidth) {
+    if (imageUrl == null || imageUrl.length < 1) {
+      return imageUrl;
+    }
+    return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight";
   }
 
   //===========================下载部分start===========================
