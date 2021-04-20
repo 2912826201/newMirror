@@ -166,9 +166,10 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
       if (topChat) {
-        Application.topChatModelList.add(topChatModel);
-        topChatIndex = Application.topChatModelList.length - 1;
-        topChat = true;
+        if(topChatIndex<0) {
+          Application.topChatModelList.add(topChatModel);
+          topChatIndex = Application.topChatModelList.length - 1;
+        }
         if (null != widget.dto) {
           widget.dto.isTop = 1;
           context.read<ConversationNotifier>().insertTop(widget.dto);
@@ -178,7 +179,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
           Application.topChatModelList.removeAt(topChatIndex);
         }
         topChatIndex = -1;
-        topChat = false;
         if (null != widget.dto) {
           widget.dto.isTop = 0;
           context.read<ConversationNotifier>().insertCommon(widget.dto);

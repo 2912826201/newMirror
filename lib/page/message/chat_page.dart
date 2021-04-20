@@ -1294,29 +1294,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 //判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
     print("判断是否退出群聊或者加入群聊");
-    if (message != null) {
+    if (message != null&&message.conversationType==RCConversationType.Group&&
+      message.targetId==conversation.conversationId) {
       //清聊天未读数
       _resetChatGroupUserModelList();
       Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
-      if(dataMap["subType"]==0) {
+      if(dataMap["subType"]==0||dataMap["subType"]==2) {
         print("dataMap[subType]0:${dataMap["subType"]}");
         insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
           if (code == 0) {
             print("scrollPositionPixels加入：$scrollPositionPixels");
-            chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
-            isHaveReceiveChatDataList = true;
-            if (scrollPositionPixels < 500) {
-              isHaveReceiveChatDataList = false;
-
-              EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-            }
-          }
-        });
-      }else if(dataMap["subType"]==2){
-        print("dataMap[subType]2:${dataMap["subType"]}");
-        insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
-          if (code == 0) {
-            print("scrollPositionPixels移除：$scrollPositionPixels");
             chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
             isHaveReceiveChatDataList = true;
             if (scrollPositionPixels < 500) {
