@@ -14,6 +14,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -361,7 +362,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     child: CachedNetworkImage(
                       height: height * 0.11,
                       width: height * 0.11,
-                      imageUrl: avatar == null ? "" : avatar,
+                      imageUrl: avatar!=null?FileUtil.getMediumImage(avatar):" ",
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         color: AppColor.bgWhite,

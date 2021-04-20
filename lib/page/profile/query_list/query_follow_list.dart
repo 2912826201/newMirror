@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -77,6 +78,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   String hintText;
   bool showNoMore = true;
   String defaultImage = DefaultImage.nodata;
+
   ///获取关注列表
   _getFollowList() async {
     if (listPage > 1 && hasNext == 0) {
@@ -96,7 +98,7 @@ class _QueryFollowState extends State<QueryFollowList> {
           model.list.forEach((element) {
             buddyList.add(element);
           });
-        }else{
+        } else {
           buddyList.add(BuddyModel());
         }
         _refreshController.refreshCompleted();
@@ -544,7 +546,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
-                                        if(buddyList.length!=1&&buddyList[index].nickName!=null){
+                                        if (buddyList.length != 1 && buddyList[index].nickName != null) {
                                           context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
                                               isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
                                                   ? true
@@ -561,16 +563,16 @@ class _QueryFollowState extends State<QueryFollowList> {
                                               userId: widget.userId,
                                               isMySelf: isMySelf,
                                               globalKey: index ==
-                                                  (widget.type == 1 || widget.type == 2
-                                                      ? buddyList.length - 1
-                                                      : topicList.length - 1)
+                                                      (widget.type == 1 || widget.type == 2
+                                                          ? buddyList.length - 1
+                                                          : topicList.length - 1)
                                                   ? globalKey
                                                   : null,
                                             );
                                           } else {
                                             List<BuddyModel> list = [];
-                                            for(int i = 0;i<buddyList.length;i++){
-                                              if(i!=index){
+                                            for (int i = 0; i < buddyList.length; i++) {
+                                              if (i != index) {
                                                 list.add(buddyList[i]);
                                               }
                                             }
@@ -579,7 +581,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                             buddyList.insert(0, BuddyModel());
                                             return Container();
                                           }
-                                        }else{
+                                        } else {
                                           return Container(
                                             key: globalKey,
                                             height: ScreenUtil.instance.height,
@@ -816,7 +818,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                             child: CachedNetworkImage(
                               height: 38,
                               width: 38,
-                              imageUrl: avatarUrl,
+                              imageUrl: avatarUrl != null ? FileUtil.getMediumImage(avatarUrl) : " ",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
                                 color: AppColor.bgWhite,
@@ -827,43 +829,45 @@ class _FollowItemState extends State<QueryFollowItem> {
                   SizedBox(
                     width: 12,
                   ),
-                   Container(
-                      width: ScreenUtil.instance.screenWidthDp-(FollowButton.FOLLOW_BUTTON_WIDTH+66+32),
-                      height: 48,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              userName,
-                              style: AppStyle.textMedium15,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                  Container(
+                    width: ScreenUtil.instance.screenWidthDp - (FollowButton.FOLLOW_BUTTON_WIDTH + 66 + 32),
+                    height: 48,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Spacer(),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            userName,
+                            style: AppStyle.textMedium15,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          haveIntroduction ? Spacer() : Container(),
-                          haveIntroduction
-                              ? Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    description,
-                                    style: AppStyle.textSecondaryRegular12,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
-                              : Container(
-                                  height: 0,
+                        ),
+                        haveIntroduction ? Spacer() : Container(),
+                        haveIntroduction
+                            ? Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  description,
+                                  style: AppStyle.textSecondaryRegular12,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                          Spacer(),
-                        ],
-                      ),
+                              )
+                            : Container(
+                                height: 0,
+                              ),
+                        Spacer(),
+                      ],
                     ),
+                  ),
                 ],
               )),
-          SizedBox(width: 16,),
+          SizedBox(
+            width: 16,
+          ),
           FollowButton(
             id: uid,
             isFollow: isFollow,

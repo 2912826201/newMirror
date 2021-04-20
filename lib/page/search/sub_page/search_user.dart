@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
@@ -244,7 +245,7 @@ class _SearchState extends State<SearchUserItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl: widget.model.avatarUri,
+                        imageUrl:  widget.model.avatarUri!=null?FileUtil.getMediumImage(  widget.model.avatarUri):" ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,

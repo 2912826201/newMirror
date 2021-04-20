@@ -21,6 +21,7 @@ import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -66,7 +67,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   String _signature;
 
   ///头像
-  String _avatar = "";
+  String _avatar;
 
   TabController _mController;
 
@@ -696,7 +697,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: avatarSize,
           width: avatarSize,
           useOldImageOnUrlChange: true,
-          imageUrl: _avatar,
+          imageUrl: _avatar!=null?FileUtil.getMediumImage(_avatar):" ",
           fit: BoxFit.cover,
           placeholder: (context, url) =>Container(color: AppColor.bgWhite,),
           /*errorWidget:(context, url, e) {
