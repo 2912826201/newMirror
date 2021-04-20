@@ -151,7 +151,11 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    return "$imageUrl?imageslim";
+    if(imageUrl.contains("?")){
+      return "$imageUrl|imageslim";
+    }else{
+      return "$imageUrl?imageslim";
+    }
   }
 
   //获取限制尺寸的图片
@@ -159,7 +163,11 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight";
+    if(imageUrl.contains("?")){
+      return "$imageUrl|imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
+    }else{
+      return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
+    }
   }
 
   static String getSmallImage(String imageUrl){
@@ -168,6 +176,14 @@ class FileUtil {
 
   static String getMediumImage(String imageUrl){
     return _getMaxSizeImage(imageUrl, maxImageSizeMedium, maxImageSizeMedium);
+  }
+
+  static String getLargeImage(String imageUrl){
+    return _getMaxSizeImage(imageUrl, maxImageSizeLarge, maxImageSizeLarge);
+  }
+
+  static String getLargeVideoFirstImage(String videoUrl){
+    return _getMaxSizeImage(getVideoFirstPhoto(videoUrl), maxImageSizeLarge, maxImageSizeLarge);
   }
 
   //===========================下载部分start===========================

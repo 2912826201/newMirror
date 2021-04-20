@@ -21,6 +21,7 @@ import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/page/training/test_appvar.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -512,9 +513,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                             clipBehavior: Clip.antiAlias,
                             child: CachedNetworkImage(
                               // 调整磁盘缓存中图像大小
-                              maxHeightDiskCache: 200,
-                              maxWidthDiskCache: 200,
-                              imageUrl: topicList[index].pics[indexs] != null ? topicList[index].pics[indexs] : "",
+                              maxHeightDiskCache: 250,
+                              maxWidthDiskCache: 250,
+                              imageUrl: topicList[index].pics[indexs] != null ? FileUtil.getMediumImage(topicList[index].pics[indexs]) : "",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
                                 color: AppColor.bgWhite,

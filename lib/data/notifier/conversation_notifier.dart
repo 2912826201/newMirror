@@ -127,8 +127,6 @@ class ConversationNotifier with ChangeNotifier {
   _updateUnreadMessageNumber(){
     Application.unreadMessageNumber=0;
     _conversationMap.forEach((key, value) {
-      print("--key, value--${key} ${value}");
-      print("--value.runtimeType--" + value.runtimeType.toString());
       NoPromptUidModel model=NoPromptUidModel(type: value.type,targetId: int.parse(value.conversationId));
       if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
         Application.unreadMessageNumber+=value.unreadCount;

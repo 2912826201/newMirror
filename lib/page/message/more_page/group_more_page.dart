@@ -17,6 +17,7 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -303,7 +304,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       child: Container(
         child: Column(
           children: [
-            getUserImage(userModel.avatarUri, 47, 47),
+            getUserImage(FileUtil.getSmallImage(userModel.avatarUri), 47, 47),
             SizedBox(
               height: 6,
             ),

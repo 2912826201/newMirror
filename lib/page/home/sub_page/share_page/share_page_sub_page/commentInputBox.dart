@@ -12,6 +12,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -74,10 +75,10 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     height: 28,
                     width: 28,
                     // 调整磁盘缓存中图像大小
-                    maxHeightDiskCache: 200,
-                    maxWidthDiskCache: 200,
+                    maxHeightDiskCache: 150,
+                    maxWidthDiskCache: 150,
                     imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
-                        ? context.watch<ProfileNotifier>().profile.avatarUri
+                        ? FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri)
                         : "",
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(

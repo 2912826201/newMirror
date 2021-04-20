@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 
 import 'custom_appbar.dart';
 import 'icon.dart';
@@ -143,7 +144,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             child: CachedNetworkImage(
               height: double.infinity,
               width: double.infinity,
-              imageUrl: this.coverImgUrl == null ? "" : this.coverImgUrl,
+              imageUrl: this.coverImgUrl == null ? "" : FileUtil.getImageSlim(this.coverImgUrl),
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
                 color: AppColor.bgWhite,

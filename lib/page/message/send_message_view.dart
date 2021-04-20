@@ -14,6 +14,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/message_view/alert_msg.dart';
 import 'package:mirror/page/message/message_view/feed_msg.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -108,6 +109,8 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         } catch (e) {}
       }
     }
+
+    userUrl=FileUtil.getSmallImage(userUrl);
   }
 
   //临时消息

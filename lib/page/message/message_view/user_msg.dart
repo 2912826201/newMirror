@@ -8,6 +8,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'package:mirror/util/file_util.dart';
 
 import 'currency_msg.dart';
 
@@ -202,7 +203,7 @@ class UserMsg extends StatelessWidget {
                           width:double.infinity,
                           height: double.infinity,
                           child: Image.network(
-                            userModel.avatarUri,
+                            FileUtil.getSmallImage(userModel.avatarUri),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -233,7 +234,7 @@ class UserMsg extends StatelessWidget {
               borderRadius: BorderRadius.circular(47.0 / 2),
               border: Border.all(color: AppColor.white, width: 2),
             ),
-            child: getUserImage(userModel.avatarUri, 47, 47),
+            child: getUserImage(FileUtil.getSmallImage(userModel.avatarUri), 47, 47),
           ),
         ],
       ),

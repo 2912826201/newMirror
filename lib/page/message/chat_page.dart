@@ -182,6 +182,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
 
     if (conversation.getType() == RCConversationType.Group) {
@@ -198,12 +200,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       initTextController();
       initReleaseFeedInputFormatter();
     }
-
     initWidget();
 
     initScrollController();
 
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
   @override
@@ -228,13 +235,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //清聊天未读数
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       //清其他数据
-      Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
       _textController.text = "";
       Application.appContext.read<ChatEnterNotifier>().clearRules();
     }
     if (conversation.getType() == RCConversationType.Group) {
+      Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
     }
@@ -245,9 +252,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     deletePostCompleteMessage(conversation);
   }
 
+
+  @override
+  Future didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState:$state");
+    if (state == AppLifecycleState.paused) {
+      _messageInputBodyClick();
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   ///----------------------------------------ui start---------------------------------------------///

@@ -53,7 +53,7 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
   _LiveRoomVideoOperationPageState createState() => _LiveRoomVideoOperationPageState(coachRelation);
 }
 
-class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> {
+class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> with WidgetsBindingObserver{
   _LiveRoomVideoOperationPageState(this.coachRelation);
 
   //与教练的关系
@@ -104,6 +104,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
     print("开播时间是:${widget.startTime},${widget.coachId}");
 
     EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage, EVENTBUS_ROOM_OPERATION_PAGE,
@@ -1126,9 +1129,24 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     messageCantSendStream.close();
   }
 
+
+  @override
+  Future didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState:$state");
+    if (state == AppLifecycleState.paused) {
+      if(_emojiState){
+        _emojiStateOld=false;
+        _onClickBodyListener();
+      }
+    }
+  }
+
+
   @override
   void dispose() {
     _closeData();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

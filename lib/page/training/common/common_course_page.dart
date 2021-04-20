@@ -159,7 +159,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: Image.network(
-                  videoModel.coachDto?.avatarUri ?? "",
+                  FileUtil.getSmallImage(videoModel.coachDto?.avatarUri) ?? "",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -348,7 +348,8 @@ Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextSty
               longTime = 0;
             }
             if (longTime > 0) {
-              timeString = DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+              timeString =
+                  DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
             }
             return Container(
               width: 136,
@@ -763,7 +764,10 @@ Widget getUserImage(String imageUrl, double height, double width) {
     child: CachedNetworkImage(
       height: height,
       width: width,
-      imageUrl: imageUrl == null ? "" : imageUrl,
+      imageUrl: imageUrl == null ? "" : FileUtil.getSmallImage(imageUrl),
+      // 调整磁盘缓存中图像大小
+      maxHeightDiskCache: 150,
+      maxWidthDiskCache: 150,
       fit: BoxFit.cover,
       placeholder: (context, url) => Container(
         color: AppColor.bgWhite,
