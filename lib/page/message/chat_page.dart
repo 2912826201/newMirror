@@ -187,6 +187,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (conversation.getType() == RCConversationType.Group) {
       EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       EventBus.getDefault().registerSingleParameter(_judgeResetPage, EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
+      EventBus.getDefault().registerNoParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE, registerName: RESET_CHAR_GROUP_USER_LIST);
     }
     EventBus.getDefault()
         .registerSingleParameter(resetSettingStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
@@ -219,8 +220,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void deactivate() {
+    super.deactivate();
     _messageInputBodyClick();
     _scrollController.dispose();
     if (Application.appContext != null) {
@@ -233,7 +234,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       _textController.text = "";
       Application.appContext.read<ChatEnterNotifier>().clearRules();
     }
-
     if (conversation.getType() == RCConversationType.Group) {
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
@@ -243,6 +243,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
 
     deletePostCompleteMessage(conversation);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   ///----------------------------------------ui start---------------------------------------------///
@@ -949,7 +954,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    postVoice(chatDataList[0], conversation.conversationId, conversation.type, conversation.getType(), () {
+    // print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
+    postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
@@ -1285,25 +1291,51 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
   }
 
-//判断是否退出界面加入群聊
+//判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
+    print("判断是否退出群聊或者加入群聊");
     if (message != null) {
       //清聊天未读数
-      ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-      getChatGroupUserModelList(conversation.conversationId, context);
-      insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
-        if (code == 0) {
-          print("scrollPositionPixels1：$scrollPositionPixels");
-          chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
-          isHaveReceiveChatDataList = true;
-          if (scrollPositionPixels < 500) {
-            isHaveReceiveChatDataList = false;
+      _resetChatGroupUserModelList();
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      if(dataMap["subType"]==0) {
+        print("dataMap[subType]0:${dataMap["subType"]}");
+        insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
+          if (code == 0) {
+            print("scrollPositionPixels加入：$scrollPositionPixels");
+            chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
+            isHaveReceiveChatDataList = true;
+            if (scrollPositionPixels < 500) {
+              isHaveReceiveChatDataList = false;
 
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+              EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            }
           }
-        }
-      });
+        });
+      }else if(dataMap["subType"]==2){
+        print("dataMap[subType]2:${dataMap["subType"]}");
+        insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
+          if (code == 0) {
+            print("scrollPositionPixels移除：$scrollPositionPixels");
+            chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
+            isHaveReceiveChatDataList = true;
+            if (scrollPositionPixels < 500) {
+              isHaveReceiveChatDataList = false;
+
+              EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            }
+          }
+        });
+      }else{
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
     }
+  }
+
+  //重新刷新群聊人数
+  void _resetChatGroupUserModelList(){
+    ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+    getChatGroupUserModelList(conversation.conversationId, context);
   }
 
   initWidget() {

@@ -64,7 +64,7 @@ class EventBus {
     }
     _registerMap[registerName][pageName].stream.listen((msg) {
       if (null == msg) {
-        print("EventBus:post广播需要一个参数!!!--目前没有参数,不进行广播");
+        print("EventBus:post广播需要一个参数!!!--目前没有参数,不进行广播:$pageName,$registerName");
       } else {
         listener(msg);
       }
@@ -88,7 +88,7 @@ class EventBus {
       if (null == msg) {
         listener();
       } else {
-        print("EventBus:post广播不需要参数!!!--请不要传参进入");
+        print("EventBus:post广播不需要参数!!!--请不要传参进入:$pageName,$registerName");
         listener();
       }
     });
@@ -190,7 +190,9 @@ const String EVENTBUS__VIDEO_PLAYORPAUSE = "video_play_or_pause";
 //聊天界面的bar
 const String EVENTBUS_CHAT_BAR = "eventbus_chat_bar";
 //聊天界面的加入群聊或者离开群聊
-const String CHAT_JOIN_EXIT = "eventbus_chat_bar";
+const String CHAT_JOIN_EXIT = "eventbus_chat_join_exit";
+//聊天界面刷新群聊人数
+const String RESET_CHAR_GROUP_USER_LIST = "eventbus_reset_char_group_user_list";
 //聊天界面的更新消息状态
 const String RESET_MSG_STATUS = "reset_msg_status";
 //聊天界面的消息列表更新

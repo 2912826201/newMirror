@@ -37,13 +37,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
         && RCConversationType.Group == chatTypeId}");
     if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
-      List<dynamic> users = mapGroupModel["users"];
-      for (dynamic d in users) {
-        if (d["uid"] == Application.profile.uid) {
-          EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
-          break;
-        }
-      }
+      print("111111移除群聊");
+      EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
     }else{
       insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
     }
@@ -56,13 +51,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
         && RCConversationType.Group == chatTypeId}");
     print("value:${message.originContentMap.toString()}");
     if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
-      List<dynamic> users = mapGroupModel["users"];
-      for (dynamic d in users) {
-        if (d["uid"] == Application.profile.uid) {
-          EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
-          break;
-        }
-      }
+      print("1111111111111加入群聊");
+      EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
     }else{
       insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
     }
