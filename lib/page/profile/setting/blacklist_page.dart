@@ -11,6 +11,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -130,7 +131,7 @@ class _BlackListState extends State<BlackListPage> {
               child: CachedNetworkImage(
                 height: 38,
                 width: 38,
-                imageUrl: blackList[index].avatarUri,
+                imageUrl: blackList[index].avatarUri!=null?FileUtil.getMediumImage(blackList[index].avatarUri):" ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,

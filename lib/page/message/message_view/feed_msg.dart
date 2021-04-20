@@ -193,8 +193,13 @@ class FeedMsg extends StatelessWidget {
     if (isPicOrVideo < 0) {
       return Container();
     } else {
-      String showUrl =
-          (isPicOrVideo == 0 ? homeFeedMode.picUrls[0].url : FileUtil.getVideoFirstPhoto(homeFeedMode.videos[0].url));
+      String showUrl;
+
+      if (isPicOrVideo == 0) {
+        showUrl = FileUtil.getLargeImage(homeFeedMode.picUrls[0].url);
+      } else {
+        showUrl = FileUtil.getLargeVideoFirstImage(homeFeedMode.videos[0].url);
+      }
 
       int ms = 0;
       if (isPicOrVideo == 1) {
@@ -234,8 +239,7 @@ class FeedMsg extends StatelessWidget {
                           AppColor.textPrimary1.withOpacity(0.35),
                         ],
                       ),
-                    )
-                ),
+                    )),
               ),
               Offstage(
                 offstage: isPicOrVideo == 0,
@@ -243,7 +247,7 @@ class FeedMsg extends StatelessWidget {
                   height: double.infinity,
                   width: double.infinity,
                   child: Center(
-                    child:  AppIcon.getAppIcon(AppIcon.play_28, 28),
+                    child: AppIcon.getAppIcon(AppIcon.play_28, 28),
                   ),
                 ),
               ),

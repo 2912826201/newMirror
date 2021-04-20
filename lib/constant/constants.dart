@@ -19,6 +19,7 @@ const int minRecordVoiceDuration=1;
 //缩略图尺寸
 const int maxImageSizeSmall = 150;
 const int maxImageSizeMedium = 250;
+const int maxImageSizeLarge = 500;
 
 //截图保存尺寸
 const double cropImageSize = 1080.0;
