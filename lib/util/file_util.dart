@@ -178,6 +178,14 @@ class FileUtil {
     return _getMaxSizeImage(imageUrl, maxImageSizeMedium, maxImageSizeMedium);
   }
 
+  static String getLargeImage(String imageUrl){
+    return _getMaxSizeImage(imageUrl, maxImageSizeLarge, maxImageSizeLarge);
+  }
+
+  static String getLargeVideoFirstImage(String videoUrl){
+    return _getMaxSizeImage(getVideoFirstPhoto(videoUrl), maxImageSizeLarge, maxImageSizeLarge);
+  }
+
   //===========================下载部分start===========================
   //获取指定url文件下载后的文件路径 可用来判断是否已下载
   Future<String> getDownloadedPath(String url) async {

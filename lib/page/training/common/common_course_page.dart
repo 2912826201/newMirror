@@ -159,7 +159,7 @@ Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function on
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: Image.network(
-                  videoModel.coachDto?.avatarUri ?? "",
+                  FileUtil.getSmallImage(videoModel.coachDto?.avatarUri) ?? "",
                   fit: BoxFit.cover,
                 ),
               ),

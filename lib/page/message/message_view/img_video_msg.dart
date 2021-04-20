@@ -244,7 +244,7 @@ class ImgVideoMsg extends StatelessWidget {
         return getImagePlaceHolder();
       }
     } else {
-      return getCachedNetworkImage(FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]));
+      return getCachedNetworkImage(FileUtil.getLargeVideoFirstImage(sizeInfoMap["showImageUrl"]));
     }
   }
 
@@ -272,7 +272,7 @@ class ImgVideoMsg extends StatelessWidget {
           return getImagePlaceHolder();
         }
       } else {
-        return getCachedNetworkImage(FileUtil.getImageSlim(sizeInfoMap["showImageUrl"]));
+        return getCachedNetworkImage(FileUtil.getLargeImage(sizeInfoMap["showImageUrl"]));
       }
     }
   }
@@ -356,25 +356,25 @@ class ImgVideoMsg extends StatelessWidget {
       ),
     );
   }
+
   //获取视频的标识遮罩
   Widget getVideoMask() {
     return Offstage(
-        offstage: isImgOrVideo,
-        child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  AppColor.textPrimary1.withOpacity(0),
-                  AppColor.textPrimary1.withOpacity(0.35),
-                ],
-              ),
-            )
-        ),
-      );
+      offstage: isImgOrVideo,
+      child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColor.textPrimary1.withOpacity(0),
+                AppColor.textPrimary1.withOpacity(0.35),
+              ],
+            ),
+          )),
+    );
   }
 
   //初始化数据
