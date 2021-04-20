@@ -18,6 +18,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -270,12 +271,11 @@ class HeadViewState extends State<HeadView> {
                             height: 38,
                             /// imageUrl的淡入动画的持续时间。
                             // fadeInDuration: Duration(milliseconds: 0),
-                            imageUrl:
-                                isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl,
+                            imageUrl: FileUtil.getSmallImage(isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
                             fit: BoxFit.cover,
                             // 调整磁盘缓存中图像大小
-                            maxHeightDiskCache: 200,
-                            maxWidthDiskCache: 200,
+                            maxHeightDiskCache: 150,
+                            maxWidthDiskCache: 150,
                           )
                         // NetworkImage(
                         //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)

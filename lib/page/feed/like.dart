@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -162,13 +163,15 @@ class LikeListViewItem extends StatelessWidget {
               height: 38,
               width: 38,
               child: ClipOval(
-               child: CachedNetworkImage(
-                  /// imageUrl的淡入动画的持续时间。
-                  // fadeInDuration: Duration(milliseconds: 0),
-                  imageUrl: model.avatarUrl ?? "",
-                  fit: BoxFit.cover,
-                )
-              ),
+                  child: CachedNetworkImage(
+                /// imageUrl的淡入动画的持续时间。
+                // fadeInDuration: Duration(milliseconds: 0),
+                imageUrl: FileUtil.getSmallImage(model.avatarUrl) ?? "",
+                fit: BoxFit.cover,
+                // 调整磁盘缓存中图像大小
+                maxHeightDiskCache: 150,
+                maxWidthDiskCache: 150,
+              )),
             ),
           ),
           Column(

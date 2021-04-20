@@ -15,6 +15,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
@@ -227,9 +228,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             height: 21,
             width: 21,
             // 调整磁盘缓存中图像大小
-            maxHeightDiskCache: 200,
-            maxWidthDiskCache: 200,
-            imageUrl: url != null ? url : "",
+            maxHeightDiskCache: 150,
+            maxWidthDiskCache: 150,
+            imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
               color: AppColor.bgWhite,
