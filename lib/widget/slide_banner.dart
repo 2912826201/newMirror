@@ -20,6 +20,7 @@ import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
@@ -153,7 +154,7 @@ class _SlideBannerState extends State<SlideBanner> {
             child: CachedNetworkImage(
               /// imageUrl的淡入动画的持续时间。
               // fadeInDuration: Duration(milliseconds: 0),
-              imageUrl: item.url,
+              imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
               width: ScreenUtil.instance.width,
               height: height,
               fit: BoxFit.cover,
@@ -172,7 +173,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   // fadeInDuration: Duration(milliseconds: 0),
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
-                  imageUrl: item.url != null ? item.url : "",
+                  imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
                   errorWidget: (context, url, error) => Container(
                     color: AppColor.bgWhite,
                   ),
@@ -187,7 +188,7 @@ class _SlideBannerState extends State<SlideBanner> {
                       /// imageUrl的淡入动画的持续时间。
                       fadeInDuration: Duration(milliseconds: 0),
                       fit: BoxFit.cover,
-                      imageUrl: item.url != null ? item.url : "",
+                      imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
                       errorWidget: (context, url, error) => Container(
                         color: AppColor.bgWhite,
                       ),
