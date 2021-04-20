@@ -180,11 +180,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               attentionIdList.insert(0, -1);
               status = Status.noConcern;
             }
+            lastTime = model.lastTime;
           } else {
-            //没有存在空布局时再插入
-            if (attentionIdList.first != -1) {
-              attentionIdList.insert(0, -1);
-            }
+            attentionIdList.insert(0, -1);
             status = Status.noConcern;
           }
           _refreshController.refreshCompleted();
@@ -200,6 +198,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             } else {
               _refreshController.loadNoData();
             }
+            lastTime = model.lastTime;
           } else {
             _refreshController.loadNoData();
           }
@@ -207,7 +206,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
       });
     }
-    lastTime = model.lastTime;
+
     isRequestInterface = false;
     // } else {
     //   print('-""--7666666666666666666666666666666666666else else');
