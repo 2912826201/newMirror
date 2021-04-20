@@ -21,6 +21,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -254,9 +255,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                             clipBehavior: Clip.antiAlias,
                                             child: CachedNetworkImage(
                                               // 调整磁盘缓存中图像大小
-                                              maxHeightDiskCache: 200,
-                                              maxWidthDiskCache: 200,
-                                              imageUrl: widget.model.avatarUrl != null ? widget.model.avatarUrl : "",
+                                              maxHeightDiskCache: 150,
+                                              maxWidthDiskCache: 150,
+                                              imageUrl: widget.model.avatarUrl != null ? FileUtil.getSmallImage(widget.model.avatarUrl) : "",
                                               fit: BoxFit.cover,
                                               placeholder: (context, url) => Container(
                                                 color: AppColor.bgWhite,

@@ -73,6 +73,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    print("当前页面销毁了？？？？？？？？？？");
     _controller.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -200,7 +201,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor:AppColor.white,
+        backgroundColor: AppColor.white,
         resizeToAvoidBottomInset: false,
         body: ChangeNotifierProvider(
           create: (_) => ReleaseFeedInputNotifier(
@@ -296,8 +297,11 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   // 发布动态选择的图片视频
   SelectedMediaFiles selectedMediaFiles;
 
-  // 发布动态选择的地址
+  // 发布动态选择的地址详细信息
   PeripheralInformationPoi selectAddress;
+
+  // 发布动态选择的地址文本
+  String seletedAddressText = "你在哪儿";
 
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../icon.dart';
@@ -143,8 +144,11 @@ class FriendsCell extends StatelessWidget {
                   child: CachedNetworkImage(
                     height: 38,
                     width: 38,
-                    imageUrl: avatarList.first,
+                    imageUrl: FileUtil.getSmallImage(avatarList.first) ?? "",
                     fit: BoxFit.cover,
+                    // 调整磁盘缓存中图像大小
+                    maxHeightDiskCache: 150,
+                    maxWidthDiskCache: 150,
                     placeholder: (context, url) => Container(
                       color: AppColor.bgWhite,
                     ),
@@ -161,7 +165,10 @@ class FriendsCell extends StatelessWidget {
                         child: CachedNetworkImage(
                           height: 28,
                           width: 28,
-                          imageUrl: avatarList.first,
+                          // 调整磁盘缓存中图像大小
+                          maxHeightDiskCache: 150,
+                          maxWidthDiskCache: 150,
+                          imageUrl: FileUtil.getSmallImage(avatarList.first) ?? "",
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             color: AppColor.bgWhite,
@@ -184,7 +191,10 @@ class FriendsCell extends StatelessWidget {
                       child: CachedNetworkImage(
                         height: 28,
                         width: 28,
-                        imageUrl: avatarList[1],
+                        // 调整磁盘缓存中图像大小
+                        maxHeightDiskCache: 150,
+                        maxWidthDiskCache: 150,
+                        imageUrl: FileUtil.getSmallImage(avatarList[1]) ?? "",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,

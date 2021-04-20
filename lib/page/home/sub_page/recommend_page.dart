@@ -15,6 +15,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
@@ -407,12 +408,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       width: 47,
                                       useOldImageOnUrlChange: true,
                                       imageUrl: liveVideoModel[index].coachDto.avatarUri != null
-                                          ? liveVideoModel[index].coachDto.avatarUri
+                                          ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
                                           : "",
                                       fit: BoxFit.cover,
                                       // 调整磁盘缓存中图像大小
-                                      maxHeightDiskCache: 200,
-                                      maxWidthDiskCache: 200,
+                                      maxHeightDiskCache: 150,
+                                      maxWidthDiskCache: 150,
                                       placeholder: (context, url) => CircularProgressIndicator(),
                                       errorWidget: (context, url, e) {
                                         return Image.asset(
@@ -437,12 +438,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                               height: 47,
                               width: 47,
                               imageUrl: liveVideoModel[index].coachDto.avatarUri != null
-                                  ? liveVideoModel[index].coachDto.avatarUri
+                                  ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
                                   : "",
                               fit: BoxFit.cover,
                               // 调整磁盘缓存中图像大小
-                              maxHeightDiskCache: 200,
-                              maxWidthDiskCache: 200,
+                              maxHeightDiskCache: 150,
+                              maxWidthDiskCache: 150,
                               placeholder: (context, url) => CircularProgressIndicator(),
                               errorWidget: (context, url, e) {
                                 return Image.asset(
