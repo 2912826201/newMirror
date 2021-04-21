@@ -44,9 +44,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
   // #后跟随的实时搜索文本
   String topicSearchStr = "";
-
-
-
+  // 最大字节数
+  int maxNumberOfBytes;
+  //
   ReleaseFeedInputFormatter({
     TriggerAtCallback triggerAtCallback,
     ValueChangedCallback valueChangedCallback,
@@ -71,9 +71,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
     bool isAdd = oldValue.text.length < newValue.text.length;
     print("新值$newValue");
-    // print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
+    print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
     print("新值前光标${newValue.selection.start}");
-
     print("新值后光标${newValue.selection.end}");
     print("旧值$oldValue");
     print("旧值前光标${oldValue.selection.start}");

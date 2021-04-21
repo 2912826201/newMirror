@@ -158,6 +158,14 @@ class _SlideBannerState extends State<SlideBanner> {
               width: ScreenUtil.instance.width,
               height: height,
               fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: AppColor.bgWhite,
+              ),
+              errorWidget: (context, url, e) {
+                return Container(
+                  color: AppColor.bgWhite,
+                );
+              },
             ),
           ),
         ));
@@ -174,9 +182,14 @@ class _SlideBannerState extends State<SlideBanner> {
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
                   imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                  errorWidget: (context, url, error) => Container(
+                  placeholder: (context, url) => Container(
                     color: AppColor.bgWhite,
                   ),
+                  errorWidget: (context, url, e) {
+                    return Container(
+                      color: AppColor.bgWhite,
+                    );
+                  },
                 )
         )
             : Hero(
@@ -189,9 +202,14 @@ class _SlideBannerState extends State<SlideBanner> {
                       fadeInDuration: Duration(milliseconds: 0),
                       fit: BoxFit.cover,
                       imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                      errorWidget: (context, url, error) => Container(
+                      placeholder: (context, url) => Container(
                         color: AppColor.bgWhite,
                       ),
+                      errorWidget: (context, url, e) {
+                        return Container(
+                          color: AppColor.bgWhite,
+                        );
+                      },
                     )),
               ));
       }
