@@ -357,6 +357,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
         return GestureDetector(
           onTap: () async {
+            AppRouter.navigateToVideoDetail(context, liveVideoList[index].id, videoModel: liveVideoList[index]);
             // TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
             // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => StickyDemo(model: topicModel,)));
           },
@@ -512,6 +513,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                             alignment: Alignment.center,
                             clipBehavior: Clip.antiAlias,
                             child: CachedNetworkImage(
+                              height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                              width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                               // 调整磁盘缓存中图像大小
                               maxHeightDiskCache: 250,
                               maxWidthDiskCache: 250,

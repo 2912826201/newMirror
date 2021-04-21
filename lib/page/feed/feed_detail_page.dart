@@ -74,7 +74,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
-    context.read<FeedMapNotifier>().changeImageDetailsStatus(false,needNotify: false);
     if (widget.errorCode == CODE_SUCCESS) {
       feedModel = context.read<FeedMapNotifier>().value.feedMap[widget.model.id];
       _checkBlackStatus();
@@ -119,16 +118,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        child:Scaffold(
+    return Scaffold(
         backgroundColor: AppColor.white,
         appBar: CustomAppBar(
           titleString: "动态详情页",
           leadingOnTap: () {
-            if(!context.read<FeedMapNotifier>().value.showImageDetails){
               Navigator.of(context).pop(true);
-            }
-
           },
         ),
         body: widget.errorCode != CODE_NO_DATA
@@ -272,11 +267,9 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                     const Spacer()
                   ],
                 ),
-              )),onWillPop: _requestPop,);
+              ));
   }
-  Future<bool> _requestPop() {
-    return new Future.value(context.read<FeedMapNotifier>().value.showImageDetails?false:true);
-  }
+
   Widget _getCourseCommentUi() {
     /* Future.delayed(Duration(milliseconds: 100),()async{
       print("开始滚动------------------------------------------------------------------------");
