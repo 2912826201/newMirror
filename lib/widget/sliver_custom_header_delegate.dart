@@ -104,13 +104,13 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
       padding: const EdgeInsets.only(left: 17.5, bottom: 16),
       child: Row(
         children: [
-          Icon(
-            Icons.access_time,
+          AppIcon.getAppIcon(
+            AppIcon.time_filled_16,
+            18,
             color: AppColor.white,
-            size: 18,
           ),
           SizedBox(
-            width: 10,
+            width: 8,
           ),
           Text(
             DateUtil.formatDateNoYearString(DateUtil.stringToDateTime(startTime)) +

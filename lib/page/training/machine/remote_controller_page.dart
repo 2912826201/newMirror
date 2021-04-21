@@ -117,7 +117,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             Visibility(
               visible: widget.liveRoomId != null,
               child: CustomAppBarIconButton(
-                  icon: Icons.menu_book_rounded,
+                  svgName: AppIcon.nav_danmaku,
                   iconColor: AppColor.black,
                   onTap: () {
                     openInputBottomSheet(

@@ -97,7 +97,7 @@ class HeadViewState extends State<HeadView> {
         } else {
           removeFollowAndFollow(id, context, isCancel);
         }
-      }else{
+      } else {
         Toast.show("关注失败，请重试", context);
       }
     }
@@ -269,13 +269,23 @@ class HeadViewState extends State<HeadView> {
                         ? CachedNetworkImage(
                             width: 38,
                             height: 38,
+
                             /// imageUrl的淡入动画的持续时间。
                             // fadeInDuration: Duration(milliseconds: 0),
-                            imageUrl: FileUtil.getSmallImage(isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
+                            imageUrl: FileUtil.getSmallImage(
+                                isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
                             fit: BoxFit.cover,
                             // 调整磁盘缓存中图像大小
                             maxHeightDiskCache: 150,
                             maxWidthDiskCache: 150,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.bgWhite,
+                            ),
+                            errorWidget: (context, url, e) {
+                              return Container(
+                                color: AppColor.bgWhite,
+                              );
+                            },
                           )
                         // NetworkImage(
                         //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)

@@ -565,10 +565,10 @@ class MessageManager {
           }
         }
         String operatorName = dataMap["operatorName"];
-        if (dataMap["operatorUid"] == Application.profile.uid) {
+        if (dataMap["operator"] == Application.profile.uid) {
           operatorName = "你";
         }
-        return "$operatorName将$names加入了群聊";
+        return "$operatorName邀请了$names加入群聊";
       case 1:
         String names = "";
         for (int i = 0; i < dataMap["users"].length; i++) {

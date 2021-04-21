@@ -9,6 +9,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:video_player/video_player.dart';
 
 import '../dynamic_list.dart';
@@ -197,9 +198,9 @@ class _VideoWidgetState extends State<VideoWidget> {
                                             streamController.sink
                                                 .add(widget.feedModel.videos.first.controller.value.volume > 0);
                                           },
-                                          child: Icon(
-                                            snapshot.data == false ? Icons.volume_mute : Icons.volume_up,
-                                            size: 16,
+                                          child: AppIcon.getAppIcon(
+                                            snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
+                                            16,
                                             color: AppColor.white,
                                           ),
                                         );

@@ -20,6 +20,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -85,7 +86,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
         titleString: "我的二维码",
         actions: [
           CustomAppBarIconButton(
-              icon: Icons.ios_share,
+              svgName: AppIcon.nav_share,
               iconColor: AppColor.black,
               onTap: () {
                 model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
@@ -109,10 +110,12 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                 children: [
                   //背景图
                   Container(
-                    height: ScreenUtil.instance.height,
-                    width: ScreenUtil.instance.screenWidthDp,
-                    child: Image.network("http://devpic.aimymusic.com/ifapp/1008977/1615279317627.jpg",fit: BoxFit.cover,)
-                  ),
+                      height: ScreenUtil.instance.height,
+                      width: ScreenUtil.instance.screenWidthDp,
+                      child: Image.network(
+                        "http://devpic.aimymusic.com/ifapp/1008977/1615279317627.jpg",
+                        fit: BoxFit.cover,
+                      )),
                   Positioned(
                       left: (ScreenUtil.instance.screenWidthDp - ScreenUtil.instance.screenWidthDp * 0.8) / 2,
                       top: ScreenUtil.instance.height * 0.17,

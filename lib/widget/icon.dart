@@ -15,6 +15,7 @@ class AppIcon {
   static const String nav_more = "assets/svg/nav_more.svg";
   static const String nav_scan = "assets/svg/nav_scan.svg";
   static const String nav_settings = "assets/svg/nav_settings.svg";
+  static const String nav_danmaku = "assets/svg/nav_danmaku.svg";
   static const String input_at = "assets/svg/input_at.svg";
   static const String input_keyboard = "assets/svg/input_keyboard.svg";
   static const String input_voice = "assets/svg/input_voice.svg";
@@ -51,6 +52,7 @@ class AppIcon {
   static const String double_arrow_down_16 = "assets/svg/double_arrow_down_16.svg";
   static const String close_18 = "assets/svg/close_18.svg";
   static const String close_24 = "assets/svg/close_24.svg";
+  static const String close_circle_16 = "assets/svg/close_circle_16.svg";
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
@@ -132,6 +134,7 @@ class AppIcon {
   static const String volume_on_16 = "assets/svg/volume_on_16.svg";
   static const String volume_off_16 = "assets/svg/volume_off_16.svg";
   static const String pin_bubble_index_bar = "assets/svg/pin_bubble_index_bar.svg";
+  static const String error_circle = "assets/svg/error_circle.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

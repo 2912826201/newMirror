@@ -414,11 +414,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       // 调整磁盘缓存中图像大小
                                       maxHeightDiskCache: 150,
                                       maxWidthDiskCache: 150,
-                                      placeholder: (context, url) => CircularProgressIndicator(),
+                                      placeholder: (context, url) => Container(
+                                        color: AppColor.bgWhite,
+                                      ),
                                       errorWidget: (context, url, e) {
-                                        return Image.asset(
-                                          "images/test.png",
-                                          fit: BoxFit.cover,
+                                        return Container(
+                                          color: AppColor.bgWhite,
                                         );
                                       },
                                     ),
@@ -444,11 +445,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                               // 调整磁盘缓存中图像大小
                               maxHeightDiskCache: 150,
                               maxWidthDiskCache: 150,
-                              placeholder: (context, url) => CircularProgressIndicator(),
+                              placeholder: (context, url) => Container(
+                                color: AppColor.bgWhite,
+                              ),
                               errorWidget: (context, url, e) {
-                                return Image.asset(
-                                  "images/test.png",
-                                  fit: BoxFit.cover,
+                                return Container(
+                                  color: AppColor.bgWhite,
                                 );
                               },
                             ),

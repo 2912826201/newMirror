@@ -580,10 +580,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                 alignment: Alignment.center,
                 height: 36,
                 width: 36,
-                child: Icon(
-                  Icons.highlight_off,
+                child: AppIcon.getAppIcon(
+                  AppIcon.close_circle_16,
+                  16,
                   color: AppColor.white,
-                  size: 16,
                 ),
               ),
             ),

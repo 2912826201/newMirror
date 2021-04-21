@@ -26,6 +26,7 @@ import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
@@ -57,6 +58,7 @@ class _EditInformationState extends State<EditInformation> {
   int buttonState = CustomRedButton.buttonStateNormal;
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
+
   @override
   void initState() {
     super.initState();
@@ -267,7 +269,7 @@ class _EditInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose( "地区", context.watch<AddressPickerNotifier>().provinceCity),
+                    child: _rowChose("地区", context.watch<AddressPickerNotifier>().provinceCity),
                     onTap: () {
                       openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
                     },
@@ -283,9 +285,9 @@ class _EditInformationState extends State<EditInformation> {
                     onTap: () {
                       AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
                         if (result != null) {
-                          if(result.length!=0){
+                          if (result.length != 0) {
                             _introduction = result;
-                          }else{
+                          } else {
                             _introduction = null;
                           }
                         }
@@ -304,20 +306,20 @@ class _EditInformationState extends State<EditInformation> {
             ),
             buttonState == CustomRedButton.buttonStateLoading
                 ? Container(
-              height: ScreenUtil.instance.height,
+                    height: ScreenUtil.instance.height,
                     child: InkWell(
-                    onTap: () {
-                      return null;
-                    },
-                    child: Container(),
-                  ))
+                      onTap: () {
+                        return null;
+                      },
+                      child: Container(),
+                    ))
                 : Container()
           ],
         ));
   }
 
   //这是每项资料的item
-  Widget _rowChose( String title, String textContent) {
+  Widget _rowChose(String title, String textContent) {
     return Container(
       height: title == "简介" ? textHeight + 25 : 48,
       width: width,
@@ -394,11 +396,8 @@ class _EditInformationState extends State<EditInformation> {
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                      child: Icon(
-                    Icons.add,
-                    size: 16,
-                    color: AppColor.white,
-                  )),
+                    child: AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
+                  ),
                 ))
           ],
         ));
@@ -430,10 +429,10 @@ class _EditInformationState extends State<EditInformation> {
                 Spacer(),
                 InkWell(
                     onTap: () {
-                        setState(() {
-                          userBirthday = choseTime;
-                        });
-                        Navigator.pop(context);
+                      setState(() {
+                        userBirthday = choseTime;
+                      });
+                      Navigator.pop(context);
                     },
                     child: Text('确定', style: AppStyle.redRegular16)),
               ],

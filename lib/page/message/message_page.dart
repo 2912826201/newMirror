@@ -196,9 +196,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               SizedBox(
                 width: 16,
               ),
-              Icon(
-                Icons.error_outline,
-                size: 16,
+              AppIcon.getAppIcon(
+                AppIcon.error_circle,
+                16,
                 color: AppColor.mainRed,
               ),
               SizedBox(
@@ -254,7 +254,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToInteractivePage(context,type: type,callBack: (type) async {
+              AppRouter.navigateToInteractivePage(context, type: type, callBack: (type) async {
                 switch (type) {
                   case 0:
                     context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0);
@@ -326,9 +326,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               SizedBox(
                 width: 16,
               ),
-              Icon(
-                Icons.error_outline,
-                size: 16,
+              AppIcon.getAppIcon(
+                AppIcon.error_circle,
+                16,
                 color: AppColor.orange,
               ),
               SizedBox(
@@ -374,8 +374,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 width: 224,
                 height: 224,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                  image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
                 ),
               ),
               SizedBox(
