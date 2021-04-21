@@ -198,6 +198,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             }
           }
           isSuccess = true;
+          jumpChatPageConversationDto(context, cdto);
         }
       } catch (e) {
         print(e);
