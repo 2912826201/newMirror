@@ -146,8 +146,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     });
   }
 
-
-
   // 重新登录替换布局
   _againLoginReplaceLayout() {
     // 调用关注接口替换
@@ -163,14 +161,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       return;
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-    if (model != null) {
-      print('---7666666666666666666666666666666666666model！=null');
-      if (mounted) {
-        setState(() {
-          print("dataPage:  ￥￥$dataPage");
-          if (dataPage == 1) {
+
+    print('---7666666666666666666666666666666666666model！=null');
+    if (mounted) {
+      setState(() {
+        print("dataPage:  ￥￥$dataPage");
+        if (dataPage == 1) {
+          if (model != null) {
             print("第一页");
-            //fixme model.list为空 null 会报错
             if (model.list != null && model.list.isNotEmpty) {
               model.list.forEach((v) {
                 attentionIdList.add(HomeFeedModel.fromJson(v).id);
@@ -182,8 +180,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               attentionIdList.insert(0, -1);
               status = Status.noConcern;
             }
-            _refreshController.refreshCompleted();
-          } else if (dataPage > 1 && lastTime != null) {
+            lastTime = model.lastTime;
+          } else {
+            attentionIdList.insert(0, -1);
+            status = Status.noConcern;
+          }
+          _refreshController.refreshCompleted();
+        } else if (dataPage > 1 && lastTime != null) {
+          if (model != null) {
             print("第二页");
             if (model.list.isNotEmpty) {
               model.list.forEach((v) {
@@ -194,35 +198,30 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             } else {
               _refreshController.loadNoData();
             }
+            lastTime = model.lastTime;
+          } else {
+            _refreshController.loadNoData();
           }
-          // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
-        });
-      }
-      lastTime = model.lastTime;
-      isRequestInterface = false;
+        }
+        // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
+      });
     }
-    // else if (context.read<ProfileNotifier>().profile != null &&
-    //     PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-    //             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) ==
-    //         null) {
-    //   print('-""--7666666666666666666666666666666666666else if');
+
+    isRequestInterface = false;
+    // } else {
+    //   print('-""--7666666666666666666666666666666666666else else');
+    //   // 没有存在空布局时再插入
+    //   if (attentionIdList.first != -1) {
+    //     attentionIdList.insert(0, -1);
+    //   }
     //   status = Status.noConcern;
-    //   _refreshController.loadNoData();
+    //   _refreshController.loadComplete();
+    //   // _refreshController.loadNoData();
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    //   // 这是为了加载无动态缺省布局
     // }
-    else {
-      print('-""--7666666666666666666666666666666666666else else');
-      // 没有存在空布局时再插入
-      if (attentionIdList.first != -1) {
-        attentionIdList.insert(0, -1);
-      }
-      status = Status.noConcern;
-      _refreshController.loadComplete();
-      // _refreshController.loadNoData();
-      if (mounted) {
-        setState(() {});
-      }
-      // 这是为了加载无动态缺省布局
-    }
     // 更新动态数量
     int addFeedNum = 0;
     attentionModelList.forEach((element) {
@@ -240,9 +239,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0 &&context.read<FeedMapNotifier>().value.unReadFeedCount!=0) {
-      ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity: Toast.CENTER);
-     /* _unReadFeedCount = 0;*/
+    if (addFeedNum != 0 && context.read<FeedMapNotifier>().value.unReadFeedCount != 0) {
+      ToastShow.show(
+          msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
+          context: context,
+          gravity: Toast.CENTER);
+      /* _unReadFeedCount = 0;*/
       /*EventBus.getDefault().post(msg: _unReadFeedCount, registerName: EVENTBUS__FEED_UNREAD);*/
       context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
