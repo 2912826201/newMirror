@@ -421,6 +421,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             }),
         titleWidget: Container(
           width: 140,
+          color: AppColor.white,
           child: TabBar(
             controller: controller,
             tabs: [

@@ -98,12 +98,16 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                                 child: Image.file(
                                   imageFile,
                                   fit: BoxFit.cover,
+                                  width: 36,
+                                  height: 36,
                                 ))
                             : widget.postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage != null
                                 ? Container(
                                     width: 36,
                                     height: 36,
                                     child: RawImage(
+                                      width: 36,
+                                      height: 36,
                                       image: widget
                                           .postprogressModel.postFeedModel.selectedMediaFiles.list.first.croppedImage,
                                       fit: BoxFit.cover,

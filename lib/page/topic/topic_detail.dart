@@ -448,7 +448,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             width: 72,
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
-                border: Border.all(width: 1, color: AppColor.black)),
+                border: Border.all(width: 1, color:AppColor.bgBlack)),
             child: widget.model.isFollow == 0
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -497,5 +497,5 @@ class TopicDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
 class TopicUiChangeModel {
   Color titleColor = AppColor.transparent;
   Color iconColor = AppColor.white;
-  bool canOnclick = true;
+  bool canOnclick = false;
 }
