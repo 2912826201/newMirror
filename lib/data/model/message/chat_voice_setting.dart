@@ -20,6 +20,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
       print("======onPlayerCompletion");
       isPlaying = false;
       isPause = false;
+      idMd5String = "";
+      Application.audioPlayer.stop();
       notifyListeners();
     });
   }
@@ -29,6 +31,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
       print("======onPlayerError");
       isPlaying = false;
       isPause = false;
+      idMd5String = "";
+      Application.audioPlayer.stop();
       notifyListeners();
     });
   }
