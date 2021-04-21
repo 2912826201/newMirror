@@ -45,32 +45,30 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        child: Scaffold(
-          appBar: CustomAppBar(
-            titleString: "下载课程",
-            actions: [
-              CustomAppBarTextButton(topText, AppColor.textPrimary3, () {
-                if (courseVideoModelList != null && courseVideoModelList.length > 0) {
-                  if (topText == "选择") {
-                    topText = "取消";
-                  } else {
-                    topText = "选择";
-                  }
-                  selectDeleteIndexList.clear();
-                  isAllSelect = false;
-                  if (mounted) {
-                    setState(() {});
-                  }
-                } else {
-                  ToastShow.show(msg: "暂无课程", context: context);
-                }
-              }),
-            ],
-          ),
-          body: getBodyUi(),
-        ),
-        onWillPop: _requestPop);
+    return Scaffold(
+      appBar: CustomAppBar(
+        titleString: "下载课程",
+        actions: [
+          CustomAppBarTextButton(topText, AppColor.textPrimary3, () {
+            if (courseVideoModelList != null && courseVideoModelList.length > 0) {
+              if (topText == "选择") {
+                topText = "取消";
+              } else {
+                topText = "选择";
+              }
+              selectDeleteIndexList.clear();
+              isAllSelect = false;
+              if (mounted) {
+                setState(() {});
+              }
+            } else {
+              ToastShow.show(msg: "暂无课程", context: context);
+            }
+          }),
+        ],
+      ),
+      body: getBodyUi(),
+    );
   }
 
   // 监听返回
