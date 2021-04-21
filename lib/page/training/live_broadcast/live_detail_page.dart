@@ -910,7 +910,7 @@ class LiveDetailPageState extends XCState {
     }
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
     //加载数据
-    Map<String, dynamic> model = await (isHaveStartTime ? liveCourseDetail : getLatestLiveById)(courseId: liveCourseId);
+    Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
