@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
 //账号与安全
@@ -129,15 +130,11 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             SizedBox(
               width: 12,
             ),
-            Container(
-              height: 18,
-              width: 18,
-              child: Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 18,
-                color: AppColor.textHint,
-              ),
-            )
+            AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              18,
+              color: AppColor.textHint,
+            ),
           ],
         ),
       ),

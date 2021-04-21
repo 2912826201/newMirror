@@ -91,7 +91,7 @@ class ChatPageUtil {
                   height: 48,
                   width: 48,
                   color: AppColor.transparent,
-                  child: Icon(Icons.close, size: 16, color: AppColor.colorb9b9b9),
+                  child: AppIcon.getAppIcon(AppIcon.close_18, 16, color: AppColor.textHint),
                 ),
                 onTap: () {
                   if (_showTopAttentionUi != null) {
@@ -119,7 +119,7 @@ class ChatPageUtil {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add, size: 16, color: AppColor.textPrimary1),
+                      AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.textPrimary1),
                       Text("关注", style: AppStyle.textMedium14),
                       SizedBox(width: 2),
                     ],
