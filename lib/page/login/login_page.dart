@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
               padding:
                   EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight, left: CustomAppBar.appBarHorizontalPadding),
               child: CustomAppBarIconButton(
-                svgName: AppIcon.nav_return,
+                svgName: AppIcon.nav_close,
                 iconColor: AppColor.black,
                 onTap: () {
                   Navigator.pop(context);
@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _backImage() {
     return Container(
       child: Image.asset(
-        "assets/svg/nav_close.svg",
+        "assets/png/login_bg.png",
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,

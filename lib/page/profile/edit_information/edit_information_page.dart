@@ -338,7 +338,7 @@ class _EditInformationState extends State<EditInformation> {
           ),
           Container(
             alignment: title != "简介" ? Alignment.centerLeft : Alignment.topLeft,
-            height: title == "简介" ? 148 : 23,
+            height: title == "简介" ? textHeight : 23,
             width: width * 0.67,
             child: Text(
               textContent != null ? textContent : "去编辑",
@@ -376,7 +376,7 @@ class _EditInformationState extends State<EditInformation> {
                   : CachedNetworkImage(
                       height: 72,
                       width: 72,
-                      imageUrl: avataruri,
+                      imageUrl: FileUtil.getMediumImage(avataruri),
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         color: AppColor.bgWhite,
@@ -491,6 +491,7 @@ class _EditInformationState extends State<EditInformation> {
         "资料修改失败",
         context,
       );
+      Navigator.pop(context);
       print('=========================资料修改失败！=========================');
     }
   }
