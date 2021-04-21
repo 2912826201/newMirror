@@ -124,13 +124,12 @@ class _SlideBannerState extends State<SlideBanner> {
     List.generate(widget.model.picUrls.length, (indexs) {
       PicUrlsModel item = widget.model.picUrls[indexs];
       // 查看大图设置
-      if (widget.isDynamicDetails) {
-        cupertinoButtons.add(CupertinoButton(
+       /* cupertinoButtons.add(CupertinoButton(
           borderRadius: BorderRadius.zero,
           padding: EdgeInsets.zero,
-          onPressed: () {
+        *//*  onPressed: () {
             print('---------------------------------大图预览');
-            /*ImagePreview.preview(
+            *//**//*ImagePreview.preview(
               context,
               initialIndex: indexs,
               onIndexChanged: (ind) {
@@ -146,8 +145,8 @@ class _SlideBannerState extends State<SlideBanner> {
               }),
             ).then((value) {
               context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
-            });*/
-          },
+            });*//**//*
+          },*//*
           child: ImagePreviewHero(
             tag: item.url + "$indexs",
             child: CachedNetworkImage(
@@ -167,8 +166,8 @@ class _SlideBannerState extends State<SlideBanner> {
               },
             ),
           ),
-        ));
-      } else {
+        ));*/
+
         // 轮播图设置
         cupertinoButtons.add((!widget.isHero)
             ? Container(
@@ -211,7 +210,6 @@ class _SlideBannerState extends State<SlideBanner> {
                       },
                     )),
               ));
-      }
     });
     return cupertinoButtons;
   }
