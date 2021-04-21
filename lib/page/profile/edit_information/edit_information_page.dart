@@ -345,8 +345,8 @@ class _EditInformationState extends State<EditInformation> {
             child: Text(
               textContent != null ? textContent : "去编辑",
               style: AppStyle.textRegular16,
-              maxLines: title != "简介" ? 1 : 5,
-              overflow: TextOverflow.ellipsis,
+              /*maxLines: title != "简介" ? 1 : 5,*/
+             /* overflow: TextOverflow.ellipsis,*/
             ),
           ),
           Spacer(),

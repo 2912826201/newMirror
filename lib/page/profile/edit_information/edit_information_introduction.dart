@@ -93,9 +93,8 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                   if (editText.length == 0) {
                     Navigator.pop(this.context, "");
                   } else {
-                    print('---------------------------${cutTextToList(editText, "", 0).toString()}');
                     if (editText.replaceAll(new RegExp(r"\s+"), "").length != 0) {
-                      Navigator.pop(this.context, StringUtil.textWrapMatch(editText));
+                      Navigator.pop(this.context, editText.trim());
                     } else {
                       Navigator.pop(context, "");
                     }
