@@ -568,6 +568,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           recallNotificationMessagePosition++;
         }
       }
+    }else{
+      chatDataList.insert(
+          0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch, conversation.conversationId));
     }
   }
 

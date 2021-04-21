@@ -328,9 +328,11 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   setEmojiState(bool emojiState) {
     this.emojiState = emojiState;
-    if (mounted) {
-      setState(() {});
-    }
+    try{
+      if (mounted) {
+        setState(() {});
+      }
+    }catch (e){}
   }
 
   setData({bool bottomSettingPanelState, bool emojiState}) {
@@ -340,8 +342,10 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     if (emojiState != null) {
       this.emojiState = emojiState;
     }
-    if (mounted) {
-      setState(() {});
-    }
+    try{
+      if (mounted) {
+        setState(() {});
+      }
+    }catch (e){}
   }
 }
