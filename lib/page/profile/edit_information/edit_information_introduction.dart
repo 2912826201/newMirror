@@ -88,13 +88,13 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                 () {
                   _commentFocus.unfocus();
                   if(editText.length==0){
-                    Navigator.pop(this.context, null);
+                    Navigator.pop(this.context, "");
                   }else{
                     print('---------------------${editText.replaceAll(new RegExp(r"\s+"), "")}');
                     if(editText.replaceAll(new RegExp(r"\s+"), "").length!=0){
                       Navigator.pop(this.context, editText);
                     }else{
-                      Navigator.pop(context,null);
+                      Navigator.pop(context,"");
                     }
                   }
                 },

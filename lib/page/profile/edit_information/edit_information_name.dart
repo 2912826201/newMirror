@@ -147,7 +147,7 @@ class _EditInformationNameState extends State<EditInformationName> {
             "0-15个字符，起个好听的名字吧~",
             style: AppStyle.textPrimary3Regular14,
           ),
-          Expanded(child: Container()),
+        Spacer(),
           Text(
             "$_reciprocal",
             style: AppStyle.textPrimary3Regular14,
@@ -161,7 +161,6 @@ class _EditInformationNameState extends State<EditInformationName> {
     var putFiled = TextField(
       autofocus: true,
       maxLength: 15,
-      /*maxLines: 1,*/
       focusNode: _commentFocus,
       controller: controller,
       cursorColor: AppColor.black,

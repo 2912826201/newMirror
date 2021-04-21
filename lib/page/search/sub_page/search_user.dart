@@ -245,11 +245,18 @@ class _SearchState extends State<SearchUserItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl:  widget.model.avatarUri!=null?FileUtil.getMediumImage(  widget.model.avatarUri):" ",
+                        maxWidthDiskCache: 150,
+                        maxHeightDiskCache: 150,
+                        imageUrl:  widget.model.avatarUri!=null?FileUtil.getSmallImage(  widget.model.avatarUri):" ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,
                         ),
+                        errorWidget: (context, url, e) {
+                          return Container(
+                            color: AppColor.bgWhite,
+                          );
+                        },
                       ),
                     ),
                   ),

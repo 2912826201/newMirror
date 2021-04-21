@@ -140,11 +140,10 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         loadText = "加载中...";
       }
       List<HomeFeedModel> feedModel = [];
-      try{
-
+      try {
         // 更新数据
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
-      }catch(e){
+      } catch (e) {
         print('-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$e');
       }
     }
@@ -412,13 +411,14 @@ class SearchFeeditemState extends State<SearchFeeditem> {
         // width: ((ScreenUtil.instance.screenWidthDp) / 2),
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
-            child: Center(
-          child: CircularProgressIndicator(),
-        )),
-        imageUrl: model.picUrls[0].url != null ? model.picUrls[0].url : "",
-        errorWidget: (context, url, error) => Container(
           color: AppColor.bgWhite,
         ),
+        errorWidget: (context, url, e) {
+          return Container(
+            color: AppColor.bgWhite,
+          );
+        },
+        imageUrl: model.picUrls[0].url != null ? model.picUrls[0].url : "",
       ),
     );
   }
