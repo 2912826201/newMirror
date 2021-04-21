@@ -84,3 +84,7 @@ widget/     可复用的界面组件。
     child: Scaffold()
   )
   2.用了AppBar：在AppBar中设置brightness: Brightness.light //light是黑字，dark是白字
+  
+## 备忘
+flutter build apk --release --target-platform android-arm64
+flutter build apk --release --target-platform android-arm
