@@ -283,9 +283,11 @@ class _EditInformationState extends State<EditInformation> {
                     onTap: () {
                       AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
                         if (result != null) {
-                          _introduction = result;
-                        } else {
-                          _introduction = null;
+                          if(result.length!=0){
+                            _introduction = result;
+                          }else{
+                            _introduction = null;
+                          }
                         }
                         setState(() {});
                       });

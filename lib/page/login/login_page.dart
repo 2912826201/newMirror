@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _backImage() {
     return Container(
       child: Image.asset(
-        "assets/png/login_bg.png",
+        "assets/svg/nav_close.svg",
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
