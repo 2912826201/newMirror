@@ -588,6 +588,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //表情框
   Widget emojiPlan(double keyboardHeight) {
+    keyboardHeight += MediaQuery.of(context).padding.bottom;
     print("_emojiState:$_emojiState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
@@ -628,6 +629,15 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 SliverToBoxAdapter(
                   child: _emojiBottomBox(),
                 ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .padding
+                        .bottom,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -640,14 +650,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   //获取表情头部的 内嵌的表情
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: keyboardHeight - 45.0,
+      height: keyboardHeight - 45.0 - MediaQuery
+          .of(context)
+          .padding
+          .bottom,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
       child: GridView.builder(
         padding: const EdgeInsets.only(top: 10),
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },

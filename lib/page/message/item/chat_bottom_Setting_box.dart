@@ -97,6 +97,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   //表情框
   Widget emoji(double keyboardHeight) {
+    keyboardHeight += MediaQuery.of(context).padding.bottom;
     double height = emojiState ? keyboardHeight : 0.0;
     return AnimatedContainer(
       duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),
@@ -150,6 +151,15 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
                 ),
                 SliverToBoxAdapter(
                   child: _emojiBottomBox(),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .padding
+                        .bottom,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -215,13 +225,16 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   //获取表情头部的 内嵌的表情
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: keyboardHeight - 45.0,
+      height: keyboardHeight - 45.0 - MediaQuery
+          .of(context)
+          .padding
+          .bottom,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: GridView.builder(
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
