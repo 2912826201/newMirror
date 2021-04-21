@@ -24,6 +24,9 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
 
       ///输入的字符
       inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
+      if(inputText == "\n"){
+        return oldValue;
+      }
       if(maxLength != null&&!newValue.composing.isValid){
       if (newValue.text.length > maxLength && oldValue.text.length < maxLength) {
         ///还可以输入多少字符
