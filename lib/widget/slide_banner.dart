@@ -130,8 +130,7 @@ class _SlideBannerState extends State<SlideBanner> {
           padding: EdgeInsets.zero,
           onPressed: () {
             print('---------------------------------大图预览');
-            context.read<FeedMapNotifier>().changeImageDetailsStatus(true);
-            ImagePreview.preview(
+            /*ImagePreview.preview(
               context,
               initialIndex: indexs,
               onIndexChanged: (ind) {
@@ -147,7 +146,7 @@ class _SlideBannerState extends State<SlideBanner> {
               }),
             ).then((value) {
               context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
-            });
+            });*/
           },
           child: ImagePreviewHero(
             tag: item.url + "$indexs",

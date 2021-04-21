@@ -50,11 +50,11 @@ Widget getMessageState(int status,
   if (status == RCSentStatus.Sending) {
     //发送中
     return Container(
-      width: 28.0,
-      height: 28.0,
+      width: 24.0,
+      height: 24.0,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       child: CupertinoActivityIndicator(
-        radius: 14,
+        radius: 10,
       ),
     );
   } else if (status == RCSentStatus.Failed) {
