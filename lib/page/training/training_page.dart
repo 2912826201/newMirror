@@ -347,15 +347,17 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                  child: Text(
-                "近期直播",
-                style: AppStyle.textMedium16,
-              )),
+                child: Text(
+                  "近期直播",
+                  style: AppStyle.textMedium16,
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   AppRouter.navigateToLiveBroadcast(context);
                 },
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       "全部",
@@ -472,6 +474,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               AppRouter.navigateToVideoCourseList(context);
             },
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "添加课程",
