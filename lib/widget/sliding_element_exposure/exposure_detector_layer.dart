@@ -172,6 +172,7 @@ class ExposureDetectorLayer extends ContainerLayer {
       if (info.visibleFraction >= 0.5) {
         if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
           if (nowTime - _exposureTime[layer.key].time > ExposureDetectorController.instance.exposureTime) {
+            print("info:::::::$info");
             layer.onExposureChanged(info);
           } else {
             setScheduleUpdate();

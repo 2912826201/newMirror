@@ -1154,7 +1154,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
         }
       }
     }).catchError((e) {
-      print("媒体文件报错：" + entity.id + ":" + e);
+      print("媒体文件报错：" + entity.id + ":$e");
     });
   }
 }
