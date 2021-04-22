@@ -17,6 +17,9 @@ class RongCloud {
   RongCloudReceiveManager _receiveManager;
   RongCloudStatusManager _statusManager;
 
+  int _retryCount = 0;
+  List<int> _retryInterval = [1, 3, 5, 10, 30, 60];
+
   //初始化融云组件
   static RongCloud init() {
     if (_instance == null) {
@@ -50,9 +53,8 @@ class RongCloud {
 
   //连接融云服务器
   void connect() async {
-    //TODO 需要处理没能成功从服务器取到token的情况
     String token = await requestRongCloudToken();
-    if(token != null) {
+    if (token != null) {
       doConnect(token, (int code, String userId) {
         print('RongCloud connect result ' + code.toString());
         if (code == 0) {
@@ -63,10 +65,36 @@ class RongCloud {
           _statusManager.setStatus(RCConnectionStatus.Connected);
         } else if (code == 31004) {
           //token 非法，需要重新从 APP 服务获取新 token 并连接
-          connect();
+          _retryConnect();
         }
       });
+    } else {
+      //token没有取到，需要重新从 APP 服务获取新 token 并连接
+      _retryConnect();
     }
+  }
+
+  // 重连方法
+  void _retryConnect() {
+    // 未登录的情况不重试 并将重试次数清零
+    if (Application.token == null || Application.token.anonymous == 1) {
+      _instance._retryCount = 0;
+      return;
+    }
+    int interval = 0;
+    //当重试次数超出递增数列上限时赋值最大值，否则从响应次数取值
+    if (_instance._retryCount >= _instance._retryInterval.length) {
+      interval = _instance._retryInterval.last;
+    } else {
+      interval = _instance._retryInterval[_instance._retryCount];
+    }
+    //重试次数加一
+    _instance._retryCount += 1;
+    //在延迟间隔时间后获取token连接融云
+    Future.delayed(Duration(seconds: interval), (){
+      print("重连融云第${_instance._retryCount}次，间隔$interval秒，时间戳${DateTime.now().millisecondsSinceEpoch}");
+      connect();
+    });
   }
 
   //连接融云服务器 错误码见common_define.dart中的RCErrorCode
@@ -80,12 +108,12 @@ class RongCloud {
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendGroupMessage(String targetId, MessageContent content)async {
+  Future<Message> sendGroupMessage(String targetId, MessageContent content) async {
     return RongIMClient.sendMessage(RCConversationType.Group, targetId, content);
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendPrivateMessage(String targetId, MessageContent content)async {
+  Future<Message> sendPrivateMessage(String targetId, MessageContent content) async {
     return RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
   }
 
@@ -95,11 +123,11 @@ class RongCloud {
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendVoiceMessage(Message message)async {
-    if(Application.platform==1){
+  Future<Message> sendVoiceMessage(Message message) async {
+    if (Application.platform == 1) {
       return RongIMClient.getMessage(
           (await RongIMClient.sendIntactMessageWithCallBack(message, "", "", null)).messageId);
-    }else{
+    } else {
       return RongIMClient.sendIntactMessageWithCallBack(message, "", "", null);
     }
   }
@@ -154,22 +182,22 @@ class RongCloud {
   }
 
   /// 清空指定类型，targetId 的某一会话所有聊天消息记录
-  void clearMessages(int conversationType,String targetId,Function(int code) finished){
-    if (conversationType == null||targetId == null) {
+  void clearMessages(int conversationType, String targetId, Function(int code) finished) {
+    if (conversationType == null || targetId == null) {
       return;
     }
-    RongIMClient.clearMessages(conversationType, targetId,finished);
+    RongIMClient.clearMessages(conversationType, targetId, finished);
   }
 
   //插入发送的消息
   void insertOutgoingMessage(
       int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
-      {int sendTime = -1,int sendStatus=RCSentStatus.Sent}) {
+      {int sendTime = -1, int sendStatus = RCSentStatus.Sent}) {
     // 需要同时更新会话
     if (sendTime < 0) {
       RongIMClient.insertOutgoingMessage(
           conversationType, targetId, sendStatus, content, new DateTime.now().millisecondsSinceEpoch, (msg, code) {
-        if(msg!=null) {
+        if (msg != null) {
           try {
             MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
           } catch (e) {}
@@ -178,7 +206,7 @@ class RongCloud {
       });
     } else {
       RongIMClient.insertOutgoingMessage(conversationType, targetId, sendStatus, content, sendTime, (msg, code) {
-        if(msg!=null) {
+        if (msg != null) {
           try {
             MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
           } catch (e) {}
@@ -226,12 +254,12 @@ class RongCloud {
   }
 
   //加入聊天室
-  void joinChatRoom(String targetId,{int messageCount=-1}) {
-     RongIMClient.joinChatRoom(targetId,messageCount);
+  void joinChatRoom(String targetId, {int messageCount = -1}) {
+    RongIMClient.joinChatRoom(targetId, messageCount);
   }
 
   //退出聊天室
   void quitChatRoom(String targetId) {
-     RongIMClient.quitChatRoom(targetId);
+    RongIMClient.quitChatRoom(targetId);
   }
 }

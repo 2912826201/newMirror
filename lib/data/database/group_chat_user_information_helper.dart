@@ -130,8 +130,12 @@ class GroupChatUserInformationDBHelper {
   }
 
   Future<bool> _insert(GroupChatUserInformationDto informationDto) async {
-    var result = await DBHelper.instance.db.insert(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap());
-    return result > 0;
+    try{
+      var result = await DBHelper.instance.db.insert(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, informationDto.toMap());
+      return result > 0;
+    }catch (e){
+      return await _update(informationDto);
+    }
   }
 
   Future<bool> _update(GroupChatUserInformationDto informationDto) async {

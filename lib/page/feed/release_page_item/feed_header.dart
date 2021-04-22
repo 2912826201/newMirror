@@ -69,12 +69,12 @@ class FeedHeader extends StatelessWidget {
     PostprogressModel postprogressModel = PostprogressModel();
     postprogressModel.showPulishView = true;
     postprogressModel.plannedSpeed = 0.0;
-    List<AtUsersModel> atUsersModel = [];
+    List<PostAtUserModel> atUsersModel = [];
     String address;
     String cityCode;
     String latitude;
     String longitude;
-    List<TopicDtoModel> topics = [];
+    List<PostTopicModel> topics = [];
     feedModel.content = inputText;
     feedModel.uid = uid;
     feedModel.currentTimestamp = currentTimestamp;
@@ -85,7 +85,7 @@ class FeedHeader extends StatelessWidget {
         print("feedModel.content${feedModel.content}");
         for (Rule rule in rules) {
           if (rule.isAt) {
-            AtUsersModel atModel = AtUsersModel();
+            PostAtUserModel atModel = PostAtUserModel();
             atModel.index = rule.startIndex;
             atModel.len = rule.endIndex;
             atModel.uid = rule.id;
@@ -93,7 +93,7 @@ class FeedHeader extends StatelessWidget {
           } else {
             print("查看发布话题动态——————————————————————————————");
             print(rule.toString());
-            TopicDtoModel topicDtoModel = TopicDtoModel();
+            PostTopicModel topicDtoModel = PostTopicModel();
 
             if (rule.id != -1) {
               topicDtoModel.id = rule.id;
@@ -133,14 +133,14 @@ class FeedHeader extends StatelessWidget {
     } else {
       for (Rule rule in rules) {
         if (rule.isAt) {
-          AtUsersModel atModel = AtUsersModel();
+          PostAtUserModel atModel = PostAtUserModel();
           atModel.index = rule.startIndex;
           atModel.len = rule.endIndex;
           atModel.uid = rule.id;
           atUsersModel.add(atModel);
         } else {
           print(rule.toString());
-          TopicDtoModel topicDtoModel = TopicDtoModel();
+          PostTopicModel topicDtoModel = PostTopicModel();
 
           if (rule.id != -1) {
             topicDtoModel.id = rule.id;
