@@ -78,7 +78,7 @@ class HomeFeedModel {
     this.selectedMediaFiles,
   });
 
-  // 转换model
+  /*// 转换model
   HomeFeedModel conversionModel(PostFeedModel postFeedModel, BuildContext context, {bool isRefresh = false}) {
     HomeFeedModel homeFeedModel = HomeFeedModel();
     // 发布model转换动态model展示
@@ -129,7 +129,7 @@ class HomeFeedModel {
       homeFeedModel.selectedMediaFiles = postFeedModel.selectedMediaFiles;
     }
     return homeFeedModel;
-  }
+  }*/
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];

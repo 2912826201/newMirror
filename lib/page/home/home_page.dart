@@ -98,8 +98,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 当成功处理清空数据
             // 重新赋值存入
             print("清空数据_______________________");
-            AppPrefs.setPublishFeedLocalInsertData(
-                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+            AppPrefs.removePublishFeed("${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
             //  清除图片路径
             if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                 .contains(AppConfig.getAppPublishDir())) {
@@ -302,6 +301,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         print("数据请求发不打印${postModel.toString()}");
         if (mounted) {
           Map<String, dynamic> feedModel = Map();
+          print('--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
           feedModel = await publishFeed(
               type: 0,
               content: postModel.content,
@@ -319,17 +319,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 发布完成
             // 插入接口更新
             attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
+            // 删除本地存储
+            AppPrefs.removePublishFeed("${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
             postprogressModel.plannedSpeed = 1.0;
             streamProgress.sink.add(postprogressModel);
             // 延迟器:
             new Future.delayed(Duration(seconds: 3), () {
-              // 重新赋值存入
-              AppPrefs.setPublishFeedLocalInsertData(
-                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
               //  清除图片路径
-              print("文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path}");
-              print(
-                  "文件路径：：：：${postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path.contains(AppConfig.getAppPublishDir())}");
               if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                   .contains(AppConfig.getAppPublishDir())) {
                 _clearCache(AppConfig.getAppPublishDir());
@@ -495,9 +491,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     return ReleaseProgressView(
                       postprogressModel: snapshot.data,
                       deleteReleaseFeedChanged: () {
-                        // 重新赋值存入
-                        AppPrefs.setPublishFeedLocalInsertData(
-                            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+                        // 删除本地存储
+                        AppPrefs.removePublishFeed("${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
                         //  清除图片路径
                         if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                             .contains(AppConfig.getAppPublishDir())) {

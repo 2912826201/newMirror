@@ -319,18 +319,21 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
       SearchUserModel model = SearchUserModel();
       model = await ProfileSearchUser(keyWork, 20, lastTime: searchLastTime);
-      searchLastTime = model.lastTime;
-      searchHasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          BuddyModel followModel = BuddyModel();
-          followModel.nickName = v.nickName + " ";
-          followModel.uid = v.uid;
-          followModel.avatarUri = v.avatarUri;
-          searchFollowList.add(followModel);
-        });
-        searchLoadStatus = LoadingStatus.STATUS_IDEL;
-        searchLoadText = "加载中...";
+      if (model != null) {
+        searchLastTime = model.lastTime;
+        searchHasNext = model.hasNext;
+
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            BuddyModel followModel = BuddyModel();
+            followModel.nickName = v.nickName + " ";
+            followModel.uid = v.uid;
+            followModel.avatarUri = v.avatarUri;
+            searchFollowList.add(followModel);
+          });
+          searchLoadStatus = LoadingStatus.STATUS_IDEL;
+          searchLoadText = "加载中...";
+        }
       }
       // 获取关注@数据
       List<BuddyModel> follow = [];
@@ -370,17 +373,18 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       BuddyListModel model = BuddyListModel();
 
       model = await GetFollowList(20, lastTime: lastTime);
-      lastTime = model.lastTime;
-      hasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          v.nickName = v.nickName + " ";
-        });
-        followList.addAll(model.list);
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
+      if (model != null) {
+        lastTime = model.lastTime;
+        hasNext = model.hasNext;
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            v.nickName = v.nickName + " ";
+          });
+          followList.addAll(model.list);
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
+        }
       }
-
       // 备份字段赋值
       backupFollowList = followList;
     }

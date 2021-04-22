@@ -28,7 +28,16 @@ class _AboutPageState extends State<AboutPage> {
   String content;
 
   _AboutPageState({this.url, this.haveNewVersion, this.content});
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+    haveNewVersion = true;
+    content = "111111111111111111111111111111111"
+        "11111111111111111111111111111111111"
+        "11111111111111111111111111111111111";
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;

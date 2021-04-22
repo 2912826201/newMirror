@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -120,24 +121,20 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     });
     _getMsgList(widget.type);
   }
-
+@override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    Application.unreadNoticeTimeStamp=null;
+  }
   @override
   void initState() {
     hintText = "这里什么都没有呢";
-    timeStamp = DateTime.now().millisecondsSinceEpoch;
+    Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
     _getMsgList(widget.type);
-    /*WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      RenderBox renderBox = refreshFooterKey.currentContext.findRenderObject();
-      var offset =  renderBox.localToGlobal(Offset.zero);
-      if(offset.dy>ScreenUtil.instance.height){
-        showFooter  = true;
-        setState(() {
-        });
-      }
-    });*/
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {
@@ -163,12 +160,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, timeStamp);
-        return false;
-      },
-      child: StreamBuilder<List<QueryModel>>(
+    return  StreamBuilder<List<QueryModel>>(
           initialData: msgList,
           stream: streamController.stream,
           builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
@@ -242,8 +234,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                       ),
               ),
             );
-          }),
-    );
+          });
   }
 }
 

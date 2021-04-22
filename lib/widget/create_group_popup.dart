@@ -188,7 +188,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
 
         if (model != null) {
           ConversationDto cdto = ConversationDto.fromGroupChat(model);
-          cdto.updateTime=new DateTime.now().add(Duration(seconds: -5)).microsecondsSinceEpoch;
+          cdto.content=getContent();
           bool result = await ConversationDBHelper().insertConversation(cdto);
           if (result) {
             if (cdto.isTop == 0) {
@@ -209,6 +209,18 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         }
       }
     }
+  }
+
+  String getContent(){
+    String content="你邀请了";
+    for(BuddyModel model in _friendList){
+      if(_selectedUidList.contains(model.uid)){
+        content+=model.nickName+"、";
+      }
+    }
+    content=content.substring(0,content.length-1);
+    content+="加入群聊";
+    return content;
   }
 
   Widget _buildFriendItem(BuildContext context, int index) {

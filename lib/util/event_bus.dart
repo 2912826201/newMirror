@@ -159,6 +159,8 @@ const String EVENTBUS_VIDEOWIGET_PAGE = "videoWigetPage";
 const String EVENTBUS_LIVE_COURSE_PAGE = "live_course_page";
 // 直播列表页
 const String EVENTBUS_LIVE_COURSE_LIST_PAGE = "live_course_list_page";
+// 训练界面
+const String EVENTBUS_TRAINING_PAGE = "training_page";
 
 ///广播类型
 //发布动态
@@ -213,3 +215,5 @@ const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";
 const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";
 // 主页跳转界面功能
 const String MAIN_PAGE_JUMP_PAGE = "main_page_jump_page";
+// 训练界面获取最近直播课程数据
+const String TRAINING_PAGE_GET_DATA = "main_page_jump_page";

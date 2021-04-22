@@ -56,7 +56,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     }
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
-    setState(() {
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
@@ -100,7 +99,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         _refreshController.loadFailed();
       }
     }
-    });
+    if(mounted){
+      setState(() {
+      });
+    }
     Future.delayed(Duration.zero,(){
       // 同步数据
       context.read<FeedMapNotifier>().updateFeedMap(followModel);
@@ -146,7 +148,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     if(followModel.length==0){
       listNoData = true;
     }
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
     if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
       context.read<FeedMapNotifier>().deleteFeed(id);
     }

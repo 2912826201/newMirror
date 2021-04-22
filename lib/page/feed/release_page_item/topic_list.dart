@@ -83,7 +83,7 @@ class TopicListState extends State<TopicList> {
     }
     DataResponseModel model = await getUserRecommendTopic(size: 20);
     if (dataPage == 1) {
-      if (model.list.isNotEmpty) {
+      if (model!=null&&model.list.isNotEmpty) {
         model.list.forEach((v) {
           topics.add(TopicDtoModel.fromJson(v));
         });
