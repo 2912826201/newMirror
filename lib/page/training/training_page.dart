@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -53,16 +54,22 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
     _requestCourse();
+    _resetData();
+    EventBus.getDefault().registerNoParameter(_resetData, EVENTBUS_TRAINING_PAGE,registerName: TRAINING_PAGE_GET_DATA);
+  }
 
+  _resetData(){
     getLatestLive().then((result) {
       if (result != null) {
+        _liveList.clear();
         _liveList.addAll(result);
-      }
-      if (mounted) {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     }).catchError((error) {});
   }
+
 
   _requestCourse() {
     if (_isVideoCourseRequesting) {

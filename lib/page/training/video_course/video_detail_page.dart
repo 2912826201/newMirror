@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
@@ -103,9 +104,13 @@ class VideoDetailPageState extends XCState {
 
   //下载监听
   Function(String, int, int) _progressListener;
+  CancelToken cancelToken = CancelToken();
+  Connectivity connectivity = Connectivity();
+  Dio dio = Dio();
 
   //下载进度
   double _progress = 0.0;
+  String _progressText = "正常下载";
 
   //全部需要下载多少个文件
   int allDownLoadCount = 0;
@@ -164,6 +169,19 @@ class VideoDetailPageState extends XCState {
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
     getDataAction();
     initProgressListener();
+    initConnectivity();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    cancelToken.cancel();
+    dio.lock();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -456,6 +474,9 @@ class VideoDetailPageState extends XCState {
 
   //获取下载中的ui
   Widget getDownloadingUi(String text) {
+    if(_progressText.contains("异常")||_progressText.contains("暂停")){
+      text="下载暂停";
+    }
     return Container(
       width: double.infinity,
       height: 40,
@@ -596,6 +617,7 @@ class VideoDetailPageState extends XCState {
   //下载监听
   void initProgressListener() {
     _progressListener = (taskId, received, total) async {
+      print("task的id是：$taskId");
       isDownLoading = true;
       _progress = received / total * (1.0 / allDownLoadCount) + completeDownCount * (1.0 / allDownLoadCount);
       _progress = ((_progress * 10000) ~/ 1) / 10000.0;
@@ -615,6 +637,25 @@ class VideoDetailPageState extends XCState {
         reload(() {});
       }
     };
+  }
+
+  initConnectivity(){
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      switch (result) {
+        case ConnectivityResult.mobile:
+          print('----------mobile-----------------mobile');
+          break;
+        case ConnectivityResult.wifi:
+          print('----------wifi-----------------wifi');
+          break;
+        case ConnectivityResult.none:
+          dio.lock();
+          ToastShow.show(msg: "下载异常，请重试", context: context);
+          _progressText = "下载异常";
+          setState(() {});
+          break;
+      }
+    });
   }
 
   //没有登陆点击事件
@@ -648,9 +689,27 @@ class VideoDetailPageState extends XCState {
       downloadAllCompleteVideo();
     } else {
       completeDownCount = allDownLoadCount - downloadStringArray.length;
+      dio = Dio();
       startDownVideo(downloadStringArray[0]);
     }
   }
+
+  onDownLoadErrorClick()async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
+    if(_progressText.contains("异常")||_progressText.contains("暂停")){
+      dio = Dio();
+      _progressText="正常下载";
+      startDownVideo(downloadStringArray[0]);
+    }else{
+      dio.lock();
+      _progressText="下载暂停";
+      setState(() {});
+    }
+  }
+
 
   //全部的视频地址已经下载完成--跳转
   void downloadAllCompleteVideo() {
@@ -668,14 +727,16 @@ class VideoDetailPageState extends XCState {
         }
       }
       DownloadVideoCourseDBHelper().update(videoModel, urls, filePaths);
-      AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
+      if(context!=null&&mounted) {
+        AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
+      }
     });
   }
 
   //开始下载
   void startDownVideo(String downloadUrl) async {
-    String taskId = (await FileUtil().download(downloadUrl, _progressListener, type: downloadTypeCourse))?.taskId;
-    print("task的id是：$taskId");
+    FileUtil().chunkDownLoad(context, downloadUrl, _progressListener,
+        cancelToken: cancelToken, dio: dio,type:downloadTypeCourse);
   }
 
   //格式化进度
@@ -812,10 +873,7 @@ class VideoDetailPageState extends XCState {
           child: SizedBox(
             child: GestureDetector(
               child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
-              onTap: () {
-                print("下载中");
-                ToastShow.show(msg: "下载中", context: context);
-              },
+              onTap: onDownLoadErrorClick,
             ),
           ),
         ),
