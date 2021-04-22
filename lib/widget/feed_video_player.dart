@@ -19,10 +19,10 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/test/BetterPlayerListVideoPlayerTest.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+import 'better_player_list_video/better_player_list_video_player_dont_keep_state.dart';
 import 'icon.dart';
 
 /// feed_video_player
@@ -181,12 +181,15 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     }
   }
-
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print("销毁更好的播放器页面了");
+    controller?.removeEventsListener(eventListener);
+  }
   @override
   void dispose() {
-    print("销毁更好的播放器页面了");
-    // controller.removeEventsListener(eventListener);
-    // listController.setBetterPlayerController(controller);
     // controller.dispose();
     super.dispose();
   }
@@ -253,7 +256,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                   height: videoSize.height,
                   // videoSize.height,
                   child: widget.isInListView
-                      ? BetterPlayerListVideoPlayer(
+                      ? BetterPlayerListVideoPlayerDontKeep(
                           dataSource,
                           betterPlayerListVideoPlayerController: listController,
                           configuration: configuration,
