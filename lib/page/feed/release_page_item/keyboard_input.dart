@@ -111,6 +111,7 @@ class KeyboardInputState extends State<KeyboardInput> {
 
     _formatter = ReleaseFeedInputFormatter(
         controller: widget.controller,
+        maxNumberOfBytes: 3000,
         rules: context.read<ReleaseFeedInputNotifier>().rules,
         // @回调
         triggerAtCallback: (String str) async {

@@ -29,13 +29,15 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   List<Rule> rules;
   final String triggerAtSymbol;
   final String triggerTopicSymbol;
+
   // 是否监听#话题
   final bool isMonitorTop;
   final Function correctRulesListener;
 
   // 记录@的光标
- List<AtIndex> atCursorIndexs;
+  List<AtIndex> atCursorIndexs;
   int atIndex = 0;
+
   // @后跟随的实时搜索文本
   String atSearchStr = "";
 
@@ -44,8 +46,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
   // #后跟随的实时搜索文本
   String topicSearchStr = "";
+
   // 最大字节数
   int maxNumberOfBytes;
+
   //
   ReleaseFeedInputFormatter({
     TriggerAtCallback triggerAtCallback,
@@ -59,6 +63,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     this.atCursorIndexs,
     this.correctRulesListener,
     this.rules,
+    this.maxNumberOfBytes,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
         _valueChangedCallback = valueChangedCallback,
@@ -70,18 +75,50 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // 判断是删除还是新增
 
     bool isAdd = oldValue.text.length < newValue.text.length;
-    print("新值$newValue");
-    print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
-    print("新值前光标${newValue.selection.start}");
-    print("新值后光标${newValue.selection.end}");
-    print("旧值$oldValue");
-    print("旧值前光标${oldValue.selection.start}");
-    print("旧值后光标${oldValue.selection.end}");
-    print("at光标$atIndex");
-    print("rules￥￥${rules.toString()}");
+    // print("新值$newValue");
+    // print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
+    // print("新值前光标${newValue.selection.start}");
+    // print("新值后光标${newValue.selection.end}");
+    // print("旧值$oldValue");
+    // print("旧值前光标${oldValue.selection.start}");
+    // print("旧值后光标${oldValue.selection.end}");
+    // print("at光标$atIndex");
+    // print("rules￥￥${rules.toString()}");
+    print(newValue.text == "\n");
+    // 需求要求按照字节数算超过好后不输入
+    if (maxNumberOfBytes != null && utf8.encode(newValue.text).length > maxNumberOfBytes) {
+      print("新值$newValue");
+      print("旧值$oldValue");
+      // 旧值文本
+      String oldText = oldValue.text;
+      // 后输入的文字
+      String newInputText = utf8.decode(
+          utf8.encode(newValue.text).sublist(utf8.encode(oldValue.text).length, utf8.encode(newValue.text).length));
+      print("newInputText:::$newInputText");
+      // 旧值文本长度
+      int oldUtf8Length = utf8.encode(oldValue.text).length;
+      print("oldUtf8Length:::1:::$oldUtf8Length");
+      // 拼接没有超出限制的文本
+      newInputText.characters.forEach((element) {
+        oldUtf8Length += utf8.encode(element).length;
+        print("oldUtf8Length:::2:::$oldUtf8Length");
+        if (oldUtf8Length <= maxNumberOfBytes) {
+          oldText += element;
+        } else {
+          print("跳出");
+          return;
+        }
+      });
+      return TextEditingValue(
+          text: oldText,
+          selection: TextSelection(
+            baseOffset: oldText.length,
+            extentOffset: oldText.length,
+          ));
+    }
     if (!isMonitorTop) {
       print("atCursorIndex::::${atCursorIndexs.toString()}");
-      if ( atCursorIndexs.length > 0) {
+      if (atCursorIndexs.length > 0) {
         atIndex = atCursorIndexs.first.index;
       }
     }
@@ -101,7 +138,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         _triggerAtCallback(triggerAtSymbol);
       }
       if (newValue.text.length - oldValue.text.length == 1 &&
-          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol && isMonitorTop) {
+          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol &&
+          isMonitorTop) {
         print("输入了#");
         topicIndex = newValue.selection.end;
         atIndex = 0;
@@ -132,13 +170,13 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       print("isValid:::${!oldValue.composing.isValid}");
       print(oldValue.selection.start);
       print(oldValue.selection.end);
-      if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end ) {
+      if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end) {
         print("进了这里面");
 
         /// 直接delete情况 / 选中一部分替换的情况
         return checkRules(oldValue, newValue);
       }
-      if (Platform.isIOS &&  oldValue.isComposingRangeValid) {
+      if (Platform.isIOS && oldValue.isComposingRangeValid) {
         // 跟随@后面输入的实时搜索值
         if (atIndex > 0 && newValue.selection.start >= atIndex) {
           atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
@@ -150,23 +188,22 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
     }
 
-
     print("还调用了下面");
     // ios在输入中就要去修正索引
     if (Platform.isIOS && oldValue.isComposingRangeValid) {
       print("ios输入中");
-      if (rules.isNotEmpty ) {
+      if (rules.isNotEmpty) {
         _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
       }
     }
     // 输入完成时安卓修正索引，ios再次修正
-    if (!oldValue.composing.isValid ) {
+    if (!oldValue.composing.isValid) {
       print("ios 安卓：：：： 输入完成");
-      if (rules.isNotEmpty ) {
+      if (rules.isNotEmpty) {
         _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
       }
       // ios如果当前光标在高亮范围内，唤醒@或者话题视图重新搜索， 移除当前高亮效果
-      if (Platform.isIOS ) {
+      if (Platform.isIOS) {
         Rule b;
         for (Rule rule in rules) {
           // 点击的是@高亮文本
@@ -183,14 +220,14 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
           }
         }
         // 删除在点击范围内的@规则
-        if(b != null) {
+        if (b != null) {
           rules.removeWhere((element) => b.id == element.id);
           print("sdkfskdfs");
           print(rules.toString());
         }
       }
       // if (!Platform.isIOS) {
-        _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr, true);
+      _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr, true);
       // }
       print("返回值++++++++++++++++${newValue.text}");
     }
@@ -218,7 +255,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         print(rules[i]);
       }
     }
-    if(correctRulesListener!=null){
+    if (correctRulesListener != null) {
       correctRulesListener();
     }
   }
@@ -231,8 +268,6 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newValue);
     print(oldValue);
 
-
-
     /// 因为选中删除 和 直接delete删除的开始光标位置不一，故作统一处理
     int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - 1;
     // int startIndex = newValue.selection.end;
@@ -240,16 +275,16 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     int endIndex = oldValue.selection.end;
     // 删除@或者#时要关闭视图
     print('==========topicIndex$topicIndex');
-      if (startIndex + 1 <= atIndex) {
-        print('==================startIndex + 1 <= atIndex');
+    if (startIndex + 1 <= atIndex) {
+      print('==================startIndex + 1 <= atIndex');
       atIndex = 0;
-        _shutDownCallback();
-      }
-      if (startIndex + 1 <= topicIndex) {
-        print('==================startIndex + 1 <= topicIndex');
-        topicIndex = 0;
-        _shutDownCallback();
-      }
+      _shutDownCallback();
+    }
+    if (startIndex + 1 <= topicIndex) {
+      print('==================startIndex + 1 <= topicIndex');
+      topicIndex = 0;
+      _shutDownCallback();
+    }
     if (atIndex > 0 && startIndex + 1 > atIndex) {
       print("111");
       print(oldValue.text);
@@ -262,7 +297,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     }
     print("3");
 
-    bool isRule=false;
+    bool isRule = false;
 
     /// 用于迭代的时候不能删除@的处理
     print(rules);
@@ -273,7 +308,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       print(rule);
       if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
           (endIndex > rule.startIndex && endIndex <= rule.endIndex)) {
-        isRule=true;
+        isRule = true;
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
         print(startIndex >= rule.startIndex && startIndex <= rule.endIndex);
@@ -298,10 +333,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     //   return newValue;
     // }
     // 一次性全部删除时
-   if(newValue.text.isEmpty) {
-     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%全部删除了");
-     rules.clear();
-   }
+    if (newValue.text.isEmpty) {
+      print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%全部删除了");
+      rules.clear();
+    }
+
     /// 清除掉不需要的rule
     for (int i = 0; i < delRules.length; i++) {
       rules.remove(delRules[i]);
@@ -360,54 +396,53 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // Future.delayed(Duration(milliseconds: 10), () => _flag = false);
 
     _valueChangedCallback?.call(rules, value, 0, 0, atSearchStr, topicSearchStr, false);
-    if(isRule) {
+    if (isRule) {
       return TextEditingValue(
         text: value,
         selection: newSelection,
         composing: TextRange.empty,
       );
-    }else{
-
+    } else {
       /*return newValue;*/
-        ///这是多选删除
+
+      ///这是多选删除
       //fixme 这里是处理删除国旗时可能会出现删除半个出现文字的bug
       //fixme 但是会在ios上出现删除普通的文字出现问题
-        if(oldValue.text.characters.length-newValue.text.characters.length>1){
-          return newValue;
-        }
-        ///这是单字符删除
-        print('------------------------------删除监听${newValue.selection.baseOffset}---${oldValue.selection.baseOffset}');
-        String backText = "";
-        String beginText = "";
-        String lastText = "";
-        try{
-          /*note 这里只处理以characters为单位的单个字符，已知删除前的光标必为老值的光标，删除后的光标不能用新值的光标(默认没删完)
+      if (oldValue.text.characters.length - newValue.text.characters.length > 1) {
+        return newValue;
+      }
+
+      ///这是单字符删除
+      print('------------------------------删除监听${newValue.selection.baseOffset}---${oldValue.selection.baseOffset}');
+      String backText = "";
+      String beginText = "";
+      String lastText = "";
+      try {
+        /*note 这里只处理以characters为单位的单个字符，已知删除前的光标必为老值的光标，删除后的光标不能用新值的光标(默认没删完)
           所以用老值的光标取值再去掉最后一位，可得到删除的内容*/
 
-          beginText = oldValue.text.substring(0,oldValue.selection.baseOffset);
+        beginText = oldValue.text.substring(0, oldValue.selection.baseOffset);
 
-          if( Application.platform==0){
-            beginText  = beginText.characters.getRange(0,beginText.characters
-                .length-1).string;
-          }
-          lastText = oldValue.text.characters.getRange(beginText.characters.length+1,oldValue.text.characters.length).string;
-          backText = beginText+lastText;
-        }catch(e){
-          print('--------------------------------$e');
+        if (Application.platform == 0) {
+          beginText = beginText.characters.getRange(0, beginText.characters.length - 1).string;
+        }
+        lastText =
+            oldValue.text.characters.getRange(beginText.characters.length + 1, oldValue.text.characters.length).string;
+        backText = beginText + lastText;
+      } catch (e) {
+        print('--------------------------------$e');
       }
-        return TextEditingValue(
-            text:backText,
-            selection: TextSelection(
-              baseOffset: beginText.length,
-              extentOffset:  beginText.length,
-            ));
-      }
-
+      return TextEditingValue(
+          text: backText,
+          selection: TextSelection(
+            baseOffset: beginText.length,
+            extentOffset: beginText.length,
+          ));
+    }
   }
 
-  void PositioningDeleteChar(){
+  void PositioningDeleteChar() {}
 
-  }
   void clear() {
     rules.clear();
   }
@@ -416,26 +451,26 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 /// @和#话题的规则
 class Rule {
   // 起始的索引值
-   int startIndex;
+  int startIndex;
 
   // 结束的索引值
-   int endIndex;
+  int endIndex;
 
   // 元素
   String params;
 
   // 用于防重复添加
-   int clickIndex;
+  int clickIndex;
 
   // 区分时at还是话题
-   bool isAt;
+  bool isAt;
 
   // atUid
-   int id;
+  int id;
 
   Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt, [this.id]);
 
-  Rule.fromJson(Map<String, dynamic> json){
+  Rule.fromJson(Map<String, dynamic> json) {
     startIndex = json["startIndex"];
     endIndex = json["endIndex"];
     params = json["params"];
@@ -443,16 +478,18 @@ class Rule {
     isAt = json["isAt"];
     id = json["id"];
   }
-   Map<String, dynamic> toJson() {
-     var map = <String, dynamic>{};
-     map["startIndex"] = startIndex;
-     map["endIndex"] = endIndex;
-     map["params"] = params;
-     map["clickIndex"] = clickIndex;
-     map["isAt"] = isAt;
-     map["id"] = id;
-     return map;
-   }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["startIndex"] = startIndex;
+    map["endIndex"] = endIndex;
+    map["params"] = params;
+    map["clickIndex"] = clickIndex;
+    map["isAt"] = isAt;
+    map["id"] = id;
+    return map;
+  }
+
   Rule copy([startIndex, endIndex, params]) {
     return Rule(startIndex ?? this.startIndex, endIndex ?? this.endIndex, params ?? this.params,
         clickIndex ?? this.clickIndex, isAt ?? this.isAt, id ?? this.id);
@@ -466,7 +503,9 @@ class Rule {
 
 class AtIndex {
   final int index;
+
   AtIndex(this.index);
+
   @override
   String toString() {
     return "index : $index";

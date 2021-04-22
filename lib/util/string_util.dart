@@ -4,6 +4,7 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
@@ -216,21 +218,21 @@ class StringUtil {
   大于10000，则显示为w，采取末位舍去法保留小数点后一位，如：60400显示为6w，63500显示为6.3w
    */
   static String getNumber(int number) {
-    if (number == null||number == 0 || number<0) {
+    if (number == null || number == 0 || number < 0) {
       return 0.toString();
     }
-      if (number < 1000) {
-        return number.toString();
+    if (number < 1000) {
+      return number.toString();
+    } else {
+      String db = "${(number / number < 10000 ? 1000 : 10000).toString()}";
+      if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
+        String doubleText = db.substring(0, db.indexOf(".") + 2);
+        return doubleText + "${number < 10000 ? "k" : "w"}";
       } else {
-        String db = "${(number / number < 10000?1000:10000).toString()}";
-        if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
-          String doubleText = db.substring(0, db.indexOf(".") + 2);
-          return doubleText + "${number < 10000?"k":"w"}";
-        } else {
-          String intText = db.substring(0, db.indexOf("."));
-          return intText + "${number < 10000?"k":"w"}";
-        }
+        String intText = db.substring(0, db.indexOf("."));
+        return intText + "${number < 10000 ? "k" : "w"}";
       }
+    }
   }
 
   /*
@@ -250,12 +252,13 @@ class StringUtil {
     });
     return breakWord;
   }
+
   /** 全局动态和请求数据比较
    * 比较两数组 取出不同的，
    * array1 数组一
    * array2 数组二
    * **/
-  static List<HomeFeedModel>  followModelFilterDeta(List<HomeFeedModel> array1, List<HomeFeedModel> array2) {
+  static List<HomeFeedModel> followModelFilterDeta(List<HomeFeedModel> array1, List<HomeFeedModel> array2) {
     List<HomeFeedModel> result = [];
     for (var i = 0; i < array1.length; i++) {
       var obj = array1[i].id;
@@ -356,10 +359,10 @@ class StringUtil {
     double containerWidth = ScreenUtil.instance.width;
     double containerHeight;
     double videoRatio = 0.0;
-    if(selectedMediaFiles != null) {
+    if (selectedMediaFiles != null) {
       videoRatio = selectedMediaFiles.list.first.sizeInfo.width / selectedMediaFiles.list.first.sizeInfo.height;
     }
-    if(feedModel != null) {
+    if (feedModel != null) {
       videoRatio = feedModel.videos.first.width / feedModel.videos.first.height;
     }
     double containerRatio;
@@ -384,24 +387,134 @@ class StringUtil {
   }
 
   ///截取显示，由于可能存在表情，不能使用subString，characters可以将表情看做一个字符
-  static String maxLength(String str, int len,{bool isOmit=true}) {
-    if(str.length>len){
+  static String maxLength(String str, int len, {bool isOmit = true}) {
+    if (str.length > len) {
       String backString = "";
       bool breakFor = false;
-      for(int i = 0;i < str.characters.toList().length;i++){
-        if(!breakFor&&(backString+str.characters.toList()[i]).length<=len){
+      for (int i = 0; i < str.characters.toList().length; i++) {
+        if (!breakFor && (backString + str.characters.toList()[i]).length <= len) {
           backString += str.characters.toList()[i];
-        }else{
+        } else {
           breakFor = true;
         }
       }
-      return backString+"${isOmit?"...":""}";
+      return backString + "${isOmit ? "..." : ""}";
     }
     return str;
   }
 
-  // 设置高亮文本
-  static List<TextSpan> setHighlightTextSpan(BuildContext context, String text, { int topicId ,List<TopicDtoModel> topics, List<AtUsersModel>  atUsers}) {
+  // 删除前面的空换行
+  static String deletedBeforeSpaceLine(String str) {
+    String returnText = "";
+    int isSpace = 0;
+    for (String text in str.characters) {
+      // NOTE 空格的10进制为32，\n换行的10进制为10，\r\n和为13
+      print(text.toString().codeUnits.first);
+      int tenHex = text.toString().codeUnits.first;
+      // 添加零宽空格补充索引位置
+      if (tenHex == 32 || tenHex == 10 || tenHex == 13) {
+        returnText += '\u200B';
+        isSpace += 1;
+      } else {
+        break;
+      }
+    }
+    returnText = returnText + str.substring(isSpace, str.length);
+    return returnText;
+  }
+
+  /**
+   * 将字符串中的连续的多个换行缩减成二个换行
+   * @param str  要处理的内容
+   * @return	返回的结果
+   */
+  static String replaceLineBlanks(String str, List<Rule> rules) {
+    if (str == null) {
+      return str;
+    }
+    print(str.length);
+    // 最后一位高亮索引的位置
+    int lastHighlightIndex;
+    if (rules.isNotEmpty) {
+      lastHighlightIndex = rules.last.endIndex;
+    }
+    String result = "";
+    // 记录有连续有几个换行
+    int lineBreak = 0;
+    // 去掉尾部空格换行
+    var strTrim = str.trimRight();
+    // 此时高亮文本在最后
+    print("lastHighlightIndex::::$lastHighlightIndex");
+    print("str:::$str");
+    if (lastHighlightIndex != null && lastHighlightIndex >= strTrim.length) {
+      // 去掉尾部空格换行
+      str = str.trimRight();
+      print("str:::$str");
+      // 补起高亮被删除的空格
+      str += " ";
+      print("str:::$str");
+    } else {
+      // 去掉尾部空格换行
+      str = str.trimRight();
+    }
+    //
+    print("//////////////////");
+    // 处理开头是否存在换行
+    print(str);
+    str = StringUtil.deletedBeforeSpaceLine(str);
+    print(str);
+    for (int i = 0; i < str.characters.length; i++) {
+      String text = str.characters.elementAt(i);
+      print("text:::::::::::::::::$text");
+      // NOTE \n换行的10进制为10，\r\n和为13此方法是获取十进制
+      int tenHex = text.toString().codeUnits.first;
+      // 添加零宽空格补充索引位置
+      if (tenHex == 10 || tenHex == 13) {
+        lineBreak += 1;
+        // 最后一个就位换行时判断不会进下面在此判断
+        if (i == str.characters.length - 1) {
+          print("最后的：：：：：：：：：：");
+          if (lineBreak == 1) {
+            result += '\n';
+          } else if (lineBreak >= 2) {
+            result += "\n";
+            result += "\n";
+            print(lineBreak - 2);
+            //NOTE 是为了解决高亮文本的索引，减去中间部分的换行，插入零宽空格补充索引位置
+            for (int i = 0; i < lineBreak - 2; i++) {
+              result += '\u200B';
+            }
+          }
+        }
+      } else {
+        print(lineBreak);
+        if (lineBreak == 1) {
+          result += '\n';
+          print("111111");
+          print(result.length);
+        } else if (lineBreak >= 2) {
+          result += "\n";
+          result += "\n";
+          //NOTE 是为了解决高亮文本的索引，减去中间部分的换行，插入零宽空格补充索引位置
+          for (int i = 0; i < lineBreak - 2; i++) {
+            print("啦啦啦啦");
+            result += '\u200B';
+          }
+          print("2222222");
+          print(result.length);
+        }
+        print(result.length);
+        lineBreak = 0;
+        result += text;
+      }
+    }
+    print(str.length);
+    print("result.leng:::${result.length}");
+    return result;
+  }
+
+  static List<TextSpan> setHighlightTextSpan(BuildContext context, String text,
+      {int topicId, List<TopicDtoModel> topics, List<AtUsersModel> atUsers}) {
     var textSpanList = <TextSpan>[];
     var contentArray = <AtuserOrTopicModel>[];
     // @和话题map：key为索引开始位置。
@@ -488,8 +601,9 @@ class StringUtil {
             if (userMap[(i).toString()] != null) {
               if (contentArray[i].type == "@") {
                 print('---------------------userMap[(i)]----${userMap[(i).toString()]}--');
-                getUserInfo(uid: userMap[(i).toString()]).then((value){
-                  AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+                getUserInfo(uid: userMap[(i).toString()]).then((value) {
+                  AppRouter.navigateToMineDetail(context, value.uid,
+                      avatarUrl: value.avatarUri, userName: value.nickName);
                 });
               } else if (contentArray[i].type == "#") {
                 if (topicId == userMap[i.toString()]) {
