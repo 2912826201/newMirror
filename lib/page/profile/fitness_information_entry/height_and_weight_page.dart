@@ -100,7 +100,21 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                     print('=height=======$heights===weight==========$weight');
                     Application.fitnessEntryModel.height = heights;
                     Application.fitnessEntryModel.weight = weight;
-                    AppRouter.navigateToBodyTypePage(context);
+                    if(Application.videoTagModel!=null){
+                      if(Application.videoTagModel.bodyType!=null){
+                        AppRouter.navigateToBodyTypePage(context);
+                      }else if(Application.videoTagModel.target!=null){
+                        AppRouter.navigateToFitnessTargetPage(context);
+                      }else if(Application.videoTagModel.level!=null){
+                        AppRouter.navigateToFitnessLevelPage(context);
+                      }else if(Application.videoTagModel.part!=null){
+                        AppRouter.navigateToFitnessPartPage(context);
+                      }else{
+                        AppRouter.navigateToTrainSeveralPage(context);
+                      }
+                    }else{
+                      AppRouter.navigateToTrainSeveralPage(context);
+                    }
                   }
                 },
               ),
