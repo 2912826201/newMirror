@@ -218,13 +218,15 @@ class TextMsg extends StatelessWidget {
 
   List<TextSpan> getTextSpanArray(String content, bool isMyself) {
     var textSpanArray = <TextSpan>[];
-    if (!StringUtil.strNoEmpty(content)) {
-      textSpanArray.addAll(judgeIsAtUser("消息为空", isMyself, 0));
+    if (content==null||content.length<1) {
+      textSpanArray.addAll(judgeIsAtUser("", isMyself, 0));
     } else {
       var contentArray = content.split(" ");
       for (int i = 0; i < contentArray.length; i++) {
         if (contentArray[i] != null && contentArray[i].length > 0) {
           textSpanArray.addAll(judgeIsAtUser(contentArray[i], isMyself, i, isUrl: StringUtil.isURL(contentArray[i])));
+        }else{
+          textSpanArray.addAll([getNullContentSpace(" ", isMyself, i, false)]);
         }
       }
     }
@@ -238,6 +240,17 @@ class TextMsg extends StatelessWidget {
           ..onTap = () {
             voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: content, isUrl: isUrl);
           },
+        style: TextStyle(
+          color: isUrlColor
+              ? AppColor.mainBlue
+              : !isUrl
+                  ? (!isMyself ? AppColor.textPrimary2 : AppColor.white)
+                  : AppColor.mainBlue,
+        ));
+  }
+  TextSpan getNullContentSpace(String content, bool isMyself, int index, bool isUrl, {bool isUrlColor = false}) {
+    return TextSpan(
+        text: (content),
         style: TextStyle(
           color: isUrlColor
               ? AppColor.mainBlue

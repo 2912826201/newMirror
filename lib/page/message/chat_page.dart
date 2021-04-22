@@ -482,7 +482,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // 存入最新的值
     context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
-    if (StringUtil.strNoEmpty(text)) {
+    if (text!=null&&text.length>0) {
       if (!isHaveTextLen) {
         isReset = true;
         isHaveTextLen = true;
@@ -840,7 +840,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //发送文字消息
   _postText(String text) {
-    if (text == null || text.isEmpty || text.length < 1) {
+    if (text == null || text.length < 1) {
       ToastShow.show(msg: "消息为空,请输入消息！", context: _context);
       return;
     }
@@ -1488,6 +1488,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
+      maxNumberOfBytes: 6000,
       correctRulesListener: () {
         _resetEditText();
       },
