@@ -1696,10 +1696,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // Application.atMesGroupModel.add(atMsg);
     _messageInputBodyClick();
-    Message message =
-        chatDataList == null || chatDataList.length < 1 || chatDataList[0].msg == null ? null : chatDataList[0].msg;
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-        _morePageOnClick, _moreOnClickExitChatPage, message);
+        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
   }
 
   //更多的界面-里面进行了一些的点击事件

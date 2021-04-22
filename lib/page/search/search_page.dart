@@ -207,7 +207,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       print("历史记录（（（（（（（））））））$searchHistoryList");
       if (results[0] != null) {
         DataResponseModel model = results[0];
-        if (model.list.isNotEmpty) {
+        if (model != null && model.list.isNotEmpty) {
           model.list.forEach((v) {
             topicList.add(TopicDtoModel.fromJson(v));
           });
