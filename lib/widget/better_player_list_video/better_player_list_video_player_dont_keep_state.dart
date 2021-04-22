@@ -70,7 +70,6 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
   void dispose() {
     print("视频测试dispose");
     _betterPlayerController.dispose();
-    // _betterPlayerController.removeListener(() {})
     _isDisposing = true;
     super.dispose();
   }

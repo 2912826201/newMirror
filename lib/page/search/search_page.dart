@@ -356,6 +356,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   // 热门课程推荐类容Item
   List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () async {
             AppRouter.navigateToVideoDetail(context, liveVideoList[index].id, videoModel: liveVideoList[index]);
             // TopicDtoModel topicModel = await getTopicInfo(topicId: topicList.first.id);
@@ -518,7 +519,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                               // 调整磁盘缓存中图像大小
                               maxHeightDiskCache: 250,
                               maxWidthDiskCache: 250,
-                              imageUrl: topicList[index].pics[indexs] != null ? FileUtil.getMediumImage(topicList[index].pics[indexs]) : "",
+                              imageUrl: topicList[index].pics[indexs] != null
+                                  ? FileUtil.getMediumImage(topicList[index].pics[indexs])
+                                  : "",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
                                 color: AppColor.bgWhite,
