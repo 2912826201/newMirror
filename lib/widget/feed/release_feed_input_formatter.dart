@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:toast/toast.dart';
 
 // at回调
 typedef TriggerAtCallback = Future<String> Function(String at);
@@ -50,7 +52,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   // 最大字节数
   int maxNumberOfBytes;
 
-  //
+  // 上下文
+  BuildContext context;
   ReleaseFeedInputFormatter({
     TriggerAtCallback triggerAtCallback,
     ValueChangedCallback valueChangedCallback,
@@ -64,6 +67,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     this.correctRulesListener,
     this.rules,
     this.maxNumberOfBytes,
+    this.context,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
         _valueChangedCallback = valueChangedCallback,
@@ -106,6 +110,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
           oldText += element;
         } else {
           print("跳出");
+          ToastShow.show(msg: "字数超出限制", context: context, gravity: Toast.CENTER);
           return;
         }
       });
