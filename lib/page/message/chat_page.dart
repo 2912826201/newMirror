@@ -1574,24 +1574,28 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //聊天内容的点击事件
   _messageInputBodyClick() {
     print("_messageInputBodyClick");
-    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
-      _emojiStateOld=false;
-      print("_emojiStateOld1:$_emojiStateOld");
-      if (MediaQuery.of(context).viewInsets.bottom > 0) {
-        FocusScope.of(context).requestFocus(new FocusNode());
+    try{
+      if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
+        _emojiStateOld=false;
+        print("_emojiStateOld1:$_emojiStateOld");
+
+        if (MediaQuery.of(context).viewInsets.bottom > 0) {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        }
+
+        _bottomSettingPanelState = false;
+        bottomSettingChildKey.currentState.bottomSettingPanelState = false;
+        if (_emojiState) {
+          _emojiState = false;
+          bottomSettingChildKey.currentState.setData(
+            bottomSettingPanelState: false,
+            emojiState: _emojiState,
+          );
+        } else {
+          bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+        }
       }
-      _bottomSettingPanelState = false;
-      bottomSettingChildKey.currentState.bottomSettingPanelState = false;
-      if (_emojiState) {
-        _emojiState = false;
-        bottomSettingChildKey.currentState.setData(
-          bottomSettingPanelState: false,
-          emojiState: _emojiState,
-        );
-      } else {
-        bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-      }
-    }
+    }catch (e){}
   }
 
   //表情的点击事件
