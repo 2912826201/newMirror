@@ -45,12 +45,12 @@ class PostFeedModel {
   SelectedMediaFiles selectedMediaFiles;
   int uid;
   String content;
-  List<AtUsersModel> atUsersModel = [];
+  List<PostAtUserModel> atUsersModel = [];
   String address;
   String cityCode;
   String longitude;
   String latitude;
-  List<TopicDtoModel> topics = [];
+  List<PostTopicModel> topics = [];
 
   // 当前时间戳
   int currentTimestamp;
@@ -93,19 +93,19 @@ class PostFeedModel {
     print(json["atUsersModel"]);
     if (json["atUsersModel"] != null) {
       json["atUsersModel"].forEach((v) {
-        if (v is AtUsersModel) {
+        if (v is PostAtUserModel) {
           atUsersModel.add(v);
         } else {
-          atUsersModel.add(AtUsersModel.fromJson(v));
+          atUsersModel.add(PostAtUserModel.fromJson(v));
         }
       });
     }
     if (json["topics"] != null) {
       json["topics"].forEach((v) {
-        if (v is TopicDtoModel) {
+        if (v is PostTopicModel) {
           topics.add(v);
         } else {
-          topics.add(TopicDtoModel.fromJson(v));
+          topics.add(PostTopicModel.fromJson(v));
         }
       });
     }
@@ -121,5 +121,47 @@ class PostFeedModel {
   @override
   String toString() {
     return toJson().toString();
+  }
+}
+//[{"id":11,index:0,len:6},{"name":"这是话题的名字",index:0,len:8
+class  PostTopicModel{
+  int id;
+  int index;
+  int len;
+  String name;
+  PostTopicModel();
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["id"] = id;
+    map["index"] = index;
+    map["name"] = name;
+    map["len"] = len;
+    return map;
+  }
+
+  PostTopicModel.fromJson(Map<String, dynamic> json) {
+    id = json["id"];
+    index = json["index"];
+    len = json["len"];
+    name = json["name"];
+  }
+}
+class  PostAtUserModel{
+  int uid;
+  int index;
+  int len;
+  PostAtUserModel();
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["uid"] = uid;
+    map["index"] = index;
+    map["len"] = len;
+    return map;
+  }
+
+  PostAtUserModel.fromJson(Map<String, dynamic> json) {
+    uid = json["uid"];
+    index = json["index"];
+    len = json["len"];
   }
 }
