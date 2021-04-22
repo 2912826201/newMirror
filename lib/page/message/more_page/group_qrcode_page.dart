@@ -18,6 +18,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class GroupQrCodePage extends StatefulWidget {
@@ -83,7 +84,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
         titleString: "群聊二维码",
         actions: [
           CustomAppBarIconButton(
-              icon: Icons.ios_share,
+              svgName: AppIcon.nav_share,
               iconColor: AppColor.black,
               onTap: () {
                 model.width = int.parse("$width".substring(0, "$width".indexOf(".")));

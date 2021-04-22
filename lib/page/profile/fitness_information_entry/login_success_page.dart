@@ -30,7 +30,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
     super.initState();
     //note 这里需求为固定宽度内展示文字，超过固定宽度则省略
     String name = context.read<ProfileNotifier>().profile.nickName;
-    textLeftWidth = getTextSize("欢迎回来",AppStyle.textMedium23,1,ScreenUtil.instance.width).width+41;
+    textLeftWidth = calculateTextWidth("欢迎回来",AppStyle.textMedium23,ScreenUtil.instance.width,1).width+41;
     textRightWidth = calculateTextWidth(", 登陆成功!",AppStyle.textMedium23,ScreenUtil.instance.width,1).width+41;
     textWidth = ScreenUtil.instance.width-textLeftWidth-textRightWidth;
     if(calculateTextWidth(name,AppStyle.textMedium23,ScreenUtil.instance.width,1).width>textWidth){

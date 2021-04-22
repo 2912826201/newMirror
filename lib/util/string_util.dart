@@ -622,4 +622,26 @@ class StringUtil {
     }
     return textSpanList;
   }
+    //过滤换行,默认规则为过滤为两个换行
+  static String textWrapMatch(String text,{int wrapCount = 2}) {
+    text = text.trim();
+    if (text.length != 0) {
+      int wrapCount = 0;
+      String backText = "";
+      for (int i = 0; i < text.characters
+          .toList()
+          .length; i++) {
+        if (text.characters.toList()[i] == "\n") {
+          wrapCount++;
+        } else {
+          wrapCount = 0;
+        }
+        if (wrapCount < 3 || wrapCount == 0) {
+          backText += text.characters.toList()[i];
+        }
+      }
+      return backText;
+    }
+    return null;
+  }
 }

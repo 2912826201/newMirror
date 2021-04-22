@@ -12,11 +12,22 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     print('------------------------------formatEditUpdate');
     print("00000000000000000");
-    /*if (Application.platform==1&&!newValue.composing.isValid) {
-      return newValue;
-    }*/
-    if (newValue.text.length > oldValue.text.length && maxLength != null&&!newValue.composing.isValid) {
+    String inputText;
+
+    if (newValue.text.length > oldValue.text.length) {
       print("111111111111111");
+      ///输入前的光标位置
+      int inputFristIndex = newValue.text.substring(0, oldValue.selection.baseOffset).characters.length;
+
+      ///输入后的光标位置
+      int inputLastIndex = newValue.text.substring(0, newValue.selection.baseOffset).characters.length;
+
+      ///输入的字符
+      inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
+      if(inputText == "\n"||inputText == "\r"||inputText == "\r\n"){
+        return oldValue;
+      }
+      if(maxLength != null&&!newValue.composing.isValid){
       if (newValue.text.length > maxLength && oldValue.text.length < maxLength) {
         ///还可以输入多少字符
         int needCount = maxLength - oldValue.text.length;
@@ -28,7 +39,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
         int inputLastIndex = newValue.text.substring(0, newValue.selection.baseOffset).characters.length;
 
         ///输入的字符
-        String inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
+        inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
         print('-----------------inputText$inputText');
         print('----------------------------预输入拦截');
 
@@ -53,6 +64,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
       if (newValue.text.length > maxLength) {
         print('----------------------------正常拦截');
         return oldValue;
+      }
       }
     }
     print("oldValue::::$oldValue");

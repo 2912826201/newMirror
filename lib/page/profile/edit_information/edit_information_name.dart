@@ -161,6 +161,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     var putFiled = TextField(
       autofocus: true,
       maxLength: 15,
+      maxLines: 1,
       focusNode: _commentFocus,
       controller: controller,
       cursorColor: AppColor.black,

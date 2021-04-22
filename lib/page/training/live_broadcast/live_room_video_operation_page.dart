@@ -88,7 +88,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   int cursorIndexPr = -1;
 
-  int onlineUserNumber = 2;
+  int onlineUserNumber = 1;
   Timer timer;
   Widget timeText;
   Widget onlineMenNumberText;
@@ -588,6 +588,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //表情框
   Widget emojiPlan(double keyboardHeight) {
+    keyboardHeight += MediaQuery.of(context).padding.bottom;
     print("_emojiState:$_emojiState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
@@ -628,6 +629,15 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 SliverToBoxAdapter(
                   child: _emojiBottomBox(),
                 ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .padding
+                        .bottom,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -640,14 +650,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   //获取表情头部的 内嵌的表情
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: keyboardHeight - 45.0,
+      height: keyboardHeight - 45.0 - MediaQuery
+          .of(context)
+          .padding
+          .bottom,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
       child: GridView.builder(
         padding: const EdgeInsets.only(top: 10),
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -950,15 +963,15 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Map<String, dynamic> map = await roomInfo(widget.coachId, count: 3);
-    if (null != map["data"]["total"]) {
-      resetOnlineUserNumber(map["data"]["total"]);
-    }
     if (null != map["data"]["userList"]) {
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel = BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));
         onlineManUidList.add(buddyModel.uid);
       });
+    }
+    if (null !=onlineManList) {
+      resetOnlineUserNumber(onlineManList.length);
     }
     getAllOnlineUserNumber(onlineUserNumber + 1);
     resetOnlineUserImage();
@@ -969,9 +982,6 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     Future.delayed(Duration(seconds: 2), () async {
       print("number:$number");
       Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
-      if (null != map["data"]["total"]) {
-        resetOnlineUserNumber(map["data"]["total"]);
-      }
       if (null != map["data"]["userList"]) {
         onlineManList.clear();
         onlineManUidList.clear();
@@ -981,6 +991,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           onlineManUidList.add(buddyModel.uid);
         });
         EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      }
+      if (null != onlineManList) {
+        resetOnlineUserNumber(onlineManList.length);
       }
     });
   }
@@ -1003,8 +1016,11 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   //刷新人数
   void resetOnlineUserNumber(number) {
     print("刷新人数");
-    if (null == number || !(number is int) || number < 2) {
+    if (null == number || !(number is int)) {
       return;
+    }
+    if(number < onlineManList.length){
+      number=onlineManList.length;
     }
     onlineUserNumber = number;
     if (mounted) {
@@ -1244,30 +1260,31 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         print("22222222222222222:type:$type，${textMessage.sendUserInfo?.portraitUri},${textMessage.sendUserInfo
             ?.userId}");
         //加入直播间
+
+        print("33333333:type:$type");
+        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
+        addLiveRoom(textMessage);
         if (textMessage.sendUserInfo.userId != null) {
           if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
             print("有这个人");
             subLiveRoom(textMessage, isReset: false);
           } else {
             print("没有这个人");
-            resetOnlineUserNumber(++onlineUserNumber);
+            resetOnlineUserNumber(onlineManList.length);
           }
         } else {
           textMessage.sendUserInfo.userId = "100";
           print("没有这个人");
-          resetOnlineUserNumber(++onlineUserNumber);
+          resetOnlineUserNumber(onlineManList.length);
           getAllOnlineUserNumber(onlineUserNumber);
         }
-        print("33333333:type:$type");
-        _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
-        addLiveRoom(textMessage);
         break;
       case "quitLiveRoom":
       //退出直播间
         print("${textMessage.sendUserInfo.name}退出了直播间");
 
-        resetOnlineUserNumber(--onlineUserNumber);
         subLiveRoom(textMessage);
+        resetOnlineUserNumber(onlineManList.length);
         break;
       case "feeling":
         print("弹出训练感受！！！${contentMap["data"].toString()}");

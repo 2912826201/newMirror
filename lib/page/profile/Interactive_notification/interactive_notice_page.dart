@@ -476,7 +476,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl: coverImage != null ? coverImage : "",
+                        imageUrl:coverImage!=null?FileUtil.getSmallImage(coverImage):" ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,

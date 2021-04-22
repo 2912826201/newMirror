@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -81,20 +83,20 @@ class _IntroductionState extends State<EditInformationIntroduction> {
           titleString: "编辑简介",
           actions: [
             Container(
-              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+              padding:
+                  const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
                 "确定",
                 CustomRedButton.buttonStateNormal,
                 () {
                   _commentFocus.unfocus();
-                  if(editText.length==0){
+                  if (editText.length == 0) {
                     Navigator.pop(this.context, "");
-                  }else{
-                    print('---------------------${editText.replaceAll(new RegExp(r"\s+"), "")}');
-                    if(editText.replaceAll(new RegExp(r"\s+"), "").length!=0){
-                      Navigator.pop(this.context, editText);
-                    }else{
-                      Navigator.pop(context,"");
+                  } else {
+                    if (editText.replaceAll(new RegExp(r"\s+"), "").length != 0) {
+                      Navigator.pop(this.context, editText.trim());
+                    } else {
+                      Navigator.pop(context, "");
                     }
                   }
                 },
@@ -148,9 +150,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
               border: InputBorder.none,
             ),
-            inputFormatters: [
-              ExpressionTeamDeleteFormatter(maxLength: 30)
-            ],
+            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30)],
           ),
           Container(
             alignment: Alignment.bottomRight,

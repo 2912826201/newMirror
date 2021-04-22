@@ -257,15 +257,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         16 +
         5;
     return Scaffold(
-          body: Container(
-              height: height,
-              width: width,
-              child: Stack(
-                children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
-              )),
-        );
+      body: Container(
+          height: height,
+          width: width,
+          child: Stack(
+            children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
+          )),
+    );
   }
-
 
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody() {
@@ -301,22 +300,22 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     delegate: StickyTabBarDelegate(
                       width: width,
                       child: TabBar(
-                            unselectedLabelStyle: AppStyle.textHintRegular16,
-                            unselectedLabelColor: AppColor.textSecondary,
-                            labelStyle: AppStyle.textMedium18,
-                            labelColor: AppColor.black,
-                            indicatorColor: AppColor.black,
-                            controller: _mController,
-                            indicatorSize: TabBarIndicatorSize.label,
-                            indicator: RoundUnderlineTabIndicator(
-                                insets: EdgeInsets.only(bottom: 0),
-                                wantWidth: 20,
-                                borderSide: BorderSide(width: 2, color: AppColor.black)),
-                            tabs: <Widget>[
-                              Tab(text: '动态'),
-                              Tab(text: '喜欢'),
-                            ],
-                          ),
+                        unselectedLabelStyle: AppStyle.textHintRegular16,
+                        unselectedLabelColor: AppColor.textSecondary,
+                        labelStyle: AppStyle.textMedium18,
+                        labelColor: AppColor.black,
+                        indicatorColor: AppColor.black,
+                        controller: _mController,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        indicator: RoundUnderlineTabIndicator(
+                            insets: EdgeInsets.only(bottom: 0),
+                            wantWidth: 20,
+                            borderSide: BorderSide(width: 2, color: AppColor.black)),
+                        tabs: <Widget>[
+                          Tab(text: '动态'),
+                          Tab(text: '喜欢'),
+                        ],
+                      ),
                     ),
                   )
                 : SliverToBoxAdapter(
@@ -349,7 +348,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       ),
                     ],
                   )
-                :  ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
+                : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
             : Container(
                 padding: EdgeInsets.only(top: 12),
                 color: AppColor.white,
@@ -359,7 +358,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: Container(
                         width: 224,
                         height: 224,
-                        child:Image.asset(DefaultImage.error),
+                        child: Image.asset(DefaultImage.error),
                       ),
                     ),
                     SizedBox(
@@ -661,9 +660,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       !notifier.profileUiChangeModel[widget.userId].isFollow
                           ? Icon(
                               Icons.message,
-                              size: 14,
+                              size: 16,
                             )
-                          : Icon(Icons.add, color: AppColor.white, size: 14),
+                          : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
                       SizedBox(
                         width: 2,
                       ),
@@ -697,9 +696,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: avatarSize,
           width: avatarSize,
           useOldImageOnUrlChange: true,
-          imageUrl: _avatar!=null?FileUtil.getMediumImage(_avatar):" ",
+          imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
           fit: BoxFit.cover,
-          placeholder: (context, url) =>Container(color: AppColor.bgWhite,),
+          placeholder: (context, url) => Container(
+            color: AppColor.bgWhite,
+          ),
           /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/

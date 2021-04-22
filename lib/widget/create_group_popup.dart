@@ -188,7 +188,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
 
         if (model != null) {
           ConversationDto cdto = ConversationDto.fromGroupChat(model);
-
+          cdto.updateTime=new DateTime.now().add(Duration(seconds: -5)).microsecondsSinceEpoch;
           bool result = await ConversationDBHelper().insertConversation(cdto);
           if (result) {
             if (cdto.isTop == 0) {
@@ -198,6 +198,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             }
           }
           isSuccess = true;
+          jumpChatPageConversationDto(context, cdto);
         }
       } catch (e) {
         print(e);
