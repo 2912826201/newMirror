@@ -123,7 +123,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                       postComments(
                           targetId: widget.feedModel.id,
                           targetType: 0,
-                          contentext: text,
+                          contentext: StringUtil.replaceLineBlanks(text,rules),
                           atUsers: jsonEncode(atListModel),
                           commentModelCallback: (BaseResponseModel commentModel) {
                             CommentDtoModel comModel;

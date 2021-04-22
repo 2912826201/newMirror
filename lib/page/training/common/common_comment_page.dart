@@ -23,6 +23,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
@@ -876,7 +877,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     await postComments(
       targetId: targetId,
       targetType: targetType,
-      contentext: text,
+      contentext: StringUtil.replaceLineBlanks(text,rules),
       atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,

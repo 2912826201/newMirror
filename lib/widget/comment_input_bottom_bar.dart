@@ -230,6 +230,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       isMonitorTop: false,
       controller: _textEditingController,
       rules: context.read<CommentEnterNotifier>().rules,
+      maxNumberOfBytes: 600,
+      context: context,
       // @回调
       triggerAtCallback: (String str) async {
         if (widget.isShowAt) {
