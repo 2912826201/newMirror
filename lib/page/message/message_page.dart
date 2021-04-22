@@ -140,7 +140,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   //获取未读互动通知数
   _getUnreadMsgCount() async {
     Unreads model = await getUnReads();
-    context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0,ats: model.at,lauds: model.laud);
+    if(model!=null){
+      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment,ats: model.at,lauds: model.laud);
+    }
   }
 
   @override
