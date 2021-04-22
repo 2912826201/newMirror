@@ -7,7 +7,7 @@ class UserInteractiveNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
   int removeId;
-
+  bool haveNewFans = false;
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
   void laudedChange(int id, int lauded) {

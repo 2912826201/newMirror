@@ -88,6 +88,7 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
+            getUnReads();
             switch (index) {
               case 0:
                 break;
@@ -95,7 +96,6 @@ class MainPageState extends XCState {
                 EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
                 break;
               case 2:
-                getUnReads();
                 break;
               case 3:
                 _getFollowCount();

@@ -12,31 +12,46 @@ class UnreadMessageNotifier extends ChangeNotifier {
   UnreadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
 
   void changeUnreadMsg({int comments, int ats, int lauds}) {
-    bool isChanged = false;
-    if (comments != null && comment != comments) {
-      Application.unreadNoticeNumber=0;
-      Application.unreadNoticeNumber+=comments;
-      comment = comments;
-      isChanged = true;
-    }
-    if (ats != null && at != ats) {
-      if(!isChanged){
-        Application.unreadNoticeNumber=0;
+    bool needChange = false;
+    if (Application.unreadNoticeNumber == 0) {
+      if (comments != null&&comment!=comments) {
+        needChange = true;
+        Application.unreadNoticeNumber += comments;
+        comment = comments;
       }
-      Application.unreadNoticeNumber+=ats;
-      at = ats;
-      isChanged = true;
-    }
-    if (lauds != null && laud != lauds) {
-      if(!isChanged){
-        Application.unreadNoticeNumber=0;
+      if (ats != null&&at!=ats) {
+        needChange = true;
+        Application.unreadNoticeNumber += ats;
+        at = ats;
       }
-      Application.unreadNoticeNumber+=lauds;
-      laud = lauds;
-      isChanged = true;
+      if (lauds != null&&laud!=lauds) {
+        needChange = true;
+        Application.unreadNoticeNumber += lauds;
+        laud = lauds;
+      }
+    } else {
+      if (comments != null&&comment!=comments) {
+        needChange = true;
+        Application.unreadNoticeNumber -= comment;
+        Application.unreadNoticeNumber += comments;
+        comment = comments;
+      }
+      if (ats != null&&at!=ats) {
+        needChange = true;
+        Application.unreadNoticeNumber -= at;
+        Application.unreadNoticeNumber += ats;
+        at = ats;
+      }
+      if (lauds != null&&laud!=lauds) {
+        needChange = true;
+        Application.unreadNoticeNumber -= laud;
+        Application.unreadNoticeNumber += lauds;
+        laud = lauds;
+      }
     }
-    if (isChanged) {
+    if(needChange){
       notifyListeners();
     }
   }
+
 }

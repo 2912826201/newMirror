@@ -52,6 +52,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   double _screenWidth = 0.0;
   int _listLength = 0;
   int choseUnreadType;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -67,7 +68,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     // _getUnreadMsgCount();
   }
 
-  _removeUnreadNotice(int unReadTimeStamp,int type){
+  _removeUnreadNotice(int unReadTimeStamp, int type) {
     print('------------------------回调');
     switch (type) {
       case 0:
@@ -80,11 +81,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         context.read<UnreadMessageNotifier>().changeUnreadMsg(lauds: 0);
         break;
     }
-    refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value){
+    refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value) {
       //然后获取新的未读数
       _getUnreadMsgCount();
     });
   }
+
   //获取系统通知状态
   _checkNotificationPermission() {
     return NotificationPermissions.getNotificationPermissionStatus().then((status) {
@@ -140,9 +142,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   //获取未读互动通知数
   _getUnreadMsgCount() async {
     Unreads model = await getUnReads();
-    if(model!=null){
-      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment,ats: model.at,lauds: model.laud);
-    }
   }
 
   @override
@@ -278,7 +277,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           InkWell(
             onTap: () {
               AppRouter.navigateToInteractivePage(context, type: type, callBack: (result) async {
-                _removeUnreadNotice(Application.unreadNoticeTimeStamp,type);
+                _removeUnreadNotice(Application.unreadNoticeTimeStamp, type);
               });
             },
             child: Stack(
@@ -288,8 +287,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     type == 0
                         ? AppIcon.message_comment
                         : type == 1
-                        ? AppIcon.message_at
-                        : AppIcon.message_like,
+                            ? AppIcon.message_at
+                            : AppIcon.message_like,
                     45),
                 Positioned(
                   left: 29.5,
