@@ -9,11 +9,11 @@ const String RONGCLOUD_GETTOKEN = "/third/rongcloud/getRongCloudToken";
 
 Future<String> requestRongCloudToken() async {
   BaseResponseModel responseModel = await requestApi(RONGCLOUD_GETTOKEN, {});
-  if(responseModel.isSuccess&&responseModel.code==CODE_SUCCESS){
+  if (responseModel.isSuccess && responseModel.code == CODE_SUCCESS) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     String token = responseModel.data["token"];
     return token;
-  }else {
+  } else {
     //TODO 这里实际需要处理失败
     return null;
   }
