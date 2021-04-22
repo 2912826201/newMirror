@@ -327,7 +327,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
         ToastShow.show(msg: responseModel.message, context: context);
       }
     } else {
-      ToastShow.show(msg: "登录失败", context: context);
+      ToastShow.show(msg: "登录失败！", context: context);
     }
     setState(() {
       logining = false;
@@ -364,6 +364,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       AppRouter.popToBeforeLogin(context);
     } else {
+      ToastShow.show(msg: "登录失败！", context: context);
       print('------------------用户信息请求失败');
     }
   }
