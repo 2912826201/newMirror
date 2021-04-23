@@ -72,7 +72,7 @@ class FeedSharePopups extends StatelessWidget {
       ShareViewModel a = ShareViewModel(name: name[i], icon: icon[i]);
       shareViewModel.add(a);
     }
-    if (sharedType != 1) {
+    if (sharedType == 2) {
       ShareViewModel a = ShareViewModel(
         name: "保存本地",
         icon: AppIcon.share_download_circle,
