@@ -52,6 +52,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   requestRecommendTopic({bool refreshOrLoading}) async {
     if (recommendHasNext != 0) {
       DataResponseModel model = await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId);
+      if(refreshOrLoading) {
+        recommendTopicList.clear();
+      }
       if (model != null) {
         recommendHasNext = model.hasNext;
         if (model.list.isNotEmpty) {
@@ -118,7 +121,6 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   controller: refreshController,
                   onRefresh: () {
-                    recommendTopicList.clear();
                     recommendHasNext = null;
                     refreshController.loadComplete();
                     requestRecommendTopic(refreshOrLoading: true);
