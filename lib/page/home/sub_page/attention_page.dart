@@ -390,7 +390,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: CustomScrollView(
               key: globalKey,
               controller: _controller,
-              physics: AlwaysScrollableScrollPhysics(),
+              physics:   Platform.isIOS ?
+              BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverList(
                   // controller: _controller,
