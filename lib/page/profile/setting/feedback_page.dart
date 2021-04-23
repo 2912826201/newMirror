@@ -129,12 +129,8 @@ class _feedBackPage extends State<FeedBackPage> {
                 color: Color(0xFFFFFFFF),
               ),
           itemBuilder: (context, index) {
-            if (imageDataList != null) {
-              if (index == imageDataList.length) {
-                return _addImageItem();
-              } else {
+            if (imageDataList != null&&index != imageDataList.length) {
                 return _item(index);
-              }
             } else {
               return _addImageItem();
             }

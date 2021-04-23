@@ -91,10 +91,6 @@ class ChunkDownLaod {
             data: "下载完成",
           );
         }
-      }).catchError((e){
-        if(CancelToken.isCancel(e)){
-          print('-----------------------下载取消');
-        }
       });
     }
 
