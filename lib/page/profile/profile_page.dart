@@ -13,11 +13,13 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/promotion/new_user_promotion_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -173,6 +175,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动"),
               /* _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
             ],
@@ -468,6 +471,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //点击事件Training record
   void onClickListener(String title) {
+    String image="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -478,6 +482,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
       AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
+    } else if ("参加活动" == title) {
+      showImageDialog(
+        context,
+        imageUrl:image,
+        onClickListener:(){
+          //跳转不关闭当前页面
+          Navigator.of(context).push(
+            new MaterialPageRoute(
+              settings: RouteSettings(name: "NewUserPromotionPage"),
+              builder: (context) {
+                return NewUserPromotionPage();
+              },
+            ),
+          );
+        }
+      );
     }
   }
 }

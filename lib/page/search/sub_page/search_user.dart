@@ -111,9 +111,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
             print('model================ ${element.relation}');
             modelList.add(element);
           });
-          _refreshController.refreshToIdle();
         }
-        _refreshController.refreshCompleted();
       } else {
         noData = true;
         defaultImage = DefaultImage.nodata;
@@ -122,6 +120,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         noData = true;
         defaultImage = DefaultImage.error;
       }
+      _refreshController.refreshCompleted();
     } else if (dataPage > 1 && hashNext == 1) {
       _refreshController.isLoading;
       if (model != null && model.list != null) {

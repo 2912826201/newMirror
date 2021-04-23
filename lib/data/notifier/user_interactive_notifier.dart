@@ -39,7 +39,7 @@ class UserInteractiveNotifier extends ChangeNotifier {
       }
       profileUiChangeModel[id] = model;
     } else {
-      if (isFollow != null) {
+      if (isFollow != null&&profileUiChangeModel[id].isFollow==null) {
         profileUiChangeModel[id].isFollow = isFollow;
       }
     }
