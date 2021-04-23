@@ -376,7 +376,7 @@ class HeadViewState extends State<HeadView> {
           return true;
         }),
         title: "提交举报",
-        info: "确认举报用户",
+        info: "确认举报该动态",
         barrierDismissible: false);
   }
 
