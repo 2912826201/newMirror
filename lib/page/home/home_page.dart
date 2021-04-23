@@ -191,8 +191,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         } else {
           _percent = 1;
         }
-        postprogressModel.plannedSpeed = _percent / 3;
-        streamProgress.sink.add(postprogressModel);
+        if (postprogressModel.postFeedModel.selectedMediaFiles.type == mediaTypeKeyImage) {
+          postprogressModel.plannedSpeed = _percent / 3;
+          streamProgress.sink.add(postprogressModel);
+        }
       }
       // 转文件
       String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
@@ -274,11 +276,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
           results = await FileUtil().uploadMedias(fileList, (percent) {
             print("percent：${percent}");
-            if (postprogressModel.plannedSpeed < 1) {
-              postprogressModel.plannedSpeed += percent / 7;
-            } else {
-              postprogressModel.plannedSpeed = 1;
-            }
+            postprogressModel.plannedSpeed = percent;
             // postprogressModel.plannedSpeed = percent;
             streamProgress.sink.add(postprogressModel);
             print("percent结束了:");
@@ -301,7 +299,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         print("数据请求发不打印${postModel.toString()}");
         if (mounted) {
           Map<String, dynamic> feedModel = Map();
-          print('--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
+          print(
+              '--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
           feedModel = await publishFeed(
               type: 0,
               content: postModel.content,
@@ -492,7 +491,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                       postprogressModel: snapshot.data,
                       deleteReleaseFeedChanged: () {
                         // 删除本地存储
-                        AppPrefs.removePublishFeed("${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
+                        AppPrefs.removePublishFeed(
+                            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
                         //  清除图片路径
                         if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                             .contains(AppConfig.getAppPublishDir())) {
