@@ -269,7 +269,6 @@ class TopicListState extends State<TopicList> {
                       },
                       child: Container(
                         margin: const EdgeInsets.only(left: 16),
-                        height: 54,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

@@ -533,7 +533,9 @@ class StringUtil {
     int end = 0;
     if (topics != null && topics.length > 0) {
       for (int i = 0; i < topics.length; i++) {
-        maps[topics[i].index.toString()] = topics[i];
+        if(topics[i].dataState != 1) {
+          maps[topics[i].index.toString()] = topics[i];
+        }
       }
     }
     if (atUsers != null && atUsers.length > 0) {
