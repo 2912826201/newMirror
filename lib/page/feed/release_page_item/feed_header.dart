@@ -14,6 +14,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -68,12 +69,12 @@ class FeedHeader extends StatelessWidget {
     PostprogressModel postprogressModel = PostprogressModel();
     postprogressModel.showPulishView = true;
     postprogressModel.plannedSpeed = 0.0;
-    List<AtUsersModel> atUsersModel = [];
+    List<PostAtUserModel> atUsersModel = [];
     String address;
     String cityCode;
     String latitude;
     String longitude;
-    List<TopicDtoModel> topics = [];
+    List<PostTopicModel> topics = [];
     feedModel.content = inputText;
     feedModel.uid = uid;
     feedModel.currentTimestamp = currentTimestamp;
@@ -84,7 +85,7 @@ class FeedHeader extends StatelessWidget {
         print("feedModel.content${feedModel.content}");
         for (Rule rule in rules) {
           if (rule.isAt) {
-            AtUsersModel atModel = AtUsersModel();
+            PostAtUserModel atModel = PostAtUserModel();
             atModel.index = rule.startIndex;
             atModel.len = rule.endIndex;
             atModel.uid = rule.id;
@@ -92,7 +93,7 @@ class FeedHeader extends StatelessWidget {
           } else {
             print("查看发布话题动态——————————————————————————————");
             print(rule.toString());
-            TopicDtoModel topicDtoModel = TopicDtoModel();
+            PostTopicModel topicDtoModel = PostTopicModel();
 
             if (rule.id != -1) {
               topicDtoModel.id = rule.id;
@@ -132,14 +133,14 @@ class FeedHeader extends StatelessWidget {
     } else {
       for (Rule rule in rules) {
         if (rule.isAt) {
-          AtUsersModel atModel = AtUsersModel();
+          PostAtUserModel atModel = PostAtUserModel();
           atModel.index = rule.startIndex;
           atModel.len = rule.endIndex;
           atModel.uid = rule.id;
           atUsersModel.add(atModel);
         } else {
           print(rule.toString());
-          TopicDtoModel topicDtoModel = TopicDtoModel();
+          PostTopicModel topicDtoModel = PostTopicModel();
 
           if (rule.id != -1) {
             topicDtoModel.id = rule.id;
@@ -220,7 +221,8 @@ class FeedHeader extends StatelessWidget {
           const Spacer(),
           GestureDetector(
             onTap: () {
-              // 读取输入框最新的值
+              // 读取输入框最新的值去掉后空格换行
+              // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
               var inputText = controller.text;
 
               // 获取输入框内的规则
@@ -231,7 +233,9 @@ class FeedHeader extends StatelessWidget {
 
               // 获取用户Id
               var uid = context.read<ProfileNotifier>().profile.uid;
-              pulishFeed(context, inputText, uid, rules, poi);
+              print("11111111");
+              // print(StringUtil.replaceLineBlanks(inputText,rules));
+              pulishFeed(context, StringUtil.replaceLineBlanks(inputText,rules), uid, rules, poi);
             },
             child: Container(
                 height: 28,

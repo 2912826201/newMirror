@@ -83,7 +83,7 @@ class TopicListState extends State<TopicList> {
     }
     DataResponseModel model = await getUserRecommendTopic(size: 20);
     if (dataPage == 1) {
-      if (model.list.isNotEmpty) {
+      if (model!=null&&model.list.isNotEmpty) {
         model.list.forEach((v) {
           topics.add(TopicDtoModel.fromJson(v));
         });
@@ -269,7 +269,6 @@ class TopicListState extends State<TopicList> {
                       },
                       child: Container(
                         margin: const EdgeInsets.only(left: 16),
-                        height: 54,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

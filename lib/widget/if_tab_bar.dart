@@ -349,8 +349,8 @@ class _IFTabBarState extends State<IFTabBar> {
                           child: notifier.value.unReadFeedCount != 0
                               ? ClipOval(
                             child: Container(
-                              height: 10,
-                              width: 10,
+                              height: 8,
+                              width: 8,
                               color: AppColor.mainRed,
                             ),
                           )

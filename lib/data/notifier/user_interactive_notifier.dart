@@ -3,10 +3,12 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:provider/provider.dart';
+
 class UserInteractiveNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
   int removeId;
+  bool haveNewFans = false;
 
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
@@ -36,6 +38,10 @@ class UserInteractiveNotifier extends ChangeNotifier {
         model.feedStringList.add("举报");
       }
       profileUiChangeModel[id] = model;
+    } else {
+      if (isFollow != null&&profileUiChangeModel[id].isFollow==null) {
+        profileUiChangeModel[id].isFollow = isFollow;
+      }
     }
   }
 
@@ -65,11 +71,15 @@ class UserInteractiveNotifier extends ChangeNotifier {
         profileUiChangeModel[id].attentionModel.followerCount -= 1;
       }
     }
-    if(profileUiChangeModel.containsKey(Application.appContext.read<ProfileNotifier>().profile.uid)){
+    if (profileUiChangeModel.containsKey(Application.appContext.read<ProfileNotifier>().profile.uid)) {
       if (follow) {
-        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid].attentionModel.followingCount += 1;
+        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid]
+            .attentionModel
+            .followingCount += 1;
       } else {
-        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid].attentionModel.followingCount -= 1;
+        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid]
+            .attentionModel
+            .followingCount -= 1;
       }
     }
     notifyListeners();

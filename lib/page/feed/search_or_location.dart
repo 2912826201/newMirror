@@ -37,6 +37,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
   List<PeripheralInformationPoi> searchPois = []; //返回搜索页面的数据集合
   bool cityLimit = true; //仅返回指定城市数据
+  String searchText = ""; // 记录上一次的搜索文本
 
   @override
   void initState() {
@@ -46,12 +47,13 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
     }
     searchController.addListener(() {
       String val = searchController.text;
+      print("val:::::::$val");
       //调用搜索接口
       if (val == null || val == "" || val.length == 0) {
         setState(() {
           scrollController.jumpTo(0);
         });
-      } else {
+      } else if (searchText != val){
         print('调用搜索接口');
         scrollController.jumpTo(0);
         searchHttp();
@@ -176,8 +178,10 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       searchPois.clear();
       PeripheralInformationEntity locationInformationEntity =
           await searchForHttp(searchController.text, currentAddressInfo.city, page: 1);
+      searchText = searchController.text;
       if (locationInformationEntity.status == "1") {
         _refreshController.refreshCompleted();
+        _refreshController.loadComplete();
         print('请求成功');
         pageIndex = 1;
         print(locationInformationEntity.pois);
@@ -216,16 +220,20 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
             pages = (total / pageSize).floor() + 1;
           }
         }
+        if(mounted) {
+          setState(() {});
+        }
       } else {
         _refreshController.refreshFailed();
         // Fluttertoast.showToast(msg: "请求失败");
       }
-      setState(() {});
     }
   }
 
   //加载更多
   Future<Null> onLoadMore() async {
+    print("pageIndex::::::$pageIndex");
+    print("pages::::::$pages");
     if (searchController.text != null && searchController.text.isNotEmpty) {
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity =
@@ -307,7 +315,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       // pois.forEach((v) {
       //   print(v.toString());
       // });
-      setState(() {});
+
       int total = int.parse(locationInformationEntity.count) + 2; //总数量
       print(total);
       //算页数
@@ -315,6 +323,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
         pages = (total / pageSize).floor();
       } else {
         pages = (total / pageSize).floor() + 1;
+      }
+      if(mounted) {
+        setState(() {});
       }
     } else {
       // 请求失败
@@ -364,8 +375,8 @@ class LocationItem extends StatelessWidget {
 
   // 内部布局
   locationLayout() {
-    print("checkIndex￥$checkIndex");
-    print(poi.toString());
+    // print("checkIndex￥$checkIndex");
+    // print(poi.toString());
     if (poi.id == Application.cityId || index == 0) {
       return Container(
         alignment: const Alignment(-1, 0),

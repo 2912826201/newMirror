@@ -174,8 +174,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       });
     }
     BaseResponseModel responseModel = await sendSms(inputController.text, 0);
-    if (responseModel != null) {
-      if(responseModel.code==200){
+    if (responseModel != null&&responseModel.code==200) {
         print("发送验证码成功");
         ToastShow.show(msg: "验证码发送成功！", context: context);
         _titleOfSendTextBtn = "发送";
@@ -186,11 +185,10 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
             isSent: true,
           );
         }));
-      }else {
-        ToastShow.show(msg: "${responseModel.message}", context: context);
-        _titleOfSendTextBtn = _resendTitle;
-        print("发送验证码失败");
-      }
+    }else{
+      ToastShow.show(msg: "验证码发送失败，请重试", context: context);
+      _titleOfSendTextBtn = _resendTitle;
+      print("发送验证码失败");
     }
     sendMsging = false;
     setState(() {});

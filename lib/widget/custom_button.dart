@@ -423,7 +423,6 @@ class FollowButton extends StatefulWidget {
   FollowButtonType buttonType;
   bool isMysList;
   int type;
-
   FollowButton({this.isFollow, this.id, this.buttonType, this.isMysList, this.type});
 
   @override
@@ -434,7 +433,6 @@ class FollowButton extends StatefulWidget {
 
 class _FollowButtonState extends State<FollowButton> {
   bool isMySelf = false;
-  bool beforeFollowOver = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -452,9 +450,8 @@ class _FollowButtonState extends State<FollowButton> {
       } else {
         _getAttention(widget.id);
       }
-      setState(() {
-        beforeFollowOver = false;
-      });
+    }else{
+      ToastShow.show(msg: "关注失败", context: context);
     }
   }
 
@@ -513,7 +510,7 @@ class _FollowButtonState extends State<FollowButton> {
           AppRouter.navigateToLoginPage(context);
           return false;
         }
-        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow&&beforeFollowOver) {
+        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow) {
           _checkBlackStatus();
         }
       },

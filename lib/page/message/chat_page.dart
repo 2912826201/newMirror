@@ -482,7 +482,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // 存入最新的值
     context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
-    if (StringUtil.strNoEmpty(text)) {
+    if (text!=null&&text.length>0) {
       if (!isHaveTextLen) {
         isReset = true;
         isHaveTextLen = true;
@@ -840,7 +840,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //发送文字消息
   _postText(String text) {
-    if (text == null || text.isEmpty || text.length < 1) {
+    if (text == null || text.length < 1) {
       ToastShow.show(msg: "消息为空,请输入消息！", context: _context);
       return;
     }
@@ -1488,6 +1488,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
+      maxNumberOfBytes: 6000,
       correctRulesListener: () {
         _resetEditText();
       },
@@ -1574,24 +1575,28 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //聊天内容的点击事件
   _messageInputBodyClick() {
     print("_messageInputBodyClick");
-    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
-      _emojiStateOld=false;
-      print("_emojiStateOld1:$_emojiStateOld");
-      if (MediaQuery.of(context).viewInsets.bottom > 0) {
-        FocusScope.of(context).requestFocus(new FocusNode());
+    try{
+      if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
+        _emojiStateOld=false;
+        print("_emojiStateOld1:$_emojiStateOld");
+
+        if (MediaQuery.of(context).viewInsets.bottom > 0) {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        }
+
+        _bottomSettingPanelState = false;
+        bottomSettingChildKey.currentState.bottomSettingPanelState = false;
+        if (_emojiState) {
+          _emojiState = false;
+          bottomSettingChildKey.currentState.setData(
+            bottomSettingPanelState: false,
+            emojiState: _emojiState,
+          );
+        } else {
+          bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+        }
       }
-      _bottomSettingPanelState = false;
-      bottomSettingChildKey.currentState.bottomSettingPanelState = false;
-      if (_emojiState) {
-        _emojiState = false;
-        bottomSettingChildKey.currentState.setData(
-          bottomSettingPanelState: false,
-          emojiState: _emojiState,
-        );
-      } else {
-        bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-      }
-    }
+    }catch (e){}
   }
 
   //表情的点击事件
@@ -1696,10 +1701,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // Application.atMesGroupModel.add(atMsg);
     _messageInputBodyClick();
-    Message message =
-        chatDataList == null || chatDataList.length < 1 || chatDataList[0].msg == null ? null : chatDataList[0].msg;
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-        _morePageOnClick, _moreOnClickExitChatPage, message);
+        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
   }
 
   //更多的界面-里面进行了一些的点击事件

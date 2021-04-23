@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -253,9 +254,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 // BouncingScrollPhysics
                 physics:
                     // ClampingScrollPhysics(),
-                    // FixedExtentScrollPhysics(),
-                    AlwaysScrollableScrollPhysics(),
-                // BouncingScrollPhysics(),
+                    // RangeMaintainingScrollPhysics(),
+                // FixedExtentScrollPhysics(),
+                // AlwaysScrollableScrollPhysics(),
+                // Platform
+                Platform.isIOS ?
+                BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
                 slivers: [
                   // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
                   // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。

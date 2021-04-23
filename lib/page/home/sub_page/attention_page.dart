@@ -86,7 +86,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   bool showNoMroe = true;
 
   // 是否请求接口
-  bool isRequestInterface = false;
+  bool isRequestInterfaceEnd = false;
 
   // 声明定时器
   Timer timer;
@@ -131,7 +131,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     if (!isLoggedIn) {
       status = Status.notLoggedIn;
     } else {
-      getRecommendFeed();
+      getRecommendFeed(refreshOrLoading: true);
     }
     // 上拉加载
     super.initState();
@@ -149,19 +149,21 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 重新登录替换布局
   _againLoginReplaceLayout() {
     // 调用关注接口替换
-    getRecommendFeed();
+    getRecommendFeed(refreshOrLoading: true);
   }
 
   // 请求关注接口
-  getRecommendFeed() async {
-    isRequestInterface = true;
+  getRecommendFeed({bool refreshOrLoading}) async {
     print("开始请求动态数据");
     if (dataPage > 1 && lastTime == null) {
       _refreshController.loadNoData();
       return;
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-
+    if (refreshOrLoading) {
+      attentionIdList.clear();
+      attentionModelList.clear();
+    }
     print('---7666666666666666666666666666666666666model！=null');
     if (mounted) {
       setState(() {
@@ -203,25 +205,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             _refreshController.loadNoData();
           }
         }
-        // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
       });
     }
-
-    isRequestInterface = false;
-    // } else {
-    //   print('-""--7666666666666666666666666666666666666else else');
-    //   // 没有存在空布局时再插入
-    //   if (attentionIdList.first != -1) {
-    //     attentionIdList.insert(0, -1);
-    //   }
-    //   status = Status.noConcern;
-    //   _refreshController.loadComplete();
-    //   // _refreshController.loadNoData();
-    //   if (mounted) {
-    //     setState(() {});
-    //   }
-    //   // 这是为了加载无动态缺省布局
-    // }
+    isRequestInterfaceEnd = true;
     // 更新动态数量
     int addFeedNum = 0;
     attentionModelList.forEach((element) {
@@ -375,22 +361,20 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               showNoMroe = IntegerUtil.showNoMore(globalKey);
             });
             dataPage += 1;
-            getRecommendFeed();
+            getRecommendFeed(refreshOrLoading: false);
           },
           onRefresh: () {
             dataPage = 1;
-            attentionIdList.clear();
-            attentionModelList.clear();
             _refreshController.loadComplete();
             lastTime = null;
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();
-            getRecommendFeed();
+            getRecommendFeed(refreshOrLoading: true);
           },
           child: CustomScrollView(
               key: globalKey,
               controller: _controller,
-              physics: AlwaysScrollableScrollPhysics(),
+              physics: Platform.isIOS ? BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverList(
                   // controller: _controller,

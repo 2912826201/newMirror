@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
@@ -16,6 +17,7 @@ import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
@@ -49,6 +51,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   double _screenWidth = 0.0;
   int _listLength = 0;
+  int choseUnreadType;
 
   @override
   bool get wantKeepAlive => true;
@@ -63,6 +66,25 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     _initConnectivity();
     // 已在点击tab按钮时请求
     // _getUnreadMsgCount();
+  }
+
+  _removeUnreadNotice(int unReadTimeStamp, int type) {
+    print('------------------------回调');
+    switch (type) {
+      case 0:
+        context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0);
+        break;
+      case 1:
+        context.read<UnreadMessageNotifier>().changeUnreadMsg(ats: 0);
+        break;
+      case 2:
+        context.read<UnreadMessageNotifier>().changeUnreadMsg(lauds: 0);
+        break;
+    }
+    refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value) {
+      //然后获取新的未读数
+      _getUnreadMsgCount();
+    });
   }
 
   //获取系统通知状态
@@ -254,23 +276,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToInteractivePage(context, type: type, callBack: (type) async {
-                switch (type) {
-                  case 0:
-                    context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0);
-                    break;
-                  case 1:
-                    context.read<UnreadMessageNotifier>().changeUnreadMsg(ats: 0);
-                    break;
-                  case 2:
-                    context.read<UnreadMessageNotifier>().changeUnreadMsg(lauds: 0);
-                    break;
-                }
-                //用时间戳清空之前的未读数
-                int timeStamp = type as int;
-                await refreshUnreadMsg(type, timeStamp: timeStamp);
-                //然后获取新的未读数
-                _getUnreadMsgCount();
+              AppRouter.navigateToInteractivePage(context, type: type, callBack: (result) async {
+                _removeUnreadNotice(Application.unreadNoticeTimeStamp, type);
               });
             },
             child: Stack(

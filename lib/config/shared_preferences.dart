@@ -93,7 +93,10 @@ class AppPrefs {
     }
    return  value;
   }
-
+ // 删除发布动态本地数据key
+  static removePublishFeed(String key) {
+    _instance.remove(key);
+  }
 
   static setLiveRoomMuteMessage(int liveRoomId)async {
     Map<String, dynamic> map = await queryMute(liveRoomId);

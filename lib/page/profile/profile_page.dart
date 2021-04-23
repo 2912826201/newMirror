@@ -13,15 +13,16 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/promotion/new_user_promotion_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'profile_detail_page.dart';
 
 class DefaultImage {
   static String nodata = "assets/png/default_no_data.png";
@@ -42,9 +43,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int feedCount;
   UserModel userModel;
   double avatarSize = 87;
-  double userDetaileIconSize =  73;
-  double userDetailHeight = 100.5;
+
+  //关注，粉丝，点赞三块的尺寸
+  double userDetaileIconSize = 73;
+
+  //头像和按钮的row的高度
+  double userAvatarAndButtonHeight = 100.5;
+
+  //整个资料版高度
   double pageHeaderHeight;
+
+  //高斯模糊高度
   double gaussianBlurHeight;
   ScrollController controller = ScrollController();
   double width = ScreenUtil.instance.screenWidthDp;
@@ -63,8 +72,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
-    pageHeaderHeight = ScreenUtil.instance.statusBarHeight+CustomAppBar.appBarHeight+17+userDetailHeight;
-    gaussianBlurHeight = ScreenUtil.instance.statusBarHeight+CustomAppBar.appBarHeight+45;
+    pageHeaderHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 17 + userAvatarAndButtonHeight;
+    gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 45;
     getProfileModel();
     controller.addListener(() {
       if (controller.position.maxScrollExtent < controller.offset) {
@@ -121,7 +130,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       style: AppStyle.textRegular12,
                     ),
                   ),
-                  SizedBox(width: 16.5,),
+                  SizedBox(
+                    width: 16.5,
+                  ),
                   Container(
                     width: (width - 65) / 3,
                     alignment: Alignment.centerLeft,
@@ -130,7 +141,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       style: AppStyle.textRegular12,
                     ),
                   ),
-                  SizedBox(width: 16.5,),
+                  SizedBox(
+                    width: 16.5,
+                  ),
                   Container(
                     width: (width - 65) / 3,
                     alignment: Alignment.centerLeft,
@@ -162,6 +175,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动"),
               /* _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
             ],
@@ -176,53 +190,54 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Container(
       height: pageHeaderHeight,
       width: width,
-      child:Stack(
-      children: [
-        Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-          print("头像地址:$avatar");
-          return CachedNetworkImage(
-            height: gaussianBlurHeight,
+      child: Stack(
+        children: [
+          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+            print("头像地址:$avatar");
+            return CachedNetworkImage(
+              height: gaussianBlurHeight,
+              width: width,
+              imageUrl: avatar != null ? avatar : "",
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: AppColor.bgWhite,
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.bgWhite,
+              ),
+            );
+          }, selector: (context, notifier) {
+            return notifier.profile.avatarUri;
+          }),
+          Positioned(
+              child: Container(
             width: width,
-            imageUrl: avatar != null ? avatar : "",
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
-            ),
-            errorWidget: (context, url, error) => Container(
-              color: AppColor.bgWhite,
-            ),
-          );
-        }, selector: (context, notifier) {
-          return notifier.profile.avatarUri;
-        }),
-        Positioned(
-            child: Container(
-          width: width,
-          height: gaussianBlurHeight,
-          color: AppColor.white.withOpacity(0.6),
-        )),
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+            height: gaussianBlurHeight,
+            color: AppColor.white.withOpacity(0.6),
+          )),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
 
-          ///这里是顶部appbar和头像关注
-          child: Container(
-            height: pageHeaderHeight,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: ScreenUtil.instance.statusBarHeight,
-                ),
-                _getTopText(),
-                SizedBox(
-                  height: 17,
-                ),
-                _getUserImage(),
-              ],
+            ///这里是顶部appbar和头像关注
+            child: Container(
+              height: pageHeaderHeight,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: ScreenUtil.instance.statusBarHeight,
+                  ),
+                  _getTopText(),
+                  SizedBox(
+                    height: 17,
+                  ),
+                  _getUserImage(),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),);
+        ],
+      ),
+    );
   }
 
   ///这是扫一扫
@@ -293,7 +308,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这里因为头像和关注等是水平，所以放在一起
   Widget _getUserImage() {
     return Container(
-        height: userDetailHeight,
+        height: userAvatarAndButtonHeight,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
         child: Stack(
@@ -306,8 +321,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Positioned(
                 right: 0,
                 bottom: 0,
-                child: Row(
-                    children: [
+                child: Row(children: [
                   InkWell(
                     child: _textAndNumber(
                         "关注",
@@ -320,7 +334,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       AppRouter.navigateToQueryFollowList(context, 1, context.read<ProfileNotifier>().profile.uid);
                     },
                   ),
-
                   InkWell(
                     onTap: () {
                       AppRouter.navigateToQueryFollowList(context, 2, context.read<ProfileNotifier>().profile.uid);
@@ -333,7 +346,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                             .attentionModel
                             .followerCount)),
                   ),
-
                   InkWell(
                     onTap: () {
                       AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,
@@ -369,19 +381,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
               print("头像地址:$avatar");
               return ClipOval(
-                    child: CachedNetworkImage(
-                      height: avatarSize,
-                      width: avatarSize,
-                      imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                    ),
-                  );
+                child: CachedNetworkImage(
+                  height: avatarSize,
+                  width: avatarSize,
+                  imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColor.bgWhite,
+                  ),
+                ),
+              );
             }, selector: (context, notifier) {
               return notifier.profile.avatarUri;
             }),
@@ -398,25 +410,28 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: userDetaileIconSize,
       width: userDetaileIconSize,
       child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
             number,
             style: AppStyle.textMedium18,
           ),
-         SizedBox(height: 2,),
-         Text(
+          SizedBox(
+            height: 2,
+          ),
+          Text(
             text,
             style: AppStyle.textRegular12,
           ),
-      ],
-    ),);
+        ],
+      ),
+    );
   }
 
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget  _secondData(Widget icon, number, String text) {
+  Widget _secondData(Widget icon, number, String text) {
     var _userPlate = Stack(
       children: [
         Container(
@@ -430,7 +445,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 22,),
+              SizedBox(
+                height: 22,
+              ),
               icon,
               SizedBox(
                 height: 6.5,
@@ -454,6 +471,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //点击事件Training record
   void onClickListener(String title) {
+    String image="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -464,6 +482,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
       AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
+    } else if ("参加活动" == title) {
+      showImageDialog(
+        context,
+        imageUrl:image,
+        onClickListener:(){
+          //跳转不关闭当前页面
+          Navigator.of(context).push(
+            new MaterialPageRoute(
+              settings: RouteSettings(name: "NewUserPromotionPage"),
+              builder: (context) {
+                return NewUserPromotionPage();
+              },
+            ),
+          );
+        }
+      );
     }
   }
 }
