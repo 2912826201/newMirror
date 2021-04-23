@@ -321,7 +321,8 @@ class HeadViewState extends State<HeadView> {
                 )),
                 widget.isShowConcern ? isShowFollowButton(context) : Container(),
                 Container(
-                  margin: const EdgeInsets.only(right: 16),
+                  width: 56,
+                  height: 62,
                   child: AppIconButton(
                     svgName: AppIcon.more_feed,
                     iconSize: 24,
