@@ -80,11 +80,11 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 
   @override
   void initState() {
-    requestFeednIterface();
+    requestFeednIterface(refreshOrLoading:true);
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestFeednIterface();
+        requestFeednIterface(refreshOrLoading:false);
       }
     });
     widget.textController.addListener(() {
@@ -96,11 +96,10 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       timer = Timer(Duration(milliseconds: 700), () {
         if (lastString != widget.keyWord) {
           if (feedList.isNotEmpty) {
-            feedList.clear();
             lastTime = null;
             hasNext = null;
           }
-          requestFeednIterface();
+          requestFeednIterface(refreshOrLoading:true);
         }
       });
       lastString = widget.keyWord;
@@ -121,7 +120,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   }
 
   // 请求动态接口
-  requestFeednIterface() async {
+  requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
       if (loadStatus == LoadingStatus.STATUS_IDEL) {
         // 先设置状态，防止下拉就直接加载
@@ -130,6 +129,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         });
       }
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
+      if(refreshOrLoading) {
+        feedList.clear();
+      }
       if (model != null && model.list.isNotEmpty) {
         lastTime = model.lastTime;
         hasNext = model.hasNext;
@@ -168,12 +170,11 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
               behavior: OverScrollBehavior(),
               child: RefreshIndicator(
                   onRefresh: () async {
-                    feedList.clear();
                     lastTime = null;
                     hasNext = null;
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    requestFeednIterface();
+                    requestFeednIterface(refreshOrLoading:true);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,

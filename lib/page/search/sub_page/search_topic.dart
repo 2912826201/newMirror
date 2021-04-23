@@ -56,11 +56,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   void initState() {
-    requestFeednIterface();
+    requestFeednIterface(refreshOrLoading: true);
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestFeednIterface();
+        requestFeednIterface(refreshOrLoading: false);
       }
     });
     widget.textController.addListener(() {
@@ -73,11 +73,10 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         if (lastString != widget.keyWord) {
           if (topicList.isNotEmpty) {
             print("333333333333333333333");
-            topicList.clear();
             lastScore = null;
             hasNext = null;
           }
-          requestFeednIterface();
+          requestFeednIterface(refreshOrLoading: true);
         }
       });
       lastString = widget.keyWord;
@@ -98,7 +97,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   }
 
   // 请求动态接口
-  requestFeednIterface() async {
+  requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
       if (loadStatus == LoadingStatus.STATUS_IDEL) {
         // 先设置状态，防止下拉就直接加载
@@ -107,14 +106,19 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         });
       }
       DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore);
-      lastScore = model.lastScore;
-      hasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          topicList.add(TopicDtoModel.fromJson(v));
-        });
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
+      if (refreshOrLoading) {
+        topicList.clear();
+      }
+      if (model != null) {
+        lastScore = model.lastScore;
+        hasNext = model.hasNext;
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            topicList.add(TopicDtoModel.fromJson(v));
+          });
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
+        }
       }
     }
     if (hasNext == 0) {
@@ -135,12 +139,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
               behavior: OverScrollBehavior(),
               child: RefreshIndicator(
                   onRefresh: () async {
-                    topicList.clear();
                     lastScore = null;
                     hasNext = null;
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    requestFeednIterface();
+                    requestFeednIterface(refreshOrLoading: true);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,

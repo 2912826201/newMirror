@@ -51,11 +51,11 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
 
   @override
   void initState() {
-    requestSearchCourse();
+    requestSearchCourse(refreshOrLoading:true);
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestSearchCourse();
+        requestSearchCourse(refreshOrLoading:false);
       }
     });
     widget.textController.addListener(() {
@@ -67,11 +67,10 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
       timer = Timer(Duration(milliseconds: 700), () {
         if (lastString != widget.keyWord) {
           if (liveVideoList.isNotEmpty) {
-            liveVideoList.clear();
             lastTime = null;
             hasNext = null;
           }
-          requestSearchCourse();
+          requestSearchCourse(refreshOrLoading:true);
         }
       });
       lastString = widget.keyWord;
@@ -92,7 +91,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   }
 
   // 请求搜索课程接口
-  requestSearchCourse() async {
+  requestSearchCourse({bool refreshOrLoading}) async {
     if (hasNext != 0) {
       if (loadStatus == LoadingStatus.STATUS_IDEL) {
         // 先设置状态，防止下拉就直接加载
@@ -101,14 +100,19 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
         });
       }
       DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
-      lastTime = model.lastTime;
-      hasNext = model.hasNext;
-      if (model.list.length != 0) {
-        model.list.forEach((v) {
-          liveVideoList.add(LiveVideoModel.fromJson(v));
-        });
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
+      if (refreshOrLoading) {
+        liveVideoList.clear();
+      }
+      if (model != null) {
+        lastTime = model.lastTime;
+        hasNext = model.hasNext;
+        if (model.list.length != 0) {
+          model.list.forEach((v) {
+            liveVideoList.add(LiveVideoModel.fromJson(v));
+          });
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
+        }
       }
     }
     if (hasNext == 0) {
@@ -129,12 +133,11 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
               behavior: OverScrollBehavior(),
               child: RefreshIndicator(
                   onRefresh: () async {
-                    liveVideoList.clear();
                     lastTime = null;
                     hasNext = null;
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    requestSearchCourse();
+                    requestSearchCourse(refreshOrLoading:true);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,
