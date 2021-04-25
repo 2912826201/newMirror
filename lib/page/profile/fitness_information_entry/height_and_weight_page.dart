@@ -8,7 +8,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/precision_limit_formatter.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/precision_limit_formatter.dart';
 
 class HeightAndWeightPage extends StatefulWidget {
   @override
@@ -130,7 +130,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: SizedBox()),
+          Spacer(),
           Container(
             width: width * 0.37,
             child: Column(

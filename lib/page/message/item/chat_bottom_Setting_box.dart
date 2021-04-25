@@ -6,10 +6,10 @@ import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'emoji_manager.dart';
 

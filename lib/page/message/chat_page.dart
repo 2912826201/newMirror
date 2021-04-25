@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,6 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';

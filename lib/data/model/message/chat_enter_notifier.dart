@@ -1,6 +1,6 @@
 // 输入框输入文字的监听
 import 'package:flutter/cupertino.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 class ChatEnterNotifier extends ChangeNotifier {
   ChatEnterNotifier({this.textFieldStr = ""});

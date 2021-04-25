@@ -5,8 +5,9 @@ import 'package:mirror/util/string_util.dart';
 
 class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   int maxLength;
-
-  ExpressionTeamDeleteFormatter({this.maxLength});
+  //这是用于判断是否可以输入换行但是需要筛选
+  bool needWrap;
+  ExpressionTeamDeleteFormatter({this.maxLength,this.needWrap = true});
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
@@ -16,20 +17,9 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
 
     if (newValue.text.length > oldValue.text.length) {
       print("111111111111111");
-      ///输入前的光标位置
-      int inputFristIndex = newValue.text.substring(0, oldValue.selection.baseOffset).characters.length;
-
-      ///输入后的光标位置
-      int inputLastIndex = newValue.text.substring(0, newValue.selection.baseOffset).characters.length;
-
-      ///输入的字符
-      inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
-      if(inputText == "\n"||inputText == "\r"||inputText == "\r\n"){
-        return oldValue;
-      }
       if(maxLength != null&&!newValue.composing.isValid){
-      if (newValue.text.length > maxLength && oldValue.text.length < maxLength) {
-        ///还可以输入多少字符
+        print('22222222222222222222222');
+          ///还可以输入多少字符
         int needCount = maxLength - oldValue.text.length;
 
         ///输入前的光标位置
@@ -42,7 +32,10 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
         inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
         print('-----------------inputText$inputText');
         print('----------------------------预输入拦截');
-
+        if(!needWrap){
+          print('4444444444444444444444444444');
+          inputText = StringUtil.textWrapMatch(inputText,wantWrapCount: 0);
+        }
         ///这是需要返回的字符
         String backText = "";
 
@@ -60,7 +53,6 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
               baseOffset: oldValue.selection.baseOffset + interceptInputText.length,
               extentOffset: oldValue.selection.baseOffset + interceptInputText.length,
             ));
-      }
       if (newValue.text.length > maxLength) {
         print('----------------------------正常拦截');
         return oldValue;
@@ -72,8 +64,11 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
 
     ///这是删除的监听
     if (oldValue.text.length > newValue.text.length&&!newValue.composing.isValid) {
+      print('5555555555555555555555555555555555');
+
       ///这是多选删除
       if (oldValue.text.characters.length - newValue.text.characters.length > 1) {
+        print('66666666666666666666666666666666666666666');
         return newValue;
       }
 
@@ -99,6 +94,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
           ));
     }
     print("newValue::::::$newValue");
+    print('end--end--end--end--end--end--end--end--end--end--');
     return newValue;
   }
 }

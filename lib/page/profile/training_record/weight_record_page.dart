@@ -13,7 +13,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-import 'package:mirror/widget/precision_limit_formatter.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/precision_limit_formatter.dart';
 import 'package:provider/provider.dart';
 import 'customize_line_chart.dart';
 
