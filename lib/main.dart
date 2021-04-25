@@ -185,6 +185,8 @@ Future _initApp() async {
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
   //FIXME 需要检测网络连接 确认有网后再进行以下操作 不然会报错卡住流程 没有网则需要跳转至初始无网络的引导页面
+  // 用户信息先赋值个uid为-1的初始值
+  Application.profile = ProfileDto.fromUserModel(UserModel());
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -221,14 +223,20 @@ Future _initApp() async {
     profile = await ProfileDBHelper().queryProfile(token.uid);
     if (profile == null) {
       UserModel user = await getUserInfo();
-      profile = ProfileDto.fromUserModel(user);
-      await ProfileDBHelper().insertProfile(profile);
+      if(user != null){
+        profile = ProfileDto.fromUserModel(user);
+        await ProfileDBHelper().insertProfile(profile);
+        Application.profile = profile;
+      }else{
+        //没能成功取到用户信息时 则视为登录失效 删掉之前的token
+        Application.token = null;
+      }
+    } else {
+      Application.profile = profile;
     }
   } else {
-    //匿名用户时 给个uid为-1的其他信息为空的用户
-    profile = ProfileDto.fromUserModel(UserModel());
+    //匿名用户时 保持上面已赋值的默认初始值
   }
-  Application.profile = profile;
 
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   Map<String, dynamic> videoCourseTagMap = await getAllTags();

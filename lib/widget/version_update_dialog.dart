@@ -88,15 +88,13 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       if (value != null && value.filePath != null) {
         print('-----------------下载完成4${value.filePath}');
         Future.delayed(Duration.zero, () async {
-          _installApk();
+          _installApk(value.filePath);
         });
       }
     }).catchError((e) {});
   }
 
-  _installApk() async {
-    Future.delayed(Duration(milliseconds: 300), () async {
-      String path = await FileUtil().getDownloadedPath(url);
+  _installApk(String path) async {
       print('===========================path$path');
       if (path != null) {
         print('------------------下载完成5');
@@ -121,7 +119,6 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
           });
         }
       }
-    });
   }
 
   @override
@@ -163,7 +160,11 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                     _updateProgress();
                   }
                 } else if (progressText == "去安装") {
-                  _installApk();
+                  FileUtil().getDownloadedPath(url).then((path){
+                    if(path!=null){
+                      _installApk(path);
+                    }
+                  });
                 } else if (progressText == "继续下载") {
                   dio = Dio();
                   _updateProgress();

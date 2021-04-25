@@ -203,7 +203,12 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求推荐话题接口
       getRecommendTopic(size: 20),
       // 请求历史记录
-      SearchHistoryDBHelper().querySearchHistory(context.read<ProfileNotifier>().profile.uid),
+        SearchHistoryDBHelper().querySearchHistory(context
+          .read<ProfileNotifier>()
+        .profile != null ? context
+            .read<ProfileNotifier>()
+            .profile
+            .uid : -1),
       recommendCourse(),
       // 请求热门课程
     ]).then((results) {
@@ -432,9 +437,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () async {
-              TopicDtoModel topicModel = await getTopicInfo(topicId: topicList[index].id);
               FocusScope.of(context).requestFocus(FocusNode());
-              AppRouter.navigateToTopicDetailPage(context, topicModel);
+              AppRouter.navigateToTopicDetailPage(context, topicList[index].id);
             },
             child: Stack(
               children: [

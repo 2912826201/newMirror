@@ -800,8 +800,8 @@ class _FollowItemState extends State<QueryFollowItem> {
                 if (widget.type == 1 || widget.type == 2) {
                   AppRouter.navigateToMineDetail(context, uid, avatarUrl: avatarUrl, userName: userName);
                 } else {
-                  TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
-                  AppRouter.navigateToTopicDetailPage(context, topicModel, isTopicList: true, callback: (result) {
+                  // TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
+                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id, isTopicList: true, callback: (result) {
                     widget.topicDeleteCallBack();
                   });
 
