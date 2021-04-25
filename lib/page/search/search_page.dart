@@ -99,8 +99,6 @@ class _SearchHeaderState extends State<SearchHeader> {
     });
     _formatter = InputFormatter(
       controller: controller,
-      maxNumberOfBytes: 90,
-      context: context,
       inputChangedCallback: (String value) {
         context.read<SearchEnterNotifier>().changeCallback(value);
       },
