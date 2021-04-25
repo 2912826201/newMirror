@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -9,11 +8,9 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 
 class SearchTopic extends StatefulWidget {
@@ -133,6 +130,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (topicList.isNotEmpty) {
       return Container(
           child: ScrollConfiguration(

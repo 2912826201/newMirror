@@ -1,26 +1,17 @@
-// import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_sound_lite/flutter_sound.dart';
 
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:flutter/material.dart';
+
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/search/sub_page/search_feed.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicList extends StatefulWidget {
   TopicList({this.topicId, this.type});
@@ -107,6 +98,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
         color: AppColor.white,
         child: MediaQuery.removePadding(

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -12,7 +11,6 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 
 class SearchCourse extends StatefulWidget {
@@ -127,6 +125,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (liveVideoList.isNotEmpty) {
       return Container(
           child: ScrollConfiguration(
