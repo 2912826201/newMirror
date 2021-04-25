@@ -526,6 +526,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         info: "确认退出当前试听课程吗？",
         topImageUrl: "",
         cancel: AppDialogButton("仍要退出", () {
+          //先暂停再退出页面 避免返回到上一个界面后仍在播放一小段时间
+          _controller?.pause();
           Navigator.pop(context);
           return true;
         }),

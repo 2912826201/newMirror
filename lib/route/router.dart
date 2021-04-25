@@ -20,7 +20,6 @@ import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/route/route_handler.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 

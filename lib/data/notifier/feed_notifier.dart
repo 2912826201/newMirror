@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 
 class FeedMap {
   Map<int, HomeFeedModel> _feedMap = {};

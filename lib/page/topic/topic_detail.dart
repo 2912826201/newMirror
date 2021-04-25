@@ -29,7 +29,6 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';

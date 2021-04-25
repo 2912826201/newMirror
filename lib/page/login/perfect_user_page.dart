@@ -26,8 +26,9 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -191,7 +192,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
           inputFormatters: [
-            ExpressionTeamDeleteFormatter(maxLength: 15)
+            ExpressionTeamDeleteFormatter(maxLength: 15,needWrap: false)
             ],
       onChanged: (value) {
         setState(() {
@@ -213,8 +214,6 @@ class _PerfectUserState extends State<PerfectUserPage> {
           });
           FocusScope.of(context).requestFocus(blankNode);
           _upDataUserInfo();
-        } else {
-          Toast.show("昵称和头像不能为空", context);
         }
       },
       child: Container(

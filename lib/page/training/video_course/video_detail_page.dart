@@ -652,7 +652,9 @@ class VideoDetailPageState extends XCState {
           dio.lock();
           ToastShow.show(msg: "下载异常，请重试", context: context);
           _progressText = "下载异常";
-          setState(() {});
+          if(mounted){
+            setState(() {});
+          }
           break;
       }
     });

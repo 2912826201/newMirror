@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -197,7 +198,8 @@ class _PhoneBindingPageState extends State<PhoneBindingPage> {
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
           ),
-        ));
+        ),
+    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],);
     return Container(
       child: putfield,
       margin: const EdgeInsets.only(top: 38, bottom: 32, left: 41, right: 41),
