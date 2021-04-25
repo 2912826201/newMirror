@@ -18,8 +18,6 @@ import 'package:mirror/page/download_test_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
-import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
-import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -74,6 +72,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("测试页");
     print("build");
     print("底部条高度：${ScreenUtil.instance.bottomBarHeight}");

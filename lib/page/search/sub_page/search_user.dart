@@ -1,28 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:provider/provider.dart';
 
 class SearchUser extends StatefulWidget {
   String text;
@@ -142,6 +132,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return !noData
         ? Container(
             padding: const EdgeInsets.only(left: 16, right: 16),
