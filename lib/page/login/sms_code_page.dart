@@ -26,6 +26,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -206,6 +207,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       controller: inputController,
       keyboardType: TextInputType.number,
       showCursor: true,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
       decoration: InputDecoration(
           counterText: "",
           //不显示字数计数文字

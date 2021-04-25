@@ -13,7 +13,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/text_span_field/range_style.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:provider/provider.dart';

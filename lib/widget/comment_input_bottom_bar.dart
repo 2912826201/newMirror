@@ -20,8 +20,8 @@ import 'package:mirror/widget/text_span_field/range_style.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
-import 'feed/release_feed_input_formatter.dart';
+import 'dialog.dart';
+import 'input_formatter/release_feed_input_formatter.dart';
 import 'icon.dart';
 
 typedef VoidCallback = void Function(String content, List<Rule> rules);
@@ -637,15 +637,25 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 context.read<CommentEnterNotifier>().changeCallback(text);
                               },
                               onSubmitted: (text) {
-                                if (text != null) {
+                                if(text.trim().length == 0) {
+                                  showAppDialog(context,
+                                      title: "提示",
+                                      info: "字数不能为空",
+                                      confirm: AppDialogButton("我知道了", () {
+                                        return true;
+                                      }));
+                                } else {
                                   voidCallback(
                                     text,
                                     rules,
                                   );
-                                } else {
-                                  ToastShow.show(msg: "不能发送空文本", context: context, gravity: Toast.CENTER);
+                                  Navigator.of(context).pop();
                                 }
-                                Navigator.of(context).pop(1);
+                                // if (text != null) {
+                                //
+                                // } else {
+                                //   ToastShow.show(msg: "不能发送空文本", context: context, gravity: Toast.CENTER);
+                                // }
                               },
                               onTap: () {
                                 // 开启键盘关闭表情
@@ -748,11 +758,25 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             offstage: Platform.isIOS,
                             child: GestureDetector(
                                 onTap: () {
-                                  voidCallback(
-                                    _textEditingController.text,
-                                    rules,
-                                  );
-                                  Navigator.of(context).pop(1);
+                                  if(_textEditingController.text.trim().length == 0) {
+                                    showAppDialog(context,
+                                        title: "提示",
+                                        info: "字数不能为空",
+                                        confirm: AppDialogButton("我知道了", () {
+                                          return true;
+                                        }));
+                                  } else {
+                                    voidCallback(
+                                      _textEditingController.text,
+                                      rules,
+                                    );
+                                    Navigator.of(context).pop();
+                                  }
+                                  // voidCallback(
+                                  //   _textEditingController.text,
+                                  //   rules,
+                                  // );
+                                  // Navigator.of(context).pop(1);
                                 },
                                 child: IgnorePointer(
                                   // 监听输入框的值==""使外层点击不生效。非""手势生效。

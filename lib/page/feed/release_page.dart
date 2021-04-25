@@ -16,7 +16,7 @@ import 'package:mirror/page/feed/release_page_item/keyboard_input.dart';
 import 'package:mirror/page/feed/release_page_item/release_feed_main_view.dart';
 import 'package:mirror/page/feed/release_page_item/topic_list.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
