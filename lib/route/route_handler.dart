@@ -22,6 +22,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
+import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
@@ -135,6 +136,11 @@ var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<
 
 var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return PhoneLoginPage();
+});
+
+var handlerLoginSmsCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return SmsCodePage(phoneNumber: data["phoneNumber"], isSent: data["isSent"],);
 });
 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
