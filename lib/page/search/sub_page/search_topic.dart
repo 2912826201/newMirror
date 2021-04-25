@@ -215,7 +215,7 @@ class SearchTopiciItem extends StatelessWidget {
       onTap: () async {
         FocusScope.of(context).requestFocus(FocusNode());
         TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
-        AppRouter.navigateToTopicDetailPage(context, topicModel);
+        AppRouter.navigateToTopicDetailPage(context,  model.id);
       },
       child: Container(
         width: ScreenUtil.instance.width,

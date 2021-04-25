@@ -37,9 +37,9 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class TopicDetail extends StatefulWidget {
-  TopicDetail({Key key, this.isTopicList, this.model}) : super(key: key);
+  TopicDetail({Key key, this.isTopicList, this.topicId}) : super(key: key);
   bool isTopicList;
-  TopicDtoModel model;
+  int topicId;
 
   @override
   TopicDetailState createState() => TopicDetailState();
@@ -63,6 +63,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 头部滑动距离
   double headSlideHeight;
 
+  TopicDtoModel model;
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
@@ -91,6 +92,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   @override
   void initState() {
+    // 请求话题详情页数据
+    requestTopicInfo();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     scrollChildKeys = [leftKey, rightKey];
     _tabController.addListener(() {
@@ -135,12 +138,18 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     super.initState();
   }
 
+  // 请求话题详情页信息
+  requestTopicInfo() async {
+    model = await getTopicInfo(topicId: widget.topicId);
+    setState(() {});
+  }
+
   // 请求关注话题
   requestFollowTopic() async {
-    Map<String, dynamic> map = await followTopic(topicId: widget.model.id);
+    Map<String, dynamic> map = await followTopic(topicId: model.id);
     if (map["state"] == true) {
       setState(() {
-        widget.model.isFollow = 1;
+        model.isFollow = 1;
       });
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(null);
@@ -152,13 +161,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 请求取消关注话题
   requestCancelFollowTopic() async {
-    Map<String, dynamic> map = await cancelFollowTopic(topicId: widget.model.id);
+    Map<String, dynamic> map = await cancelFollowTopic(topicId: model.id);
     if (map["state"] == true) {
       setState(() {
-        widget.model.isFollow = 0;
+        model.isFollow = 0;
       });
       if (widget.isTopicList) {
-        context.read<UserInteractiveNotifier>().removeListId(widget.model.id);
+        context.read<UserInteractiveNotifier>().removeListId(model.id);
       }
     } else {
       ToastShow.show(msg: "取消关注失败", context: context);
@@ -169,10 +178,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   sliverAppBarHeight() {
     // UI图原始高度
     double height = 153.0 + ScreenUtil.instance.statusBarHeight;
-    if (widget.model.description != null) {
+    if (model.description != null) {
       //加上文字高度
-      height +=
-          getTextSize(widget.model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
+      height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
       // 文字上下方间距
       height += 25;
     }
@@ -184,9 +192,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 获取背景颜色
   Color getBackgroundColor() {
     Color color;
-    if (widget.model.backgroundColorId != null && Application.topicBackgroundConfig.isNotEmpty) {
+    if (model.backgroundColorId != null && Application.topicBackgroundConfig.isNotEmpty) {
       Application.topicBackgroundConfig.forEach((element) {
-        if (widget.model.backgroundColorId == element.id) {
+        if (model.backgroundColorId == element.id) {
           color = ColorsUtil.hexToColor("#${element.backgroundColor}");
           return;
         }
@@ -201,10 +209,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColor.white,
-        body: Stack(
-          children: [
-            widget.model != null
-                ? NestedScrollView(
+        body: model != null
+            ? Stack(
+                children: [
+                  NestedScrollView(
                     controller: _scrollController,
                     headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                       return <Widget>[
@@ -236,15 +244,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                 width: ScreenUtil.instance.width,
                                 color: getBackgroundColor(),
                                 child: Image.asset(
-                                  backgroundImages[widget.model.patternId],
+                                  backgroundImages[model.patternId],
                                   fit: BoxFit.cover,
                                 ),
                               ),
                               // 头像
                               Positioned(
                                   left: 14,
-                                  bottom: widget.model.description != null
-                                      ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
+                                  bottom: model.description != null
+                                      ? (getTextSize(model.description, AppStyle.textRegular14, 10,
                                                   ScreenUtil.instance.width - 32)
                                               .height +
                                           25 +
@@ -272,9 +280,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                           // 调整磁盘缓存中图像大小
                                           maxHeightDiskCache: 150,
                                           maxWidthDiskCache: 150,
-                                          imageUrl: widget.model.avatarUrl != null
-                                              ? FileUtil.getSmallImage(widget.model.avatarUrl)
-                                              : "",
+                                          imageUrl:
+                                              model.avatarUrl != null ? FileUtil.getSmallImage(model.avatarUrl) : "",
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => Container(
                                             color: AppColor.bgWhite,
@@ -288,8 +295,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   )),
                               // 话题内容
                               Positioned(
-                                  bottom: widget.model.description != null
-                                      ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
+                                  bottom: model.description != null
+                                      ? (getTextSize(model.description, AppStyle.textRegular14, 10,
                                                   ScreenUtil.instance.width - 32)
                                               .height +
                                           25)
@@ -308,7 +315,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                             Container(
                                               width: ScreenUtil.instance.width * (168 / ScreenUtil.instance.width),
                                               child: Text(
-                                                "#${widget.model.name}",
+                                                "#${model.name}",
                                                 style: AppStyle.textMedium16,
                                               ),
                                             ),
@@ -316,7 +323,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               height: 3,
                                             ),
                                             Text(
-                                              "${StringUtil.getNumber(widget.model.feedCount)}条动态",
+                                              "${StringUtil.getNumber(model.feedCount)}条动态",
                                               style: AppStyle.textPrimary3Regular12,
                                             )
                                           ],
@@ -331,14 +338,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                     ),
                                   )),
                               // 话题描述
-                              widget.model.description != null
+                              model.description != null
                                   ? Positioned(
                                       bottom: 0,
                                       child: Container(
                                         width: ScreenUtil.instance.width,
                                         padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
                                         child: Text(
-                                          widget.model.description,
+                                          model.description,
                                           style: AppStyle.textRegular14,
                                           maxLines: 10,
                                         ),
@@ -378,7 +385,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         PrimaryScrollContainer(
                           scrollChildKeys[0],
                           TopicList(
-                            topicId: widget.model.id,
+                            topicId: model.id,
                             type: 5,
                           ),
                         ),
@@ -387,23 +394,47 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         PrimaryScrollContainer(
                           scrollChildKeys[1],
                           TopicList(
-                            topicId: widget.model.id,
+                            topicId: model.id,
                             type: 4,
                           ),
                         ),
                       ],
                     ),
+                  ),
+                  Positioned(top: 0, child: appBar()),
+                  Positioned(
+                    bottom: ScreenUtil.instance.bottomBarHeight + 28,
+                    left: (ScreenUtil.instance.width - 127) / 2,
+                    right: (ScreenUtil.instance.width - 127) / 2,
+                    child: _gotoRelease(),
                   )
-                : Container(),
-            Positioned(top: 0, child: appBar()),
-            Positioned(
-              bottom: ScreenUtil.instance.bottomBarHeight + 28,
-              left: (ScreenUtil.instance.width - 127) / 2,
-              right: (ScreenUtil.instance.width - 127) / 2,
-              child: _gotoRelease(),
-            )
-          ],
-        ));
+                ],
+              )
+            : Container(
+                width: ScreenUtil.instance.width,
+                height: ScreenUtil.instance.height,
+                child: Column(
+                  children: [
+                    Container(
+                      width: ScreenUtil.instance.width,
+                      height: ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight,
+                      // color: AppColor.bgBlack,
+                      alignment: Alignment(-1, 1),
+                      child: CustomAppBarIconButton(
+                        svgName: AppIcon.nav_return,
+                        iconColor: AppColor.bgBlack,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    Expanded(
+                        child: Center(
+                      child: CupertinoActivityIndicator(),
+                    ))
+                  ],
+                ),
+              ));
   }
 
   Widget appBar() {
@@ -433,7 +464,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     width: 12,
                   ),
                   Text(
-                    "#${widget.model.name}",
+                    "#${model.name}",
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
@@ -455,7 +486,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     onTap: () {
                       openShareBottomSheet(
                           context: context,
-                          map: widget.model.toJson(),
+                          map: model.toJson(),
                           sharedType: 3,
                           chatTypeModel: ChatTypeModel.NULL_COMMENT);
                     },
@@ -473,9 +504,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _gotoRelease() {
     return InkWell(
       onTap: () {
-        Application.topicMap[widget.model.id] = widget.model;
+        Application.topicMap[model.id] = model;
         AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-            publishMode: 1, topicId: widget.model.id);
+            publishMode: 1, topicId: model.id);
       },
       child: Container(
         width: 127,
@@ -516,7 +547,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
-          if (widget.model.isFollow == 0) {
+          if (model.isFollow == 0) {
             requestFollowTopic();
           } else {
             requestCancelFollowTopic();
@@ -528,7 +559,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
                 border: Border.all(width: 1, color: AppColor.bgBlack)),
-            child: widget.model.isFollow == 0
+            child: model.isFollow == 0
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
