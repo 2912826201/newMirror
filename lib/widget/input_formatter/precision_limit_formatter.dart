@@ -6,9 +6,7 @@ import 'package:flutter/services.dart';
 ///第四位为小数点则不是整数，则可以输入六位
 class PrecisionLimitFormatter extends TextInputFormatter {
   int _scale;
-  TextEditingValue Function(String) deleteCallBack;
-
-  PrecisionLimitFormatter(this._scale, {this.deleteCallBack});
+  PrecisionLimitFormatter(this._scale);
 
   RegExp exp = new RegExp("[0-9.]");
   static const String POINTER = ".";

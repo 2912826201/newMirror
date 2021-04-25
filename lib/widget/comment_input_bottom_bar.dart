@@ -20,9 +20,8 @@ import 'package:mirror/widget/text_span_field/range_style.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
 import 'dialog.dart';
-import 'feed/release_feed_input_formatter.dart';
+import 'input_formatter/release_feed_input_formatter.dart';
 import 'icon.dart';
 
 typedef VoidCallback = void Function(String content, List<Rule> rules);

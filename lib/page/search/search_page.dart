@@ -138,6 +138,9 @@ class _SearchHeaderState extends State<SearchHeader> {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
+                    // onChanged: (text) {
+                    //
+                    // },
                     decoration: const InputDecoration(
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),

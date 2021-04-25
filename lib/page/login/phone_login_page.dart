@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -8,6 +9,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -248,6 +250,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         keyboardType: TextInputType.phone,
         autofocus: true,
         decoration: inputFieldDecoration,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
       );
     }
     var encapsulateBoxArea = Container(
