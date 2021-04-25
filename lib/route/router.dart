@@ -33,6 +33,7 @@ class AppRouter {
   static String pathMain = "/main";
   static String pathLogin = "/login";
   static String pathLoginPhone = "/login/phone";
+  static String pathLoginSmsCode = "/login/smscode";
   static String pathTest = "/test";
   static String pathLoginTest = "/logintest";
   static String pathRCTest = "/rctest";
@@ -124,6 +125,7 @@ class AppRouter {
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLoginPhone, handler: handlerLoginPhone);
+    router.define(pathLoginSmsCode, handler: handlerLoginSmsCode);
     // 点赞页面
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
@@ -337,12 +339,19 @@ class AppRouter {
     if (route != null) {
       Application.loginPopRouteName = route.settings.name;
     }
-    _navigateToPage(context, pathLogin, map, callback: callback);
+    _navigateToPage(context, pathLogin, map, callback: callback, isFromBottom: true);
   }
 
   static void navigateToPhoneLoginPage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLoginPhone, map);
+  }
+
+  static void navigateToSmsCodePage(BuildContext context, String phoneNumber, bool isSent) {
+    Map<String, dynamic> map = Map();
+    map["phoneNumber"] = phoneNumber;
+    map["isSent"] = isSent;
+    _navigateToPage(context, pathLoginSmsCode, map, isFromBottom: true);
   }
 
   static void navigateToLiveBroadcast(BuildContext context) {
@@ -371,7 +380,7 @@ class AppRouter {
   static void navigateToVideoCourseResult(BuildContext context, TrainingCompleteResultModel trainingResult) {
     Map<String, dynamic> map = Map();
     map["result"] = trainingResult.toJson();
-    _navigateToPage(context, pathVideoCourseResult, map);
+    _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId,
@@ -588,7 +597,7 @@ class AppRouter {
     if (topicId != null) {
       map["topicId"] = topicId;
     }
-    _navigateToPage(context, pathRelease, map);
+    _navigateToPage(context, pathRelease, map, isFromBottom: true);
   }
 
   static void navigateToChatPage(
@@ -672,7 +681,7 @@ class AppRouter {
   static void navigateToMachineRemoteController(BuildContext context, {int liveRoomId}) {
     Map<String, dynamic> map = Map();
     map["liveRoomId"] = liveRoomId;
-    _navigateToPage(context, pathMachineRemoteController, map);
+    _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
   }
 
   static void navigateToMachineConnectionInfo(BuildContext context) {
