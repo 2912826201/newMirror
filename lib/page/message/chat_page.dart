@@ -87,6 +87,8 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    List<ChatDataModel> chatDataList=[];
+    chatDataList.addAll(this.chatDataList);
     return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList);
   }
 }
@@ -185,6 +187,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   @override
   void initState() {
     super.initState();
+    print("ChatPage-initState");
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -214,6 +217,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print("conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
@@ -1257,6 +1261,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     if (message == null) {
       return;
     }
+    print("message.targetId:${message.targetId},${conversation.conversationId}");
     if (message.targetId != conversation.conversationId) {
       return;
     }
