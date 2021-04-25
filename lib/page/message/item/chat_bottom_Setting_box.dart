@@ -5,7 +5,6 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
@@ -258,50 +257,59 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             ),
           ),
           onTap: () {
-            // widget.textController.text = emojiModel.code;
+            // 表情光标改动前的位置
+            if(cursorIndexPr<0){
+              cursorIndexPr=0;
+            }
+            int changeFrontPosition = cursorIndexPr ?? 0;
+            print("changeFrontPosition:1:$changeFrontPosition");
             // 获取输入框内的规则
             var rules = context.read<ChatEnterNotifier>().rules;
 
-            if (widget.textController.text == null || widget.textController.text.length < 1) {
-              widget.textController.text = "";
-              cursorIndexPr = 0;
-              if (widget.callBackCursorIndexPr != null) {
-                widget.callBackCursorIndexPr(cursorIndexPr);
-              }
-            }
-            if (cursorIndexPr >= 0) {
+            if (cursorIndexPr != null&&cursorIndexPr>=0) {
+              print("光标前文字：：：：${widget.textController.text.substring(0, cursorIndexPr)}");
+              print("当前选择emoji::::${emojiModel.code}");
+              print(
+                  "光标后文字：：：：${widget.textController.text.substring(cursorIndexPr, widget.textController.text.length)}");
               widget.textController.text = widget.textController.text.substring(0, cursorIndexPr) +
                   emojiModel.code +
                   widget.textController.text.substring(cursorIndexPr, widget.textController.text.length);
             } else {
               widget.textController.text += emojiModel.code;
             }
-            if (widget.changTextLen != null) {
-              widget.changTextLen(widget.textController.text);
-            }
+            context.read<ChatEnterNotifier>().changeCallback(widget.textController.text);
+            // 记录新的emoji光标位置
+            cursorIndexPr = cursorIndexPr + emojiModel.code.length;
+
+            var setCursor = TextSelection(
+              baseOffset: cursorIndexPr,
+              extentOffset: cursorIndexPr,
+            );
+            widget.textController.selection = setCursor;
+
+            print(emojiModel.code.length);
+            print("cursorIndexPr:$cursorIndexPr");
+            // 这是替换输入的文本修改后面输入的@的规则
             if (rules.isNotEmpty) {
               print("不为空");
-              int diffLength = emojiModel.code.length;
+              print("changeFrontPosition:2:$changeFrontPosition");
+              int diffLength = cursorIndexPr - changeFrontPosition;
               print("diffLength:$diffLength");
+              print(rules.toString());
               for (int i = 0; i < rules.length; i++) {
-                if (rules[i].startIndex >= cursorIndexPr) {
+                if (rules[i].startIndex >= changeFrontPosition) {
+                  print("改光标了————————————————————————");
                   int newStartIndex = rules[i].startIndex + diffLength;
                   int newEndIndex = rules[i].endIndex + diffLength;
                   rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
                 }
               }
+              print(rules.toString());
+              print(widget.textController.text);
             }
-            cursorIndexPr += emojiModel.code.length;
             if (widget.callBackCursorIndexPr != null) {
               widget.callBackCursorIndexPr(cursorIndexPr);
             }
-            // 替换
-            context.read<ChatEnterNotifier>().replaceRules(rules);
-            Future.delayed(Duration(milliseconds: 100), () {
-              if (widget.textScrollController != null) {
-                widget.textScrollController.jumpTo(widget.textScrollController.position.maxScrollExtent);
-              }
-            });
           },
         ));
   }
