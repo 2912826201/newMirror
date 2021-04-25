@@ -203,7 +203,12 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求推荐话题接口
       getRecommendTopic(size: 20),
       // 请求历史记录
-      SearchHistoryDBHelper().querySearchHistory(context.read<ProfileNotifier>().profile.uid),
+        SearchHistoryDBHelper().querySearchHistory(context
+          .read<ProfileNotifier>()
+        .profile != null ? context
+            .read<ProfileNotifier>()
+            .profile
+            .uid : -1),
       recommendCourse(),
       // 请求热门课程
     ]).then((results) {
