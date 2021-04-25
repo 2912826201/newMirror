@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/chat_voice.dart';
@@ -10,7 +12,7 @@ typedef VoiceFile = void Function(String path, int time);
 class MessageInputBar extends StatefulWidget {
   final GestureTapCallback voiceOnTap;
   final bool isVoice;
-  final LayoutWidgetBuilder edit;
+  final Widget edit;
   final VoidCallback onEmojio;
   final VoiceFile voiceFile;
   final Widget more;
@@ -40,16 +42,23 @@ class MessageInputBarState extends State<MessageInputBar> {
 
   setIsVoice(bool isVoice) {
     this.isVoice = isVoice;
-    if (mounted) {
-      setState(() {});
-    }
+    streamVoiceWidget.sink.add(isVoice);
   }
+
+
+  StreamController<bool> streamVoiceWidget = StreamController<bool>();
 
   MessageInputBarState(this.isVoice);
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    streamVoiceWidget.close();
   }
 
   @override
@@ -72,7 +81,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                 children: <Widget>[
                   Container(
                     height: 48.0,
-                    padding: EdgeInsets.only(left: 10, right: 10),
+                    padding: EdgeInsets.only(left: 6, right: 6),
                     child: AppIconButton(
                       onTap: () {
                         if (widget.voiceOnTap != null) {
@@ -95,7 +104,13 @@ class MessageInputBarState extends State<MessageInputBar> {
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
                           color: AppColor.bgWhite.withOpacity(0.65), borderRadius: BorderRadius.circular(16.0)),
-                      child: isVoice ? ChatVoice(voiceFile: widget.voiceFile) : LayoutBuilder(builder: widget.edit),
+                      child: StreamBuilder(
+                        stream: streamVoiceWidget.stream,
+                        builder: (context, snapshot) {
+                          return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
+                        },
+                      ),
+                      // child: isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit,
                     ),
                   )),
                   Container(
