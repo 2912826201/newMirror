@@ -1,11 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/token_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:provider/provider.dart';
 import '../config/config.dart';
+import 'basic_api.dart';
 
 /// api
 /// Created by yangjiayi on 2020/10/26.
@@ -55,20 +60,42 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
   BaseResponseModel responseModel;
   try {
     Response response;
-    if(requestMethod == METHOD_GET) {
+    if (requestMethod == METHOD_GET) {
       _setHeaders(authType, _getDioGetInstance());
       response = await _getDioGetInstance().get(path, queryParameters: queryParameters);
       print("response：${response.toString()}");
-    }else{
+    } else {
       _setHeaders(authType, _getDioPostInstance());
       response = await _getDioPostInstance().post(path, queryParameters: queryParameters);
     }
     responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
     //302为未登录 一般统一自动处理 登出清数据断开一些组件连接等操作
-    if(responseModel.code == CODE_NOT_LOGIN && autoHandleLogout){
+    if (responseModel.code == CODE_NOT_LOGIN && autoHandleLogout) {
       responseModel.isSuccess = false;
-      Application.appLogout(isKicked: true);
-      return responseModel;
+      //如果用户是已登录非匿名状态 则走登出流程，匿名状态则重新获取token重新请求接口
+      if (Application.token != null && Application.token.anonymous == 0) {
+        Application.appLogout(isKicked: true);
+        return responseModel;
+      } else {
+        print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了匿名用户重新获取token流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
+        //先取个匿名token
+        BaseResponseModel tokenResponse = await login("anonymous", null, null, null);
+        if (tokenResponse != null && tokenResponse.code == 200) {
+          TokenModel tokenModel = TokenModel.fromJson(tokenResponse.data);
+          TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
+          //如果本来就是匿名token那么换个token就行 不用清任何东西也不用跳转页面
+          await TokenDBHelper().insertToken(tokenDto);
+          Application.appContext.read<TokenNotifier>().setToken(tokenDto);
+          //替换完token后重新请求原本请求的接口
+          return await requestApi(path, queryParameters,
+              authType: authType, requestMethod: requestMethod, autoHandleLogout: autoHandleLogout);
+        } else {
+          ToastShow.show(msg: tokenResponse.message, context: Application.appContext);
+          //失败的情况下 登出将无token可用 所以不能继续登出
+          print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫重新获取token流程获取token失败🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
+          return responseModel;
+        }
+      }
     } else {
       //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理
       responseModel.isSuccess = responseModel.code != CODE_SERVER_ERROR;
@@ -140,7 +167,8 @@ Dio _getDioGetInstance() {
 //FIXME 如果token已过期或即将过期则需要做刷新token或重新获取token的操作
 void _setHeaders(int authType, Dio dio) {
   //TODO 渠道号暂时写死
-  dio.options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
+  dio.options.headers["aimy-drivers"] =
+      "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;
   switch (authType) {
