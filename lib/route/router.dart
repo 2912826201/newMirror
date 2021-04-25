@@ -202,15 +202,19 @@ class AppRouter {
   // 封装了入参，无论入参是什么格式都转成map
   //TODO 需要统一页面切换的过场效果
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false, int duration = 250, RouteTransitionsBuilder builder}) {
+      {Function(dynamic result) callback,
+      bool replace = false,
+      int duration = 250,
+      bool isFromBottom = false,
+      RouteTransitionsBuilder transitions}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (Application.pagePopRouterName == null) {
       Application.pagePopRouterName = [];
     }
-    if(Application.pagePopRouterName.length!=0){
-      if(Application.pagePopRouterName.last==uri){
-        return ;
+    if (Application.pagePopRouterName.length != 0) {
+      if (Application.pagePopRouterName.last == uri) {
+        return;
       }
     }
     if (Application.pagePopRouterName.contains(uri)) {
@@ -225,14 +229,15 @@ class AppRouter {
     Application.pagePopRouterName.add(uri);
 
     Application.router
-        .navigateTo(
-      context,
-      uri,
-      replace: replace,
-      transitionDuration: Duration(milliseconds: duration),
-      transition: builder == null ? TransitionType.cupertino : TransitionType.custom,
-      transitionBuilder: builder,
-    )
+        .navigateTo(context, uri,
+            replace: replace,
+            transitionDuration: Duration(milliseconds: duration),
+            transition: transitions == null
+                ? isFromBottom
+                    ? TransitionType.inFromBottom
+                    : TransitionType.cupertino
+                : TransitionType.custom,
+            transitionBuilder: transitions)
         .then((value) {
       if (Application.pagePopRouterName.isNotEmpty && Application.pagePopRouterName.contains(uri)) {
         Application.pagePopRouterName.remove(uri);
@@ -322,7 +327,7 @@ class AppRouter {
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
     map["topicId"] = topicId;
-    _navigateToPage(context, pathMediaPicker, map, callback: callback);
+    _navigateToPage(context, pathMediaPicker, map, callback: callback, isFromBottom: true);
   }
 
   static void navigateToLoginPage(BuildContext context, {Function(dynamic result) callback}) {
@@ -443,12 +448,14 @@ class AppRouter {
   static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
-  static void navigateToProfileFollowListPage(BuildContext context, int userId,int type) {
+
+  static void navigateToProfileFollowListPage(BuildContext context, int userId, int type) {
     Map<String, dynamic> map = Map();
     map["userId"] = userId;
     map["type"] = type;
     _navigateToPage(context, pathProfileFollowListPage, map);
   }
+
   static void navigateToEditInfomation(BuildContext context, Function(dynamic result) callback) {
     _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
@@ -530,12 +537,12 @@ class AppRouter {
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
-  static void navigateToVipPage(BuildContext context,int vipState, {bool openOrNot = true}) {
+  static void navigateToVipPage(BuildContext context, int vipState, {bool openOrNot = true}) {
     Map<String, dynamic> map = Map();
-    if(vipState!=null){
+    if (vipState != null) {
       map["vipState"] = vipState;
     }
-    _navigateToPage(context, openOrNot?pathVipOpenPage:pathVipNotOpenPage, map);
+    _navigateToPage(context, openOrNot ? pathVipOpenPage : pathVipNotOpenPage, map);
   }
 
   static void navigateToVipNamePlatePage(BuildContext context, int index) {
@@ -567,13 +574,15 @@ class AppRouter {
   static void navigateToTrainSeveralPage(BuildContext context) {
     _navigateToPage(context, pathTrainSeveralPage, {});
   }
-  static void navigateToInteractivePage(BuildContext context, {int type,Function(dynamic result) callBack}) {
+
+  static void navigateToInteractivePage(BuildContext context, {int type, Function(dynamic result) callBack}) {
     Map<String, dynamic> map = Map();
     if (type != null) {
       map["type"] = type;
     }
-    _navigateToPage(context, pathProfileInteractiveNoticePage, map,callback: callBack);
+    _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
+
   static void navigateToReleasePage(BuildContext context, {int topicId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
@@ -736,7 +745,7 @@ class AppRouter {
     if (duration > 0) {
       builder = getFadeTransitionBuilder();
     }
-    _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, builder: builder);
+    _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, transitions: builder);
   }
 
   /// 自定义页面切换动画 - 渐变切换
