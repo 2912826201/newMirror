@@ -40,6 +40,7 @@ import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:toast/toast.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 
 ///这是完善资料页
 
@@ -51,8 +52,6 @@ class PerfectUserPage extends StatefulWidget {
 }
 
 class _PerfectUserState extends State<PerfectUserPage> {
-  final inputCotroller = TextEditingController();
-
   //输入的最长字符
   final maxTextLength = 15;
   final _hintText = "戳这里输入昵称";
@@ -63,9 +62,21 @@ class _PerfectUserState extends State<PerfectUserPage> {
   bool onClicking = false;
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
+  PinYinTextEditController controller = PinYinTextEditController();
+  String lastInput = "";
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (lastInput != controller.completeText) {
+        lastInput = controller.completeText;
+        ///通知onChanged
+        setState(() {
+          username = lastInput;
+          textLength = lastInput.length;
+        });
+      }
+    });
   }
 
   @override
@@ -181,7 +192,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
   Widget _inputWidget() {
     return TextField(
       maxLength: maxTextLength,
-      controller: inputCotroller,
+      controller: controller,
       showCursor: true,
       cursorColor: AppColor.black,
       decoration: InputDecoration(
@@ -192,14 +203,8 @@ class _PerfectUserState extends State<PerfectUserPage> {
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
           inputFormatters: [
-            ExpressionTeamDeleteFormatter(maxLength: 15,needWrap: false)
+            ExpressionTeamDeleteFormatter(maxLength: maxTextLength,needWrap: false)
             ],
-      onChanged: (value) {
-        setState(() {
-          textLength = value.length;
-          username = value;
-        });
-      },
     );
   }
 

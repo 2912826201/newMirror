@@ -4,7 +4,7 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
-import 'package:mirror/page/login/sms_code_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -49,6 +49,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   var _textField;
 
   bool sendMsging = false;
+
   //输入框控制器
   final TextEditingController inputController = TextEditingController();
 
@@ -161,13 +162,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       setState(() {
         sendMsging = false;
       });
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return SmsCodePage(
-          phoneNumber: inputController.text,
-          isSent: true,
-        );
-      }));
-      return;
+      AppRouter.navigateToSmsCodePage(context, inputController.text, true);
     }
     //下方是非重入验证码页面的情况，需要触发相应的接口
     if (this.mounted) {
@@ -176,18 +171,13 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       });
     }
     BaseResponseModel responseModel = await sendSms(inputController.text, 0);
-    if (responseModel != null&&responseModel.code==200) {
-        print("发送验证码成功");
-        ToastShow.show(msg: "验证码发送成功！", context: context);
-        _titleOfSendTextBtn = "发送";
-        Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return SmsCodePage(
-            phoneNumber: inputController.text,
-            isSent: true,
-          );
-        }));
-    }else{
+    if (responseModel != null && responseModel.code == 200) {
+      print("发送验证码成功");
+      ToastShow.show(msg: "验证码发送成功！", context: context);
+      _titleOfSendTextBtn = "发送";
+      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
+      AppRouter.navigateToSmsCodePage(context, inputController.text, true);
+    } else {
       ToastShow.show(msg: "验证码发送失败，请重试", context: context);
       _titleOfSendTextBtn = _resendTitle;
       print("发送验证码失败");
@@ -294,32 +284,34 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         }
       },
       child: Container(
-        width: ScreenUtil.instance.screenWidthDp,
-        height: 44,
-        decoration: BoxDecoration(
-            color:_smsBtnColor,
-            borderRadius: BorderRadius.all(Radius.circular(3)),),
-        child: Row(
-          children: [
-         Spacer(),
-            sendMsging
-                ?Container(
-              height: 17,
-              width: 17,
-              child: CircularProgressIndicator(
-                valueColor:AlwaysStoppedAnimation(AppColor.black),
-                backgroundColor: AppColor.white,
-                strokeWidth:1.5
-              )):Container(),
-          SizedBox(width: 2.5,),
-          Text(
-        _titleOfSendTextBtn,
-        style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+          width: ScreenUtil.instance.screenWidthDp,
+          height: 44,
+          decoration: BoxDecoration(
+            color: _smsBtnColor,
+            borderRadius: BorderRadius.all(Radius.circular(3)),
           ),
-          Spacer()
-          ],
-        )
-      ),
+          child: Row(
+            children: [
+              Spacer(),
+              sendMsging
+                  ? Container(
+                      height: 17,
+                      width: 17,
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(AppColor.black),
+                          backgroundColor: AppColor.white,
+                          strokeWidth: 1.5))
+                  : Container(),
+              SizedBox(
+                width: 2.5,
+              ),
+              Text(
+                _titleOfSendTextBtn,
+                style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+              ),
+              Spacer()
+            ],
+          )),
     );
     var returns = Container(
       child: smsBtn,

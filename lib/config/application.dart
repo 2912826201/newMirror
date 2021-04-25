@@ -9,6 +9,7 @@ import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
+import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -171,7 +172,8 @@ class Application {
   //发布失败动态key
   static String postFailurekey = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
-
+  // 话题详情页背景图配置表
+  static List<TopicBackgroundConfigModel> topicBackgroundConfig = [];
   //公共登出方法
   static appLogout({bool isKicked = false}) async {
     //先取个匿名token
