@@ -9,9 +9,7 @@ import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.da
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/expression_team_delete_formatter.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/precision_limit_formatter.dart';
-
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 ///编辑昵称
 class EditInformationName extends StatefulWidget {
   String userName;

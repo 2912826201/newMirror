@@ -161,7 +161,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
-
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),

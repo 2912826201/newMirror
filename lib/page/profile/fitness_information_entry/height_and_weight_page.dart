@@ -8,7 +8,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/precision_limit_formatter.dart';
+import 'package:mirror/widget/input_formatter/precision_limit_formatter.dart';
 
 class HeightAndWeightPage extends StatefulWidget {
   @override
