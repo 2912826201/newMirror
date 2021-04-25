@@ -22,6 +22,8 @@ const String CANCELFOLLOWTOPIC = "/appuser/web/topic/cancelFollow";
 
 //获取用户推荐话题【含用户最近使用话题3条置顶】
 const String GETUSERRECOMMENDTOPIC = "/appuser/web/topic/getUserRecommendTopic";
+// 获取话题详情页背景配置图
+const String GETBACKGROUNDCONFIG = "//appuser/web/sys/getBackgroundConfig";
 //获取搜索话题列表
 Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore}) async {
   Map<String, dynamic> params = {};
@@ -126,6 +128,20 @@ Future<DataResponseModel> pullTopicList({@required int type, @required int size,
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(PULLTOPICLIST, params);
+  if (responseModel.isSuccess) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
+  }
+}
+
+// 获取话题详情页背景配置图
+Future<DataResponseModel> getBackgroundConfig() async {
+  BaseResponseModel responseModel = await requestApi(GETBACKGROUNDCONFIG, {});
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel = DataResponseModel();
     if (responseModel.data != null) {
