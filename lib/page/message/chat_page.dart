@@ -1327,20 +1327,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 //判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
     print("判断是否退出群聊或者加入群聊");
+
     if (message == null) {
+      print(message == null);
       return;
     }
-    if (message.targetId != conversation.conversationId) {
-      return;
-    }
-    if(message.conversationType != conversation.getType()){
-      return;
-    }
-    if(message.conversationType !=RCConversationType.Group){
+    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    if (dataMap["groupChatId"].toString() != conversation.conversationId) {
+      print("message.targetId:${message.targetId},${conversation.conversationId}");
       return;
     }
     _resetChatGroupUserModelList(message);
-    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    print("dataMap[subType]0:${dataMap["subType"]}");
     if(dataMap["subType"]==0||dataMap["subType"]==2) {
       print("dataMap[subType]0:${dataMap["subType"]}");
       insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
@@ -1365,13 +1363,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (message == null) {
       return;
     }
-    if (message.targetId != conversation.conversationId) {
-      return;
-    }
-    if(message.conversationType != conversation.getType()){
-      return;
-    }
-    if(message.conversationType !=RCConversationType.Group){
+    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    if (dataMap["groupChatId"].toString() != conversation.conversationId) {
       return;
     }
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -1496,10 +1489,23 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       // @回调
       triggerAtCallback: (String str) async {
         print("打开@功能--str：$str------------------------");
-        if (conversation.getType() == RCConversationType.Group) {
-          context.read<ChatEnterNotifier>().openAtCallback(str);
-          isClickAtUser = false;
-          EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+        bool isHaveUser=true;
+        if (context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
+          if (context.watch<GroupUserProfileNotifier>().isNoHaveMe()) {
+            isHaveUser=false;
+          }
+        } else {
+          if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+              null) {
+            isHaveUser=false;
+          }
+        }
+        if(isHaveUser) {
+          if (conversation.getType() == RCConversationType.Group) {
+            context.read<ChatEnterNotifier>().openAtCallback(str);
+            isClickAtUser = false;
+            EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+          }
         }
         return "";
       },

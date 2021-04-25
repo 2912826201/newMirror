@@ -1,5 +1,8 @@
 // 话题列表
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -83,7 +86,7 @@ class TopicListState extends State<TopicList> {
     }
     DataResponseModel model = await getUserRecommendTopic(size: 20);
     if (dataPage == 1) {
-      if (model!=null&&model.list.isNotEmpty) {
+      if (model != null && model.list.isNotEmpty) {
         model.list.forEach((v) {
           topics.add(TopicDtoModel.fromJson(v));
         });
@@ -171,6 +174,12 @@ class TopicListState extends State<TopicList> {
                       // 点击空白区域响应事件
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
+                        // 获取实时搜索文本
+                        String searchStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;
+                        if (utf8.encode(searchStr).length > 45) {
+                          ToastShow.show(msg: "话题字数超出限制", context: context, gravity: Toast.CENTER);
+                          return;
+                        }
                         context.read<ReleaseFeedInputNotifier>().setClickTopic(true);
                         // #的文字长度
                         // 减一是因为输入已经添加了一个#去掉文本内的#
@@ -178,8 +187,7 @@ class TopicListState extends State<TopicList> {
                         print("类容：${list[index].name}___${list[index].name.length}");
                         // 获取比较规则
                         var rules = context.read<ReleaseFeedInputNotifier>().rules;
-                        // 获取实时搜索文本
-                        String searchStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;
+
                         // 检测是否添加过
                         if (rules.isNotEmpty) {
                           for (Rule atRule in rules) {
@@ -275,10 +283,8 @@ class TopicListState extends State<TopicList> {
                             SizedBox(
                               height: 6,
                             ),
-                            Text(
-                              list[index].name,
-                              style: AppStyle.textRegular16,
-                            ),
+                            Text(list[index].name,
+                                style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
                             const SizedBox(
                               height: 2,
                             ),

@@ -99,6 +99,8 @@ class _SearchHeaderState extends State<SearchHeader> {
     });
     _formatter = InputFormatter(
       controller: controller,
+      maxNumberOfBytes: 90,
+      context: context,
       inputChangedCallback: (String value) {
         context.read<SearchEnterNotifier>().changeCallback(value);
       },
@@ -138,6 +140,9 @@ class _SearchHeaderState extends State<SearchHeader> {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
+                    // onChanged: (text) {
+                    //
+                    // },
                     decoration: const InputDecoration(
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
