@@ -7,7 +7,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 
 class EditInformationIntroduction extends StatefulWidget {
   final String introduction;

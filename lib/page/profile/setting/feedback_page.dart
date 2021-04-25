@@ -17,8 +17,8 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:toast/toast.dart';
 
