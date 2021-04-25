@@ -358,7 +358,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       //页面跳转至登录前的页面
       // 存在发布失败数据通知homePage获取数据
       if (AppPrefs.getPublishFeedLocalInsertData(
-              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+              "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
           null) {
         EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
