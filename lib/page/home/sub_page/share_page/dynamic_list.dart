@@ -136,8 +136,8 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   : Container(),
               // 输入框
               CommentInputBox(feedModel: widget.model),
-              // 推荐用户
-              getAttention(widget.index, widget.isShowRecommendUser),
+              // Note 推荐用户 暂时屏蔽
+              // getAttention(widget.index, widget.isShowRecommendUser),
               // 分割块
               Container(
                 height: 18,
