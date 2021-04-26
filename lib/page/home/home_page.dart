@@ -138,23 +138,30 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   //获取网络连接状态
   _initConnectivity() async {
-    connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (context.read<TokenNotifier>().isLoggedIn) {
-        if (AppPrefs.getPublishFeedLocalInsertData(
-                "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
-            null) {
-          if (result == ConnectivityResult.mobile) {
-            print("移动网");
-            pulishFeed(getPublishFeedData(), isPostPageJump: false);
-          } else if (result == ConnectivityResult.wifi) {
-            print("wifi");
-            pulishFeed(getPublishFeedData(), isPostPageJump: false);
-          } else {
-            print("无网了");
+    if(context.read<TokenNotifier>().token != null ) {
+      connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+        if (context
+            .read<TokenNotifier>()
+            .isLoggedIn) {
+          if (AppPrefs.getPublishFeedLocalInsertData(
+              "${Application.postFailurekey}_${context
+                  .read<TokenNotifier>()
+                  .token
+                  .uid}") !=
+              null) {
+            if (result == ConnectivityResult.mobile) {
+              print("移动网");
+              pulishFeed(getPublishFeedData(), isPostPageJump: false);
+            } else if (result == ConnectivityResult.wifi) {
+              print("wifi");
+              pulishFeed(getPublishFeedData(), isPostPageJump: false);
+            } else {
+              print("无网了");
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   // 发布动态

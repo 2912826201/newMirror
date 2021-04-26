@@ -408,7 +408,7 @@ class TopicDtoModel {
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
-    uid = json["uid"];
+    uid = json["uid"]!=null?json["uid"]:0;
     index = json["index"];
     len = json["len"];
     name = json["name"];

@@ -78,7 +78,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     // 调整磁盘缓存中图像大小
                     maxHeightDiskCache: 150,
                     maxWidthDiskCache: 150,
-                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
+                    imageUrl: context.watch<TokenNotifier>().isLoggedIn&&context.watch<ProfileNotifier>().profile
+                        .avatarUri !=
+                        null
                         ? FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri)
                         : "",
                     fit: BoxFit.cover,
