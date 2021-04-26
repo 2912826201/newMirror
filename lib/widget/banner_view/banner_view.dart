@@ -1,8 +1,8 @@
 library banner_view;
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:mirror/widget/banner_view/page_scroll_physics.dart';
 
 //indicator container builder
 ///[indicatorWidget] indicator widget, position the indicator widget into container
@@ -10,7 +10,6 @@ typedef Widget IndicatorContainerBuilder(BuildContext context, Widget indicatorW
 
 const String TAG = 'BannerView';
 
-/// Created by yangxiaowei
 /// BannerView
 class BannerView extends StatefulWidget {
   final List<Widget> banners;
@@ -67,7 +66,6 @@ class BannerView extends StatefulWidget {
   _BannerViewState createState() => new _BannerViewState();
 }
 
-/// Created by yangxiaowei
 class _BannerViewState extends State<BannerView> {
   List<Widget> _originBanners = [];
   List<Widget> _banners = [];
@@ -178,6 +176,8 @@ class _BannerViewState extends State<BannerView> {
   /// Banner container
   Widget _renderBannerBody() {
     Widget pageView = new PageView.builder(
+      pageSnapping: false,// 必需设置为false下面直定义的滑动才会生效
+      physics: pageScrollPhysics(),
       itemBuilder: (context, index) {
         Widget widget = this._banners[index];
         return new GestureDetector(
@@ -202,7 +202,7 @@ class _BannerViewState extends State<BannerView> {
           widget.onPageChanged(index);
         }
       },
-      physics: new ClampingScrollPhysics(),
+      // physics: new ClampingScrollPhysics(),
     );
 
     return new NotificationListener(
