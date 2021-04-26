@@ -217,3 +217,4 @@ const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";
 const String MAIN_PAGE_JUMP_PAGE = "main_page_jump_page";
 // 训练界面获取最近直播课程数据
 const String TRAINING_PAGE_GET_DATA = "main_page_jump_page";
+const String DOUBLE_TAP_TABBAR = "double_tap_tabbar";

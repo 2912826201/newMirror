@@ -51,6 +51,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   List<QueryModel> msgList = [];
   bool haveData = false;
   String hintText;
+  int hasNext = 0;
   String defaultImage = DefaultImage.nodata;
   int timeStamp;
   ScrollController scrollController = ScrollController();
@@ -70,6 +71,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     if (listPage == 1) {
       controller.loadComplete();
       if (model != null) {
+        hasNext = model.hasNext;
         lastTime = model.lastTime;
         msgList.clear();
         if (model.list != null) {
@@ -91,6 +93,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
         lastTime = model.lastTime;
+        hasNext = model.hasNext;
         model.list.forEach((element) {
           msgList.add(element);
         });
@@ -153,7 +156,14 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     }
     msgList.clear();
     msgList.addAll(list);
-    streamController.sink.add(msgList);
+    if(msgList.length==0&&hasNext==0){
+      controller.requestLoading();
+      setState(() {
+      });
+      streamController.sink.add(msgList);
+    }else{
+      streamController.sink.add(msgList);
+    }
   }
 
   @override
@@ -179,8 +189,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
               body: Container(
                 width: width,
                 height: height,
-                child: snapshot.data.isNotEmpty
-                    ? ScrollConfiguration(
+                child:ScrollConfiguration(
                         behavior: OverScrollBehavior(),
                         child: SmartRefresher(
                           controller: controller,
@@ -190,12 +199,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           header: SmartRefresherHeadFooter.init().getHeader(),
                           onRefresh: _onRefresh,
                           onLoading: () {
-                            setState(() {
-                              showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                            });
+                            if(msgList.length!=0){
+                              setState(() {
+                                showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                              });
+                            }
                             _onLoading();
                           },
-                          child: ListView.builder(
+                          child: snapshot.data.isNotEmpty
+                              ?  ListView.builder(
                               controller: scrollController,
                               shrinkWrap: true,
                               //解决无限高度问题
@@ -208,30 +220,30 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   index: index,
                                   globalKey: listPage == 1 && index == snapshot.data.length - 1 ? globalKey : null,
                                 );
-                              }),
+                              }):Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: height * 0.22,
+                                ),
+                                Container(
+                                  width: 285,
+                                  height: 285,
+                                  child: Image.asset(defaultImage),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  hintText,
+                                  style: AppStyle.textPrimary3Regular14,
+                                )
+                              ],
+                            ),
+                          ),
                         ))
-                    : Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: height * 0.22,
-                            ),
-                            Container(
-                              width: 285,
-                              height: 285,
-                              child: Image.asset(defaultImage),
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                              hintText,
-                              style: AppStyle.textPrimary3Regular14,
-                            )
-                          ],
-                        ),
-                      ),
+
               ),
             );
           });

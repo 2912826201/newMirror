@@ -128,6 +128,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE,registerName:DOUBLE_TAP_TABBAR );
     print('-----------------------------profileDetailsListInit');
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
         registerName: EVENTBUS_PROFILE_DELETE_FEED);
@@ -138,6 +139,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             : hintText = "你还没有喜欢的内容~去逛逛吧";
   }
 
+  _tabBarDoubleTap(result){
+    print('-----------------------------333333333333333333333333333333');
+    int type = result;
+    if(type==widget.type){
+      _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+      setState(() {
+      });
+    }
+  }
   _deleteFeedCallBack(int id) {
       followModel.removeWhere((element) {
         return element.id == id;
