@@ -7,6 +7,7 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -666,6 +667,8 @@ class VideoCourseListPageState extends XCState {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[index]}");
         AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: heroTagArray[index], videoModel: videoModel);
+
+        // AppRouter.navigateToMachineRemoteController(context,courseId: videoModel.id,modeType: mode_video);
       },
     );
   }
