@@ -175,22 +175,46 @@ class _BannerViewState extends State<BannerView> {
 
   /// Banner container
   Widget _renderBannerBody() {
-    Widget pageView = new PageView.builder(
-      pageSnapping: false,// 必需设置为false下面直定义的滑动才会生效
+    //
+    // Widget pageView = new PageView.builder(
+    //   pageSnapping: false,// 必需设置为false下面直定义的滑动才会生效 此时是否自定义滚动行为
+    //   physics: pageScrollPhysics(),
+    //   itemBuilder: (context, index) {
+    //     Widget widget = this._banners[index];
+    //     return new GestureDetector(
+    //       child: widget,
+    //       onTapDown: (detail) {
+    //         _Logger.d(TAG, '**********   onTapDown');
+    //         this._cancel(manual: true);
+    //       },
+    //     );
+    //   },
+    //   allowImplicitScrolling: true,
+    //
+    //   controller: this._pageController,
+    //   itemCount: this._banners.length,
+    //   onPageChanged: (index) {
+    //     _Logger.d(TAG, '**********   changed  index: $index  cu: $_currentIndex');
+    //     this._currentIndex = index;
+    //     if (!(this._timer?.isActive ?? false)) {
+    //       this._nextBannerTask();
+    //     }
+    //     setState(() {});
+    //     if (null != widget.onPageChanged) {
+    //       widget.onPageChanged(index);
+    //     }
+    //   },
+    //   // physics: new ClampingScrollPhysics(),
+    // );
+    Widget pageView = new PageView(
+      children: this._banners,
+      // 必需设置为false下面直定义的滑动才会生效 此时是否自定义滚动行为
+      pageSnapping: false,
+      // 自定义滚动行为
       physics: pageScrollPhysics(),
-      itemBuilder: (context, index) {
-        Widget widget = this._banners[index];
-        return new GestureDetector(
-          child: widget,
-          onTapDown: (detail) {
-            _Logger.d(TAG, '**********   onTapDown');
-            this._cancel(manual: true);
-          },
-        );
-      },
+      // 在当前元素预加载下一个元素
       allowImplicitScrolling: true,
       controller: this._pageController,
-      itemCount: this._banners.length,
       onPageChanged: (index) {
         _Logger.d(TAG, '**********   changed  index: $index  cu: $_currentIndex');
         this._currentIndex = index;
@@ -202,9 +226,7 @@ class _BannerViewState extends State<BannerView> {
           widget.onPageChanged(index);
         }
       },
-      // physics: new ClampingScrollPhysics(),
     );
-
     return new NotificationListener(
       child: pageView,
       onNotification: (notification) {
