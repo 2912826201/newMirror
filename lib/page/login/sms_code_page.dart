@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
@@ -13,9 +14,11 @@ import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -364,6 +367,14 @@ class _SmsCodePageState extends State<SmsCodePage> {
       }
       // 重新登录替换关注页布局
       EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      // 获取话题详情页背景色
+      Application.topicBackgroundConfig.clear();
+      DataResponseModel dataResponseModel = await getBackgroundConfig();
+      if (dataResponseModel != null && dataResponseModel.list != null) {
+        dataResponseModel.list.forEach((v) {
+          Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
+        });
+      }
       AppRouter.popToBeforeLogin(context);
     } else {
       ToastShow.show(msg: "登录失败！", context: context);

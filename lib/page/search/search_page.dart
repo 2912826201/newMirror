@@ -134,7 +134,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     controller: controller,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (text) {
-                      if (text.isNotEmpty) {
+                      if (text.isNotEmpty&&context.read<TokenNotifier>().isLoggedIn) {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },

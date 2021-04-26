@@ -181,9 +181,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         // 更新全局监听
         context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
-    }).catchError((e) {
-      print("报错了");
-      print(e);
     });
   }
 

@@ -393,7 +393,9 @@ class LiveDetailPageState extends XCState {
     //todo 判断用户是不是vip缺少开通vip的回调
     bool isVip=false;
 
-    if(Application.profile!=null&&Application.profile.isVip!=null&&Application.profile.isVip == 1){
+    if(context.read<TokenNotifier>().isLoggedIn&&Application.profile!=null&&Application.profile
+        .isVip!=null&&Application.profile
+        .isVip == 1){
       isVip=true;
     }
 
