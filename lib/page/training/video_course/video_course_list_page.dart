@@ -39,6 +39,8 @@ class VideoCourseListPageState extends XCState {
   //当前显示的直播课程的list
   var videoModelArray = <LiveVideoModel>[];
 
+  bool isRefreshing=false;
+
   //头部标签
   VideoTagModel videoTagModel;
 
@@ -711,6 +713,9 @@ class VideoCourseListPageState extends XCState {
 
   //获取数据
   _loadData({bool isRefreshOrLoad = false}) async {
+    if(isRefreshOrLoad){
+      isRefreshing=true;
+    }
     print("获取数据----------------------------");
     List<int> _level = <int>[];
     List<int> _part = <int>[];
@@ -757,6 +762,7 @@ class VideoCourseListPageState extends XCState {
               isHaveMoreData = true;
               pagePosition++;
             }
+            isRefreshing=false;
           });
         }
       });
@@ -800,7 +806,11 @@ class VideoCourseListPageState extends XCState {
 
   //加载数据
   _onLoading() async {
-    await _loadData(isRefreshOrLoad: false);
+    if(!isRefreshing) {
+      await _loadData(isRefreshOrLoad: false);
+    }else{
+      _refreshController.loadComplete();
+    }
   }
 
   //设置高度监听的设置
