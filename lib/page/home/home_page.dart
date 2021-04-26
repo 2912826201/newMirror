@@ -81,12 +81,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 发布失败后发布model赋值
   postModelAssignment() {
     if (AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+            "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
         null) {
       print("HomePageState发布失败数据");
       // 取出发布动态数据
       postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+          "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}")));
       print("取出失败数据postprogressModel：${postprogressModel.toString()}");
       if (postprogressModel != null && postprogressModel.postFeedModel != null) {
         print("1111111111111");
@@ -124,7 +124,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 取出发布动态数据
   PostprogressModel getPublishFeedData() {
     postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+        "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}")));
     if (postprogressModel != null && postprogressModel.postFeedModel != null) {
       postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
         v.file = File(v.filePath);
@@ -138,23 +138,30 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   //获取网络连接状态
   _initConnectivity() async {
-    connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (context.read<TokenNotifier>().isLoggedIn) {
-        if (AppPrefs.getPublishFeedLocalInsertData(
-                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
-            null) {
-          if (result == ConnectivityResult.mobile) {
-            print("移动网");
-            pulishFeed(getPublishFeedData(), isPostPageJump: false);
-          } else if (result == ConnectivityResult.wifi) {
-            print("wifi");
-            pulishFeed(getPublishFeedData(), isPostPageJump: false);
-          } else {
-            print("无网了");
+    if(context.read<TokenNotifier>().token != null ) {
+      connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+        if (context
+            .read<TokenNotifier>()
+            .isLoggedIn) {
+          if (AppPrefs.getPublishFeedLocalInsertData(
+              "${Application.postFailurekey}_${context
+                  .read<TokenNotifier>()
+                  .token
+                  .uid}") !=
+              null) {
+            if (result == ConnectivityResult.mobile) {
+              print("移动网");
+              pulishFeed(getPublishFeedData(), isPostPageJump: false);
+            } else if (result == ConnectivityResult.wifi) {
+              print("wifi");
+              pulishFeed(getPublishFeedData(), isPostPageJump: false);
+            } else {
+              print("无网了");
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   // 发布动态

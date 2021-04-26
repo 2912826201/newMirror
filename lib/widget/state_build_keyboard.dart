@@ -7,6 +7,7 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
   Timer timerBottomHeight;
   int _timerBottomHeightCount=0;
   bool pageHeightStopCanvas=true;
+  int _timerCount=0;
 
   @override
   void initState() {
@@ -19,6 +20,11 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
   //计时
   _initTime() {
     timerBottomHeight = Timer.periodic(Duration(milliseconds: 1), (timer) {
+      _timerCount++;
+      if(_timerCount>1000){
+        _timerCount=0;
+        secondListener();
+      }
       if(this.context!=null&&this.mounted) {
         if (oldKeyboardHeight == MediaQuery.of(this.context).viewInsets.bottom) {
           _timerBottomHeightCount++;
@@ -75,4 +81,5 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
 
 
   void keyBoardHeightThanZero();
+  void secondListener();
 }

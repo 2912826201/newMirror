@@ -498,12 +498,12 @@ var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext contex
 // 话题详情页
 var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  TopicDtoModel topicModel;
-  if (data["topicModel"] != null) {
-    topicModel = TopicDtoModel.fromJson(data["topicModel"]);
-  }
+  // TopicDtoModel topicModel;
+  // if (data["topicModel"] != null) {
+  //   topicModel = TopicDtoModel.fromJson(data["topicModel"]);
+  // }
   return TopicDetail(
-    model: topicModel,
+    topicId: data["topicId"],
     isTopicList: data["isTopicList"],
   );
 });

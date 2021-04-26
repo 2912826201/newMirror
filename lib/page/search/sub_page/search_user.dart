@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -14,6 +13,7 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 class SearchUser extends StatefulWidget {
   String text;
   double width;
@@ -132,6 +132,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return !noData
         ? Container(
             padding: const EdgeInsets.only(left: 16, right: 16),

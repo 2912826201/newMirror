@@ -1,11 +1,9 @@
 import 'dart:async';
 
-// import 'dart:html';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 
@@ -30,15 +28,12 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
-import 'package:mirror/widget/slide_banner.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
 
 class SearchFeed extends StatefulWidget {
   SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
@@ -161,6 +156,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("biubiu!@@###%%^^^&&&&****(((()))))_+++==--009");
     print(feedList.isNotEmpty);
     if (feedList.isNotEmpty) {

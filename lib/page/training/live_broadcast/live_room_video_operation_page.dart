@@ -1538,4 +1538,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     //   _focusNode.unfocus();
     // }
   }
+
+  @override
+  void secondListener() {
+    // TODO: implement secondListener
+  }
 }

@@ -611,8 +611,8 @@ class StringUtil {
                 if (topicId == userMap[i.toString()]) {
                   return;
                 }
-                TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
-                AppRouter.navigateToTopicDetailPage(context, topicModel);
+                // TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
+                AppRouter.navigateToTopicDetailPage(context, userMap[i.toString()]);
               }
             }
           },
