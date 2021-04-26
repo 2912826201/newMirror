@@ -122,3 +122,51 @@ Future<bool> startLiveCourse(int machineId, int courseId) async {
   data["type"] = 0;
   return _sendOrder(machineId, "Training", data);
 }
+
+//结束视频课
+Future<bool> finishVideoCourse(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 1;
+  return _sendOrder(machineId, "Stop", data);
+}
+
+//结束直播课
+Future<bool> finishLiveCourse(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 0;
+  return _sendOrder(machineId, "Stop", data);
+}
+
+//机器遥控器上一段
+Future<bool> remoteControlPrevious(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["switchOver"] = 0;
+  return _sendOrder(machineId, "SwitchOver", data);
+}
+
+//机器遥控器下一段
+Future<bool> remoteControlNext(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["switchOver"] = 1;
+  return _sendOrder(machineId, "SwitchOver", data);
+}
+
+//机器遥控器暂停
+Future<bool> remoteControlPause(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["pause"] = 0;
+  return _sendOrder(machineId, "Pause", data);
+}
+
+//机器遥控器继续
+Future<bool> remoteControlResume(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["pause"] = 1;
+  return _sendOrder(machineId, "Pause", data);
+}

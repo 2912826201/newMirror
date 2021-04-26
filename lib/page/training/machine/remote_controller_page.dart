@@ -31,27 +31,24 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 //机器遥控器页
 
-
-
 ///courseId：课程id,直播课程id或者视频课程的id
 ///modeTye:类型,[liveVideoMode]
 class RemoteControllerPage extends StatefulWidget {
   final int courseId;
   final String modeType;
 
-  RemoteControllerPage({this.courseId,this.modeType=mode_null});
+  RemoteControllerPage({this.courseId, this.modeType = mode_null});
 
   @override
-  _RemoteControllerState createState() => _RemoteControllerState(courseId,modeType);
+  _RemoteControllerState createState() => _RemoteControllerState(courseId, modeType);
 }
 
 class _RemoteControllerState extends State<RemoteControllerPage> {
   String _title = "终端遥控";
 
-
   int courseId;
   String modeType;
-  
+
   _RemoteControllerState(this.courseId, this.modeType);
 
   int _totalDuration = 0;
@@ -67,14 +64,16 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   int _status;
 
-  List<VideoCoursePart> _partList=[];
+  List<VideoCoursePart> _partList = [];
 
   //是不是直播间的控制
-  bool isLiveRoomController()=>modeType==mode_live;
+  bool isLiveRoomController() => modeType == mode_live;
+
   //是不是视频课的控制
-  bool isVideoRoomController()=>modeType==mode_video;
+  bool isVideoRoomController() => modeType == mode_video;
+
   //是不是空的课程
-  bool isNullCourse()=>modeType==mode_null;
+  bool isNullCourse() => modeType == mode_null;
 
   @override
   void dispose() {
@@ -109,11 +108,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       component.scriptToVideo?.forEach((element) {
         urlList.add(element.videoUrl);
       });
-      VideoCoursePart part=VideoCoursePart();
-      part.videoList=urlList;
-      part.duration=(component.times / 1000).floor();
-      part.name=component.name;
-      part.type=component.type == 3 ? 1 : 0;
+      VideoCoursePart part = VideoCoursePart();
+      part.videoList = urlList;
+      part.duration = (component.times / 1000).floor();
+      part.name = component.name;
+      part.type = component.type == 3 ? 1 : 0;
       _partList.add(part);
     });
   }
@@ -121,7 +120,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   _parsePartList() {
     _indexMapWithoutRest.clear();
     _partAmountWithoutRest = 0;
-    _totalDuration=0;
+    _totalDuration = 0;
     for (int i = 0; i < _partList.length; i++) {
       //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
       if (_partList[i].type == 1) {
@@ -221,9 +220,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildScreen() {
-    if(isNullCourse()) {
+    if (isNullCourse()) {
       return _buildMachinePic();
-    }else{
+    } else {
       return _buildVideoCourse();
     }
   }
@@ -448,6 +447,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   svgName: AppIcon.skip_previous_28,
                   onTap: () {
                     print("上一段");
+                    if (!isNullCourse()) {
+                      remoteControlPrevious(notifier.machine.machineId, courseId);
+                    }
                   },
                   buttonHeight: 44,
                   buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
@@ -455,9 +457,14 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 AppIconButton(
                   iconSize: 28,
                   svgName: AppIcon.pause_28,
-                  onTap: () {
+                  onTap: () async {
                     print("暂停");
-                    // _showPauseDialog();
+                    if (!isNullCourse()) {
+                      bool result = await remoteControlPause(notifier.machine.machineId, courseId);
+                      if (result != null && result) {
+                        _showPauseDialog();
+                      }
+                    }
                   },
                   buttonHeight: 44,
                   buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
@@ -467,6 +474,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   svgName: AppIcon.skip_next_28,
                   onTap: () {
                     print("下一段");
+                    if (!isNullCourse()) {
+                      remoteControlNext(notifier.machine.machineId, courseId);
+                    }
                   },
                   buttonHeight: 44,
                   buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
@@ -517,7 +527,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 children: [
                   GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () {
+                      onTap: () async {
+                        if (isLiveRoomController()) {
+                          await finishLiveCourse(context.read<MachineNotifier>().machine.machineId, courseId);
+                        } else if (isVideoRoomController()) {
+                          await finishVideoCourse(context.read<MachineNotifier>().machine.machineId, courseId);
+                        }
                         Navigator.pop(context);
                       },
                       child: Column(
@@ -539,7 +554,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   ),
                   GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () {
+                      onTap: () async {
+                        await remoteControlResume(context.read<MachineNotifier>().machine.machineId, courseId);
                         Navigator.pop(context);
                       },
                       child: Column(
@@ -567,7 +583,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   //发送弹幕
   _postMessage(String content, List<Rule> rules) {
-    if(!isLiveRoomController()){
+    if (!isLiveRoomController()) {
       return;
     }
     print("发送弹幕：$content");
@@ -671,25 +687,21 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     );
   }
 
-
-
-  _getCourseInformation()async{
-    if(isNullCourse()){
+  _getCourseInformation() async {
+    if (isNullCourse()) {
       return;
     }
-    LiveVideoModel liveVideoModel= await getLiveVideoModel(courseId: courseId,type:modeType);
-    if(liveVideoModel==null){
-      courseId=null;
-      modeType=mode_null;
-    }else{
+    LiveVideoModel liveVideoModel = await getLiveVideoModel(courseId: courseId, type: modeType);
+    if (liveVideoModel == null) {
+      courseId = null;
+      modeType = mode_null;
+    } else {
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
       _updateInfoByPosition();
     }
-    if(mounted) {
-      setState(() {
-
-      });
+    if (mounted) {
+      setState(() {});
     }
   }
 }
