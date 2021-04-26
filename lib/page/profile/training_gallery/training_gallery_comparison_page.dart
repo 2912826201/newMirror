@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -37,6 +36,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
   Axis _orientation = Axis.horizontal;
   double _canvasSize = 0;
 
+  bool _isBusy = false;
+
   @override
   Widget build(BuildContext context) {
     _canvasSize = ScreenUtil.instance.screenWidthDp;
@@ -51,6 +52,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
               "完成",
               CustomRedButton.buttonStateNormal,
               () async {
+                //因为获取图像数据需要时间，所以可能在快速点击时执行多次此方法，获取多次图像弹出多个分享弹窗。根据_isBusy变量状态控制
+                if(_isBusy){
+                  return;
+                }
+                _isBusy = true;
                 RenderRepaintBoundary boundary = _cropperKey.currentContext.findRenderObject();
                 double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
                 ui.Image image = await boundary.toImage(pixelRatio: dpr);
@@ -61,7 +67,6 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                 print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
                 File imageFile =
                     await FileUtil().writeImageDataToFile(picBytes, DateTime.now().millisecondsSinceEpoch.toString());
-
                 SharedImageModel model = SharedImageModel();
                 model.width = (_canvasSize * dpr).toInt();
                 model.height = (_canvasSize * dpr).toInt();
@@ -71,6 +76,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                     chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
                     map: model.toJson(),
                     sharedType: 2);
+                _isBusy = false;
               },
             ),
           ),
