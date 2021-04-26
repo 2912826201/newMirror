@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/material.dart';
@@ -13,7 +16,8 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
+import 'package:mirror/consta'
+    'nt/style.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/route/router.dart';
@@ -27,18 +31,28 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 //机器遥控器页
 
-class RemoteControllerPage extends StatefulWidget {
-  //模式  0-普通模式，1-直播间模式
-  final int liveRoomId;
 
-  RemoteControllerPage({this.liveRoomId});
+
+///courseId：课程id,直播课程id或者视频课程的id
+///modeTye:类型,[liveVideoMode]
+class RemoteControllerPage extends StatefulWidget {
+  final int courseId;
+  final String modeType;
+
+  RemoteControllerPage({this.courseId,this.modeType=mode_null});
 
   @override
-  _RemoteControllerState createState() => _RemoteControllerState();
+  _RemoteControllerState createState() => _RemoteControllerState(courseId,modeType);
 }
 
 class _RemoteControllerState extends State<RemoteControllerPage> {
   String _title = "终端遥控";
+
+
+  int courseId;
+  String modeType;
+  
+  _RemoteControllerState(this.courseId, this.modeType);
 
   int _totalDuration = 0;
   double _currentPosition = 0;
@@ -53,55 +67,83 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   int _status;
 
+  List<VideoCoursePart> _partList=[];
+
+  //是不是直播间的控制
+  bool isLiveRoomController()=>modeType==mode_live;
+  //是不是视频课的控制
+  bool isVideoRoomController()=>modeType==mode_video;
+  //是不是空的课程
+  bool isNullCourse()=>modeType==mode_null;
+
   @override
   void dispose() {
     super.dispose();
-    if (widget.liveRoomId != null) {
+    if (isLiveRoomController()) {
       //退出聊天室
-      Application.rongCloud.quitChatRoom(widget.liveRoomId.toString());
+      Application.rongCloud.quitChatRoom(courseId.toString());
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _partList.addAll(testPartList);
     _parsePartList();
     _updateInfoByPosition();
     _volume = context.read<MachineNotifier>().machine?.volume;
     _luminance = context.read<MachineNotifier>().machine?.luminance;
     _status = context.read<MachineNotifier>().machine?.status;
 
-    if (widget.liveRoomId != null) {
+    if (isLiveRoomController()) {
       //加入聊天室
-      Application.rongCloud.joinChatRoom(widget.liveRoomId.toString());
+      Application.rongCloud.joinChatRoom(courseId.toString());
     }
+    _getCourseInformation();
+  }
+
+  _parseModelToPartList(LiveVideoModel liveVideoModel) {
+    _partList.clear();
+    liveVideoModel.coursewareDto.componentDtos.forEach((component) {
+      List<String> urlList = [];
+      component.scriptToVideo?.forEach((element) {
+        urlList.add(element.videoUrl);
+      });
+      VideoCoursePart part=VideoCoursePart();
+      part.videoList=urlList;
+      part.duration=(component.times / 1000).floor();
+      part.name=component.name;
+      part.type=component.type == 3 ? 1 : 0;
+      _partList.add(part);
+    });
   }
 
   _parsePartList() {
     _indexMapWithoutRest.clear();
     _partAmountWithoutRest = 0;
-    for (int i = 0; i < testPartList.length; i++) {
+    _totalDuration=0;
+    for (int i = 0; i < _partList.length; i++) {
       //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
-      if (testPartList[i].type == 1) {
+      if (_partList[i].type == 1) {
         _indexMapWithoutRest[i] = _partAmountWithoutRest - 1;
       } else {
         _indexMapWithoutRest[i] = _partAmountWithoutRest;
         _partAmountWithoutRest++;
       }
-      _totalDuration += testPartList[i].duration;
+      _totalDuration += _partList[i].duration;
     }
   }
 
   _updateInfoByPosition() {
     int time = _currentPosition.toInt();
-    for (int i = 0; i < testPartList.length; i++) {
+    for (int i = 0; i < _partList.length; i++) {
       _currentPartIndex = i;
-      if (time <= testPartList[i].duration) {
-        _remainingPartTime = testPartList[i].duration - time;
-        _partProgress = time / testPartList[i].duration;
+      if (time <= _partList[i].duration) {
+        _remainingPartTime = _partList[i].duration - time;
+        _partProgress = time / _partList[i].duration;
         return;
       } else {
-        time -= testPartList[i].duration;
+        time -= _partList[i].duration;
       }
     }
   }
@@ -115,7 +157,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           titleString: _title,
           actions: [
             Visibility(
-              visible: widget.liveRoomId != null,
+              visible: isLiveRoomController(),
               child: CustomAppBarIconButton(
                   svgName: AppIcon.nav_danmaku,
                   iconColor: AppColor.black,
@@ -179,8 +221,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildScreen() {
-    // return _buildMachinePic();
-    return _buildVideoCourse();
+    if(isNullCourse()) {
+      return _buildMachinePic();
+    }else{
+      return _buildVideoCourse();
+    }
   }
 
   Widget _buildMachinePic() {
@@ -203,7 +248,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           child: Stack(
             children: [
               Center(
-                child: VideoCourseCircleProgressBar(testPartList, _currentPartIndex, _partProgress),
+                child: VideoCourseCircleProgressBar(_partList, _currentPartIndex, _partProgress),
               ),
               Center(
                 child: Text(
@@ -220,9 +265,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           ),
         ),
         Text(
-          testPartList[_currentPartIndex].type == 1
+          _partList[_currentPartIndex].type == 1
               ? "休息"
-              : "${testPartList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+              : "${_partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
           style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
         )
       ],
@@ -522,8 +567,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   //发送弹幕
   _postMessage(String content, List<Rule> rules) {
+    if(!isLiveRoomController()){
+      return;
+    }
     print("发送弹幕：$content");
-    if (null == content || content.length < 1 && widget.liveRoomId != null) {
+    if (null == content || content.length < 1 && courseId != null) {
       return;
     }
     _sendChatRoomMsg(content);
@@ -539,12 +587,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     msg.sendUserInfo = userInfo;
     Map<String, dynamic> textMap = Map();
     textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
-    textMap["toUserId"] = widget.liveRoomId;
+    textMap["toUserId"] = courseId;
     textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
     textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
     textMap["data"] = text;
     msg.content = jsonEncode(textMap);
-    await Application.rongCloud.sendChatRoomMessage(widget.liveRoomId.toString(), msg);
+    await Application.rongCloud.sendChatRoomMessage(courseId.toString(), msg);
   }
 
   _showDisconnectPopup() {
@@ -621,5 +669,27 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         );
       },
     );
+  }
+
+
+
+  _getCourseInformation()async{
+    if(isNullCourse()){
+      return;
+    }
+    LiveVideoModel liveVideoModel= await getLiveVideoModel(courseId: courseId,type:modeType);
+    if(liveVideoModel==null){
+      courseId=null;
+      modeType=mode_null;
+    }else{
+      _parseModelToPartList(liveVideoModel);
+      _parsePartList();
+      _updateInfoByPosition();
+    }
+    if(mounted) {
+      setState(() {
+
+      });
+    }
   }
 }

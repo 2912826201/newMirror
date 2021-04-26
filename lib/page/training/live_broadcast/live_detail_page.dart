@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -917,14 +918,7 @@ class LiveDetailPageState extends XCState {
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
     //加载数据
     Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId);
-    if (model == null) {
-      loadingStatus = LoadingStatus.STATUS_IDEL;
-      Future.delayed(Duration(seconds: 1), () {
-        if (mounted) {
-          reload(() {});
-        }
-      });
-    } else {
+    if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
       liveModel = LiveVideoModel.fromJson(model);
       if (openLiveCourse) {
         //如果已登录且有关联的机器 发送指令让机器跳转页面
@@ -937,6 +931,13 @@ class LiveDetailPageState extends XCState {
       if (mounted) {
         reload(() {});
       }
+    } else {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        if (mounted) {
+          reload(() {});
+        }
+      });
     }
   }
 
