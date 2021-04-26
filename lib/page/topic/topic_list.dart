@@ -107,6 +107,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
         color: AppColor.white,
         child: MediaQuery.removePadding(

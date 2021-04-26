@@ -55,7 +55,7 @@ class UserModel {
     this.deletedTime,
     this.status,
     this.age,
-    this.isVip,
+    this.isVip = 0,
     this.isLiving,
     this.isPerfect,
     this.isPhone,
@@ -64,7 +64,7 @@ class UserModel {
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
-    uid = json["uid"];
+    uid = json["uid"]!=null?json["uid"]:0;
     phone = json["phone"];
     type = json["type"];
     subType = json["subType"];
