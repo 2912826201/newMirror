@@ -687,6 +687,18 @@ class AppRouter {
     _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
   }
 
+  //判断打开遥控器界面没有
+  static bool isHaveMachineRemoteControllerPage(){
+    try{
+      for(String element in Application.pagePopRouterName){
+        if(element.contains(pathMachineRemoteController)){
+          return true;
+        }
+      }
+    }catch (e){}
+    return false;
+  }
+
   static void navigateToMachineConnectionInfo(BuildContext context) {
     _navigateToPage(context, pathMachineConnectionInfo, {});
   }

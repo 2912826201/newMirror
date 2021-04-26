@@ -14,9 +14,12 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
+import 'package:mirror/data/model/training/training_schedule_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
 import 'package:qrcode/qrcode.dart';
@@ -218,12 +221,12 @@ class MessageManager {
     dto.createTime = msg.sentTime;
     dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
 
-
     //需要额外获取的信息
     dto.isTop = 0;
-    TopChatModel topChatModel = new TopChatModel(type: dto.type==GROUP_TYPE?1:0, chatId: int.parse(dto.conversationId));
-    if(TopChatModel.contains(Application.topChatModelList, topChatModel)){
-      dto.isTop=1;
+    TopChatModel topChatModel =
+        new TopChatModel(type: dto.type == GROUP_TYPE ? 1 : 0, chatId: int.parse(dto.conversationId));
+    if (TopChatModel.contains(Application.topChatModelList, topChatModel)) {
+      dto.isTop = 1;
     }
 
     //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
@@ -233,12 +236,12 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
-      if(msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+      if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
         Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
-        if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+        if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
           dto.unreadCount = 0;
           return dto;
-        }else if(contentMap["subObjectName"]==ChatTypeModel.MESSAGE_TYPE_CMD){
+        } else if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_CMD) {
           dto.unreadCount = 0;
           return dto;
         }
@@ -246,9 +249,9 @@ class MessageManager {
       dto.unreadCount = 1;
 
       //加上全局未读数
-      NoPromptUidModel model=NoPromptUidModel(type: dto.type,targetId: int.parse(dto.conversationId));
-      if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
-        Application.unreadMessageNumber+=1;
+      NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
+      if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
+        Application.unreadMessageNumber += 1;
         EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
       }
     }
@@ -371,44 +374,27 @@ class MessageManager {
           break;
         case 7:
           //7-预约直播
-          EventBus.getDefault().post(msg: message,registerName: LIVE_COURSE_BOOK_LIVE);
+          EventBus.getDefault().post(msg: message, registerName: LIVE_COURSE_BOOK_LIVE);
           break;
         case 8:
-          //8-遥控器变化
-          MachineModel machine = MachineModel.fromJson(dataMap);
-          //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
-          if (Application.machine == null || Application.machine.machineId != machine.machineId) {
-            getMachineStatusInfo().then((list) {
-              if (list != null && list.isNotEmpty) {
-                Application.appContext.read<MachineNotifier>().setMachine(list.first);
-              }
-            });
-          } else {
-            //有变化再更新
-            bool hasChanged = false;
-            if (machine.volume != null && machine.volume != Application.machine.volume) {
-              Application.machine.volume = machine.volume;
-              hasChanged = true;
-            }
-            if (machine.luminance != null && machine.luminance != Application.machine.luminance) {
-              Application.machine.luminance = machine.luminance;
-              hasChanged = true;
-            }
-            if (hasChanged) {
-              Application.appContext.read<MachineNotifier>().setMachine(Application.machine);
-            }
+          //8-遥控器变化---目前只有训练进度
+          print("目前只有训练进度");
+          TrainingScheduleModel model=TrainingScheduleModel.fromJson(dataMap["cmd"]);
+          if(model!=null){
+            _trainingSchedule(model);
           }
           break;
         case 9:
           //9-训练结束
+          EventBus.getDefault().post(registerName: END_OF_TRAINING);
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
           if (trainingResult.hasResult == 1) {}
           break;
         case 10:
-          //10-直播禁言
-          print("直播禁言");
+          //10-开始训练-StartTraining
+          _startTraining(dataMap);
           break;
         default:
           break;
@@ -420,12 +406,12 @@ class MessageManager {
       switch (dataMap["subType"]) {
         case 0:
           GroupChatUserInformationDBHelper().update(message: message);
-          EventBus.getDefault().post(msg:message,registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.getDefault().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 1:
         case 2:
           GroupChatUserInformationDBHelper().removeMessageGroup(message);
-          EventBus.getDefault().post(msg:message,registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.getDefault().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 4:
           //修改群名
@@ -439,17 +425,17 @@ class MessageManager {
         default:
           break;
       }
-      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
+      EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
-      EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
+      EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
     }
   }
 
   //直播间的通知消息
   static splitChatRoomMessage(Message message) async {
-    if(message.conversationType != RCConversationType.ChatRoom){
+    if (message.conversationType != RCConversationType.ChatRoom) {
       return;
     }
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
@@ -459,10 +445,10 @@ class MessageManager {
         case 0:
           //0-直播开始
           print("直播开始");
-          List list=[];
+          List list = [];
           list.add(0);
           list.add(dataMap["courseId"]);
-          EventBus.getDefault().post(msg:list,registerName: LIVE_COURSE_LIVE_START_OR_END);
+          EventBus.getDefault().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         case 1:
           //1-心跳
@@ -471,20 +457,20 @@ class MessageManager {
           break;
         case 2:
           //2-直播禁言
-          List list=[];
+          List list = [];
           list.add(2);
           list.add(dataMap["liveRoomId"].toString());
           list.add(dataMap["users"]);
           list.add(message);
-          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE,msg: list);
+          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE, msg: list);
           break;
         case 3:
-        //3-直播结束
+          //3-直播结束
           print("直播结束");
-          List list=[];
+          List list = [];
           list.add(3);
           list.add(dataMap["courseId"]);
-          EventBus.getDefault().post(msg:list,registerName: LIVE_COURSE_LIVE_START_OR_END);
+          EventBus.getDefault().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         default:
           break;
@@ -535,7 +521,7 @@ class MessageManager {
       case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
         return "撤回了一条消息";
       case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-        return _parseGrpNtf(msg.originContentMap,isTextMessageGrpNtf:false);
+        return _parseGrpNtf(msg.originContentMap, isTextMessageGrpNtf: false);
       case ChatTypeModel.MESSAGE_TYPE_CMD:
         return "私聊通知";
       default:
@@ -543,11 +529,11 @@ class MessageManager {
     }
   }
 
-  static String _parseGrpNtf(Map<String, dynamic> content,{bool isTextMessageGrpNtf=true}) {
+  static String _parseGrpNtf(Map<String, dynamic> content, {bool isTextMessageGrpNtf = true}) {
     Map<String, dynamic> dataMap;
-    if(isTextMessageGrpNtf){
+    if (isTextMessageGrpNtf) {
       dataMap = json.decode(json.decode(content["data"])["data"]);
-    }else{
+    } else {
       dataMap = json.decode(content["data"]);
     }
     print("dataMap:${dataMap.toString()}");
@@ -635,7 +621,7 @@ class MessageManager {
 
   //判断消息是不是聊天室弹幕消息
   static bool judgeBarrageMessage(Message message) {
-    print("message.objectName：${message.objectName},${ message.conversationType}");
+    print("message.objectName：${message.objectName},${message.conversationType}");
     if (message == null) {
       return false;
     } else if (message.conversationType != RCConversationType.ChatRoom) {
@@ -659,18 +645,66 @@ class MessageManager {
 
   //判断是不是聊天室的通知
   static bool judgeChatRoomNotice(Message message) {
-    print("message.objectName：${message.objectName},${ message.conversationType}");
+    print("message.objectName：${message.objectName},${message.conversationType}");
     if (message == null) {
       return false;
     } else if (message.conversationType == RCConversationType.ChatRoom) {
-      if(message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD){
+      if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
         print("聊天室：私通知");
         return true;
-      }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+      } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
         print("聊天室：群通知");
         return true;
       }
     }
     return false;
+  }
+
+  //机器训练开始
+  static void _startTraining(Map<String, dynamic> dataMap) {
+    if (dataMap["courseId"] == null || dataMap["courseType"] == null) {
+      print("dataMap[courseType]:${dataMap["courseType"]},courseId：${dataMap["courseId"]}");
+      return;
+    }
+    if (!(dataMap["courseType"] == 0 || dataMap["courseType"] == 1)) {
+      print("dataMap[courseType]:${dataMap["courseType"]}");
+      return;
+    }
+
+    //dataMap["courseType"]==0  直播 1--视频
+
+    if (AppRouter.isHaveMachineRemoteControllerPage()) {
+      List list = [];
+      String modeType = dataMap["courseType"] == 0 ? mode_live : mode_video;
+      list.add(dataMap["courseId"]);
+      list.add(modeType);
+      EventBus.getDefault().post(msg: list, registerName: START_TRAINING);
+    } else {
+      if (dataMap["courseType"] == 0) {
+        //courseType-0--直播
+        BuildContext context = Application.navigatorKey.currentState.overlay.context;
+        AppRouter.navigateToMachineRemoteController(context, courseId: dataMap["courseId"], modeType: mode_live);
+      } else {
+        //courseType-0--视频
+        BuildContext context = Application.navigatorKey.currentState.overlay.context;
+        AppRouter.navigateToMachineRemoteController(context, courseId: dataMap["courseId"], modeType: mode_video);
+      }
+    }
+  }
+
+  //机器训练进度的返回---只有视频课程
+  static void _trainingSchedule(TrainingScheduleModel model){
+    if(model.courseId==null){
+      return;
+    }
+    if(AppRouter.isHaveMachineRemoteControllerPage()){
+      EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
+    }else{
+      BuildContext context = Application.navigatorKey.currentState.overlay.context;
+      AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_video);
+      Future.delayed(Duration(milliseconds: 100),(){
+        EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
+      });
+    }
   }
 }
