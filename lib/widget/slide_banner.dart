@@ -1,28 +1,22 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/image_preview/image_preview_page.dart';
-import 'package:mirror/page/image_preview/image_preview_view.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/banner_view/banner_view.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +61,9 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // scroll_to_index定位
   AutoScrollController controller;
-  SwiperController swiperController = SwiperController();
+
+  // SwiperController swiperController = SwiperController();
+
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
 
@@ -103,17 +99,12 @@ class _SlideBannerState extends State<SlideBanner> {
       imageCount = widget.model.picUrls.length;
       imageWidth = widget.model.picUrls.first.width;
     }
-    swiperController.addListener(() {
-      print(swiperController.index);
-    });
-
+    // swiperController.addListener(() {
+    //   print(swiperController.index);
+    // });
+    // 预加载图片组件
     if (widget.model.picUrls.isNotEmpty) {
       cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
-      // swiperController.
-      for(int i = 0; i< widget.model.picUrls.length; i++) {
-        swiperController.index = i;
-      }
-      swiperController.index = 0;
     }
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
@@ -361,14 +352,12 @@ class _SlideBannerState extends State<SlideBanner> {
                 child: Container(
                   width: width,
                   height: setAspectRatio(widget.height),
-                  child: Swiper.children(
-                    children: cupertinoButtonList,
-                    autoplayDelay: 0,
-                    duration:0,
-                    controller: swiperController,
-                    viewportFraction: 0.99999999,
-                    loop: false,
-                    onIndexChanged: (index) {
+                  // 轮播图
+                  child: BannerView(
+                    cupertinoButtonList,
+                    cycleRolling: false,
+                    autoRolling: false,
+                    onPageChanged: (index) {
                       autoPlay(index);
                       if (index > 1) {
                         if (index < imageCount - 3) {
@@ -380,8 +369,28 @@ class _SlideBannerState extends State<SlideBanner> {
                         }
                       }
                     },
-                    onTap: (index) {},
-                  )
+                  ),
+                  // child: Swiper.children(
+                  //   children: cupertinoButtonList,
+                  //   autoplayDelay: 0,
+                  //   duration:0,
+                  //   controller: swiperController,
+                  //   viewportFraction: 0.99999999,
+                  //   loop: false,
+                  //   onIndexChanged: (index) {
+                  //     autoPlay(index);
+                  //     if (index > 1) {
+                  //       if (index < imageCount - 3) {
+                  //         controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                  //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                  //       } else if (index == imageCount - 3) {
+                  //         controller.animateTo(controller.position.maxScrollExtent,
+                  //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                  //       }
+                  //     }
+                  //   },
+                  //   onTap: (index) {},
+                  // )
                 ),
               ),
               Positioned(
