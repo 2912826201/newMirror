@@ -10,6 +10,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
@@ -164,6 +165,9 @@ class _SharePopupState extends State<_SharePopup> {
   Widget _buildFriendItem(BuildContext context, int index) {
     return GestureDetector(
       onTap: (){
+        if(ClickUtil.isFastClick()){
+          return;
+        }
         print("点击了人名");
         _shareMessage(_friendList[index].uid,_friendList[index].nickName,RCConversationType.Private);
       },
@@ -386,6 +390,9 @@ class _SharePopupState extends State<_SharePopup> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
+          if(ClickUtil.isFastClick()){
+            return;
+          }
           print("点击了群名");
           _shareMessage(_groupList[index].id,name,RCConversationType.Group);
         },
