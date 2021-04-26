@@ -51,6 +51,13 @@ class MainPageState extends XCState {
     _unReadFeedCount = unread;
   }
 
+  List pages = [
+    HomePage(),
+    TrainingPage(),
+    MessagePage(),
+    ProfilePage(),
+  ];
+
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
       if (attentionModel != null) {
@@ -63,7 +70,7 @@ class MainPageState extends XCState {
 
   _getUnReadFeedCount() {
     getUnReadFeedCount().then((value) {
-      if (value != null&&value!=context.read<FeedMapNotifier>().value.unReadFeedCount) {
+      if (value != null && value != context.read<FeedMapNotifier>().value.unReadFeedCount) {
         context.read<FeedMapNotifier>().setUnReadFeedCount(value);
       }
     });
@@ -103,14 +110,13 @@ class MainPageState extends XCState {
             }
           },
         ),
-        body: PageView(
+        body: PageView.custom(
           controller: pageController,
-          children: [
-            HomePage(),
-            TrainingPage(),
-            MessagePage(),
-            ProfilePage(),
-          ],
+          childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+            return pages[index];
+          }, childCount: 4),
+            // 提前预加载当前pageView的下一个视图
+          allowImplicitScrolling: true,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));
   }
