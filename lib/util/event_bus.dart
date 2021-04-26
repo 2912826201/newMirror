@@ -225,3 +225,5 @@ const String END_OF_TRAINING = "end_of_training";
 const String START_TRAINING = "start_training";
 // 机器训练中
 const String SCHEDULE_TRAINING_VIDEO = "schedule_training_video";
+//双击tabbar
+const String DOUBLE_TAP_TABBAR = "double_tap_tabbar";

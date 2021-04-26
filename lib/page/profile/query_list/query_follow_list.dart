@@ -87,7 +87,7 @@ class _QueryFollowState extends State<QueryFollowList> {
       return;
     }
     print('====================关注页请求接口');
-    BuddyListModel model = await GetFollowList(15, uid: widget.userId.toString(), lastTime: _lastTime);
+    BuddyListModel model = await GetFollowList(20, uid: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
       if (model != null) {
@@ -99,14 +99,14 @@ class _QueryFollowState extends State<QueryFollowList> {
             buddyList.add(element);
           });
         } else {
-          buddyList.add(BuddyModel());
+          buddyList.add(BuddyModel(uid: -1));
         }
         _refreshController.refreshCompleted();
       } else {
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
-        buddyList.add(BuddyModel());
+        buddyList.add(BuddyModel(uid: -1));
       }
       //这是插入的作为话题入口的假数据
       buddyList.insert(0, BuddyModel());
@@ -140,17 +140,14 @@ class _QueryFollowState extends State<QueryFollowList> {
     }
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
-    SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
+    SearchUserModel model = await searchFollowUser(text, 20, uids: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
         print('===================== =============model有值');
         buddyList.clear();
         hasNext = model.hasNext;
-        buddyList.insert(0, BuddyModel());
         if (model.list.isNotEmpty) {
-          //这是插入的作为话题入口的假数据
-          buddyList.insert(0, BuddyModel());
           model.list.forEach((element) {
             //因为搜索的model和关注列表的model不一样，用这个model插入一条数据去接得到的数据
             searchModel.clear();
@@ -168,8 +165,14 @@ class _QueryFollowState extends State<QueryFollowList> {
           });
           _lastTime = model.lastTime;
           _refreshController.refreshCompleted();
+        }else{
+          buddyList.add(BuddyModel(uid: -1));
         }
+      }else{
+        buddyList.add(BuddyModel(uid: -1));
       }
+      //这是插入的作为话题入口的假数据
+      buddyList.insert(0, BuddyModel());
       _refreshController.refreshCompleted();
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
@@ -200,12 +203,6 @@ class _QueryFollowState extends State<QueryFollowList> {
     }
     refreshOver = true;
     setState(() {});
-    if (buddyList.length > 1) {
-      for (int i = 0; i < buddyList.length; i++) {
-        context.watch<UserInteractiveNotifier>().changeIsFollow(
-            true, buddyList[i].relation == 0 || buddyList[i].relation == 2 ? true : false, buddyList[i].uid);
-      }
-    }
   }
 
   ///获取粉丝列表
@@ -524,9 +521,13 @@ class _QueryFollowState extends State<QueryFollowList> {
                               header: SmartRefresherHeadFooter.init().getHeader(),
                               onRefresh: __onRefresh,
                               onLoading: () {
-                                setState(() {
-                                  showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                                });
+                                if((widget.type==1&&buddyList.length!=1)||(widget.type==2&&buddyList.length!=0)||
+                                    (widget.type==3&&topicList.length!=0)){
+                                  setState(() {
+                                    showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                                  });
+                                }
+
                                 _onLoading();
                               },
                               child: ListView.builder(
@@ -546,44 +547,9 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
-                                        if (buddyList.length != 1 && buddyList[index].nickName != null) {
-                                          context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
-                                              isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
-                                                  ? true
-                                                  : false);
-                                          if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
-                                              !context
-                                                  .watch<UserInteractiveNotifier>()
-                                                  .profileUiChangeModel[buddyList[index].uid]
-                                                  .isFollow) {
-                                            return QueryFollowItem(
-                                              type: widget.type,
-                                              buddyModel: buddyList[index],
-                                              width: width,
-                                              userId: widget.userId,
-                                              isMySelf: isMySelf,
-                                              globalKey: index ==
-                                                      (widget.type == 1 || widget.type == 2
-                                                          ? buddyList.length - 1
-                                                          : topicList.length - 1)
-                                                  ? globalKey
-                                                  : null,
-                                            );
-                                          } else {
-                                            List<BuddyModel> list = [];
-                                            for (int i = 0; i < buddyList.length; i++) {
-                                              if (i != index) {
-                                                list.add(buddyList[i]);
-                                              }
-                                            }
-                                            buddyList.clear();
-                                            buddyList.addAll(list);
-                                            buddyList.insert(0, BuddyModel());
-                                            return Container();
-                                          }
-                                        } else {
+                                        //这是缺省图，插入了一条id为-1的数据
+                                        if(buddyList[index].uid==-1){
                                           return Container(
-                                            key: globalKey,
                                             height: ScreenUtil.instance.height,
                                             width: ScreenUtil.instance.screenWidthDp,
                                             child: Center(
@@ -609,6 +575,53 @@ class _QueryFollowState extends State<QueryFollowList> {
                                               ),
                                             ),
                                           );
+                                        }
+                                        context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
+                                            isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
+                                                ? true
+                                                : false);
+                                        if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
+                                            !context
+                                                .watch<UserInteractiveNotifier>()
+                                                .profileUiChangeModel[buddyList[index].uid]
+                                                .isFollow) {
+                                          return QueryFollowItem(
+                                            type: widget.type,
+                                            buddyModel: buddyList[index],
+                                            width: width,
+                                            userId: widget.userId,
+                                            isMySelf: isMySelf,
+                                            globalKey: index ==
+                                                    (widget.type == 1 || widget.type == 2
+                                                        ? buddyList.length - 1
+                                                        : topicList.length - 1)
+                                                ? globalKey
+                                                : null,
+                                            userFollowChangeCallBack: (){
+                                              List<BuddyModel> list = [];
+                                              buddyList.forEach((element) {
+                                                if(element.uid != null&&element.uid!=context
+                                                    .read<UserInteractiveNotifier>()
+                                                    .removeId){
+                                                  list.add(element);
+                                                }
+                                              });
+                                              buddyList.clear();
+                                              buddyList.addAll(list);
+                                              buddyList.insert(0, BuddyModel());
+                                              if(buddyList.length==1){
+                                                if(hasNext==0){
+                                                  buddyList.add(BuddyModel(uid: -1));
+                                                }else{
+                                                  _refreshController.requestLoading();
+                                                }
+                                              }
+                                              setState(() {
+                                              });
+                                            },
+                                          );
+                                        } else {
+                                          return Container();
                                         }
                                       }
                                       //type为2的时候展示粉丝
@@ -720,6 +733,7 @@ class QueryFollowItem extends StatefulWidget {
   int userId;
   bool isMySelf;
   DeleteChangedCallback topicDeleteCallBack;
+  DeleteChangedCallback userFollowChangeCallBack;
   GlobalKey globalKey;
 
   QueryFollowItem(
@@ -730,7 +744,8 @@ class QueryFollowItem extends StatefulWidget {
       this.userId,
       this.isMySelf,
       this.topicDeleteCallBack,
-      this.globalKey});
+      this.globalKey,
+      this.userFollowChangeCallBack});
 
   @override
   State<StatefulWidget> createState() {
@@ -798,7 +813,10 @@ class _FollowItemState extends State<QueryFollowItem> {
           InkWell(
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
-                  AppRouter.navigateToMineDetail(context, uid, avatarUrl: avatarUrl, userName: userName);
+                  AppRouter.navigateToMineDetail(context, uid, avatarUrl: avatarUrl, userName: userName,callback:
+                  (result){
+                    widget.userFollowChangeCallBack();
+                  });
                 } else {
                   // TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
                   AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id, isTopicList: true, callback: (result) {

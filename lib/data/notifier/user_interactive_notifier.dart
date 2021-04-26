@@ -51,6 +51,9 @@ class UserInteractiveNotifier extends ChangeNotifier {
   }
 
   void changeIsFollow(bool needNotify, bool bl, int id) {
+    if(!bl){
+      removeId = id;
+    }
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].feedStringList.clear();
     if (!bl) {

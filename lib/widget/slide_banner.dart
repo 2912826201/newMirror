@@ -123,6 +123,9 @@ class _SlideBannerState extends State<SlideBanner> {
     List<Widget> cupertinoButtons = [];
     List.generate(widget.model.picUrls.length, (indexs) {
       PicUrlsModel item = widget.model.picUrls[indexs];
+      // if(indexs == 2) {
+      //   item.url = null;
+      // }
       // 查看大图设置
       /* cupertinoButtons.add(CupertinoButton(
           borderRadius: BorderRadius.zero,

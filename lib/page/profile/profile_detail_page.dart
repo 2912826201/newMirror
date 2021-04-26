@@ -20,6 +20,7 @@ import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -58,6 +59,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   //资料板高度
   double userDetailBoardHeight = 0;
+
+  int firstTapTime;
+  int beforTapType;
 
   ///昵称
   String _textName;
@@ -305,14 +309,53 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         labelColor: AppColor.black,
                         indicatorColor: AppColor.black,
                         controller: _mController,
+                        onTap: (value) {
+                          print('---------------------点击了tab');
+                          if (firstTapTime == null) {
+                            beforTapType = value;
+                            firstTapTime = DateTime.now().millisecondsSinceEpoch;
+                          } else {
+                            if(beforTapType !=value){
+                              firstTapTime = null;
+                              beforTapType = value;
+                              return;
+                            }
+                            if (DateTime.now().millisecondsSinceEpoch - firstTapTime <= 250) {
+                              print('-----------------------111111111111111111111');
+                              EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                              firstTapTime = null;
+                            } else {
+                              print('-------------------------222222222222222222222');
+                              firstTapTime = DateTime.now().millisecondsSinceEpoch;
+                            }
+                          }
+                        },
                         indicatorSize: TabBarIndicatorSize.label,
                         indicator: RoundUnderlineTabIndicator(
                             insets: EdgeInsets.only(bottom: 0),
                             wantWidth: 20,
                             borderSide: BorderSide(width: 2, color: AppColor.black)),
                         tabs: <Widget>[
+                          /*InkWell(
+                            onTap: (){
+                              _mController.animateTo(0);
+                            },
+                            onDoubleTap: () {
+                              EventBus.getDefault().post(msg:2,registerName:DOUBLE_TAP_TABBAR);
+                            },
+                            child:*/
                           Tab(text: '动态'),
+                          /* ),
+                          InkWell(
+                            onTap: (){
+                              _mController.animateTo(1);
+                            },
+                            onDoubleTap: () {
+                              EventBus.getDefault().post(msg:6,registerName:DOUBLE_TAP_TABBAR);
+                            },
+                            child:*/
                           Tab(text: '喜欢'),
+                          /* ),*/
                         ],
                       ),
                     ),
@@ -433,7 +476,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         ),
                   !isMselfId
                       ? SizedBox(
-                          width: 15.5,
+                          width: 8,
                         )
                       : Container()
                 ],
@@ -523,6 +566,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     style: AppStyle.textMedium18,
                   ),
                   Spacer(),
+
                   ///id
                   Text("ID: ${widget.userId}"),
                 ],

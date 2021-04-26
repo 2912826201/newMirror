@@ -468,7 +468,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: conversation.isTop == 1 ? AppColor.textHint.withOpacity(0.14) : AppColor.white,
+      color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -618,7 +618,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   //这里的边框颜色需要随背景变化
-                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.textHint : AppColor.white)),
+                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.bgWhite : AppColor.white)),
               child: ClipOval(
                 child: CachedNetworkImage(
                   height: 28,
