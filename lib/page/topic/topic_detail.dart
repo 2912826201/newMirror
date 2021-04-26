@@ -505,6 +505,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _gotoRelease() {
     return InkWell(
       onTap: () {
+        if(!context.read<TokenNotifier>().isLoggedIn){
+          AppRouter.navigateToLoginPage(context);
+          return;
+        }
         Application.topicMap[model.id] = model;
         AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
             publishMode: 1, topicId: model.id);
