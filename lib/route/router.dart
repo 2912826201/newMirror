@@ -19,6 +19,7 @@ import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -677,10 +678,12 @@ class AppRouter {
   }
 
   //
-  //mode:模式  liveRoomId-没有-普通模式，liveRoomId-有-直播间模式
-  static void navigateToMachineRemoteController(BuildContext context, {int liveRoomId}) {
+  ///courseId：课程id,直播课程id或者视频课程的id
+  ///modeTye:类型,[liveVideoMode]
+  static void navigateToMachineRemoteController(BuildContext context,{int courseId,String modeType=mode_null}) {
     Map<String, dynamic> map = Map();
-    map["liveRoomId"] = liveRoomId;
+    map["courseId"] = courseId;
+    map["modeType"] = modeType;
     _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
   }
 

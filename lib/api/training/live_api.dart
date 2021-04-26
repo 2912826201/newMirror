@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 
 // 根据日期获取直播课程列表
@@ -85,11 +86,9 @@ Future<Map> liveCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(LIVECOURSEDETAIL, params);
-  if (responseModel.isSuccess&&responseModel.code==200) {
-    return responseModel.data;
-  } else {
-    return null;
-  }
+  params["code"]=responseModel.code;
+  params["dataMap"]=responseModel.data;
+  return params;
 }
 
 
@@ -105,6 +104,21 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
   params["dataMap"]=responseModel.data;
   return params;
 }
+
+///courseId：课程id,直播课程id或者视频课程的id
+///modeTye:类型,[liveVideoMode]
+Future<LiveVideoModel> getLiveVideoModel({@required int courseId,String type=mode_null})async{
+  if(type==mode_null){
+    return null;
+  }
+  LiveVideoModel videoModel;
+  Map<String, dynamic> model = await (type==mode_video?getVideoCourseDetail:liveCourseDetail)(courseId: courseId);
+  if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
+    videoModel = LiveVideoModel.fromJson(model["dataMap"]);
+  }
+  return videoModel;
+}
+
 
 ///预约直播
 ///请求参数

@@ -30,7 +30,8 @@ class VideoCoursePart {
   String name;
   int type; //0-课程 1-休息
 
-  VideoCoursePart(this.videoList, this.duration, this.name, this.type);
+  VideoCoursePart([this.videoList, this.duration, this.name, this.type]);
+
 }
 
 final List<VideoCoursePart> testPartList = [
@@ -40,10 +41,6 @@ final List<VideoCoursePart> testPartList = [
     testVideoUrls[0],
     testVideoUrls[1],
   ], 50, "第一段多视频结束不休息", 0),
-  VideoCoursePart([
-    // "videos/3.mp4",
-    testVideoUrls[2],
-  ], 55, "第二段单视频结束有休息", 0),
   VideoCoursePart([], 30, "休息", 1),
   VideoCoursePart([
     // "videos/4.mp4",
