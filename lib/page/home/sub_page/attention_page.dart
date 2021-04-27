@@ -140,10 +140,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   // 重新登录替换布局
   _againLoginReplaceLayout() {
-    // 调用关注接口替换
+    // 调用关注接口提换
     getRecommendFeed(refreshOrLoading: true);
   }
+  // 双击刷新
+  onDoubleTap() {
+    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  }
 
+  //
   // 请求关注接口
   getRecommendFeed({bool refreshOrLoading}) async {
     print("开始请求动态数据");

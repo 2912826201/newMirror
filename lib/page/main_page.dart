@@ -52,7 +52,7 @@ class MainPageState extends XCState {
   }
 
   List pages = [
-    HomePage(),
+    HomePage(key:homePageKey),
     TrainingPage(),
     MessagePage(),
     ProfilePage(),
@@ -107,6 +107,11 @@ class MainPageState extends XCState {
               case 3:
                 _getFollowCount();
                 break;
+            }
+          },
+          onDoubleTap: (index) {
+            if(homePageKey.currentState != null) {
+              homePageKey.currentState.subpageRefresh();
             }
           },
         ),
