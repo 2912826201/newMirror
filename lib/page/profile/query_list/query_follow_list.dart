@@ -547,6 +547,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           child: _followTopic(width),
                                         );
                                       } else {
+                                        //这是缺省图，插入了一条id为-1的数据
                                         if(buddyList[index].uid==-1){
                                           return Container(
                                             height: ScreenUtil.instance.height,
