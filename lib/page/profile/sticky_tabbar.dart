@@ -3,9 +3,10 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TabBar;
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 ///这个是个人主页实现吸顶TabBar的类
 class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar child;

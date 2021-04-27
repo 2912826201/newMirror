@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TabBar;
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -27,6 +27,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
@@ -309,26 +310,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         labelColor: AppColor.black,
                         indicatorColor: AppColor.black,
                         controller: _mController,
-                        onTap: (value) {
-                          print('---------------------点击了tab');
-                          if (firstTapTime == null) {
-                            beforTapType = value;
-                            firstTapTime = DateTime.now().millisecondsSinceEpoch;
-                          } else {
-                            if(beforTapType !=value){
-                              firstTapTime = null;
-                              beforTapType = value;
-                              return;
-                            }
-                            if (DateTime.now().millisecondsSinceEpoch - firstTapTime <= 250) {
-                              print('-----------------------111111111111111111111');
-                              EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
-                              firstTapTime = null;
-                            } else {
-                              print('-------------------------222222222222222222222');
-                              firstTapTime = DateTime.now().millisecondsSinceEpoch;
-                            }
-                          }
+                        onDoubleTap: (value){
+                          EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                         },
                         indicatorSize: TabBarIndicatorSize.label,
                         indicator: RoundUnderlineTabIndicator(
