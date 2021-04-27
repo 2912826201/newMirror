@@ -31,54 +31,46 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         hasDivider: false,
-        leadingOnTap: () {
-          FocusScope.of(context).requestFocus(blankNode);
-          Navigator.pop(context);
-        },
+        leading: Container(),
       ),
       body: Container(
         height: height,
         width: width,
+        padding: EdgeInsets.only(left: 41,right: 41),
         child: ListView(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
+              Container(
+                width: width,
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "你的身高体重是",
                     style: AppStyle.textMedium23,
                   ),
                 ),
-              ),
-            ),
             SizedBox(
               height: 12,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
+             Container(
+                width: width,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "我们将以此为你推荐训练计划,让你一试身手。",
                   style: AppStyle.textRegular14,
                 ),
               ),
-            ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             _heightAndWeightItem("身高", "CM", width),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             _heightAndWeightItem("体重", "KG", width),
             SizedBox(
-              height: height * 0.07,
+              height: 62,
             ),
             Container(
               width: width,
@@ -132,8 +124,9 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
         children: [
           Spacer(),
           Container(
-            width: width * 0.37,
+            width: 140,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   title,

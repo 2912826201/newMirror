@@ -42,11 +42,11 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
         width: width,
         height: height,
         padding: EdgeInsets.only(
-            left: ScreenUtil.instance.screenWidthDp * 0.11, right: ScreenUtil.instance.screenWidthDp * 0.11),
+            left: 41, right: 41),
         child: Column(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             Container(
               width: width,
@@ -68,7 +68,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
               ),
             ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             Expanded(
                 child: ListView.builder(
@@ -112,7 +112,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: Container()),
+                  Spacer(),
                   Row(
                     children: [
                       Text(
@@ -132,7 +132,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
                     height: 11,
                   ),
                   Container(
-                    width: ScreenUtil.instance.screenWidthDp * 0.78 * 0.73,
+                    width: ScreenUtil.instance.screenWidthDp-82-12-67,
                     child: Text(
                       introduction,
                       style: AppStyle.textHintRegular12,
@@ -140,11 +140,11 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
                       overflow: TextOverflow.clip,
                     ),
                   ),
-                  Expanded(child: Container()),
+                  Spacer(),
                 ],
               ),
             ),
-            Expanded(child: Container()),
+            Spacer(),
             Center(
               child: AppIcon.getAppIcon(
                 AppIcon.arrow_right_12,

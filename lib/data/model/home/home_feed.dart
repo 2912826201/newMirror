@@ -381,9 +381,9 @@ class TopicDtoModel {
   int createTime;
   int updateTime;
   int isFollow;
-  List<String> pics = [];
+  List<TopicPicModel> pics = [];
   String description;
-  String avatarUrl;
+  TopicPicModel avatarUrl;
 
   TopicDtoModel(
       {this.id,
@@ -408,7 +408,7 @@ class TopicDtoModel {
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
-    uid = json["uid"]!=null?json["uid"]:0;
+    uid = json["uid"] != null ? json["uid"] : 0;
     index = json["index"];
     len = json["len"];
     name = json["name"];
@@ -424,10 +424,20 @@ class TopicDtoModel {
     updateTime = json["updateTime"];
     isFollow = json["isFollow"];
     description = json["description"];
-    avatarUrl = json["avatarUrl"];
+    if (json["avatarUrl"] != null) {
+      if (json["avatarUrl"] is TopicPicModel) {
+        avatarUrl = json["avatarUrl"];
+      } else {
+        avatarUrl = TopicPicModel.fromJson(json["avatarUrl"]);
+      }
+    }
     if (json["pics"] != null) {
       json["pics"].forEach((v) {
-        pics.add(v);
+        if (v is TopicPicModel) {
+          pics.add(v);
+        } else {
+          pics.add(TopicPicModel.fromJson(v));
+        }
       });
     }
   }
@@ -453,6 +463,62 @@ class TopicDtoModel {
     map["pics"] = pics;
     map["description"] = description;
     map["avatarUrl"] = avatarUrl;
+    return map;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+//  话题内部model
+class TopicPicModel {
+  String url;
+  String hlsUrl;
+  int duration;
+  String coverUrl;
+  int width;
+  int height;
+  double offsetRatioX;
+  double offsetRatioY;
+  double videoCroppedRatio;
+
+  TopicPicModel({
+    this.url,
+    this.hlsUrl,
+    this.duration,
+    this.coverUrl,
+    this.width,
+    this.height,
+    this.offsetRatioX,
+    this.offsetRatioY,
+    this.videoCroppedRatio,
+  });
+
+  TopicPicModel.fromJson(Map<String, dynamic> json) {
+    url = json["url"];
+    hlsUrl = json['hlsUrl'];
+    duration = json["duration"];
+    coverUrl = json["coverUrl"];
+    width = json["width"];
+    height = json["height"];
+    offsetRatioX = json["offsetRatioX"];
+    offsetRatioY = json["offsetRatioY"];
+    videoCroppedRatio = json["videoCroppedRatio"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["url"] = url;
+    map["hlsUrl"] = hlsUrl;
+    map["duration"] = duration;
+    map["coverUrl"] = coverUrl;
+    map["width"] = width;
+    map["height"] = height;
+    map["offsetRatioX"] = offsetRatioX;
+    map["offsetRatioY"] = offsetRatioY;
+    map["videoCroppedRatio"] = videoCroppedRatio;
     return map;
   }
 

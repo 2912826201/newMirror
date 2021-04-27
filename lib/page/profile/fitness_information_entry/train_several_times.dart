@@ -40,18 +40,16 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         child: Column(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             Center(
               child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
+                width: width,
+                padding: EdgeInsets.only(left: 41),
+                child:  Text(
                     "你每周训练几次",
                     style: AppStyle.textMedium23,
                   ),
-                ),
               ),
             ),
             SizedBox(
@@ -59,8 +57,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
             ),
             Center(
               child: Container(
-                alignment: Alignment.centerLeft,
-                width: width * 0.78,
+                width: width,
+                padding: EdgeInsets.only(left: 41),
                 child: Text(
                   "我们将以此为你推荐训练计划，让你一试身手。",
                   style: AppStyle.textRegular14,
@@ -68,21 +66,21 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
               ),
             ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             InkWell(
               onTap: () {},
               child: _button("训练3次", three, 3),
             ),
             SizedBox(
-              height: 28,
+              height: 18,
             ),
             InkWell(
               onTap: () {},
               child: _button("训练4次", four, 4),
             ),
             SizedBox(
-              height: 28,
+              height: 18,
             ),
             InkWell(
               onTap: () {},

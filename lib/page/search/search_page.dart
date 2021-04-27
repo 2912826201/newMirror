@@ -134,7 +134,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     controller: controller,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (text) {
-                      if (text.isNotEmpty&&context.read<TokenNotifier>().isLoggedIn) {
+                      if (text.isNotEmpty && context.read<TokenNotifier>().isLoggedIn) {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
@@ -203,12 +203,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求推荐话题接口
       getRecommendTopic(size: 20),
       // 请求历史记录
-        SearchHistoryDBHelper().querySearchHistory(context
-          .read<ProfileNotifier>()
-        .profile != null ? context
-            .read<ProfileNotifier>()
-            .profile
-            .uid : -1),
+      SearchHistoryDBHelper().querySearchHistory(
+          context.read<ProfileNotifier>().profile != null ? context.read<ProfileNotifier>().profile.uid : -1),
       recommendCourse(),
       // 请求热门课程
     ]).then((results) {
@@ -234,10 +230,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted) {
         setState(() {});
       }
-    }).catchError((e) {
+    });/*.catchError((e) {
       print("报错了");
       print(e);
-    });
+    });*/
     super.initState();
   }
 
@@ -527,7 +523,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                               maxHeightDiskCache: 250,
                               maxWidthDiskCache: 250,
                               imageUrl: topicList[index].pics[indexs] != null
-                                  ? FileUtil.getMediumImage(topicList[index].pics[indexs])
+                                  ? FileUtil.getMediumImage(topicList[index].pics[indexs].coverUrl)
                                   : "",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
