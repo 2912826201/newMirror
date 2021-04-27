@@ -919,7 +919,7 @@ class LiveDetailPageState extends XCState {
     //加载数据
     Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId);
     if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
-      liveModel = LiveVideoModel.fromJson(model);
+      liveModel = LiveVideoModel.fromJson(model["dataMap"]);
       if (openLiveCourse) {
         //如果已登录且有关联的机器 发送指令让机器跳转页面
         if (isLoggedIn && Application.machine != null) {
