@@ -18,9 +18,9 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 

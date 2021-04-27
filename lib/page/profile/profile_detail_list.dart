@@ -7,13 +7,10 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -131,6 +128,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE,registerName:DOUBLE_TAP_TABBAR );
     print('-----------------------------profileDetailsListInit');
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
         registerName: EVENTBUS_PROFILE_DELETE_FEED);
@@ -141,6 +139,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             : hintText = "你还没有喜欢的内容~去逛逛吧";
   }
 
+  _tabBarDoubleTap(result){
+    print('-----------------------------333333333333333333333333333333');
+    int type = result;
+    if(type==widget.type){
+      _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    }
+  }
   _deleteFeedCallBack(int id) {
       followModel.removeWhere((element) {
         return element.id == id;
@@ -158,10 +163,11 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
+    super.build(context);
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
-
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),

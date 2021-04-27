@@ -17,7 +17,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -77,7 +78,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     // 调整磁盘缓存中图像大小
                     maxHeightDiskCache: 150,
                     maxWidthDiskCache: 150,
-                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
+                    imageUrl: context.watch<TokenNotifier>().isLoggedIn&&context.watch<ProfileNotifier>().profile
+                        .avatarUri !=
+                        null
                         ? FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri)
                         : "",
                     fit: BoxFit.cover,
@@ -123,7 +126,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                       postComments(
                           targetId: widget.feedModel.id,
                           targetType: 0,
-                          contentext: StringUtil.replaceLineBlanks(text,rules),
+                          contentext: StringUtil.replaceLineBlanks(text, rules),
                           atUsers: jsonEncode(atListModel),
                           commentModelCallback: (BaseResponseModel commentModel) {
                             CommentDtoModel comModel;

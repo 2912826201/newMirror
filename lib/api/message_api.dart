@@ -51,7 +51,7 @@ const String QUERYSYSMSGLIST = "/appuser/web/message/querySysMsgList";
 
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     Unreads model = Unreads.fromJson(responseModel.data);
     if (model != null) {

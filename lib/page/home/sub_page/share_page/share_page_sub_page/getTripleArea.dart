@@ -39,6 +39,15 @@ class GetTripleArea extends StatefulWidget {
 }
 
 class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMixin {
+  String myAvatar = "";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(context.read<ProfileNotifier>().profile!=null&&context.read<ProfileNotifier>().profile.avatarUri!=null){
+      myAvatar = context.read<ProfileNotifier>().profile.avatarUri;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     // print("打印model的值￥${widget.model}");
@@ -128,7 +137,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             alignment: Alignment.center,
             child: roundedAvatar(
               context,
-              context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri),
+                myAvatar,
             ),
             duration: const Duration(milliseconds: 200)),
       );
@@ -138,7 +147,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       int index = userInfo.indexOf(item);
       // 这里判断去掉了用户本人的显示
       if (index <= 3 &&
-          item != context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)) {
+          item != myAvatar) {
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(userInfo, index, item: item),
             duration: const Duration(milliseconds: 200),
@@ -151,7 +160,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 内部缩放动画
   animatedZoom(List<String> userInfo, int index, {String item}) {
     // 当存在用户本人点赞时，第4个头像缩放
-    if (userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 3) {
+    if (userInfo.contains(myAvatar)
+        && index
+        == 3) {
       return AnimatedContainer(
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
@@ -162,7 +173,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           ),
           duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
-    } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
+    } else if (!userInfo.contains(myAvatar) && index == 2) {
       return AnimatedContainer(
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
@@ -209,7 +220,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       } else {
         context
             .read<FeedMapNotifier>()
-            .setLaud(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+            .setLaud(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0, myAvatar, widget.model.id);
         // model
         context
             .read<UserInteractiveNotifier>()

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,6 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,7 +57,7 @@ import 'item/chat_top_at_mark.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:mirror/widget/should_build_keyboard.dart';
+import 'package:mirror/widget/state_build_keyboard.dart';
 
 import 'message_view/message_item_height_util.dart';
 
@@ -87,11 +87,14 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    List<ChatDataModel> chatDataList=[];
+    chatDataList.addAll(this.chatDataList);
     return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList);
   }
 }
 
-class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
+class ChatPageState extends StateKeyboard with TickerProviderStateMixin, WidgetsBindingObserver {
+
   final ConversationDto conversation;
   final Message shareMessage;
   final BuildContext _context;
@@ -170,7 +173,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   // 大图预览组装数据
   List<DemoSourceEntity> sourceList = [];
 
-  Widget editWidget;
   Widget topAttentionUiWidget;
 
   GlobalKey<ChatBottomSettingBoxState> bottomSettingChildKey = GlobalKey();
@@ -178,9 +180,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   GlobalKey<ChatTopAtMarkState> chatTopAtMarkChildKey = GlobalKey();
   GlobalKey<ChatDetailsBodyState> chatDetailsBodyChildKey = GlobalKey();
 
+  StreamController<int> streamEditWidget = StreamController<int>();
+
+  bool readOnly=false;
+
   @override
   void initState() {
     super.initState();
+    print("ChatPage-initState");
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -210,18 +217,58 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print("conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
   @override
-  Widget shouldBuild(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick),
       body: MessageInputBody(
         onTap: () => _messageInputBodyClick(),
         decoration: BoxDecoration(color: AppColor.bgWhite),
-        child: Column(children: getBody()),
+        child: Column(children: [
+          topAttentionUiWidget,
+
+          Expanded(
+            child: SizedBox(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  getChatDetailsBody(),
+                  (conversation.type != GROUP_TYPE)
+                      ? Container()
+                      : ChatAtUserList(
+                    isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
+                    onItemClickListener: atListItemClick,
+                    groupChatId: conversation.conversationId,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          if (conversation.getType() != RCConversationType.System)
+            getMessageInputBar(),
+
+          if (conversation.getType() != RCConversationType.System)
+            ChatBottomSettingBox(
+              key: bottomSettingChildKey,
+              bottomSettingPanelState: _bottomSettingPanelState,
+              emojiState: _emojiState,
+              textController: _textController,
+              callBackCursorIndexPr: (int cursorIndexPr) {
+                this.cursorIndexPr = cursorIndexPr;
+                _changTextLen(_textController.text);
+              },
+              changTextLen: _changTextLen,
+              deleteEditText: _deleteEditText,
+              onSubmitClick: _onSubmitClick,
+              textScrollController: textScrollController,
+            ),
+        ]),
       ),
     );
   }
@@ -231,6 +278,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     super.deactivate();
     _messageInputBodyClick();
     _scrollController.dispose();
+    streamEditWidget.close();
     if (Application.appContext != null) {
       //清聊天未读数
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -270,50 +318,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   ///----------------------------------------ui start---------------------------------------------///
 
-  //获取显示的ui主体
-  List<Widget> getBody() {
-    List<Widget> bodyArray = [];
-
-    //接收当前会话的新的消息
-    bodyArray.add(topAttentionUiWidget);
-    //添加主体聊天界面
-    bodyArray.add(Expanded(
-      child: SizedBox(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            getChatDetailsBody(),
-            (conversation.type != GROUP_TYPE)
-                ? Container()
-                : ChatAtUserList(
-                    isShow: context.read<ChatEnterNotifier>().keyWord == "@",
-                    onItemClickListener: atListItemClick,
-                    groupChatId: conversation.conversationId,
-                  ),
-          ],
-        ),
-      ),
-    ));
-
-    if (conversation.getType() != RCConversationType.System) {
-      bodyArray.add(getMessageInputBar());
-      bodyArray.add(ChatBottomSettingBox(
-        key: bottomSettingChildKey,
-        bottomSettingPanelState: _bottomSettingPanelState,
-        emojiState: _emojiState,
-        textController: _textController,
-        callBackCursorIndexPr: (int cursorIndexPr) {
-          this.cursorIndexPr = cursorIndexPr;
-        },
-        changTextLen: _changTextLen,
-        deleteEditText: _deleteEditText,
-        onSubmitClick: _onSubmitClick,
-        textScrollController: textScrollController,
-      ));
-    }
-
-    return bodyArray;
-  }
 
   //获取列表内容
   Widget getChatDetailsBody() {
@@ -341,28 +345,31 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //输入框bar
   Widget getMessageInputBar() {
-    return MessageInputBar(
-      key: messageInputBarChildKey,
-      voiceOnTap: _voiceOnTapClick,
-      onEmojio: () {
-        onEmojioClick();
+    return StreamBuilder(
+      stream: streamEditWidget.stream,
+      builder: (context, snapshot) {
+        return MessageInputBar(
+          key: messageInputBarChildKey,
+          voiceOnTap: _voiceOnTapClick,
+          onEmojio: () {
+            onEmojioClick();
+          },
+          isVoice: _isVoiceState,
+          voiceFile: _voiceFile,
+          edit: _editWidget(),
+          value: _textController.text,
+          more: ChatMoreIcon(
+            isComMomButton: StringUtil.strNoEmpty(_textController.text) && Application.platform == 0,
+            onTap: () {
+              _onSubmitClick();
+            },
+            moreTap: () => onPicAndVideoBtnClick(),
+            textController: _textController,
+          ),
+          id: null,
+          type: null,
+        );
       },
-      isVoice: _isVoiceState,
-      voiceFile: _voiceFile,
-      edit: (context, size) {
-        return editWidget;
-      },
-      value: _textController.text,
-      more: ChatMoreIcon(
-        isComMomButton: StringUtil.strNoEmpty(_textController.text) && Application.platform == 0,
-        onTap: () {
-          _onSubmitClick();
-        },
-        moreTap: () => onPicAndVideoBtnClick(),
-        textController: _textController,
-      ),
-      id: null,
-      type: null,
     );
   }
 
@@ -371,11 +378,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     return ConstrainedBox(
       constraints: BoxConstraints(
           maxHeight: 80.0,
-          minHeight: 16.0,
-          maxWidth: Platform.isIOS
-              ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
-      child: TextSpanField(
+          minHeight: 16.0,),
+      child:TextSpanField(
         onTap: () {
           _emojiStateOld=_emojiState;
           print("_emojiStateOld2:$_emojiStateOld");
@@ -393,6 +397,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           }else{
             pageHeightStopCanvas = true;
             oldKeyboardHeight = 0;
+          }
+          if(readOnly) {
+            readOnly = false;
+            streamEditWidget.sink.add(0);
           }
         },
         onLongTap: () {
@@ -413,6 +421,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             pageHeightStopCanvas = true;
             oldKeyboardHeight = 0;
           }
+          if(readOnly) {
+            readOnly = false;
+            streamEditWidget.sink.add(0);
+          }
         },
         scrollController: textScrollController,
         controller: _textController,
@@ -432,6 +444,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         //内容改变的回调
         onChanged: _changTextLen,
         textInputAction: TextInputAction.send,
+        readOnly: readOnly,
+        showCursor: true,
         onSubmitted: (text) {
           if (ClickUtil.isFastClick(time: 200)) {
             return;
@@ -790,21 +804,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void _resetCharPageBar() {
     if(mounted){
       Future.delayed(Duration(milliseconds: 100),(){
-        reload((){});
+        setState(() {
+
+        });
       });
     }
   }
 
-  //刷新输入框
-  void _resetEditText() {
-    Element e = findChild(context as Element, editWidget);
-    if (e != null) {
-      editWidget = _editWidget();
-      e.owner.lockState(() {
-        e.update(editWidget);
-      });
-    }
-  }
 
   //刷新关注条
   void _resetShowTopAttentionUi() {
@@ -874,7 +880,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else {
       if (mounted) {
         _textController.text = "";
-        _resetEditText();
+        _changTextLen("");
         context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
         if (chatDataList.length > 100) {
@@ -892,7 +898,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       _textController.text = "";
-      _resetEditText();
+      _changTextLen("");
       // List list=[];
       // list.add(0);
       // list.add(chatDataModel.id);
@@ -1255,6 +1261,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (message == null) {
       return;
     }
+    print("message.targetId:${message.targetId},${conversation.conversationId}");
     if (message.targetId != conversation.conversationId) {
       return;
     }
@@ -1327,20 +1334,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 //判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
     print("判断是否退出群聊或者加入群聊");
+
     if (message == null) {
+      print(message == null);
       return;
     }
-    if (message.targetId != conversation.conversationId) {
-      return;
-    }
-    if(message.conversationType != conversation.getType()){
-      return;
-    }
-    if(message.conversationType !=RCConversationType.Group){
+    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    if (dataMap["groupChatId"].toString() != conversation.conversationId) {
+      print("message.targetId:${message.targetId},${conversation.conversationId}");
       return;
     }
     _resetChatGroupUserModelList(message);
-    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    print("dataMap[subType]0:${dataMap["subType"]}");
     if(dataMap["subType"]==0||dataMap["subType"]==2) {
       print("dataMap[subType]0:${dataMap["subType"]}");
       insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
@@ -1365,13 +1370,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (message == null) {
       return;
     }
-    if (message.targetId != conversation.conversationId) {
-      return;
-    }
-    if(message.conversationType != conversation.getType()){
-      return;
-    }
-    if(message.conversationType !=RCConversationType.Group){
+    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+    if (dataMap["groupChatId"].toString() != conversation.conversationId) {
       return;
     }
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -1384,7 +1384,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       isShowTopAttentionUi = isShow;
       _resetShowTopAttentionUi();
     });
-    editWidget = _editWidget();
   }
 
   initScrollController() {
@@ -1490,16 +1489,29 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       controller: _textController,
       maxNumberOfBytes: 6000,
       correctRulesListener: () {
-        _resetEditText();
+        streamEditWidget.sink.add(0);
       },
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
         print("打开@功能--str：$str------------------------");
-        if (conversation.getType() == RCConversationType.Group) {
-          context.read<ChatEnterNotifier>().openAtCallback(str);
-          isClickAtUser = false;
-          EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+        bool isHaveUser=true;
+        if (context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
+          if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
+            isHaveUser=false;
+          }
+        } else {
+          if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+              null) {
+            isHaveUser=false;
+          }
+        }
+        if(isHaveUser) {
+          if (conversation.getType() == RCConversationType.Group) {
+            context.read<ChatEnterNotifier>().openAtCallback(str);
+            isClickAtUser = false;
+            EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+          }
         }
         return "";
       },
@@ -1580,6 +1592,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         _emojiStateOld=false;
         print("_emojiStateOld1:$_emojiStateOld");
 
+        if(_focusNode.hasFocus){
+          _focusNode.unfocus();
+        }
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).requestFocus(new FocusNode());
         }
@@ -1596,20 +1611,50 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
         }
       }
+      Future.delayed(Duration(milliseconds: 100),(){
+        if(readOnly){
+          readOnly=false;
+          streamEditWidget.sink.add(0);
+        }
+      });
     }catch (e){}
   }
 
   //表情的点击事件
   void onEmojioClick() {
-    if (_focusNode.hasFocus) {
-      cursorIndexPr = _textController.selection.baseOffset;
-      bottomSettingChildKey.currentState.setCursorIndexPr(cursorIndexPr);
-      _focusNode.unfocus();
+    cursorIndexPr = _textController.selection.baseOffset;
+    bottomSettingChildKey.currentState.setCursorIndexPr(cursorIndexPr);
+
+    if(_isVoiceState){
+      if(_textController.text.length>0){
+        context.read<ChatEnterNotifier>().clearRules();
+        _textController.text = "";
+        _changTextLen("");
+      }
+      _isVoiceState = false;
+      messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
     }
-    _emojiState = !_emojiState;
+
+    if(_emojiState){
+      _emojiState=false;
+      if(_focusNode.hasFocus){
+        _focusNode.unfocus();
+      }
+      readOnly=false;
+      streamEditWidget.sink.add(0);
+    }else{
+      _emojiState=true;
+      readOnly=true;
+      streamEditWidget.sink.add(0);
+      Future.delayed(Duration(milliseconds: 100),(){
+        if(!_focusNode.hasFocus){
+          FocusScope.of(context).requestFocus(_focusNode);
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
+        }
+      });
+    }
+
     bottomSettingChildKey.currentState.setEmojiState(_emojiState);
-    _isVoiceState = false;
-    messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
   }
 
   //图片的点击事件
@@ -1686,11 +1731,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     bool isGranted = (await Permission.microphone.status)?.isGranted;
     if(isGranted) {
       _focusNode.unfocus();
+      if(_textController.text.length>0){
+        context.read<ChatEnterNotifier>().clearRules();
+        _textController.text = "";
+        _changTextLen("");
+      }
       _isVoiceState = !_isVoiceState;
       messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
       if (_emojiState) {
         _emojiState = false;
         bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+      }
+      if(readOnly){
+        readOnly=false;
+        streamEditWidget.sink.add(0);
       }
     }
   }
@@ -1869,7 +1923,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     // 关闭视图
     context.read<ChatEnterNotifier>().openAtCallback("");
     EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
-    _resetEditText();
+    streamEditWidget.sink.add(0);
   }
 
   //刷新数据--加载更多以前的数据

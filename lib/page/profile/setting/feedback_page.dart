@@ -13,11 +13,12 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:toast/toast.dart';
 
@@ -230,7 +231,7 @@ class _feedBackPage extends State<FeedBackPage> {
   _uploadImage() async {
     Loading.showLoading(context);
     List<String> list = [];
-    if (fileList != null) {
+    if (fileList.length!=0&&editText.length!=0) {
       var result = await FileUtil().uploadPics(fileList, (percent) {
         print('===========================正在上传%%$percent');
       });
@@ -240,7 +241,7 @@ class _feedBackPage extends State<FeedBackPage> {
           list.add(element.url);
         });
       }
-      bool model = await putFeedBack(editText, jsonEncode(list));
+      bool model = await putFeedBack(StringUtil.textWrapMatch(editText), jsonEncode(list));
       if (model != null && model) {
         Toast.show("反馈成功!", context);
         Loading.hideLoading(context);
@@ -251,7 +252,7 @@ class _feedBackPage extends State<FeedBackPage> {
       }
     } else {
       Loading.hideLoading(context);
-      Toast.show("请添加图片", context);
+      Toast.show("反馈内容为空", context);
     }
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
@@ -14,10 +13,8 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
-import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
@@ -471,7 +468,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: conversation.isTop == 1 ? AppColor.textHint.withOpacity(0.14) : AppColor.white,
+      color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -621,7 +618,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   //这里的边框颜色需要随背景变化
-                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.textHint : AppColor.white)),
+                  border: Border.all(width: 3, color: isTop == 1 ? AppColor.bgWhite : AppColor.white)),
               child: ClipOval(
                 child: CachedNetworkImage(
                   height: 28,

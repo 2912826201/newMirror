@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
@@ -13,9 +14,11 @@ import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -26,6 +29,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -206,6 +210,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       controller: inputController,
       keyboardType: TextInputType.number,
       showCursor: true,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
       decoration: InputDecoration(
           counterText: "",
           //不显示字数计数文字
@@ -356,12 +361,20 @@ class _SmsCodePageState extends State<SmsCodePage> {
       //页面跳转至登录前的页面
       // 存在发布失败数据通知homePage获取数据
       if (AppPrefs.getPublishFeedLocalInsertData(
-              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+              "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
           null) {
         EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
       // 重新登录替换关注页布局
       EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      // 获取话题详情页背景色
+      Application.topicBackgroundConfig.clear();
+      DataResponseModel dataResponseModel = await getBackgroundConfig();
+      if (dataResponseModel != null && dataResponseModel.list != null) {
+        dataResponseModel.list.forEach((v) {
+          Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
+        });
+      }
       AppRouter.popToBeforeLogin(context);
     } else {
       ToastShow.show(msg: "登录失败！", context: context);

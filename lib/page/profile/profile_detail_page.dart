@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TabBar;
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -18,15 +18,16 @@ import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/profile_page.dart';
-import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
@@ -59,6 +60,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   //资料板高度
   double userDetailBoardHeight = 0;
+
+  int firstTapTime;
+  int beforTapType;
 
   ///昵称
   String _textName;
@@ -306,6 +310,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         labelColor: AppColor.black,
                         indicatorColor: AppColor.black,
                         controller: _mController,
+                        onDoubleTap: (value){
+                          EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                        },
                         indicatorSize: TabBarIndicatorSize.label,
                         indicator: RoundUnderlineTabIndicator(
                             insets: EdgeInsets.only(bottom: 0),
@@ -434,7 +441,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         ),
                   !isMselfId
                       ? SizedBox(
-                          width: 15.5,
+                          width: 8,
                         )
                       : Container()
                 ],

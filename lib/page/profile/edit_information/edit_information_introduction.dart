@@ -7,7 +7,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 
 class EditInformationIntroduction extends StatefulWidget {
   final String introduction;
@@ -93,6 +93,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                   if (editText.length == 0) {
                     Navigator.pop(this.context, "");
                   } else {
+                    print('---------------------${editText.replaceAll(new RegExp(r"\s+"), "").length}');
                     if (editText.replaceAll(new RegExp(r"\s+"), "").length != 0) {
                       Navigator.pop(this.context, editText.trim());
                     } else {
@@ -150,7 +151,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
               border: InputBorder.none,
             ),
-            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30)],
+            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30,needWrap: false)],
           ),
           Container(
             alignment: Alignment.bottomRight,

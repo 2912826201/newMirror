@@ -4,9 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -56,7 +54,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   //高斯模糊高度
   double gaussianBlurHeight;
   ScrollController controller = ScrollController();
-  double width = ScreenUtil.instance.screenWidthDp;
+  double width = ScreenUtil.instance.width;
   double height = ScreenUtil.instance.height;
 
   @override
@@ -215,26 +213,32 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             height: gaussianBlurHeight,
             color: AppColor.white.withOpacity(0.6),
           )),
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+          Container(
+            width: width,
+            clipBehavior: Clip.hardEdge,
+            // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+            decoration: BoxDecoration(),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
 
-            ///这里是顶部appbar和头像关注
-            child: Container(
-              height: pageHeaderHeight,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: ScreenUtil.instance.statusBarHeight,
-                  ),
-                  _getTopText(),
-                  SizedBox(
-                    height: 17,
-                  ),
-                  _getUserImage(),
-                ],
+              ///这里是顶部appbar和头像关注
+              child: Container(
+                height: pageHeaderHeight,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: ScreenUtil.instance.statusBarHeight,
+                    ),
+                    _getTopText(),
+                    SizedBox(
+                      height: 17,
+                    ),
+                    _getUserImage(),
+                  ],
+                ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -471,7 +475,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //点击事件Training record
   void onClickListener(String title) {
-    String image="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
+    String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -483,21 +487,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的订单" == title) {
       AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
-      showImageDialog(
-        context,
-        imageUrl:image,
-        onClickListener:(){
-          //跳转不关闭当前页面
-          Navigator.of(context).push(
-            new MaterialPageRoute(
-              settings: RouteSettings(name: "NewUserPromotionPage"),
-              builder: (context) {
-                return NewUserPromotionPage();
-              },
-            ),
-          );
-        }
-      );
+      showImageDialog(context, imageUrl: image, onClickListener: () {
+        //跳转不关闭当前页面
+        Navigator.of(context).push(
+          new MaterialPageRoute(
+            settings: RouteSettings(name: "NewUserPromotionPage"),
+            builder: (context) {
+              return NewUserPromotionPage();
+            },
+          ),
+        );
+      });
     }
   }
 }

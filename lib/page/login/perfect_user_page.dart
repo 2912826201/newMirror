@@ -6,14 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -26,8 +29,9 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -39,6 +43,7 @@ import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:toast/toast.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 
 ///这是完善资料页
 
@@ -50,8 +55,6 @@ class PerfectUserPage extends StatefulWidget {
 }
 
 class _PerfectUserState extends State<PerfectUserPage> {
-  final inputCotroller = TextEditingController();
-
   //输入的最长字符
   final maxTextLength = 15;
   final _hintText = "戳这里输入昵称";
@@ -62,9 +65,21 @@ class _PerfectUserState extends State<PerfectUserPage> {
   bool onClicking = false;
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
+  PinYinTextEditController controller = PinYinTextEditController();
+  String lastInput = "";
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (lastInput != controller.completeText) {
+        lastInput = controller.completeText;
+        ///通知onChanged
+        setState(() {
+          username = lastInput;
+          textLength = lastInput.length;
+        });
+      }
+    });
   }
 
   @override
@@ -180,7 +195,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
   Widget _inputWidget() {
     return TextField(
       maxLength: maxTextLength,
-      controller: inputCotroller,
+      controller: controller,
       showCursor: true,
       cursorColor: AppColor.black,
       decoration: InputDecoration(
@@ -191,14 +206,8 @@ class _PerfectUserState extends State<PerfectUserPage> {
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
           inputFormatters: [
-            ExpressionTeamDeleteFormatter(maxLength: 15)
+            ExpressionTeamDeleteFormatter(maxLength: maxTextLength,needWrap: false)
             ],
-      onChanged: (value) {
-        setState(() {
-          textLength = value.length;
-          username = value;
-        });
-      },
     );
   }
 
@@ -213,8 +222,6 @@ class _PerfectUserState extends State<PerfectUserPage> {
           });
           FocusScope.of(context).requestFocus(blankNode);
           _upDataUserInfo();
-        } else {
-          Toast.show("昵称和头像不能为空", context);
         }
       },
       child: Container(
@@ -308,6 +315,14 @@ class _PerfectUserState extends State<PerfectUserPage> {
     //一些非关键数据获取
     _getMoreInfo();
     EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+    // 获取话题详情页背景色
+    Application.topicBackgroundConfig.clear();
+    DataResponseModel dataResponseModel = await getBackgroundConfig();
+    if (dataResponseModel != null && dataResponseModel.list != null) {
+      dataResponseModel.list.forEach((v) {
+        Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
+      });
+    }
     AppRouter.navigateToLoginSucess(context);
   }
 

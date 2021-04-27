@@ -11,6 +11,7 @@ import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -19,6 +20,7 @@ import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
+import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
@@ -39,6 +41,7 @@ import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/data_response_model.dart';
 import 'data/model/feed/feed_flow_data_notifier.dart';
 import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
@@ -182,6 +185,8 @@ Future _initApp() async {
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
   //FIXME 需要检测网络连接 确认有网后再进行以下操作 不然会报错卡住流程 没有网则需要跳转至初始无网络的引导页面
+  // 用户信息先赋值个uid为-1的初始值
+  Application.profile = ProfileDto.fromUserModel(UserModel());
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -218,14 +223,20 @@ Future _initApp() async {
     profile = await ProfileDBHelper().queryProfile(token.uid);
     if (profile == null) {
       UserModel user = await getUserInfo();
-      profile = ProfileDto.fromUserModel(user);
-      await ProfileDBHelper().insertProfile(profile);
+      if(user != null){
+        profile = ProfileDto.fromUserModel(user);
+        await ProfileDBHelper().insertProfile(profile);
+        Application.profile = profile;
+      }else{
+        //没能成功取到用户信息时 则视为登录失效 删掉之前的token
+        Application.token = null;
+      }
+    } else {
+      Application.profile = profile;
     }
   } else {
-    //匿名用户时 给个uid为-1的其他信息为空的用户
-    profile = ProfileDto.fromUserModel(UserModel());
+    //匿名用户时 保持上面已赋值的默认初始值
   }
-  Application.profile = profile;
 
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   Map<String, dynamic> videoCourseTagMap = await getAllTags();
@@ -259,6 +270,16 @@ Future _initApp() async {
       if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
         queryNoPromptUidListMap["list"].forEach((v) {
           Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
+    // todo 获取背景图配置表
+    try {
+      Application.topicBackgroundConfig.clear();
+      DataResponseModel dataResponseModel = await getBackgroundConfig();
+      if (dataResponseModel != null && dataResponseModel.list != null) {
+        dataResponseModel.list.forEach((v) {
+          Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
         });
       }
     } catch (e) {}

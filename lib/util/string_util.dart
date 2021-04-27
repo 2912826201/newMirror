@@ -16,7 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
@@ -611,8 +611,8 @@ class StringUtil {
                 if (topicId == userMap[i.toString()]) {
                   return;
                 }
-                TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
-                AppRouter.navigateToTopicDetailPage(context, topicModel);
+                // TopicDtoModel topicModel = await getTopicInfo(topicId: userMap[i.toString()]);
+                AppRouter.navigateToTopicDetailPage(context, userMap[i.toString()]);
               }
             }
           },
@@ -625,7 +625,7 @@ class StringUtil {
     return textSpanList;
   }
     //过滤换行,默认规则为过滤为两个换行
-  static String textWrapMatch(String text,{int wrapCount = 2}) {
+  static String textWrapMatch(String text,{int wantWrapCount = 2}) {
     text = text.trim();
     if (text.length != 0) {
       int wrapCount = 0;
@@ -633,12 +633,13 @@ class StringUtil {
       for (int i = 0; i < text.characters
           .toList()
           .length; i++) {
-        if (text.characters.toList()[i] == "\n") {
+        if (text.characters.toList()[i] == "\n"||text.characters.toList()[i] == "\r"||text.characters.toList()[i] ==
+            "\r\n") {
           wrapCount++;
         } else {
           wrapCount = 0;
         }
-        if (wrapCount < 3 || wrapCount == 0) {
+        if (wrapCount <= wantWrapCount || wrapCount == 0) {
           backText += text.characters.toList()[i];
         }
       }

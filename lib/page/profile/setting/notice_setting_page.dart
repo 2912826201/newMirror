@@ -13,7 +13,6 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:notification_permissions/notification_permissions.dart';
-import 'package:provider/provider.dart';
 
 ///通知设置
 class NoticeSettingPage extends StatefulWidget {

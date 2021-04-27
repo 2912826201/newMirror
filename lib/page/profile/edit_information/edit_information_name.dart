@@ -8,9 +8,8 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/expression_team_delete_formatter.dart';
-import 'package:mirror/widget/precision_limit_formatter.dart';
-
+import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 ///编辑昵称
 class EditInformationName extends StatefulWidget {
   String userName;
@@ -95,11 +94,10 @@ class _EditInformationNameState extends State<EditInformationName> {
               "确定",
               CustomRedButton.buttonStateNormal,
               () {
-                if (_editText.isEmpty||_editText.replaceAll(new RegExp(r"\s+"), "").length==0) {
-                 ToastShow.show(msg: "昵称不能为空", context: context);
+                _commentFocus.unfocus();
+                if (_editText.isEmpty) {
                   return;
                 }
-                _commentFocus.unfocus();
                 Navigator.pop(this.context,_editText);
               },
             ),
@@ -135,6 +133,7 @@ class _EditInformationNameState extends State<EditInformationName> {
       ),
     );
   }
+
 
   //底部提示字数文字
   Widget _bottomText(double width) {
@@ -173,7 +172,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         border: InputBorder.none,
       ),
       inputFormatters: [
-        ExpressionTeamDeleteFormatter(maxLength: 15)
+        ExpressionTeamDeleteFormatter(maxLength: 15,needWrap: false)
          ],
     );
     return Container(padding: EdgeInsets.only(left: 16, right: 16), child: putFiled);

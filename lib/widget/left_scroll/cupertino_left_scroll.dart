@@ -133,8 +133,8 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
       () => TapGestureRecognizer(debugOwner: this),
       (TapGestureRecognizer instance) {
         instance..onTap = (){
-          if(_ct.value!=null&& _ct.value){
-            close();
+          if(LeftScrollGlobalListener.instance.isHaveOpenRowOfTag(widget.closeTag, widget.key)){
+            LeftScrollGlobalListener.instance.closeAllRowOfTag(widget.closeTag, widget.key);
           }else if(widget.onTap!=null){
             widget.onTap();
           }

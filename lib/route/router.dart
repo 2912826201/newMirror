@@ -19,8 +19,8 @@ import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/route/route_handler.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -34,6 +34,7 @@ class AppRouter {
   static String pathMain = "/main";
   static String pathLogin = "/login";
   static String pathLoginPhone = "/login/phone";
+  static String pathLoginSmsCode = "/login/smscode";
   static String pathTest = "/test";
   static String pathLoginTest = "/logintest";
   static String pathRCTest = "/rctest";
@@ -125,6 +126,7 @@ class AppRouter {
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLoginPhone, handler: handlerLoginPhone);
+    router.define(pathLoginSmsCode, handler: handlerLoginSmsCode);
     // 点赞页面
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
@@ -203,15 +205,19 @@ class AppRouter {
   // 封装了入参，无论入参是什么格式都转成map
   //TODO 需要统一页面切换的过场效果
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false, int duration = 250, RouteTransitionsBuilder builder}) {
+      {Function(dynamic result) callback,
+      bool replace = false,
+      int duration = 250,
+      bool isFromBottom = false,
+      RouteTransitionsBuilder transitions}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (Application.pagePopRouterName == null) {
       Application.pagePopRouterName = [];
     }
-    if(Application.pagePopRouterName.length!=0){
-      if(Application.pagePopRouterName.last==uri){
-        return ;
+    if (Application.pagePopRouterName.length != 0) {
+      if (Application.pagePopRouterName.last == uri) {
+        return;
       }
     }
     if (Application.pagePopRouterName.contains(uri)) {
@@ -226,14 +232,15 @@ class AppRouter {
     Application.pagePopRouterName.add(uri);
 
     Application.router
-        .navigateTo(
-      context,
-      uri,
-      replace: replace,
-      transitionDuration: Duration(milliseconds: duration),
-      transition: builder == null ? TransitionType.cupertino : TransitionType.custom,
-      transitionBuilder: builder,
-    )
+        .navigateTo(context, uri,
+            replace: replace,
+            transitionDuration: Duration(milliseconds: duration),
+            transition: transitions == null
+                ? isFromBottom
+                    ? TransitionType.inFromBottom
+                    : TransitionType.cupertino
+                : TransitionType.custom,
+            transitionBuilder: transitions)
         .then((value) {
       if (Application.pagePopRouterName.isNotEmpty && Application.pagePopRouterName.contains(uri)) {
         Application.pagePopRouterName.remove(uri);
@@ -323,7 +330,7 @@ class AppRouter {
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
     map["topicId"] = topicId;
-    _navigateToPage(context, pathMediaPicker, map, callback: callback);
+    _navigateToPage(context, pathMediaPicker, map, callback: callback, isFromBottom: true);
   }
 
   static void navigateToLoginPage(BuildContext context, {Function(dynamic result) callback}) {
@@ -333,12 +340,19 @@ class AppRouter {
     if (route != null) {
       Application.loginPopRouteName = route.settings.name;
     }
-    _navigateToPage(context, pathLogin, map, callback: callback);
+    _navigateToPage(context, pathLogin, map, callback: callback, isFromBottom: true);
   }
 
   static void navigateToPhoneLoginPage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLoginPhone, map);
+  }
+
+  static void navigateToSmsCodePage(BuildContext context, String phoneNumber, bool isSent) {
+    Map<String, dynamic> map = Map();
+    map["phoneNumber"] = phoneNumber;
+    map["isSent"] = isSent;
+    _navigateToPage(context, pathLoginSmsCode, map, isFromBottom: true);
   }
 
   static void navigateToLiveBroadcast(BuildContext context) {
@@ -367,7 +381,7 @@ class AppRouter {
   static void navigateToVideoCourseResult(BuildContext context, TrainingCompleteResultModel trainingResult) {
     Map<String, dynamic> map = Map();
     map["result"] = trainingResult.toJson();
-    _navigateToPage(context, pathVideoCourseResult, map);
+    _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId,
@@ -444,12 +458,14 @@ class AppRouter {
   static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
-  static void navigateToProfileFollowListPage(BuildContext context, int userId,int type) {
+
+  static void navigateToProfileFollowListPage(BuildContext context, int userId, int type) {
     Map<String, dynamic> map = Map();
     map["userId"] = userId;
     map["type"] = type;
     _navigateToPage(context, pathProfileFollowListPage, map);
   }
+
   static void navigateToEditInfomation(BuildContext context, Function(dynamic result) callback) {
     _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
@@ -531,12 +547,12 @@ class AppRouter {
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
-  static void navigateToVipPage(BuildContext context,int vipState, {bool openOrNot = true}) {
+  static void navigateToVipPage(BuildContext context, int vipState, {bool openOrNot = true}) {
     Map<String, dynamic> map = Map();
-    if(vipState!=null){
+    if (vipState != null) {
       map["vipState"] = vipState;
     }
-    _navigateToPage(context, openOrNot?pathVipOpenPage:pathVipNotOpenPage, map);
+    _navigateToPage(context, openOrNot ? pathVipOpenPage : pathVipNotOpenPage, map);
   }
 
   static void navigateToVipNamePlatePage(BuildContext context, int index) {
@@ -568,19 +584,21 @@ class AppRouter {
   static void navigateToTrainSeveralPage(BuildContext context) {
     _navigateToPage(context, pathTrainSeveralPage, {});
   }
-  static void navigateToInteractivePage(BuildContext context, {int type,Function(dynamic result) callBack}) {
+
+  static void navigateToInteractivePage(BuildContext context, {int type, Function(dynamic result) callBack}) {
     Map<String, dynamic> map = Map();
     if (type != null) {
       map["type"] = type;
     }
-    _navigateToPage(context, pathProfileInteractiveNoticePage, map,callback: callBack);
+    _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
+
   static void navigateToReleasePage(BuildContext context, {int topicId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
       map["topicId"] = topicId;
     }
-    _navigateToPage(context, pathRelease, map);
+    _navigateToPage(context, pathRelease, map, isFromBottom: true);
   }
 
   static void navigateToChatPage(
@@ -660,11 +678,25 @@ class AppRouter {
   }
 
   //
-  //mode:模式  liveRoomId-没有-普通模式，liveRoomId-有-直播间模式
-  static void navigateToMachineRemoteController(BuildContext context, {int liveRoomId}) {
+  ///courseId：课程id,直播课程id或者视频课程的id
+  ///modeTye:类型,[liveVideoMode]
+  static void navigateToMachineRemoteController(BuildContext context,{int courseId,String modeType=mode_null}) {
     Map<String, dynamic> map = Map();
-    map["liveRoomId"] = liveRoomId;
-    _navigateToPage(context, pathMachineRemoteController, map);
+    map["courseId"] = courseId;
+    map["modeType"] = modeType;
+    _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
+  }
+
+  //判断打开遥控器界面没有
+  static bool isHaveMachineRemoteControllerPage(){
+    try{
+      for(String element in Application.pagePopRouterName){
+        if(element.contains(pathMachineRemoteController)){
+          return true;
+        }
+      }
+    }catch (e){}
+    return false;
   }
 
   static void navigateToMachineConnectionInfo(BuildContext context) {
@@ -737,7 +769,7 @@ class AppRouter {
     if (duration > 0) {
       builder = getFadeTransitionBuilder();
     }
-    _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, builder: builder);
+    _navigateToPage(context, pathOtherCompleteCourse, map, duration: duration, transitions: builder);
   }
 
   /// 自定义页面切换动画 - 渐变切换
@@ -753,10 +785,10 @@ class AppRouter {
   }
 
   // 话题详情页
-  static void navigateToTopicDetailPage(BuildContext context, TopicDtoModel topicModel,
+  static void navigateToTopicDetailPage(BuildContext context, int topicId,
       {bool isTopicList = false, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
-    map["topicModel"] = topicModel;
+    map["topicId"] = topicId;
     map["isTopicList"] = isTopicList;
     _navigateToPage(context, pathTopicDetailPage, map, callback: callback);
   }

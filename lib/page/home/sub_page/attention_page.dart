@@ -1,26 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
-import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
@@ -148,10 +140,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   // 重新登录替换布局
   _againLoginReplaceLayout() {
-    // 调用关注接口替换
+    // 调用关注接口提换
     getRecommendFeed(refreshOrLoading: true);
   }
+  // 双击刷新
+  onDoubleTap() {
+    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  }
 
+  //
   // 请求关注接口
   getRecommendFeed({bool refreshOrLoading}) async {
     print("开始请求动态数据");
@@ -292,6 +289,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("AttentionPage_______build");
     print("当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
     var isLogged = context.watch<TokenNotifier>().isLoggedIn;

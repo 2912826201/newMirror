@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -19,7 +18,6 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -88,6 +86,8 @@ class RecommendPage extends StatefulWidget {
   RecommendPageState createState() => RecommendPageState();
 }
 
+GlobalKey<RecommendPageState> recommendKey = GlobalKey();
+
 class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
@@ -132,7 +132,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     // 重新登录替换推荐页数据
-    EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
+    EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     super.initState();
   }
@@ -183,9 +183,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         // 更新全局监听
         context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
-    }).catchError((e) {
-      print("报错了");
-      print(e);
     });
   }
 
@@ -221,12 +218,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
 
-  _againLoginReplaceLayout() {
-    mergeRequest();
+  againLoginReplaceLayout() {
+    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("RecommendPageState_______build ");
     return Stack(
       children: [
@@ -255,11 +253,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 physics:
                     // ClampingScrollPhysics(),
                     // RangeMaintainingScrollPhysics(),
-                // FixedExtentScrollPhysics(),
-                // AlwaysScrollableScrollPhysics(),
-                // Platform
-                Platform.isIOS ?
-                BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
+                    // FixedExtentScrollPhysics(),
+                    // AlwaysScrollableScrollPhysics(),
+                    // Platform
+                    Platform.isIOS ? BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
                 slivers: [
                   // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
                   // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。

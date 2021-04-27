@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,7 +35,6 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/text_span_field/range_style.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';

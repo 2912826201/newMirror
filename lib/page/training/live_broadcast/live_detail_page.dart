@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -393,7 +394,9 @@ class LiveDetailPageState extends XCState {
     //todo 判断用户是不是vip缺少开通vip的回调
     bool isVip=false;
 
-    if(Application.profile!=null&&Application.profile.isVip!=null&&Application.profile.isVip == 1){
+    if(context.read<TokenNotifier>().isLoggedIn&&Application.profile!=null&&Application.profile
+        .isVip!=null&&Application.profile
+        .isVip == 1){
       isVip=true;
     }
 
@@ -915,15 +918,8 @@ class LiveDetailPageState extends XCState {
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
     //加载数据
     Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId);
-    if (model == null) {
-      loadingStatus = LoadingStatus.STATUS_IDEL;
-      Future.delayed(Duration(seconds: 1), () {
-        if (mounted) {
-          reload(() {});
-        }
-      });
-    } else {
-      liveModel = LiveVideoModel.fromJson(model);
+    if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
+      liveModel = LiveVideoModel.fromJson(model["dataMap"]);
       if (openLiveCourse) {
         //如果已登录且有关联的机器 发送指令让机器跳转页面
         if (isLoggedIn && Application.machine != null) {
@@ -935,6 +931,13 @@ class LiveDetailPageState extends XCState {
       if (mounted) {
         reload(() {});
       }
+    } else {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        if (mounted) {
+          reload(() {});
+        }
+      });
     }
   }
 
@@ -1005,6 +1008,7 @@ class LiveDetailPageState extends XCState {
     }
     ToastShow.show(msg: "使用终端进行训练", context: context);
     startVideoCourse(Application.machine.machineId, liveCourseId);
+    AppRouter.navigateToMachineRemoteController(context);
   }
 
   //登陆终端进行训练

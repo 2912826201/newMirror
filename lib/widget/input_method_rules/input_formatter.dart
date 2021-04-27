@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:toast/toast.dart';
 // 输入框回调
 typedef InputChangedCallback = void Function(String value);
 
@@ -8,17 +12,53 @@ class InputFormatter extends TextInputFormatter {
   InputChangedCallback _inputChangedCallback;
 
   TextEditingController controller;
-
+  // 最大字节数
+  int maxNumberOfBytes;
+  // 上下文
+  BuildContext context;
   InputFormatter({
     @required this.controller,
     InputChangedCallback inputChangedCallback,
+    this.context,
+    this.maxNumberOfBytes,
   })  : assert( controller != null),
         _inputChangedCallback = inputChangedCallback;
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    // 需求要求按照字节数算超过好后不输入
+    if (maxNumberOfBytes != null && utf8.encode(newValue.text).length > maxNumberOfBytes) {
+      print("新值$newValue");
+      print("旧值$oldValue");
+      // 旧值文本
+      String oldText = oldValue.text;
+      // 后输入的文字
+      String newInputText = utf8.decode(
+          utf8.encode(newValue.text).sublist(utf8.encode(oldValue.text).length, utf8.encode(newValue.text).length));
+      print("newInputText:::$newInputText");
+      // 旧值文本长度
+      int oldUtf8Length = utf8.encode(oldValue.text).length;
+      print("oldUtf8Length:::1:::$oldUtf8Length");
+      // 拼接没有超出限制的文本
+      newInputText.characters.forEach((element) {
+        oldUtf8Length += utf8.encode(element).length;
+        print("oldUtf8Length:::2:::$oldUtf8Length");
+        if (oldUtf8Length <= maxNumberOfBytes) {
+          oldText += element;
+        } else {
+          print("跳出");
+          ToastShow.show(msg: "字数超出限制", context: context, gravity: Toast.CENTER);
+          return;
+        }
+      });
+      return TextEditingValue(
+          text: oldText,
+          selection: TextSelection(
+            baseOffset: oldText.length,
+            extentOffset: oldText.length,
+          ));
+    }
     // 判断是删除还是新增
-
     bool isAdd = oldValue.text.length < newValue.text.length;
     // 如果是新增
     if (isAdd && oldValue.selection.start == oldValue.selection.end) {

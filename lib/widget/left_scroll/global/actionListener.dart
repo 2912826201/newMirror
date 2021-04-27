@@ -48,6 +48,37 @@ class LeftScrollGlobalListener {
       }
     }
   }
+
+
+  // 关闭所有同Tag的Row
+  closeAllRowOfTag(LeftScrollCloseTag tag, Key key) {
+    if (tag == null) {
+      return;
+    }
+    if (map[tag] == null) {
+      return;
+    }
+    for (var otherKey in map[tag].keys) {
+      if (map[tag][otherKey].value == true) {
+        map[tag][otherKey].value = false;
+      }
+    }
+  }
+
+  bool isHaveOpenRowOfTag(LeftScrollCloseTag tag, Key key){
+    if (tag == null) {
+      return false;
+    }
+    if (map[tag] == null) {
+      return false;
+    }
+    for (var otherKey in map[tag].keys) {
+      if (map[tag][otherKey].value == true) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 class LeftScrollCloseTag {

@@ -22,6 +22,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
+import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
@@ -81,7 +82,6 @@ import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -136,6 +136,11 @@ var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<
 
 var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return PhoneLoginPage();
+});
+
+var handlerLoginSmsCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return SmsCodePage(phoneNumber: data["phoneNumber"], isSent: data["isSent"],);
 });
 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -420,7 +425,8 @@ var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return RemoteControllerPage(
-    liveRoomId: data["liveRoomId"],
+    courseId: data["courseId"],
+    modeType: data["modeType"],
   );
 });
 
@@ -493,12 +499,12 @@ var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext contex
 // 话题详情页
 var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  TopicDtoModel topicModel;
-  if (data["topicModel"] != null) {
-    topicModel = TopicDtoModel.fromJson(data["topicModel"]);
-  }
+  // TopicDtoModel topicModel;
+  // if (data["topicModel"] != null) {
+  //   topicModel = TopicDtoModel.fromJson(data["topicModel"]);
+  // }
   return TopicDetail(
-    model: topicModel,
+    topicId: data["topicId"],
     isTopicList: data["isTopicList"],
   );
 });

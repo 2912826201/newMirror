@@ -10,17 +10,17 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-
 /// share_popup
 /// Created by Shipk on 2021/4/6.
 
-showSharePopup(BuildContext context,Map<String, dynamic> shareMap,String chatTypeModel) {
+showSharePopup(BuildContext context, Map<String, dynamic> shareMap, String chatTypeModel) {
   showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -28,15 +28,15 @@ showSharePopup(BuildContext context,Map<String, dynamic> shareMap,String chatTyp
       elevation: 0,
       backgroundColor: AppColor.transparent,
       builder: (context) {
-        return _SharePopup(shareMap,chatTypeModel);
+        return _SharePopup(shareMap, chatTypeModel);
       });
 }
 
 class _SharePopup extends StatefulWidget {
-    final Map<String, dynamic> shareMap;
-    final String chatTypeModel;
+  final Map<String, dynamic> shareMap;
+  final String chatTypeModel;
 
-    _SharePopup(this.shareMap, this.chatTypeModel);
+  _SharePopup(this.shareMap, this.chatTypeModel);
 
   @override
   _SharePopupState createState() => _SharePopupState();
@@ -48,12 +48,13 @@ class _SharePopupState extends State<_SharePopup> {
   List<BuddyModel> _originalFriendList = [];
   List<BuddyModel> _friendList = [];
 
-
   List<GroupChatModel> _groupList = [];
 
   PageController _pageController = PageController();
 
   String _lastSearchText = "";
+
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -160,12 +161,14 @@ class _SharePopupState extends State<_SharePopup> {
     );
   }
 
-
   Widget _buildFriendItem(BuildContext context, int index) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
+        if(ClickUtil.isFastClick()){
+          return;
+        }
         print("点击了人名");
-        _shareMessage(_friendList[index].uid,_friendList[index].nickName,RCConversationType.Private);
+        _shareMessage(_friendList[index].uid, _friendList[index].nickName, RCConversationType.Private);
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -254,17 +257,17 @@ class _SharePopupState extends State<_SharePopup> {
               ),
               _inputController.text.isEmpty
                   ? Container(
-                width: 42,
-              )
+                      width: 42,
+                    )
                   : AppIconButton(
-                svgName: AppIcon.clear_circle_grey,
-                iconSize: 16,
-                buttonWidth: 40,
-                buttonHeight: 32,
-                onTap: () {
-                  _inputController.text = "";
-                },
-              ),
+                      svgName: AppIcon.clear_circle_grey,
+                      iconSize: 16,
+                      buttonWidth: 40,
+                      buttonHeight: 32,
+                      onTap: () {
+                        _inputController.text = "";
+                      },
+                    ),
             ],
           ),
         ),
@@ -378,7 +381,7 @@ class _SharePopupState extends State<_SharePopup> {
 
   Widget _buildGroupItem(BuildContext context, int index) {
     List<String> avatarList = _groupList[index].coverUrl.split(",");
-    String name=_groupList[index].modifiedName ?? _groupList[index].name;
+    String name = _groupList[index].modifiedName ?? _groupList[index].name;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       height: 48,
@@ -386,8 +389,11 @@ class _SharePopupState extends State<_SharePopup> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
+          if(ClickUtil.isFastClick()){
+            return;
+          }
           print("点击了群名");
-          _shareMessage(_groupList[index].id,name,RCConversationType.Group);
+          _shareMessage(_groupList[index].id, name, RCConversationType.Group);
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -399,60 +405,60 @@ class _SharePopupState extends State<_SharePopup> {
                 children: [
                   avatarList.length == 1
                       ? ClipOval(
-                    child: CachedNetworkImage(
-                      height: 32,
-                      width: 32,
-                      imageUrl: avatarList.first,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                    ),
-                  )
+                          child: CachedNetworkImage(
+                            height: 32,
+                            width: 32,
+                            imageUrl: avatarList.first,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.bgWhite,
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColor.bgWhite,
+                            ),
+                          ),
+                        )
                       : avatarList.length > 1
-                      ? Positioned(
-                      top: 0,
-                      right: 0,
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          height: 20,
-                          width: 20,
-                          imageUrl: avatarList.first,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: AppColor.bgWhite,
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: AppColor.bgWhite,
-                          ),
-                        ),
-                      ))
-                      : Container(),
+                          ? Positioned(
+                              top: 0,
+                              right: 0,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  height: 20,
+                                  width: 20,
+                                  imageUrl: avatarList.first,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(
+                                    color: AppColor.bgWhite,
+                                  ),
+                                  errorWidget: (context, url, error) => Container(
+                                    color: AppColor.bgWhite,
+                                  ),
+                                ),
+                              ))
+                          : Container(),
                   avatarList.length > 1
                       ? Positioned(
-                    bottom: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, border: Border.all(width: 3, color: AppColor.white)),
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          height: 20,
-                          width: 20,
-                          imageUrl: avatarList[1],
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: AppColor.bgWhite,
+                          bottom: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, border: Border.all(width: 3, color: AppColor.white)),
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                height: 20,
+                                width: 20,
+                                imageUrl: avatarList[1],
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  color: AppColor.bgWhite,
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  color: AppColor.bgWhite,
+                                ),
+                              ),
+                            ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: AppColor.bgWhite,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
+                        )
                       : Container(),
                 ],
               ),
@@ -483,14 +489,18 @@ class _SharePopupState extends State<_SharePopup> {
     );
   }
 
-
-
-  void _shareMessage(int userId,String name,int type)async{
+  void _shareMessage(int userId, String name, int type) async {
+    //避免重复分享
+    if (_isSharing) {
+      return;
+    }
+    _isSharing = true;
     if (await jumpShareMessage(widget.shareMap, widget.chatTypeModel, name, userId, type, context)) {
       ToastShow.show(msg: "分享成功", context: context);
     } else {
       ToastShow.show(msg: "分享失败", context: context);
     }
+    _isSharing = false;
     Navigator.of(context).pop();
   }
 }

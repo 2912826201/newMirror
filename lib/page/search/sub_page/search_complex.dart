@@ -19,16 +19,12 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_course.dart';
-import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:provider/provider.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
 import 'search_topic.dart';
 
 class SearchComplex extends StatefulWidget {
@@ -138,6 +134,9 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           liveVideoList.add(LiveVideoModel.fromJson(v));
         }
       });
+    } else {
+      // 接口失败
+      liveVideoList.clear();
     }
 
     if (userModel != null && userModel.list.length != 0) {
@@ -145,11 +144,15 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         print('model================ ${element.relation}');
       });
       userList.addAll(userModel.list);
+    } else {
+      userList.clear();
     }
     if (topicModel != null && topicModel.list.length != 0) {
       topicModel.list.forEach((v) {
         topicList.add(TopicDtoModel.fromJson(v));
       });
+    } else {
+      topicList.clear();
     }
     if (feedModel != null && feedModel.list.length != 0) {
       feedModel.list.forEach((v) {
@@ -165,6 +168,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       // 更新全局监听
 
       context.read<FeedMapNotifier>().updateFeedMap(feedList);
+    } else {
+      feedList.clear();
     }
     if(liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0) {
       isShowDefaultMap = false;
@@ -212,6 +217,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return isShowDefaultMap == null ? Container() : !isShowDefaultMap
         ? Container(
             child: Column(

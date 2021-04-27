@@ -19,6 +19,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
@@ -652,7 +653,9 @@ class VideoDetailPageState extends XCState {
           dio.lock();
           ToastShow.show(msg: "下载异常，请重试", context: context);
           _progressText = "下载异常";
-          setState(() {});
+          if(mounted){
+            setState(() {});
+          }
           break;
       }
     });
@@ -748,7 +751,7 @@ class VideoDetailPageState extends XCState {
   //获取底部按钮
   Widget _getBottomBar() {
     //todo 判断用户是不是vip缺少开通vip的回调
-    bool isVip = Application.profile.isVip == 1;
+    bool isVip = context.read<TokenNotifier>().isLoggedIn?Application.profile.isVip == 1:false;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
@@ -980,14 +983,15 @@ class VideoDetailPageState extends XCState {
       return;
     }
     AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid,
-        avatarUrl: videoModel.coachDto?.avatarUri, userName: videoModel.coachDto?.nickName, callback: (dynamic result) {
-      print("result:$result");
-      if (null != result && result is bool) {
-        videoModel.coachDto.relation = result ? 0 : 1;
-        if (mounted) {
-          reload(() {});
-        }
-      }
+        avatarUrl: videoModel.coachDto?.avatarUri, userName: videoModel.coachDto?.nickName, callback: (dynamic r) {
+          bool result=context.read<UserInteractiveNotifier>().profileUiChangeModel[videoModel.coachDto.uid].isFollow;
+          print("result:$result");
+          if (null != result && result is bool) {
+            videoModel.coachDto.relation = result ? 0 : 1;
+            if (mounted) {
+              reload(() {});
+            }
+          }
     });
   }
 
@@ -1158,5 +1162,6 @@ class VideoDetailPageState extends XCState {
   void _useTerminal() {
     print("绑定了终端");
     startVideoCourse(Application.machine.machineId, videoCourseId);
+    AppRouter.navigateToMachineRemoteController(context);
   }
 }

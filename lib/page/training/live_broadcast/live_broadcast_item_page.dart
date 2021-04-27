@@ -3,12 +3,12 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -649,5 +649,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
 
   void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {
     AppRouter.navigateToLiveDetail(context, value.id, heroTag: heroTagArray[index], liveModel: value);
+
+    // AppRouter.navigateToMachineRemoteController(context,courseId: value.id,modeType: mode_live);
   }
 }

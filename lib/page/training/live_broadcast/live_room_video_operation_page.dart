@@ -1263,18 +1263,19 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
         print("33333333:type:$type");
         _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name, textMessage.sendUserInfo.userId);
-        addLiveRoom(textMessage);
         if (textMessage.sendUserInfo.userId != null) {
           if (onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))) {
             print("有这个人");
-            subLiveRoom(textMessage, isReset: false);
+            // subLiveRoom(textMessage, isReset: false);
           } else {
             print("没有这个人");
+            addLiveRoom(textMessage);
             resetOnlineUserNumber(onlineManList.length);
           }
         } else {
           textMessage.sendUserInfo.userId = "100";
           print("没有这个人");
+          addLiveRoom(textMessage);
           resetOnlineUserNumber(onlineManList.length);
           getAllOnlineUserNumber(onlineUserNumber);
         }
@@ -1537,5 +1538,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     // if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
     //   _focusNode.unfocus();
     // }
+  }
+
+  @override
+  void secondListener() {
+    // TODO: implement secondListener
   }
 }
