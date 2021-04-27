@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -114,10 +115,6 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
     _getCourseInformation();
     _initEventBus();
-
-    if(isLiveRoomController()){
-      _timer();
-    }
   }
 
   _parseModelToPartList(LiveVideoModel liveVideoModel) {
@@ -514,7 +511,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           Slider(
             max: _totalDuration.toDouble(),
             min: 0,
-            value: _currentPosition,
+            value: min(_currentPosition, _totalDuration.toDouble()),
             onChanged: (position) {
               _currentPosition = position;
               _updateInfoByPosition();
@@ -723,6 +720,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _parsePartList();
       _updateInfoByPosition();
     }
+    if(isLiveRoomController()){
+      if(timer!=null){
+        timer.cancel();
+        this.timer=null;
+      }
+      _timer();
+    }
     if (mounted) {
       setState(() {});
     }
@@ -753,6 +757,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   _endOfTraining() {
     courseId = null;
     modeType = mode_null;
+    if(timer!=null){
+      timer.cancel();
+      this.timer=null;
+    }
     if (mounted) {
       setState(() {});
     }
@@ -763,26 +771,36 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     if (!(list[0] == courseId && list[1] == modeType)) {
       courseId = list[0];
       modeType = list[1];
-      if (mounted) {
-        setState(() {});
-      }
+      _currentPosition=0;
+      _getCourseInformation();
     }
   }
 
   //机器训练视频课程的训练进度
   _scheduleTraining(TrainingScheduleModel model) {
-    _currentPosition=0;
+    if(model.courseId!=courseId||!isVideoRoomController()){
+      courseId=model.courseId;
+      modeType=mode_video;
+      _currentPosition=0;
+      _getCourseInformation();
+      return;
+    }
+    if(model.index==0&&model.progressBar<1000){
+      return;
+    }
+    double currentPosition=0;
     for(int i=0;i<model.index;i++){
-      _currentPosition+=_partList[i].duration;
+      currentPosition+=_partList[i].duration;
     }
     int time = model.progressBar~/1000;
-    _currentPosition+=time;
-    _currentPartIndex=model.index;
-    _remainingPartTime = _partList[_currentPartIndex].duration - time;
-    _partProgress = time / _partList[_currentPartIndex].duration;
-    if(mounted){
-      streamVideoCourseCircleProgressBar.sink.add(0);
-      // _timeSchedule();
+    currentPosition+=time;
+    if((_currentPosition-currentPosition).abs()>0.5){
+      _currentPosition=currentPosition;
+    }
+    if(isVideoRoomController()){
+      if(timer==null) {
+        _timer();
+      }
     }
   }
 

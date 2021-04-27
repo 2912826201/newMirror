@@ -1162,5 +1162,6 @@ class VideoDetailPageState extends XCState {
   void _useTerminal() {
     print("绑定了终端");
     startVideoCourse(Application.machine.machineId, videoCourseId);
+    AppRouter.navigateToMachineRemoteController(context);
   }
 }
