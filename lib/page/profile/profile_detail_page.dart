@@ -61,9 +61,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   //资料板高度
   double userDetailBoardHeight = 0;
 
-  int firstTapTime;
-  int beforTapType;
-
   ///昵称
   String _textName;
 
@@ -97,7 +94,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
-  StreamController<double> titleStreamController = StreamController<double>();
   StreamController<bool> loadingStreamController = StreamController<bool>();
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();

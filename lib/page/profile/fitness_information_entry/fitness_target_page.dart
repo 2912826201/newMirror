@@ -18,7 +18,8 @@ class FitnessTargetPage extends StatefulWidget {
 class _FitnessTargetState extends State<FitnessTargetPage> {
   List<SubTagModel> targetList = [];
   int beforIndex;
-
+  double width = ScreenUtil.instance.screenWidthDp;
+  double height = ScreenUtil.instance.height;
   @override
   void initState() {
     // TODO: implement initState
@@ -33,9 +34,6 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
-
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
@@ -44,45 +42,40 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
       body: Container(
         width: width,
         height: height,
+        padding: EdgeInsets.only(left: 41,right: 41),
         child: Column(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
+            Container(
+                  width: width,
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "你的目标是？",
                     style: AppStyle.textMedium23,
                   ),
                 ),
-              ),
-            ),
+
             SizedBox(
               height: 12,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
+             Container(
+                width: width,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "我们将以此为你推荐训练计划,让你一试身手。",
                   style: AppStyle.textRegular14,
                 ),
               ),
-            ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            Expanded(
-                child: ListView.builder(
+           Expanded(child: ListView.builder(
                     itemCount: targetList.length,
                     itemBuilder: (context, index) {
                       return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快熟减掉赘肉，击退小肚腩", index);
-                    })),
+                    })) ,
           ],
         ),
       ),
@@ -90,44 +83,41 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
   }
 
   Widget _choseItem(int order, String title, String introduction, int index) {
-    return Container(
+    return InkWell(
+      onTap: () {
+        setState(() {
+          beforIndex = index;
+          Application.fitnessEntryModel.target = targetList[index].id - 1;
+          /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
+          if (Application.videoTagModel != null) {
+            if (Application.videoTagModel.level != null) {
+              AppRouter.navigateToFitnessLevelPage(context);
+            } else if (Application.videoTagModel.part != null) {
+              AppRouter.navigateToFitnessPartPage(context);
+            } else {
+              AppRouter.navigateToTrainSeveralPage(context);
+            }
+          } else {
+            AppRouter.navigateToTrainSeveralPage(context);
+          }
+        });
+      },
+      child:Container(
         height: 78,
-        margin: EdgeInsets.only(
-            left: ScreenUtil.instance.screenWidthDp * 0.10, right: ScreenUtil.instance.screenWidthDp * 0.10),
-        padding: EdgeInsets.only(left: 7, right: 7),
-        child:InkWell(
-          onTap: () {
-            setState(() {
-              beforIndex = index;
-              Application.fitnessEntryModel.target = targetList[index].id - 1;
-              /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-              if (Application.videoTagModel != null) {
-                if (Application.videoTagModel.level != null) {
-                  AppRouter.navigateToFitnessLevelPage(context);
-                } else if (Application.videoTagModel.part != null) {
-                  AppRouter.navigateToFitnessPartPage(context);
-                } else {
-                  AppRouter.navigateToTrainSeveralPage(context);
-                }
-              } else {
-                AppRouter.navigateToTrainSeveralPage(context);
-              }
-            });
-          },
-          child: Container(
-            color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
-            child:Row(
+      color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
+        width: width,
+        padding: EdgeInsets.only(left: 7, right: 7,top: 12,bottom: 12),
+        child:Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.only(top: 12),
               child: Text(
                 "${index + 1}",
                 style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
               ),
             ),
             SizedBox(
-              width: ScreenUtil.instance.screenWidthDp * 0.78 * 0.04,
+              width: 8,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +149,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
               ),
             ),
           ],
-        ) ,),
+        ),
       ),
     );
   }

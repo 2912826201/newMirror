@@ -45,7 +45,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
         child: Column(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             Container(
                   alignment: Alignment.bottomLeft,
@@ -66,7 +66,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
                 ),
             ),
             SizedBox(
-              height: height * 0.05,
+              height: 62,
             ),
             Container(
               height: 260,
