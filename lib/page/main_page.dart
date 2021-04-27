@@ -1,27 +1,18 @@
-import 'dart:async';
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
-import 'package:mirror/route/router.dart';
-import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/if_tab_bar.dart';
 import 'package:provider/provider.dart';
-
 import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
@@ -52,7 +43,7 @@ class MainPageState extends XCState {
   }
 
   List pages = [
-    HomePage(key:homePageKey),
+    HomePage(key: homePageKey),
     TrainingPage(),
     MessagePage(),
     ProfilePage(),
@@ -110,7 +101,7 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
-            if(homePageKey.currentState != null) {
+            if (homePageKey.currentState != null) {
               homePageKey.currentState.subpageRefresh();
             }
           },
@@ -120,7 +111,7 @@ class MainPageState extends XCState {
           childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {
             return pages[index];
           }, childCount: 4),
-            // 提前预加载当前pageView的下一个视图
+          // 提前预加载当前pageView的下一个视图
           allowImplicitScrolling: true,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));
