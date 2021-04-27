@@ -366,7 +366,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
     senderName = widget.msgModel.senderName;
-    coverImage = widget.msgModel.coverUrl;
+    coverImage = widget.msgModel.coverUrl.coverUrl;
     _getRefData(context);
     if (widget.type == 0 && widget.msgModel.commentData != null) {
       if (widget.msgModel.refType == 2) {
