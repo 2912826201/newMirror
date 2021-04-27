@@ -114,6 +114,11 @@ class AppRouter {
   // 所在位置页面
   static String pathSearchOrLocationPage = "feed/searchOrlocationwidget";
 
+  // 活动界面
+  static String pathNewUserPromotionPage = "/newUserPromotionPage";
+  // 活动界面-添加老师和群聊界面
+  static String pathLordQRCodePage = "/newUserPromotionPage/pathLordQRCodePage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -198,6 +203,10 @@ class AppRouter {
     router.define(pathFeedDetailPage, handler: handlerFeedDetailPage);
     // 所在位置页面
     router.define(pathSearchOrLocationPage, handler: handlerSearchOrLocationPage);
+    // 新用户活动界面
+    router.define(pathNewUserPromotionPage, handler: handlerNewUserPromotionPage);
+    // 新用户活动界面-添加老师和进入群聊界面
+    router.define(pathLordQRCodePage, handler: handlerLordQRCodePage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -895,4 +904,16 @@ class AppRouter {
       },
     ));
   }
+
+  // 活动界面
+  static void navigateNewUserPromotionPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathNewUserPromotionPage, map);
+  }
+  // 活动界面-添加老师和群聊界面
+  static void navigateLordQRCodePage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLordQRCodePage, map);
+  }
+
 }

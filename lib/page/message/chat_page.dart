@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -322,6 +324,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
+    bool isPersonalButler=false;
+    //todo 单独展示底部选着面板的id-1002885
+    if(conversation.type==PRIVATE_TYPE&&conversation.uid==1008051){
+      isPersonalButler=true;
+    }
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
       chatTopAtMarkChildKey: chatTopAtMarkChildKey,
@@ -334,7 +341,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       voidMessageClickCallBack: onMessageClickCallBack,
       chatName: getChatName(),
       conversationDtoType: conversation.type,
-      isPersonalButler: conversation.type == MANAGER_TYPE,
+      isPersonalButler: isPersonalButler,
       isHaveAtMeMsg: isHaveAtMeMsg,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
@@ -2070,7 +2077,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
-      _postSelectMessage(content);
+      // _postSelectMessage(content);
+      if(content=="拉入群聊"){
+        _showGroupPopup();
+      }
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
       ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
       if (ClickUtil.isFastClick(time: 200)) {
@@ -2161,6 +2171,20 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  //显示我已加入的群聊--邀请对话的人进入群聊
+  _showGroupPopup(){
+    showGroupPopup(context,
+      int.parse(conversation.conversationId),
+      (GroupChatModel groupChatModel)async{
+        bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
+        if(isSuccess){
+          String name = groupChatModel.modifiedName ?? groupChatModel.name;
+          _postText("我已邀请你进入群聊：$name");
+        }
+      }
+    );
   }
 
   @override

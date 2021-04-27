@@ -63,6 +63,8 @@ import 'package:mirror/page/profile/training_record/weight_record_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
+import 'package:mirror/page/promotion/lord_qr_code_page.dart';
+import 'package:mirror/page/promotion/new_user_promotion_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/scan_code/my_qrcode_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
@@ -569,4 +571,15 @@ var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Ma
     // 传入之前选择地址
     selectAddress: selectAddress,
   );
+});
+
+// 新用户活动界面
+var handlerNewUserPromotionPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return NewUserPromotionPage();
+});
+// 活动添加老师和进入群聊界面
+var handlerLordQRCodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return LordQRCodePage();
 });

@@ -6,7 +6,8 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 
 ///管家界面-底部可操作列表
 class ChatSystemBottomBar extends StatelessWidget {
-  final List<String> alertList = ["获取个人数据", "获取食谱", "获取今日课件", "其他操作", "其他操作", "其他操作", "其他操作"];
+  // final List<String> alertList = ["获取个人数据", "获取食谱", "获取今日课件", "其他操作", "其他操作", "其他操作", "其他操作"];
+  final List<String> alertList = ["拉入群聊"];
 
   final VoidMessageClickCallBack voidMessageClickCallBack;
 

@@ -488,15 +488,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
       showImageDialog(context, imageUrl: image, onClickListener: () {
-        //跳转不关闭当前页面
-        Navigator.of(context).push(
-          new MaterialPageRoute(
-            settings: RouteSettings(name: "NewUserPromotionPage"),
-            builder: (context) {
-              return NewUserPromotionPage();
-            },
-          ),
-        );
+        AppRouter.navigateNewUserPromotionPage(context);
       });
     }
   }

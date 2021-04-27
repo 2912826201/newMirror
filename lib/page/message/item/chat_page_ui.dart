@@ -10,6 +10,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -219,5 +220,31 @@ class ChatPageUtil {
     }
     getTimeAlert(dataList, conversation.conversationId);
     return [dataList, systemLastTime, systemPage];
+  }
+
+
+  //添加这些用户
+  Future<bool> addUserGroup(String addUserId,int groupChatId) async {
+    Map<String, dynamic> model = await inviteJoin(groupChatId:groupChatId, uids: addUserId);
+    if (model != null) {
+      if (model["NotFriendList"] != null && model["NotFriendList"].length > 0) {
+        String name = "";
+        for (int i = 0; i < model["NotFriendList"].length; i++) {
+          if (i == 0) {
+            name += model["NotFriendList"][i]["nickName"];
+          } else {
+            name += "," + model["NotFriendList"][i]["nickName"];
+          }
+        }
+        ToastShow.show(msg: name, context: context);
+        return false;
+      } else {
+        ToastShow.show(msg: "邀请成功", context: context);
+        return true;
+      }
+    } else {
+      ToastShow.show(msg: "邀请失败", context: context);
+      return false;
+    }
   }
 }
