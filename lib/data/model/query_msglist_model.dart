@@ -52,7 +52,7 @@ class QueryModel{
   Map<String ,dynamic> refData;
   String senderName;
   String senderAvatarUrl;
-  String coverUrl;
+  TopicPicModel coverUrl;
   QueryModel();
   QueryModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -69,7 +69,14 @@ class QueryModel{
     refData = json["refData"];
     senderName = json["senderName"];
     senderAvatarUrl = json["senderAvatarUrl"];
-    coverUrl = json["coverUrl"];
+
+    if(json["coverUrl"] != null ) {
+      if(json["coverUrl"] is TopicPicModel) {
+        coverUrl = json["coverUrl"];
+      } else {
+        coverUrl = TopicPicModel.fromJson(json["coverUrl"]);
+      }
+    }
   }
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
