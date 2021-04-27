@@ -33,9 +33,10 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
   HomePageState createState() => HomePageState();
 }
-
+GlobalKey<HomePageState> homePageKey = GlobalKey();
 class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
@@ -135,16 +136,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   //获取网络连接状态
   _initConnectivity() async {
-    if(context.read<TokenNotifier>().token != null ) {
+    if (context.read<TokenNotifier>().token != null) {
       connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-        if (context
-            .read<TokenNotifier>()
-            .isLoggedIn) {
+        if (context.read<TokenNotifier>().isLoggedIn) {
           if (AppPrefs.getPublishFeedLocalInsertData(
-              "${Application.postFailurekey}_${context
-                  .read<TokenNotifier>()
-                  .token
-                  .uid}") !=
+                  "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
               null) {
             if (result == ConnectivityResult.mobile) {
               print("移动网");
@@ -388,6 +384,15 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     }
   }
 
+  // 子页面下拉刷新
+  subpageRefresh() {
+    if (controller.index == 0 && attentionKey.currentState != null) {
+      attentionKey.currentState.onDoubleTap();
+    } else if (controller.index == 1 && recommendKey.currentState != null) {
+      recommendKey.currentState.againLoginReplaceLayout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("HomePage_____________________________________________build");
@@ -444,6 +449,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               wantWidth: 16,
             ),
             onDoubleTap: (index) {
+              subpageRefresh();
               print("双击了${index}");
             },
           ),
@@ -481,7 +487,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     AttentionPage(
                       key: attentionKey,
                     ),
-                    RecommendPage(),
+                    RecommendPage(
+                      key: recommendKey,
+                    ),
                     // RecommendPage()
                   ],
                 ),
