@@ -1008,6 +1008,7 @@ class LiveDetailPageState extends XCState {
     }
     ToastShow.show(msg: "使用终端进行训练", context: context);
     startVideoCourse(Application.machine.machineId, liveCourseId);
+    AppRouter.navigateToMachineRemoteController(context);
   }
 
   //登陆终端进行训练
