@@ -230,10 +230,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted) {
         setState(() {});
       }
-    }).catchError((e) {
+    });/*.catchError((e) {
       print("报错了");
       print(e);
-    });
+    });*/
     super.initState();
   }
 
