@@ -231,7 +231,7 @@ class _feedBackPage extends State<FeedBackPage> {
   _uploadImage() async {
     Loading.showLoading(context);
     List<String> list = [];
-    if (fileList != null) {
+    if (fileList.length!=0&&editText.length!=0) {
       var result = await FileUtil().uploadPics(fileList, (percent) {
         print('===========================正在上传%%$percent');
       });
@@ -252,7 +252,7 @@ class _feedBackPage extends State<FeedBackPage> {
       }
     } else {
       Loading.hideLoading(context);
-      Toast.show("请添加图片", context);
+      Toast.show("反馈内容为空", context);
     }
   }
 }

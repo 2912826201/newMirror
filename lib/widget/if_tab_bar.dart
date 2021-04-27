@@ -21,8 +21,8 @@ import 'count_badge.dart';
 
 class IFTabBar extends StatefulWidget {
   Function(int) tabBarClickListener;
-
-  IFTabBar({this.tabBarClickListener});
+  final ValueChanged<int> onDoubleTap;
+  IFTabBar({this.tabBarClickListener,this.onDoubleTap});
 
   @override
   _IFTabBarState createState() => _IFTabBarState();
@@ -257,6 +257,11 @@ class _IFTabBarState extends State<IFTabBar> {
             radius: 0,
             onTap: () {
               _onClickListener(0);
+            },
+            onDoubleTap: () {
+              if(widget.onDoubleTap != null) {
+                widget.onDoubleTap(0);
+              }
             },
             child: Container(
               width: getItemClickWidth(snapshot.data)[0],

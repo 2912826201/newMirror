@@ -336,26 +336,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                             wantWidth: 20,
                             borderSide: BorderSide(width: 2, color: AppColor.black)),
                         tabs: <Widget>[
-                          /*InkWell(
-                            onTap: (){
-                              _mController.animateTo(0);
-                            },
-                            onDoubleTap: () {
-                              EventBus.getDefault().post(msg:2,registerName:DOUBLE_TAP_TABBAR);
-                            },
-                            child:*/
                           Tab(text: '动态'),
-                          /* ),
-                          InkWell(
-                            onTap: (){
-                              _mController.animateTo(1);
-                            },
-                            onDoubleTap: () {
-                              EventBus.getDefault().post(msg:6,registerName:DOUBLE_TAP_TABBAR);
-                            },
-                            child:*/
                           Tab(text: '喜欢'),
-                          /* ),*/
                         ],
                       ),
                     ),

@@ -144,8 +144,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     int type = result;
     if(type==widget.type){
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
-      setState(() {
-      });
     }
   }
   _deleteFeedCallBack(int id) {

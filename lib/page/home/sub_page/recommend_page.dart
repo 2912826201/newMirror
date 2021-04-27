@@ -86,6 +86,8 @@ class RecommendPage extends StatefulWidget {
   RecommendPageState createState() => RecommendPageState();
 }
 
+GlobalKey<RecommendPageState> recommendKey = GlobalKey();
+
 class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
@@ -130,7 +132,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     // 重新登录替换推荐页数据
-    EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
+    EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     super.initState();
   }
@@ -216,8 +218,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
 
-  _againLoginReplaceLayout() {
-    mergeRequest();
+  againLoginReplaceLayout() {
+    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
   }
 
   @override
@@ -251,11 +253,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 physics:
                     // ClampingScrollPhysics(),
                     // RangeMaintainingScrollPhysics(),
-                // FixedExtentScrollPhysics(),
-                // AlwaysScrollableScrollPhysics(),
-                // Platform
-                Platform.isIOS ?
-                BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
+                    // FixedExtentScrollPhysics(),
+                    // AlwaysScrollableScrollPhysics(),
+                    // Platform
+                    Platform.isIOS ? BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
                 slivers: [
                   // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
                   // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
