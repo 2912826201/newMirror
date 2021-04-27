@@ -128,7 +128,7 @@ class _StickyDemoState extends State<StickyDemo> with SingleTickerProviderStateM
                     width: ScreenUtil.instance.width,
                     decoration: BoxDecoration(
                       // color: Colors.redAccent,
-                      image: DecorationImage(image: NetworkImage(widget.model.avatarUrl), fit: BoxFit.cover),
+                      image: DecorationImage(image: NetworkImage(widget.model.avatarUrl.coverUrl), fit: BoxFit.cover),
                     ),
                     child: Container(
                       color: AppColor.bgBlack.withOpacity(0.7),
@@ -283,22 +283,34 @@ class _StickyDemoState extends State<StickyDemo> with SingleTickerProviderStateM
             child: TabBarView(
               controller: this.tabController,
               children: <Widget>[
-                ListView.builder(itemBuilder: (context, index) {
-                  return  Container(
-                    height: 85,
-                    alignment: Alignment.center,
-                    color: Colors.primaries[index % Colors.primaries.length],
-                    child: Text('$index',style: TextStyle(color: Colors.white,fontSize: 20),),
-                  );
-                },itemCount: 25,),
-                ListView.builder(itemBuilder: (context, index) {
-                  return  Container(
-                    height: 85,
-                    alignment: Alignment.center,
-                    color: Colors.primaries[index % Colors.primaries.length],
-                    child: Text('$index',style: TextStyle(color: Colors.white,fontSize: 20),),
-                  );
-                },itemCount: 25,),
+                ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      height: 85,
+                      alignment: Alignment.center,
+                      color: Colors.primaries[index % Colors.primaries.length],
+                      child: Text(
+                        '$index',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    );
+                  },
+                  itemCount: 25,
+                ),
+                ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      height: 85,
+                      alignment: Alignment.center,
+                      color: Colors.primaries[index % Colors.primaries.length],
+                      child: Text(
+                        '$index',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    );
+                  },
+                  itemCount: 25,
+                ),
                 // ListView.
               ],
             ),

@@ -281,8 +281,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                           // 调整磁盘缓存中图像大小
                                           maxHeightDiskCache: 150,
                                           maxWidthDiskCache: 150,
-                                          imageUrl:
-                                              model.avatarUrl != null ? FileUtil.getSmallImage(model.avatarUrl) : "",
+                                          imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
+                                              ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
+                                              : "",
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => Container(
                                             color: AppColor.bgWhite,
@@ -505,7 +506,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _gotoRelease() {
     return InkWell(
       onTap: () {
-        if(!context.read<TokenNotifier>().isLoggedIn){
+        if (!context.read<TokenNotifier>().isLoggedIn) {
           AppRouter.navigateToLoginPage(context);
           return;
         }
