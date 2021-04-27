@@ -81,6 +81,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   StreamController<int> streamVideoCourseCircleProgressBar = StreamController<int>();
 
+  Timer timer;
+
   @override
   void dispose() {
     super.dispose();
@@ -90,6 +92,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
     streamVideoCourseCircleProgressBar.close();
     _unRegisterEventBus();
+    if(timer!=null){
+      timer.cancel();
+      timer=null;
+    }
   }
 
   @override
@@ -108,6 +114,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
     _getCourseInformation();
     _initEventBus();
+
+    if(isLiveRoomController()){
+      _timer();
+    }
   }
 
   _parseModelToPartList(LiveVideoModel liveVideoModel) {
@@ -143,11 +153,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   _updateInfoByPosition() {
-    int time = _currentPosition.toInt();
+    double time = _currentPosition;
     for (int i = 0; i < _partList.length; i++) {
       _currentPartIndex = i;
       if (time <= _partList[i].duration) {
-        _remainingPartTime = _partList[i].duration - time;
+        _remainingPartTime = _partList[i].duration - time.toInt();
         _partProgress = time / _partList[i].duration;
         return;
       } else {
@@ -247,13 +257,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildVideoCourse() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        StreamBuilder(
-          stream: streamVideoCourseCircleProgressBar.stream,
-          builder: (context, snapshot) {
-            return SizedBox(
+    return StreamBuilder(
+      stream: streamVideoCourseCircleProgressBar.stream,
+      builder: (context, snapshot) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
               height: 214.5,
               width: 214.5,
               child: Stack(
@@ -274,16 +284,16 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   ),
                 ],
               ),
-            );
-          },
-        ),
-        Text(
-          _partList[_currentPartIndex].type == 1
-              ? "休息"
-              : "${_partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
-          style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
-        )
-      ],
+            ),
+            Text(
+              _partList[_currentPartIndex].type == 1
+                  ? "休息"
+                  : "${_partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+              style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -776,4 +786,19 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
   }
 
+  //直播计时
+  _timer(){
+    timer=Timer.periodic(Duration(milliseconds: 100), (timer) {
+      _currentPosition +=0.1;
+      if(_currentPartIndex>_partList[_partList.length-1].duration&&_currentPartIndex==_partList.length-1){
+        this.timer.cancel();
+        this.timer=null;
+      }else {
+        _updateInfoByPosition();
+        if (mounted) {
+          streamVideoCourseCircleProgressBar.sink.add(0);
+        }
+      }
+    });
+  }
 }
