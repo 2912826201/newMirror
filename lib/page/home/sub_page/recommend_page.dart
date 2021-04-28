@@ -489,7 +489,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   _showImageDialog(){
     Future.delayed(Duration(milliseconds: 300),(){
       if(context.read<TokenNotifier>().isLoggedIn){
-        bool isShowNewUserDialog=true;
+        bool isShowNewUserDialog=false;
         if(Application.isShowNewUserDialog){
           isShowNewUserDialog=true;
         }else if(AppPrefs.isFirstLaunchToDay()){
