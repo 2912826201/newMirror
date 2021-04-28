@@ -258,6 +258,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           if (conversation.getType() != RCConversationType.System)
             ChatBottomSettingBox(
               key: bottomSettingChildKey,
+              focusNode: _focusNode,
               bottomSettingPanelState: _bottomSettingPanelState,
               emojiState: _emojiState,
               textController: _textController,
@@ -887,6 +888,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       if (mounted) {
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
         context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
@@ -905,6 +907,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       _changTextLen("");
       // List list=[];
       // list.add(0);
@@ -1062,6 +1065,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         recallNotificationMessagePosition = -1;
         if (mounted) {
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
@@ -1087,6 +1091,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isShowTopAttentionUi = true;
           _resetShowTopAttentionUi();
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
@@ -1197,6 +1202,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
     if (mounted) {
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       isHaveTextLen = false;
       EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
@@ -1636,6 +1642,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       if(_textController.text.length>0){
         context.read<ChatEnterNotifier>().clearRules();
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
       }
       _isVoiceState = false;
@@ -1741,6 +1748,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       if(_textController.text.length>0){
         context.read<ChatEnterNotifier>().clearRules();
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
       }
       _isVoiceState = !_isVoiceState;
@@ -2065,6 +2073,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
+      bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
       Future.delayed(Duration(milliseconds: 100), () {
         textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
       });
