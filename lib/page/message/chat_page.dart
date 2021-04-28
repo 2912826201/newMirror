@@ -1323,11 +1323,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         String imageUrl = map["showImageUrl"];
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'image', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'image', imageUrl);
           sourceList.add(demoSourceEntity);
         }
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'video', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'video', imageUrl);
           sourceList.add(demoSourceEntity);
         }
       } catch (e) {
@@ -2124,11 +2124,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
             Map<String, dynamic> map = json.decode(mapModel["data"]);
             String imageUrl = map["showImageUrl"];
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'image', imageUrl);
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'image', imageUrl);
               sourceList.add(demoSourceEntity);
             }
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'video', imageUrl);
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'video', imageUrl);
               sourceList.add(demoSourceEntity);
             }
           } catch (e) {
@@ -2144,7 +2144,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     print("当前点击的messageID：${chatDataList[position].msg.messageId}");
     for (int i = sourceList.length - 1; i >= 0; i--) {
       DemoSourceEntity source = sourceList[i];
-      if (int.parse(source.heroId) == chatDataList[position].msg.messageId) {
+      if (source.heroId == chatDataList[position].msg.messageId) {
         initIndex = i;
       }
     }
