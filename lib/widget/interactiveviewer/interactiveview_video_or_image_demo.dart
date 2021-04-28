@@ -6,7 +6,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
-  String heroId;
+  int heroId;
   String url;
   String previewUrl;
   String type;
