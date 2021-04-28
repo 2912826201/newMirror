@@ -239,6 +239,6 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue-1.otf
-    - family: FZYouHJVFWTWH1
+    - family: STHeitiSCMedium
       fonts:
-        - asset: assets/fonts/FZYouHJVFWTWH1.TTF
+        - asset: assets/fonts/STHeitiSCMedium.ttc

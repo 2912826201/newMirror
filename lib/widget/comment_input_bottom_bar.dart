@@ -630,6 +630,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               style: TextStyle(
                                 fontSize: 16,
                                 color: AppColor.textPrimary1,
+                                // fontFamily: "STHeitiSCMedium",
                               ),
                               //内容改变的回调
                               onChanged: (text) {
@@ -645,6 +646,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                         return true;
                                       }));
                                 } else {
+                                  print("text______________________$text");
                                   voidCallback(
                                     text,
                                     rules,
