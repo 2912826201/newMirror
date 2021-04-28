@@ -74,7 +74,9 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
   }
 
   jumpPage()async{
-    Navigator.of(context).pop();
-    AppRouter.navigateLordQRCodePage(context);
+    Future.delayed(Duration(milliseconds: 100),(){
+      Navigator.of(context).pop();
+      AppRouter.navigateLordQRCodePage(context);
+    });
   }
 }

@@ -137,12 +137,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 重新登录替换推荐页数据
     EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
-
-    if(context.read<TokenNotifier>().isLoggedIn){
-      _showImageDialog();
-    }
-
     super.initState();
+
+    _showImageDialog();
   }
 
   // 合并请求
@@ -487,21 +484,25 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   //判断是不是显示活动的dialog
-  //todo 新用户登录展示活动的入口---活动入口
+  //todo 新用户登录展示活动的入口---活动入口好吃
   //todo 用户今天第一次登录展示活动的入口
   _showImageDialog(){
-    // bool isShowNewUserDialog=false;
-    // if(Application.isShowNewUserDialog){
-    //   isShowNewUserDialog=true;
-    // }else if(AppPrefs.isFirstLaunchToDay()){
-    //   isShowNewUserDialog=true;
-    // }
-    // if(isShowNewUserDialog){
-    //   String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
-    //   Application.isShowNewUserDialog=false;
-    //   showImageDialog(context, imageUrl: image, onClickListener: () {
-    //     AppRouter.navigateNewUserPromotionPage(context);
-    //   });
-    // }
+    Future.delayed(Duration(milliseconds: 300),(){
+      if(context.read<TokenNotifier>().isLoggedIn){
+        bool isShowNewUserDialog=true;
+        if(Application.isShowNewUserDialog){
+          isShowNewUserDialog=true;
+        }else if(AppPrefs.isFirstLaunchToDay()){
+          isShowNewUserDialog=true;
+        }
+        if(isShowNewUserDialog){
+          String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
+          Application.isShowNewUserDialog=false;
+          showImageDialog(context, imageUrl: image, onClickListener: () {
+            AppRouter.navigateNewUserPromotionPage(context);
+          });
+        }
+      }
+    });
   }
 }
