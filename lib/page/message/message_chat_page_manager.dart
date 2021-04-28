@@ -716,7 +716,7 @@ Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) 
 
 //获取群成员信息
 Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context) async {
-  context.watch<GroupUserProfileNotifier>().clearAllUser();
+  context.read<GroupUserProfileNotifier>().clearAllUser();
   List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
   print("------model:${model.toString()}");
