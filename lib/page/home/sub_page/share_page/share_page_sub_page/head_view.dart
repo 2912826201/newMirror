@@ -141,7 +141,8 @@ class HeadViewState extends State<HeadView> {
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-      if (context.watch<TokenNotifier>().isLoggedIn&&widget.isShowConcern &&
+      if (context.watch<TokenNotifier>().isLoggedIn &&
+          widget.isShowConcern &&
           (notifier.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
@@ -225,7 +226,8 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (context.read<TokenNotifier>().isLoggedIn&&widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
+    if (context.read<TokenNotifier>().isLoggedIn &&
+        widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
@@ -272,7 +274,7 @@ class HeadViewState extends State<HeadView> {
                             /// imageUrl的淡入动画的持续时间。
                             // fadeInDuration: Duration(milliseconds: 0),
                             imageUrl: FileUtil.getSmallImage(
-                                isMySelf?context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
+                                isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
                             fit: BoxFit.cover,
                             // 调整磁盘缓存中图像大小
                             maxHeightDiskCache: 150,

@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/banner_view/banner_view.dart';
@@ -38,7 +39,7 @@ class SlideBanner extends StatefulWidget {
   _SlideBannerState createState() => _SlideBannerState();
 }
 
-class _SlideBannerState extends State<SlideBanner> {
+class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   int zindex = 0; //要移入的下标
 
   // 图片张数
@@ -90,6 +91,8 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   void initState() {
     super.initState();
+    //初始化
+    WidgetsBinding.instance.addObserver(this);
     if (widget.model != null && widget.model.selectedMediaFiles != null) {
       print("图片显示问题:::${widget.model.selectedMediaFiles.list.first.file}");
       imageCount = widget.model.selectedMediaFiles.list.length;
@@ -462,5 +465,20 @@ class _SlideBannerState extends State<SlideBanner> {
         ],
       ),
     );
+  }
+
+  // didHaveMemoryPressure
+  @override
+  void didHaveMemoryPressure() {
+    // TODO: implement didHaveMemoryPressure
+    super.didHaveMemoryPressure();
+    try {
+      print("轮播图清除缓存");
+      widget.model.picUrls.forEach((element) {
+        ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
+      });
+    } catch (e) {
+      print("轮播图清除缓存失败：：：：：：：：：$e");
+    }
   }
 }

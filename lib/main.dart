@@ -29,6 +29,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
+import 'package:mirror/widget/my_widgets_binding_observer.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -108,7 +109,9 @@ Future _initApp() async {
   // 升级flutter版本1.10.2后，因为在main()方法中有异步操作，对一些插件做了初始化操作。
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
-
+  // 添加内存不足的监听处理
+  MyWidgetsBindingObserver observer = MyWidgetsBindingObserver();
+  WidgetsBinding.instance.addObserver(observer);
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
