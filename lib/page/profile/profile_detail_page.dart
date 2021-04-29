@@ -280,6 +280,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                   return SliverPersistentHeader(
                     pinned: true,
+                            //自定义用来占位置的吸顶透明布局
                     delegate: fillingContainerDelegate(
                         height: snapshot.data,
                         color: AppColor.transparent,

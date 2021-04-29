@@ -91,7 +91,9 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            getUnReads();
+            Future.delayed(Duration.zero,(){
+              getUnReads();
+            });
             switch (index) {
               case 0:
                 break;
@@ -106,7 +108,7 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
-            if (homePageKey.currentState != null) {
+            if (homePageKey.currentState != null && index == 0) {
               homePageKey.currentState.subpageRefresh();
             }
           },
