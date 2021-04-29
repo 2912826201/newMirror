@@ -15,7 +15,7 @@ class NewUserPromotionPage extends StatefulWidget {
 }
 
 class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
-  String image="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2932957420,533255517&fm=26&gp=0.jpg";
+  String image = "assets/png/new_user_event_dialog.png";
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
             Expanded(child: SizedBox(
               child: SingleChildScrollView(
                 child: Container(
-                  child: Image.network(image,fit: BoxFit.cover),
+                  child: Image.asset(image,fit: BoxFit.cover),
                 ),
               ),
             )),

@@ -174,6 +174,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   Widget _buildTopView(MachineNotifier notifier) {
     return Column(
       children: [
+        // _buildTestBanner(),
         _buildBanner(),
         notifier.machine == null ? _buildConnection() : _buildEquipment(notifier),
         _buildLive(),
@@ -183,7 +184,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     );
   }
 
-  Widget _buildBanner() {
+  Widget _buildTestBanner() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Container(
@@ -197,6 +198,21 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             child: Text("去测试页"),
           ),
         ),
+      ),
+    );
+  }
+  Widget _buildBanner() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: GestureDetector(
+        child: Container(
+          height: _screenWidth * 140 / 375,
+          color: AppColor.bgBlack,
+          child: Image.asset("assets/png/new_user_event_banner.png",fit: BoxFit.cover),
+        ),
+        onTap: (){
+          AppRouter.navigateNewUserPromotionPage(context);
+        },
       ),
     );
   }
