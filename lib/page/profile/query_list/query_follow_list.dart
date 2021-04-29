@@ -525,7 +525,6 @@ class _QueryFollowState extends State<QueryFollowList> {
                                     showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
                                   });
                                 }
-
                                 _onLoading();
                               },
                               child: buddyList.isNotEmpty || topicList.isNotEmpty
