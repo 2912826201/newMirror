@@ -11,6 +11,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/sliver_list_test_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -68,7 +69,12 @@ class CommentInputBoxState extends State<CommentInputBox> {
           crossAxisAlignment: widget.isFeedDetail ? CrossAxisAlignment.start : CrossAxisAlignment.center,
           children: [
             InkWell(
-              onTap: () {},
+              onTap: () {
+                //第二种
+                // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                //   return SliverListDemoPage();
+                // }));
+              },
               child: Container(
                 margin: EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
                 child: ClipOval(
