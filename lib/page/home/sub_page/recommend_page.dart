@@ -496,9 +496,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           isShowNewUserDialog=true;
         }
         if(isShowNewUserDialog){
-          String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
           Application.isShowNewUserDialog=false;
-          showImageDialog(context, imageUrl: image, onClickListener: () {
+          showImageDialog(context, onClickListener: () {
             AppRouter.navigateNewUserPromotionPage(context);
           });
         }

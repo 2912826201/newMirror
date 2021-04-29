@@ -458,7 +458,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos}) {
+  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos=false}) {
     int messageCount = conversation.unreadCount;
     NoPromptUidModel model =
         NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));

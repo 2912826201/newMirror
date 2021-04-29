@@ -77,9 +77,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 style: AppStyle.textRegular16,
               ),
             ),
-            SizedBox(
-              height: 62,
-            ),
+            Spacer(),
             Container(
               width: width,
               padding: EdgeInsets.only(left: 41, right: 41),
@@ -110,6 +108,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 },
               ),
             ),
+            Spacer()
           ],
         ),
       ),

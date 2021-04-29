@@ -173,8 +173,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动")
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
               /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
             ],
@@ -476,7 +476,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //点击事件Training record
   void onClickListener(String title) {
-    String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -489,7 +488,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToHeightAndWeigetPage(context);
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
-      showImageDialog(context, imageUrl: image, onClickListener: () {
+      showImageDialog(context, onClickListener: () {
         AppRouter.navigateNewUserPromotionPage(context);
       });
     }
