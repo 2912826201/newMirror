@@ -394,9 +394,13 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
 
   // map["systemPage"] = systemPage;
   // map["systemLastTime"] = systemLastTime;
+  //map["textContent"] = textContent;
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
   return ChatPage(
+      systemPage:data["systemPage"],
+      systemLastTime:data["systemLastTime"],
+      textContent:data["textContent"],
       conversation: conversation,
       shareMessage: shareMessage,
       chatDataList: Application.chatDataList,

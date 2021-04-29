@@ -616,6 +616,7 @@ class AppRouter {
       @required List<ChatDataModel> chatDataModelList,
       String systemLastTime,
       int systemPage = 0,
+      String textContent,
       Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
@@ -623,6 +624,7 @@ class AppRouter {
     }
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
+    map["textContent"] = textContent;
     Application.shareMessage = shareMessage;
     Application.chatDataList.clear();
     Application.chatDataList.addAll(chatDataModelList);
