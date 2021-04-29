@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
 /// dialog
 /// Created by shipinke 2021-4-23
 
@@ -25,7 +26,7 @@ class _AppDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 272.0,
+      width: 375.0/ScreenUtil.instance.width*272,
       decoration: BoxDecoration(
         color: AppColor.transparent,
         borderRadius: BorderRadius.circular(7),
@@ -53,7 +54,7 @@ class _AppDialog extends StatelessWidget {
     if (imageUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          height: 297.0,
+          height: 297.0/272.0*(375.0/ScreenUtil.instance.width*272),
           color: AppColor.transparent,
           child: Image.asset(imageUrl,fit: BoxFit.cover,),
         ),
@@ -72,7 +73,7 @@ class _AppDialog extends StatelessWidget {
     if (imageBtnUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          width: 130.0,
+          width: 375.0/ScreenUtil.instance.width*130,
           color: AppColor.transparent,
           child: Image.asset(imageBtnUrl,fit: BoxFit.cover,),
         ),
