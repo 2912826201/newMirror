@@ -3,10 +3,13 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -173,7 +176,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动")
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动")
               // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
               /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
@@ -475,7 +478,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   //点击事件Training record
-  void onClickListener(String title) {
+  void onClickListener(String title)async {
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -488,9 +491,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToHeightAndWeigetPage(context);
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
-      showImageDialog(context, onClickListener: () {
-        AppRouter.navigateNewUserPromotionPage(context);
-      });
+      // showImageDialog(context, onClickListener: () {
+      //   AppRouter.navigateNewUserPromotionPage(context);
+      // });
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
+      } else {
+        context.read<MachineNotifier>().setMachine(null);
+      }
     }
   }
 }

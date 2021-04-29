@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
 /// dialog
 /// Created by shipinke 2021-4-23
 
@@ -25,7 +26,7 @@ class _AppDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 272.0,
+      width: 375.0/ScreenUtil.instance.width*272,
       decoration: BoxDecoration(
         color: AppColor.transparent,
         borderRadius: BorderRadius.circular(7),
@@ -53,7 +54,7 @@ class _AppDialog extends StatelessWidget {
     if (imageUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          height: 297.0,
+          height: 297.0/272.0*(375.0/ScreenUtil.instance.width*272),
           color: AppColor.transparent,
           child: Image.asset(imageUrl,fit: BoxFit.cover,),
         ),
@@ -72,7 +73,7 @@ class _AppDialog extends StatelessWidget {
     if (imageBtnUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          width: 130.0,
+          width: 375.0/ScreenUtil.instance.width*130,
           color: AppColor.transparent,
           child: Image.asset(imageBtnUrl,fit: BoxFit.cover,),
         ),
@@ -86,34 +87,16 @@ class _AppDialog extends StatelessWidget {
     }
   }
 
-  // _buildImageCloseBtnView(BuildContext context) {
-  //   //如果有头部图片 上边距从头部图片下面开始算 因为每个组件都要加内上边距 所以只加个差值
-  //   if (imageCloseBtnUrl != null) {
-  //     _viewList.add(GestureDetector(
-  //       child: Container(
-  //         width: 40.0,
-  //         height: 40.0,
-  //         padding: EdgeInsets.all(6.0),
-  //         color: AppColor.transparent,
-  //         child: Image.asset(imageCloseBtnUrl,fit: BoxFit.cover,),
-  //       ),
-  //       onTap: (){
-  //         Navigator.pop(context);
-  //       },
-  //     ));
-  //   }
-  // }
-
   _buildImageCloseBtnView(BuildContext context) {
     //如果有头部图片 上边距从头部图片下面开始算 因为每个组件都要加内上边距 所以只加个差值
-    if (imageBtnUrl != null) {
+    if (imageCloseBtnUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
           width: 40.0,
           height: 40.0,
-          margin: EdgeInsets.only(top: 30),
+          padding: EdgeInsets.all(6.0),
           color: AppColor.transparent,
-          child: Icon(Icons.close_outlined,size: 28,color: AppColor.textPrimary1.withOpacity(0.35)),
+          child: Image.asset(imageCloseBtnUrl,fit: BoxFit.cover,),
         ),
         onTap: (){
           Navigator.pop(context);
@@ -121,6 +104,24 @@ class _AppDialog extends StatelessWidget {
       ));
     }
   }
+
+  // _buildImageCloseBtnView(BuildContext context) {
+  //   //如果有头部图片 上边距从头部图片下面开始算 因为每个组件都要加内上边距 所以只加个差值
+  //   if (imageBtnUrl != null) {
+  //     _viewList.add(GestureDetector(
+  //       child: Container(
+  //         width: 40.0,
+  //         height: 40.0,
+  //         margin: EdgeInsets.only(top: 30),
+  //         color: AppColor.transparent,
+  //         child: Icon(Icons.close_outlined,size: 28,color: AppColor.textPrimary1.withOpacity(0.35)),
+  //       ),
+  //       onTap: (){
+  //         Navigator.pop(context);
+  //       },
+  //     ));
+  //   }
+  // }
 
 }
 

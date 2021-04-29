@@ -233,11 +233,15 @@ class _LiveRoomVideoPageState extends XCState {
         player.setDataSource(url, autoPlay: true);
         loadingStatus = LoadingStatus.STATUS_COMPLETED;
       } else {
-        ToastShow.show(msg: "暂无该场直播!", context: context);
+        if(context!=null&&mounted) {
+          ToastShow.show(msg: "暂无该场直播!", context: context);
+        }
         loadingStatus = LoadingStatus.STATUS_IDEL;
       }
     } else {
-      ToastShow.show(msg: "直播地址获取失败!", context: context);
+      if(context!=null&&mounted) {
+        ToastShow.show(msg: "直播地址获取失败!", context: context);
+      }
       loadingStatus = LoadingStatus.STATUS_IDEL;
     }
     if (mounted) {
