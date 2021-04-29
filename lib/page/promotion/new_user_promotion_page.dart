@@ -94,7 +94,6 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
   _exitPageListener() {
     showAppDialog(context,
         info: "不再看一眼？报名后即可获得教练一对一指导和丰富福利哦",
-        topImageUrl: "",
         barrierDismissible: false,
         cancel: AppDialogButton("残忍离开", () {
           Navigator.of(context).pop();
