@@ -106,7 +106,7 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
-            if (homePageKey.currentState != null) {
+            if (homePageKey.currentState != null && index == 0) {
               homePageKey.currentState.subpageRefresh();
             }
           },
