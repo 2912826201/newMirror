@@ -4,14 +4,18 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/machine_model.dart';
+import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -137,11 +141,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 重新登录替换推荐页数据
     EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
-    EventBus.getDefault().registerNoParameter(_showImageDialog, EVENTBUS_RECOMMEND_PAGE,
-        registerName: SHOW_IMAGE_DIALOG);
+    EventBus.getDefault().registerSingleParameter(_getMachineStatusInfo,
+        EVENTBUS_RECOMMEND_PAGE,registerName: GET_MACHINE_STATUS_INFO);
+    EventBus.getDefault().registerNoParameter(_isHaveLoginSuccess,
+        EVENTBUS_RECOMMEND_PAGE,registerName: SHOW_IMAGE_DIALOG);
     super.initState();
 
-    _showImageDialog();
+    _isMachineModelInGame();
   }
 
   // 合并请求
@@ -484,25 +490,76 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     );
   }
 
+
+  //成功
+  _isHaveLoginSuccess(){
+    Future.delayed(Duration(seconds: 1),(){
+      if(!AppRouter.isHaveLoginSuccess()){
+        _isMachineModelInGame();
+      }
+    });
+  }
+
+  bool isShowNewUserDialog=false;
+  bool isFutureDelayed=false;
+
   //判断是不是显示活动的dialog
   //todo 新用户登录展示活动的入口---活动入口好吃
   //todo 用户今天第一次登录展示活动的入口
+  _isMachineModelInGame(){
+    if(!this.isFutureDelayed){
+      this.isFutureDelayed=true;
+      Future.delayed(Duration(milliseconds: 300),(){
+        getMachineStatusInfo().then((list) {
+          if (list != null && list.isNotEmpty) {
+            MachineModel model=list.first;
+            if(model!=null&&model.isConnect==1&&model.inGame==1){
+              if(model.type==0) {
+                _getMachineStatusInfo(model);
+              }
+              this.isFutureDelayed=false;
+              return;
+            }
+          }
+          _showImageDialog();
+          this.isFutureDelayed=false;
+        }).catchError((e){
+          _showImageDialog();
+        });
+      });
+    }
+  }
+
   _showImageDialog(){
-    Future.delayed(Duration(milliseconds: 300),(){
-      if(context.read<TokenNotifier>().isLoggedIn){
-        bool isShowNewUserDialog=false;
-        if(Application.isShowNewUserDialog){
-          isShowNewUserDialog=true;
-        }else if(AppPrefs.isFirstLaunchToDay()){
-          isShowNewUserDialog=true;
-        }
-        if(isShowNewUserDialog){
-          Application.isShowNewUserDialog=false;
-          showImageDialog(context, onClickListener: () {
-            AppRouter.navigateNewUserPromotionPage(context);
-          });
+    if(context.read<TokenNotifier>().isLoggedIn&&!this.isShowNewUserDialog){
+      bool isShowNewUserDialog=false;
+      if(Application.isShowNewUserDialog){
+        isShowNewUserDialog=true;
+      }else if(AppPrefs.isFirstLaunchToDay()){
+        isShowNewUserDialog=true;
+      }
+      if(isShowNewUserDialog){
+        Application.isShowNewUserDialog=false;
+        this.isShowNewUserDialog=true;
+        showImageDialog(context, onClickListener: () {
+          AppRouter.navigateNewUserPromotionPage(context);
+        },onExitListener:(){
+          this.isShowNewUserDialog=false;
+        });
+      }
+    }
+  }
+
+  _getMachineStatusInfo(MachineModel model){
+    print("MachineModel:${model.toJson().toString()}");
+    if(model!=null&&model.isConnect==1&&model.inGame==1){
+      if(model.type==0){
+        print("+-++++++++++++++++++++++++++++++++++++++++++++++");
+        if(!AppRouter.isHaveMachineRemoteControllerPage()){
+          BuildContext context = Application.navigatorKey.currentState.overlay.context;
+          AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_live);
         }
       }
-    });
+    }
   }
 }

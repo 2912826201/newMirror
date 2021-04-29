@@ -708,6 +708,18 @@ class AppRouter {
     return false;
   }
 
+  //判断有没有登陆成功界面
+  static bool isHaveLoginSuccess(){
+    try{
+      for(String element in Application.pagePopRouterName){
+        if(element.contains(pathLoginSucess)){
+          return true;
+        }
+      }
+    }catch (e){}
+    return false;
+  }
+
   static void navigateToMachineConnectionInfo(BuildContext context) {
     _navigateToPage(context, pathMachineConnectionInfo, {});
   }

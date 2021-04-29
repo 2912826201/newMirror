@@ -726,10 +726,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     );
   }
 
+  int getMachineStatusInfoCount=0;
+
   _getCourseInformation() async {
     if (isNullCourse()) {
       return;
     }
+    getMachineStatusInfoCount=0;
     LiveVideoModel liveVideoModel = await getLiveVideoModel(courseId: courseId, type: modeType);
     if (liveVideoModel == null) {
       courseId = null;
@@ -738,13 +741,29 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
       if(isLiveRoomController()){
-        List<MachineModel> machineList = await getMachineStatusInfo();
-        if (machineList != null && machineList.isNotEmpty) {
-          machineModel=machineList.first;
-          if(machineModel.timestamp<machineModel.startCourse){
-            _currentPosition=0;
+        while(!(machineModel!=null&&machineModel.isConnect==1&&machineModel.inGame==1)){
+          getMachineStatusInfoCount++;
+          Duration duration;
+          if(getMachineStatusInfoCount==1){
+            duration=Duration.zero;
           }else{
-            _currentPosition=(machineModel.timestamp-machineModel.startCourse)/1000;
+            duration=Duration(seconds: 1);
+          }
+          await Future.delayed(duration,()async{
+            List<MachineModel> machineList = await getMachineStatusInfo();
+            if (machineList != null && machineList.isNotEmpty) {
+              machineModel=machineList.first;
+              if(machineModel!=null&&machineModel.isConnect==1&&machineModel.inGame==1){
+                if(machineModel.timestamp<machineModel.startCourse){
+                  _currentPosition=0;
+                }else{
+                  _currentPosition=(machineModel.timestamp-machineModel.startCourse)/1000;
+                }
+              }
+            }
+          });
+          if(getMachineStatusInfoCount>6){
+            break;
           }
         }
       }
@@ -886,8 +905,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         if (mounted) {
           _setProgressBarChildKeyData();
         }
-        if(_currentPosition==0){
-          if(machineModel!=null&&DateTime.now().millisecondsSinceEpoch>=machineModel.startCourse){
+        if(_currentPosition==0&&isLiveRoomController()){
+          if(machineModel!=null&&machineModel.startCourse!=null
+              &&DateTime.now().millisecondsSinceEpoch>=machineModel.startCourse){
             _currentPosition += 0.1;
           }
         }else {
