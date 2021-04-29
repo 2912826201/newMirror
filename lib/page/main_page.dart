@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';

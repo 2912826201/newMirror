@@ -229,3 +229,5 @@ const String SCHEDULE_TRAINING_VIDEO = "schedule_training_video";
 const String DOUBLE_TAP_TABBAR = "double_tap_tabbar";
 //获取设备信息
 const String GET_MACHINE_STATUS_INFO = "get_machine_status_info";
+//显示新用户dialog
+const String SHOW_IMAGE_DIALOG = "show_new_user_image_dialog";

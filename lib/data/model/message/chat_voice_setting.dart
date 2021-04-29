@@ -48,12 +48,12 @@ class VoiceSettingNotifier extends ChangeNotifier {
     // print("======getIsPlaying");
     if (isPlaying) {
       if (idMd5String != null && idMd5String == this.idMd5String) {
-        return isPlaying;
+        return true;
       } else {
         return false;
       }
     }
-    return isPlaying;
+    return false;
   }
 
   //设置一个音频播放器是否在播放
@@ -110,8 +110,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
       if (this.isPlaying) {
         await pause();
       }
-      startPlayer(url, context, urlMd5String);
       this.idMd5String = urlMd5String;
+      startPlayer(url, context, urlMd5String);
     }
   }
 

@@ -57,7 +57,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   //用于分页加载的page
   int listPage = 1;
   int hasNext = 0;
-  RefreshController _refreshController = RefreshController();
+  RefreshController _refreshController;
 
   //判断是否有备注
   bool haveRemarks = false;
@@ -401,8 +401,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     } else {
       isMySelf = false;
     }
-    __onRefresh();
-
+    _refreshController = RefreshController(initialRefresh: true);
     controller.addListener(() {
       _lastTime = null;
       _lastScore = null;
@@ -509,8 +508,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                       height: 0,
                     ),
 
-              buddyList.isNotEmpty || topicList.isNotEmpty
-                  ? Expanded(
+               Expanded(
                       child: ScrollConfiguration(
                           behavior: OverScrollBehavior(),
                           child: SmartRefresher(
@@ -521,16 +519,16 @@ class _QueryFollowState extends State<QueryFollowList> {
                               header: SmartRefresherHeadFooter.init().getHeader(),
                               onRefresh: __onRefresh,
                               onLoading: () {
-                                if((widget.type==1&&buddyList.length!=1)||(widget.type==2&&buddyList.length!=0)||
+                                if((widget.type==1&&buddyList.length>2)||(widget.type==2&&buddyList.length!=0)||
                                     (widget.type==3&&topicList.length!=0)){
                                   setState(() {
                                     showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
                                   });
                                 }
-
                                 _onLoading();
                               },
-                              child: ListView.builder(
+                              child: buddyList.isNotEmpty || topicList.isNotEmpty
+                                  ?ListView.builder(
                                   shrinkWrap: true, //解决无限高度问题
                                   physics: AlwaysScrollableScrollPhysics(),
                                   //这里是将插入的假数据展示成跳转话题页的item
@@ -667,28 +665,27 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         },
                                       );
                                     }
-                                  }))),
-                    )
-                  : Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Container(
-                            width: 285,
-                            height: 285,
-                            child: Image.asset(defaultImage),
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            hintText,
-                            style: AppStyle.textHintRegular14,
-                          ),
-                          Spacer(),
-                        ],
-                      ),
+                                  }): Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Spacer(),
+                                    Container(
+                                      width: 285,
+                                      height: 285,
+                                      child: Image.asset(defaultImage),
+                                    ),
+                                    SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      hintText,
+                                      style: AppStyle.textHintRegular14,
+                                    ),
+                                    Spacer(),
+                                  ],
+                                ),
+                              ))),
                     ),
             ],
           ),

@@ -45,7 +45,7 @@ class InteractiveNoticePage extends StatefulWidget {
 }
 
 class _InteractiveNoticeState extends State<InteractiveNoticePage> {
-  RefreshController controller = RefreshController();
+  RefreshController controller;
   int lastTime;
   int listPage = 1;
   List<QueryModel> msgList = [];
@@ -137,7 +137,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
-    _getMsgList(widget.type);
+    controller = RefreshController(initialRefresh: true);
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {

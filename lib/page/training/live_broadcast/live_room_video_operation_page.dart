@@ -963,7 +963,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Map<String, dynamic> map = await roomInfo(widget.coachId, count: 3);
-    if (null != map["data"]["userList"]) {
+    if (null !=map["data"]&&null != map["data"]["userList"]) {
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel = BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));
