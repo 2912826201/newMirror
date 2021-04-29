@@ -162,8 +162,8 @@ dependencies:
   # 测试用从相册或相机获取图片的库
   image_picker: ^0.6.7+14
   #测试用图片放大拖拽
-#  flutter_drag_scale:
-#    git: https://github.com/LiuC520/flutter_drag_scale.git
+  #  flutter_drag_scale:
+  #    git: https://github.com/LiuC520/flutter_drag_scale.git
   #  粘性header
   #  sticky_headers: ^0.1.8+1
   #测试用断点续传
@@ -239,3 +239,12 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue-1.otf
+    - family: Fzzxhjt
+      fonts:
+        - asset: assets/fonts/Fzzxhjt.TTF
+    - family: Fzltsjt
+      fonts:
+          - asset: assets/fonts/Fzltsjt.TTF
+    - family: Fzcjljt
+      fonts:
+          - asset: assets/fonts/Fzcjljt.TTF

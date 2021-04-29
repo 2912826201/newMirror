@@ -86,7 +86,9 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            getUnReads();
+            Future.delayed(Duration.zero,(){
+              getUnReads();
+            });
             switch (index) {
               case 0:
                 break;

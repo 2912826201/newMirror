@@ -75,7 +75,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                     itemCount: targetList.length,
                     itemBuilder: (context, index) {
                       return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快熟减掉赘肉，击退小肚腩", index);
-                    })) ,
+                    })),
           ],
         ),
       ),
@@ -127,9 +127,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                   title,
                   style: beforIndex == index ? AppStyle.textMedium21 : AppStyle.textPrimary3Medium21,
                 ),
-                SizedBox(
-                  height: 8,
-                ),
+                Spacer(),
                 Text(
                   introduction,
                   style: AppStyle.textSecondaryRegular12,
