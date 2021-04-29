@@ -237,8 +237,8 @@ Future _initApp() async {
   } else {
     //匿名用户时 保持上面已赋值的默认初始值
   }
-  // 启动app调用(服务端处理数据)
-  await startApp();
+  // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
+  // await startApp();
   // todo 获取背景图配置表
   try {
     Application.topicBackgroundConfig.clear();

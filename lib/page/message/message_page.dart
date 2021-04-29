@@ -49,6 +49,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   double _screenWidth = 0.0;
   int _listLength = 0;
   int choseUnreadType;
+  StreamController<ConversationAnimationModel> streamController = StreamController<ConversationAnimationModel>.broadcast();
 
   @override
   bool get wantKeepAlive => true;
@@ -428,15 +429,21 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           itemTag: "conversation",
           itemIndex: index,
           isDoubleDelete: true,
-          itemChild: _conversationItem(index, conversation),
+          itemChild: _conversationItem(index, conversation, isIos: true),
           onTap: () {
             getMessageType(conversation, context);
             jumpChatPageConversationDto(context, conversation);
           },
-          onClickRightBtn: () {
-            MessageManager.removeConversation(
-                context, conversation.conversationId, conversation.uid, conversation.type);
-            Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+          onClickRightBtn: (ind) {
+            ConversationAnimationModel animationModel = ConversationAnimationModel();
+            animationModel.index = ind;
+            animationModel.conversationItemHeight = 0.0;
+            streamController.sink.add(animationModel);
+            new Future.delayed(Duration(milliseconds: 350), () {
+              MessageManager.removeConversation(
+                  context, conversation.conversationId, conversation.uid, conversation.type);
+              Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+            });
           },
         );
       }
@@ -451,7 +458,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-  Widget _conversationItem(int index, ConversationDto conversation) {
+  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos}) {
     int messageCount = conversation.unreadCount;
     NoPromptUidModel model =
         NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));
@@ -465,82 +472,187 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     bool isMentioned = msgContent.mentionedInfo != null &&
         msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
     List<String> avatarList = conversation.avatarUri.split(",");
-    return Container(
-      height: 69,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-              height: 45,
-              width: 45,
-              child: conversation.type == OFFICIAL_TYPE ||
-                      conversation.type == LIVE_TYPE ||
-                      conversation.type == TRAINING_TYPE
-                  ? _getOfficialAvatar(conversation.type)
-                  : _getConversationAvatar(avatarList, conversation.isTop)),
-          SizedBox(
-            width: 12,
-          ),
-          Expanded(
-            child: Column(
+    return isIos
+        ? StreamBuilder<ConversationAnimationModel>(
+            initialData: ConversationAnimationModel(),
+            stream: streamController.stream,
+            builder: (BuildContext stramContext, AsyncSnapshot<ConversationAnimationModel> snapshot) {
+              return AnimatedContainer(
+                height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 69,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.linear,
+                child: Container(
+                  height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 69,
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 45,
+                          width: 45,
+                          child: conversation.type == OFFICIAL_TYPE ||
+                                  conversation.type == LIVE_TYPE ||
+                                  conversation.type == TRAINING_TYPE
+                              ? _getOfficialAvatar(conversation.type)
+                              : _getConversationAvatar(avatarList, conversation.isTop)),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: index == snapshot.data.index
+                                        ? Container()
+                                        : Text(
+                                            StringUtil.strNoEmpty(conversation.name)
+                                                ? conversation.name
+                                                : conversation.conversationId,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            maxLines: 1,
+                                            style: AppStyle.textRegular14,
+                                          )),
+                                index == snapshot.data.index
+                                    ? Container()
+                                    : Text(
+                                        DateUtil.getShowMessageDateString(
+                                            DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                                        style: AppStyle.textHintRegular12,
+                                      )
+                              ],
+                            ),
+                            Spacer(),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                isMentioned
+                                    ? Text(
+                                        "[有人@你]",
+                                        style: AppStyle.redRegular13,
+                                      )
+                                    : Container(),
+                                Expanded(
+                                    child: index == snapshot.data.index
+                                        ? Container()
+                                        : Text(
+                                            //FIXME 这个逻辑需要在群成员数据库写好后替换掉
+                                            _getItemContent(conversation) ?? "",
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            maxLines: 1,
+                                            style: AppStyle.textSecondaryRegular13,
+                                          )),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                index == snapshot.data.index ? Container() : CountBadge(messageCount, false),
+                              ],
+                            ),
+                            SizedBox(
+                              height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 12.5,
+                            ),
+                            Container(
+                              height: 0.5,
+                              color: AppColor.bgWhite,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+              //   AnimatedContainer(
+              //   duration: const Duration(milliseconds: 500),
+              //   curve: Curves.linear,
+              //   height: snapshot.data,
+              //   child: Container(
+              //     height: snapshot.data,
+              //   ),
+              // );
+            })
+        : Container(
+            height: 69,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        child: Text(
-                      StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      maxLines: 1,
-                      style: AppStyle.textRegular14,
-                    )),
-                    Text(
-                      DateUtil.getShowMessageDateString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
-                      style: AppStyle.textHintRegular12,
-                    )
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    isMentioned
-                        ? Text(
-                            "[有人@你]",
-                            style: AppStyle.redRegular13,
-                          )
-                        : Container(),
-                    Expanded(
-                        child: Text(
-                      //FIXME 这个逻辑需要在群成员数据库写好后替换掉
-                      _getItemContent(conversation) ?? "",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      maxLines: 1,
-                      style: AppStyle.textSecondaryRegular13,
-                    )),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    CountBadge(messageCount, false),
-                  ],
-                ),
-                SizedBox(
-                  height: 12.5,
-                ),
                 Container(
-                  height: 0.5,
-                  color: AppColor.bgWhite,
+                    height: 45,
+                    width: 45,
+                    child: conversation.type == OFFICIAL_TYPE ||
+                            conversation.type == LIVE_TYPE ||
+                            conversation.type == TRAINING_TYPE
+                        ? _getOfficialAvatar(conversation.type)
+                        : _getConversationAvatar(avatarList, conversation.isTop)),
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: Text(
+                            StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 1,
+                            style: AppStyle.textRegular14,
+                          )),
+                          Text(
+                            DateUtil.getShowMessageDateString(
+                                DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                            style: AppStyle.textHintRegular12,
+                          )
+                        ],
+                      ),
+                      Spacer(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          isMentioned
+                              ? Text(
+                                  "[有人@你]",
+                                  style: AppStyle.redRegular13,
+                                )
+                              : Container(),
+                          Expanded(
+                              child: Text(
+                            //FIXME 这个逻辑需要在群成员数据库写好后替换掉
+                            _getItemContent(conversation) ?? "",
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 1,
+                            style: AppStyle.textSecondaryRegular13,
+                          )),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          CountBadge(messageCount, false),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 12.5,
+                      ),
+                      Container(
+                        height: 0.5,
+                        color: AppColor.bgWhite,
+                      )
+                    ],
+                  ),
                 )
               ],
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
 
   String _getItemContent(ConversationDto conversation) {
@@ -691,4 +803,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       ],
     );
   }
+}
+
+class ConversationAnimationModel {
+  double conversationItemHeight = 69;
+  int index;
 }

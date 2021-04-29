@@ -118,7 +118,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       itemTag: "tag",
       itemIndex: index,
       itemChild: getItem(index),
-      onClickRightBtn: () {
+      onClickRightBtn: (ind) {
         delWeight(weightDataModel.recordList[index].id);
         weightDataModel.recordList.removeAt(index);
         if (mounted) {
