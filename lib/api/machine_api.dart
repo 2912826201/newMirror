@@ -33,7 +33,7 @@ Future<bool> loginMachine(int mid) async {
 Future<List<MachineModel>> getMachineStatusInfo() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(GETMACHINESTATUSINFO, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     List<MachineModel> list = [];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((element) {

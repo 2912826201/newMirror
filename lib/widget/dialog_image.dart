@@ -11,6 +11,7 @@ import 'package:mirror/util/screen_util.dart';
 // ignore: must_be_immutable
 class _AppDialog extends StatelessWidget {
   final Function() onClickListener;
+  final Function() onExitListener;
 
   final List<Widget> _viewList = [];
 
@@ -20,7 +21,7 @@ class _AppDialog extends StatelessWidget {
 
   _AppDialog(
       {Key key,
-      this.onClickListener})
+      this.onClickListener,this.onExitListener})
       : super(key: key);
 
   @override
@@ -63,6 +64,9 @@ class _AppDialog extends StatelessWidget {
           if(onClickListener!=null){
             onClickListener();
           }
+          if(onExitListener!=null){
+            onExitListener();
+          }
         },
       ));
     }
@@ -82,6 +86,9 @@ class _AppDialog extends StatelessWidget {
           if(onClickListener!=null){
             onClickListener();
           }
+          if(onExitListener!=null){
+            onExitListener();
+          }
         },
       ));
     }
@@ -100,6 +107,9 @@ class _AppDialog extends StatelessWidget {
         ),
         onTap: (){
           Navigator.pop(context);
+          if(onExitListener!=null){
+            onExitListener();
+          }
         },
       ));
     }
@@ -128,6 +138,7 @@ class _AppDialog extends StatelessWidget {
 
 showImageDialog(BuildContext context,
     {Function() onClickListener,
+    Function() onExitListener,
     bool barrierDismissible = false}) {
   showDialog(
       context: context,
@@ -138,7 +149,7 @@ showImageDialog(BuildContext context,
             child: Dialog(
               backgroundColor: AppColor.transparent,
               elevation:0,
-              child: _AppDialog(onClickListener:onClickListener),
+              child: _AppDialog(onClickListener:onClickListener,onExitListener:onExitListener),
             ));
       });
 }
