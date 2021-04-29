@@ -179,7 +179,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///获取关注、粉丝、获赞数数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
-    if (attentionModel != null) {
+    if (attentionModel != null&& mounted ) {
       context.read<UserInteractiveNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
@@ -207,7 +207,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
-      setState(() {
         _avatar = userModel.avatarUri;
         _signature = userModel.description;
         userStatus = userModel.status;
@@ -218,7 +217,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           _signatureHeight = testSize.height;
         }
         _textName = userModel.nickName;
-      });
+        if(mounted){
+          setState(() {
+          });
+        }
       if (userModel.relation == 0 || userModel.relation == 2) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       } else if (userModel.relation == 1 || userModel.relation == 3) {
