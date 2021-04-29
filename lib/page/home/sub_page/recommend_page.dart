@@ -137,6 +137,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 重新登录替换推荐页数据
     EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+    EventBus.getDefault().registerNoParameter(_showImageDialog, EVENTBUS_RECOMMEND_PAGE,
+        registerName: SHOW_IMAGE_DIALOG);
     super.initState();
 
     _showImageDialog();
@@ -225,7 +227,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   againLoginReplaceLayout() {
     _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
-    _showImageDialog();
   }
 
   @override
