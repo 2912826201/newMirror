@@ -87,6 +87,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   Timer timer;
 
+  MachineModel machineModel;
+
   @override
   void dispose() {
     super.dispose();
@@ -159,8 +161,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         _remainingPartTime = _partList[i].duration - time.toInt();
         _partProgress = time / _partList[i].duration;
         return;
-      } else {
+      } else if(i<_partList.length-1){
         time -= _partList[i].duration;
+      } else{
+        _partProgress=_partList[i].duration.toDouble();
       }
     }
     if(isLiveRoomController()){
@@ -736,12 +740,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       if(isLiveRoomController()){
         List<MachineModel> machineList = await getMachineStatusInfo();
         if (machineList != null && machineList.isNotEmpty) {
-          _currentPosition=0;
-          for(int i=0;i<machineList.first.index;i++){
-            _currentPosition+=_partList[i].duration;
+          machineModel=machineList.first;
+          if(machineModel.timestamp<machineModel.startCourse){
+            _currentPosition=0;
+          }else{
+            _currentPosition=(machineModel.timestamp-machineModel.startCourse)/1000;
           }
-          double time = machineList.first.progressBar/1000;
-          _currentPosition+=time;
         }
       }
       _updateInfoByPosition();
@@ -882,7 +886,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         if (mounted) {
           _setProgressBarChildKeyData();
         }
-        _currentPosition += 0.1;
+        if(_currentPosition==0){
+          if(machineModel!=null&&DateTime.now().millisecondsSinceEpoch>=machineModel.startCourse){
+            _currentPosition += 0.1;
+          }
+        }else {
+          _currentPosition += 0.1;
+        }
       }
     });
   }
