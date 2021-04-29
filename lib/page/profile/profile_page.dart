@@ -173,7 +173,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
               // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动"),
               /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
@@ -490,15 +490,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
       showImageDialog(context, imageUrl: image, onClickListener: () {
-        //跳转不关闭当前页面
-        Navigator.of(context).push(
-          new MaterialPageRoute(
-            settings: RouteSettings(name: "NewUserPromotionPage"),
-            builder: (context) {
-              return NewUserPromotionPage();
-            },
-          ),
-        );
+        AppRouter.navigateNewUserPromotionPage(context);
       });
     }
   }

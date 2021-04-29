@@ -10,6 +10,7 @@ import 'api.dart';
 const String LOGIN = "/uaa/oauth/login";
 const String LOGOUT = "/uaa/oauth/logout";
 const String SENDSMS = "/uaa/oauth/authentication/sms/send";
+const String STARTAPP ="/appuser/web/sys/StartApp";
 
 //登录以及刷新token
 //grant_type说明 sms：验证码登录、qq：QQ登录、wechat：微信登录、apple：苹果登录、refresh_token：刷新token、anonymous：获取匿名token
@@ -55,6 +56,19 @@ Future<BaseResponseModel> sendSms(String phoneNumber, int type) async {
 Future<bool> logout() async {
   BaseResponseModel responseModel = await requestApi(LOGOUT, {"token": Application.token.accessToken},
       authType: AUTH_TYPE_NONE, autoHandleLogout: false);
+  if (responseModel.isSuccess) {
+    //TODO 这里实际需要将请求结果处理为具体的业务数据
+    return responseModel.code == CODE_SUCCESS;
+  } else {
+    //TODO 这里实际需要处理失败
+    return false;
+  }
+}
+
+//启动app调用(服务端处理数据)
+Future<bool> startApp() async {
+  BaseResponseModel responseModel = await requestApi(STARTAPP, {"token": Application.token.accessToken},
+      authType: AUTH_TYPE_NONE);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel.code == CODE_SUCCESS;

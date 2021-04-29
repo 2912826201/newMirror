@@ -282,7 +282,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         onTap: () {
           onItemCLick(index);
         },
-        onClickRightBtn: () {
+        onClickRightBtn: (indx) {
           //点击了删除按钮
           selectDeleteIndexList.clear();
           selectDeleteIndexList.add(index);

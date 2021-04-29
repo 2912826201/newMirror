@@ -227,3 +227,5 @@ const String START_TRAINING = "start_training";
 const String SCHEDULE_TRAINING_VIDEO = "schedule_training_video";
 //双击tabbar
 const String DOUBLE_TAP_TABBAR = "double_tap_tabbar";
+//获取设备信息
+const String GET_MACHINE_STATUS_INFO = "get_machine_status_info";

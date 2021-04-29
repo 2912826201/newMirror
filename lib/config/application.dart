@@ -167,6 +167,9 @@ class Application {
   //未读数-通知
   static int unreadNoticeNumber = 0;
 
+  //是否显示新用户的dialog
+  static bool isShowNewUserDialog = false;
+
   //发布失败动态key
   static String postFailurekey = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
@@ -233,5 +236,6 @@ class Application {
     postChatDataModelList.clear();
     unreadMessageNumber = 0;
     unreadNoticeNumber = 0;
+    isShowNewUserDialog =false;
   }
 }

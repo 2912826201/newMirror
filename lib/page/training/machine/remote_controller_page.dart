@@ -161,6 +161,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         time -= _partList[i].duration;
       }
     }
+    if(isLiveRoomController()){
+      _remainingPartTime=_currentPosition.toInt();
+    }
   }
 
   @override
@@ -236,11 +239,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildScreen() {
-    if (isNullCourse()) {
-      return _buildMachinePic();
-    } else {
-      return _buildVideoCourse();
-    }
+    return Stack(
+      children: [
+        Visibility(visible:isNullCourse(),child: _buildMachinePic()),
+        Visibility(visible:!isNullCourse(),child: _buildVideoCourse()),
+      ],
+    );
   }
 
   Widget _buildMachinePic() {
@@ -257,6 +261,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     return StreamBuilder(
       stream: streamVideoCourseCircleProgressBar.stream,
       builder: (context, snapshot) {
+        if(isLiveRoomController()){
+          _remainingPartTime=_currentPosition.toInt();
+        }
+        // print("_remainingPartTime:${_remainingPartTime}");
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -718,6 +726,17 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     } else {
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
+      if(isLiveRoomController()){
+        List<MachineModel> machineList = await getMachineStatusInfo();
+        if (machineList != null && machineList.isNotEmpty) {
+          _currentPosition=0;
+          for(int i=0;i<machineList.first.index;i++){
+            _currentPosition+=_partList[i].duration;
+          }
+          double time = machineList.first.progressBar/1000;
+          _currentPosition+=time;
+        }
+      }
       _updateInfoByPosition();
     }
     if(isLiveRoomController()){
@@ -776,7 +795,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
   }
 
-  //机器训练视频课程的训练进度
+
+  int timeSchedule=0;
+
   _scheduleTraining(TrainingScheduleModel model) {
     if(model.courseId!=courseId||!isVideoRoomController()){
       courseId=model.courseId;
@@ -785,38 +806,58 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _getCourseInformation();
       return;
     }
-    if(model.index==0&&model.progressBar<1000){
-      return;
-    }
-    double currentPosition=0;
+    _currentPosition=0;
     for(int i=0;i<model.index;i++){
-      currentPosition+=_partList[i].duration;
+      _currentPosition+=_partList[i].duration;
     }
-    int time = model.progressBar~/1000;
-    currentPosition+=time;
-    if((_currentPosition-currentPosition).abs()>0.5){
-      _currentPosition=currentPosition;
-    }
-    if(isVideoRoomController()){
-      if(timer==null) {
-        _timer();
-      }
+    double time = model.progressBar/1000;
+    _currentPosition+=time;
+    _currentPartIndex=model.index;
+    _remainingPartTime = _partList[_currentPartIndex].duration - time.toInt();
+    _partProgress = time / _partList[_currentPartIndex].duration;
+
+
+    print("model:${model.index},${model.progressBar},$_currentPosition,$_remainingPartTime,$_partProgress,${model.timestamp-timeSchedule}");
+    timeSchedule=model.timestamp;
+    if(mounted){
+      streamVideoCourseCircleProgressBar.sink.add(0);
+      // _timeSchedule();
     }
   }
+
+  //机器训练视频课程的训练进度
+  // _scheduleTraining(TrainingScheduleModel model) {
+  //   if(model.courseId!=courseId||!isVideoRoomController()){
+  //     courseId=model.courseId;
+  //     modeType=mode_video;
+  //     _currentPosition=0;
+  //     _getCourseInformation();
+  //     return;
+  //   }
+  //   double currentPosition=0;
+  //   for(int i=0;i<model.index;i++){
+  //     currentPosition+=_partList[i].duration;
+  //   }
+  //   currentPosition+=model.progressBar/1000;
+  //   if((_currentPosition-currentPosition).abs()>1){
+  //     print("_currentPosition:$_currentPosition,currentPosition:$currentPosition");
+  //     _currentPosition=currentPosition;
+  //   }
+  //   if(isVideoRoomController()){
+  //     if(timer==null) {
+  //       _timer();
+  //     }
+  //   }
+  // }
 
   //直播计时
   _timer(){
     timer=Timer.periodic(Duration(milliseconds: 100), (timer) {
-      _currentPosition +=0.1;
-      if(_currentPartIndex>_partList[_partList.length-1].duration&&_currentPartIndex==_partList.length-1){
-        this.timer.cancel();
-        this.timer=null;
-      }else {
-        _updateInfoByPosition();
-        if (mounted) {
-          streamVideoCourseCircleProgressBar.sink.add(0);
-        }
+      _updateInfoByPosition();
+      if (mounted) {
+        streamVideoCourseCircleProgressBar.sink.add(0);
       }
+      _currentPosition +=0.1;
     });
   }
 }

@@ -63,12 +63,14 @@ class ImgVideoMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     intData();
 
-    return sizeInfoMap == null
-        ? getContentBoxItem(context)
-        : Hero(
-            tag: sizeInfoMap["messageId"],
-            child: getContentBoxItem(context),
-          );
+    return
+        // sizeInfoMap == null
+        //   ?
+        getContentBoxItem(context);
+    // : Hero(
+    //     tag: sizeInfoMap["messageId"],
+    //     child: getContentBoxItem(context),
+    //   );
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -183,7 +185,12 @@ class ImgVideoMsg extends StatelessWidget {
           sizeInfoMap: sizeInfoMap,
           isOnlyContentHeight: true),
       child: GestureDetector(
-        child: imgVideoContentBox(context),
+        child: sizeInfoMap == null
+            ? imgVideoContentBox(context)
+            : Hero(
+                tag: sizeInfoMap["messageId"],
+                child: imgVideoContentBox(context),
+              ),
         onTap: () {
           onImgVideoContentBoxClick(context);
         },
@@ -406,11 +413,14 @@ class ImgVideoMsg extends StatelessWidget {
   void onImgVideoContentBoxClick(BuildContext context) {
     String imageUrl = sizeInfoMap["showImageUrl"];
     if (isImgOrVideo) {
+      print("___________________________${sizeInfoMap["messageId"]}");
       voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
       // ToastShow.show(msg: "点击了图片", context: context);
     } else {
+      print("___________________________${sizeInfoMap["messageId"]}");
       voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl, position: position);
       // ToastShow.show(msg: "点击了视频", context: context);
+
     }
   }
 }

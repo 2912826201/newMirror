@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -74,15 +75,8 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
 
   jumpPage()async{
     Future.delayed(Duration(milliseconds: 100),(){
-      //跳转不关闭当前页面
-      Navigator.of(context).push(
-        new MaterialPageRoute(
-          settings: RouteSettings(name: "LordQRCodePage"),
-          builder: (context) {
-            return LordQRCodePage();
-          },
-        ),
-      );
+      Navigator.of(context).pop();
+      AppRouter.navigateLordQRCodePage(context);
     });
   }
 }

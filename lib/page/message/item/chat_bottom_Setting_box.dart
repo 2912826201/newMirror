@@ -20,6 +20,7 @@ class ChatBottomSettingBox extends StatefulWidget {
   final Function(String text) changTextLen;
   final Function() deleteEditText;
   final Function() onSubmitClick;
+  final FocusNode focusNode;
   final ScrollController textScrollController;
 
   ChatBottomSettingBox(
@@ -29,6 +30,7 @@ class ChatBottomSettingBox extends StatefulWidget {
       this.textController,
       this.callBackCursorIndexPr,
       this.changTextLen,
+      this.focusNode,
       this.deleteEditText,
       this.onSubmitClick,
       this.textScrollController})
@@ -257,9 +259,17 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             ),
           ),
           onTap: () {
+
+            if(!widget.focusNode.hasFocus){
+              FocusScope.of(context).requestFocus(widget.focusNode);
+              return;
+            }
+
             // 表情光标改动前的位置
             if(cursorIndexPr<0){
               cursorIndexPr=0;
+            }else if(widget.textController.text.length<cursorIndexPr){
+              cursorIndexPr=widget.textController.text.length;
             }
             int changeFrontPosition = cursorIndexPr ?? 0;
             print("changeFrontPosition:1:$changeFrontPosition");

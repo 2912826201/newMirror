@@ -27,7 +27,7 @@ class LeftScrollListView extends StatefulWidget {
   final VoidCallback onTap;
 
   //点击删除按钮
-  final VoidCallback onClickRightBtn;
+  final ValueChanged<int> onClickRightBtn;
 
   //是否需要两次点击删除进行提示
   final bool isDoubleDelete;
@@ -81,7 +81,7 @@ class _LeftScrollListViewState extends State<LeftScrollListView> {
               });
             } else {
               if (widget.onClickRightBtn != null) {
-                widget.onClickRightBtn();
+                widget.onClickRightBtn(widget.itemIndex);
               }
             }
           },

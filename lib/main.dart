@@ -223,11 +223,11 @@ Future _initApp() async {
     profile = await ProfileDBHelper().queryProfile(token.uid);
     if (profile == null) {
       UserModel user = await getUserInfo();
-      if(user != null){
+      if (user != null) {
         profile = ProfileDto.fromUserModel(user);
         await ProfileDBHelper().insertProfile(profile);
         Application.profile = profile;
-      }else{
+      } else {
         //没能成功取到用户信息时 则视为登录失效 删掉之前的token
         Application.token = null;
       }
@@ -237,7 +237,18 @@ Future _initApp() async {
   } else {
     //匿名用户时 保持上面已赋值的默认初始值
   }
-
+  // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
+  // await startApp();
+  // todo 获取背景图配置表
+  try {
+    Application.topicBackgroundConfig.clear();
+    DataResponseModel dataResponseModel = await getBackgroundConfig();
+    if (dataResponseModel != null && dataResponseModel.list != null) {
+      dataResponseModel.list.forEach((v) {
+        Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
+      });
+    }
+  } catch (e) {}
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   Map<String, dynamic> videoCourseTagMap = await getAllTags();
   if (videoCourseTagMap != null) {
@@ -270,16 +281,6 @@ Future _initApp() async {
       if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
         queryNoPromptUidListMap["list"].forEach((v) {
           Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
-        });
-      }
-    } catch (e) {}
-    // todo 获取背景图配置表
-    try {
-      Application.topicBackgroundConfig.clear();
-      DataResponseModel dataResponseModel = await getBackgroundConfig();
-      if (dataResponseModel != null && dataResponseModel.list != null) {
-        dataResponseModel.list.forEach((v) {
-          Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
         });
       }
     } catch (e) {}

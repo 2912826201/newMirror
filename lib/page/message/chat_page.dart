@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -256,6 +258,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           if (conversation.getType() != RCConversationType.System)
             ChatBottomSettingBox(
               key: bottomSettingChildKey,
+              focusNode: _focusNode,
               bottomSettingPanelState: _bottomSettingPanelState,
               emojiState: _emojiState,
               textController: _textController,
@@ -322,6 +325,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
+    bool isPersonalButler=false;
+    //todo 单独展示底部选着面板的id-1002885
+    if(conversation.type==PRIVATE_TYPE&&conversation.uid==1008051){
+      isPersonalButler=true;
+    }
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
       chatTopAtMarkChildKey: chatTopAtMarkChildKey,
@@ -334,7 +342,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       voidMessageClickCallBack: onMessageClickCallBack,
       chatName: getChatName(),
       conversationDtoType: conversation.type,
-      isPersonalButler: conversation.type == MANAGER_TYPE,
+      isPersonalButler: isPersonalButler,
       isHaveAtMeMsg: isHaveAtMeMsg,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
@@ -880,6 +888,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       if (mounted) {
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
         context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
@@ -898,6 +907,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       _changTextLen("");
       // List list=[];
       // list.add(0);
@@ -1055,6 +1065,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         recallNotificationMessagePosition = -1;
         if (mounted) {
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
@@ -1080,6 +1091,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isShowTopAttentionUi = true;
           _resetShowTopAttentionUi();
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
@@ -1190,6 +1202,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
     if (mounted) {
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       isHaveTextLen = false;
       EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
@@ -1310,11 +1323,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         String imageUrl = map["showImageUrl"];
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'image', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'image', imageUrl);
           sourceList.add(demoSourceEntity);
         }
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'video', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'video', imageUrl);
           sourceList.add(demoSourceEntity);
         }
       } catch (e) {
@@ -1629,6 +1642,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       if(_textController.text.length>0){
         context.read<ChatEnterNotifier>().clearRules();
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
       }
       _isVoiceState = false;
@@ -1734,6 +1748,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       if(_textController.text.length>0){
         context.read<ChatEnterNotifier>().clearRules();
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
       }
       _isVoiceState = !_isVoiceState;
@@ -2058,6 +2073,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
+      bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
       Future.delayed(Duration(milliseconds: 100), () {
         textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
       });
@@ -2070,7 +2086,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
-      _postSelectMessage(content);
+      // _postSelectMessage(content);
+      if(content=="拉入群聊"){
+        _showGroupPopup();
+      }
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
       ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
       if (ClickUtil.isFastClick(time: 200)) {
@@ -2105,11 +2124,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
             Map<String, dynamic> map = json.decode(mapModel["data"]);
             String imageUrl = map["showImageUrl"];
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'image', imageUrl);
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'image', imageUrl);
               sourceList.add(demoSourceEntity);
             }
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'video', imageUrl);
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'video', imageUrl);
               sourceList.add(demoSourceEntity);
             }
           } catch (e) {
@@ -2125,7 +2144,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     print("当前点击的messageID：${chatDataList[position].msg.messageId}");
     for (int i = sourceList.length - 1; i >= 0; i--) {
       DemoSourceEntity source = sourceList[i];
-      if (int.parse(source.heroId) == chatDataList[position].msg.messageId) {
+      if (source.heroId == chatDataList[position].msg.messageId) {
         initIndex = i;
       }
     }
@@ -2161,6 +2180,20 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  //显示我已加入的群聊--邀请对话的人进入群聊
+  _showGroupPopup(){
+    showGroupPopup(context,
+      int.parse(conversation.conversationId),
+      (GroupChatModel groupChatModel)async{
+        bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
+        if(isSuccess){
+          String name = groupChatModel.modifiedName ?? groupChatModel.name;
+          _postText("我已邀请你进入群聊：$name");
+        }
+      }
+    );
   }
 
   @override

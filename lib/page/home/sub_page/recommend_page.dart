@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -18,6 +20,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -135,6 +138,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     super.initState();
+
+    _showImageDialog();
   }
 
   // 合并请求
@@ -220,6 +225,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   againLoginReplaceLayout() {
     _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    _showImageDialog();
   }
 
   @override
@@ -475,5 +481,28 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         },
       ),
     );
+  }
+
+  //判断是不是显示活动的dialog
+  //todo 新用户登录展示活动的入口---活动入口好吃
+  //todo 用户今天第一次登录展示活动的入口
+  _showImageDialog(){
+    Future.delayed(Duration(milliseconds: 300),(){
+      if(context.read<TokenNotifier>().isLoggedIn){
+        bool isShowNewUserDialog=false;
+        if(Application.isShowNewUserDialog){
+          isShowNewUserDialog=true;
+        }else if(AppPrefs.isFirstLaunchToDay()){
+          isShowNewUserDialog=true;
+        }
+        if(isShowNewUserDialog){
+          String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
+          Application.isShowNewUserDialog=false;
+          showImageDialog(context, imageUrl: image, onClickListener: () {
+            AppRouter.navigateNewUserPromotionPage(context);
+          });
+        }
+      }
+    });
   }
 }
