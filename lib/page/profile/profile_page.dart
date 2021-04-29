@@ -491,15 +491,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToHeightAndWeigetPage(context);
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("参加活动" == title) {
-      showImageDialog(context, onClickListener: () {
-        AppRouter.navigateNewUserPromotionPage(context);
-      });
-      // List<MachineModel> machineList = await getMachineStatusInfo();
-      // if (machineList != null && machineList.isNotEmpty) {
-      //   context.read<MachineNotifier>().setMachine(machineList.first);
-      // } else {
-      //   context.read<MachineNotifier>().setMachine(null);
-      // }
+      // showImageDialog(context, onClickListener: () {
+      //   AppRouter.navigateNewUserPromotionPage(context);
+      // });
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
+      } else {
+        context.read<MachineNotifier>().setMachine(null);
+      }
     }
   }
 }

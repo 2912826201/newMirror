@@ -90,7 +90,7 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
 
   @override
   Widget build(BuildContext context) {
-    if(isLiveRoomController){
+    if(isLiveRoomController&&currentPosition!=null){
       remainingPartTime=currentPosition.toInt();
     }
     return Column(
