@@ -112,6 +112,7 @@ Future _initApp() async {
   // 添加内存不足的监听处理
   MyWidgetsBindingObserver observer = MyWidgetsBindingObserver();
   WidgetsBinding.instance.addObserver(observer);
+
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
@@ -240,8 +241,6 @@ Future _initApp() async {
   } else {
     //匿名用户时 保持上面已赋值的默认初始值
   }
-  // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
-  // await startApp();
   // todo 获取背景图配置表
   try {
     Application.topicBackgroundConfig.clear();
@@ -288,6 +287,8 @@ Future _initApp() async {
       }
     } catch (e) {}
   }
+  // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
+  await startApp();
 }
 
 //初始化地区数据
