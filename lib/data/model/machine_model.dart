@@ -22,6 +22,14 @@ class MachineModel {
   String deviceNumber;
   String sysVersion;
   String wifi;
+  int inGame;
+  int pause;
+  int index;
+  int courseId;
+  int type;
+  int progressBar;
+  int timestamp;
+  int startCourse;
 
   MachineModel(
       {this.isConnect,
@@ -32,7 +40,15 @@ class MachineModel {
       this.name,
       this.deviceNumber,
       this.sysVersion,
-      this.wifi});
+      this.wifi,
+      this.inGame,
+      this.pause,
+      this.index,
+      this.courseId,
+      this.type,
+      this.progressBar,
+      this.timestamp,
+      this.startCourse});
 
   MachineModel.fromJson(Map<String, dynamic> json) {
     isConnect = json["isConnect"];
@@ -44,6 +60,14 @@ class MachineModel {
     deviceNumber = json["deviceNumber"];
     sysVersion = json["sysVersion"];
     wifi = json["wifi"];
+    inGame = json["inGame"];
+    pause = json["pause"];
+    index = json["index"];
+    courseId = json["courseId"];
+    type = json["type"];
+    progressBar = json["progressBar"];
+    timestamp = json["timestamp"];
+    startCourse = json["startCourse"];
   }
 
   Map<String, dynamic> toJson() {
@@ -57,6 +81,14 @@ class MachineModel {
     map["deviceNumber"] = deviceNumber;
     map["sysVersion"] = sysVersion;
     map["wifi"] = wifi;
+    map["inGame"] = inGame;
+    map["pause"] = pause;
+    map["index"] = index;
+    map["courseId"] = courseId;
+    map["type"] = type;
+    map["progressBar"] = progressBar;
+    map["timestamp"] = timestamp;
+    map["startCourse"] = startCourse;
     return map;
   }
 }
