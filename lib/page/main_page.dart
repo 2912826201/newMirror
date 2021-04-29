@@ -125,8 +125,8 @@ class MainPageState extends XCState {
   }
 
   _getMachineStatusInfo(MachineModel model){
+    print("MachineModel:${model.toJson().toString()}");
     if(model!=null&&model.isConnect==1&&model.inGame==1){
-      print("MachineModel:${model.toJson().toString()}");
       if(model.type==0){
         if(!AppRouter.isHaveMachineRemoteControllerPage()){
           List list = [];
