@@ -176,7 +176,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动")
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动")
               // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
               /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
@@ -494,12 +494,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       // showImageDialog(context, onClickListener: () {
       //   AppRouter.navigateNewUserPromotionPage(context);
       // });
-      // List<MachineModel> machineList = await getMachineStatusInfo();
-      // if (machineList != null && machineList.isNotEmpty) {
-      //   context.read<MachineNotifier>().setMachine(machineList.first);
-      // } else {
-      //   context.read<MachineNotifier>().setMachine(null);
-      // }
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
+      } else {
+        context.read<MachineNotifier>().setMachine(null);
+      }
     }
   }
 }
