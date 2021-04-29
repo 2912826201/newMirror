@@ -494,12 +494,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       // showImageDialog(context, onClickListener: () {
       //   AppRouter.navigateNewUserPromotionPage(context);
       // });
-      List<MachineModel> machineList = await getMachineStatusInfo();
-      if (machineList != null && machineList.isNotEmpty) {
-        context.read<MachineNotifier>().setMachine(machineList.first);
-      } else {
-        context.read<MachineNotifier>().setMachine(null);
-      }
+      // List<MachineModel> machineList = await getMachineStatusInfo();
+      // if (machineList != null && machineList.isNotEmpty) {
+      //   context.read<MachineNotifier>().setMachine(machineList.first);
+      // } else {
+      //   context.read<MachineNotifier>().setMachine(null);
+      // }
     }
   }
 }

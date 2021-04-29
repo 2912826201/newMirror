@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -128,12 +129,10 @@ class MainPageState extends XCState {
     print("MachineModel:${model.toJson().toString()}");
     if(model!=null&&model.isConnect==1&&model.inGame==1){
       if(model.type==0){
+        print("+-++++++++++++++++++++++++++++++++++++++++++++++");
         if(!AppRouter.isHaveMachineRemoteControllerPage()){
-          List list = [];
-          String modeType = mode_live;
-          list.add(model.courseId);
-          list.add(modeType);
-          EventBus.getDefault().post(msg: list, registerName: START_TRAINING);
+          BuildContext context = Application.navigatorKey.currentState.overlay.context;
+          AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_live);
         }
       }
     }
