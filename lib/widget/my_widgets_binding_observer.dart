@@ -8,7 +8,7 @@ class MyWidgetsBindingObserver extends WidgetsBindingObserver {
     // TODO: implement didHaveMemoryPressure
     super.didHaveMemoryPressure();
     try {
-      print("main文件清除缓存");
+      print("main文件图片清除缓存");
       ImageCachedObserverUtil.clearPendingCacheImage();
     } catch (e) {
       print("内存不足清除失败");
