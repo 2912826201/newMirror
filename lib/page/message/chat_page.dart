@@ -339,7 +339,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     bool isShowName = conversation.getType() == RCConversationType.Group;
     bool isPersonalButler=false;
     //todo 单独展示底部选着面板的id-1002885-1008051
-    if(conversation.type==PRIVATE_TYPE&&conversation.uid==1002885){
+    if(conversation.type==PRIVATE_TYPE&&conversation.uid==coachIsAccountId){
       isPersonalButler=true;
     }
     return ChatDetailsBody(
@@ -2108,13 +2108,13 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         _textController.selection = setCursor;
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
-      ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
+      // ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
       // _postSelectMessage(content);
       if(content=="拉入群聊"){
         _showGroupPopup();
       }
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-      ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
+      // ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
       if (ClickUtil.isFastClick(time: 200)) {
         return;
       }
