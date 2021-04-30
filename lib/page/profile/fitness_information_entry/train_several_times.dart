@@ -69,24 +69,15 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
             SizedBox(
               height: 42,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练3次", three, 3),
-            ),
+           _button("训练3次", three, 3),
             SizedBox(
               height: 18,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练4次", four, 4),
-            ),
+             _button("训练4次", four, 4),
             SizedBox(
               height: 18,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练5次", fives, 5),
-            ),
+             _button("训练5次", fives, 5),
           ],
         ),
       ),
@@ -102,8 +93,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         height: 44.0,
         width: ScreenUtil.instance.screenWidthDp,
         circular: 3.0,
-        textColor: selected ? AppColor.white : AppColor.textHint,
-        fontSize: 16,
+        textColor: selected ? AppColor.white : AppColor.textPrimary1,
+        fontSize: 18,
         backColor: selected ? AppColor.bgBlack : AppColor.transparent,
         color: selected ? AppColor.transparent : AppColor.textHint,
         onTap: () {
