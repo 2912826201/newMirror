@@ -3,15 +3,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 class NewUserPromotionPage extends StatefulWidget {
   @override
@@ -27,6 +27,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
     return WillPopScope(
         child: Scaffold(
           appBar: CustomAppBar(
+            leadingOnTap:_requestPop,
             titleString: "活动界面",
           ),
           body:  getBodyUi(),
@@ -75,6 +76,11 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
                 child: Image.asset(imageBtn),
               ),
               onTap: (){
+                if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+                  ToastShow.show(msg: "请先登陆app!", context: context);
+                  AppRouter.navigateToLoginPage(context);
+                  return;
+                }
                 jumpPage();
               },
             ),
