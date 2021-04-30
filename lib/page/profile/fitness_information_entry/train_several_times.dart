@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -139,5 +140,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
       AppRouter.popToBeforeLogin(context);
       print('================================健身信息录入失败');
     }
+    Future.delayed(Duration(milliseconds: 100),(){
+      EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
+    });
   }
 }

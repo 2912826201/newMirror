@@ -288,7 +288,7 @@ Future _initApp() async {
     } catch (e) {}
   }
   // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
-  //await startApp();
+  // await startApp();
 }
 
 //初始化地区数据

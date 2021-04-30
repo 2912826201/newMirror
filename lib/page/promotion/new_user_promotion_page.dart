@@ -2,12 +2,16 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-
-import 'lord_qr_code_page.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class NewUserPromotionPage extends StatefulWidget {
   @override
@@ -15,68 +19,100 @@ class NewUserPromotionPage extends StatefulWidget {
 }
 
 class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
-  String image = "assets/png/new_user_event_dialog.png";
+  String image = "assets/png/new_user_promotion_page_bg.png";
+  String imageBtn = "assets/png/new_user_promotion_page_btn.png";
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        titleString: "活动界面",
-      ),
-      body:  Container(
-        child: Column(
-          children: [
-            Expanded(child: SizedBox(
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Image.asset(image,fit: BoxFit.cover),
-                ),
-              ),
-            )),
-            Container(
-              height: 48,
-              width: ScreenUtil.instance.width,
-              color: Colors.white,
-              child: GestureDetector(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 32,vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Text(
-                    "报名",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18,color: Colors.white),
-                  ),
-                ),
-                onTap: (){
-                  showAppDialog(context,
-                      title: "报名",
-                      info: "确定要报名参加训练营吗？",
-                      barrierDismissible: false,
-                      cancel: AppDialogButton("取消", () {
-                        print("点了取消");
-                        return true;
-                      }),
-                      confirm: AppDialogButton("确定", () {
-                        print("点击了确定");
-                        jumpPage();
-                        return true;
-                      }));
-                },
-              ),
-            )
+    return WillPopScope(
+        child: Scaffold(
+          appBar: CustomAppBar(
+            titleString: "活动界面",
+          ),
+          body:  getBodyUi(),
+        ),
+        onWillPop: _requestPop);
+  }
+
+
+  Widget getBodyUi(){
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xffDBD1FF),
+            Color(0xff927AF0),
           ],
         ),
+      ),
+      child: Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          // ScrollConfiguration(
+          //     behavior: OverScrollBehavior(),
+          //     child: SingleChildScrollView(
+          //       physics: RangeMaintainingScrollPhysics(),
+          //       child: Container(
+          //         child: Image.asset(image,fit: BoxFit.cover),
+          //       ),
+          //     ),
+          // ),
+          SingleChildScrollView(
+            physics: ClampingScrollPhysics(),
+            child: Container(
+              child: Image.asset(image,fit: BoxFit.cover),
+            ),
+          ),
+          Container(
+            height: 117,
+            margin: EdgeInsets.only(bottom: 12),
+            width: ScreenUtil.instance.width,
+            color: Colors.transparent,
+            child: GestureDetector(
+              child: Container(
+                child: Image.asset(imageBtn),
+              ),
+              onTap: (){
+                jumpPage();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
+  // 监听返回事件
+  Future<bool> _requestPop() {
+    _exitPageListener();
+    return new Future.value(false);
+  }
+
+  //退出界面
+  _exitPageListener() {
+    showAppDialog(context,
+        info: "不再看一眼？报名后即可获得教练一对一指导和丰富福利哦",
+        barrierDismissible: false,
+        cancel: AppDialogButton("残忍离开", () {
+          Navigator.of(context).pop();
+          return true;
+        }),
+        confirm: AppDialogButton("再看看", () {
+          return true;
+        }));
+  }
+
   jumpPage()async{
-    Future.delayed(Duration(milliseconds: 100),(){
+    Future.delayed(Duration(milliseconds: 100),()async{
       Navigator.of(context).pop();
-      AppRouter.navigateLordQRCodePage(context);
+      ProfileAddFollow(1002885);
+      UserModel userModel=UserModel();
+      userModel.nickName="大灰狼";
+      userModel.uid=1002885;
+      userModel.avatarUri="http://devpic.aimymusic.com/ifapp/1002885/1618397003729.jpg";
+      jumpChatPageUser(context, userModel,textContent: "我要参加训练营");
     });
   }
 }

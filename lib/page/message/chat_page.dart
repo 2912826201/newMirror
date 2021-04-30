@@ -76,12 +76,14 @@ class ChatPage extends StatefulWidget {
   final List<ChatDataModel> chatDataList;
   final int systemPage;
   final String systemLastTime;
+  final String textContent;
 
   ChatPage(
       {Key key,
       @required this.conversation,
       this.shareMessage,
       this.chatDataList,
+      this.textContent,
       this.systemLastTime,
       this.systemPage,
       this.context})
@@ -91,7 +93,7 @@ class ChatPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     List<ChatDataModel> chatDataList=[];
     chatDataList.addAll(this.chatDataList);
-    return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList);
+    return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList,textContent);
   }
 }
 
@@ -105,10 +107,17 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   final List<ChatDataModel> chatDataList;
 
   String systemLastTime;
+  String textContent;
   int systemPage = 0;
 
   ChatPageState(
-      this.conversation, this.shareMessage, this._context, this.systemLastTime, this.systemPage, this.chatDataList);
+      this.conversation,
+      this.shareMessage,
+      this._context,
+      this.systemLastTime,
+      this.systemPage,
+      this.chatDataList,
+      this.textContent);
 
   //是否显示表情
   bool _emojiState = false;
@@ -214,6 +223,9 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     initScrollController();
 
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+
+    //自动发送消息
+    _sendMessageAutomatically();
   }
 
   @override
@@ -326,8 +338,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
     bool isPersonalButler=false;
-    //todo 单独展示底部选着面板的id-1002885
-    if(conversation.type==PRIVATE_TYPE&&conversation.uid==1008051){
+    //todo 单独展示底部选着面板的id-1002885-1008051
+    if(conversation.type==PRIVATE_TYPE&&conversation.uid==1002885){
       isPersonalButler=true;
     }
     return ChatDetailsBody(
@@ -851,6 +863,17 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   ///------------------------------------数据初始化和各种回调   end--------------------------------------------------------------------------------///
 
   ///------------------------------------发送消息  start-----------------------------------------------------------------------///
+
+  //自动发送消息
+  _sendMessageAutomatically(){
+    Future.delayed(Duration(seconds: 1),(){
+      if(conversation.type==PRIVATE_TYPE&&textContent!=null&&textContent.length>0){
+        _attntionOnClick();
+        _postText(textContent);
+        textContent=null;
+      }
+    });
+  }
 
   //发送文字消息
   _postText(String text) {
@@ -2187,6 +2210,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     showGroupPopup(context,
       int.parse(conversation.conversationId),
       (GroupChatModel groupChatModel)async{
+        await ProfileAddFollow(1002885);
         bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
         if(isSuccess){
           String name = groupChatModel.modifiedName ?? groupChatModel.name;

@@ -53,6 +53,7 @@ int imPostSecondNumber = 5;
 void jumpChatPageUser(
   BuildContext context,
   UserModel userModel,
+{String textContent}
 ) {
   ConversationDto conversation = new ConversationDto();
   conversation.conversationId = userModel.uid.toString();
@@ -60,7 +61,7 @@ void jumpChatPageUser(
   conversation.name = userModel.nickName;
   conversation.avatarUri = userModel.avatarUri;
   conversation.type = PRIVATE_TYPE;
-  jumpChatPageConversationDto(context, conversation);
+  jumpChatPageConversationDto(context, conversation,textContent: textContent);
 }
 
 //分享跳转界面
@@ -123,8 +124,8 @@ Future<bool> jumpShareMessage(
 }
 
 //去聊天界面
-void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation) {
-  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null);
+void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation,{String textContent}) {
+  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null,textContent: textContent);
 }
 
 //去群聊界面
@@ -143,13 +144,14 @@ void jumpChatPageTest(BuildContext context) {
 }
 
 //跳转界面-去聊天界面-先获取群成员
-void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async {
+void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage,String textContent}) async {
 
   if (conversation.type == GROUP_TYPE) {
+    textContent=null;
     context.read<GroupUserProfileNotifier>().clearAllUser();
   }
 
-  _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage);
+  _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage,textContent: textContent);
 
   if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
@@ -160,7 +162,7 @@ void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Mes
 }
 
 //跳转界面-去聊天界面
-void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage}) async {
+void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage,String textContent}) async {
   List<ChatDataModel> chatDataModelList;
   int systemPage = 0;
   String systemLastTime;
@@ -179,6 +181,7 @@ void _jumpChatPage({BuildContext context, ConversationDto conversation, Message 
     shareMessage: shareMessage,
     systemPage: systemPage,
     systemLastTime: systemLastTime,
+    textContent: textContent,
   );
 }
 
