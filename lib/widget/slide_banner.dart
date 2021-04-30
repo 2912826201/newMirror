@@ -105,10 +105,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     // swiperController.addListener(() {
     //   print(swiperController.index);
     // });
-    // 预加载图片组件
-    if (widget.model.picUrls.isNotEmpty) {
-      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
-    }
+
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection);
@@ -186,9 +183,9 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 // useOldImageOnUrlChange: true,
                 fit: BoxFit.cover,
                 imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                // placeholder: (context, url) => Container(
-                //   color: AppColor.bgWhite,
-                // ),
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
+                ),
                 errorWidget: (context, url, e) {
                   return Container(
                     color: AppColor.bgWhite,
@@ -337,7 +334,10 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
     print("轮播图builder：${widget.model.id}");
-
+    // 预加载图片组件
+    if (widget.model != null && widget.model.picUrls.isNotEmpty) {
+      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
+    }
     // else if (widget.model != null && widget.model.selectedMediaFiles != null) {
     //   cupertinoButtonList = localPicture(setAspectRatio(widget.height));
     // }
@@ -474,9 +474,11 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     super.didHaveMemoryPressure();
     try {
       print("轮播图清除缓存");
-      widget.model.picUrls.forEach((element) {
-        ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
-      });
+      if (widget.model != null && widget.model.picUrls.length > 0) {
+        widget.model.picUrls.forEach((element) {
+          ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
+        });
+      }
     } catch (e) {
       print("轮播图清除缓存失败：：：：：：：：：$e");
     }

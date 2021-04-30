@@ -33,7 +33,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:toast/toast.dart';

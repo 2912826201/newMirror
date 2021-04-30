@@ -27,9 +27,8 @@ class _AppDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 375.0/ScreenUtil.instance.width*272,
       decoration: BoxDecoration(
-        color: AppColor.transparent,
+        color:AppColor.transparent,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
@@ -55,9 +54,7 @@ class _AppDialog extends StatelessWidget {
     if (imageUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          height: 297.0/272.0*(375.0/ScreenUtil.instance.width*272),
-          color: AppColor.transparent,
-          child: Image.asset(imageUrl,fit: BoxFit.cover,),
+          child: Image.asset(imageUrl),
         ),
         onTap: (){
           Navigator.pop(context);
@@ -77,7 +74,7 @@ class _AppDialog extends StatelessWidget {
     if (imageBtnUrl != null) {
       _viewList.add(GestureDetector(
         child: Container(
-          width: 375.0/ScreenUtil.instance.width*130,
+          width: ScreenUtil.instance.width*0.43,
           color: AppColor.transparent,
           child: Image.asset(imageBtnUrl,fit: BoxFit.cover,),
         ),

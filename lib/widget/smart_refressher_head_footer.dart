@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'pull_to_refresh/pull_to_refresh.dart';
 
 class SmartRefresherHeadFooter{
   static SmartRefresherHeadFooter _headFooter;

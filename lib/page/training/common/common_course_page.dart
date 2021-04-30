@@ -14,7 +14,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 Widget getNoCompleteTitle(BuildContext context, String text) {
   return Container(

@@ -81,7 +81,7 @@ Future<int> ProfileAddFollow(int id,{int type=0}) async {
   int backCode;
   if (responseModel.isSuccess) {
     Map<String, dynamic> result = responseModel.data;
-    if (result.isNotEmpty) {
+    if (null!=result&&result.isNotEmpty) {
       backCode = result["relation"];
       return backCode;
     }

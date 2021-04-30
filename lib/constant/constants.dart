@@ -23,3 +23,6 @@ const int maxImageSizeLarge = 500;
 
 //截图保存尺寸
 const double cropImageSize = 1080.0;
+
+//教练的账号
+const int coachIsAccountId=1002885;

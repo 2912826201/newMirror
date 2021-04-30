@@ -919,6 +919,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
 
   _setProgressBarChildKeyData(){
+    if(!mounted||progressBarChildKey==null||progressBarChildKey.currentState==null||progressBarChildKey.currentState.setStateData==null){
+      return;
+    }
     progressBarChildKey.currentState.setStateData(
       _partList,
       _currentPartIndex,
