@@ -92,7 +92,11 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     _feedList.forEach((element) {
       value._feedMap[element.id] = element;
       value._feedMap[element.id].hotComment = [];
-      if (element.comments.isNotEmpty) {
+      if (element.comments.isNotEmpty&&element.comments.length>1) {
+        for(int i = 0; i < 2;i++){
+          value._feedMap[element.id].hotComment.add(element.comments[i]);
+        }
+      }else if(element.comments.isNotEmpty){
         value._feedMap[element.id].hotComment.addAll(element.comments);
       }
     });

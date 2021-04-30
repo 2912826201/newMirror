@@ -67,7 +67,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       return;
     }
     QueryListModel model = await queryMsgList(type, 20, lastTime);
-
     if (listPage == 1) {
       controller.loadComplete();
       if (model != null) {
@@ -88,7 +87,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         haveData = false;
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
-        controller.refreshFailed();
+        controller.refreshCompleted();
       }
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
