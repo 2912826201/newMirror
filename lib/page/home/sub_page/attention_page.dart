@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
@@ -480,7 +481,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
         ///临时的空数组
         List<int> themList = [];
-
+        List<HomeFeedModel> feedList = [];
+        feedMap.forEach((key, value) {
+          if (value.pushId == pushId) {
+            themList.add(key);
+            feedList.add(value);
+          }
+        });
         print("themList:::${themList.toString()}");
         print("attentionIdList:::${attentionIdList.toString()}");
         if (arrayDate(attentionIdList, themList).length == 0) {
@@ -494,6 +501,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           print("进入了222222");
           setState(() {
             attentionIdList = arrayDate(attentionIdList, themList);
+            // 去重
+            attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
           });
