@@ -36,7 +36,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/constants.dart';
 

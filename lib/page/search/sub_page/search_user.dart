@@ -12,7 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class SearchUser extends StatefulWidget {
   String text;

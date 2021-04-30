@@ -8,6 +8,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/machine_model.dart';
@@ -28,7 +29,7 @@ import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
@@ -531,7 +532,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   _showImageDialog(){
-    if(context.read<TokenNotifier>().isLoggedIn&&!this.isShowNewUserDialog){
+    if(context.read<TokenNotifier>().isLoggedIn&&!this.isShowNewUserDialog&&
+      Application.profile.uid!=coachIsAccountId){
       bool isShowNewUserDialog=false;
       if(Application.isShowNewUserDialog){
         isShowNewUserDialog=true;

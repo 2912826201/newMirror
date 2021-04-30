@@ -35,7 +35,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class TopicDetail extends StatefulWidget {
   TopicDetail({Key key, this.isTopicList, this.topicId}) : super(key: key);

@@ -26,7 +26,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/api/message_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 import '../message_chat_page_manager.dart';
