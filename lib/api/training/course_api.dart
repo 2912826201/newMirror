@@ -390,7 +390,7 @@ Future<Map> feeling(int courseId, String feel) async {
   return params;
 }
 
-///反馈直播训练感受
+///查询禁言时间
 ///liveRoomId：直播间id
 ///uid：用户id不填则为当前用户
 Future<Map> queryMute(int liveRoomId) async {

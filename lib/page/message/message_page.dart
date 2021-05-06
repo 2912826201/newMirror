@@ -8,6 +8,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
@@ -465,12 +466,21 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     if (NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
       messageCount = 0;
     }
+    //
+    // MessageContent msgContent = MessageContent();
+    // msgContent.decode(conversation.content);
+    // //FIXME 是否有人at我 不能只看最新一条 要从map中查
+    // bool isMentioned = msgContent.mentionedInfo != null &&
+    //     msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
+    //
 
-    MessageContent msgContent = MessageContent();
-    msgContent.decode(conversation.content);
-    //FIXME 是否有人at我 不能只看最新一条 要从map中查
-    bool isMentioned = msgContent.mentionedInfo != null &&
-        msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
+    bool isMentioned;
+    AtMsg atMeMsg = Application.atMesGroupModel.getAtMsg(conversation.conversationId);
+    if (atMeMsg == null) {
+      isMentioned=false;
+    } else {
+      isMentioned = true;
+    }
     List<String> avatarList = conversation.avatarUri.split(",");
     return isIos
         ? StreamBuilder<ConversationAnimationModel>(
