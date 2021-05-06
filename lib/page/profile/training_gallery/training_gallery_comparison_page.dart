@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -16,6 +17,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:intl/intl.dart';
+import 'package:mirror/widget/loading.dart';
 
 /// training_gallery_comparison_page
 /// Created by yangjiayi on 2021/1/25.
@@ -38,6 +40,19 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
 
   bool _isBusy = false;
 
+// 图片加载完成监听
+  StreamController<ImageDownloadFinished> streamController = StreamController<ImageDownloadFinished>();
+  ImageDownloadFinished imageDownloadFinished = ImageDownloadFinished();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Loading.showLoading(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _canvasSize = ScreenUtil.instance.screenWidthDp;
@@ -48,37 +63,47 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
           Container(
             padding:
                 const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
-              "完成",
-              CustomRedButton.buttonStateNormal,
-              () async {
-                //因为获取图像数据需要时间，所以可能在快速点击时执行多次此方法，获取多次图像弹出多个分享弹窗。根据_isBusy变量状态控制
-                if(_isBusy){
-                  return;
-                }
-                _isBusy = true;
-                RenderRepaintBoundary boundary = _cropperKey.currentContext.findRenderObject();
-                double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
-                ui.Image image = await boundary.toImage(pixelRatio: dpr);
-                print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-                print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                Uint8List picBytes = byteData.buffer.asUint8List();
-                print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                File imageFile =
-                    await FileUtil().writeImageDataToFile(picBytes, DateTime.now().millisecondsSinceEpoch.toString());
-                SharedImageModel model = SharedImageModel();
-                model.width = (_canvasSize * dpr).toInt();
-                model.height = (_canvasSize * dpr).toInt();
-                model.file = imageFile;
-                openShareBottomSheet(
-                    context: context,
-                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
-                    map: model.toJson(),
-                    sharedType: 2);
-                _isBusy = false;
-              },
-            ),
+            child: StreamBuilder<ImageDownloadFinished>(
+                initialData: imageDownloadFinished,
+                stream: streamController.stream,
+                builder: (BuildContext stramContext, AsyncSnapshot<ImageDownloadFinished> snapshot) {
+                  if (snapshot.data.afterImage && snapshot.data.beforeImage) {
+                    Loading.hideLoading(context);
+                  }
+                  return CustomRedButton(
+                    "完成",
+                    snapshot.data.afterImage && snapshot.data.beforeImage
+                        ? CustomRedButton.buttonStateNormal
+                        : CustomRedButton.buttonStateInvalid,
+                    () async {
+                      //因为获取图像数据需要时间，所以可能在快速点击时执行多次此方法，获取多次图像弹出多个分享弹窗。根据_isBusy变量状态控制
+                      if (_isBusy) {
+                        return;
+                      }
+                      _isBusy = true;
+                      RenderRepaintBoundary boundary = _cropperKey.currentContext.findRenderObject();
+                      double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
+                      ui.Image image = await boundary.toImage(pixelRatio: dpr);
+                      print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                      ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+                      print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                      Uint8List picBytes = byteData.buffer.asUint8List();
+                      print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                      File imageFile = await FileUtil()
+                          .writeImageDataToFile(picBytes, DateTime.now().millisecondsSinceEpoch.toString());
+                      SharedImageModel model = SharedImageModel();
+                      model.width = (_canvasSize * dpr).toInt();
+                      model.height = (_canvasSize * dpr).toInt();
+                      model.file = imageFile;
+                      openShareBottomSheet(
+                          context: context,
+                          chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
+                          map: model.toJson(),
+                          sharedType: 2);
+                      _isBusy = false;
+                    },
+                  );
+                }),
           ),
         ],
       ),
@@ -114,6 +139,9 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                       setState(() {
                         _orientation = Axis.vertical;
                       });
+                      imageDownloadFinished.beforeImage = false;
+                      imageDownloadFinished.afterImage = false;
+                      streamController.sink.add(imageDownloadFinished);
                     }
                   },
                   child: AppIcon.getAppIcon(
@@ -131,6 +159,9 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                       setState(() {
                         _orientation = Axis.horizontal;
                       });
+                      imageDownloadFinished.beforeImage = false;
+                      imageDownloadFinished.afterImage = false;
+                      streamController.sink.add(imageDownloadFinished);
                     }
                   },
                   child: AppIcon.getAppIcon(
@@ -157,7 +188,9 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
             child: Stack(
               children: [
                 CropperImage(
-                  NetworkImage(widget.image1.url),
+                  NetworkImage(
+                    widget.image1.url,
+                  ),
                   lineWidth: 0,
                   outHeight: 1,
                   outWidth: 2,
@@ -165,6 +198,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
+                  imageLoadCompleteCallBack: (bo) {
+                    print("图片加载完成1");
+                    imageDownloadFinished.beforeImage = true;
+                    streamController.sink.add(imageDownloadFinished);
+                  },
                 ),
                 Positioned(
                   left: 10,
@@ -187,6 +225,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
+                  imageLoadCompleteCallBack: (bo) {
+                    print("图片加载完成2");
+                    imageDownloadFinished.afterImage = true;
+                    streamController.sink.add(imageDownloadFinished);
+                  },
                 ),
                 Positioned(
                   left: 10,
@@ -214,6 +257,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
+                  imageLoadCompleteCallBack: (bo) {
+                    print("图片加载完成3");
+                    imageDownloadFinished.beforeImage = true;
+                    streamController.sink.add(imageDownloadFinished);
+                  },
                 ),
                 Positioned(
                   left: 16,
@@ -236,6 +284,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
+                  imageLoadCompleteCallBack: (bo) {
+                    print("图片加载完成4");
+                    imageDownloadFinished.afterImage = true;
+                    streamController.sink.add(imageDownloadFinished);
+                  },
                 ),
                 Positioned(
                   left: 16,
@@ -282,4 +335,11 @@ Widget _buildDateLabel(int beforeOrAfter, String dateTime) {
       )
     ],
   );
+}
+
+class ImageDownloadFinished {
+  bool beforeImage = false;
+  bool afterImage = false;
+
+  ImageDownloadFinished({this.beforeImage = false, this.afterImage = false});
 }
