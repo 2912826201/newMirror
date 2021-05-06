@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
@@ -29,7 +29,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
 
   // 声明定时器
   Timer timer;
-  List<LiveVideoModel> liveVideoList = [];
+  List<CourseModel> liveVideoList = [];
 
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
@@ -106,7 +106,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
         hasNext = model.hasNext;
         if (model.list.length != 0) {
           model.list.forEach((v) {
-            liveVideoList.add(LiveVideoModel.fromJson(v));
+            liveVideoList.add(CourseModel.fromJson(v));
           });
           loadStatus = LoadingStatus.STATUS_IDEL;
           loadText = "加载中...";
@@ -201,7 +201,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
 
 class SearchCourseItem extends StatefulWidget {
   SearchCourseItem({Key key, this.index, this.count, this.videoModel}) : super(key: key);
-  LiveVideoModel videoModel;
+  CourseModel videoModel;
   int index;
   int count;
 
@@ -241,7 +241,7 @@ class SearchCourseItemState extends State<SearchCourseItem> {
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveVideoModel videoModel, index) {
+  Object getHeroTag(CourseModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {

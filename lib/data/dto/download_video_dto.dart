@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 
 /// download_course_video_dto
 /// Created by shipk on 2021/1/21
@@ -18,7 +18,7 @@ class DownloadCourseVideoDto {
   String courseName;
   List<String> courseUrls;
   List<String> courseFilePaths;
-  LiveVideoModel videoCourseModel;
+  CourseModel videoCourseModel;
   int downloadTime;
 
   DownloadCourseVideoDto();
@@ -48,7 +48,7 @@ class DownloadCourseVideoDto {
     if (map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL] != null) {
       dynamic mapDynamic=json.decode(map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL]);
       if(mapDynamic!=null) {
-        videoCourseModel = LiveVideoModel.fromJson(mapDynamic);
+        videoCourseModel = CourseModel.fromJson(mapDynamic);
       }
     }
   }

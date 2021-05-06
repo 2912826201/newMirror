@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 
 import '../api.dart';
 // 搜索课程
@@ -50,14 +50,14 @@ Future<DataResponseModel> searchCourse({@required String key, @required int size
 }
 
 // 获取推荐课程
-Future<List<LiveVideoModel>> recommendCourse() async {
+Future<List<CourseModel>> recommendCourse() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(RECOMMENDCOURSE, params);
   if (responseModel.isSuccess) {
-    List<LiveVideoModel> list = [];
+    List<CourseModel> list = [];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveVideoModel.fromJson(e));
+        list.add(CourseModel.fromJson(e));
       });
     }
     return list;

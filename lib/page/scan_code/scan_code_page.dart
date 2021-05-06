@@ -37,7 +37,7 @@ class scanCodePageState extends State<ScanCodePage> {
   StreamController<double> streamController = StreamController<double>();
   QRCaptureController _captureController = QRCaptureController();
   bool upOrDown = false;
-
+  int timeTemp;
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -52,20 +52,17 @@ class scanCodePageState extends State<ScanCodePage> {
     streamController.sink.add(250);
     _captureController.onCapture((data) {
       print('onCapture----$data');
-      resolveScanResult(data);
-    });
-    _getShortUrl();
-  }
-
-  _getShortUrl() async {
-    Map<String, dynamic> map = await getShortUrl(type: 3, targetId: context.read<ProfileNotifier>().profile.uid);
-    if (map != null) {
-      codeData = map["url"];
-      print('==================这是用户二维码$codeData');
-      if (mounted) {
-        setState(() {});
+      //note 防止回调太快，每两秒响应一次结果
+      if(timeTemp==null){
+        timeTemp = DateTime.now().millisecondsSinceEpoch;
+        resolveScanResult(data);
       }
-    }
+      if(DateTime.now().millisecondsSinceEpoch-timeTemp>2000){
+        timeTemp =DateTime.now().millisecondsSinceEpoch;
+        resolveScanResult(data);
+
+      }
+    });
   }
 
   @override

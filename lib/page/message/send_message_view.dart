@@ -5,7 +5,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -400,7 +400,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
 
   //获取直播和视频的模块
   Widget getLiveVideoCourseMsg(Map<String, dynamic> liveVideoModelMap, bool isLiveOrVideo, String msgId) {
-    LiveVideoModel liveVideoModel = LiveVideoModel.fromJson(liveVideoModelMap);
+    CourseModel liveVideoModel = CourseModel.fromJson(liveVideoModelMap);
     return LiveVideoCourseMsg(
         liveVideoModel: liveVideoModel,
         isLiveOrVideo: isLiveOrVideo,

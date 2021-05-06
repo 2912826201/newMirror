@@ -153,7 +153,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 1;
       });
       if (widget.isTopicList) {
-        context.read<UserInteractiveNotifier>().removeListId(null);
+        context.read<UserInteractiveNotifier>().removeListId(model.id,isAdd: false);
       }
     } else {
       ToastShow.show(msg: "关注失败", context: context);

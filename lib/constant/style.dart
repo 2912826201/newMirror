@@ -18,7 +18,7 @@ class AppStyle {
   static const textMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1,decoration: TextDecoration.none);
   static const textMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);

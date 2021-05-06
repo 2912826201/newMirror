@@ -113,7 +113,7 @@ class HeadViewState extends State<HeadView> {
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, false);
-
+        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);

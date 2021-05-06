@@ -19,7 +19,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -1817,6 +1817,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
+      if (context
+          .read<UserInteractiveNotifier>()
+          .profileUiChangeModel
+          .containsKey(int.parse(conversation.conversationId))) {
+        context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId));
+      }
     } else {
       //不是还有关系不能邀请进群
       _insertMessageMenu(name + " 邀请失败!");
@@ -1855,6 +1861,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
               .containsKey(int.parse(conversation.conversationId))) {
             print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(conversation.conversationId));
+            context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId),isAdd:
+            false);
           }
         }
       }
@@ -2076,12 +2084,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
-      LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
+      CourseModel liveModel = CourseModel.fromJson(map);
       AppRouter.navigateToLiveDetail(context, liveModel.id,
           heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: _context);
-      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
+      CourseModel videoModel = CourseModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       // ToastShow.show(msg: "播放录音", context: _context);

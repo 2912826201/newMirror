@@ -49,7 +49,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Loading.showLoading(context);
+      Loading.showLoading(context,infoText: "正在制作对比图,请稍候");
     });
   }
 

@@ -87,6 +87,9 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
               ? "休息"
               : "${partList[currentPartIndex].name} ${indexMapWithoutRest[currentPartIndex] + 1}/$partAmountWithoutRest",
           style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         )
       ],
     );
