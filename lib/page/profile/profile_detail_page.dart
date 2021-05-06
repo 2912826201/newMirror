@@ -22,6 +22,7 @@ import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -239,6 +240,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
+    ImageCachedObserverUtil.clearPendingCacheImage();
     print('--------------------------------个人主页deactivate');
   }
 

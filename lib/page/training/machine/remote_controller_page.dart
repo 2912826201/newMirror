@@ -5,7 +5,7 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/data/model/training/live_video_mode.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
-import 'package:mirror/page/training/machine/remote_controller__progress_bar.dart';
+import 'package:mirror/page/training/machine/remote_controller_progress_bar.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
