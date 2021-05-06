@@ -8,7 +8,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -142,7 +142,10 @@ var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, 
 
 var handlerLoginSmsCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return SmsCodePage(phoneNumber: data["phoneNumber"], isSent: data["isSent"],);
+  return SmsCodePage(
+    phoneNumber: data["phoneNumber"],
+    isSent: data["isSent"],
+  );
 });
 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -158,8 +161,8 @@ var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
-    userName: data["userName"]!=null?data["userName"]:null,
-    imageUrl: data["imageUrl"]!=null?data["imageUrl"]:null,
+    userName: data["userName"] != null ? data["userName"] : null,
+    imageUrl: data["imageUrl"] != null ? data["imageUrl"] : null,
   );
 });
 var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -204,7 +207,7 @@ var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<St
 });
 
 var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return  NoticeSettingPage();
+  return NoticeSettingPage();
 });
 
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -229,7 +232,9 @@ var handlerVipNotOpen = Handler(handlerFunc: (BuildContext context, Map<String, 
 });
 var handlerVipOpen = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return VipOpenPage(vipState: data["vipState"],);
+  return VipOpenPage(
+    vipState: data["vipState"],
+  );
 });
 var handlerVipNamePlatePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -257,7 +262,9 @@ var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String
 });
 var handlerInteractiveNoticePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return InteractiveNoticePage(type: data["type"],);
+  return InteractiveNoticePage(
+    type: data["type"],
+  );
 });
 var handlerTrainSeveralTimes = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -293,21 +300,22 @@ var handlerVideoCourseList = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerVideoCoursePlay = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return VideoCoursePlayPage(
-      Map<String, String>.from(data["videoPathMap"]), LiveVideoModel.fromJson(data["videoCourseModel"]));
+      Map<String, String>.from(data["videoPathMap"]), CourseModel.fromJson(data["videoCourseModel"]));
 });
 
 //课程结果页
 var handlerVideoCourseResult = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return VideoCourseResultPage(TrainingCompleteResultModel.fromJson(data["result"]));
+  return VideoCourseResultPage(
+      TrainingCompleteResultModel.fromJson(data["result"]), CourseModel.fromJson(data["course"]));
 });
 
 //直播课程详情界面
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveVideoModel liveModel;
+  CourseModel liveModel;
   if (data["liveModel"] != null) {
-    liveModel = LiveVideoModel.fromJson(data["liveModel"]);
+    liveModel = CourseModel.fromJson(data["liveModel"]);
   }
   return LiveDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
@@ -327,9 +335,9 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
 //视频课程详情界面
 var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveVideoModel videoModel;
+  CourseModel videoModel;
   if (data["videoModel"] != null) {
-    videoModel = LiveVideoModel.fromJson(data["videoModel"]);
+    videoModel = CourseModel.fromJson(data["videoModel"]);
   }
   return VideoDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
@@ -398,27 +406,27 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
   return ChatPage(
-      systemPage:data["systemPage"],
-      systemLastTime:data["systemLastTime"],
-      textContent:data["textContent"],
+      systemPage: data["systemPage"],
+      systemLastTime: data["systemLastTime"],
+      textContent: data["textContent"],
       conversation: conversation,
       shareMessage: shareMessage,
       chatDataList: Application.chatDataList,
-      context:context);
+      context: context);
 });
 
 //群聊更多界面
 var handlerGroupMorePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ConversationDto dto = ConversationDto.fromMap(data["dto"]);
-  return GroupMorePage(chatGroupId:data["chatUserId"],chatType:data["chatType"],groupName:data["name"],dto:dto);
+  return GroupMorePage(chatGroupId: data["chatUserId"], chatType: data["chatType"], groupName: data["name"], dto: dto);
 });
 
 //私聊更多界面
 var handlerPrivateMorePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ConversationDto dto = ConversationDto.fromMap(data["dto"]);
-  return PrivateMorePage(chatUserId:data["chatUserId"],chatType:data["chatType"],name:data["name"],dto:dto);
+  return PrivateMorePage(chatUserId: data["chatUserId"], chatType: data["chatType"], name: data["name"], dto: dto);
 });
 
 //群聊二维码界面
@@ -449,7 +457,9 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ScanCodePage(showMyCode: data["showMyCode"],);
+  return ScanCodePage(
+    showMyCode: data["showMyCode"],
+  );
 });
 
 //扫描二维码结果页

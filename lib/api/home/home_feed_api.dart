@@ -5,7 +5,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 
 // 获取动态列表
 const String PULLLISTFEED = "/appuser/web/feed/pullList";
@@ -369,14 +369,14 @@ Future<List> recommendCoach() async {
 // 新首页推荐教练
 Future<List> newRecommendCoach() async {
   BaseResponseModel responseModel = await requestApi( NEWRECOMMENDCOACH, {});
-  List<LiveVideoModel> liveVideoModel = [];
+  List<CourseModel> liveVideoModel = [];
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
       if (dataResponseModel.list.isNotEmpty) {
         dataResponseModel.list.forEach((v) {
-          liveVideoModel.add(LiveVideoModel.fromJson(v));
+          liveVideoModel.add(CourseModel.fromJson(v));
         });
       }
     }

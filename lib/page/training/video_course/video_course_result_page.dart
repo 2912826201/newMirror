@@ -6,6 +6,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -18,24 +19,19 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 class VideoCourseResultPage extends StatefulWidget {
   final TrainingCompleteResultModel result;
+  final CourseModel course;
 
-  VideoCourseResultPage(this.result, {Key key}) : super(key: key);
+  VideoCourseResultPage(this.result, this.course, {Key key}) : super(key: key);
 
   @override
   _VideoCourseResultState createState() => _VideoCourseResultState();
 }
 
 class _VideoCourseResultState extends State<VideoCourseResultPage> {
-  String _videoCourseName = "课程名称";
-  int _uid = 123;
-  String _nickName = "Koach 大婷婷";
-  String _avatarUrl = "https://i1.hdslb.com/bfs/face/c63ebeed7d49967e2348ef953b539f8de90c5140.jpg";
-  int _relation = 1;
-
   @override
   void initState() {
     super.initState();
-    //TODO 通过课程id获取课程详情
+    //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
   }
 
   @override
@@ -126,7 +122,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               end: Alignment.bottomCenter,
             )),
             child: Text(
-              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n$_videoCourseName",
+              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n${widget.course.title}",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
@@ -146,11 +142,12 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                     child: PentagonChart(
                       width: 144.0,
                       rateList: [
-                        widget.result.synthesisRank,
-                        widget.result.completionDegree,
-                        widget.result.lowerRank,
-                        widget.result.upperRank,
-                        widget.result.coreRank
+                        //修正分数 至少有25分
+                        widget.result.synthesisRank > 25 ? widget.result.synthesisRank / 100 : 0.25,
+                        widget.result.completionDegree > 25 ? widget.result.completionDegree / 100 : 0.25,
+                        widget.result.lowerRank > 25 ? widget.result.lowerRank / 100 : 0.25,
+                        widget.result.upperRank > 25 ? widget.result.upperRank / 100 : 0.25,
+                        widget.result.coreRank > 25 ? widget.result.coreRank / 100 : 0.25
                       ],
                     ),
                   )),
@@ -310,7 +307,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               child: CachedNetworkImage(
                 height: 32,
                 width: 32,
-                imageUrl: _avatarUrl,
+                imageUrl: widget.course.coachDto.avatarUri,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
@@ -321,7 +318,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               width: 12,
             ),
             Text(
-              _nickName,
+              widget.course.coachDto.nickName,
               style: TextStyle(color: AppColor.textPrimary2, fontSize: 14, fontWeight: FontWeight.w500),
             ),
             SizedBox(
@@ -335,11 +332,11 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             Spacer(),
             InkWell(
                 onTap: () {
-                  if (_relation == 0 || _relation == 2) {
-                    ProfileAddFollow(_uid).then((relation) {
+                  if (widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2) {
+                    ProfileAddFollow(widget.course.coachId).then((relation) {
                       if (relation != null) {
                         setState(() {
-                          _relation = relation;
+                          widget.course.coachDto.relation = relation;
                         });
                       }
                     });
@@ -350,13 +347,18 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   height: 24,
                   alignment: Alignment.centerRight,
                   decoration: BoxDecoration(
-                    color: _relation == 0 || _relation == 2 ? AppColor.textPrimary1 : AppColor.transparent,
+                    color: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+                        ? AppColor.textPrimary1
+                        : AppColor.transparent,
                     borderRadius: BorderRadius.all(Radius.circular(14)),
-                    border: Border.all(width: _relation == 0 || _relation == 2 ? 0.5 : 0.0),
+                    border: Border.all(
+                        width:
+                            widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? 0.5 : 0.0),
                   ),
                   child: Center(
-                    child: Text(_relation == 0 || _relation == 2 ? "关注" : "已关注",
-                        style: _relation == 0 || _relation == 2
+                    child: Text(
+                        widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? "关注" : "已关注",
+                        style: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
                             ? AppStyle.whiteRegular12
                             : AppStyle.textSecondaryRegular12),
                   ),

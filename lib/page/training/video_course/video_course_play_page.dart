@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -59,7 +59,7 @@ class VideoCoursePlayPage extends StatefulWidget {
   final Map<String, String> videoPathMap;
 
   //视频课的model
-  final LiveVideoModel videoCourseModel;
+  final CourseModel videoCourseModel;
 
   @override
   _VideoCoursePlayState createState() => _VideoCoursePlayState();

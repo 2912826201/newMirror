@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:mirror/api/training/live_api.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/api/training/course_api.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
 import 'package:mirror/page/training/machine/remote_controller_progress_bar.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -37,7 +37,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 //机器遥控器页
 
 ///courseId：课程id,直播课程id或者视频课程的id
-///modeTye:类型,[liveVideoMode]
+///modeTye:类型,[CourseMode]
 class RemoteControllerPage extends StatefulWidget {
   final int courseId;
   final String modeType;
@@ -121,7 +121,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _initEventBus();
   }
 
-  _parseModelToPartList(LiveVideoModel liveVideoModel) {
+  _parseModelToPartList(CourseModel liveVideoModel) {
     _partList.clear();
     liveVideoModel.coursewareDto.componentDtos.forEach((component) {
       List<String> urlList = [];
@@ -733,7 +733,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       return;
     }
     getMachineStatusInfoCount=0;
-    LiveVideoModel liveVideoModel = await getLiveVideoModel(courseId: courseId, type: modeType);
+    CourseModel liveVideoModel = await getCourseModel(courseId: courseId, type: modeType);
     if (liveVideoModel == null) {
       courseId = null;
       modeType = mode_null;
