@@ -37,7 +37,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 //机器遥控器页
 
 ///courseId：课程id,直播课程id或者视频课程的id
-///modeTye:类型,[CourseMode]
+///modeType:类型,[CourseMode]
 class RemoteControllerPage extends StatefulWidget {
   final int courseId;
   final String modeType;
@@ -58,8 +58,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   int _totalDuration = 0;
   double _currentPosition = 0;
+
   //最大值不变
-  bool _currentPositionNoConstant=false;
+  bool _currentPositionNoConstant = false;
   int _currentPartIndex = 0;
   int _remainingPartTime = 0;
   double _partProgress = 0;
@@ -82,7 +83,6 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   //是不是空的课程
   bool isNullCourse() => modeType == mode_null;
 
-
   GlobalKey<RemoteControllerProgressBarState> progressBarChildKey = GlobalKey();
 
   Timer timer;
@@ -97,9 +97,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       Application.rongCloud.quitChatRoom(courseId.toString());
     }
     _unRegisterEventBus();
-    if(timer!=null){
+    if (timer != null) {
       timer.cancel();
-      timer=null;
+      timer = null;
     }
   }
 
@@ -161,14 +161,14 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         _remainingPartTime = _partList[i].duration - time.toInt();
         _partProgress = time / _partList[i].duration;
         return;
-      } else if(i<_partList.length-1){
+      } else if (i < _partList.length - 1) {
         time -= _partList[i].duration;
-      } else{
-        _partProgress=_partList[i].duration.toDouble();
+      } else {
+        _partProgress = _partList[i].duration.toDouble();
       }
     }
-    if(isLiveRoomController()){
-      _remainingPartTime=_currentPosition.toInt();
+    if (isLiveRoomController()) {
+      _remainingPartTime = _currentPosition.toInt();
     }
   }
 
@@ -230,6 +230,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          //上方图片及状态视图显示部分
           Container(
             height: 260,
             child: _buildScreen(),
@@ -238,6 +239,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             height: 12,
             color: AppColor.bgWhite,
           ),
+          //下方操作面板部分
           _buildPanel(notifier),
         ],
       ),
@@ -247,8 +249,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   Widget _buildScreen() {
     return Stack(
       children: [
-        Visibility(visible:isNullCourse(),child: _buildMachinePic()),
-        Visibility(visible:!isNullCourse(),child: _buildVideoCourse()),
+        Visibility(visible: isNullCourse(), child: _buildMachinePic()),
+        Visibility(visible: !isNullCourse(), child: _buildVideoCourse()),
       ],
     );
   }
@@ -265,14 +267,15 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   Widget _buildVideoCourse() {
     return RemoteControllerProgressBar(
-        progressBarChildKey,
-        _partList,
-        _currentPartIndex,
-        _partProgress,
-        _remainingPartTime,
-        _indexMapWithoutRest,
-        _partAmountWithoutRest,
-        isLiveRoomController(),);
+      progressBarChildKey,
+      _partList,
+      _currentPartIndex,
+      _partProgress,
+      _remainingPartTime,
+      _indexMapWithoutRest,
+      _partAmountWithoutRest,
+      isLiveRoomController(),
+    );
     //
     // if(isLiveRoomController()){
     //   _remainingPartTime=_currentPosition.toInt();
@@ -527,24 +530,24 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           SizedBox(
             height: 16,
           ),
-          Slider(
-            max: _totalDuration.toDouble(),
-            min: 0,
-            value: min(_currentPosition, _totalDuration.toDouble()),
-            onChanged: (position) {
-              _currentPosition = position;
-              _updateInfoByPosition();
-              _setProgressBarChildKeyData();
-            },
-          ),
-          FlatButton(
-            onPressed: () {
-              MachineModel machine = context.read<MachineNotifier>().machine;
-              machine.status = (machine.status + 1) % 2;
-              context.read<MachineNotifier>().setMachine(machine);
-            },
-            child: Text("连接/中断"),
-          ),
+          // Slider(
+          //   max: _totalDuration.toDouble(),
+          //   min: 0,
+          //   value: min(_currentPosition, _totalDuration.toDouble()),
+          //   onChanged: (position) {
+          //     _currentPosition = position;
+          //     _updateInfoByPosition();
+          //     _setProgressBarChildKeyData();
+          //   },
+          // ),
+          // FlatButton(
+          //   onPressed: () {
+          //     MachineModel machine = context.read<MachineNotifier>().machine;
+          //     machine.status = (machine.status + 1) % 2;
+          //     context.read<MachineNotifier>().setMachine(machine);
+          //   },
+          //   child: Text("连接/中断"),
+          // ),
         ],
       ),
     );
@@ -726,13 +729,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     );
   }
 
-  int getMachineStatusInfoCount=0;
+  int getMachineStatusInfoCount = 0;
 
   _getCourseInformation() async {
     if (isNullCourse()) {
       return;
     }
-    getMachineStatusInfoCount=0;
+    getMachineStatusInfoCount = 0;
     CourseModel liveVideoModel = await getCourseModel(courseId: courseId, type: modeType);
     if (liveVideoModel == null) {
       courseId = null;
@@ -740,39 +743,39 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     } else {
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
-      if(isLiveRoomController()){
-        while(!(machineModel!=null&&machineModel.isConnect==1&&machineModel.inGame==1)){
+      if (isLiveRoomController()) {
+        while (!(machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1)) {
           getMachineStatusInfoCount++;
           Duration duration;
-          if(getMachineStatusInfoCount==1){
-            duration=Duration.zero;
-          }else{
-            duration=Duration(seconds: 1);
+          if (getMachineStatusInfoCount == 1) {
+            duration = Duration.zero;
+          } else {
+            duration = Duration(seconds: 1);
           }
-          await Future.delayed(duration,()async{
+          await Future.delayed(duration, () async {
             List<MachineModel> machineList = await getMachineStatusInfo();
             if (machineList != null && machineList.isNotEmpty) {
-              machineModel=machineList.first;
-              if(machineModel!=null&&machineModel.isConnect==1&&machineModel.inGame==1){
-                if(machineModel.timestamp<machineModel.startCourse){
-                  _currentPosition=0;
-                }else{
-                  _currentPosition=(machineModel.timestamp-machineModel.startCourse)/1000;
+              machineModel = machineList.first;
+              if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1) {
+                if (machineModel.timestamp < machineModel.startCourse) {
+                  _currentPosition = 0;
+                } else {
+                  _currentPosition = (machineModel.timestamp - machineModel.startCourse) / 1000;
                 }
               }
             }
           });
-          if(getMachineStatusInfoCount>6){
+          if (getMachineStatusInfoCount > 6) {
             break;
           }
         }
       }
       _updateInfoByPosition();
     }
-    if(isLiveRoomController()){
-      if(timer!=null){
+    if (isLiveRoomController()) {
+      if (timer != null) {
         timer.cancel();
-        this.timer=null;
+        this.timer = null;
       }
       _timer();
     }
@@ -781,34 +784,30 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
   }
 
+  _initEventBus() {
+    EventBus.getDefault()
+        .registerNoParameter(_endOfTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
 
+    EventBus.getDefault()
+        .registerSingleParameter(_startTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
 
-  _initEventBus(){
-    EventBus.getDefault().registerNoParameter(_endOfTraining,
-        EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
-
-    EventBus.getDefault().registerSingleParameter(_startTraining,
-        EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
-
-    EventBus.getDefault().registerSingleParameter(_scheduleTraining,
-        EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: SCHEDULE_TRAINING_VIDEO);
+    EventBus.getDefault().registerSingleParameter(_scheduleTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE,
+        registerName: SCHEDULE_TRAINING_VIDEO);
   }
 
-  _unRegisterEventBus(){
+  _unRegisterEventBus() {
     EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: SCHEDULE_TRAINING_VIDEO);
   }
 
-
-
   //机器退出训练
   _endOfTraining() {
     courseId = null;
     modeType = mode_null;
-    if(timer!=null){
+    if (timer != null) {
       timer.cancel();
-      this.timer=null;
+      this.timer = null;
     }
     if (mounted) {
       setState(() {});
@@ -820,13 +819,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     if (!(list[0] == courseId && list[1] == modeType)) {
       courseId = list[0];
       modeType = list[1];
-      _currentPosition=0;
+      _currentPosition = 0;
       _getCourseInformation();
     }
   }
 
-
-  int timeSchedule=0;
+  int timeSchedule = 0;
 
   // _scheduleTraining(TrainingScheduleModel model) {
   //   if(model.courseId!=courseId||!isVideoRoomController()){
@@ -857,22 +855,23 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   // 机器训练视频课程的训练进度
   _scheduleTraining(TrainingScheduleModel model) {
-    if(model.courseId!=courseId||!isVideoRoomController()){
-      courseId=model.courseId;
-      modeType=mode_video;
-      _currentPosition=0;
+    if (model.courseId != courseId || !isVideoRoomController()) {
+      courseId = model.courseId;
+      modeType = mode_video;
+      _currentPosition = 0;
       _getCourseInformation();
       return;
     }
-    double currentPosition=0;
-    for(int i=0;i<model.index;i++){
-      currentPosition+=_partList[i].duration;
+    double currentPosition = 0;
+    for (int i = 0; i < model.index; i++) {
+      currentPosition += _partList[i].duration;
     }
-    currentPosition+=model.progressBar/1000;
+    currentPosition += model.progressBar / 1000;
 
-      print("model:${model.index},${model.progressBar},$_currentPosition,$_remainingPartTime,$_partProgress,${model.timestamp-timeSchedule},$_currentPartIndex");
-    _currentPositionNoConstant=false;
-    if(model.index==_currentPartIndex) {
+    print(
+        "model:${model.index},${model.progressBar},$_currentPosition,$_remainingPartTime,$_partProgress,${model.timestamp - timeSchedule},$_currentPartIndex");
+    _currentPositionNoConstant = false;
+    if (model.index == _currentPartIndex) {
       if (_currentPosition <= currentPosition) {
         print("_currentPositionNoConstant小于:_currentPosition$_currentPosition,$currentPosition");
         _currentPosition = currentPosition;
@@ -885,41 +884,44 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       } else {
         print("_currentPositionNoConstant小于2秒:_currentPosition$_currentPosition,$currentPosition");
       }
-    }else{
+    } else {
       print("_currentPositionNoConstant：index不同:_currentPosition$_currentPosition,$currentPosition");
       _currentPosition = currentPosition;
     }
 
-    if(isVideoRoomController()){
-      if(timer==null) {
+    if (isVideoRoomController()) {
+      if (timer == null) {
         _timer();
       }
     }
   }
 
   //直播计时
-  _timer(){
-    timer=Timer.periodic(Duration(milliseconds: 100), (timer) {
-      if(!_currentPositionNoConstant) {
+  _timer() {
+    timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (!_currentPositionNoConstant) {
         _updateInfoByPosition();
         if (mounted) {
           _setProgressBarChildKeyData();
         }
-        if(_currentPosition==0&&isLiveRoomController()){
-          if(machineModel!=null&&machineModel.startCourse!=null
-              &&DateTime.now().millisecondsSinceEpoch>=machineModel.startCourse){
+        if (_currentPosition == 0 && isLiveRoomController()) {
+          if (machineModel != null &&
+              machineModel.startCourse != null &&
+              DateTime.now().millisecondsSinceEpoch >= machineModel.startCourse) {
             _currentPosition += 0.1;
           }
-        }else {
+        } else {
           _currentPosition += 0.1;
         }
       }
     });
   }
 
-
-  _setProgressBarChildKeyData(){
-    if(!mounted||progressBarChildKey==null||progressBarChildKey.currentState==null||progressBarChildKey.currentState.setStateData==null){
+  _setProgressBarChildKeyData() {
+    if (!mounted ||
+        progressBarChildKey == null ||
+        progressBarChildKey.currentState == null ||
+        progressBarChildKey.currentState.setStateData == null) {
       return;
     }
     progressBarChildKey.currentState.setStateData(
@@ -930,6 +932,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _indexMapWithoutRest,
       _partAmountWithoutRest,
       isLiveRoomController(),
-      _currentPosition,);
+      _currentPosition,
+    );
   }
 }
