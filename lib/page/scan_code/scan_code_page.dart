@@ -54,18 +54,6 @@ class scanCodePageState extends State<ScanCodePage> {
       print('onCapture----$data');
       resolveScanResult(data);
     });
-    _getShortUrl();
-  }
-
-  _getShortUrl() async {
-    Map<String, dynamic> map = await getShortUrl(type: 3, targetId: context.read<ProfileNotifier>().profile.uid);
-    if (map != null) {
-      codeData = map["url"];
-      print('==================这是用户二维码$codeData');
-      if (mounted) {
-        setState(() {});
-      }
-    }
   }
 
   @override

@@ -1817,6 +1817,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
+      if (context
+          .read<UserInteractiveNotifier>()
+          .profileUiChangeModel
+          .containsKey(int.parse(conversation.conversationId))) {
+        context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId));
+      }
     } else {
       //不是还有关系不能邀请进群
       _insertMessageMenu(name + " 邀请失败!");
@@ -1855,6 +1861,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
               .containsKey(int.parse(conversation.conversationId))) {
             print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(conversation.conversationId));
+            context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId),isAdd:
+            false);
           }
         }
       }

@@ -43,7 +43,7 @@ class _BlackListState extends State<BlackListPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserInteractiveNotifier>().removeId = null;
+    context.read<UserInteractiveNotifier>().removeId = [];
     _getBlackList();
   }
 
@@ -115,7 +115,7 @@ class _BlackListState extends State<BlackListPage> {
                 if (context.read<UserInteractiveNotifier>().removeId != null) {
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {
-                    if (element.uid != context.read<UserInteractiveNotifier>().removeId) {
+                    if (!context.read<UserInteractiveNotifier>().removeId.contains(element.uid)) {
                       list.add(element);
                     }
                   });

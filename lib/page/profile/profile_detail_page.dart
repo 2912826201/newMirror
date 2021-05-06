@@ -743,6 +743,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (attntionResult == 1 || attntionResult == 3) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
+        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId,isAdd: false);
         ToastShow.show(msg: "关注成功!", context: context);
       }
     }
