@@ -198,7 +198,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
-                  imageLoadCompleteCallBack: (bo) {
+                  imageLoadCompleteCallBack: () {
                     print("图片加载完成1");
                     imageDownloadFinished.beforeImage = true;
                     streamController.sink.add(imageDownloadFinished);
@@ -225,7 +225,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
-                  imageLoadCompleteCallBack: (bo) {
+                  imageLoadCompleteCallBack: () {
                     print("图片加载完成2");
                     imageDownloadFinished.afterImage = true;
                     streamController.sink.add(imageDownloadFinished);
@@ -257,7 +257,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
-                  imageLoadCompleteCallBack: (bo) {
+                  imageLoadCompleteCallBack: () {
                     print("图片加载完成3");
                     imageDownloadFinished.beforeImage = true;
                     streamController.sink.add(imageDownloadFinished);
@@ -284,7 +284,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   round: 0,
                   backBoxColor0: AppColor.transparent,
                   backBoxColor1: AppColor.transparent,
-                  imageLoadCompleteCallBack: (bo) {
+                  imageLoadCompleteCallBack: () {
                     print("图片加载完成4");
                     imageDownloadFinished.afterImage = true;
                     streamController.sink.add(imageDownloadFinished);

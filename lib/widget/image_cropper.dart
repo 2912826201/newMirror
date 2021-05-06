@@ -10,7 +10,7 @@ import 'package:mirror/constant/constants.dart';
 
 const Color _defualtMaskColor = Color.fromARGB(160, 0, 0, 0);
 // 图片加载完成回调
-typedef ImageLoadCompleteCallBack = Future Function(bool bo);
+typedef ImageLoadCompleteCallBack = Future Function();
 
 ///来源：https://gitee.com/wskfjt/flutterhead_clipping_control
 ///图像裁剪，适用于头像裁剪和输出固定尺寸的图片裁剪
@@ -396,7 +396,7 @@ class CropperImageRender extends RenderProxyBox {
       canvas.rotate(rotate1);
       canvas.scale(scale);
       canvas.drawImage(_image, Offset(-_image.width / 2, -_image.height / 2), Paint());
-      _imageLoadCompleteCallBack(true);
+      _imageLoadCompleteCallBack();
       canvas.restore();
     }
 
