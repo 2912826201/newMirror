@@ -265,7 +265,7 @@ Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async
   }
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     print('用户关注列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
@@ -288,7 +288,7 @@ Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) a
   }
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     print('用户互相关注列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
@@ -333,7 +333,7 @@ Future<BuddyListModel> GetFansList(int LastTime,int size,{int uid})async{
     map["uid"] = uid;
   }
   BaseResponseModel responseModel = await requestApi(FANS_LIST,map);
-  if(responseModel.isSuccess){
+  if(responseModel.isSuccess&&responseModel.data!=null){
     print('用户粉丝列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
