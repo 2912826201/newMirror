@@ -23,6 +23,9 @@ class UserInteractiveNotifier extends ChangeNotifier {
   }
 
   void removeListId(int id,{bool isAdd = true}) {
+    if(removeId==null){
+      return;
+    }
     if(isAdd){
       removeId.add(id);
     }else{
