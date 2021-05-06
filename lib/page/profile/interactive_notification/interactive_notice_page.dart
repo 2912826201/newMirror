@@ -217,7 +217,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
-                                  globalKey: listPage == 1 && index == snapshot.data.length - 1 ? globalKey : null,
+                                  globalKey: index == snapshot.data.length - 1 ? globalKey : null,
                                 );
                               }):Center(
                             child: Column(
