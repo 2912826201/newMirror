@@ -34,7 +34,7 @@ import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import 'api/training/live_api.dart';
+import 'api/training/course_api.dart';
 import 'api/message_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';

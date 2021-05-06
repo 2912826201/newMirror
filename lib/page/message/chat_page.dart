@@ -19,7 +19,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -2084,12 +2084,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
-      LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
+      CourseModel liveModel = CourseModel.fromJson(map);
       AppRouter.navigateToLiveDetail(context, liveModel.id,
           heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: _context);
-      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
+      CourseModel videoModel = CourseModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       // ToastShow.show(msg: "播放录音", context: _context);
@@ -2218,7 +2218,9 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     showGroupPopup(context,
       int.parse(conversation.conversationId),
       (GroupChatModel groupChatModel)async{
-        await ProfileAddFollow(1002885);
+        if(isShowTopAttentionUi) {
+          await _attntionOnClick();
+        }
         bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
         if(isSuccess){
           String name = groupChatModel.modifiedName ?? groupChatModel.name;

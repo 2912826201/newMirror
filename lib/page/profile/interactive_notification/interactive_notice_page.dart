@@ -13,7 +13,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
@@ -280,7 +280,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   String senderAvatarUrl;
   CommentDtoModel fatherCommentModel;
   HomeFeedModel feedModel;
-  LiveVideoModel liveVideoModel;
+  CourseModel liveVideoModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
@@ -320,7 +320,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else if (widget.msgModel.refType == 2) {
         fatherCommentModel = CommentDtoModel.fromJson(widget.msgModel.refData);
       } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
-        liveVideoModel = LiveVideoModel.fromJson(widget.msgModel.refData);
+        liveVideoModel = CourseModel.fromJson(widget.msgModel.refData);
       }
       if (widget.isFrist) {
         widget.isFrist = false;

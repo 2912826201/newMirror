@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -24,7 +24,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
   int _isVideoCoursePage = 0;
   int _isVideoCourseTotalCount = 0;
   bool _videoCourseHasNext = false;
-  List<LiveVideoModel> _videoCourseList = [];
+  List<CourseModel> _videoCourseList = [];
   RefreshController _refreshController = RefreshController();
   bool isShowNoMore = true;
 
@@ -98,7 +98,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
   }
 
   //每一个item
-  Widget getItem(LiveVideoModel videoModel) {
+  Widget getItem(CourseModel videoModel) {
     return Container(
       color: AppColor.transparent,
       padding: const EdgeInsets.symmetric(horizontal: 16),

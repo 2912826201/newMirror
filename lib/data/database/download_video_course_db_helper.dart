@@ -1,12 +1,12 @@
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 
 /// download_video_course_db_helper
 /// Created by shipk on 2021/1/21.
 
 class DownloadVideoCourseDBHelper {
-  Future<bool> update(LiveVideoModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
+  Future<bool> update(CourseModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
     if (videoCourseModel == null) {
       return false;
     }
@@ -17,7 +17,7 @@ class DownloadVideoCourseDBHelper {
     }
   }
 
-  Future<bool> _insert(LiveVideoModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
+  Future<bool> _insert(CourseModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
     if (videoCourseModel == null) {
       return false;
     }
@@ -32,7 +32,7 @@ class DownloadVideoCourseDBHelper {
     return result > 0;
   }
 
-  Future<bool> _update(LiveVideoModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
+  Future<bool> _update(CourseModel videoCourseModel, List<String> courseUrls, List<String> courseFilePaths) async {
     if (videoCourseModel == null) {
       return false;
     }

@@ -11,7 +11,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -50,7 +50,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   List<UserModel> userList = [];
 
   // 相关课程data
-  List<LiveVideoModel> liveVideoList = [];
+  List<CourseModel> liveVideoList = [];
 
   // 声明定时器
   Timer timer;
@@ -131,7 +131,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     if (courseModel != null && courseModel.list.length != 0) {
       courseModel.list.forEach((v) {
         if (v != null) {
-          liveVideoList.add(LiveVideoModel.fromJson(v));
+          liveVideoList.add(CourseModel.fromJson(v));
         }
       });
     } else {

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -36,7 +36,7 @@ class HomeFeedModel {
   List<VideosModel> videos = []; //视频json
   List<AtUsersModel> atUsers = []; //@用户列表
   List<TopicDtoModel> topics = []; //话题信息
-  LiveVideoModel courseDto; //课程信息
+  CourseModel courseDto; //课程信息
   int isFollow = 0; // 是否关注
   int isLaud = 0; // 是否点赞
   List<String> laudUserInfo = []; // 点赞头像
@@ -192,7 +192,7 @@ class HomeFeedModel {
       });
     }
     if (json["courseDto"] != null) {
-      courseDto = LiveVideoModel.fromJson(json["courseDto"]);
+      courseDto = CourseModel.fromJson(json["courseDto"]);
     }
     if (json["laudUserInfo"] != null) {
       json["laudUserInfo"].forEach((v) {
