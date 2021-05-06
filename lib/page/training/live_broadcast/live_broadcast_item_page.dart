@@ -4,12 +4,12 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/route/router.dart';
@@ -45,10 +45,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   var howEarlyToRemind = 15;
 
   //当前显示的直播课程的list
-  var liveModelArray = <LiveVideoModel>[];
+  var liveModelArray = <CourseModel>[];
 
   //当前显示的直播课程的list--今日回放的直播
-  var liveModelOldArray = <LiveVideoModel>[];
+  var liveModelOldArray = <CourseModel>[];
 
   //日历内有多少个提醒计划
   // var calendarEvents = <Event>[];
@@ -203,7 +203,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   }
 
   //获取列表ui
-  Widget _getLiveBroadcastUI(List<LiveVideoModel> liveList, bool isOld) {
+  Widget _getLiveBroadcastUI(List<CourseModel> liveList, bool isOld) {
     var imageWidth = 120;
     var imageHeight = 90;
     var columnArray = <Widget>[];
@@ -235,7 +235,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   }
 
   //获取left的图片
-  Widget _getItemLeftImageUi(LiveVideoModel value, int imageWidth, int imageHeight, bool isOld, int index) {
+  Widget _getItemLeftImageUi(CourseModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     String imageUrl;
     if (value.picUrl != null) {
       imageUrl = value.picUrl;
@@ -311,7 +311,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   }
 
   //获取右边数据的ui
-  Widget _getRightDataUi(LiveVideoModel value, int imageWidth, int imageHeight, bool isOld, int index) {
+  Widget _getRightDataUi(CourseModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     return Expanded(
         child: SizedBox(
       child: Container(
@@ -419,7 +419,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   }
 
   //按钮 去上课 预约 已预约 回放
-  Widget _getButton(LiveVideoModel value, bool isOld, index) {
+  Widget _getButton(CourseModel value, bool isOld, index) {
     var alreadyOrderBgColor = AppColor.white;
     var noAlreadyOrderBgColor = AppColor.textPrimary1;
     // if (isOld) {
@@ -586,14 +586,14 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
       Map<String, dynamic> model = await getLiveCoursesByDate(date: DateUtil.formatDateString(dataDate), type: 1);
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
-          liveModelOldArray.add(LiveVideoModel.fromJson(v));
+          liveModelOldArray.add(CourseModel.fromJson(v));
         });
       }
     }
     Map<String, dynamic> model = await getLiveCoursesByDate(date: DateUtil.formatDateString(dataDate), type: 0);
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
-        liveModelArray.add(LiveVideoModel.fromJson(v));
+        liveModelArray.add(CourseModel.fromJson(v));
       });
     }
 
@@ -615,7 +615,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveVideoModel liveModel, int index, bool isOld) {
+  Object getHeroTag(CourseModel liveModel, int index, bool isOld) {
     if (isOld) {
       index += liveModelArray?.length;
     }
@@ -628,13 +628,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
     }
   }
 
-  void getRelation(LiveVideoModel value) async {
+  void getRelation(CourseModel value) async {
     UserModel userModel = await getUserInfo(uid: value.coachId);
     value.coachDto.relation = userModel.relation;
   }
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveVideoModel value, int index, bool isOld) {
+  void onClickItem(CourseModel value, int index, bool isOld) {
     print("index$index,liveModelArray.length：${liveModelArray.length},isOld:$isOld");
     gotoNavigateToLiveDetail(
         value,
@@ -647,7 +647,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
     getRelation(value);
   }
 
-  void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {
+  void gotoNavigateToLiveDetail(CourseModel value, int index) {
     AppRouter.navigateToLiveDetail(context, value.id, heroTag: heroTagArray[index], liveModel: value);
 
     // AppRouter.navigateToMachineRemoteController(context,courseId: value.id,modeType: mode_live);

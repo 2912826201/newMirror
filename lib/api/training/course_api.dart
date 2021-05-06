@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate";
@@ -56,12 +56,8 @@ const String ROOMINFO = "/sport/web/liveCourse/roomInfo";
 //反馈直播训练感受
 const String FEELING = "/sport/web/liveCourse/feeling";
 
-
 //查询禁言时间
 const String QUERYMUTE = "/sport/web/liveMute/queryMute";
-
-
-
 
 ///根据日期获取直播课程列表
 ///请求参数
@@ -86,12 +82,10 @@ Future<Map> liveCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(LIVECOURSEDETAIL, params);
-  params["code"]=responseModel.code;
-  params["dataMap"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["dataMap"] = responseModel.data;
   return params;
 }
-
-
 
 ///视频课程详情
 ///请求参数
@@ -100,25 +94,24 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(GETVIDEOCOURSEDETAIL, params);
-  params["code"]=responseModel.code;
-  params["dataMap"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["dataMap"] = responseModel.data;
   return params;
 }
 
 ///courseId：课程id,直播课程id或者视频课程的id
-///modeTye:类型,[liveVideoMode]
-Future<LiveVideoModel> getLiveVideoModel({@required int courseId,String type=mode_null})async{
-  if(type==mode_null){
+///modeTye:类型,[CourseMode]
+Future<CourseModel> getCourseModel({@required int courseId, String type = mode_null}) async {
+  if (type == mode_null) {
     return null;
   }
-  LiveVideoModel videoModel;
-  Map<String, dynamic> model = await (type==mode_video?getVideoCourseDetail:liveCourseDetail)(courseId: courseId);
+  CourseModel courseModel;
+  Map<String, dynamic> model = await (type == mode_video ? getVideoCourseDetail : liveCourseDetail)(courseId: courseId);
   if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
-    videoModel = LiveVideoModel.fromJson(model["dataMap"]);
+    courseModel = CourseModel.fromJson(model["dataMap"]);
   }
-  return videoModel;
+  return courseModel;
 }
-
 
 ///预约直播
 ///请求参数
@@ -132,13 +125,13 @@ Future<Map> bookLiveCourse({@required int courseId, @required String startTime, 
   params["type"] = isBook ? 1 : 0;
   BaseResponseModel responseModel = await requestApi(BOOKLIVECOURSE, params);
   if (responseModel.isSuccess) {
-    if(responseModel.code==CODE_SUCCESS) {
+    if (responseModel.code == CODE_SUCCESS) {
       params.clear();
       params.addAll(responseModel.data);
-      params["code"]=CODE_SUCCESS;
-    }else if(responseModel.code==CODE_DATA_EXCEPTION){
+      params["code"] = CODE_SUCCESS;
+    } else if (responseModel.code == CODE_DATA_EXCEPTION) {
       params.clear();
-      params["code"]=CODE_DATA_EXCEPTION;
+      params["code"] = CODE_DATA_EXCEPTION;
     }
     return params;
   } else {
@@ -232,14 +225,14 @@ Future<Map> getFinishedVideoCourse(int videoCourseId, int size, {int lastId}) as
 }
 
 //获取最近直播
-Future<List<LiveVideoModel>> getLatestLive() async {
+Future<List<CourseModel>> getLatestLive() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(GETLATESTLIVE, params);
   if (responseModel.isSuccess) {
-    List<LiveVideoModel> list = [];
+    List<CourseModel> list = [];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveVideoModel.fromJson(e));
+        list.add(CourseModel.fromJson(e));
       });
     }
     return list;
@@ -249,7 +242,7 @@ Future<List<LiveVideoModel>> getLatestLive() async {
 }
 
 //获取学过的课程列表
-Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) async {
+Future<ListModel<CourseModel>> getLearnedCourse(int size, {int lastTime}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   if (lastTime != null) {
@@ -257,14 +250,14 @@ Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) asy
   }
   BaseResponseModel responseModel = await requestApi(GETLEARNEDCOURSE, params);
   if (responseModel.isSuccess) {
-    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
-    List<LiveVideoModel> list = [];
+    ListModel<CourseModel> listModel = ListModel<CourseModel>();
+    List<CourseModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
     listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveVideoModel.fromJson(e));
+        list.add(CourseModel.fromJson(e));
       });
     }
     listModel.list = list;
@@ -274,9 +267,8 @@ Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) asy
   }
 }
 
-
 //获取我的课程列表
-Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}) async {
+Future<ListModel<CourseModel>> getMyCourse(int page, int size, {int lastTime}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   params["page"] = page;
@@ -285,14 +277,14 @@ Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}
   }
   BaseResponseModel responseModel = await requestApi(GETMYCOURSE, params);
   if (responseModel.isSuccess) {
-    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
-    List<LiveVideoModel> list = [];
+    ListModel<CourseModel> listModel = ListModel<CourseModel>();
+    List<CourseModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
     listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveVideoModel.fromJson(e));
+        list.add(CourseModel.fromJson(e));
       });
     }
     listModel.list = list;
@@ -302,9 +294,8 @@ Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}
   }
 }
 
-
 //获取我在终端训练过的列表
-Future<ListModel<LiveVideoModel>> getTerminalLearnedCourse(int size, {int lastTime}) async {
+Future<ListModel<CourseModel>> getTerminalLearnedCourse(int size, {int lastTime}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   if (lastTime != null) {
@@ -312,14 +303,14 @@ Future<ListModel<LiveVideoModel>> getTerminalLearnedCourse(int size, {int lastTi
   }
   BaseResponseModel responseModel = await requestApi(GETTERMINALLEARNEDCOURSE, params);
   if (responseModel.isSuccess) {
-    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
-    List<LiveVideoModel> list = [];
+    ListModel<CourseModel> listModel = ListModel<CourseModel>();
+    List<CourseModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
     listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveVideoModel.fromJson(e));
+        list.add(CourseModel.fromJson(e));
       });
     }
     listModel.list = list;
@@ -328,7 +319,6 @@ Future<ListModel<LiveVideoModel>> getTerminalLearnedCourse(int size, {int lastTi
     return null;
   }
 }
-
 
 ///添加我的课程
 ///请求参数
@@ -343,7 +333,6 @@ Future<Map> addToMyCourse(int courseId) async {
     return null;
   }
 }
-
 
 ///从我的课程移除
 ///请求参数
@@ -362,53 +351,50 @@ Future<Map> deleteFromMyCourse(int courseId) async {
 ///获取直播地址
 ///courseId：课程id
 ///直播协议类型typr：HTTP_FLV、RTMP、HLS
-Future<Map> getPullStreamUrl(int courseId,{String type="HLS"}) async {
+Future<Map> getPullStreamUrl(int courseId, {String type = "HLS"}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId;
   params["type"] = type;
   BaseResponseModel responseModel = await requestApi(GETPULLSTREAMURL, params);
-  params["code"]=responseModel.code;
-  params["data"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["data"] = responseModel.data;
   return params;
 }
-
 
 ///获取直播间信息
 ///liveRoomId：直播间id
 ///count：一次性获取多少个人数
-Future<Map> roomInfo(int liveRoomId,{int count=50}) async {
+Future<Map> roomInfo(int liveRoomId, {int count = 50}) async {
   Map<String, dynamic> params = {};
   params["liveRoomId"] = liveRoomId;
   params["count"] = count;
   BaseResponseModel responseModel = await requestApi(ROOMINFO, params);
-  params["code"]=responseModel.code;
-  params["data"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["data"] = responseModel.data;
   return params;
 }
-
 
 ///反馈直播训练感受
 ///courseId：课程id
 ///feel：训练感受id
-Future<Map> feeling(int courseId,String feel) async {
+Future<Map> feeling(int courseId, String feel) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId;
   params["feel"] = feel;
   BaseResponseModel responseModel = await requestApi(FEELING, params);
-  params["code"]=responseModel.code;
-  params["data"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["data"] = responseModel.data;
   return params;
 }
 
-
-///查询禁言时间
+///反馈直播训练感受
 ///liveRoomId：直播间id
 ///uid：用户id不填则为当前用户
 Future<Map> queryMute(int liveRoomId) async {
   Map<String, dynamic> params = {};
   params["liveRoomId"] = liveRoomId;
   BaseResponseModel responseModel = await requestApi(QUERYMUTE, params);
-  params["code"]=responseModel.code;
-  params["data"]=responseModel.data;
+  params["code"] = responseModel.code;
+  params["data"] = responseModel.data;
   return params;
 }

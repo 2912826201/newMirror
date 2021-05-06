@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
@@ -20,7 +20,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final String userUrl;
   final String name;
   final bool isMyself;
-  final LiveVideoModel liveVideoModel;
+  final CourseModel liveVideoModel;
   final bool isLiveOrVideo;
   final String msgId;
   final String sendChatUserId;

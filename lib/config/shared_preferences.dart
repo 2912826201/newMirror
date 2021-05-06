@@ -1,5 +1,5 @@
-import 'package:mirror/api/training/live_api.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/date_util.dart';

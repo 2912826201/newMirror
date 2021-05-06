@@ -12,8 +12,8 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/machine_model.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -102,7 +102,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 数据源
   List<int> recommendIdList = [];
   List<HomeFeedModel> recommendModelList = [];
-  List<LiveVideoModel> liveVideoModel = [];
+  List<CourseModel> liveVideoModel = [];
   RefreshController _refreshController = RefreshController();
 
   // 列表监听

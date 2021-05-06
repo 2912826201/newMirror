@@ -47,7 +47,7 @@ import 'package:mirror/util/string_util.dart';
 /// updateTime : 1609387264786
 /// vipprice : 0
 
-class LiveVideoModel {
+class CourseModel {
   int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约 5已结束 6未开播-没有做
 
   String getGetPlayType() {
@@ -67,13 +67,13 @@ class LiveVideoModel {
       return "去上课";
     } else {
       //0-未开播 1-正在直播 2-直播结束 3-可回放
-      if (_liveCourseState!=null&&_liveCourseState == 1) {
+      if (_liveCourseState != null && _liveCourseState == 1) {
         this.playType = 1;
         return "去上课";
-      }else if (_liveCourseState!=null&&_liveCourseState == 2) {
+      } else if (_liveCourseState != null && _liveCourseState == 2) {
         this.playType = 5;
         return "已结束";
-      }else if (_liveCourseState!=null&&_liveCourseState == 3) {
+      } else if (_liveCourseState != null && _liveCourseState == 3) {
         this.playType = 3;
         return "回放";
       } else {
@@ -129,7 +129,7 @@ class LiveVideoModel {
   int _coursewareId;
   CoursewareDto _coursewareDto;
   int _bgmType;
-  int _priceType;//0免费-1会员免费-2会员付费
+  int _priceType; //0免费-1会员免费-2会员付费
   double _price;
   int _state;
   int _auditState;
@@ -159,6 +159,7 @@ class LiveVideoModel {
   double _vipprice;
 
   int get id => _id;
+
   int get type => _type;
 
   String get title => _title;
@@ -215,7 +216,6 @@ class LiveVideoModel {
 
   String get endTime => _endTime;
 
-
   int get totalTrainingTime => _totalTrainingTime;
 
   int get totalTrainingAmount => _totalTrainingAmount;
@@ -235,17 +235,24 @@ class LiveVideoModel {
   int get createTime => _createTime;
 
   int get updateTime => _updateTime;
+
   int get endState => _endState;
+
   int get isInMyCourseList => _isInMyCourseList;
+
   int get liveCourseState => _liveCourseState;
+
   int get bookCount => _bookCount;
+
   int get liveRoomCount => _liveRoomCount;
+
   int get watchCount => _watchCount;
+
   int get lastPracticeTime => _lastPracticeTime;
 
   double get vipprice => _vipprice;
 
-  LiveVideoModel(
+  CourseModel(
       {int id,
       int type,
       String title,
@@ -345,7 +352,7 @@ class LiveVideoModel {
     playType = 0;
   }
 
-  LiveVideoModel.fromJson(dynamic json) {
+  CourseModel.fromJson(dynamic json) {
     _id = json["id"];
     _type = json["type"];
     _title = json["title"];
@@ -360,20 +367,19 @@ class LiveVideoModel {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        if(v is SubTagModel){
+        if (v is SubTagModel) {
           _partDtos.add(v);
-        }else{
+        } else {
           _partDtos.add(SubTagModel.fromJson(v));
         }
-
       });
     }
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        if(v is EquipmentDtos){
+        if (v is EquipmentDtos) {
           _equipmentDtos.add(v);
-        }else{
+        } else {
           _equipmentDtos.add(EquipmentDtos.fromJson(v));
         }
       });
@@ -471,7 +477,8 @@ class LiveVideoModel {
     map["lastPracticeTime"] = _lastPracticeTime;
     return map;
   }
-   @override
+
+  @override
   String toString() {
     return toJson().toString();
   }
@@ -571,29 +578,29 @@ class CoursewareDto {
 
   int get updateTime => _updateTime;
 
-  CoursewareDto({
-    int id,
-    String name,
-    String picUrl,
-    String previewVideoUrl,
-    String description,
-    int type,
-    int times,
-    int calories,
-    int levelId,
-    SubTagModel levelDto,
-    int targetId,
-    SubTagModel targetDto,
-    List<SubTagModel> partDtos,
-    List<ComponentDtos> componentDtos,
-    List<EquipmentDtos> equipmentDtos,
-    int creatorId,
-    String creatorNickname,
-    int state,
-    int useAmount,
-    int dataState,
-    int createTime,
-    int updateTime}) {
+  CoursewareDto(
+      {int id,
+      String name,
+      String picUrl,
+      String previewVideoUrl,
+      String description,
+      int type,
+      int times,
+      int calories,
+      int levelId,
+      SubTagModel levelDto,
+      int targetId,
+      SubTagModel targetDto,
+      List<SubTagModel> partDtos,
+      List<ComponentDtos> componentDtos,
+      List<EquipmentDtos> equipmentDtos,
+      int creatorId,
+      String creatorNickname,
+      int state,
+      int useAmount,
+      int dataState,
+      int createTime,
+      int updateTime}) {
     _id = id;
     _name = name;
     _picUrl = picUrl;
@@ -634,19 +641,19 @@ class CoursewareDto {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        if(v is SubTagModel){
+        if (v is SubTagModel) {
           _partDtos.add(v);
-        }else{
+        } else {
           _partDtos.add(SubTagModel.fromJson(v));
-      }
+        }
       });
     }
     if (json["componentDtos"] != null) {
       _componentDtos = [];
       json["componentDtos"].forEach((v) {
-        if(v is ComponentDtos){
+        if (v is ComponentDtos) {
           _componentDtos.add(v);
-        }else{
+        } else {
           _componentDtos.add(ComponentDtos.fromJson(v));
         }
       });
@@ -654,9 +661,9 @@ class CoursewareDto {
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        if(v is EquipmentDtos){
+        if (v is EquipmentDtos) {
           _equipmentDtos.add(v);
-        }else{
+        } else {
           _equipmentDtos.add(EquipmentDtos.fromJson(v));
         }
       });
@@ -745,7 +752,6 @@ class CoursewareDto {
     map["updateTime"] = _updateTime;
     return map;
   }
-
 }
 
 /// id : 1
@@ -767,11 +773,7 @@ class EquipmentDtos {
 
   String get terminalPicUrl => _terminalPicUrl;
 
-  EquipmentDtos({
-    int id,
-    String name,
-    dynamic appPicUrl,
-    String terminalPicUrl}) {
+  EquipmentDtos({int id, String name, dynamic appPicUrl, String terminalPicUrl}) {
     _id = id;
     _name = name;
     _appPicUrl = appPicUrl;
@@ -800,7 +802,6 @@ class EquipmentDtos {
     map["terminalPicUrl"] = _terminalPicUrl;
     return map;
   }
-
 }
 
 /// id : 1
@@ -886,27 +887,27 @@ class ComponentDtos {
 
   int get updateTime => _updateTime;
 
-  ComponentDtos({
-    int id,
-    String name,
-    int type,
-    int times,
-    List<SubTagModel> partDtos,
-    SubTagModel levelDto,
-    List<EquipmentDtos> equipmentDtos,
-    int calories,
-    int isIdentify,
-    int identifyType,
-    List<Scripts> scripts,
-    List<ScriptToVideo> scriptToVideo,
-    int creatorId,
-    String creatorNickname,
-    int referenceAmount,
-    int seeLimit,
-    int state,
-    int dataState,
-    int createTime,
-    int updateTime}) {
+  ComponentDtos(
+      {int id,
+      String name,
+      int type,
+      int times,
+      List<SubTagModel> partDtos,
+      SubTagModel levelDto,
+      List<EquipmentDtos> equipmentDtos,
+      int calories,
+      int isIdentify,
+      int identifyType,
+      List<Scripts> scripts,
+      List<ScriptToVideo> scriptToVideo,
+      int creatorId,
+      String creatorNickname,
+      int referenceAmount,
+      int seeLimit,
+      int state,
+      int dataState,
+      int createTime,
+      int updateTime}) {
     _id = id;
     _name = name;
     _type = type;
@@ -937,9 +938,9 @@ class ComponentDtos {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        if(v is SubTagModel){
+        if (v is SubTagModel) {
           _partDtos.add(v);
-        }else{
+        } else {
           _partDtos.add(SubTagModel.fromJson(v));
         }
       });
@@ -948,9 +949,9 @@ class ComponentDtos {
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        if(v is EquipmentDtos){
+        if (v is EquipmentDtos) {
           _equipmentDtos.add(v);
-        }else{
+        } else {
           _equipmentDtos.add(EquipmentDtos.fromJson(v));
         }
       });
@@ -961,9 +962,9 @@ class ComponentDtos {
     if (json["scripts"] != null) {
       _scripts = [];
       json["scripts"].forEach((v) {
-        if(v is Scripts){
+        if (v is Scripts) {
           _scripts.add(v);
-        }else{
+        } else {
           _scripts.add(Scripts.fromJson(v));
         }
       });
@@ -971,9 +972,9 @@ class ComponentDtos {
     if (json["scriptToVideo"] != null) {
       _scriptToVideo = [];
       json["scriptToVideo"].forEach((v) {
-        if(v is ScriptToVideo){
+        if (v is ScriptToVideo) {
           _scriptToVideo.add(v);
-        }else{
+        } else {
           _scriptToVideo.add(ScriptToVideo.fromJson(v));
         }
       });
@@ -1022,7 +1023,6 @@ class ComponentDtos {
     map["updateTime"] = _updateTime;
     return map;
   }
-
 }
 
 /// scriptIds : [{"startTime":12000,"id":55,"endTime":29580}]
@@ -1040,10 +1040,7 @@ class ScriptToVideo {
 
   int get videoTime => _videoTime;
 
-  ScriptToVideo({
-    List<ScriptIds> scriptIds,
-    String videoUrl,
-    int videoTime}) {
+  ScriptToVideo({List<ScriptIds> scriptIds, String videoUrl, int videoTime}) {
     _scriptIds = scriptIds;
     _videoUrl = videoUrl;
     _videoTime = videoTime;
@@ -1053,9 +1050,9 @@ class ScriptToVideo {
     if (json["scriptIds"] != null) {
       _scriptIds = [];
       json["scriptIds"].forEach((v) {
-        if(v is ScriptIds){
+        if (v is ScriptIds) {
           _scriptIds.add(v);
-        }else{
+        } else {
           _scriptIds.add(ScriptIds.fromJson(v));
         }
       });
@@ -1073,7 +1070,6 @@ class ScriptToVideo {
     map["videoTime"] = _videoTime;
     return map;
   }
-
 }
 
 /// startTime : 12000
@@ -1091,10 +1087,7 @@ class ScriptIds {
 
   int get endTime => _endTime;
 
-  ScriptIds({
-    int startTime,
-    int id,
-    int endTime}) {
+  ScriptIds({int startTime, int id, int endTime}) {
     _startTime = startTime;
     _id = id;
     _endTime = endTime;
@@ -1103,7 +1096,7 @@ class ScriptIds {
   ScriptIds.fromJson(dynamic json) {
     _startTime = json["startTime"];
     _id = json["id"];
-    if(json["endTime"] is int) {
+    if (json["endTime"] is int) {
       _endTime = json["endTime"];
     }
   }
@@ -1115,7 +1108,6 @@ class ScriptIds {
     map["endTime"] = _endTime;
     return map;
   }
-
 }
 
 /// id : 55
@@ -1237,36 +1229,36 @@ class Scripts {
 
   String get aicheckSteps => _aicheckSteps;
 
-  Scripts({
-    int id,
-    String name,
-    int isIdentify,
-    String picUrl,
-    int levelId,
-    SubTagModel levelDto,
-    List<SubTagModel> partDtos,
-    String equipmentIds,
-    List<EquipmentDtos> equipmentDtos,
-    dynamic type,
-    dynamic point,
-    dynamic rate,
-    dynamic calories,
-    dynamic expectHeartRate,
-    String steps,
-    String breathingRhythm,
-    String movementFeeling,
-    dynamic positionId,
-    dynamic positionDto,
-    dynamic muscleId,
-    dynamic muscleDto,
-    dynamic detail,
-    int state,
-    int creatorId,
-    int dataState,
-    int createTime,
-    int updateTime,
-    int practiceAmount,
-    String aicheckSteps}) {
+  Scripts(
+      {int id,
+      String name,
+      int isIdentify,
+      String picUrl,
+      int levelId,
+      SubTagModel levelDto,
+      List<SubTagModel> partDtos,
+      String equipmentIds,
+      List<EquipmentDtos> equipmentDtos,
+      dynamic type,
+      dynamic point,
+      dynamic rate,
+      dynamic calories,
+      dynamic expectHeartRate,
+      String steps,
+      String breathingRhythm,
+      String movementFeeling,
+      dynamic positionId,
+      dynamic positionDto,
+      dynamic muscleId,
+      dynamic muscleDto,
+      dynamic detail,
+      int state,
+      int creatorId,
+      int dataState,
+      int createTime,
+      int updateTime,
+      int practiceAmount,
+      String aicheckSteps}) {
     _id = id;
     _name = name;
     _isIdentify = isIdentify;
@@ -1308,9 +1300,9 @@ class Scripts {
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
-        if(v is SubTagModel){
+        if (v is SubTagModel) {
           _partDtos.add(v);
-        }else{
+        } else {
           _partDtos.add(SubTagModel.fromJson(v));
         }
       });
@@ -1319,12 +1311,11 @@ class Scripts {
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
-        if(v is EquipmentDtos){
+        if (v is EquipmentDtos) {
           _equipmentDtos.add(v);
-        }else{
+        } else {
           _equipmentDtos.add(EquipmentDtos.fromJson(v));
         }
-
       });
     }
     _type = json["type"];
@@ -1388,5 +1379,4 @@ class Scripts {
     map["aicheckSteps"] = _aicheckSteps;
     return map;
   }
-
 }

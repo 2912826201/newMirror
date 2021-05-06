@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
@@ -14,7 +15,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
@@ -379,8 +380,8 @@ class MessageManager {
         case 8:
           //8-遥控器变化---目前只有训练进度
           print("目前只有训练进度");
-          TrainingScheduleModel model=TrainingScheduleModel.fromJson(dataMap["cmd"]);
-          if(model!=null){
+          TrainingScheduleModel model = TrainingScheduleModel.fromJson(dataMap["cmd"]);
+          if (model != null) {
             _trainingSchedule(model);
           }
           break;
@@ -390,7 +391,24 @@ class MessageManager {
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
-          if (trainingResult.hasResult == 1) {}
+          if (trainingResult.hasResult == 1) {
+            switch (trainingResult.type) {
+              case 0: // 直播课
+                break;
+              case 1: // 视频课
+                getCourseModel(courseId: trainingResult.courseId, type: mode_video).then((courseModel) {
+                  if (courseModel != null) {
+                    Future.delayed(Duration.zero).then((value) {
+                      AppRouter.navigateToVideoCourseResult(
+                          Application.navigatorKey.currentState.overlay.context, trainingResult, courseModel);
+                    });
+                  }
+                });
+                break;
+              default:
+                break;
+            }
+          }
           break;
         case 10:
           //10-开始训练-StartTraining
@@ -693,17 +711,17 @@ class MessageManager {
   }
 
   //机器训练进度的返回---只有视频课程
-  static void _trainingSchedule(TrainingScheduleModel model){
-    if(model.courseId==null){
+  static void _trainingSchedule(TrainingScheduleModel model) {
+    if (model.courseId == null) {
       return;
     }
-    if(AppRouter.isHaveMachineRemoteControllerPage()){
-      EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
-    }else{
+    if (AppRouter.isHaveMachineRemoteControllerPage()) {
+      EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
+    } else {
       BuildContext context = Application.navigatorKey.currentState.overlay.context;
       AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_video);
-      Future.delayed(Duration(milliseconds: 100),(){
-        EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
+      Future.delayed(Duration(milliseconds: 100), () {
+        EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
       });
     }
   }

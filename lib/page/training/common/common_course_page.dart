@@ -6,7 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -48,7 +48,7 @@ Widget getNoCompleteTitle(BuildContext context, String text) {
 }
 
 //获取课程显示的图片
-String getCourseShowImage(LiveVideoModel courseModel) {
+String getCourseShowImage(CourseModel courseModel) {
   String imageUrl;
   if (courseModel.picUrl != null) {
     imageUrl = courseModel.picUrl;
@@ -61,7 +61,7 @@ String getCourseShowImage(LiveVideoModel courseModel) {
 }
 
 //获取训练数据ui
-Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey globalKey) {
+Widget getTitleWidget(CourseModel videoModel, BuildContext context, GlobalKey globalKey) {
   var widgetArray = <Widget>[];
   var titleArray = [
     ((videoModel.times ?? 0) ~/ 60000).toString(),
@@ -133,7 +133,7 @@ Widget getTitleWidget(LiveVideoModel videoModel, BuildContext context, GlobalKey
 }
 
 //获取教练的名字
-Widget getCoachItem(LiveVideoModel videoModel, BuildContext context, Function onClickAttention, Function onClickCoach,
+Widget getCoachItem(CourseModel videoModel, BuildContext context, Function onClickAttention, Function onClickCoach,
     GlobalKey globalKey) {
   return SliverToBoxAdapter(
     child: GestureDetector(
@@ -235,7 +235,7 @@ Widget getLineView() {
 
 //训练器材界面
 Widget getTrainingEquipmentUi(
-    LiveVideoModel videoModel, BuildContext context, TextStyle titleTextStyle, GlobalKey globalKey) {
+    CourseModel videoModel, BuildContext context, TextStyle titleTextStyle, GlobalKey globalKey) {
   var widgetList = <Widget>[];
   widgetList.add(Container(
     padding: const EdgeInsets.only(left: 16),
@@ -307,7 +307,7 @@ List<String> getTerminalPicUrlList(List<EquipmentDtos> equipmentDtos) {
 }
 
 //获取动作的ui
-Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextStyle titleTextStyle) {
+Widget getActionUiVideo(CourseModel videoModel, BuildContext context, TextStyle titleTextStyle) {
   // ignore: null_aware_before_operator
   if (videoModel.coursewareDto?.actionMapList == null || videoModel.coursewareDto?.actionMapList?.length < 1) {
     return SliverToBoxAdapter();
@@ -404,7 +404,7 @@ Widget getActionUiVideo(LiveVideoModel videoModel, BuildContext context, TextSty
 
 //获取动作的ui
 Widget getActionUiLive(
-    LiveVideoModel liveModel, BuildContext context, GlobalKey globalKey, bool isShowAllItem, Function onClick) {
+    CourseModel liveModel, BuildContext context, GlobalKey globalKey, bool isShowAllItem, Function onClick) {
   if (liveModel == null ||
       liveModel.coursewareDto == null ||
       liveModel.coursewareDto.actionMapList == null ||

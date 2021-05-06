@@ -176,6 +176,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
+      context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId);
       Loading.hideLoading(context);
       Navigator.pop(context);
     }
@@ -189,7 +190,8 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
       isBlack = true;
       setState(() {});
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
-      context.read<UserInteractiveNotifier>().removeListId(null);
+      context.read<UserInteractiveNotifier>().removeListId(widget.userId,isAdd: false);
+      context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId);
       ToastShow.show(msg: "拉黑成功", context: context);
     } else {
       ToastShow.show(msg: "操作失败", context: context);

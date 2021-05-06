@@ -11,7 +11,7 @@ import 'package:mirror/data/database/search_history_db_helper.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_complex.dart';
@@ -194,7 +194,7 @@ class SearchMiddleView extends StatefulWidget {
 class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
-  List<LiveVideoModel> liveVideoList = [];
+  List<CourseModel> liveVideoList = [];
 
   @override
   void initState() {
@@ -220,7 +220,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
-      List<LiveVideoModel> liveList = [];
+      List<CourseModel> liveList = [];
       if (results[2] != null) {
         liveList = results[2];
         if (liveList.isNotEmpty) {

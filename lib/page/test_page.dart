@@ -372,24 +372,24 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   child: Text("音量"),
                 ),
               ]),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                RaisedButton(
-                  onPressed: () {
-                    TrainingCompleteResultModel result = TrainingCompleteResultModel();
-                    result.synthesisRank = 0.67;
-                    result.upperRank = 1.0;
-                    result.lowerRank = 0.8;
-                    result.coreRank = 0.33;
-                    result.completionDegree = 0.57;
-                    result.no = 233;
-                    result.calorie = 198;
-                    result.mseconds = 2040000;
-                    result.synthesisScore = 12894;
-                    AppRouter.navigateToVideoCourseResult(context, result);
-                  },
-                  child: Text("视频课结果页"),
-                ),
-              ]),
+              // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              //   RaisedButton(
+              //     onPressed: () {
+              //       TrainingCompleteResultModel result = TrainingCompleteResultModel();
+              //       result.synthesisRank = 0.67;
+              //       result.upperRank = 1.0;
+              //       result.lowerRank = 0.8;
+              //       result.coreRank = 0.33;
+              //       result.completionDegree = 0.57;
+              //       result.no = 233;
+              //       result.calorie = 198;
+              //       result.mseconds = 2040000;
+              //       result.synthesisScore = 12894;
+              //       AppRouter.navigateToVideoCourseResult(context, result);
+              //     },
+              //     child: Text("视频课结果页"),
+              //   ),
+              // ]),
               Container(
                 color: AppColor.mainRed,
                 child: Text(
