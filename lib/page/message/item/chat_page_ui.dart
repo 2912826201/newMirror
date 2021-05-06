@@ -236,7 +236,7 @@ class ChatPageUtil {
             name += "," + model["NotFriendList"][i]["nickName"];
           }
         }
-        ToastShow.show(msg: name, context: context);
+        ToastShow.show(msg: "邀请失败", context: context);
         return false;
       } else {
         ToastShow.show(msg: "邀请成功", context: context);
