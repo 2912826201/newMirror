@@ -2210,7 +2210,9 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     showGroupPopup(context,
       int.parse(conversation.conversationId),
       (GroupChatModel groupChatModel)async{
-        await ProfileAddFollow(1002885);
+        if(isShowTopAttentionUi) {
+          await _attntionOnClick();
+        }
         bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
         if(isSuccess){
           String name = groupChatModel.modifiedName ?? groupChatModel.name;
