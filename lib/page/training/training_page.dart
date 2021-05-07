@@ -38,7 +38,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   int _isVideoCourseLastTime;
   bool _videoCourseHasNext;
 
-  //TODO 临时变量 之后要像机器信息一样全局维护
+  //TODO 临时变量控制是否展示播放条 之后要像机器信息一样全局维护 需求变更暂时不用播放条了
   bool _isPlayingCourse = false;
 
   RefreshController _refreshController = RefreshController();
@@ -201,6 +201,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       ),
     );
   }
+
   Widget _buildBanner() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),

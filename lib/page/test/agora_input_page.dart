@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/page/agora_test_page.dart';
+import 'package:mirror/page/test/agora_test_page.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
 /// agora_input_page
