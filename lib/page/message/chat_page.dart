@@ -622,7 +622,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
         judgeNowChatIsHaveAt();
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        if(chatTopAtMarkChildKey!=null&&chatTopAtMarkChildKey.currentState!=null&&
+            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs!=null) {
+          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        }
       }
     }
   }
@@ -646,7 +649,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          if(chatTopAtMarkChildKey!=null&&chatTopAtMarkChildKey.currentState!=null&&
+              chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs!=null) {
+            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          }
           break;
         }
       }

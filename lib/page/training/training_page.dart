@@ -207,8 +207,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       child: GestureDetector(
         child: Container(
           height: _screenWidth * 140 / 375,
+          width: ScreenUtil.instance.width,
           color: AppColor.bgBlack,
-          child: Image.asset("assets/png/new_user_event_banner.png",fit: BoxFit.cover),
+          child: Image.asset("assets/png/new_user_event_banner.png",fit: BoxFit.cover,),
         ),
         onTap: (){
           AppRouter.navigateNewUserPromotionPage(context);
