@@ -26,6 +26,7 @@ import 'package:provider/provider.dart';
 import 'package:qrcode/qrcode.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
+import 'package:mirror/page/message/item/chat_page_ui.dart';
 
 /// message_manager
 /// Created by yangjiayi on 2020/12/21.
@@ -173,6 +174,11 @@ class MessageManager {
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
     }
+
+    if(!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)){
+      return null;
+    }
+
 
     ConversationDto dto = ConversationDto();
     //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是

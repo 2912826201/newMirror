@@ -29,7 +29,6 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
-import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -42,7 +41,6 @@ import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
@@ -295,15 +293,6 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     _scrollController.dispose();
     streamEditWidget.close();
     context.read<ChatMessageProfileNotifier>().setData(0, "");
-    if (Application.appContext != null) {
-      //清聊天未读数
-      ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-      //清其他数据
-      Application.appContext.read<VoiceSettingNotifier>().stop();
-      Application.appContext.read<ChatMessageProfileNotifier>().clear();
-      _textController.text = "";
-      Application.appContext.read<ChatEnterNotifier>().clearRules();
-    }
     if (conversation.getType() == RCConversationType.Group) {
       Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
@@ -711,7 +700,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           }
 
           if (dataList != null && dataList.length > 0) {
-            getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
             print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -779,7 +768,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           }
 
           if (dataList != null && dataList.length > 0) {
-            getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
             print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -1991,7 +1980,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
       }
       if (dataList != null && dataList.length > 0) {
-        getTimeAlert(dataList, conversation.conversationId);
+        ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
         print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
         if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
           chatDataList.removeAt(chatDataList.length - 1);
@@ -2015,7 +2004,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   _onRefreshSystemInformation() async {
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
-      getTimeAlert(dataList, conversation.conversationId);
+      ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
       if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
         chatDataList.removeAt(chatDataList.length - 1);
       }

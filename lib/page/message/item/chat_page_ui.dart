@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
@@ -6,7 +8,10 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -169,10 +174,14 @@ class ChatPageUtil {
     if (chatDataList != null && chatDataList.length > 0) {
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
-          chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+          if(isShowNewChatDataModel(chatDataList[i])) {
+            chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+          }
         } else if (chatDataList[i].msg != null &&
             (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-          chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+          if(isShowNewChatDataModel(chatDataList[i])) {
+            chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
+          }
         }
       }
     }
@@ -246,5 +255,175 @@ class ChatPageUtil {
       ToastShow.show(msg: "邀请失败", context: context);
       return false;
     }
+  }
+
+  bool isShowNewMessage(Message message){
+    return isShowNewChatDataModel(getMessage(message, isHaveAnimation: false));
+  }
+
+
+  bool isShowNewChatDataModel(ChatDataModel chatDataModel){
+    if(chatDataModel.isTemporary){
+      return true;
+    }else{
+      switch(chatDataModel.msg.objectName){
+        case ChatTypeModel.MESSAGE_TYPE_TEXT:
+          TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
+          try {
+            Map<String, dynamic> mapModel = json.decode(textMessage.content);
+            if (_getIsAlertMessage(mapModel["subObjectName"])) {
+              //-------------------------------------------------提示消息--------------------------------------------
+              return _isNoShowMsg(map: mapModel);
+            } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+              //-------------------------------------------------群通知消息-第二种-------------------------------------------
+              Map<String, dynamic> map = Map();
+              map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+              map["data"] = json.decode(mapModel["data"]);
+              return _isNoShowMsg(map: map);
+            }
+          } catch (e) {}
+          return false;
+        case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
+          // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
+          Map<String, dynamic> map = Map();
+          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+          map["data"] = chatDataModel.msg.originContentMap;
+          return _isNoShowMsg(map: map);
+        case ChatTypeModel.MESSAGE_TYPE_CMD:
+          // -----------------------------------------------通知-私聊-----------------------------------------------
+          Map<String, dynamic> map = Map();
+          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+          map["data"] = chatDataModel.msg.originContentMap;
+          return _isNoShowMsg(map: map);
+        default:
+          return false;
+      }
+    }
+  }
+
+  //todo 获取群主的方式是有问题的 目前还好 如果以后有管理员 这样是不行的
+  bool _isNoShowMsg({@required Map<String, dynamic> map}){
+    //0--加入群聊
+    //1--退出群聊
+    //2--移除群聊
+    //3--群主转移
+    //4--群名改变
+    //5--扫码加入群聊
+    if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
+      Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
+      if (mapGroupModel["subType"] == 0||mapGroupModel["subType"] ==1||mapGroupModel["subType"] ==2) {
+        if (context.read<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+          ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+
+
+          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
+            return false;
+          } else {
+            if (mapGroupModel["subType"] == 0 && map["data"]["name"] == "Entry") {
+              return false;
+            }else{
+              return _isHaveUserMessageAlert(mapGroupModel);
+            }
+          }
+        } else {
+          if (mapGroupModel["subType"] == 1) {
+            return false;
+          } else {
+            if (mapGroupModel["subType"] == 0 && map["data"]["name"] == "Entry") {
+              return false;
+            }else{
+              return _isHaveUserMessageAlert(mapGroupModel);
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  //判断这个提示里面有没有我或者 我是不是群主
+  bool _isHaveUserMessageAlert(Map<String, dynamic> mapGroupModel){
+
+    //0--加入群聊
+    //1--退出群聊
+    //2--移除群聊
+    //3--群主转移
+    //4--群名改变
+    //5--扫码加入群聊
+    bool isHaveUserSelf = false;
+    List<dynamic> users = mapGroupModel["users"];
+
+    if (mapGroupModel["subType"] == 0) {
+      //邀请
+      if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
+        isHaveUserSelf = true;
+      }
+    } else if (mapGroupModel["subType"] == 2) {
+      //移除
+      if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
+        isHaveUserSelf = true;
+      }
+    }
+    for (dynamic d in users) {
+      try {
+        if (d != null) {
+          if (d["uid"] == Application.profile.uid) {
+            isHaveUserSelf = true;
+          }
+        }
+      } catch (e) {
+        break;
+      }
+    }
+
+    //退出群聊
+    if (mapGroupModel["subType"] == 1) {
+      if (!isHaveUserSelf) {
+        if (context.read<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED &&
+            context.read<GroupUserProfileNotifier>().chatGroupUserModelList != null &&
+            context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
+          ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+          if (chatGroupUserModel.uid != Application.profile.uid) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    } else if (mapGroupModel["subType"] == 2) {
+      //移出了群聊
+      if (!isHaveUserSelf) {
+        if (context.read<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED &&
+            context.read<GroupUserProfileNotifier>().chatGroupUserModelList != null &&
+            context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
+          ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+          if (chatGroupUserModel.uid != Application.profile.uid) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+  //判断这个消息是不是提示消息
+  bool _getIsAlertMessage(String chatTypeModel) {
+    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
+      return true;
+    }
+    return false;
   }
 }
