@@ -59,6 +59,9 @@ const String FEELING = "/sport/web/liveCourse/feeling";
 //查询禁言时间
 const String QUERYMUTE = "/sport/web/liveMute/queryMute";
 
+//视频课结果提交感受
+const String VIDEOCOURSECOMMITFEELING = "/sport/web/videoCourse/commitFeeling";
+
 ///根据日期获取直播课程列表
 ///请求参数
 ///date:2020-12-10
@@ -387,7 +390,7 @@ Future<Map> feeling(int courseId, String feel) async {
   return params;
 }
 
-///反馈直播训练感受
+///查询禁言时间
 ///liveRoomId：直播间id
 ///uid：用户id不填则为当前用户
 Future<Map> queryMute(int liveRoomId) async {
@@ -397,4 +400,19 @@ Future<Map> queryMute(int liveRoomId) async {
   params["code"] = responseModel.code;
   params["data"] = responseModel.data;
   return params;
+}
+
+///反馈直播训练感受
+///resultId：训练结果id
+///feelingId：感受id
+Future<bool> videoCourseCommitFeeling(int resultId, int feelingId) async {
+  Map<String, dynamic> params = {};
+  params["id"] = resultId;
+  params["feelingId"] = feelingId;
+  BaseResponseModel responseModel = await requestApi(VIDEOCOURSECOMMITFEELING, params);
+  if (responseModel.isSuccess && responseModel.code == CODE_SUCCESS) {
+    return true;
+  } else {
+    return false;
+  }
 }

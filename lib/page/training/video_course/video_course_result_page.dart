@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -28,6 +29,9 @@ class VideoCourseResultPage extends StatefulWidget {
 }
 
 class _VideoCourseResultState extends State<VideoCourseResultPage> {
+  int _feedbackIndex = -1;
+  bool _isFeedbacking = false;
+
   @override
   void initState() {
     super.initState();
@@ -396,14 +400,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("太简单了！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 0);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 0;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 0 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),
@@ -419,14 +432,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("很棒！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 1);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 1;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 1 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),
@@ -442,14 +464,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("太难了！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 2);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 2;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 2 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),

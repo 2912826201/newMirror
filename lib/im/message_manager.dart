@@ -310,7 +310,7 @@ class MessageManager {
   }
 
   //分为两类 一类通知（私聊通知、群聊通知） 一类消息
-  static splitMessage(Message message) async {
+  static splitMessage(Message message) {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
       //私聊通知
       Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);

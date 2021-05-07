@@ -31,7 +31,6 @@ class VideoCoursePart {
   int type; //0-课程 1-休息
 
   VideoCoursePart([this.videoList, this.duration, this.name, this.type]);
-
 }
 
 final List<VideoCoursePart> testPartList = [
@@ -366,28 +365,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                   ),
                 ),
                 SizedBox(height: 7.5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      _partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      "${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
-                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                )
+                Text(
+                  "${_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                ),
               ],
             ),
             Spacer(),

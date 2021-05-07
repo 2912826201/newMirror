@@ -170,7 +170,7 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     print("点赞了前：：：：：：：：$laud");
     if (laud == 0) {
       value._feedMap[id].laudCount -= 1;
-      value._feedMap[id].laudUserInfo.removeAt(0);
+      value._feedMap[id].laudUserInfo.removeWhere((v) => v == avatarUrl);
     } else {
       value._feedMap[id].laudCount += 1;
       value._feedMap[id].laudUserInfo.insert(0, avatarUrl);

@@ -7,14 +7,14 @@ import 'package:flutter/rendering.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
-import 'package:mirror/page/feed_video_test_page.dart';
-import 'package:mirror/page/feed_video_test_page2.dart';
+import 'package:mirror/page/test/feed_video_test_page.dart';
+import 'package:mirror/page/test/feed_video_test_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
-import 'media_picker/media_picker_page.dart';
+import '../media_picker/media_picker_page.dart';
 
 /// media_test_page
 /// Created by yangjiayi on 2020/11/21.
