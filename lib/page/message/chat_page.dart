@@ -294,6 +294,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     _messageInputBodyClick();
     _scrollController.dispose();
     streamEditWidget.close();
+    context.read<ChatMessageProfileNotifier>().setData(0, "");
     if (Application.appContext != null) {
       //清聊天未读数
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);

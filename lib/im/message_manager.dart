@@ -79,7 +79,12 @@ class MessageManager {
         //将旧数据的创建时间赋值过来
         dto.createTime = exist.createTime;
         //将未读数累加
-        dto.unreadCount += exist.unreadCount;
+        if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
+            Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
+          dto.unreadCount =0;
+        }else{
+          dto.unreadCount += exist.unreadCount;
+        }
       }
       //处理名字 新的没有值 旧的有值则用旧的
       if (dto.name == "" && exist.name != "") {
@@ -237,26 +242,30 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
-      if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-        Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
-        if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-          dto.unreadCount = 0;
-          return dto;
-        } else if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_CMD) {
-          dto.unreadCount = 0;
-          return dto;
+      if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
+          Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
+        dto.unreadCount = 0;
+      }else{
+        if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+          Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
+          if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+            dto.unreadCount = 0;
+            return dto;
+          } else if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_CMD) {
+            dto.unreadCount = 0;
+            return dto;
+          }
+        }
+        dto.unreadCount = 1;
+
+        //加上全局未读数
+        NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
+        if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
+          Application.unreadMessageNumber += 1;
+          EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
         }
       }
-      dto.unreadCount = 1;
-
-      //加上全局未读数
-      NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
-      if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
-        Application.unreadMessageNumber += 1;
-        EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      }
     }
-
     return dto;
   }
 
