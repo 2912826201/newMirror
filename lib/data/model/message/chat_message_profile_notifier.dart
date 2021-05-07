@@ -44,6 +44,14 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     }
   }
 
+  //是否是当前聊天界面
+  bool isCurrentChatGroupId(Message message){
+    bool a=message.targetId == this.chatUserId && message.conversationType == chatTypeId;
+    print("value:${message.targetId},${this.chatUserId},${message.conversationType},$chatTypeId,$a");
+    return message.targetId == this.chatUserId && message.conversationType == chatTypeId;
+  }
+
+
   //加入群聊
   entryGroup(Message message){
     Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
