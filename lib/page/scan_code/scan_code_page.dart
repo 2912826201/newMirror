@@ -40,6 +40,7 @@ class scanCodePageState extends State<ScanCodePage> {
   Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  bool requestOver = true;
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -57,6 +58,10 @@ class scanCodePageState extends State<ScanCodePage> {
     });
     controller.scannedDataStream.listen((scanData) {
       print('scanData---------------------------${scanData.code}');
+      //note 接口很慢的情况，防止重复请求和响应
+      if(!requestOver){
+        return;
+      }
       //note 防止回调太快，每两秒响应一次结果
       if(timeTemp==null){
         timeTemp = DateTime.now().millisecondsSinceEpoch;
@@ -275,7 +280,9 @@ class scanCodePageState extends State<ScanCodePage> {
     //TODO 判断二维码短链接的语句之后要换
     if (result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")) {
       //是我们自己的短链接 要用get请求获取其中的uri
+      requestOver = false;
       String uri = await resolveShortUrl(result);
+      requestOver = true;
       _resolveUri(uri);
     } else {
       _resolveUri(result);
@@ -332,7 +339,9 @@ class scanCodePageState extends State<ScanCodePage> {
         case "if://userProfile":
           int uid = int.parse(params["uid"]);
           print('--------------------------uid----$uid-');
+          requestOver = false;
           getUserInfo(uid: uid).then((value){
+            requestOver = true;
             if(value!=null){
               Navigator.pop(context);
               AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
