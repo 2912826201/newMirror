@@ -454,8 +454,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               wantWidth: 16,
             ),
             onDoubleTap: (index) {
-              subpageRefresh();
-              print("双击了${index}");
+              if (controller.index == index) {
+                subpageRefresh();
+              } else {
+                controller.animateTo(index);
+              }
             },
           ),
         ),
