@@ -239,13 +239,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.10"
-  dio_range_download:
-    dependency: "direct main"
-    description:
-      name: dio_range_download
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.0"
   english_words:
     dependency: "direct main"
     description:
@@ -758,20 +751,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.0"
-  qrcode:
-    dependency: "direct main"
-    description:
-      name: qrcode
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.4"
-  r_upgrade:
-    dependency: "direct main"
-    description:
-      name: r_upgrade
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.3.2+3"
   recase:
     dependency: transitive
     description:
