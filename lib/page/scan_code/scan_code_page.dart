@@ -18,7 +18,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:qrcode/qrcode.dart';
 import 'package:scan/scan.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';

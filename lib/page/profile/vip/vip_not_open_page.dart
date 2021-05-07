@@ -15,13 +15,13 @@ import 'package:provider/provider.dart';
 
 class VipState {
   //续费
-  static int RENEW = 1;
+  static const int RENEW = 1;
 
   //未开通
-  static int NOTOPEN = 2;
+  static const int NOTOPEN = 2;
 
   //已过期
-  static int EXPIRED = 3;
+  static const int EXPIRED = 3;
 }
 
 //会员未开通页
