@@ -346,7 +346,6 @@ class HeadViewState extends State<HeadView> {
                             switch (context
                                 .read<UserInteractiveNotifier>()
                                 .profileUiChangeModel[widget.model.pushId]
-                                // ignore: missing_return
                                 .feedStringList[index]) {
                               case "删除":
                                 deleteFeed();

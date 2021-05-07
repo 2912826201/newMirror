@@ -74,6 +74,8 @@ const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 
 ///用户推送列表
 const String QUERY_MSG_LIST = "/appuser/web/message/queryMsgList";
+///粉丝新增未读
+const String FANS_UNREAD = "/appuser/web/user/follow/getUnReadAddFansCount";
 //关注
 //0-普通场景1-直播中关注教练
 Future<int> ProfileAddFollow(int id,{int type=0}) async {
@@ -437,6 +439,14 @@ Future<Map> relation(int uid,int targetId) async {
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
+    return null;
+  }
+}
+Future<int> fansUnread()async{
+  BaseResponseModel responseModel = await requestApi(FANS_UNREAD, {});
+  if(responseModel.isSuccess&&responseModel.data!=null){
+    return responseModel.data["amount"];
+  }else{
     return null;
   }
 }

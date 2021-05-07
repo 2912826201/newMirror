@@ -10,9 +10,14 @@ class UserInteractiveNotifier extends ChangeNotifier {
   List<int> removeId;
   List<int> userFollowChangeIdList;
   bool haveNewFans = false;
-
+  int fansUnreadCount = 0;
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
+
+  void changeUnreadFansCount(int count){
+    fansUnreadCount = count;
+    notifyListeners();
+  }
   void laudedChange(int id, int lauded) {
     if (lauded == 0) {
       profileUiChangeModel[id].attentionModel.laudedCount -= 1;
