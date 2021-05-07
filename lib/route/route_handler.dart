@@ -63,7 +63,7 @@ import 'package:mirror/page/profile/training_record/weight_record_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
-import 'package:mirror/page/promotion/lord_qr_code_page.dart';
+import 'package:mirror/page/promotion/manager_qr_code_page.dart';
 import 'package:mirror/page/promotion/new_user_promotion_page.dart';
 import 'package:mirror/page/test/rc_test_page.dart';
 import 'package:mirror/page/scan_code/my_qrcode_page.dart';
@@ -80,6 +80,7 @@ import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_page.dart';
+import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/address_picker.dart';
@@ -286,6 +287,7 @@ var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage(
     topicId: data["topicId"],
+    videoCourseId: data["videoCourseId"],
   );
 });
 
@@ -595,5 +597,5 @@ var handlerNewUserPromotionPage = Handler(handlerFunc: (BuildContext context, Ma
 // 活动添加老师和进入群聊界面
 var handlerLordQRCodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return LordQRCodePage();
+  return ManagerQRCodePage();
 });
