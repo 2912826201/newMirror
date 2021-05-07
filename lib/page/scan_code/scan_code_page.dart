@@ -17,7 +17,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:qrcode/qrcode.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:scan/scan.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
@@ -35,36 +35,45 @@ class ScanCodePage extends StatefulWidget {
 class scanCodePageState extends State<ScanCodePage> {
   String codeData;
   StreamController<double> streamController = StreamController<double>();
-  QRCaptureController _captureController = QRCaptureController();
   bool upOrDown = false;
   int timeTemp;
+  Barcode result;
+  QRViewController controller;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  bool requestOver = true;
   @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    print('----------------------扫码界面deactivate');
-    _captureController.pause();
   }
 
   @override
   void initState() {
     super.initState();
     streamController.sink.add(250);
-    _captureController.onCapture((data) {
-      print('onCapture----$data');
+  }
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      this.controller = controller;
+    });
+    controller.scannedDataStream.listen((scanData) {
+      print('scanData---------------------------${scanData.code}');
+      //note 接口很慢的情况，防止重复请求和响应
+      if(!requestOver){
+        return;
+      }
       //note 防止回调太快，每两秒响应一次结果
       if(timeTemp==null){
         timeTemp = DateTime.now().millisecondsSinceEpoch;
-        resolveScanResult(data);
+        resolveScanResult(scanData.code);
       }
       if(DateTime.now().millisecondsSinceEpoch-timeTemp>2000){
         timeTemp =DateTime.now().millisecondsSinceEpoch;
-        resolveScanResult(data);
+        resolveScanResult(scanData.code);
 
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +93,10 @@ class scanCodePageState extends State<ScanCodePage> {
           Container(
             width: ScreenUtil.instance.screenWidthDp,
             height: ScreenUtil.instance.height,
-            child: QRCaptureView(
-              controller: _captureController,
-            ),
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            )
           ),
           _scanCoverView()
         ],
@@ -270,7 +280,9 @@ class scanCodePageState extends State<ScanCodePage> {
     //TODO 判断二维码短链接的语句之后要换
     if (result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")) {
       //是我们自己的短链接 要用get请求获取其中的uri
+      requestOver = false;
       String uri = await resolveShortUrl(result);
+      requestOver = true;
       _resolveUri(uri);
     } else {
       _resolveUri(result);
@@ -282,7 +294,7 @@ class scanCodePageState extends State<ScanCodePage> {
       ToastShow.show(msg: "不支持的二维码", context: context);
       return;
     } else if (uri.startsWith("if://")) {
-      _captureController.pause();
+      controller.pauseCamera();
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
       List<String> strs = uri.split("?");
       String command = strs.first;
@@ -326,10 +338,14 @@ class scanCodePageState extends State<ScanCodePage> {
           break;
         case "if://userProfile":
           int uid = int.parse(params["uid"]);
-          Navigator.pop(context);
           print('--------------------------uid----$uid-');
+          requestOver = false;
           getUserInfo(uid: uid).then((value){
-            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+            requestOver = true;
+            if(value!=null){
+              Navigator.pop(context);
+              AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+            }
           });
           break;
         default:
@@ -340,14 +356,14 @@ class scanCodePageState extends State<ScanCodePage> {
           break;
       }
     } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-      _captureController.pause();
+      controller.pauseCamera();
       //网页 需要再细致区分处理 暂时先不处理
       ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       Navigator.pop(context);
       AppRouter.navigateToScanCodeResultPage(context, model);
     } else {
-      _captureController.pause();
+      controller.pauseCamera();
       ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       Navigator.pop(context);

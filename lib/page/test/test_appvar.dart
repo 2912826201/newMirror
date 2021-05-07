@@ -6,7 +6,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 
 class StickyDemo extends StatefulWidget {

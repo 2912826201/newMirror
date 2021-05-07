@@ -108,8 +108,28 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
+            print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
               homePageKey.currentState.subpageRefresh();
+            }
+            if (index == 0 && currentIndex != 0) {
+              if (pageController.hasClients) {
+                print("跳转222222");
+                if (index - currentIndex == 1 || currentIndex - index == 1) {
+                  pageController.animateToPage(index,
+                      duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                } else {
+                  pageController.jumpToPage(index);
+                }
+                currentIndex = index;
+                EventBus.getDefault().post(msg: index,registerName: MAIN_PAGE_JUMP_PAGE);
+              }
+              if (_unReadFeedCount == 0) {
+                _getUnReadFeedCount();
+              }
+              Future.delayed(Duration.zero, () {
+                getUnReads();
+              });
             }
           },
         ),

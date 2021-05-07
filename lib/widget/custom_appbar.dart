@@ -136,7 +136,6 @@ class CustomAppBarIconButton extends StatelessWidget {
   final String svgName;
   final Color iconColor;
   final Function() onTap;
-
   @override
   Widget build(BuildContext context) {
     return AppIconButton(

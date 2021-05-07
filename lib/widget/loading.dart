@@ -14,6 +14,7 @@ import 'icon.dart';
 class Loading {
   static bool isShow = false;
   static StreamController<bool> streamController;
+
   ///note 还没有ui图，暂时按照需求给出大致的样子
   static showLoading(BuildContext context, {String infoText}) {
     streamController = StreamController<bool>();

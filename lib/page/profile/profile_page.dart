@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -171,7 +172,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试")
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+              Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
               // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
               /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
@@ -473,7 +475,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   //点击事件Training record
-  void onClickListener(String title)async {
+  void onClickListener(String title) async {
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -495,6 +497,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       // } else {
       //   context.read<MachineNotifier>().setMachine(null);
       // }
+    } else if ("融云" == title) {
+      AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
     }
   }
 }

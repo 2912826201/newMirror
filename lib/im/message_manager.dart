@@ -23,7 +23,6 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
-import 'package:qrcode/qrcode.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/page/message/item/chat_page_ui.dart';

@@ -12,11 +12,11 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/activation_test_page.dart';
-import 'package:mirror/page/agora_input_page.dart';
-import 'package:mirror/page/download_test_page.dart';
-import 'package:mirror/page/media_test_page.dart';
-import 'package:mirror/page/qiniu_test_page.dart';
+import 'package:mirror/page/test/activation_test_page.dart';
+import 'package:mirror/page/test/agora_input_page.dart';
+import 'package:mirror/page/test/download_test_page.dart';
+import 'package:mirror/page/test/media_test_page.dart';
+import 'package:mirror/page/test/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -32,9 +32,9 @@ import 'package:mirror/widget/volume_popup.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'message/message_chat_page_manager.dart';
-import 'training/video_course/video_course_play_page2.dart';
-import 'training/video_course/video_course_play_page.dart';
+import '../message/message_chat_page_manager.dart';
+import '../training/video_course/video_course_play_page2.dart';
+import '../training/video_course/video_course_play_page.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
