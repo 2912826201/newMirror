@@ -149,7 +149,7 @@ dependencies:
 
   #安装包升级测试
   r_upgrade: ^0.3.2+3
-
+  qr_code_scanner: ^0.3.4
   another_flushbar: ^1.10.11
 
 
