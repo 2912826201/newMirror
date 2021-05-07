@@ -66,7 +66,13 @@ class MainPageState extends XCState {
       }
     });
   }
-
+  _getUnReadFansCount() {
+    fansUnread().then((value) {
+      if (value != null && value != context.read<UserInteractiveNotifier>().fansUnreadCount) {
+        context.read<UserInteractiveNotifier>().changeUnreadFansCount(value);
+      }
+    });
+  }
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
@@ -90,6 +96,9 @@ class MainPageState extends XCState {
             }
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
+            }
+            if(context.read<UserInteractiveNotifier>().fansUnreadCount==0){
+              _getUnReadFansCount();
             }
             Future.delayed(Duration.zero, () {
               getUnReads();

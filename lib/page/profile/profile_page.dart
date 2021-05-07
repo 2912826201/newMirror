@@ -15,6 +15,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/icon.dart';
@@ -411,6 +412,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这里是关注粉丝动态
   Widget _textAndNumber(String text, String number) {
     print('__________________________$number');
+    Size fansCountSize;
+    if(text=="粉丝"){
+      fansCountSize = calculateTextWidth(number,AppStyle.textMedium18,userDetaileIconSize,1).size;
+    }
     return Container(
       height: userDetaileIconSize,
       width: userDetaileIconSize,
@@ -418,9 +423,29 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            number,
-            style: AppStyle.textMedium18,
+          Stack(
+            children: [
+              Container(
+                width: text=="粉丝"?fansCountSize.width+6:null,
+                child: Text(
+                number,
+                style: AppStyle.textMedium18,
+              ),),
+              Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                return Positioned(
+                    top: 0,
+                    right: 0,
+                    child: notifier.fansUnreadCount > 0 && text == "粉丝"
+                        ? ClipOval(
+                            child: Container(
+                              height: 8,
+                              width: 8,
+                              color: AppColor.mainRed,
+                            ),
+                          )
+                        : Container());
+              })
+            ],
           ),
           SizedBox(
             height: 2,

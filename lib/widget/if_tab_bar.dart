@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -422,7 +423,25 @@ class _IFTabBarState extends State<IFTabBar> {
               child: Container(
                 width: 24,
                 height: 24,
-                child: snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
+                child:Stack(
+                  children: [
+                    snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
+                    Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                      return Positioned(
+                          top: 0,
+                          right: 4,
+                          child:
+                              notifier.fansUnreadCount>0
+                                  ? ClipOval(
+                            child: Container(
+                              height: 8,
+                              width: 8,
+                              color: AppColor.mainRed,
+                            ),
+                          )
+                         : Container());})
+                  ],
+                )
               ),
             ),
           ),
