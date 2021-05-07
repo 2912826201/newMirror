@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
@@ -10,8 +11,11 @@ class DemoSourceEntity {
   String url;
   String previewUrl;
   String type;
+  int height;
+  int width;
+  int duration;
 
-  DemoSourceEntity(this.heroId, this.type, this.url, {this.previewUrl});
+  DemoSourceEntity(this.heroId, this.type, this.url, {this.previewUrl, this.width, this.height, this.duration});
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -70,6 +74,7 @@ class _DemoImageItemState extends State<DemoImageItem> {
                   fit: BoxFit.cover,
                 );
               },
+
               /// imageUrl的淡入动画的持续时间。
               fadeInDuration: Duration(milliseconds: 0),
               useOldImageOnUrlChange: true,
@@ -149,6 +154,17 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
     }
   }
 
+// 计算长宽比
+  double setAspectRatio() {
+    double videoWidth = ScreenUtil.instance.width;
+    return (videoWidth / widget.source.width) * widget.source.height;
+    if (widget.source.height > widget.source.width) {
+      return (widget.source.height / widget.source.width);
+    } else {
+      return (widget.source.width / widget.source.height);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return _controller.value.initialized
@@ -163,9 +179,13 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
                 },
                 child: Hero(
                   tag: widget.source.heroId,
-                  child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
+                  child: Container(
+                    width: ScreenUtil.instance.width,
+                    height: setAspectRatio(),
+                    // child: AspectRatio(
+                    //   aspectRatio: widget.source.height > widget.source.width ? _controller.value.aspectRatio : setAspectRatio(),
                     child: VideoPlayer(_controller),
+                    // )
                   ),
                 ),
               ),
