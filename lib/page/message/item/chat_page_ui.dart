@@ -263,42 +263,43 @@ class ChatPageUtil {
 
 
   bool isShowNewChatDataModel(ChatDataModel chatDataModel){
-    if(chatDataModel.isTemporary){
-      return true;
-    }else{
-      switch(chatDataModel.msg.objectName){
-        case ChatTypeModel.MESSAGE_TYPE_TEXT:
-          TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
-          try {
-            Map<String, dynamic> mapModel = json.decode(textMessage.content);
-            if (_getIsAlertMessage(mapModel["subObjectName"])) {
-              //-------------------------------------------------提示消息--------------------------------------------
-              return _isNoShowMsg(map: mapModel);
-            } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-              //-------------------------------------------------群通知消息-第二种-------------------------------------------
-              Map<String, dynamic> map = Map();
-              map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-              map["data"] = json.decode(mapModel["data"]);
-              return _isNoShowMsg(map: map);
-            }
-          } catch (e) {}
-          return false;
-        case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-          // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
-          Map<String, dynamic> map = Map();
-          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-          map["data"] = chatDataModel.msg.originContentMap;
-          return _isNoShowMsg(map: map);
-        case ChatTypeModel.MESSAGE_TYPE_CMD:
-          // -----------------------------------------------通知-私聊-----------------------------------------------
-          Map<String, dynamic> map = Map();
-          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-          map["data"] = chatDataModel.msg.originContentMap;
-          return _isNoShowMsg(map: map);
-        default:
-          return false;
-      }
-    }
+    return true;
+    // if(chatDataModel.isTemporary){
+    //   return true;
+    // }else{
+    //   switch(chatDataModel.msg.objectName){
+    //     case ChatTypeModel.MESSAGE_TYPE_TEXT:
+    //       TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
+    //       try {
+    //         Map<String, dynamic> mapModel = json.decode(textMessage.content);
+    //         if (_getIsAlertMessage(mapModel["subObjectName"])) {
+    //           //-------------------------------------------------提示消息--------------------------------------------
+    //           return _isNoShowMsg(map: mapModel);
+    //         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+    //           //-------------------------------------------------群通知消息-第二种-------------------------------------------
+    //           Map<String, dynamic> map = Map();
+    //           map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+    //           map["data"] = json.decode(mapModel["data"]);
+    //           return _isNoShowMsg(map: map);
+    //         }
+    //       } catch (e) {}
+    //       return false;
+    //     case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
+    //       // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
+    //       Map<String, dynamic> map = Map();
+    //       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+    //       map["data"] = chatDataModel.msg.originContentMap;
+    //       return _isNoShowMsg(map: map);
+    //     case ChatTypeModel.MESSAGE_TYPE_CMD:
+    //       // -----------------------------------------------通知-私聊-----------------------------------------------
+    //       Map<String, dynamic> map = Map();
+    //       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+    //       map["data"] = chatDataModel.msg.originContentMap;
+    //       return _isNoShowMsg(map: map);
+    //     default:
+    //       return false;
+    //   }
+    // }
   }
 
   //todo 获取群主的方式是有问题的 目前还好 如果以后有管理员 这样是不行的
