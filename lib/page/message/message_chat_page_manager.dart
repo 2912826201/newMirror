@@ -765,19 +765,7 @@ String getChatTypeModel(ChatDataModel chatDataModel) {
   }
 }
 
-//加入时间提示
-void getTimeAlert(List<ChatDataModel> chatDataList, String chatId) {
-  if (chatDataList != null && chatDataList.length > 0) {
-    for (int i = chatDataList.length - 1; i >= 0; i--) {
-      if (i == chatDataList.length - 1) {
-        chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
-      } else if (chatDataList[i].msg != null &&
-          (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-        chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
-      }
-    }
-  }
-}
+
 
 //获取时间戳
 ChatDataModel getTimeAlertModel(int sentTime, String chatId) {

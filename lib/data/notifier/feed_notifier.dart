@@ -38,6 +38,11 @@ class FeedMap {
 
   int get unReadFeedCount => _unReadFeedCount;
 
+  // 是否可下拉
+  bool _isDropDown = true;
+
+  bool get isDropDown => _isDropDown;
+
   FeedMap(this._feedMap);
 }
 
@@ -61,7 +66,7 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     notifyListeners();
   }
 
-  setUnReadFeedCount(int count){
+  setUnReadFeedCount(int count) {
     value._unReadFeedCount = count;
     notifyListeners();
   }
@@ -87,16 +92,17 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     value._childModel = model;
     notifyListeners();
   }
+
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
       value._feedMap[element.id] = element;
       value._feedMap[element.id].hotComment = [];
-      if (element.comments.isNotEmpty&&element.comments.length>1) {
-        for(int i = 0; i < 2;i++){
+      if (element.comments.isNotEmpty && element.comments.length > 1) {
+        for (int i = 0; i < 2; i++) {
           value._feedMap[element.id].hotComment.add(element.comments[i]);
         }
-      }else if(element.comments.isNotEmpty){
+      } else if (element.comments.isNotEmpty) {
         value._feedMap[element.id].hotComment.addAll(element.comments);
       }
     });
@@ -115,19 +121,19 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
       value._feedMap[feedId].hotComment.removeWhere((element) {
         return element.id == commentDtoModel.id || element.targetId == commentDtoModel.id;
       });
-      if(value._feedMap[feedId].hotComment.length<2&&value._feedMap[feedId].comments.length!=0){
-        if(value._feedMap[feedId].comments.length>1&&value._feedMap[feedId].hotComment.length==0){
-          for(int i = 0;i<2;i++){
-            if(value._feedMap[feedId].comments[i].id!=commentDtoModel.id){
+      if (value._feedMap[feedId].hotComment.length < 2 && value._feedMap[feedId].comments.length != 0) {
+        if (value._feedMap[feedId].comments.length > 1 && value._feedMap[feedId].hotComment.length == 0) {
+          for (int i = 0; i < 2; i++) {
+            if (value._feedMap[feedId].comments[i].id != commentDtoModel.id) {
               value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments[i]);
             }
           }
-        }else if(value._feedMap[feedId].hotComment.length!=0){
-          if(value._feedMap[feedId].comments.first.id!=value._feedMap[feedId].hotComment.first.id){
+        } else if (value._feedMap[feedId].hotComment.length != 0) {
+          if (value._feedMap[feedId].comments.first.id != value._feedMap[feedId].hotComment.first.id) {
             value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments.first);
           }
-        }else{
-          if(value._feedMap[feedId].comments.length!=0){
+        } else {
+          if (value._feedMap[feedId].comments.length != 0) {
             value._feedMap[feedId].hotComment.add(value._feedMap[feedId].comments.first);
           }
         }
@@ -143,12 +149,12 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     notifyListeners();
   }
 
-  void deleteCommentCount(int feedId,CommentDtoModel commentDtoModel){
-    value.feedMap[feedId].commentCount  -= 1+commentDtoModel.replyCount;
-    value.feedMap[feedId].totalCount -= 1+commentDtoModel.replyCount;
+  void deleteCommentCount(int feedId, CommentDtoModel commentDtoModel) {
+    value.feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
+    value.feedMap[feedId].totalCount -= 1 + commentDtoModel.replyCount;
     notifyListeners();
-
   }
+
   // 删除动态
   void deleteFeed(int id) {
     value._feedMap.remove(id);
@@ -219,8 +225,8 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
 
   // 更新
   void updateTotalCount(int totalCount, int id) {
-    value._feedMap[id].totalCount =totalCount;
-    value._feedMap[id].commentCount =totalCount;
+    value._feedMap[id].totalCount = totalCount;
+    value._feedMap[id].commentCount = totalCount;
     notifyListeners();
   }
 
@@ -286,9 +292,13 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   }
 
 
-
   setBuildCallBack(bool b) {
     value._buildIsOver = b;
+    notifyListeners();
+  }
+
+  setDropDown(bool b) {
+    value._isDropDown = b;
     notifyListeners();
   }
 }

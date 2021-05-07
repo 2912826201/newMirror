@@ -240,7 +240,11 @@ abstract class RefreshIndicatorState<T extends RefreshIndicator> extends State<T
         if (!mounted) return;
         floating = false;
         if (mode == RefreshStatus.completed || mode == RefreshStatus.failed) {
-          SmartRefresher.ofState(context).setCanDrag(configuration.enableScrollWhenRefreshCompleted);
+          if(SmartRefresher != null &&
+              SmartRefresher.ofState(context) != null &&
+              SmartRefresher.ofState(context).setCanDrag != null){
+            SmartRefresher.ofState(context).setCanDrag(configuration.enableScrollWhenRefreshCompleted);
+          }
         }
         update();
         /*

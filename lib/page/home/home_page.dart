@@ -15,6 +15,7 @@ import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
@@ -454,8 +455,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               wantWidth: 16,
             ),
             onDoubleTap: (index) {
-              subpageRefresh();
-              print("双击了${index}");
+              if (controller.index == index) {
+                subpageRefresh();
+              } else {
+                controller.animateTo(index);
+              }
             },
           ),
         ),
@@ -488,6 +492,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               Expanded(
                 child: TabBarView(
                   controller: controller,
+                  physics:  context.watch<FeedMapNotifier>().value.isDropDown ? pageScrollPhysics() : NeverScrollableScrollPhysics(),
                   children: [
                     AttentionPage(
                       key: attentionKey,
