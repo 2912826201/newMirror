@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -11,6 +13,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -25,6 +28,7 @@ class FeedHeader extends StatelessWidget {
   TextEditingController controller;
   final int videoCourseId;
   final int liveCourseId;
+  StreamController<int> streamController = StreamController<int>();
 
   FeedHeader({this.selectedMediaFiles, this.controller, this.videoCourseId, this.liveCourseId});
 
@@ -225,36 +229,34 @@ class FeedHeader extends StatelessWidget {
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () {
-              // 读取输入框最新的值去掉后空格换行
-              // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
-              var inputText = controller.text;
-
-              // 获取输入框内的规则
-              var rules = context.read<ReleaseFeedInputNotifier>().rules;
-
-              // 获取选择的地址
-              var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
-
-              // 获取用户Id
-              var uid = context.read<ProfileNotifier>().profile.uid;
-              print("11111111");
-              // print(StringUtil.replaceLineBlanks(inputText,rules));
-              pulishFeed(context, StringUtil.replaceLineBlanks(inputText, rules), uid, rules, poi);
-            },
-            child: Container(
-                height: 28,
-                width: 60,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    // 监听输入框的值动态改变样式
-                    color: AppColor.mainRed),
-                child: Center(
-                  child: const Text(
+            onTap: () {},
+            child: StreamBuilder<int>(
+                initialData: CustomRedButton.buttonStateNormal,
+                stream: streamController.stream,
+                builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
+                  return CustomRedButton(
                     "发布",
-                    style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
-                  ),
-                )),
+                    snapshot.data,
+                    () {
+                      streamController.sink.add(CustomRedButton.buttonStateLoading);
+                      // 读取输入框最新的值去掉后空格换行
+                      // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
+                      var inputText = controller.text;
+
+                      // 获取输入框内的规则
+                      var rules = context.read<ReleaseFeedInputNotifier>().rules;
+
+                      // 获取选择的地址
+                      var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
+
+                      // 获取用户Id
+                      var uid = context.read<ProfileNotifier>().profile.uid;
+                      print("11111111");
+                      // print(StringUtil.replaceLineBlanks(inputText,rules));
+                      pulishFeed(context, StringUtil.replaceLineBlanks(inputText, rules), uid, rules, poi);
+                    },
+                  );
+                }),
           ),
           const SizedBox(
             width: 16,
