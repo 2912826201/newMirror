@@ -43,10 +43,12 @@ class MessageInputBarState extends State<MessageInputBar> {
   setIsVoice(bool isVoice) {
     this.isVoice = isVoice;
     streamVoiceWidget.sink.add(isVoice);
+    streamVoiceIconWidget.sink.add(isVoice);
   }
 
 
   StreamController<bool> streamVoiceWidget = StreamController<bool>();
+  StreamController<bool> streamVoiceIconWidget = StreamController<bool>();
 
   MessageInputBarState(this.isVoice);
 
@@ -59,6 +61,7 @@ class MessageInputBarState extends State<MessageInputBar> {
   void dispose() {
     super.dispose();
     streamVoiceWidget.close();
+    streamVoiceIconWidget.close();
   }
 
   @override
@@ -82,17 +85,34 @@ class MessageInputBarState extends State<MessageInputBar> {
                   Container(
                     height: 48.0,
                     padding: EdgeInsets.only(left: 6, right: 6),
-                    child: AppIconButton(
-                      onTap: () {
-                        if (widget.voiceOnTap != null) {
-                          widget.voiceOnTap();
-                        }
+                    child: StreamBuilder(
+                      stream: streamVoiceIconWidget.stream,
+                      builder: (context, snapshot) {
+                        // return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
+                        return AppIconButton(
+                          onTap: () {
+                            if (widget.voiceOnTap != null) {
+                              widget.voiceOnTap();
+                            }
+                          },
+                          iconSize: 24,
+                          buttonWidth: 36,
+                          buttonHeight: 36,
+                          svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
+                        );
                       },
-                      iconSize: 24,
-                      buttonWidth: 36,
-                      buttonHeight: 36,
-                      svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
                     ),
+                    // child: AppIconButton(
+                    //   onTap: () {
+                    //     if (widget.voiceOnTap != null) {
+                    //       widget.voiceOnTap();
+                    //     }
+                    //   },
+                    //   iconSize: 24,
+                    //   buttonWidth: 36,
+                    //   buttonHeight: 36,
+                    //   svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
+                    // ),
                   ),
                   Expanded(
                       child: SizedBox(
