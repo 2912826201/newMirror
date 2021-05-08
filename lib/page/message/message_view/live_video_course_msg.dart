@@ -260,6 +260,11 @@ class LiveVideoCourseMsg extends StatelessWidget {
 
   //底部文字
   Widget _getBottomText() {
+    String name="";
+    if(liveVideoModel!=null&&liveVideoModel.coursewareDto!=null&&liveVideoModel.coursewareDto.levelDto!=null&&
+        liveVideoModel.coursewareDto.levelDto.name!=null){
+      name=liveVideoModel.coursewareDto.levelDto.name;
+    }
     return Container(
       width: double.infinity,
       height: 68.5,
@@ -292,8 +297,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            // ignore: null_aware_before_operator
-            child: Text(liveVideoModel.coursewareDto?.levelDto?.name + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
+            child: Text(name??"" + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
           ),
         ],
       ),
