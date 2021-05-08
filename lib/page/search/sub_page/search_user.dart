@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -225,7 +226,7 @@ class _SearchState extends State<SearchUserItem> {
           InkWell(
               onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());
-                AppRouter.navigateToMineDetail(context, widget.model.uid,
+                jumpToUserProfilePage(context, widget.model.uid,
                     avatarUrl: widget.model.avatarUri, userName: widget.model.nickName);
               },
               child: Row(

@@ -15,6 +15,7 @@ import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -298,7 +299,7 @@ class GroupMorePageState extends State<GroupMorePage> {
         if (!(await isContinue())) {
           return;
         }
-        AppRouter.navigateToMineDetail(context, userModel.uid,
+        jumpToUserProfilePage(context, userModel.uid,
             avatarUrl: userModel.avatarUri, userName: userModel.nickName);
       },
       child: Container(

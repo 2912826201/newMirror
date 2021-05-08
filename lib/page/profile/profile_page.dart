@@ -11,6 +11,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -194,7 +195,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         children: [
           Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
             print("头像地址:$avatar");
-            return CachedNetworkImage(
+            return  CachedNetworkImage(
               height: gaussianBlurHeight,
               width: width,
               imageUrl: avatar != null ? avatar : "",
@@ -354,7 +355,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,
+                      jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
                           avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
                           userName: context.read<ProfileNotifier>().profile.nickName);
                     },
@@ -378,7 +379,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: avatarSize,
       child: InkWell(
         onTap: () {
-          AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid,
+          jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
               avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
               userName: context.read<ProfileNotifier>().profile.nickName);
         },

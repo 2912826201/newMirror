@@ -31,6 +31,7 @@ import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 import '../../../widget/overscroll_behavior.dart';
+import '../profile_detail_page.dart';
 
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
@@ -393,7 +394,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, widget.msgModel.senderId,
+              jumpToUserProfilePage(context, widget.msgModel.senderId,
                   avatarUrl: widget.msgModel.senderAvatarUrl, userName: widget.msgModel.senderName);
             },
             child: Container(

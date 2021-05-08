@@ -13,6 +13,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
@@ -35,6 +36,15 @@ import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+
+void jumpToUserProfilePage(BuildContext context, int uId,
+    {String avatarUrl, String userName, Function(dynamic result) callback}) {
+  if (!context.read<TokenNotifier>().isLoggedIn) {
+    AppRouter.navigateToLoginPage(context);
+    return;
+  }
+  AppRouter.navigateToMineDetail(context, uId, avatarUrl: avatarUrl, userName: userName, callback: callback);
+}
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
@@ -180,7 +190,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///获取关注、粉丝、获赞数数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
-    if (attentionModel != null&& mounted ) {
+    if (attentionModel != null && mounted) {
       context.read<UserInteractiveNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
@@ -208,20 +218,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
-        _avatar = userModel.avatarUri;
-        _signature = userModel.description;
-        userStatus = userModel.status;
-        print('-------------------------userStatus = ${userModel.status}');
-        if (_signature != null) {
-          ///判断文字的高度，动态改变
-          TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
-          _signatureHeight = testSize.height;
-        }
-        _textName = userModel.nickName;
-        if(mounted){
-          setState(() {
-          });
-        }
+      _avatar = userModel.avatarUri;
+      _signature = userModel.description;
+      userStatus = userModel.status;
+      print('-------------------------userStatus = ${userModel.status}');
+      if (_signature != null) {
+        ///判断文字的高度，动态改变
+        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
+        _signatureHeight = testSize.height;
+      }
+      _textName = userModel.nickName;
+      if (mounted) {
+        setState(() {});
+      }
       if (userModel.relation == 0 || userModel.relation == 2) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       } else if (userModel.relation == 1 || userModel.relation == 3) {
@@ -284,7 +293,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                   return SliverPersistentHeader(
                     pinned: true,
-                            //自定义用来占位置的吸顶透明布局
+                    //自定义用来占位置的吸顶透明布局
                     delegate: fillingContainerDelegate(
                         height: snapshot.data,
                         color: AppColor.transparent,
@@ -311,7 +320,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         labelColor: AppColor.black,
                         indicatorColor: AppColor.black,
                         controller: _mController,
-                        onDoubleTap: (value){
+                        onDoubleTap: (value) {
                           EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                         },
                         indicatorSize: TabBarIndicatorSize.label,
@@ -743,7 +752,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (attntionResult == 1 || attntionResult == 3) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
-        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId,isAdd: false);
+        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId, isAdd: false);
         ToastShow.show(msg: "关注成功!", context: context);
       }
     }

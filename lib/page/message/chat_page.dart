@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -2073,7 +2074,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: _context);
       _messageInputBodyClick();
-      AppRouter.navigateToMineDetail(context, map["uid"], avatarUrl: map["avatarUri"], userName: map["nikeName"],
+      jumpToUserProfilePage(context, map["uid"], avatarUrl: map["avatarUri"], userName: map["nikeName"],
           callback: (dynamic result) {
         print("result:$result");
         getRelation();
