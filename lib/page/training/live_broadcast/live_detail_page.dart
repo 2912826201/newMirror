@@ -350,7 +350,7 @@ class LiveDetailPageState extends XCState {
             ),
           ),
           getTitleWidget(liveModel, context, globalKeyList[1]),
-          getCoachItem(liveModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
+          getCoachItem(liveModel, context, onClickAttention, onClickCoach, globalKeyList[2],getDataAction),
           getLineView(),
           getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18, globalKeyList[3]),
           getActionUiLive(liveModel, context, globalKeyList[4], isShowAllItemAction, onClickShowAllAction),
@@ -827,32 +827,10 @@ class LiveDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention() async {
-    if (!(mounted && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
-      AppRouter.navigateToLoginPage(context);
-      return;
-    }
-    if (await isOffline()) {
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return false;
-    }
-    if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
-      _getAttention(liveModel.coachDto?.uid);
-    }
+  onClickAttention(int attntionResult) async {
+    liveModel.coachDto?.relation = attntionResult;
   }
 
-  ///这是关注的方法
-  _getAttention(int userId) async {
-    int attntionResult = await ProfileAddFollow(userId);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      liveModel.coachDto?.relation = 1;
-      if (mounted) {
-        reload(() {});
-      }
-    }
-  }
 
   ///点击了教练
   onClickCoach() async {
