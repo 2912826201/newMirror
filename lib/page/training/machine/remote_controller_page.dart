@@ -755,7 +755,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             if (machineList != null && machineList.isNotEmpty) {
               machineModel = machineList.first;
               if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1&&
-                  machineModel.timestamp!=null||machineModel.startCourse!=null) {
+                  machineModel.timestamp!=null&&machineModel.startCourse!=null) {
                 if (machineModel.timestamp < machineModel.startCourse) {
                   _currentPosition = 0;
                 } else {
