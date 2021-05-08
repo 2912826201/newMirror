@@ -580,7 +580,7 @@ class VideoDetailPageState extends XCState {
       return;
     }
     if (!(context != null && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -598,7 +598,7 @@ class VideoDetailPageState extends XCState {
       return;
     }
     if (!(mounted && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -669,7 +669,7 @@ class VideoDetailPageState extends XCState {
 
   //没有登陆点击事件
   void onNoLoginClickListener() {
-    ToastShow.show(msg: "请先登陆app!", context: context);
+    ToastShow.show(msg: "请先登录app!", context: context);
     // 去登录
     AppRouter.navigateToLoginPage(context);
   }
@@ -816,7 +816,7 @@ class VideoDetailPageState extends XCState {
               Expanded(
                 child: SizedBox(
                   child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    child: getBtnUi(false, "登录终端使用终端播放", textStyle, double.infinity, 40, margin_32),
                     onTap: _loginTerminalBtn,
                   ),
                 ),
@@ -841,7 +841,7 @@ class VideoDetailPageState extends XCState {
               Expanded(
                 child: SizedBox(
                   child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    child: getBtnUi(false, "登录终端使用终端播放", textStyle, double.infinity, 40, margin_32),
                     onTap: _loginTerminalBtn,
                   ),
                 ),
@@ -867,7 +867,7 @@ class VideoDetailPageState extends XCState {
               Expanded(
                 child: SizedBox(
                   child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放3", textStyle, double.infinity, 40, margin_32),
+                    child: getBtnUi(false, "登录终端使用终端播放3", textStyle, double.infinity, 40, margin_32),
                     onTap: _loginTerminalBtn,
                   ),
                 ),
