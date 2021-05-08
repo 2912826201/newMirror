@@ -18,6 +18,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -445,7 +446,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                     GestureDetector(
                       child: getUserImage(value.avatarUrl, isSubComment ? 32 : 42, isSubComment ? 32 : 42),
                       onTap: () {
-                        AppRouter.navigateToMineDetail(context, value.uid,
+                        jumpToUserProfilePage(context, value.uid,
                             avatarUrl: value.avatarUrl, userName: value.name);
                       },
                     ),
@@ -550,7 +551,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               }
             } else {
               if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-                ToastShow.show(msg: "请先登陆app!", context: context);
+                ToastShow.show(msg: "请先登录app!", context: context);
                 AppRouter.navigateToLoginPage(context);
                 return;
               }
@@ -667,7 +668,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         text: "${value.name}  ",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.uid, avatarUrl: value.avatarUrl, userName: value.name);
+            jumpToUserProfilePage(context, value.uid, avatarUrl: value.avatarUrl, userName: value.name);
           },
         style: AppStyle.textMedium15));
     if (isSubComment) {
@@ -684,7 +685,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           text: "${value.replyName}  ",
           recognizer: new TapGestureRecognizer()
             ..onTap = () {
-              AppRouter.navigateToMineDetail(context, value.replyId,
+              jumpToUserProfilePage(context, value.replyId,
                   avatarUrl: value.avatarUrl, userName: value.replyName);
             },
           style: AppStyle.textMedium15,
@@ -740,7 +741,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             if (userMap[(i).toString()] != null) {
               print('--------------------------userMap[(i).toString()]----${userMap[(i).toString()]}-');
               getUserInfo(uid: userMap[(i).toString()]).then((value) {
-                AppRouter.navigateToMineDetail(context, value.uid,
+                jumpToUserProfilePage(context, value.uid,
                     avatarUrl: value.avatarUri, userName: value.nickName);
               });
             }
@@ -1484,7 +1485,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //点赞-取消点赞
   _laudComment(int commentId, bool laud, int chatUserId) async {
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -1532,7 +1533,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -1559,7 +1560,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }

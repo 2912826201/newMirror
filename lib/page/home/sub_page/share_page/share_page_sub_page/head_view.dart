@@ -252,13 +252,9 @@ class HeadViewState extends State<HeadView> {
                     child: GestureDetector(
             behavior: HitTestBehavior.opaque,
                 onTap: () {
-                  if (!context.read<TokenNotifier>().isLoggedIn) {
-                    AppRouter.navigateToLoginPage(context);
-                  } else {
                     FocusScope.of(context).requestFocus(FocusNode());
-                    AppRouter.navigateToMineDetail(context, widget.model.pushId,
+                    jumpToUserProfilePage(context, widget.model.pushId,
                         avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
-                  }
                 },
                 child:Row(
                   crossAxisAlignment: CrossAxisAlignment.center,

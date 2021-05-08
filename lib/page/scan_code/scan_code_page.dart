@@ -9,6 +9,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -341,7 +342,7 @@ class scanCodePageState extends State<ScanCodePage> {
             requestOver = true;
             if(value!=null){
               Navigator.pop(context);
-              AppRouter.navigateToMineDetail(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+              jumpToUserProfilePage(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
             }
           });
           break;

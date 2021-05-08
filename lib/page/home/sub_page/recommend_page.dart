@@ -20,6 +20,7 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
@@ -374,7 +375,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             onTap: () {
               if (context.read<TokenNotifier>().isLoggedIn) {
                 if (liveVideoModel[index].coachDto.isLiving == 0) {
-                  AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid,
+                  jumpToUserProfilePage(context, liveVideoModel[index].coachDto.uid,
                       avatarUrl: liveVideoModel[index].coachDto.avatarUri,
                       userName: liveVideoModel[index].coachDto.nickName);
                 } else {

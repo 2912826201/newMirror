@@ -14,6 +14,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
@@ -21,9 +22,10 @@ import 'package:mirror/page/training/live_broadcast/live_room_video_operation_pa
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
+import 'package:provider/provider.dart';
 /// router
 /// Created by yangjiayi on 2020/11/14.
 
@@ -544,7 +546,7 @@ class AppRouter {
     }
     _navigateToPage(context, pathLike, map);
   }
-
+  ///跳转个人主页使用处理过未登录情况的方法，
   static void navigateToMineDetail(BuildContext context, int uId,
       {String avatarUrl, String userName, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
