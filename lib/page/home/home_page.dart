@@ -317,7 +317,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               latitude: postModel.latitude,
               longitude: postModel.longitude,
               cityCode: postModel.cityCode,
-              topics: jsonEncode(postModel.topics));
+              topics: jsonEncode(postModel.topics),
+              videoCourseId:postModel.videoCourseId);
           print("发不接受发布结束：feedModel$feedModel");
 
           if (feedModel != null) {
@@ -331,7 +332,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 延迟器:
             new Future.delayed(Duration(seconds: 3), () {
               //  清除图片路径
-              if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+              if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                   .contains(AppConfig.getAppPublishDir())) {
                 _clearCache(AppConfig.getAppPublishDir());
               }
@@ -519,7 +520,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         AppPrefs.removePublishFeed(
                             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
                         //  清除图片路径
-                        if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                        if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                             .contains(AppConfig.getAppPublishDir())) {
                           _clearCache(AppConfig.getAppPublishDir());
                         }

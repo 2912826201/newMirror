@@ -9,6 +9,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
+import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -82,7 +84,15 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              print("炫耀！");
+              showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) {
+                    return WillPopScope(
+                      onWillPop: () async => true, //用来屏蔽安卓返回键关弹窗
+                      child: VideoCourseResultShareDialog(widget.result, widget.course),
+                    );
+                  });
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -116,15 +126,25 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         children: [
           Container(
             height: 193,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColor.textPrimary1, AppColor.textPrimary2],
+                stops: [0, 1],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Image.asset(
+              "assets/png/video_course_result_bg.png",
+              width: ScreenUtil.instance.screenWidthDp,
+              height: 193,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Container(
+            height: 193,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              colors: [AppColor.textPrimary1, AppColor.textPrimary2],
-              stops: [0, 1],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )),
             child: Text(
               "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n${widget.course.title}",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
@@ -141,20 +161,21 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: Container(
-                    alignment: Alignment.center,
-                    child: PentagonChart(
-                      width: 144.0,
-                      rateList: [
-                        //修正分数 至少有25分
-                        widget.result.synthesisRank > 25 ? widget.result.synthesisRank / 100 : 0.25,
-                        widget.result.completionDegree > 25 ? widget.result.completionDegree / 100 : 0.25,
-                        widget.result.lowerRank > 25 ? widget.result.lowerRank / 100 : 0.25,
-                        widget.result.upperRank > 25 ? widget.result.upperRank / 100 : 0.25,
-                        widget.result.coreRank > 25 ? widget.result.coreRank / 100 : 0.25
-                      ],
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: PentagonChart(
+                        width: 144.0,
+                        rateList: [
+                          //修正分数 至少有25分
+                          widget.result.synthesisRank > 25 ? widget.result.synthesisRank / 100 : 0.25,
+                          widget.result.completionDegree > 25 ? widget.result.completionDegree / 100 : 0.25,
+                          widget.result.lowerRank > 25 ? widget.result.lowerRank / 100 : 0.25,
+                          widget.result.upperRank > 25 ? widget.result.upperRank / 100 : 0.25,
+                          widget.result.coreRank > 25 ? widget.result.coreRank / 100 : 0.25
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                   Container(
                     height: 78,
                     child: Row(
@@ -502,14 +523,31 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
 }
 
 class PentagonChart extends StatelessWidget {
+  //五边形的宽度
   final double width;
+
+  //五个评分 0-1
   final List<double> rateList;
 
-  const PentagonChart({Key key, @required this.width, @required this.rateList}) : super(key: key);
+  //字的颜色
+  final Color fontColor;
+
+  //字的大小
+  final double fontSize;
+
+  PentagonChart(
+      {Key key,
+      @required this.width,
+      @required this.rateList,
+      this.fontColor = AppColor.textPrimary3,
+      this.fontSize = 14.0})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double containerWidth = width * 2;
+    // 整个视图为五边形宽的2.25倍(当字号和宽度不匹配时可能会导致视图宽度不够)
+    double containerWidth = width * 2.25;
+    // 每条边的边长
     double a = width / 2 / cos(pi / 5);
     print("a:$a");
     Offset p1 = Offset(0.0, 0.0);
@@ -530,6 +568,7 @@ class PentagonChart extends StatelessWidget {
       height: containerHeight,
       width: containerWidth,
       child: Stack(children: [
+        //五边形
         Positioned(
           top: 32,
           left: containerWidth / 2,
@@ -537,13 +576,14 @@ class PentagonChart extends StatelessWidget {
             painter: _PentagonChartPainter(pointList, rateList),
           ),
         ),
+        //五个文字
         Positioned(
           child: SizedBox(
             width: containerWidth,
             child: Text(
               "综合",
               textAlign: TextAlign.center,
-              style: AppStyle.textPrimary3Regular14,
+              style: TextStyle(color: fontColor, fontSize: fontSize),
             ),
           ),
         ),
@@ -558,14 +598,14 @@ class PentagonChart extends StatelessWidget {
                 Text(
                   //为了确保布局对称 加了个全角空格
                   "　核心",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
                 SizedBox(
                   width: width + 12 * 2,
                 ),
                 Text(
                   "完成度",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
               ],
             ),
@@ -581,14 +621,14 @@ class PentagonChart extends StatelessWidget {
               children: [
                 Text(
                   "上肢",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
                 SizedBox(
                   width: a,
                 ),
                 Text(
                   "下肢",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
               ],
             ),

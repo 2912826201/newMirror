@@ -51,7 +51,8 @@ class PostFeedModel {
   String longitude;
   String latitude;
   List<PostTopicModel> topics = [];
-
+  int videoCourseId;
+  int liveCourseId;
   // 当前时间戳
   int currentTimestamp;
 
@@ -65,7 +66,9 @@ class PostFeedModel {
       this.content,
       this.currentTimestamp,
       this.latitude,
-      this.longitude});
+      this.longitude,
+      this.videoCourseId,
+      this.liveCourseId});
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -83,6 +86,8 @@ class PostFeedModel {
     map["topics"] = topics;
     // }
     map["currentTimestamp"] = currentTimestamp;
+    map["videoCourseId"] = videoCourseId;
+    map["liveCourseId"] = liveCourseId;
     return map;
   }
 
@@ -116,6 +121,8 @@ class PostFeedModel {
     longitude = json["longitude"];
     latitude = json["latitude"];
     currentTimestamp = json["currentTimestamp"];
+    videoCourseId = json["videoCourseId"];
+    liveCourseId = json["liveCourseId"];
   }
 
   @override

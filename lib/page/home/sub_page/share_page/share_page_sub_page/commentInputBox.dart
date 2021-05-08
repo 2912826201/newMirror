@@ -11,6 +11,8 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/test/verification_codeInput_demo_page.dart';
+import 'package:mirror/page/test/verification_codeInput_demo_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -71,6 +73,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 //第二种
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //   return SliverListDemoPage();
+                // }));
+                // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                //   return VerificationCodeInputDemoPage();
                 // }));
               },
               child: Container(

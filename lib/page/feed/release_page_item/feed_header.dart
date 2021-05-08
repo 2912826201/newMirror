@@ -23,8 +23,10 @@ import '../release_page.dart';
 class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
   TextEditingController controller;
+  final int videoCourseId;
+  final int liveCourseId;
 
-  FeedHeader({this.selectedMediaFiles, this.controller});
+  FeedHeader({this.selectedMediaFiles, this.controller, this.videoCourseId, this.liveCourseId});
 
   // 发布动态
   pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
@@ -105,6 +107,12 @@ class FeedHeader extends StatelessWidget {
           latitude = poi.location.split(",")[1];
           cityCode = poi.citycode;
         }
+        if (videoCourseId != null) {
+          feedModel.videoCourseId = videoCourseId;
+        }
+        if (liveCourseId != null) {
+          feedModel.liveCourseId = liveCourseId;
+        }
         feedModel.atUsersModel = atUsersModel;
         feedModel.address = address;
         feedModel.cityCode = cityCode;
@@ -154,6 +162,12 @@ class FeedHeader extends StatelessWidget {
         latitude = poi.location.split(",")[1];
         cityCode = poi.citycode;
       }
+      if (videoCourseId != null) {
+        feedModel.videoCourseId = videoCourseId;
+      }
+      if (liveCourseId != null) {
+        feedModel.liveCourseId = liveCourseId;
+      }
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
       feedModel.cityCode = cityCode;
@@ -170,7 +184,6 @@ class FeedHeader extends StatelessWidget {
       print('--------------Navigator------Navigator-------------Navigator------');
     }
     print("postprogressModel:::${postprogressModel.toString()}");
-
     Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     print("5555455555");
     // 传入发布动态model
@@ -227,7 +240,7 @@ class FeedHeader extends StatelessWidget {
               var uid = context.read<ProfileNotifier>().profile.uid;
               print("11111111");
               // print(StringUtil.replaceLineBlanks(inputText,rules));
-              pulishFeed(context, StringUtil.replaceLineBlanks(inputText,rules), uid, rules, poi);
+              pulishFeed(context, StringUtil.replaceLineBlanks(inputText, rules), uid, rules, poi);
             },
             child: Container(
                 height: 28,

@@ -1,5 +1,4 @@
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -49,8 +48,9 @@ followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
 
 class ReleasePage extends StatefulWidget {
   final int topicId;
+  final int videoCourseId;
 
-  ReleasePage({this.topicId});
+  ReleasePage({this.topicId, this.videoCourseId});
 
   @override
   ReleasePageState createState() => ReleasePageState();
@@ -220,7 +220,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   // 头部布局
-                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller),
+                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller,videoCourseId: widget.videoCourseId,),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图
