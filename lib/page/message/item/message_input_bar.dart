@@ -127,7 +127,13 @@ class MessageInputBarState extends State<MessageInputBar> {
                       child: StreamBuilder(
                         stream: streamVoiceWidget.stream,
                         builder: (context, snapshot) {
-                          return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
+                          return Stack(
+                            children: [
+                              Visibility(visible: isVoice,child: ChatVoice(voiceFile: widget.voiceFile)),
+                              Visibility(visible: !isVoice,child: widget.edit),
+                            ],
+                          );
+                          // return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
                         },
                       ),
                       // child: isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit,

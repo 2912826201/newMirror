@@ -141,6 +141,9 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
           // }
           // 滚动开始
           // print('滚动开始');
+          if(widget.onTap!=null){
+            widget.onTap();
+          }
           isScroll = true;
         } else if (notification is ScrollUpdateNotification) {
           // 滚动位置更新
