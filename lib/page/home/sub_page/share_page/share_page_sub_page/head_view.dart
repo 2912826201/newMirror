@@ -279,8 +279,11 @@ class HeadViewState extends State<HeadView> {
                                     : widget.model.avatarUrl),
                                 fit: BoxFit.cover,
                                 // 调整磁盘缓存中图像大小
-                                maxHeightDiskCache: 150,
-                                maxWidthDiskCache: 150,
+                                // maxHeightDiskCache: 150,
+                                // maxWidthDiskCache: 150,
+                          // 指定缓存宽高
+                          memCacheWidth: 150,
+                          memCacheHeight: 150,
                                 placeholder: (context, url) => Container(
                                   color: AppColor.bgWhite,
                                 ),

@@ -518,8 +518,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                               height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                               width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                               // 调整磁盘缓存中图像大小
-                              maxHeightDiskCache: 250,
-                              maxWidthDiskCache: 250,
+                              // maxHeightDiskCache: 250,
+                              // maxWidthDiskCache: 250,
+                              // 指定缓存宽高
+                              memCacheWidth: 250,
+                              memCacheHeight: 250,
                               imageUrl: topicList[index].pics[indexs] != null
                                   ? FileUtil.getMediumImage(topicList[index].pics[indexs].coverUrl)
                                   : "",
