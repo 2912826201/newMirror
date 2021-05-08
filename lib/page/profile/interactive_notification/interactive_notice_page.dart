@@ -52,6 +52,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   bool haveData = false;
   String hintText;
   int hasNext = 0;
+  bool fristRequestIsOver = false;
   String defaultImage = DefaultImage.nodata;
   ScrollController scrollController = ScrollController();
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
@@ -87,6 +88,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         defaultImage = DefaultImage.error;
         controller.refreshCompleted();
       }
+      fristRequestIsOver = true;
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
         lastTime = model.lastTime;
@@ -217,7 +219,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   index: index,
                                   globalKey: index == snapshot.data.length - 1 ? globalKey : null,
                                 );
-                              }):Center(
+                              }):fristRequestIsOver?Center(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -238,7 +240,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                 )
                               ],
                             ),
-                          ),
+                          ):Container(height: height,width: width,color: AppColor.white,),
                         ))
 
               ),
