@@ -50,7 +50,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return getContentBoxItem(context);
+    return liveVideoModel != null ?
+      getContentBoxItem(context) : Container();
   }
 
   Widget getContentBoxItem(BuildContext context) {
