@@ -719,7 +719,7 @@ Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) 
 
 //获取群成员信息
 Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context) async {
-  context.read<GroupUserProfileNotifier>().clearAllUser();
+  Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
   List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
   print("------model:${model.toString()}");
@@ -729,9 +729,9 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
       chatGroupUserModelList.add(model);
       GroupChatUserInformationDBHelper().update(chatGroupUserModel: model, groupId: groupChatId);
     });
-    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
+    Application.appContext.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
   } else {
-    context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
+    Application.appContext.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
   }
 
   print("------len:${chatGroupUserModelList.length}");

@@ -7,6 +7,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/course_model.dart';
+import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/training/common/follow_button.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -133,8 +135,8 @@ Widget getTitleWidget(CourseModel videoModel, BuildContext context, GlobalKey gl
 }
 
 //获取教练的名字
-Widget getCoachItem(CourseModel videoModel, BuildContext context, Function onClickAttention, Function onClickCoach,
-    GlobalKey globalKey) {
+Widget getCoachItem(CourseModel videoModel, BuildContext context, Function(int attntionResult) onClickAttention, Function onClickCoach,
+    GlobalKey globalKey,Function resetDataListener) {
   return SliverToBoxAdapter(
     child: GestureDetector(
       onTap: onClickCoach,
@@ -174,53 +176,15 @@ Widget getCoachItem(CourseModel videoModel, BuildContext context, Function onCli
               ),
             ),
             Expanded(child: SizedBox()),
-            GestureDetector(
-              onTap: onClickAttention,
-              child: Container(
-                color: Colors.transparent,
-                height: 48.0,
-                padding: EdgeInsets.only(right: 16),
-                child: UnconstrainedBox(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                    child: Material(
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
-                        color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
-                            ? AppColor.white
-                            : AppColor.black,
-                        child: InkWell(
-                          splashColor: AppColor.textHint,
-                          onTap: onClickAttention,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(100)),
-                              border: Border.all(
-                                  width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
-                                      ? 1
-                                      : 0.0,
-                                  color: AppColor.textHint),
-                            ),
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                            child: Text(
-                              videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? "已关注" : "关注",
-                              style: TextStyle(
-                                  color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
-                                      ? AppColor.textHint
-                                      : AppColor.white,
-                                  fontSize: 11),
-                            ),
-                          ),
-                        )),
-                  ),
-                ),
-              ),
-            ),
+            FollowButton(videoModel.coachDto,onClickAttention,resetDataListener),
+            // getFollowButton(context,videoModel.coachDto,onClickAttention),
           ],
         ),
       ),
     ),
   );
 }
+
 
 //获取横线
 Widget getLineView() {

@@ -56,6 +56,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   int listPage = 1;
   int hasNext = 0;
   RefreshController _refreshController;
+  bool fristRequestIsOver = false;
 
   //判断是否有备注
   bool haveRemarks = false;
@@ -110,6 +111,7 @@ class _QueryFollowState extends State<QueryFollowList> {
       }
       //这是插入的作为话题入口的假数据
       buddyList.insert(0, BuddyModel());
+      fristRequestIsOver = true;
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
         hasNext = model.hasNext;
@@ -218,7 +220,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
       if (model != null) {
-        if(context.read<UserInteractiveNotifier>().fansUnreadCount!=0){
+        if (context.read<UserInteractiveNotifier>().fansUnreadCount != 0) {
           context.read<UserInteractiveNotifier>().changeUnreadFansCount(0);
         }
         buddyList.clear();
@@ -235,6 +237,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         defaultImage = DefaultImage.error;
         _refreshController.refreshFailed();
       }
+      fristRequestIsOver = true;
     } else if (listPage > 1 && _lastTime != null) {
       print('lastTime================================$_lastTime');
       if (model != null) {
@@ -280,6 +283,7 @@ class _QueryFollowState extends State<QueryFollowList> {
           });
         }
         _refreshController.refreshCompleted();
+        fristRequestIsOver = true;
       } else {
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
@@ -445,10 +449,10 @@ class _QueryFollowState extends State<QueryFollowList> {
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    if(idNeedClear){
+    if (idNeedClear) {
       context.read<UserInteractiveNotifier>().removeId = null;
     }
-    if(userIdNeedClear){
+    if (userIdNeedClear) {
       context.read<UserInteractiveNotifier>().userFollowChangeIdList = null;
     }
   }
@@ -534,126 +538,79 @@ class _QueryFollowState extends State<QueryFollowList> {
                 child: ScrollConfiguration(
                     behavior: OverScrollBehavior(),
                     child: SmartRefresher(
-                        controller: _refreshController,
-                        enablePullUp: true,
-                        enablePullDown: true,
-                        footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-                        header: SmartRefresherHeadFooter.init().getHeader(),
-                        onRefresh: __onRefresh,
-                        onLoading: () {
-                          if ((widget.type == 1 && buddyList.length > 2) ||
-                              (widget.type == 2 && buddyList.length != 0) ||
-                              (widget.type == 3 && topicList.length != 0)) {
-                            setState(() {
-                              showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                            });
-                          }
-                          _onLoading();
-                        },
-                        child: buddyList.isNotEmpty || topicList.isNotEmpty
-                            ? ListView.builder(
-                                shrinkWrap: true, //解决无限高度问题
-                                physics: AlwaysScrollableScrollPhysics(),
-                                //这里是将插入的假数据展示成跳转话题页的item
-                                itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
-                                itemBuilder: (context, index) {
-                                  ///type为1,关注
-                                  if (widget.type == 1) {
-                                    //index=0的时候展示跳转话题页的item,否则展示关注item
-                                    if (index == 0) {
-                                      return InkWell(
-                                        onTap: () {
-                                          AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
-                                        },
-                                        child: _followTopic(width),
-                                      );
-                                    } else {
-                                      //这是缺省图，插入了一条id为-1的数据
-                                      if (buddyList[index].uid == -1) {
-                                        return Container(
-                                          height: ScreenUtil.instance.height,
-                                          width: ScreenUtil.instance.screenWidthDp,
-                                          child: Center(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  height: 150,
-                                                ),
-                                                Container(
-                                                  width: 285,
-                                                  height: 285,
-                                                  child: Image.asset(defaultImage),
-                                                ),
-                                                SizedBox(
-                                                  height: 16,
-                                                ),
-                                                Text(
-                                                  hintText,
-                                                  style: AppStyle.textPrimary3Regular14,
-                                                )
-                                              ],
-                                            ),
+                      controller: _refreshController,
+                      enablePullUp: true,
+                      enablePullDown: true,
+                      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                      header: SmartRefresherHeadFooter.init().getHeader(),
+                      onRefresh: __onRefresh,
+                      onLoading: () {
+                        if ((widget.type == 1 && buddyList.length > 2) ||
+                            (widget.type == 2 && buddyList.length != 0) ||
+                            (widget.type == 3 && topicList.length != 0)) {
+                          setState(() {
+                            showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                          });
+                        }
+                        _onLoading();
+                      },
+                      child: buddyList.isNotEmpty || topicList.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true, //解决无限高度问题
+                              physics: AlwaysScrollableScrollPhysics(),
+                              //这里是将插入的假数据展示成跳转话题页的item
+                              itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
+                              itemBuilder: (context, index) {
+                                ///type为1,关注
+                                if (widget.type == 1) {
+                                  //index=0的时候展示跳转话题页的item,否则展示关注item
+                                  if (index == 0) {
+                                    return InkWell(
+                                      onTap: () {
+                                        AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
+                                      },
+                                      child: _followTopic(width),
+                                    );
+                                  } else {
+                                    //这是缺省图，插入了一条id为-1的数据
+                                    if (buddyList[index].uid == -1) {
+                                      return Container(
+                                        height: ScreenUtil.instance.height,
+                                        width: ScreenUtil.instance.screenWidthDp,
+                                        child: Center(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                height: 150,
+                                              ),
+                                              Container(
+                                                width: 285,
+                                                height: 285,
+                                                child: Image.asset(defaultImage),
+                                              ),
+                                              SizedBox(
+                                                height: 16,
+                                              ),
+                                              Text(
+                                                hintText,
+                                                style: AppStyle.textPrimary3Regular14,
+                                              )
+                                            ],
                                           ),
-                                        );
-                                      }
-                                      context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
-                                          isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
-                                              ? true
-                                              : false);
-                                      if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
-                                          !context
-                                              .watch<UserInteractiveNotifier>()
-                                              .profileUiChangeModel[buddyList[index].uid]
-                                              .isFollow) {
-                                        return QueryFollowItem(
-                                          type: widget.type,
-                                          buddyModel: buddyList[index],
-                                          width: width,
-                                          userId: widget.userId,
-                                          isMySelf: isMySelf,
-                                          globalKey: index ==
-                                                  (widget.type == 1 || widget.type == 2
-                                                      ? buddyList.length - 1
-                                                      : topicList.length - 1)
-                                              ? globalKey
-                                              : null,
-                                          userFollowChangeCallBack: () {
-                                            if (context
-                                                .read<UserInteractiveNotifier>()
-                                                .userFollowChangeIdList
-                                                .isNotEmpty) {
-                                              List<BuddyModel> list = [];
-                                              buddyList.forEach((element) {
-                                                if (element.uid != null &&
-                                                    !context
-                                                        .read<UserInteractiveNotifier>()
-                                                        .userFollowChangeIdList
-                                                        .contains(element.uid)) {
-                                                  list.add(element);
-                                                }
-                                              });
-                                              buddyList.clear();
-                                              buddyList.addAll(list);
-                                              buddyList.insert(0, BuddyModel());
-                                              if (buddyList.length == 1) {
-                                                if (hasNext == 0) {
-                                                  buddyList.add(BuddyModel(uid: -1));
-                                                } else {
-                                                  _refreshController.requestLoading();
-                                                }
-                                              }
-                                              setState(() {});
-                                            }
-                                          },
-                                        );
-                                      } else {
-                                        return Container();
-                                      }
+                                        ),
+                                      );
                                     }
-                                    //type为2的时候展示粉丝
-                                  } else if (widget.type == 2) {
-                                    return QueryFollowItem(
+                                    context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
+                                        isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
+                                            ? true
+                                            : false);
+                                    if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
+                                        !context
+                                            .watch<UserInteractiveNotifier>()
+                                            .profileUiChangeModel[buddyList[index].uid]
+                                            .isFollow) {
+                                      return QueryFollowItem(
                                         type: widget.type,
                                         buddyModel: buddyList[index],
                                         width: width,
@@ -664,11 +621,45 @@ class _QueryFollowState extends State<QueryFollowList> {
                                                     ? buddyList.length - 1
                                                     : topicList.length - 1)
                                             ? globalKey
-                                            : null);
-                                  } else {
-                                    return QueryFollowItem(
+                                            : null,
+                                        userFollowChangeCallBack: () {
+                                          if (context
+                                              .read<UserInteractiveNotifier>()
+                                              .userFollowChangeIdList
+                                              .isNotEmpty) {
+                                            List<BuddyModel> list = [];
+                                            buddyList.forEach((element) {
+                                              if (element.uid != null &&
+                                                  !context
+                                                      .read<UserInteractiveNotifier>()
+                                                      .userFollowChangeIdList
+                                                      .contains(element.uid)) {
+                                                list.add(element);
+                                              }
+                                            });
+                                            buddyList.clear();
+                                            buddyList.addAll(list);
+                                            buddyList.insert(0, BuddyModel());
+                                            if (buddyList.length == 1) {
+                                              if (hasNext == 0) {
+                                                buddyList.add(BuddyModel(uid: -1));
+                                              } else {
+                                                _refreshController.requestLoading();
+                                              }
+                                            }
+                                            setState(() {});
+                                          }
+                                        },
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  }
+                                  //type为2的时候展示粉丝
+                                } else if (widget.type == 2) {
+                                  return QueryFollowItem(
                                       type: widget.type,
-                                      tpcModel: topicList[index],
+                                      buddyModel: buddyList[index],
                                       width: width,
                                       userId: widget.userId,
                                       isMySelf: isMySelf,
@@ -677,29 +668,40 @@ class _QueryFollowState extends State<QueryFollowList> {
                                                   ? buddyList.length - 1
                                                   : topicList.length - 1)
                                           ? globalKey
-                                          : null,
-                                      topicDeleteCallBack: () {
-                                        print('=========================话题详情返回');
-                                        if (context.read<UserInteractiveNotifier>().removeId != null &&
-                                            context.read<UserInteractiveNotifier>().removeId.isNotEmpty) {
-                                          List<TopicDtoModel> list = [];
-                                          topicList.forEach((element) {
-                                            if (!context
-                                                .read<UserInteractiveNotifier>()
-                                                .removeId
-                                                .contains(element.id)) {
-                                              list.add(element);
-                                            }
-                                          });
-                                          topicList.clear();
-                                          topicList.addAll(list);
-                                          setState(() {});
-                                        }
-                                      },
-                                    );
-                                  }
-                                })
-                            :  Column(
+                                          : null);
+                                } else {
+                                  return QueryFollowItem(
+                                    type: widget.type,
+                                    tpcModel: topicList[index],
+                                    width: width,
+                                    userId: widget.userId,
+                                    isMySelf: isMySelf,
+                                    globalKey: index ==
+                                            (widget.type == 1 || widget.type == 2
+                                                ? buddyList.length - 1
+                                                : topicList.length - 1)
+                                        ? globalKey
+                                        : null,
+                                    topicDeleteCallBack: () {
+                                      print('=========================话题详情返回');
+                                      if (context.read<UserInteractiveNotifier>().removeId != null &&
+                                          context.read<UserInteractiveNotifier>().removeId.isNotEmpty) {
+                                        List<TopicDtoModel> list = [];
+                                        topicList.forEach((element) {
+                                          if (!context.read<UserInteractiveNotifier>().removeId.contains(element.id)) {
+                                            list.add(element);
+                                          }
+                                        });
+                                        topicList.clear();
+                                        topicList.addAll(list);
+                                        setState(() {});
+                                      }
+                                    },
+                                  );
+                                }
+                              })
+                          : fristRequestIsOver
+                              ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(
@@ -718,8 +720,9 @@ class _QueryFollowState extends State<QueryFollowList> {
                                       style: AppStyle.textHintRegular14,
                                     ),
                                   ],
-                                ),
-                              )),
+                                )
+                              : Container(),
+                    )),
               ),
             ],
           ),

@@ -348,7 +348,7 @@ class VideoDetailPageState extends XCState {
             ),
           ),
           getTitleWidget(videoModel, context, globalKeyList[1]),
-          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
+          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2],getDataAction),
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, AppStyle.textMedium18, globalKeyList[3]),
           getActionUiVideo(videoModel, context, AppStyle.textMedium18),
@@ -651,7 +651,12 @@ class VideoDetailPageState extends XCState {
           break;
         case ConnectivityResult.none:
           dio.lock();
-          ToastShow.show(msg: "下载异常，请重试", context: context);
+          try{
+            if(context!=null&&mounted) {
+              ToastShow.show(msg: "下载异常，请重试", context: context);
+            }
+          }catch (e){
+          }
           _progressText = "下载异常";
           if(mounted){
             setState(() {});
@@ -949,32 +954,10 @@ class VideoDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention() async {
-    if (await isOffline()) {
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return;
-    }
-    if (!(mounted && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
-      AppRouter.navigateToLoginPage(context);
-      return;
-    }
-    if (!(videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3)) {
-      _getAttention(videoModel.coachDto?.uid);
-    }
+  onClickAttention(int attntionResult) async {
+    videoModel.coachDto?.relation = 1;
   }
 
-  ///这是关注的方法
-  _getAttention(int userId) async {
-    int attntionResult = await ProfileAddFollow(userId);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      videoModel.coachDto?.relation = 1;
-      if (mounted) {
-        reload(() {});
-      }
-    }
-  }
 
   ///点击了教练
   onClickCoach() async {
