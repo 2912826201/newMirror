@@ -26,9 +26,7 @@ import 'package:mirror/consta'
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/seekbar.dart';
-import 'package:mirror/widget/video_course_circle_progressbar.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// remote_controller_page

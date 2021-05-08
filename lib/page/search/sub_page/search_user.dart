@@ -141,7 +141,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                 child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(),
+                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
                   controller: _refreshController,
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   onRefresh: _onRefresh,
