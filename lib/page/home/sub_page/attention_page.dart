@@ -113,7 +113,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // TODO: implement deactivate
     super.deactivate();
     print('============================关注页deactivate');
-    context.read<FeedMapNotifier>().setBuildCallBack(false);
+    Future.delayed(Duration.zero,(){
+      context.read<FeedMapNotifier>().setBuildCallBack(false);
+    });
   }
 
   @override

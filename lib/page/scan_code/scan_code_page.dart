@@ -3,12 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
@@ -21,7 +19,6 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:scan/scan.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:provider/provider.dart';
 
 class ScanCodePage extends StatefulWidget {
   bool showMyCode;
@@ -36,7 +33,7 @@ class scanCodePageState extends State<ScanCodePage> {
   String codeData;
   StreamController<double> streamController = StreamController<double>();
   bool upOrDown = false;
-  int timeTemp;
+  int timeStamp;
   Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -63,12 +60,12 @@ class scanCodePageState extends State<ScanCodePage> {
         return;
       }
       //note 防止回调太快，每两秒响应一次结果
-      if(timeTemp==null){
-        timeTemp = DateTime.now().millisecondsSinceEpoch;
+      if(timeStamp==null){
+        timeStamp = DateTime.now().millisecondsSinceEpoch;
         resolveScanResult(scanData.code);
       }
-      if(DateTime.now().millisecondsSinceEpoch-timeTemp>2000){
-        timeTemp =DateTime.now().millisecondsSinceEpoch;
+      if(DateTime.now().millisecondsSinceEpoch-timeStamp>2000){
+        timeStamp =DateTime.now().millisecondsSinceEpoch;
         resolveScanResult(scanData.code);
 
       }

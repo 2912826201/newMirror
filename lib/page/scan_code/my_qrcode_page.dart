@@ -142,10 +142,11 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                   Positioned(
                       top: ScreenUtil.instance.height * 0.73,
                       left: (ScreenUtil.instance.screenWidthDp - 120) / 2,
-                      child: Container(
-                        width: 120,
-                        height: 30,
-                        color: AppColor.black,
+                      child:Image.asset(
+                        "assets/png/video_course_result_share_logo.png",
+                        height: 24,
+                        width: 134,
+                        fit: BoxFit.cover,
                       ))
                 ],
               )),
