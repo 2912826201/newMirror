@@ -80,7 +80,7 @@ class CropperImage extends RenderObjectWidget {
 
   @override
   CropperImageRender createRenderObject(BuildContext context) {
-    return CropperImageRender(imageLoadCompleteCallBack: imageLoadCompleteCallBack)
+    return CropperImageRender()
       ..limitations = limitations
       ..isArc = isArc
       ..backBoxColor0 = backBoxColor0
@@ -92,12 +92,12 @@ class CropperImage extends RenderObjectWidget {
       ..outWidth = outWidth
       ..outHeight = outHeight
       ..maskPadding = maskPadding
-      ..round = round;
+      ..round = round
+      ..imageLoadCompleteCallBack = imageLoadCompleteCallBack;
   }
 
   @override
   void updateRenderObject(BuildContext context, CropperImageRender renderObject) {
-    renderObject.imageLoadCompleteCallBack = imageLoadCompleteCallBack;
     renderObject
       ..limitations = limitations
       ..isArc = isArc
@@ -110,7 +110,8 @@ class CropperImage extends RenderObjectWidget {
       ..outWidth = outWidth
       ..outHeight = outHeight
       ..maskPadding = maskPadding
-      ..round = round;
+      ..round = round
+      ..imageLoadCompleteCallBack = imageLoadCompleteCallBack;
     renderObject.markNeedsPaint();
   }
 
@@ -225,8 +226,6 @@ class Pointer {
 }
 
 class CropperImageRender extends RenderProxyBox {
-  CropperImageRender({RenderBox child, ImageLoadCompleteCallBack imageLoadCompleteCallBack})
-      : _imageLoadCompleteCallBack = imageLoadCompleteCallBack;
   ImageLoadCompleteCallBack _imageLoadCompleteCallBack;
 
   ImageLoadCompleteCallBack get imageLoadCompleteCallBack => _imageLoadCompleteCallBack;
@@ -396,7 +395,9 @@ class CropperImageRender extends RenderProxyBox {
       canvas.rotate(rotate1);
       canvas.scale(scale);
       canvas.drawImage(_image, Offset(-_image.width / 2, -_image.height / 2), Paint());
-      _imageLoadCompleteCallBack();
+      if (_imageLoadCompleteCallBack != null) {
+        _imageLoadCompleteCallBack();
+      }
       canvas.restore();
     }
 

@@ -391,52 +391,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           maxHeight: 80.0,
           minHeight: 16.0,),
       child:TextSpanField(
-        onTap: () {
-          _emojiStateOld=_emojiState;
-          print("_emojiStateOld2:$_emojiStateOld");
-          if (_emojiState) {
-            _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
-            _bottomSettingPanelState = true;
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            // Future.delayed(Duration(milliseconds: 200),(){
-            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            //     _bottomSettingPanelState = false;
-            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-            //   }
-            // });
-          }else{
-            pageHeightStopCanvas = true;
-            oldKeyboardHeight = 0;
-          }
-          if(readOnly) {
-            readOnly = false;
-            streamEditWidget.sink.add(0);
-          }
-        },
-        onLongTap: () {
-          _emojiStateOld=_emojiState;
-          print("_emojiStateOld3:$_emojiStateOld");
-          if (_emojiState) {
-            _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
-            _bottomSettingPanelState = true;
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            // Future.delayed(Duration(milliseconds: 200),(){
-            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            //     _bottomSettingPanelState = false;
-            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-            //   }
-            // });
-          }else{
-            pageHeightStopCanvas = true;
-            oldKeyboardHeight = 0;
-          }
-          if(readOnly) {
-            readOnly = false;
-            streamEditWidget.sink.add(0);
-          }
-        },
+        onTap: textSpanFieldClickListener,
+        onLongTap: textSpanFieldClickListener,
         scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
@@ -523,7 +479,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     if (isReset) {
       Future.delayed(Duration(milliseconds: 100), () {
         if (mounted) {
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       });
     }
@@ -919,7 +875,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           chatDataList.addAll(list);
         }
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-        EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+        EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       }
     }
 
@@ -1040,7 +996,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         chatDataList.addAll(list);
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
       //
@@ -1088,7 +1044,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1115,7 +1071,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1224,7 +1180,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _textController.text = "";
       bottomSettingChildKey.currentState.setCursorIndexPr(0);
       isHaveTextLen = false;
-      EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     resetPostMessage(chatDataList[0], () {
@@ -1627,6 +1583,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
         if(_focusNode.hasFocus){
           _focusNode.unfocus();
+          print("222222222222222222");
         }
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -1647,10 +1604,37 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       Future.delayed(Duration(milliseconds: 100),(){
         if(readOnly){
           readOnly=false;
-          streamEditWidget.sink.add(0);
+          if(mounted&&streamEditWidget!=null&&streamEditWidget.sink!=null&&streamEditWidget.sink.add!=null) {
+            streamEditWidget.sink.add(0);
+          }
         }
       });
     }catch (e){}
+  }
+
+  //输入框的点击事件
+  textSpanFieldClickListener(){
+    _emojiStateOld=_emojiState;
+    print("_emojiStateOld2:$_emojiStateOld");
+    if (_emojiState) {
+      _emojiState = !_emojiState;
+      bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
+      _bottomSettingPanelState = true;
+      bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+      // Future.delayed(Duration(milliseconds: 200),(){
+      //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+      //     _bottomSettingPanelState = false;
+      //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+      //   }
+      // });
+    }else{
+      pageHeightStopCanvas = true;
+      oldKeyboardHeight = 0;
+    }
+    if(readOnly) {
+      readOnly = false;
+      streamEditWidget.sink.add(0);
+    }
   }
 
   //表情的点击事件
@@ -1659,12 +1643,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     bottomSettingChildKey.currentState.setCursorIndexPr(cursorIndexPr);
 
     if(_isVoiceState){
-      if(_textController.text.length>0){
-        context.read<ChatEnterNotifier>().clearRules();
-        _textController.text = "";
-        bottomSettingChildKey.currentState.setCursorIndexPr(0);
-        _changTextLen("");
-      }
+      // if(_textController.text.length>0){
+      //   context.read<ChatEnterNotifier>().clearRules();
+      //   _textController.text = "";
+      //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+      //   _changTextLen("");
+      // }
       _isVoiceState = false;
       messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
     }
@@ -1673,6 +1657,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _emojiState=false;
       if(_focusNode.hasFocus){
         _focusNode.unfocus();
+        print("3333333333333333");
       }
       readOnly=false;
       streamEditWidget.sink.add(0);
@@ -1680,10 +1665,14 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _emojiState=true;
       readOnly=true;
       streamEditWidget.sink.add(0);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       Future.delayed(Duration(milliseconds: 100),(){
         if(!_focusNode.hasFocus){
           FocusScope.of(context).requestFocus(_focusNode);
-          bottomSettingChildKey.currentState.setCursorIndexPr(0);
+          // _emojiStateOld=true;
+          // FocusScope.of(context).requestFocus(_focusNode);
+          // textSpanFieldClickListener();
+          bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
         }
       });
     }
@@ -1765,14 +1754,18 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     bool isGranted = (await Permission.microphone.status)?.isGranted;
     if(isGranted) {
       _focusNode.unfocus();
-      if(_textController.text.length>0){
-        context.read<ChatEnterNotifier>().clearRules();
-        _textController.text = "";
-        bottomSettingChildKey.currentState.setCursorIndexPr(0);
-        _changTextLen("");
-      }
+      print("4444444444444");
+      // if(_textController.text.length>0){
+      //   context.read<ChatEnterNotifier>().clearRules();
+      //   _textController.text = "";
+      //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+      //   _changTextLen("");
+      // }
       _isVoiceState = !_isVoiceState;
       messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
+
       if (_emojiState) {
         _emojiState = false;
         bottomSettingChildKey.currentState.setEmojiState(_emojiState);
@@ -1781,6 +1774,13 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         readOnly=false;
         streamEditWidget.sink.add(0);
       }
+      Future.delayed(Duration(milliseconds: 100),(){
+        if(!_isVoiceState){
+          _emojiStateOld=true;
+          FocusScope.of(context).requestFocus(_focusNode);
+          textSpanFieldClickListener();
+        }
+      });
     }
   }
 
@@ -2273,6 +2273,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           .viewInsets
           .bottom > 0 && !_bottomSettingPanelState) {
         _focusNode.unfocus();
+        print("11111111111111111111111111");
       }
     }
   }

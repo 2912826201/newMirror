@@ -36,11 +36,11 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().registerSingleParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
-  _resetMoreBtn() {
-    isComMomButton = StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0;
+  _resetMoreBtn(bool isVoiceState) {
+    isComMomButton = StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0&&!isVoiceState;
     if (mounted) {
       setState(() {});
     }
