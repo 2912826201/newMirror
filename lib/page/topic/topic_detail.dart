@@ -35,7 +35,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class TopicDetail extends StatefulWidget {
   TopicDetail({Key key, this.isTopicList, this.topicId}) : super(key: key);
@@ -153,7 +153,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 1;
       });
       if (widget.isTopicList) {
-        context.read<UserInteractiveNotifier>().removeListId(null);
+        context.read<UserInteractiveNotifier>().removeListId(model.id,isAdd: false);
       }
     } else {
       ToastShow.show(msg: "关注失败", context: context);
@@ -279,10 +279,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                         clipBehavior: Clip.antiAlias,
                                         child: CachedNetworkImage(
                                           // 调整磁盘缓存中图像大小
-                                          maxHeightDiskCache: 150,
-                                          maxWidthDiskCache: 150,
-                                          imageUrl:
-                                              model.avatarUrl != null ? FileUtil.getSmallImage(model.avatarUrl) : "",
+                                          // maxHeightDiskCache: 150,
+                                          // maxWidthDiskCache: 150,
+                                          // 指定缓存宽高
+                                          memCacheWidth: 150,
+                                          memCacheHeight: 150,
+                                          imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
+                                              ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
+                                              : "",
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => Container(
                                             color: AppColor.bgWhite,
@@ -505,7 +509,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _gotoRelease() {
     return InkWell(
       onTap: () {
-        if(!context.read<TokenNotifier>().isLoggedIn){
+        if (!context.read<TokenNotifier>().isLoggedIn) {
           AppRouter.navigateToLoginPage(context);
           return;
         }

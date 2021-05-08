@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
@@ -20,7 +20,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final String userUrl;
   final String name;
   final bool isMyself;
-  final LiveVideoModel liveVideoModel;
+  final CourseModel liveVideoModel;
   final bool isLiveOrVideo;
   final String msgId;
   final String sendChatUserId;
@@ -260,6 +260,11 @@ class LiveVideoCourseMsg extends StatelessWidget {
 
   //底部文字
   Widget _getBottomText() {
+    String name="";
+    if(liveVideoModel!=null&&liveVideoModel.coursewareDto!=null&&liveVideoModel.coursewareDto.levelDto!=null&&
+        liveVideoModel.coursewareDto.levelDto.name!=null){
+      name=liveVideoModel.coursewareDto.levelDto.name;
+    }
     return Container(
       width: double.infinity,
       height: 68.5,
@@ -292,8 +297,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            // ignore: null_aware_before_operator
-            child: Text(liveVideoModel.coursewareDto?.levelDto?.name + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
+            child: Text(name??"" + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
           ),
         ],
       ),

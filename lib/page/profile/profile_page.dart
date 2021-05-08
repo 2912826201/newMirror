@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,12 +11,11 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
-import 'package:mirror/page/promotion/new_user_promotion_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/icon.dart';
@@ -173,8 +173,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "参加活动"),
-              /* _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+              Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
+              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
+              /*
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
             ],
           ),
@@ -293,7 +295,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 text,
                 style: AppStyle.textRegular16,
               ),
-              Expanded(child: Container()),
+              Spacer(),
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_18,
                 18,
@@ -410,6 +412,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这里是关注粉丝动态
   Widget _textAndNumber(String text, String number) {
     print('__________________________$number');
+    Size fansCountSize;
+    if(text=="粉丝"){
+      fansCountSize = calculateTextWidth(number,AppStyle.textMedium18,userDetaileIconSize,1).size;
+    }
     return Container(
       height: userDetaileIconSize,
       width: userDetaileIconSize,
@@ -417,9 +423,29 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            number,
-            style: AppStyle.textMedium18,
+          Stack(
+            children: [
+              Container(
+                width: text=="粉丝"?fansCountSize.width+6:null,
+                child: Text(
+                number,
+                style: AppStyle.textMedium18,
+              ),),
+              Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                return Positioned(
+                    top: 0,
+                    right: 0,
+                    child: notifier.fansUnreadCount > 0 && text == "粉丝"
+                        ? ClipOval(
+                            child: Container(
+                              height: 8,
+                              width: 8,
+                              color: AppColor.mainRed,
+                            ),
+                          )
+                        : Container());
+              })
+            ],
           ),
           SizedBox(
             height: 2,
@@ -474,8 +500,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   //点击事件Training record
-  void onClickListener(String title) {
-    String image = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1588620919,359805583&fm=26&gp=0.jpg";
+  void onClickListener(String title) async {
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
@@ -485,19 +510,20 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
-    } else if ("参加活动" == title) {
-      showImageDialog(context, imageUrl: image, onClickListener: () {
-        //跳转不关闭当前页面
-        Navigator.of(context).push(
-          new MaterialPageRoute(
-            settings: RouteSettings(name: "NewUserPromotionPage"),
-            builder: (context) {
-              return NewUserPromotionPage();
-            },
-          ),
-        );
+      AppRouter.navigateToHeightAndWeigetPage(context);
+      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
+    } else if ("测试" == title) {
+      showImageDialog(context, onClickListener: () {
+        AppRouter.navigateNewUserPromotionPage(context);
       });
+      // List<MachineModel> machineList = await getMachineStatusInfo();
+      // if (machineList != null && machineList.isNotEmpty) {
+      //   context.read<MachineNotifier>().setMachine(machineList.first);
+      // } else {
+      //   context.read<MachineNotifier>().setMachine(null);
+      // }
+    } else if ("融云" == title) {
+      AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
     }
   }
 }

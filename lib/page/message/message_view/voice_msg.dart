@@ -68,17 +68,12 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _getUrlMd5String();
     _initTimeDuration();
     // _getIsRead();
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (urlMd5String == null) {
-    _getUrlMd5String();
-    // }
-
     return getContentBoxItem(context);
   }
 
@@ -229,20 +224,14 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                         if (ClickUtil.isFastClick(time: 300)) {
                           return;
                         }
-
-                        widget.voidMessageClickCallBack(
-                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE, position: widget.position);
-
-                        // if (widget.chatVoiceModel.read == 0) {
-                        //   widget.chatVoiceModel.read = 1;
-                        //   _setIsRead(1);
-                        //   setState(() {
-                        //
-                        //   });
-                        // }
-
-                        // ToastShow.show(msg: "点击了语音播放", context: context);
-                        context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, urlMd5String);
+                        String filePathMd5=_getUrlMd5String();
+                        if(context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String:filePathMd5)){
+                          context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, filePathMd5);
+                        }else {
+                          widget.voidMessageClickCallBack(
+                              contentType: ChatTypeModel.MESSAGE_TYPE_VOICE, position: widget.position);
+                          context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, urlMd5String);
+                        }
                       },
                     )),
               )),
@@ -412,21 +401,24 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   }
 
   //获取地址，以及md5加密后的地址
-  _getUrlMd5String() {
+  String _getUrlMd5String() {
     if (widget.isTemporary) {
       urlString = widget.chatVoiceModel.filePath;
       urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
-      // print("地址Benin：${widget.chatVoiceModel.filePath}");
+      return urlMd5String;
+      // print("地址Benin1：${widget.chatVoiceModel.filePath}");
     } else {
       if (widget.chatVoiceModel.pathUrl != null) {
         urlString = widget.chatVoiceModel.pathUrl;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.pathUrl);
-        // print("地址Benin：${widget.chatVoiceModel.pathUrl}");
+        // print("地址Benin2：${widget.chatVoiceModel.pathUrl},messageUId:${widget.chatVoiceModel.filePath}");
+        return StringUtil.generateMd5(widget.chatVoiceModel.filePath);
       } else {
         urlString = widget.chatVoiceModel.filePath;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
-        // print("地址Benin：${widget.chatVoiceModel.filePath}");
+        // print("地址Benin3：${widget.chatVoiceModel.filePath}");
         // print("urlMd5String：$urlMd5String");
+        return urlMd5String;
       }
     }
   }
@@ -441,12 +433,11 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
           if (getWidgetArrayState > 3) {
             getWidgetArrayState = 0;
           }
-          setState(() {});
+          if(mounted) {
+            setState(() {});
+          }
         }
       } catch (e) {
-        if (timer != null) {
-          timer.cancel();
-        }
       }
     });
   }

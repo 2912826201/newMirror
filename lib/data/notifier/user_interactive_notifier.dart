@@ -7,11 +7,17 @@ import 'package:provider/provider.dart';
 class UserInteractiveNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
-  int removeId;
+  List<int> removeId;
+  List<int> userFollowChangeIdList;
   bool haveNewFans = false;
-
+  int fansUnreadCount = 0;
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
+
+  void changeUnreadFansCount(int count){
+    fansUnreadCount = count;
+    notifyListeners();
+  }
   void laudedChange(int id, int lauded) {
     if (lauded == 0) {
       profileUiChangeModel[id].attentionModel.laudedCount -= 1;
@@ -21,8 +27,31 @@ class UserInteractiveNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeListId(int id) {
-    removeId = id;
+  void removeListId(int id,{bool isAdd = true}) {
+    if(removeId==null){
+      return;
+    }
+    if(isAdd){
+      removeId.add(id);
+    }else{
+      if(removeId.contains(id)){
+        removeId.remove(id);
+      }
+    }
+    notifyListeners();
+  }
+
+  void removeUserFollowId(int id,{bool isAdd = true}){
+    if(userFollowChangeIdList==null){
+      return;
+    }
+    if(isAdd){
+      userFollowChangeIdList.add(id);
+    }else{
+      if(userFollowChangeIdList.contains(id)){
+        userFollowChangeIdList.remove(id);
+      }
+    }
     notifyListeners();
   }
 
@@ -51,9 +80,6 @@ class UserInteractiveNotifier extends ChangeNotifier {
   }
 
   void changeIsFollow(bool needNotify, bool bl, int id) {
-    if(!bl){
-      removeId = id;
-    }
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].feedStringList.clear();
     if (!bl) {

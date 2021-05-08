@@ -1,27 +1,18 @@
-import 'dart:async';
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
-import 'package:mirror/route/router.dart';
-import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/if_tab_bar.dart';
 import 'package:provider/provider.dart';
-
 import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
@@ -52,7 +43,7 @@ class MainPageState extends XCState {
   }
 
   List pages = [
-    HomePage(key:homePageKey),
+    HomePage(key: homePageKey),
     TrainingPage(),
     MessagePage(),
     ProfilePage(),
@@ -75,7 +66,13 @@ class MainPageState extends XCState {
       }
     });
   }
-
+  _getUnReadFansCount() {
+    fansUnread().then((value) {
+      if (value != null && value != context.read<UserInteractiveNotifier>().fansUnreadCount) {
+        context.read<UserInteractiveNotifier>().changeUnreadFansCount(value);
+      }
+    });
+  }
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
@@ -89,13 +86,23 @@ class MainPageState extends XCState {
             print("跳转111111");
             if (pageController.hasClients) {
               print("跳转222222");
-              pageController.jumpToPage(index);
+              if (index - currentIndex == 1 || currentIndex - index == 1) {
+                pageController.animateToPage(index,
+                    duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+              } else {
+                pageController.jumpToPage(index);
+              }
               currentIndex = index;
             }
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            getUnReads();
+            if(context.read<UserInteractiveNotifier>().fansUnreadCount==0){
+              _getUnReadFansCount();
+            }
+            Future.delayed(Duration.zero, () {
+              getUnReads();
+            });
             switch (index) {
               case 0:
                 break;
@@ -110,8 +117,28 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
-            if(homePageKey.currentState != null) {
+            print("双击index：：${index} currentIndex:::$currentIndex");
+            if (homePageKey.currentState != null && currentIndex == 0) {
               homePageKey.currentState.subpageRefresh();
+            }
+            if (index == 0 && currentIndex != 0) {
+              if (pageController.hasClients) {
+                print("跳转222222");
+                if (index - currentIndex == 1 || currentIndex - index == 1) {
+                  pageController.animateToPage(index,
+                      duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                } else {
+                  pageController.jumpToPage(index);
+                }
+                currentIndex = index;
+                EventBus.getDefault().post(msg: index,registerName: MAIN_PAGE_JUMP_PAGE);
+              }
+              if (_unReadFeedCount == 0) {
+                _getUnReadFeedCount();
+              }
+              Future.delayed(Duration.zero, () {
+                getUnReads();
+              });
             }
           },
         ),
@@ -120,7 +147,7 @@ class MainPageState extends XCState {
           childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {
             return pages[index];
           }, childCount: 4),
-            // 提前预加载当前pageView的下一个视图
+          // 提前预加载当前pageView的下一个视图
           allowImplicitScrolling: true,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));

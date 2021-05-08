@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
@@ -963,7 +963,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Map<String, dynamic> map = await roomInfo(widget.coachId, count: 3);
-    if (null != map["data"]["userList"]) {
+    if (null !=map["data"]&&null != map["data"]["userList"]) {
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel = BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));

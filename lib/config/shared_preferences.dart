@@ -1,6 +1,8 @@
-import 'package:mirror/api/training/live_api.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
+import 'package:mirror/api/training/course_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Created by yangjiayi on 2020/12/15.
 
 String prefsKeyIsFirstLaunch = "isFirstLaunch";
+
+String prefsKeyIsFirstLaunchToDay = "isFirstLaunchToDay";
 // 发布动态本地插入数据
 String publishFeedLocalInsertData = "publishFeedLocalInsertDataPrefs";
 
@@ -36,6 +40,24 @@ class AppPrefs {
   static setIsFirstLaunch(bool isFirstLaunch) {
     return _instance.setBool(prefsKeyIsFirstLaunch, isFirstLaunch);
   }
+
+  static bool isFirstLaunchToDay(){
+    bool value = _instance.getBool(getFirstLaunchToDayString());
+    if (value == null) {
+      value = true;
+      setIsFirstLaunchToDay();
+    }
+    return value;
+  }
+
+  static String getFirstLaunchToDayString(){
+    return "${prefsKeyIsFirstLaunchToDay}_${Application.profile.uid}_${DateUtil.formatToDayDateString()}";
+  }
+
+  static setIsFirstLaunchToDay() {
+    return _instance.setBool(getFirstLaunchToDayString(), false);
+  }
+
     ///存分段下载数据
   static setDownLoadChunkData(String url,String downLoadDetailData){
     if(AppPrefs.getDownLoadKeyList()==null){

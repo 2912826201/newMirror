@@ -18,79 +18,75 @@ class HeightAndWeightPage extends StatefulWidget {
 }
 
 class _HeightAndWeightState extends State<HeightAndWeightPage> {
-  int weight;
-  int heights;
+  int weight = 0;
+  int heights = 0;
   FocusNode blankNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+      Navigator.pop(context);
+      return false;
+    },
+    child: Scaffold(
       resizeToAvoidBottomPadding: true,
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         hasDivider: false,
-        leadingOnTap: () {
-          FocusScope.of(context).requestFocus(blankNode);
-          Navigator.pop(context);
-        },
+        leading: Container(),
       ),
       body: Container(
         height: height,
         width: width,
+        padding: EdgeInsets.only(left: 41,right: 41),
         child: ListView(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
+              Container(
+                width: width,
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "你的身高体重是",
                     style: AppStyle.textMedium23,
                   ),
                 ),
-              ),
-            ),
             SizedBox(
               height: 12,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
+             Container(
+                width: width,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "我们将以此为你推荐训练计划,让你一试身手。",
                   style: AppStyle.textRegular14,
                 ),
               ),
-            ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             _heightAndWeightItem("身高", "CM", width),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             _heightAndWeightItem("体重", "KG", width),
             SizedBox(
-              height: height * 0.07,
+              height: 62,
             ),
             Container(
               width: width,
-              padding: EdgeInsets.only(left: 41, right: 41),
               child: ClickLineBtn(
                 title: "下一步",
                 height: 44.0,
                 width: width,
                 circular: 3.0,
-                textColor: AppColor.white,
+                textColor:heights.bitLength<2||weight.bitLength<2?AppColor.textSecondary:AppColor.white,
                 fontSize: 16,
-                backColor: AppColor.bgBlack,
+                backColor:heights.bitLength<2||weight.bitLength<2?AppColor.bgWhite:AppColor.bgBlack,
                 color: AppColor.transparent,
                 onTap: () {
                   FocusScope.of(context).requestFocus(blankNode);
@@ -122,7 +118,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   _heightAndWeightItem(String title, String unit, double width) {
@@ -132,8 +128,9 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
         children: [
           Spacer(),
           Container(
-            width: width * 0.37,
+            width: 140,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   title,
@@ -151,7 +148,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                             UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
                         focusedBorder:
                             UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
-                    inputFormatters: [PrecisionLimitFormatter(2)],
+                    inputFormatters: [PrecisionLimitFormatter(2),FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
                     onChanged: (value) {
                       if (title == "身高") {
                         setState(() {

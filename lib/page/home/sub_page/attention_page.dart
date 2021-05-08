@@ -13,12 +13,13 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 enum Status {
@@ -112,7 +113,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // TODO: implement deactivate
     super.deactivate();
     print('============================关注页deactivate');
-    context.read<FeedMapNotifier>().setBuildCallBack(false);
+    Future.delayed(Duration.zero,(){
+      context.read<FeedMapNotifier>().setBuildCallBack(false);
+    });
   }
 
   @override
@@ -130,11 +133,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 重新登录替换关注页布局
     EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+
+    // Build完成第一帧绘制完成回调
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print("关注页Build完成第一帧绘制完成回调");
       context.read<FeedMapNotifier>().setBuildCallBack(true);
-      // 动态未读数
-      /* EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
+      //持久帧的回调
+      // WidgetsBinding.instance.addPersistentFrameCallback((callback) {
+      //   print("关注页持久帧的回调");
+      // });
     });
   }
 
@@ -143,6 +150,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 调用关注接口提换
     getRecommendFeed(refreshOrLoading: true);
   }
+
   // 双击刷新
   onDoubleTap() {
     _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
@@ -151,9 +159,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   //
   // 请求关注接口
   getRecommendFeed({bool refreshOrLoading}) async {
+    if (!refreshOrLoading) {
+      // 上拉加载禁止滑动
+      context.read<FeedMapNotifier>().setDropDown(false);
+    }
     print("开始请求动态数据");
     if (dataPage > 1 && lastTime == null) {
       _refreshController.loadNoData();
+      // 上拉加载可以滑动
+      context.read<FeedMapNotifier>().setDropDown(true);
       return;
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
@@ -162,47 +176,49 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       attentionModelList.clear();
     }
     print('---7666666666666666666666666666666666666model！=null');
-    if (mounted) {
-      setState(() {
-        print("dataPage:  ￥￥$dataPage");
-        if (dataPage == 1) {
-          if (model != null) {
-            print("第一页");
-            if (model.list != null && model.list.isNotEmpty) {
-              model.list.forEach((v) {
-                attentionIdList.add(HomeFeedModel.fromJson(v).id);
-                attentionModelList.add(HomeFeedModel.fromJson(v));
-              });
-              status = Status.concern;
-            } else {
-              // 这是为了加载无动态缺省布局
-              attentionIdList.insert(0, -1);
-              status = Status.noConcern;
-            }
-            lastTime = model.lastTime;
-          } else {
-            attentionIdList.insert(0, -1);
-            status = Status.noConcern;
-          }
-          _refreshController.refreshCompleted();
-        } else if (dataPage > 1 && lastTime != null) {
-          if (model != null) {
-            print("第二页");
-            if (model.list.isNotEmpty) {
-              model.list.forEach((v) {
-                attentionIdList.add(HomeFeedModel.fromJson(v).id);
-                attentionModelList.add(HomeFeedModel.fromJson(v));
-              });
-              _refreshController.loadComplete();
-            } else {
-              _refreshController.loadNoData();
-            }
-            lastTime = model.lastTime;
-          } else {
-            _refreshController.loadNoData();
-          }
+
+    print("dataPage:  ￥￥$dataPage");
+    if (dataPage == 1) {
+      if (model != null) {
+        print("第一页");
+        if (model.list != null && model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
+          });
+          status = Status.concern;
+        } else {
+          // 这是为了加载无动态缺省布局
+          attentionIdList.insert(0, -1);
+          status = Status.noConcern;
         }
-      });
+        lastTime = model.lastTime;
+      } else {
+        attentionIdList.insert(0, -1);
+        status = Status.noConcern;
+      }
+      _refreshController.refreshCompleted();
+    } else if (dataPage > 1 && lastTime != null) {
+      if (model != null) {
+        print("第二页");
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
+          });
+          _refreshController.loadComplete();
+        } else {
+          _refreshController.loadNoData();
+        }
+        lastTime = model.lastTime;
+      } else {
+        _refreshController.loadNoData();
+      }
+      // 上拉加载可以滑动
+      context.read<FeedMapNotifier>().setDropDown(true);
+    }
+    if (mounted) {
+      setState(() {});
     }
     isRequestInterfaceEnd = true;
     // 更新动态数量
@@ -372,7 +388,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: CustomScrollView(
               key: globalKey,
               controller: _controller,
-              physics: Platform.isIOS ? BouncingScrollPhysics() : AlwaysScrollableScrollPhysics(),
+              physics: context.watch<FeedMapNotifier>().value.isDropDown
+                  ? AlwaysScrollableScrollPhysics()
+                  : NeverScrollableScrollPhysics(),
               slivers: [
                 SliverList(
                   // controller: _controller,
@@ -480,7 +498,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
         ///临时的空数组
         List<int> themList = [];
-
+        List<HomeFeedModel> feedList = [];
+        feedMap.forEach((key, value) {
+          if (value.pushId == pushId) {
+            themList.add(key);
+            feedList.add(value);
+          }
+        });
         print("themList:::${themList.toString()}");
         print("attentionIdList:::${attentionIdList.toString()}");
         if (arrayDate(attentionIdList, themList).length == 0) {
@@ -494,6 +518,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           print("进入了222222");
           setState(() {
             attentionIdList = arrayDate(attentionIdList, themList);
+            // 去重
+            attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
           });

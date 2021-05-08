@@ -48,6 +48,15 @@ class OverScrollBehavior extends ScrollBehavior{
       return const ClampingScrollPhysics();
     case TargetPlatform.fuchsia:
       return const ClampingScrollPhysics();
+    case TargetPlatform.linux:
+      // TODO: Handle this case.
+      break;
+    case TargetPlatform.macOS:
+      // TODO: Handle this case.
+      break;
+    case TargetPlatform.windows:
+      // TODO: Handle this case.
+      break;
   }
   return null;
   }

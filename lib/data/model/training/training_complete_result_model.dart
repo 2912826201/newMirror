@@ -1,4 +1,5 @@
 class TrainingCompleteResultModel {
+  int id; //训练记录的id
   int uid; //用户id
   int hasResult; //是否有结果 0-无 1-有
   int mseconds; //本次训练时长
@@ -17,7 +18,8 @@ class TrainingCompleteResultModel {
   String startTime; //直播课的话有开始时间
 
   TrainingCompleteResultModel(
-      {this.uid,
+      {this.id,
+      this.uid,
       this.hasResult,
       this.mseconds,
       this.msecondsCount,
@@ -35,6 +37,7 @@ class TrainingCompleteResultModel {
       this.startTime});
 
   TrainingCompleteResultModel.fromJson(dynamic json) {
+    id = json["id"];
     uid = json["uid"];
     hasResult = json["hasResult"];
     mseconds = json["mseconds"];
@@ -55,6 +58,7 @@ class TrainingCompleteResultModel {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
+    map["id"] = id;
     map["uid"] = uid;
     map["hasResult"] = hasResult;
     map["mseconds"] = mseconds;

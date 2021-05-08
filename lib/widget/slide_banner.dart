@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/banner_view/banner_view.dart';
@@ -38,7 +39,7 @@ class SlideBanner extends StatefulWidget {
   _SlideBannerState createState() => _SlideBannerState();
 }
 
-class _SlideBannerState extends State<SlideBanner> {
+class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   int zindex = 0; //要移入的下标
 
   // 图片张数
@@ -90,6 +91,8 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   void initState() {
     super.initState();
+    //初始化
+    WidgetsBinding.instance.addObserver(this);
     if (widget.model != null && widget.model.selectedMediaFiles != null) {
       print("图片显示问题:::${widget.model.selectedMediaFiles.list.first.file}");
       imageCount = widget.model.selectedMediaFiles.list.length;
@@ -102,10 +105,7 @@ class _SlideBannerState extends State<SlideBanner> {
     // swiperController.addListener(() {
     //   print(swiperController.index);
     // });
-    // 预加载图片组件
-    if (widget.model.picUrls.isNotEmpty) {
-      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
-    }
+
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection);
@@ -183,9 +183,9 @@ class _SlideBannerState extends State<SlideBanner> {
                 // useOldImageOnUrlChange: true,
                 fit: BoxFit.cover,
                 imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                // placeholder: (context, url) => Container(
-                //   color: AppColor.bgWhite,
-                // ),
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
+                ),
                 errorWidget: (context, url, e) {
                   return Container(
                     color: AppColor.bgWhite,
@@ -334,7 +334,10 @@ class _SlideBannerState extends State<SlideBanner> {
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
     print("轮播图builder：${widget.model.id}");
-
+    // 预加载图片组件
+    if (widget.model != null && widget.model.picUrls.isNotEmpty) {
+      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
+    }
     // else if (widget.model != null && widget.model.selectedMediaFiles != null) {
     //   cupertinoButtonList = localPicture(setAspectRatio(widget.height));
     // }
@@ -462,5 +465,22 @@ class _SlideBannerState extends State<SlideBanner> {
         ],
       ),
     );
+  }
+
+  // didHaveMemoryPressure
+  @override
+  void didHaveMemoryPressure() {
+    // TODO: implement didHaveMemoryPressure
+    super.didHaveMemoryPressure();
+    try {
+      print("轮播图清除缓存");
+      if (widget.model != null && widget.model.picUrls.length > 0) {
+        widget.model.picUrls.forEach((element) {
+          ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
+        });
+      }
+    } catch (e) {
+      print("轮播图清除缓存失败：：：：：：：：：$e");
+    }
   }
 }

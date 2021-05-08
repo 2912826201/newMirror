@@ -12,7 +12,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -30,10 +30,10 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:toast/toast.dart';
@@ -60,7 +60,7 @@ class LiveDetailPage extends StatefulWidget {
 
   final String heroTag;
   final int liveCourseId;
-  final LiveVideoModel liveModel;
+  final CourseModel liveModel;
   final bool isHaveStartTime;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
@@ -98,7 +98,7 @@ class LiveDetailPageState extends XCState {
   bool isInteractive;
 
   //当前直播的model
-  LiveVideoModel liveModel;
+  CourseModel liveModel;
 
   //加载状态
   LoadingStatus loadingStatus;
@@ -350,7 +350,7 @@ class LiveDetailPageState extends XCState {
             ),
           ),
           getTitleWidget(liveModel, context, globalKeyList[1]),
-          getCoachItem(liveModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
+          getCoachItem(liveModel, context, onClickAttention, onClickCoach, globalKeyList[2],getDataAction),
           getLineView(),
           getTrainingEquipmentUi(liveModel, context, AppStyle.textMedium18, globalKeyList[3]),
           getActionUiLive(liveModel, context, globalKeyList[4], isShowAllItemAction, onClickShowAllAction),
@@ -698,7 +698,7 @@ class LiveDetailPageState extends XCState {
   ///预约流程
   ///
 
-  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar,
+  Future<void> _bookLiveCourse(CourseModel value, int index, bool isAddCalendar,
       {bool bindingTerminal = false}) async {
     int valuePlayType = value.playType;
     print(value.getGetPlayType());
@@ -729,7 +729,7 @@ class LiveDetailPageState extends XCState {
   }
 
   //点击预约后-查询是否有创建提醒的空间id
-  void onClickMakeAnAppointment(LiveVideoModel value, String alert, bool isBook) async {
+  void onClickMakeAnAppointment(CourseModel value, String alert, bool isBook) async {
     //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
     bool isGranted = (await Permission.calendar.status)?.isGranted;
@@ -787,7 +787,7 @@ class LiveDetailPageState extends XCState {
 
   //创建提醒
   void createEvent(
-      String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin, LiveVideoModel value, String alert) async {
+      String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin, CourseModel value, String alert) async {
     Event _event = new Event(calendarId);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
@@ -827,32 +827,10 @@ class LiveDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention() async {
-    if (!(mounted && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
-      AppRouter.navigateToLoginPage(context);
-      return;
-    }
-    if (await isOffline()) {
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return false;
-    }
-    if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
-      _getAttention(liveModel.coachDto?.uid);
-    }
+  onClickAttention(int attntionResult) async {
+    liveModel.coachDto?.relation = attntionResult;
   }
 
-  ///这是关注的方法
-  _getAttention(int userId) async {
-    int attntionResult = await ProfileAddFollow(userId);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      liveModel.coachDto?.relation = 1;
-      if (mounted) {
-        reload(() {});
-      }
-    }
-  }
 
   ///点击了教练
   onClickCoach() async {
@@ -919,7 +897,7 @@ class LiveDetailPageState extends XCState {
     //加载数据
     Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId);
     if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
-      liveModel = LiveVideoModel.fromJson(model["dataMap"]);
+      liveModel = CourseModel.fromJson(model["dataMap"]);
       if (openLiveCourse) {
         //如果已登录且有关联的机器 发送指令让机器跳转页面
         if (isLoggedIn && Application.machine != null) {

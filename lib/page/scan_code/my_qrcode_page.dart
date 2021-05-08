@@ -112,10 +112,11 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                   Container(
                       height: ScreenUtil.instance.height,
                       width: ScreenUtil.instance.screenWidthDp,
-                      child: Image.network(
+                      color: AppColor.bgWhite,
+                      /*child: Image.network(
                         "http://devpic.aimymusic.com/ifapp/1008977/1615279317627.jpg",
                         fit: BoxFit.cover,
-                      )),
+                      )*/),
                   Positioned(
                       left: (ScreenUtil.instance.screenWidthDp - ScreenUtil.instance.screenWidthDp * 0.8) / 2,
                       top: ScreenUtil.instance.height * 0.17,
@@ -142,10 +143,11 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                   Positioned(
                       top: ScreenUtil.instance.height * 0.73,
                       left: (ScreenUtil.instance.screenWidthDp - 120) / 2,
-                      child: Container(
-                        width: 120,
-                        height: 30,
-                        color: AppColor.black,
+                      child:Image.asset(
+                        "assets/png/video_course_result_share_logo.png",
+                        height: 24,
+                        width: 134,
+                        fit: BoxFit.cover,
                       ))
                 ],
               )),

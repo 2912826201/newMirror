@@ -10,16 +10,16 @@ import 'package:mirror/widget/live_label_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 import 'video_course/video_course_list_page.dart';
 
@@ -31,14 +31,14 @@ class TrainingPage extends StatefulWidget {
 class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0.0;
 
-  List<LiveVideoModel> _liveList = [];
-  List<LiveVideoModel> _videoCourseList = [];
+  List<CourseModel> _liveList = [];
+  List<CourseModel> _videoCourseList = [];
 
   bool _isVideoCourseRequesting = false;
   int _isVideoCourseLastTime;
   bool _videoCourseHasNext;
 
-  //TODO 临时变量 之后要像机器信息一样全局维护
+  //TODO 临时变量控制是否展示播放条 之后要像机器信息一样全局维护 需求变更暂时不用播放条了
   bool _isPlayingCourse = false;
 
   RefreshController _refreshController = RefreshController();
@@ -174,7 +174,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   Widget _buildTopView(MachineNotifier notifier) {
     return Column(
       children: [
-        // _buildBanner(),
+        // _buildTestBanner(),
+        _buildBanner(),
         notifier.machine == null ? _buildConnection() : _buildEquipment(notifier),
         _buildLive(),
         _buildCourseTitle(),
@@ -183,7 +184,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     );
   }
 
-  Widget _buildBanner() {
+  Widget _buildTestBanner() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Container(
@@ -197,6 +198,23 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             child: Text("去测试页"),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: GestureDetector(
+        child: Container(
+          height: _screenWidth * 140 / 375,
+          width: ScreenUtil.instance.width,
+          color: AppColor.bgBlack,
+          child: Image.asset("assets/png/new_user_event_banner.png",fit: BoxFit.cover,),
+        ),
+        onTap: (){
+          AppRouter.navigateNewUserPromotionPage(context);
+        },
       ),
     );
   }
@@ -534,7 +552,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildCourseItem(int index) {
-    LiveVideoModel videoModel = _videoCourseList[index];
+    CourseModel videoModel = _videoCourseList[index];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: GestureDetector(
@@ -558,7 +576,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveVideoModel videoModel, index) {
+  Object getHeroTag(CourseModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {

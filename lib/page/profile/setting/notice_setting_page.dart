@@ -29,9 +29,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
   var permUnknown = "unknown";
   var permProvisional = "provisional";
   StreamController<SettingNotifileModel> streamController = StreamController<SettingNotifileModel>();
-  SettingNotifileModel settingNotifileModel = SettingNotifileModel(
-
-  );
+  SettingNotifileModel settingNotifileModel = SettingNotifileModel();
 
   //设置用户通知设置
   Future<bool> _setUserNotice(int type, int isOpen) async {
@@ -264,7 +262,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                 title,
                 style: AppStyle.textRegular16,
               ),
-             Spacer(),
+              Spacer(),
               SelectButton(
                 isOpen,
                 canOnClick: notifile.permisionIsOpen ? true : false,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
@@ -14,7 +15,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
@@ -22,9 +23,9 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
-import 'package:qrcode/qrcode.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
+import 'package:mirror/page/message/item/chat_page_ui.dart';
 
 /// message_manager
 /// Created by yangjiayi on 2020/12/21.
@@ -78,7 +79,12 @@ class MessageManager {
         //将旧数据的创建时间赋值过来
         dto.createTime = exist.createTime;
         //将未读数累加
-        dto.unreadCount += exist.unreadCount;
+        if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
+            Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
+          dto.unreadCount =0;
+        }else{
+          dto.unreadCount += exist.unreadCount;
+        }
       }
       //处理名字 新的没有值 旧的有值则用旧的
       if (dto.name == "" && exist.name != "") {
@@ -168,6 +174,11 @@ class MessageManager {
       return null;
     }
 
+    if(!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)){
+      return null;
+    }
+
+
     ConversationDto dto = ConversationDto();
     //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
     dto.conversationId = msg.targetId;
@@ -236,26 +247,30 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
-      if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-        Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
-        if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-          dto.unreadCount = 0;
-          return dto;
-        } else if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_CMD) {
-          dto.unreadCount = 0;
-          return dto;
+      if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
+          Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
+        dto.unreadCount = 0;
+      }else{
+        if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+          Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
+          if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+            dto.unreadCount = 0;
+            return dto;
+          } else if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_CMD) {
+            dto.unreadCount = 0;
+            return dto;
+          }
+        }
+        dto.unreadCount = 1;
+
+        //加上全局未读数
+        NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
+        if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
+          Application.unreadMessageNumber += 1;
+          EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
         }
       }
-      dto.unreadCount = 1;
-
-      //加上全局未读数
-      NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
-      if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
-        Application.unreadMessageNumber += 1;
-        EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      }
     }
-
     return dto;
   }
 
@@ -309,7 +324,7 @@ class MessageManager {
   }
 
   //分为两类 一类通知（私聊通知、群聊通知） 一类消息
-  static splitMessage(Message message) async {
+  static splitMessage(Message message) {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
       //私聊通知
       Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
@@ -379,8 +394,8 @@ class MessageManager {
         case 8:
           //8-遥控器变化---目前只有训练进度
           print("目前只有训练进度");
-          TrainingScheduleModel model=TrainingScheduleModel.fromJson(dataMap["cmd"]);
-          if(model!=null){
+          TrainingScheduleModel model = TrainingScheduleModel.fromJson(dataMap["cmd"]);
+          if (model != null) {
             _trainingSchedule(model);
           }
           break;
@@ -390,7 +405,24 @@ class MessageManager {
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
-          if (trainingResult.hasResult == 1) {}
+          if (trainingResult.hasResult == 1) {
+            switch (trainingResult.type) {
+              case 0: // 直播课
+                break;
+              case 1: // 视频课
+                getCourseModel(courseId: trainingResult.courseId, type: mode_video).then((courseModel) {
+                  if (courseModel != null) {
+                    Future.delayed(Duration.zero).then((value) {
+                      AppRouter.navigateToVideoCourseResult(
+                          Application.navigatorKey.currentState.overlay.context, trainingResult, courseModel);
+                    });
+                  }
+                });
+                break;
+              default:
+                break;
+            }
+          }
           break;
         case 10:
           //10-开始训练-StartTraining
@@ -693,17 +725,17 @@ class MessageManager {
   }
 
   //机器训练进度的返回---只有视频课程
-  static void _trainingSchedule(TrainingScheduleModel model){
-    if(model.courseId==null){
+  static void _trainingSchedule(TrainingScheduleModel model) {
+    if (model.courseId == null) {
       return;
     }
-    if(AppRouter.isHaveMachineRemoteControllerPage()){
-      EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
-    }else{
+    if (AppRouter.isHaveMachineRemoteControllerPage()) {
+      EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
+    } else {
       BuildContext context = Application.navigatorKey.currentState.overlay.context;
       AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_video);
-      Future.delayed(Duration(milliseconds: 100),(){
-        EventBus.getDefault().post(msg: model,registerName: SCHEDULE_TRAINING_VIDEO);
+      Future.delayed(Duration(milliseconds: 100), () {
+        EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
       });
     }
   }

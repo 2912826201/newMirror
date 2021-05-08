@@ -9,26 +9,28 @@ import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/constants.dart';
 
 const Color _defualtMaskColor = Color.fromARGB(160, 0, 0, 0);
+// 图片加载完成回调
+typedef ImageLoadCompleteCallBack = Future Function();
 
 ///来源：https://gitee.com/wskfjt/flutterhead_clipping_control
 ///图像裁剪，适用于头像裁剪和输出固定尺寸的图片裁剪
 class CropperImage extends RenderObjectWidget {
-  CropperImage(
-    this.image, {
-    Key key,
-    this.limitations = true,
-    this.isArc = false,
-    this.backBoxSize = 10.0,
-    this.backBoxColor0 = Colors.grey,
-    this.backBoxColor1 = Colors.white,
-    this.maskColor = _defualtMaskColor,
-    this.lineColor = Colors.white,
-    this.lineWidth = 3,
-    this.outWidth = cropImageSize,
-    this.outHeight = cropImageSize,
-    this.maskPadding = 20.0,
-    this.round = 8.0,
-  }) : super(key: key);
+  CropperImage(this.image,
+      {Key key,
+      this.limitations = true,
+      this.isArc = false,
+      this.backBoxSize = 10.0,
+      this.backBoxColor0 = Colors.grey,
+      this.backBoxColor1 = Colors.white,
+      this.maskColor = _defualtMaskColor,
+      this.lineColor = Colors.white,
+      this.lineWidth = 3,
+      this.outWidth = cropImageSize,
+      this.outHeight = cropImageSize,
+      this.maskPadding = 20.0,
+      this.round = 8.0,
+      this.imageLoadCompleteCallBack})
+      : super(key: key);
 
   ///  image 输入图片源
   final ImageProvider image;
@@ -69,6 +71,8 @@ class CropperImage extends RenderObjectWidget {
   ///round 预览框圆角 默认值：8
   final double round;
 
+  final ImageLoadCompleteCallBack imageLoadCompleteCallBack;
+
   @override
   CropperImageElement createElement() {
     return CropperImageElement(this);
@@ -88,7 +92,8 @@ class CropperImage extends RenderObjectWidget {
       ..outWidth = outWidth
       ..outHeight = outHeight
       ..maskPadding = maskPadding
-      ..round = round;
+      ..round = round
+      ..imageLoadCompleteCallBack = imageLoadCompleteCallBack;
   }
 
   @override
@@ -105,7 +110,8 @@ class CropperImage extends RenderObjectWidget {
       ..outWidth = outWidth
       ..outHeight = outHeight
       ..maskPadding = maskPadding
-      ..round = round;
+      ..round = round
+      ..imageLoadCompleteCallBack = imageLoadCompleteCallBack;
     renderObject.markNeedsPaint();
   }
 
@@ -131,7 +137,9 @@ class CropperImage extends RenderObjectWidget {
 class CropperImageElement extends RenderObjectElement {
   ImageProvider _image;
 
-  CropperImageElement(CropperImage widget) : super(widget);
+  CropperImageElement(
+    CropperImage widget,
+  ) : super(widget);
 
   @override
   CropperImageRender get renderObject => super.renderObject as CropperImageRender;
@@ -185,11 +193,13 @@ class CropperImageElement extends RenderObjectElement {
 
     if (null != _image) {
       var scale = widget.outHeight / (renderObject.bottom - renderObject.top);
-      canvas.translate(renderObject.outWidth / 2 + renderObject.drawX * scale, renderObject.outHeight / 2 + renderObject.drawY * scale);
+      canvas.translate(renderObject.outWidth / 2 + renderObject.drawX * scale,
+          renderObject.outHeight / 2 + renderObject.drawY * scale);
 
       canvas.rotate(renderObject.rotate1);
       canvas.scale(renderObject.scale * scale);
-      canvas.drawImage(renderObject.image, Offset(-renderObject.image.width / 2, -renderObject.image.height / 2), Paint());
+      canvas.drawImage(
+          renderObject.image, Offset(-renderObject.image.width / 2, -renderObject.image.height / 2), Paint());
     }
 
     return recorder.endRecording().toImage(widget.outWidth.toInt(), widget.outHeight.toInt());
@@ -216,8 +226,18 @@ class Pointer {
 }
 
 class CropperImageRender extends RenderProxyBox {
+  ImageLoadCompleteCallBack _imageLoadCompleteCallBack;
+
+  ImageLoadCompleteCallBack get imageLoadCompleteCallBack => _imageLoadCompleteCallBack;
+
   ui.Image _image;
   bool _limitations = true;
+
+  set imageLoadCompleteCallBack(ImageLoadCompleteCallBack value) {
+    _imageLoadCompleteCallBack = value;
+    markNeedsCompositingBitsUpdate();
+    markNeedsPaint();
+  }
 
   set limitations(bool value) {
     _limitations = value;
@@ -375,6 +395,9 @@ class CropperImageRender extends RenderProxyBox {
       canvas.rotate(rotate1);
       canvas.scale(scale);
       canvas.drawImage(_image, Offset(-_image.width / 2, -_image.height / 2), Paint());
+      if (_imageLoadCompleteCallBack != null) {
+        _imageLoadCompleteCallBack();
+      }
       canvas.restore();
     }
 
@@ -387,8 +410,8 @@ class CropperImageRender extends RenderProxyBox {
       var color = (0 == (y / backBoxSize) % 2) ? backBoxColor0 : backBoxColor1;
 
       for (double x = 0; x < size.width; x += backBoxSize) {
-        canvas.drawRect(
-            Rect.fromLTRB(x, y, x + backBoxSize, y + backBoxSize), Paint()..color = (color = color == backBoxColor1 ? backBoxColor0 : backBoxColor1));
+        canvas.drawRect(Rect.fromLTRB(x, y, x + backBoxSize, y + backBoxSize),
+            Paint()..color = (color = color == backBoxColor1 ? backBoxColor0 : backBoxColor1));
       }
     }
   }

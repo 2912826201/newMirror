@@ -9,7 +9,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -19,7 +19,7 @@ import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -114,6 +114,12 @@ class AppRouter {
   // 所在位置页面
   static String pathSearchOrLocationPage = "feed/searchOrlocationwidget";
 
+  // 活动界面
+  static String pathNewUserPromotionPage = "/newUserPromotionPage";
+
+  // 活动界面-添加老师和群聊界面
+  static String pathLordQRCodePage = "/newUserPromotionPage/pathLordQRCodePage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -198,6 +204,10 @@ class AppRouter {
     router.define(pathFeedDetailPage, handler: handlerFeedDetailPage);
     // 所在位置页面
     router.define(pathSearchOrLocationPage, handler: handlerSearchOrLocationPage);
+    // 新用户活动界面
+    router.define(pathNewUserPromotionPage, handler: handlerNewUserPromotionPage);
+    // 新用户活动界面-添加老师和进入群聊界面
+    router.define(pathLordQRCodePage, handler: handlerLordQRCodePage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -364,7 +374,7 @@ class AppRouter {
   }
 
   static void navigateToVideoCoursePlay(
-      BuildContext context, Map<String, String> videoPathMap, LiveVideoModel videoCourseModel) {
+      BuildContext context, Map<String, String> videoPathMap, CourseModel videoCourseModel) {
     Map<String, dynamic> map = Map();
     map["videoPathMap"] = videoPathMap;
     map["videoCourseModel"] = videoCourseModel.toJson();
@@ -378,16 +388,18 @@ class AppRouter {
   //     CommentDtoModel commentDtoModel,
   //     CommentDtoModel fatherComment}
 
-  static void navigateToVideoCourseResult(BuildContext context, TrainingCompleteResultModel trainingResult) {
+  static void navigateToVideoCourseResult(
+      BuildContext context, TrainingCompleteResultModel trainingResult, CourseModel course) {
     Map<String, dynamic> map = Map();
     map["result"] = trainingResult.toJson();
+    map["course"] = course.toJson();
     _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId,
       {String heroTag,
       bool isHaveStartTime = true,
-      LiveVideoModel liveModel,
+      CourseModel liveModel,
       CommentDtoModel commentDtoModel,
       CommentDtoModel fatherComment,
       bool isInteractiveIn = false}) {
@@ -416,7 +428,7 @@ class AppRouter {
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
       {String heroTag,
-      LiveVideoModel videoModel,
+      CourseModel videoModel,
       CommentDtoModel commentDtoModel,
       CommentDtoModel fatherComment,
       bool isInteractive = false,
@@ -593,10 +605,13 @@ class AppRouter {
     _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
 
-  static void navigateToReleasePage(BuildContext context, {int topicId}) {
+  static void navigateToReleasePage(BuildContext context, {int topicId, int videoCourseId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
       map["topicId"] = topicId;
+    }
+    if (videoCourseId != null) {
+      map["videoCourseId"] = videoCourseId;
     }
     _navigateToPage(context, pathRelease, map, isFromBottom: true);
   }
@@ -607,6 +622,7 @@ class AppRouter {
       @required List<ChatDataModel> chatDataModelList,
       String systemLastTime,
       int systemPage = 0,
+      String textContent,
       Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
@@ -614,6 +630,7 @@ class AppRouter {
     }
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
+    map["textContent"] = textContent;
     Application.shareMessage = shareMessage;
     Application.chatDataList.clear();
     Application.chatDataList.addAll(chatDataModelList);
@@ -679,8 +696,8 @@ class AppRouter {
 
   //
   ///courseId：课程id,直播课程id或者视频课程的id
-  ///modeTye:类型,[liveVideoMode]
-  static void navigateToMachineRemoteController(BuildContext context,{int courseId,String modeType=mode_null}) {
+  ///modeTye:类型,[CourseMode]
+  static void navigateToMachineRemoteController(BuildContext context, {int courseId, String modeType = mode_null}) {
     Map<String, dynamic> map = Map();
     map["courseId"] = courseId;
     map["modeType"] = modeType;
@@ -688,14 +705,26 @@ class AppRouter {
   }
 
   //判断打开遥控器界面没有
-  static bool isHaveMachineRemoteControllerPage(){
-    try{
-      for(String element in Application.pagePopRouterName){
-        if(element.contains(pathMachineRemoteController)){
+  static bool isHaveMachineRemoteControllerPage() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathMachineRemoteController)) {
           return true;
         }
       }
-    }catch (e){}
+    } catch (e) {}
+    return false;
+  }
+
+  //判断有没有登陆成功界面
+  static bool isHaveLoginSuccess() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathLoginSucess)) {
+          return true;
+        }
+      }
+    } catch (e) {}
     return false;
   }
 
@@ -876,7 +905,7 @@ class AppRouter {
   }
 
   //去直播间
-  static void navigateLiveRoomPage(BuildContext context, LiveVideoModel liveModel, {Function(int relation) callback}) {
+  static void navigateLiveRoomPage(BuildContext context, CourseModel liveModel, {Function(int relation) callback}) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LiveRoomVideoPage(liveCourseId: liveModel.id, coachId: liveModel.coachId.toString());
     }));
@@ -894,5 +923,17 @@ class AppRouter {
             coachId: liveModel.coachDto.uid);
       },
     ));
+  }
+
+  // 活动界面
+  static void navigateNewUserPromotionPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathNewUserPromotionPage, map);
+  }
+
+  // 活动界面-添加老师和群聊界面
+  static void navigateLordQRCodePage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLordQRCodePage, map);
   }
 }

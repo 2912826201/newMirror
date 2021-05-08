@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_video_mode.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/search/search_page.dart';
@@ -20,7 +20,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
 class VideoCourseListPage extends StatefulWidget {
@@ -37,7 +37,7 @@ class VideoCourseListPageState extends XCState {
   var titleItemSubSettingList = <TitleItemSubSetting>[];
 
   //当前显示的直播课程的list
-  var videoModelArray = <LiveVideoModel>[];
+  var videoModelArray = <CourseModel>[];
 
   bool isRefreshing=false;
 
@@ -649,7 +649,7 @@ class VideoCourseListPageState extends XCState {
   }
 
   //item--每一个
-  Widget _getItem(LiveVideoModel videoModel, int index, int count) {
+  Widget _getItem(CourseModel videoModel, int index, int count) {
     EdgeInsetsGeometry firstMargin = const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 6);
     EdgeInsetsGeometry commonMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6);
     EdgeInsetsGeometry endMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 50);
@@ -676,7 +676,7 @@ class VideoCourseListPageState extends XCState {
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveVideoModel videoModel, index) {
+  Object getHeroTag(CourseModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {
@@ -744,7 +744,7 @@ class VideoCourseListPageState extends XCState {
       int count = videoModelArray.length;
 
       model["list"].forEach((v) {
-        videoModelArray.add(LiveVideoModel.fromJson(v));
+        videoModelArray.add(CourseModel.fromJson(v));
       });
 
       Future.delayed(Duration(milliseconds: 500), () {
@@ -880,7 +880,7 @@ class TitleItemSubSetting {
 }
 
 //获取left的图片
-Widget buildVideoCourseItemLeftImageUi(LiveVideoModel value, Object heroTag) {
+Widget buildVideoCourseItemLeftImageUi(CourseModel value, Object heroTag) {
   String imageUrl;
   if (value.picUrl != null) {
     imageUrl = value.picUrl;
@@ -912,7 +912,7 @@ Widget buildVideoCourseItemLeftImageUi(LiveVideoModel value, Object heroTag) {
 }
 
 //获取右边数据的ui
-Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bool isMine) {
+Widget buildVideoCourseItemRightDataUi(CourseModel value, int imageHeight, bool isMine) {
   return Expanded(
       child: SizedBox(
     child: Container(

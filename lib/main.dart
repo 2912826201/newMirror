@@ -29,11 +29,12 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
+import 'package:mirror/widget/my_widgets_binding_observer.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import 'api/training/live_api.dart';
+import 'api/training/course_api.dart';
 import 'api/message_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
@@ -108,7 +109,13 @@ Future _initApp() async {
   // 升级flutter版本1.10.2后，因为在main()方法中有异步操作，对一些插件做了初始化操作。
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
-
+  // 添加内存不足的监听处理
+  MyWidgetsBindingObserver observer = MyWidgetsBindingObserver();
+  WidgetsBinding.instance.addObserver(observer);
+  //缓存个数 100
+  PaintingBinding.instance.imageCache.maximumSize = 100;
+  //缓存大小 50m
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 50 << 20;
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
@@ -223,11 +230,11 @@ Future _initApp() async {
     profile = await ProfileDBHelper().queryProfile(token.uid);
     if (profile == null) {
       UserModel user = await getUserInfo();
-      if(user != null){
+      if (user != null) {
         profile = ProfileDto.fromUserModel(user);
         await ProfileDBHelper().insertProfile(profile);
         Application.profile = profile;
-      }else{
+      } else {
         //没能成功取到用户信息时 则视为登录失效 删掉之前的token
         Application.token = null;
       }
@@ -237,7 +244,16 @@ Future _initApp() async {
   } else {
     //匿名用户时 保持上面已赋值的默认初始值
   }
-
+  // todo 获取背景图配置表
+  try {
+    Application.topicBackgroundConfig.clear();
+    DataResponseModel dataResponseModel = await getBackgroundConfig();
+    if (dataResponseModel != null && dataResponseModel.list != null) {
+      dataResponseModel.list.forEach((v) {
+        Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
+      });
+    }
+  } catch (e) {}
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   Map<String, dynamic> videoCourseTagMap = await getAllTags();
   if (videoCourseTagMap != null) {
@@ -273,17 +289,9 @@ Future _initApp() async {
         });
       }
     } catch (e) {}
-    // todo 获取背景图配置表
-    try {
-      Application.topicBackgroundConfig.clear();
-      DataResponseModel dataResponseModel = await getBackgroundConfig();
-      if (dataResponseModel != null && dataResponseModel.list != null) {
-        dataResponseModel.list.forEach((v) {
-          Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
-        });
-      }
-    } catch (e) {}
   }
+  // Note 打包放开服务端清除数据 启动app调用(服务端处理数据) 不然运行一次就要登录一次
+  // await startApp();
 }
 
 //初始化地区数据

@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
-import 'package:flutter/material.dart' hide TabBar;
+import 'package:flutter/material.dart' hide TabBar, TabBarView;
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -15,6 +15,7 @@ import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
@@ -25,7 +26,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/banner_view/page_scroll_physics.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
@@ -34,9 +37,12 @@ import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
+
   HomePageState createState() => HomePageState();
 }
+
 GlobalKey<HomePageState> homePageKey = GlobalKey();
+
 class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
@@ -311,7 +317,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               latitude: postModel.latitude,
               longitude: postModel.longitude,
               cityCode: postModel.cityCode,
-              topics: jsonEncode(postModel.topics));
+              topics: jsonEncode(postModel.topics),
+              videoCourseId:postModel.videoCourseId);
           print("发不接受发布结束：feedModel$feedModel");
 
           if (feedModel != null) {
@@ -325,7 +332,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 延迟器:
             new Future.delayed(Duration(seconds: 3), () {
               //  清除图片路径
-              if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+              if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                   .contains(AppConfig.getAppPublishDir())) {
                 _clearCache(AppConfig.getAppPublishDir());
               }
@@ -449,8 +456,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               wantWidth: 16,
             ),
             onDoubleTap: (index) {
-              subpageRefresh();
-              print("双击了${index}");
+              if (controller.index == index) {
+                subpageRefresh();
+              } else {
+                controller.animateTo(index);
+              }
             },
           ),
         ),
@@ -483,6 +493,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               Expanded(
                 child: TabBarView(
                   controller: controller,
+                  physics:  context.watch<FeedMapNotifier>().value.isDropDown ? pageScrollPhysics() : NeverScrollableScrollPhysics(),
                   children: [
                     AttentionPage(
                       key: attentionKey,
@@ -509,7 +520,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         AppPrefs.removePublishFeed(
                             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
                         //  清除图片路径
-                        if (postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                        if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
                             .contains(AppConfig.getAppPublishDir())) {
                           _clearCache(AppConfig.getAppPublishDir());
                         }

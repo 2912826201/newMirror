@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -40,18 +41,16 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         child: Column(
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             Center(
               child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
+                width: width,
+                padding: EdgeInsets.only(left: 41),
+                child:  Text(
                     "你每周训练几次",
                     style: AppStyle.textMedium23,
                   ),
-                ),
               ),
             ),
             SizedBox(
@@ -59,8 +58,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
             ),
             Center(
               child: Container(
-                alignment: Alignment.centerLeft,
-                width: width * 0.78,
+                width: width,
+                padding: EdgeInsets.only(left: 41),
                 child: Text(
                   "我们将以此为你推荐训练计划，让你一试身手。",
                   style: AppStyle.textRegular14,
@@ -68,26 +67,17 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
               ),
             ),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练3次", three, 3),
-            ),
+           _button("训练3次", three, 3),
             SizedBox(
-              height: 28,
+              height: 18,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练4次", four, 4),
-            ),
+             _button("训练4次", four, 4),
             SizedBox(
-              height: 28,
+              height: 18,
             ),
-            InkWell(
-              onTap: () {},
-              child: _button("训练5次", fives, 5),
-            ),
+             _button("训练5次", fives, 5),
           ],
         ),
       ),
@@ -103,12 +93,12 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         height: 44.0,
         width: ScreenUtil.instance.screenWidthDp,
         circular: 3.0,
-        textColor: selected ? AppColor.white : AppColor.textHint,
-        fontSize: 16,
+        textColor: selected ? AppColor.white : AppColor.textPrimary1,
+        fontSize: 18,
         backColor: selected ? AppColor.bgBlack : AppColor.transparent,
         color: selected ? AppColor.transparent : AppColor.textHint,
         onTap: () {
-          Loading.showLoading(context);
+          Loading.showLoading(context,infoText: "正在录入健身信息");
           setState(() {
             switch (type) {
               case 3:
@@ -150,5 +140,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
       AppRouter.popToBeforeLogin(context);
       print('================================健身信息录入失败');
     }
+    Future.delayed(Duration(milliseconds: 100),(){
+      EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
+    });
   }
 }

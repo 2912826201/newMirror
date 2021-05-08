@@ -1,27 +1,22 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
-import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
-import 'dart:io';
 import 'package:provider/provider.dart';
 
 import 'package:toast/toast.dart';
@@ -31,8 +26,11 @@ import '../release_page.dart';
 class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
   TextEditingController controller;
+  final int videoCourseId;
+  final int liveCourseId;
+  StreamController<int> streamController = StreamController<int>();
 
-  FeedHeader({this.selectedMediaFiles, this.controller});
+  FeedHeader({this.selectedMediaFiles, this.controller, this.videoCourseId, this.liveCourseId});
 
   // 发布动态
   pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
@@ -113,6 +111,12 @@ class FeedHeader extends StatelessWidget {
           latitude = poi.location.split(",")[1];
           cityCode = poi.citycode;
         }
+        if (videoCourseId != null) {
+          feedModel.videoCourseId = videoCourseId;
+        }
+        if (liveCourseId != null) {
+          feedModel.liveCourseId = liveCourseId;
+        }
         feedModel.atUsersModel = atUsersModel;
         feedModel.address = address;
         feedModel.cityCode = cityCode;
@@ -162,6 +166,12 @@ class FeedHeader extends StatelessWidget {
         latitude = poi.location.split(",")[1];
         cityCode = poi.citycode;
       }
+      if (videoCourseId != null) {
+        feedModel.videoCourseId = videoCourseId;
+      }
+      if (liveCourseId != null) {
+        feedModel.liveCourseId = liveCourseId;
+      }
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
       feedModel.cityCode = cityCode;
@@ -178,7 +188,6 @@ class FeedHeader extends StatelessWidget {
       print('--------------Navigator------Navigator-------------Navigator------');
     }
     print("postprogressModel:::${postprogressModel.toString()}");
-
     Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     print("5555455555");
     // 传入发布动态model
@@ -220,36 +229,34 @@ class FeedHeader extends StatelessWidget {
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () {
-              // 读取输入框最新的值去掉后空格换行
-              // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
-              var inputText = controller.text;
-
-              // 获取输入框内的规则
-              var rules = context.read<ReleaseFeedInputNotifier>().rules;
-
-              // 获取选择的地址
-              var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
-
-              // 获取用户Id
-              var uid = context.read<ProfileNotifier>().profile.uid;
-              print("11111111");
-              // print(StringUtil.replaceLineBlanks(inputText,rules));
-              pulishFeed(context, StringUtil.replaceLineBlanks(inputText,rules), uid, rules, poi);
-            },
-            child: Container(
-                height: 28,
-                width: 60,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    // 监听输入框的值动态改变样式
-                    color: AppColor.mainRed),
-                child: Center(
-                  child: const Text(
+            onTap: () {},
+            child: StreamBuilder<int>(
+                initialData: CustomRedButton.buttonStateNormal,
+                stream: streamController.stream,
+                builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
+                  return CustomRedButton(
                     "发布",
-                    style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
-                  ),
-                )),
+                    snapshot.data,
+                    () {
+                      streamController.sink.add(CustomRedButton.buttonStateLoading);
+                      // 读取输入框最新的值去掉后空格换行
+                      // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
+                      var inputText = controller.text;
+
+                      // 获取输入框内的规则
+                      var rules = context.read<ReleaseFeedInputNotifier>().rules;
+
+                      // 获取选择的地址
+                      var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
+
+                      // 获取用户Id
+                      var uid = context.read<ProfileNotifier>().profile.uid;
+                      print("11111111");
+                      // print(StringUtil.replaceLineBlanks(inputText,rules));
+                      pulishFeed(context, StringUtil.replaceLineBlanks(inputText, rules), uid, rules, poi);
+                    },
+                  );
+                }),
           ),
           const SizedBox(
             width: 16,

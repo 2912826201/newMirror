@@ -11,7 +11,7 @@ import 'package:mirror/data/database/search_history_db_helper.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_complex.dart';
@@ -19,13 +19,11 @@ import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
-import 'package:mirror/page/training/test_appvar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -134,7 +132,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     controller: controller,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (text) {
-                      if (text.isNotEmpty&&context.read<TokenNotifier>().isLoggedIn) {
+                      if (text.isNotEmpty && context.read<TokenNotifier>().isLoggedIn) {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
@@ -194,7 +192,7 @@ class SearchMiddleView extends StatefulWidget {
 class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
-  List<LiveVideoModel> liveVideoList = [];
+  List<CourseModel> liveVideoList = [];
 
   @override
   void initState() {
@@ -203,12 +201,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求推荐话题接口
       getRecommendTopic(size: 20),
       // 请求历史记录
-        SearchHistoryDBHelper().querySearchHistory(context
-          .read<ProfileNotifier>()
-        .profile != null ? context
-            .read<ProfileNotifier>()
-            .profile
-            .uid : -1),
+      SearchHistoryDBHelper().querySearchHistory(
+          context.read<ProfileNotifier>().profile != null ? context.read<ProfileNotifier>().profile.uid : -1),
       recommendCourse(),
       // 请求热门课程
     ]).then((results) {
@@ -224,7 +218,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
-      List<LiveVideoModel> liveList = [];
+      List<CourseModel> liveList = [];
       if (results[2] != null) {
         liveList = results[2];
         if (liveList.isNotEmpty) {
@@ -234,10 +228,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted) {
         setState(() {});
       }
-    }).catchError((e) {
+    });/*.catchError((e) {
       print("报错了");
       print(e);
-    });
+    });*/
     super.initState();
   }
 
@@ -524,10 +518,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                               height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                               width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                               // 调整磁盘缓存中图像大小
-                              maxHeightDiskCache: 250,
-                              maxWidthDiskCache: 250,
+                              // maxHeightDiskCache: 250,
+                              // maxWidthDiskCache: 250,
+                              // 指定缓存宽高
+                              memCacheWidth: 250,
+                              memCacheHeight: 250,
                               imageUrl: topicList[index].pics[indexs] != null
-                                  ? FileUtil.getMediumImage(topicList[index].pics[indexs])
+                                  ? FileUtil.getMediumImage(topicList[index].pics[indexs].coverUrl)
                                   : "",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(

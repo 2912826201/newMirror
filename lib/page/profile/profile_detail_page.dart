@@ -22,6 +22,7 @@ import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -61,9 +62,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   //资料板高度
   double userDetailBoardHeight = 0;
 
-  int firstTapTime;
-  int beforTapType;
-
   ///昵称
   String _textName;
 
@@ -97,7 +95,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
-  StreamController<double> titleStreamController = StreamController<double>();
   StreamController<bool> loadingStreamController = StreamController<bool>();
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();
@@ -183,7 +180,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///获取关注、粉丝、获赞数数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
-    if (attentionModel != null) {
+    if (attentionModel != null&& mounted ) {
       context.read<UserInteractiveNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
@@ -211,7 +208,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
-      setState(() {
         _avatar = userModel.avatarUri;
         _signature = userModel.description;
         userStatus = userModel.status;
@@ -222,7 +218,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           _signatureHeight = testSize.height;
         }
         _textName = userModel.nickName;
-      });
+        if(mounted){
+          setState(() {
+          });
+        }
       if (userModel.relation == 0 || userModel.relation == 2) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       } else if (userModel.relation == 1 || userModel.relation == 3) {
@@ -241,6 +240,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
+    ImageCachedObserverUtil.clearPendingCacheImage();
     print('--------------------------------个人主页deactivate');
   }
 
@@ -284,6 +284,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                   return SliverPersistentHeader(
                     pinned: true,
+                            //自定义用来占位置的吸顶透明布局
                     delegate: fillingContainerDelegate(
                         height: snapshot.data,
                         color: AppColor.transparent,
@@ -742,6 +743,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (attntionResult == 1 || attntionResult == 3) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
+        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId,isAdd: false);
         ToastShow.show(msg: "关注成功!", context: context);
       }
     }

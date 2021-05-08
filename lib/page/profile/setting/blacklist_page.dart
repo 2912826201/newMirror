@@ -8,13 +8,11 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_list_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 //黑名单
@@ -45,7 +43,7 @@ class _BlackListState extends State<BlackListPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserInteractiveNotifier>().removeId = null;
+    context.read<UserInteractiveNotifier>().removeId = [];
     _getBlackList();
   }
 
@@ -111,13 +109,12 @@ class _BlackListState extends State<BlackListPage> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, blackList[index].uid,avatarUrl:blackList[index].avatarUri,
-                  userName:blackList[index].nickName, callback:
-                  (result) {
+              AppRouter.navigateToMineDetail(context, blackList[index].uid,
+                  avatarUrl: blackList[index].avatarUri, userName: blackList[index].nickName, callback: (result) {
                 if (context.read<UserInteractiveNotifier>().removeId != null) {
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {
-                    if (element.uid != context.read<UserInteractiveNotifier>().removeId) {
+                    if (!context.read<UserInteractiveNotifier>().removeId.contains(element.uid)) {
                       list.add(element);
                     }
                   });
@@ -131,7 +128,7 @@ class _BlackListState extends State<BlackListPage> {
               child: CachedNetworkImage(
                 height: 38,
                 width: 38,
-                imageUrl: blackList[index].avatarUri!=null?FileUtil.getSmallImage(blackList[index].avatarUri):" ",
+                imageUrl: blackList[index].avatarUri != null ? FileUtil.getSmallImage(blackList[index].avatarUri) : " ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,

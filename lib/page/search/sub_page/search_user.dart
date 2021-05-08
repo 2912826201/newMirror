@@ -12,7 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class SearchUser extends StatefulWidget {
   String text;
@@ -39,6 +39,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   String lastString;
   RefreshController _refreshController = new RefreshController();
   String defaultImage = DefaultImage.nodata;
+
   @override
   void initState() {
     super.initState();
@@ -86,27 +87,27 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if(model != null){
+      if (model != null) {
         hashNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        noData = false;
-        modelList.clear();
-        _lastTime = model.lastTime;
-        if (modelList == model.list) {
-          _refreshController.refreshToIdle();
-          return;
+        if (model.list.isNotEmpty) {
+          noData = false;
+          modelList.clear();
+          _lastTime = model.lastTime;
+          if (modelList == model.list) {
+            _refreshController.refreshToIdle();
+            return;
+          } else {
+            print('===================== =============model有值');
+            model.list.forEach((element) {
+              print('model================ ${element.relation}');
+              modelList.add(element);
+            });
+          }
         } else {
-          print('===================== =============model有值');
-          model.list.forEach((element) {
-            print('model================ ${element.relation}');
-            modelList.add(element);
-          });
+          noData = true;
+          defaultImage = DefaultImage.nodata;
         }
       } else {
-        noData = true;
-        defaultImage = DefaultImage.nodata;
-      }
-      }else{
         noData = true;
         defaultImage = DefaultImage.error;
       }
@@ -141,14 +142,14 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                 child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(),
+                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
                   controller: _refreshController,
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   onRefresh: _onRefresh,
                   onLoading: _onLoading,
                   child: ListView.builder(
                       itemCount: modelList.length,
-                      itemExtent:58,
+                      itemExtent: 58,
                       itemBuilder: (context, index) {
                         return SearchUserItem(
                           model: modelList[index],
@@ -224,8 +225,8 @@ class _SearchState extends State<SearchUserItem> {
           InkWell(
               onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());
-                AppRouter.navigateToMineDetail(context, widget.model.uid,avatarUrl:widget.model.avatarUri,userName:
-                widget.model.nickName);
+                AppRouter.navigateToMineDetail(context, widget.model.uid,
+                    avatarUrl: widget.model.avatarUri, userName: widget.model.nickName);
               },
               child: Row(
                 children: [
@@ -235,9 +236,12 @@ class _SearchState extends State<SearchUserItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        maxWidthDiskCache: 150,
-                        maxHeightDiskCache: 150,
-                        imageUrl:  widget.model.avatarUri!=null?FileUtil.getSmallImage(  widget.model.avatarUri):" ",
+                        // maxWidthDiskCache: 150,
+                        // maxHeightDiskCache: 150,
+                        // 指定缓存宽高
+                        memCacheWidth: 150,
+                        memCacheHeight: 150,
+                        imageUrl: widget.model.avatarUri != null ? FileUtil.getSmallImage(widget.model.avatarUri) : " ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,

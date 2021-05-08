@@ -52,18 +52,22 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     return Container(
       child: Stack(
         children: [
-          Container(
-            child: CustomScrollView(
-              physics: BouncingScrollPhysics(),
-              slivers: <Widget>[
-                getTopUi(),
-                getTargetWeightUi(),
-                getViewLine(12),
-                getWeightTextUi(),
-                getViewLine(1),
-                listViewUi(),
-                getSizeBox(83),
-              ],
+          ClipRRect(
+            borderRadius: BorderRadius.zero,
+            child: Container(
+              width: ScreenUtil.instance.width,
+              child: CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: <Widget>[
+                  getTopUi(),
+                  getTargetWeightUi(),
+                  getViewLine(12),
+                  getWeightTextUi(),
+                  getViewLine(1),
+                  listViewUi(),
+                  getSizeBox(83),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -118,7 +122,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       itemTag: "tag",
       itemIndex: index,
       itemChild: getItem(index),
-      onClickRightBtn: () {
+      onClickRightBtn: (ind) {
         delWeight(weightDataModel.recordList[index].id);
         weightDataModel.recordList.removeAt(index);
         if (mounted) {

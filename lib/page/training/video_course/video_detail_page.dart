@@ -14,7 +14,7 @@ import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -33,10 +33,10 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/widget/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/constants.dart';
 
@@ -52,7 +52,7 @@ class VideoDetailPage extends StatefulWidget {
       this.isInteractive})
       : super(key: key);
 
-  final LiveVideoModel videoModel;
+  final CourseModel videoModel;
   final String heroTag;
   final int videoCourseId;
   final CommentDtoModel commentDtoModel;
@@ -88,7 +88,7 @@ class VideoDetailPageState extends XCState {
   bool isInteractive;
 
   //当前视频课程的model
-  LiveVideoModel videoModel;
+  CourseModel videoModel;
 
   //其他用户的完成训练
   List<HomeFeedModel> recommendTopicList = [];
@@ -348,7 +348,7 @@ class VideoDetailPageState extends XCState {
             ),
           ),
           getTitleWidget(videoModel, context, globalKeyList[1]),
-          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
+          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2],getDataAction),
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, AppStyle.textMedium18, globalKeyList[3]),
           getActionUiVideo(videoModel, context, AppStyle.textMedium18),
@@ -651,7 +651,12 @@ class VideoDetailPageState extends XCState {
           break;
         case ConnectivityResult.none:
           dio.lock();
-          ToastShow.show(msg: "下载异常，请重试", context: context);
+          try{
+            if(context!=null&&mounted) {
+              ToastShow.show(msg: "下载异常，请重试", context: context);
+            }
+          }catch (e){
+          }
           _progressText = "下载异常";
           if(mounted){
             setState(() {});
@@ -930,7 +935,7 @@ class VideoDetailPageState extends XCState {
     //加载数据
     Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
     if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
-      videoModel = LiveVideoModel.fromJson(model["dataMap"]);
+      videoModel = CourseModel.fromJson(model["dataMap"]);
       if (videoModel.isInMyCourseList != null) {
         isFavor = videoModel.isInMyCourseList == 1;
       }
@@ -949,32 +954,10 @@ class VideoDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention() async {
-    if (await isOffline()) {
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return;
-    }
-    if (!(mounted && isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
-      AppRouter.navigateToLoginPage(context);
-      return;
-    }
-    if (!(videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3)) {
-      _getAttention(videoModel.coachDto?.uid);
-    }
+  onClickAttention(int attntionResult) async {
+    videoModel.coachDto?.relation = 1;
   }
 
-  ///这是关注的方法
-  _getAttention(int userId) async {
-    int attntionResult = await ProfileAddFollow(userId);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      videoModel.coachDto?.relation = 1;
-      if (mounted) {
-        reload(() {});
-      }
-    }
-  }
 
   ///点击了教练
   onClickCoach() async {

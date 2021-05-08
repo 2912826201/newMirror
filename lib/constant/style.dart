@@ -74,9 +74,9 @@ class AppStyle {
   static const textPrimary2Medium15 =
       TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
   static const textPrimary2Medium14 =
-    TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
   static const textPrimary2Medium12 =
-    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+      TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
 
   static const textPrimary2Regular16 =
       TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textPrimary2);
@@ -99,6 +99,7 @@ class AppStyle {
   static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const whiteMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
 

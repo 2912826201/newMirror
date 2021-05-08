@@ -431,7 +431,7 @@ class _TabBarState extends State<TabBar> {
 
   void _handleDoubleTap(int index) {
     assert(index >= 0 && index < widget.tabs.length);
-    if(widget.onDoubleTap != null) {
+    if (widget.onDoubleTap != null) {
       widget.onDoubleTap(index);
     }
   }
@@ -523,9 +523,7 @@ class _TabBarState extends State<TabBar> {
           _handleTap(index);
         },
         onDoubleTap: () {
-          if(_controller.index == index) {
-            _handleDoubleTap(index);
-          }
+          _handleDoubleTap(index);
         },
         child: Padding(
           padding: EdgeInsets.only(bottom: widget.indicatorWeight),
@@ -719,19 +717,18 @@ class _ChangeAnimation extends Animation<double> with AnimationWithParentMixin<d
 
   @override
   void removeStatusListener(AnimationStatusListener listener) {
-    if (parent != null)
-      super.removeStatusListener(listener);
+    if (parent != null) super.removeStatusListener(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
-    if (parent != null)
-      super.removeListener(listener);
+    if (parent != null) super.removeListener(listener);
   }
 
   @override
   double get value => _indexChangeProgress(controller);
 }
+
 class _DragAnimation extends Animation<double> with AnimationWithParentMixin<double> {
   _DragAnimation(this.controller, this.index);
 
@@ -743,14 +740,12 @@ class _DragAnimation extends Animation<double> with AnimationWithParentMixin<dou
 
   @override
   void removeStatusListener(AnimationStatusListener listener) {
-    if (parent != null)
-      super.removeStatusListener(listener);
+    if (parent != null) super.removeStatusListener(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
-    if (parent != null)
-      super.removeListener(listener);
+    if (parent != null) super.removeListener(listener);
   }
 
   @override
@@ -761,6 +756,7 @@ class _DragAnimation extends Animation<double> with AnimationWithParentMixin<dou
     return (controllerValue - index.toDouble()).abs().clamp(0.0, 1.0) as double;
   }
 }
+
 class _TabStyle extends AnimatedWidget {
   const _TabStyle({
     Key key,
@@ -788,25 +784,18 @@ class _TabStyle extends AnimatedWidget {
 
     // To enable TextStyle.lerp(style1, style2, value), both styles must have
     // the same value of inherit. Force that to be inherit=true here.
-    final TextStyle defaultStyle = (labelStyle
-        ?? tabBarTheme.labelStyle
-        ?? themeData.primaryTextTheme.bodyText1
-    ).copyWith(inherit: true);
-    final TextStyle defaultUnselectedStyle = (unselectedLabelStyle
-        ?? tabBarTheme.unselectedLabelStyle
-        ?? labelStyle
-        ?? themeData.primaryTextTheme.bodyText1
-    ).copyWith(inherit: true);
+    final TextStyle defaultStyle =
+        (labelStyle ?? tabBarTheme.labelStyle ?? themeData.primaryTextTheme.bodyText1).copyWith(inherit: true);
+    final TextStyle defaultUnselectedStyle =
+        (unselectedLabelStyle ?? tabBarTheme.unselectedLabelStyle ?? labelStyle ?? themeData.primaryTextTheme.bodyText1)
+            .copyWith(inherit: true);
     final TextStyle textStyle = selected
         ? TextStyle.lerp(defaultStyle, defaultUnselectedStyle, animation.value)
         : TextStyle.lerp(defaultUnselectedStyle, defaultStyle, animation.value);
 
-    final Color selectedColor = labelColor
-        ?? tabBarTheme.labelColor
-        ?? themeData.primaryTextTheme.bodyText1.color;
-    final Color unselectedColor = unselectedLabelColor
-        ?? tabBarTheme.unselectedLabelColor
-        ?? selectedColor.withAlpha(0xB2); // 70% alpha
+    final Color selectedColor = labelColor ?? tabBarTheme.labelColor ?? themeData.primaryTextTheme.bodyText1.color;
+    final Color unselectedColor =
+        unselectedLabelColor ?? tabBarTheme.unselectedLabelColor ?? selectedColor.withAlpha(0xB2); // 70% alpha
     final Color color = selected
         ? Color.lerp(selectedColor, unselectedColor, animation.value)
         : Color.lerp(unselectedColor, selectedColor, animation.value);
@@ -830,14 +819,14 @@ class _TabLabelBar extends Flex {
     List<Widget> children = const <Widget>[],
     this.onPerformLayout,
   }) : super(
-    key: key,
-    children: children,
-    direction: Axis.horizontal,
-    mainAxisSize: MainAxisSize.max,
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    verticalDirection: VerticalDirection.down,
-  );
+          key: key,
+          children: children,
+          direction: Axis.horizontal,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          verticalDirection: VerticalDirection.down,
+        );
 
   final _LayoutCallback onPerformLayout;
 
@@ -860,7 +849,9 @@ class _TabLabelBar extends Flex {
     renderObject.onPerformLayout = onPerformLayout;
   }
 }
+
 typedef _LayoutCallback = void Function(List<double> xOffsets, TextDirection textDirection, double width);
+
 class _TabLabelBarRenderer extends RenderFlex {
   _TabLabelBarRenderer({
     List<RenderBox> children,
@@ -871,17 +862,17 @@ class _TabLabelBarRenderer extends RenderFlex {
     @required TextDirection textDirection,
     @required VerticalDirection verticalDirection,
     @required this.onPerformLayout,
-  }) : assert(onPerformLayout != null),
+  })  : assert(onPerformLayout != null),
         assert(textDirection != null),
         super(
-        children: children,
-        direction: direction,
-        mainAxisSize: mainAxisSize,
-        mainAxisAlignment: mainAxisAlignment,
-        crossAxisAlignment: crossAxisAlignment,
-        textDirection: textDirection,
-        verticalDirection: verticalDirection,
-      );
+          children: children,
+          direction: direction,
+          mainAxisSize: mainAxisSize,
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          textDirection: textDirection,
+          verticalDirection: verticalDirection,
+        );
 
   _LayoutCallback onPerformLayout;
 
@@ -912,6 +903,7 @@ class _TabLabelBarRenderer extends RenderFlex {
     onPerformLayout(xOffsets, textDirection, size.width);
   }
 }
+
 class _TabBarScrollController extends ScrollController {
   _TabBarScrollController(this.tabBar);
 
@@ -927,6 +919,7 @@ class _TabBarScrollController extends ScrollController {
     );
   }
 }
+
 double _indexChangeProgress(TabController controller) {
   final double controllerValue = controller.animation.value;
   final double previousIndex = controller.previousIndex.toDouble();
@@ -934,12 +927,12 @@ double _indexChangeProgress(TabController controller) {
 
   // The controller's offset is changing because the user is dragging the
   // TabBarView's PageView to the left or right.
-  if (!controller.indexIsChanging)
-    return (currentIndex - controllerValue).abs().clamp(0.0, 1.0) as double;
+  if (!controller.indexIsChanging) return (currentIndex - controllerValue).abs().clamp(0.0, 1.0) as double;
 
   // The TabController animation's value is changing from previousIndex to currentIndex.
   return (controllerValue - currentIndex).abs() / (currentIndex - previousIndex).abs();
 }
+
 class _TabBarScrollPosition extends ScrollPositionWithSingleContext {
   _TabBarScrollPosition({
     ScrollPhysics physics,
@@ -947,11 +940,11 @@ class _TabBarScrollPosition extends ScrollPositionWithSingleContext {
     ScrollPosition oldPosition,
     this.tabBar,
   }) : super(
-    physics: physics,
-    context: context,
-    initialPixels: null,
-    oldPosition: oldPosition,
-  );
+          physics: physics,
+          context: context,
+          initialPixels: null,
+          oldPosition: oldPosition,
+        );
 
   final _TabBarState tabBar;
 

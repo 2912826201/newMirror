@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -17,7 +19,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -27,7 +29,6 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
-import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -40,7 +41,6 @@ import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
@@ -74,12 +74,14 @@ class ChatPage extends StatefulWidget {
   final List<ChatDataModel> chatDataList;
   final int systemPage;
   final String systemLastTime;
+  final String textContent;
 
   ChatPage(
       {Key key,
       @required this.conversation,
       this.shareMessage,
       this.chatDataList,
+      this.textContent,
       this.systemLastTime,
       this.systemPage,
       this.context})
@@ -89,7 +91,7 @@ class ChatPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     List<ChatDataModel> chatDataList=[];
     chatDataList.addAll(this.chatDataList);
-    return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList);
+    return ChatPageState(conversation, shareMessage, context, systemLastTime, systemPage, chatDataList,textContent);
   }
 }
 
@@ -103,10 +105,17 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   final List<ChatDataModel> chatDataList;
 
   String systemLastTime;
+  String textContent;
   int systemPage = 0;
 
   ChatPageState(
-      this.conversation, this.shareMessage, this._context, this.systemLastTime, this.systemPage, this.chatDataList);
+      this.conversation,
+      this.shareMessage,
+      this._context,
+      this.systemLastTime,
+      this.systemPage,
+      this.chatDataList,
+      this.textContent);
 
   //是否显示表情
   bool _emojiState = false;
@@ -212,6 +221,9 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     initScrollController();
 
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+
+    //自动发送消息
+    _sendMessageAutomatically();
   }
 
   @override
@@ -256,6 +268,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           if (conversation.getType() != RCConversationType.System)
             ChatBottomSettingBox(
               key: bottomSettingChildKey,
+              focusNode: _focusNode,
               bottomSettingPanelState: _bottomSettingPanelState,
               emojiState: _emojiState,
               textController: _textController,
@@ -279,15 +292,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     _messageInputBodyClick();
     _scrollController.dispose();
     streamEditWidget.close();
-    if (Application.appContext != null) {
-      //清聊天未读数
-      ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-      //清其他数据
-      Application.appContext.read<VoiceSettingNotifier>().stop();
-      Application.appContext.read<ChatMessageProfileNotifier>().clear();
-      _textController.text = "";
-      Application.appContext.read<ChatEnterNotifier>().clearRules();
-    }
+    context.read<ChatMessageProfileNotifier>().setData(0, "");
     if (conversation.getType() == RCConversationType.Group) {
       Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
@@ -322,6 +327,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
+    bool isPersonalButler=false;
+    //todo 单独展示底部选着面板的id-1002885-1008051
+    if(conversation.type==PRIVATE_TYPE&&conversation.uid==coachIsAccountId){
+      isPersonalButler=true;
+    }
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
       chatTopAtMarkChildKey: chatTopAtMarkChildKey,
@@ -334,7 +344,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       voidMessageClickCallBack: onMessageClickCallBack,
       chatName: getChatName(),
       conversationDtoType: conversation.type,
-      isPersonalButler: conversation.type == MANAGER_TYPE,
+      isPersonalButler: isPersonalButler,
       isHaveAtMeMsg: isHaveAtMeMsg,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
@@ -380,52 +390,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           maxHeight: 80.0,
           minHeight: 16.0,),
       child:TextSpanField(
-        onTap: () {
-          _emojiStateOld=_emojiState;
-          print("_emojiStateOld2:$_emojiStateOld");
-          if (_emojiState) {
-            _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
-            _bottomSettingPanelState = true;
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            // Future.delayed(Duration(milliseconds: 200),(){
-            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            //     _bottomSettingPanelState = false;
-            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-            //   }
-            // });
-          }else{
-            pageHeightStopCanvas = true;
-            oldKeyboardHeight = 0;
-          }
-          if(readOnly) {
-            readOnly = false;
-            streamEditWidget.sink.add(0);
-          }
-        },
-        onLongTap: () {
-          _emojiStateOld=_emojiState;
-          print("_emojiStateOld3:$_emojiStateOld");
-          if (_emojiState) {
-            _emojiState = !_emojiState;
-            bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
-            _bottomSettingPanelState = true;
-            bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
-            // Future.delayed(Duration(milliseconds: 200),(){
-            //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-            //     _bottomSettingPanelState = false;
-            //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
-            //   }
-            // });
-          }else{
-            pageHeightStopCanvas = true;
-            oldKeyboardHeight = 0;
-          }
-          if(readOnly) {
-            readOnly = false;
-            streamEditWidget.sink.add(0);
-          }
-        },
+        onTap: textSpanFieldClickListener,
+        onLongTap: textSpanFieldClickListener,
         scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
@@ -512,7 +478,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     if (isReset) {
       Future.delayed(Duration(milliseconds: 100), () {
         if (mounted) {
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       });
     }
@@ -602,7 +568,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
         judgeNowChatIsHaveAt();
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        if(chatTopAtMarkChildKey!=null&&chatTopAtMarkChildKey.currentState!=null&&
+            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs!=null) {
+          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        }
       }
     }
   }
@@ -626,7 +595,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          if(chatTopAtMarkChildKey!=null&&chatTopAtMarkChildKey.currentState!=null&&
+              chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs!=null) {
+            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          }
           break;
         }
       }
@@ -684,7 +656,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           }
 
           if (dataList != null && dataList.length > 0) {
-            getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
             print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -752,7 +724,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           }
 
           if (dataList != null && dataList.length > 0) {
-            getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
             print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -844,6 +816,17 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
   ///------------------------------------发送消息  start-----------------------------------------------------------------------///
 
+  //自动发送消息
+  _sendMessageAutomatically(){
+    Future.delayed(Duration(seconds: 1),(){
+      if(conversation.type==PRIVATE_TYPE&&textContent!=null&&textContent.length>0){
+        _attntionOnClick();
+        _postText(textContent);
+        textContent=null;
+      }
+    });
+  }
+
   //发送文字消息
   _postText(String text) {
     if (text == null || text.length < 1) {
@@ -880,6 +863,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       if (mounted) {
         _textController.text = "";
+        bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
         context.read<ChatEnterNotifier>().clearRules();
         isHaveTextLen = false;
@@ -890,7 +874,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           chatDataList.addAll(list);
         }
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-        EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+        EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       }
     }
 
@@ -898,6 +882,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       _changTextLen("");
       // List list=[];
       // list.add(0);
@@ -1010,7 +995,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         chatDataList.addAll(list);
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
       //
@@ -1055,9 +1040,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         recallNotificationMessagePosition = -1;
         if (mounted) {
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1080,10 +1066,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isShowTopAttentionUi = true;
           _resetShowTopAttentionUi();
           _textController.text = "";
+          bottomSettingChildKey.currentState.setCursorIndexPr(0);
           isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1190,8 +1177,9 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
     if (mounted) {
       _textController.text = "";
+      bottomSettingChildKey.currentState.setCursorIndexPr(0);
       isHaveTextLen = false;
-      EventBus.getDefault().post(registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     resetPostMessage(chatDataList[0], () {
@@ -1310,11 +1298,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         String imageUrl = map["showImageUrl"];
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'image', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'image', imageUrl);
           sourceList.add(demoSourceEntity);
         }
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity("${model.msg.messageId}", 'video', imageUrl);
+          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'video', imageUrl);
           sourceList.add(demoSourceEntity);
         }
       } catch (e) {
@@ -1594,6 +1582,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
         if(_focusNode.hasFocus){
           _focusNode.unfocus();
+          print("222222222222222222");
         }
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -1614,10 +1603,37 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       Future.delayed(Duration(milliseconds: 100),(){
         if(readOnly){
           readOnly=false;
-          streamEditWidget.sink.add(0);
+          if(mounted&&streamEditWidget!=null&&streamEditWidget.sink!=null&&streamEditWidget.sink.add!=null) {
+            streamEditWidget.sink.add(0);
+          }
         }
       });
     }catch (e){}
+  }
+
+  //输入框的点击事件
+  textSpanFieldClickListener(){
+    _emojiStateOld=_emojiState;
+    print("_emojiStateOld2:$_emojiStateOld");
+    if (_emojiState) {
+      _emojiState = !_emojiState;
+      bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
+      _bottomSettingPanelState = true;
+      bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
+      // Future.delayed(Duration(milliseconds: 200),(){
+      //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
+      //     _bottomSettingPanelState = false;
+      //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+      //   }
+      // });
+    }else{
+      pageHeightStopCanvas = true;
+      oldKeyboardHeight = 0;
+    }
+    if(readOnly) {
+      readOnly = false;
+      streamEditWidget.sink.add(0);
+    }
   }
 
   //表情的点击事件
@@ -1626,11 +1642,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     bottomSettingChildKey.currentState.setCursorIndexPr(cursorIndexPr);
 
     if(_isVoiceState){
-      if(_textController.text.length>0){
-        context.read<ChatEnterNotifier>().clearRules();
-        _textController.text = "";
-        _changTextLen("");
-      }
+      // if(_textController.text.length>0){
+      //   context.read<ChatEnterNotifier>().clearRules();
+      //   _textController.text = "";
+      //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+      //   _changTextLen("");
+      // }
       _isVoiceState = false;
       messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
     }
@@ -1639,6 +1656,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _emojiState=false;
       if(_focusNode.hasFocus){
         _focusNode.unfocus();
+        print("3333333333333333");
       }
       readOnly=false;
       streamEditWidget.sink.add(0);
@@ -1646,10 +1664,14 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _emojiState=true;
       readOnly=true;
       streamEditWidget.sink.add(0);
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
       Future.delayed(Duration(milliseconds: 100),(){
         if(!_focusNode.hasFocus){
           FocusScope.of(context).requestFocus(_focusNode);
-          bottomSettingChildKey.currentState.setCursorIndexPr(0);
+          // _emojiStateOld=true;
+          // FocusScope.of(context).requestFocus(_focusNode);
+          // textSpanFieldClickListener();
+          bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
         }
       });
     }
@@ -1731,13 +1753,18 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     bool isGranted = (await Permission.microphone.status)?.isGranted;
     if(isGranted) {
       _focusNode.unfocus();
-      if(_textController.text.length>0){
-        context.read<ChatEnterNotifier>().clearRules();
-        _textController.text = "";
-        _changTextLen("");
-      }
+      print("4444444444444");
+      // if(_textController.text.length>0){
+      //   context.read<ChatEnterNotifier>().clearRules();
+      //   _textController.text = "";
+      //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+      //   _changTextLen("");
+      // }
       _isVoiceState = !_isVoiceState;
       messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+
+      EventBus.getDefault().post(msg:_isVoiceState,registerName: CHAT_BOTTOM_MORE_BTN);
+
       if (_emojiState) {
         _emojiState = false;
         bottomSettingChildKey.currentState.setEmojiState(_emojiState);
@@ -1746,6 +1773,13 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         readOnly=false;
         streamEditWidget.sink.add(0);
       }
+      Future.delayed(Duration(milliseconds: 100),(){
+        if(!_isVoiceState){
+          _emojiStateOld=true;
+          FocusScope.of(context).requestFocus(_focusNode);
+          textSpanFieldClickListener();
+        }
+      });
     }
   }
 
@@ -1779,6 +1813,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
+      if (context
+          .read<UserInteractiveNotifier>()
+          .profileUiChangeModel
+          .containsKey(int.parse(conversation.conversationId))) {
+        context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId));
+      }
     } else {
       //不是还有关系不能邀请进群
       _insertMessageMenu(name + " 邀请失败!");
@@ -1817,6 +1857,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
               .containsKey(int.parse(conversation.conversationId))) {
             print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(conversation.conversationId));
+            context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId),isAdd:
+            false);
           }
         }
       }
@@ -1938,7 +1980,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
       }
       if (dataList != null && dataList.length > 0) {
-        getTimeAlert(dataList, conversation.conversationId);
+        ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
         print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
         if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
           chatDataList.removeAt(chatDataList.length - 1);
@@ -1962,7 +2004,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   _onRefreshSystemInformation() async {
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
-      getTimeAlert(dataList, conversation.conversationId);
+      ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
       if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
         chatDataList.removeAt(chatDataList.length - 1);
       }
@@ -2038,12 +2080,12 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
-      LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
+      CourseModel liveModel = CourseModel.fromJson(map);
       AppRouter.navigateToLiveDetail(context, liveModel.id,
           heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: _context);
-      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
+      CourseModel videoModel = CourseModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       // ToastShow.show(msg: "播放录音", context: _context);
@@ -2058,6 +2100,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
+      bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
       Future.delayed(Duration(milliseconds: 100), () {
         textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
       });
@@ -2069,10 +2112,13 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         _textController.selection = setCursor;
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
-      ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
-      _postSelectMessage(content);
+      // ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
+      // _postSelectMessage(content);
+      if(content=="拉入群聊"){
+        _showGroupPopup();
+      }
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-      ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
+      // ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
       if (ClickUtil.isFastClick(time: 200)) {
         return;
       }
@@ -2105,11 +2151,17 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
             Map<String, dynamic> map = json.decode(mapModel["data"]);
             String imageUrl = map["showImageUrl"];
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'image', imageUrl);
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'image', imageUrl );
               sourceList.add(demoSourceEntity);
             }
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity("${v.msg.messageId}", 'video', imageUrl);
+              print("map::::::$map");
+              print(map["height"] is double);
+              print(map["height"] is int);
+              print(map["duration"] is double);
+              print(map["duration"] is int);
+
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'video', imageUrl,height:map["height"],width:map["width"],duration: map["duration"]);
               sourceList.add(demoSourceEntity);
             }
           } catch (e) {
@@ -2125,7 +2177,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     print("当前点击的messageID：${chatDataList[position].msg.messageId}");
     for (int i = sourceList.length - 1; i >= 0; i--) {
       DemoSourceEntity source = sourceList[i];
-      if (int.parse(source.heroId) == chatDataList[position].msg.messageId) {
+      if (source.heroId == chatDataList[position].msg.messageId) {
         initIndex = i;
       }
     }
@@ -2161,6 +2213,23 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  //显示我已加入的群聊--邀请对话的人进入群聊
+  _showGroupPopup(){
+    showGroupPopup(context,
+      int.parse(conversation.conversationId),
+      (GroupChatModel groupChatModel)async{
+        if(isShowTopAttentionUi) {
+          await _attntionOnClick();
+        }
+        bool isSuccess=await ChatPageUtil.init(context).addUserGroup(conversation.conversationId, groupChatModel.id);
+        if(isSuccess){
+          String name = groupChatModel.modifiedName ?? groupChatModel.name;
+          _postText("我已邀请你进入群聊：$name");
+        }
+      }
+    );
   }
 
   @override
@@ -2203,6 +2272,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           .viewInsets
           .bottom > 0 && !_bottomSettingPanelState) {
         _focusNode.unfocus();
+        print("11111111111111111111111111");
       }
     }
   }

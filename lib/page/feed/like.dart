@@ -11,7 +11,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class Like extends StatefulWidget {
   Like({Key key, this.model}) : super(key: key);
@@ -169,8 +169,11 @@ class LikeListViewItem extends StatelessWidget {
                 imageUrl: FileUtil.getSmallImage(model.avatarUrl) ?? "",
                 fit: BoxFit.cover,
                 // 调整磁盘缓存中图像大小
-                maxHeightDiskCache: 150,
-                maxWidthDiskCache: 150,
+                // maxHeightDiskCache: 150,
+                // maxWidthDiskCache: 150,
+                // 指定缓存宽高
+                memCacheWidth: 150,
+                memCacheHeight: 150,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
                 ),

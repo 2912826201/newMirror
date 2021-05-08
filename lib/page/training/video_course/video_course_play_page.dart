@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -31,7 +31,6 @@ class VideoCoursePart {
   int type; //0-课程 1-休息
 
   VideoCoursePart([this.videoList, this.duration, this.name, this.type]);
-
 }
 
 final List<VideoCoursePart> testPartList = [
@@ -59,7 +58,7 @@ class VideoCoursePlayPage extends StatefulWidget {
   final Map<String, String> videoPathMap;
 
   //视频课的model
-  final LiveVideoModel videoCourseModel;
+  final CourseModel videoCourseModel;
 
   @override
   _VideoCoursePlayState createState() => _VideoCoursePlayState();
@@ -366,28 +365,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                   ),
                 ),
                 SizedBox(height: 7.5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      _partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      "${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
-                      style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                )
+                Text(
+                  "${_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                ),
               ],
             ),
             Spacer(),

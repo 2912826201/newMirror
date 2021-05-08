@@ -13,7 +13,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
@@ -27,7 +27,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 import '../../../widget/overscroll_behavior.dart';
@@ -45,17 +45,16 @@ class InteractiveNoticePage extends StatefulWidget {
 }
 
 class _InteractiveNoticeState extends State<InteractiveNoticePage> {
-  RefreshController controller = RefreshController();
+  RefreshController controller;
   int lastTime;
   int listPage = 1;
   List<QueryModel> msgList = [];
   bool haveData = false;
   String hintText;
   int hasNext = 0;
+  bool fristRequestIsOver = false;
   String defaultImage = DefaultImage.nodata;
-  int timeStamp;
   ScrollController scrollController = ScrollController();
-  String footerText = "没有更多了";
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
@@ -67,7 +66,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       return;
     }
     QueryListModel model = await queryMsgList(type, 20, lastTime);
-
     if (listPage == 1) {
       controller.loadComplete();
       if (model != null) {
@@ -88,8 +86,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         haveData = false;
         hintText = "内容君在来的路上出了点状况...";
         defaultImage = DefaultImage.error;
-        controller.refreshFailed();
+        controller.refreshCompleted();
       }
+      fristRequestIsOver = true;
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
         lastTime = model.lastTime;
@@ -137,7 +136,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
-    _getMsgList(widget.type);
+    controller = RefreshController(initialRefresh: true);
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {
@@ -178,7 +177,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
               backgroundColor: AppColor.white,
               appBar: CustomAppBar(
                 leadingOnTap: () {
-                  Navigator.pop(context, timeStamp);
+                  Navigator.pop(context);
                 },
                 titleString: widget.type == 0
                     ? "评论"
@@ -218,9 +217,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   type: widget.type,
                                   msgModel: snapshot.data[index],
                                   index: index,
-                                  globalKey: listPage == 1 && index == snapshot.data.length - 1 ? globalKey : null,
+                                  globalKey: index == snapshot.data.length - 1 ? globalKey : null,
                                 );
-                              }):Center(
+                              }):fristRequestIsOver?Center(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -241,7 +240,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                 )
                               ],
                             ),
-                          ),
+                          ):Container(height: height,width: width,color: AppColor.white,),
                         ))
 
               ),
@@ -281,7 +280,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   String senderAvatarUrl;
   CommentDtoModel fatherCommentModel;
   HomeFeedModel feedModel;
-  LiveVideoModel liveVideoModel;
+  CourseModel liveVideoModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
@@ -321,7 +320,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else if (widget.msgModel.refType == 2) {
         fatherCommentModel = CommentDtoModel.fromJson(widget.msgModel.refData);
       } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
-        liveVideoModel = LiveVideoModel.fromJson(widget.msgModel.refData);
+        liveVideoModel = CourseModel.fromJson(widget.msgModel.refData);
       }
       if (widget.isFrist) {
         widget.isFrist = false;
@@ -366,7 +365,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
     senderName = widget.msgModel.senderName;
-    coverImage = widget.msgModel.coverUrl;
+    coverImage = widget.msgModel.coverUrl.coverUrl;
     _getRefData(context);
     if (widget.type == 0 && widget.msgModel.commentData != null) {
       if (widget.msgModel.refType == 2) {

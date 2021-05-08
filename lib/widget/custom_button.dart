@@ -463,6 +463,7 @@ class _FollowButtonState extends State<FollowButton> {
       ToastShow.show(msg: "关注成功!", context: context);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, false, id);
       context.read<UserInteractiveNotifier>().changeFollowCount(id, true);
+      context.read<UserInteractiveNotifier>().removeUserFollowId(id,isAdd: false);
     }
   }
 

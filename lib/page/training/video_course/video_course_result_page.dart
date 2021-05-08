@@ -3,10 +3,14 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
+import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -18,24 +22,22 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 class VideoCourseResultPage extends StatefulWidget {
   final TrainingCompleteResultModel result;
+  final CourseModel course;
 
-  VideoCourseResultPage(this.result, {Key key}) : super(key: key);
+  VideoCourseResultPage(this.result, this.course, {Key key}) : super(key: key);
 
   @override
   _VideoCourseResultState createState() => _VideoCourseResultState();
 }
 
 class _VideoCourseResultState extends State<VideoCourseResultPage> {
-  String _videoCourseName = "课程名称";
-  int _uid = 123;
-  String _nickName = "Koach 大婷婷";
-  String _avatarUrl = "https://i1.hdslb.com/bfs/face/c63ebeed7d49967e2348ef953b539f8de90c5140.jpg";
-  int _relation = 1;
+  int _feedbackIndex = -1;
+  bool _isFeedbacking = false;
 
   @override
   void initState() {
     super.initState();
-    //TODO 通过课程id获取课程详情
+    //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
   }
 
   @override
@@ -82,7 +84,15 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              print("炫耀！");
+              showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) {
+                    return WillPopScope(
+                      onWillPop: () async => true, //用来屏蔽安卓返回键关弹窗
+                      child: VideoCourseResultShareDialog(widget.result, widget.course),
+                    );
+                  });
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -116,17 +126,27 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         children: [
           Container(
             height: 193,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColor.textPrimary1, AppColor.textPrimary2],
+                stops: [0, 1],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Image.asset(
+              "assets/png/video_course_result_bg.png",
+              width: ScreenUtil.instance.screenWidthDp,
+              height: 193,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Container(
+            height: 193,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              colors: [AppColor.textPrimary1, AppColor.textPrimary2],
-              stops: [0, 1],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )),
             child: Text(
-              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n$_videoCourseName",
+              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n${widget.course.title}",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
@@ -141,19 +161,21 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: Container(
-                    alignment: Alignment.center,
-                    child: PentagonChart(
-                      width: 144.0,
-                      rateList: [
-                        widget.result.synthesisRank,
-                        widget.result.completionDegree,
-                        widget.result.lowerRank,
-                        widget.result.upperRank,
-                        widget.result.coreRank
-                      ],
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: PentagonChart(
+                        width: 144.0,
+                        rateList: [
+                          //修正分数 至少有25分
+                          widget.result.synthesisRank > 25 ? widget.result.synthesisRank / 100 : 0.25,
+                          widget.result.completionDegree > 25 ? widget.result.completionDegree / 100 : 0.25,
+                          widget.result.lowerRank > 25 ? widget.result.lowerRank / 100 : 0.25,
+                          widget.result.upperRank > 25 ? widget.result.upperRank / 100 : 0.25,
+                          widget.result.coreRank > 25 ? widget.result.coreRank / 100 : 0.25
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                   Container(
                     height: 78,
                     child: Row(
@@ -310,7 +332,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               child: CachedNetworkImage(
                 height: 32,
                 width: 32,
-                imageUrl: _avatarUrl,
+                imageUrl: FileUtil.getSmallImage(widget.course.coachDto.avatarUri),
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
@@ -321,7 +343,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               width: 12,
             ),
             Text(
-              _nickName,
+              widget.course.coachDto.nickName,
               style: TextStyle(color: AppColor.textPrimary2, fontSize: 14, fontWeight: FontWeight.w500),
             ),
             SizedBox(
@@ -335,11 +357,11 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             Spacer(),
             InkWell(
                 onTap: () {
-                  if (_relation == 0 || _relation == 2) {
-                    ProfileAddFollow(_uid).then((relation) {
+                  if (widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2) {
+                    ProfileAddFollow(widget.course.coachId).then((relation) {
                       if (relation != null) {
                         setState(() {
-                          _relation = relation;
+                          widget.course.coachDto.relation = relation;
                         });
                       }
                     });
@@ -350,13 +372,18 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   height: 24,
                   alignment: Alignment.centerRight,
                   decoration: BoxDecoration(
-                    color: _relation == 0 || _relation == 2 ? AppColor.textPrimary1 : AppColor.transparent,
+                    color: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+                        ? AppColor.textPrimary1
+                        : AppColor.transparent,
                     borderRadius: BorderRadius.all(Radius.circular(14)),
-                    border: Border.all(width: _relation == 0 || _relation == 2 ? 0.5 : 0.0),
+                    border: Border.all(
+                        width:
+                            widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? 0.5 : 0.0),
                   ),
                   child: Center(
-                    child: Text(_relation == 0 || _relation == 2 ? "关注" : "已关注",
-                        style: _relation == 0 || _relation == 2
+                    child: Text(
+                        widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? "关注" : "已关注",
+                        style: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
                             ? AppStyle.whiteRegular12
                             : AppStyle.textSecondaryRegular12),
                   ),
@@ -394,14 +421,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("太简单了！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 0);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 0;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 0 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),
@@ -417,14 +453,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("很棒！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 1);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 1;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 1 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),
@@ -440,14 +485,23 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   flex: 1,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("太难了！");
+                    onTap: () async {
+                      if (!_isFeedbacking && _feedbackIndex < 0) {
+                        _isFeedbacking = true;
+                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 2);
+                        _isFeedbacking = false;
+                        if (feedbackResult) {
+                          setState(() {
+                            _feedbackIndex = 2;
+                          });
+                        }
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: AppColor.mainBlue,
+                          color: _feedbackIndex == 2 ? AppColor.mainRed : AppColor.mainBlue,
                           height: 45,
                           width: 45,
                         ),
@@ -469,14 +523,31 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
 }
 
 class PentagonChart extends StatelessWidget {
+  //五边形的宽度
   final double width;
+
+  //五个评分 0-1
   final List<double> rateList;
 
-  const PentagonChart({Key key, @required this.width, @required this.rateList}) : super(key: key);
+  //字的颜色
+  final Color fontColor;
+
+  //字的大小
+  final double fontSize;
+
+  PentagonChart(
+      {Key key,
+      @required this.width,
+      @required this.rateList,
+      this.fontColor = AppColor.textPrimary3,
+      this.fontSize = 14.0})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double containerWidth = width * 2;
+    // 整个视图为五边形宽的2.25倍(当字号和宽度不匹配时可能会导致视图宽度不够)
+    double containerWidth = width * 2.25;
+    // 每条边的边长
     double a = width / 2 / cos(pi / 5);
     print("a:$a");
     Offset p1 = Offset(0.0, 0.0);
@@ -497,6 +568,7 @@ class PentagonChart extends StatelessWidget {
       height: containerHeight,
       width: containerWidth,
       child: Stack(children: [
+        //五边形
         Positioned(
           top: 32,
           left: containerWidth / 2,
@@ -504,13 +576,14 @@ class PentagonChart extends StatelessWidget {
             painter: _PentagonChartPainter(pointList, rateList),
           ),
         ),
+        //五个文字
         Positioned(
           child: SizedBox(
             width: containerWidth,
             child: Text(
               "综合",
               textAlign: TextAlign.center,
-              style: AppStyle.textPrimary3Regular14,
+              style: TextStyle(color: fontColor, fontSize: fontSize),
             ),
           ),
         ),
@@ -525,14 +598,14 @@ class PentagonChart extends StatelessWidget {
                 Text(
                   //为了确保布局对称 加了个全角空格
                   "　核心",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
                 SizedBox(
                   width: width + 12 * 2,
                 ),
                 Text(
                   "完成度",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
               ],
             ),
@@ -548,14 +621,14 @@ class PentagonChart extends StatelessWidget {
               children: [
                 Text(
                   "上肢",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
                 SizedBox(
                   width: a,
                 ),
                 Text(
                   "下肢",
-                  style: AppStyle.textPrimary3Regular14,
+                  style: TextStyle(color: fontColor, fontSize: fontSize),
                 ),
               ],
             ),

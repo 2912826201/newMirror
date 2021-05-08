@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 
 import 'media_picker/media_picker_page.dart';

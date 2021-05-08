@@ -4,13 +4,13 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
-import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -282,7 +282,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         onTap: () {
           onItemCLick(index);
         },
-        onClickRightBtn: () {
+        onClickRightBtn: (indx) {
           //点击了删除按钮
           selectDeleteIndexList.clear();
           selectDeleteIndexList.add(index);
@@ -309,7 +309,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       //加载数据
       Map<String, dynamic> model = await getVideoCourseDetail(courseId: courseVideoModelList[index].courseId);
       if (model["code"] != null && model["code"] == CODE_SUCCESS && model["dataMap"] != null) {
-        LiveVideoModel videoModel = LiveVideoModel.fromJson(model["dataMap"]);
+        CourseModel videoModel = CourseModel.fromJson(model["dataMap"]);
         AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId, videoModel: videoModel);
       } else if (model["code"] != null && model["code"] == CODE_NO_DATA) {
         ToastShow.show(msg: "该课程已失效!", context: context);

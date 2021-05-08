@@ -19,6 +19,7 @@ class BodyTypePage extends StatefulWidget {
 class _BodyTypeState extends State<BodyTypePage> {
   List<SubTagModel> bodyTypeList;
   SubTagModel choseType;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -27,6 +28,7 @@ class _BodyTypeState extends State<BodyTypePage> {
     bodyTypeList.sort((a, b) => a.id.compareTo(b.id));
     choseType = bodyTypeList.first;
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -40,37 +42,30 @@ class _BodyTypeState extends State<BodyTypePage> {
         height: height,
         width: width,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                child: Container(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    "你现在的体型是？",
-                    style: AppStyle.textMedium23,
-                  ),
-                ),
-              ),
-            ),
+            Container(
+                width: ScreenUtil.instance.screenWidthDp,
+                padding: EdgeInsets.only(left: 41),
+                child: Text(
+              "你现在的体型是？",
+              style: AppStyle.textMedium23,
+            ),),
             SizedBox(
               height: 12,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "我们将以此为你推荐训练计划,让你一试身手。",
-                  style: AppStyle.textRegular14,
-                ),
-              ),
-            ),
+        Container(
+          width: ScreenUtil.instance.screenWidthDp,
+          padding: EdgeInsets.only(left: 41),
+          child:Text(
+              "我们将以此为你推荐训练计划,让你一试身手。",
+              style: AppStyle.textRegular14,
+            )),
             SizedBox(
-              height: height * 0.05,
+              height: 42,
             ),
             _ImageSwiper(height, width),
             SizedBox(
@@ -82,9 +77,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 style: AppStyle.textRegular16,
               ),
             ),
-            SizedBox(
-              height: height * 0.07,
-            ),
+            Spacer(),
             Container(
               width: width,
               padding: EdgeInsets.only(left: 41, right: 41),
@@ -99,22 +92,23 @@ class _BodyTypeState extends State<BodyTypePage> {
                 color: AppColor.transparent,
                 onTap: () {
                   Application.fitnessEntryModel.bodyType = choseType.id;
-                  if(Application.videoTagModel!=null){
-                    if(Application.videoTagModel.target!=null){
+                  if (Application.videoTagModel != null) {
+                    if (Application.videoTagModel.target != null) {
                       AppRouter.navigateToFitnessTargetPage(context);
-                    }else if(Application.videoTagModel.level!=null){
+                    } else if (Application.videoTagModel.level != null) {
                       AppRouter.navigateToFitnessLevelPage(context);
-                    }else if(Application.videoTagModel.part!=null){
+                    } else if (Application.videoTagModel.part != null) {
                       AppRouter.navigateToFitnessPartPage(context);
-                    }else{
+                    } else {
                       AppRouter.navigateToTrainSeveralPage(context);
                     }
-                  }else{
+                  } else {
                     AppRouter.navigateToTrainSeveralPage(context);
                   }
                 },
               ),
             ),
+            Spacer()
           ],
         ),
       ),
@@ -123,7 +117,7 @@ class _BodyTypeState extends State<BodyTypePage> {
 
   Widget _ImageSwiper(double height, double width) {
     return Container(
-      height: height * 0.35,
+      height: 284,
       width: width,
       child: Swiper(
           viewportFraction: 0.4,
@@ -137,13 +131,9 @@ class _BodyTypeState extends State<BodyTypePage> {
           itemBuilder: (context, index) {
             return Container(
               color: AppColor.black,
-              height: height * 0.35,
-              width: width * 0.43,
-              padding: EdgeInsets.only(
-                  left: width * 0.43 * 0.1,
-                  right: width * 0.43 * 0.1,
-                  top: height * 0.35 * 0.12,
-                  bottom: height * 0.35 * 0.12),
+              height: 284,
+              width: 160,
+              padding: EdgeInsets.only(left: 16.5, right: 16.5, top: 35, bottom: 35),
               child: Image.asset(
                 "images/test/bg.png",
                 fit: BoxFit.cover,

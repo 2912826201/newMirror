@@ -113,7 +113,7 @@ class HeadViewState extends State<HeadView> {
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, false);
-
+        context.read<UserInteractiveNotifier>().removeUserFollowId(widget.model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -141,7 +141,7 @@ class HeadViewState extends State<HeadView> {
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-      if (context.watch<TokenNotifier>().isLoggedIn&&widget.isShowConcern &&
+      if (context.watch<TokenNotifier>().isLoggedIn &&
           (notifier.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
@@ -154,7 +154,6 @@ class HeadViewState extends State<HeadView> {
             _checkBlackStatus(widget.model.pushId, context, false);
           },
           child: Container(
-            margin: const EdgeInsets.only(right: 6),
             height: 28,
             width: 64,
             decoration: BoxDecoration(
@@ -194,7 +193,6 @@ class HeadViewState extends State<HeadView> {
           opacity: opacity,
           duration: Duration(milliseconds: 1000),
           child: Container(
-              margin: const EdgeInsets.only(right: 6),
               height: 28,
               width: 64,
               decoration: BoxDecoration(
@@ -225,7 +223,8 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (context.read<TokenNotifier>().isLoggedIn&&widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
+    if (context.read<TokenNotifier>().isLoggedIn &&
+        widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
@@ -244,125 +243,136 @@ class HeadViewState extends State<HeadView> {
   @override
   Widget build(BuildContext context) {
     print("动态头部build");
-    return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          if (!context.read<TokenNotifier>().isLoggedIn) {
-            AppRouter.navigateToLoginPage(context);
-          } else {
-            FocusScope.of(context).requestFocus(FocusNode());
-            AppRouter.navigateToMineDetail(context, widget.model.pushId,
-                avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
-          }
-        },
-        child: Container(
+    return Container(
             height: 62,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 16, right: 11),
-                  child: ClipOval(
-                    // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                    child: widget.model.avatarUrl != null
-                        ? CachedNetworkImage(
-                            width: 38,
-                            height: 38,
-
-                            /// imageUrl的淡入动画的持续时间。
-                            // fadeInDuration: Duration(milliseconds: 0),
-                            imageUrl: FileUtil.getSmallImage(
-                                isMySelf?context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl),
-                            fit: BoxFit.cover,
-                            // 调整磁盘缓存中图像大小
-                            maxHeightDiskCache: 150,
-                            maxWidthDiskCache: 150,
-                            placeholder: (context, url) => Container(
-                              color: AppColor.bgWhite,
-                            ),
-                            errorWidget: (context, url, e) {
-                              return Container(
-                                color: AppColor.bgWhite,
-                              );
-                            },
-                          )
-                        // NetworkImage(
-                        //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
-                        : Container(
-                            color: AppColor.bgWhite,
-                          ),
-                  ),
-                ),
                 Expanded(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                    child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (!context.read<TokenNotifier>().isLoggedIn) {
+                    AppRouter.navigateToLoginPage(context);
+                  } else {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    AppRouter.navigateToMineDetail(context, widget.model.pushId,
+                        avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
+                  }
+                },
+                child:Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // GestureDetector(
-                    //   child:
-                    Text(
-                      isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
-                      style: TextStyle(fontSize: 15),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    // onTap: () {},
-                    // ),
                     Container(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColor.textSecondary,
-                          )),
-                    )
+                      margin: const EdgeInsets.only(left: 16, right: 11),
+                      child: ClipOval(
+                        // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                        child: widget.model.avatarUrl != null
+                            ? CachedNetworkImage(
+                                width: 38,
+                                height: 38,
+
+                                /// imageUrl的淡入动画的持续时间。
+                                // fadeInDuration: Duration(milliseconds: 0),
+                                imageUrl: FileUtil.getSmallImage(isMySelf
+                                    ? context.watch<ProfileNotifier>().profile.avatarUri
+                                    : widget.model.avatarUrl),
+                                fit: BoxFit.cover,
+                                // 调整磁盘缓存中图像大小
+                                // maxHeightDiskCache: 150,
+                                // maxWidthDiskCache: 150,
+                          // 指定缓存宽高
+                          memCacheWidth: 150,
+                          memCacheHeight: 150,
+                                placeholder: (context, url) => Container(
+                                  color: AppColor.bgWhite,
+                                ),
+                                errorWidget: (context, url, e) {
+                                  return Container(
+                                    color: AppColor.bgWhite,
+                                  );
+                                },
+                              )
+                            // NetworkImage(
+                            //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
+                            : Container(
+                                color: AppColor.bgWhite,
+                              ),
+                      ),
+                    ),
+                    Expanded(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // GestureDetector(
+                        //   child:
+                        Text(
+                          isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
+                          style: TextStyle(fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        // onTap: () {},
+                        // ),
+                        Container(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColor.textSecondary,
+                              )),
+                        )
+                      ],
+                    )),
                   ],
-                )),
+                ))),
                 widget.isShowConcern ? isShowFollowButton(context) : Container(),
-                Container(
-                  width: 56,
-                  height: 62,
-                  child: AppIconButton(
-                    svgName: AppIcon.more_feed,
-                    iconSize: 24,
-                    onTap: () {
-                      print("点击更多按钮了");
-                      // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                      //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
-                      //         Application.insertFeedId) {
-                      //   // ToastShow.show(msg: "不响应", context: context);
-                      // } else {
-                      // ignore: missing_return
-                      openMoreBottomSheet(
-                          context: context,
-                          isFillet: true,
-                          lists: context
+                SizedBox(
+                  width: 6,
+                ),
+                AppIconButton(
+                  svgName: AppIcon.more_feed,
+                  iconSize: 24,
+                  onTap: () {
+                    print("点击更多按钮了");
+                    // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+                    //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
+                    //         Application.insertFeedId) {
+                    //   // ToastShow.show(msg: "不响应", context: context);
+                    // } else {
+                    // ignore: missing_return
+                    openMoreBottomSheet(
+                        context: context,
+                        isFillet: true,
+                        lists: context
+                            .read<UserInteractiveNotifier>()
+                            .profileUiChangeModel[widget.model.pushId]
+                            .feedStringList,
+                        onItemClickListener: (index) {
+                          switch (context
                               .read<UserInteractiveNotifier>()
                               .profileUiChangeModel[widget.model.pushId]
-                              .feedStringList,
-                          onItemClickListener: (index) {
-                            switch (context
-                                .read<UserInteractiveNotifier>()
-                                .profileUiChangeModel[widget.model.pushId]
-                                // ignore: missing_return
-                                .feedStringList[index]) {
-                              case "删除":
-                                deleteFeed();
-                                break;
-                              case "取消关注":
-                                _checkBlackStatus(widget.model.pushId, context, true);
-                                break;
-                              case "举报":
-                                _showDialog();
-                                break;
-                            }
-                          });
-                      // }
-                    },
-                  ),
+                              .feedStringList[index]) {
+                            case "删除":
+                              deleteFeed();
+                              break;
+                            case "取消关注":
+                              _checkBlackStatus(widget.model.pushId, context, true);
+                              break;
+                            case "举报":
+                              _showDialog();
+                              break;
+                          }
+                        });
+                    // }
+                  },
+                ),
+                SizedBox(
+                  width: 16,
                 )
               ],
-            )));
+            ));
   }
 
   void _showDialog() {

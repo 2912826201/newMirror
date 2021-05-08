@@ -201,17 +201,18 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
         getResetOpen(),
       ],
     );
-    return widget.closeOnPop
-        ? WillPopScope(
-            child: body,
-            onWillPop: () async {
-              if (translateX != 0) {
-                close();
-                return false;
-              }
-              return true;
-            })
-        : body;
+    // return widget.closeOnPop
+    //     ? WillPopScope(
+    //         child: body,
+    //         onWillPop: () async {
+    //           if (translateX != 0) {
+    //             close();
+    //             return false;
+    //           }
+    //           return true;
+    //         })
+    //     : body;
+    return body;
   }
 
   Widget getResetOpen() {

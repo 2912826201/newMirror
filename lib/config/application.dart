@@ -167,6 +167,9 @@ class Application {
   //未读数-通知
   static int unreadNoticeNumber = 0;
 
+  //是否显示新用户的dialog
+  static bool isShowNewUserDialog = false;
+
   //发布失败动态key
   static String postFailurekey = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
@@ -194,7 +197,11 @@ class Application {
         MessageManager.clearUserMessage(appContext);
         _clearUserRuntimeCache();
         //跳转页面 移除所有页面 重新打开首页
-        Application.pagePopRouterName.clear();
+        if(Application.pagePopRouterName==null){
+          Application.pagePopRouterName=[];
+        }else {
+          Application.pagePopRouterName.clear();
+        }
         navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
         //TODO 这个弹窗待定
         if (isKicked) {
@@ -233,5 +240,6 @@ class Application {
     postChatDataModelList.clear();
     unreadMessageNumber = 0;
     unreadNoticeNumber = 0;
+    isShowNewUserDialog =false;
   }
 }

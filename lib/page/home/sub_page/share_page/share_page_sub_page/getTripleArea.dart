@@ -40,14 +40,16 @@ class GetTripleArea extends StatefulWidget {
 
 class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMixin {
   String myAvatar = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(context.read<ProfileNotifier>().profile!=null&&context.read<ProfileNotifier>().profile.avatarUri!=null){
+    if (context.read<ProfileNotifier>().profile != null && context.read<ProfileNotifier>().profile.avatarUri != null) {
       myAvatar = context.read<ProfileNotifier>().profile.avatarUri;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     // print("打印model的值￥${widget.model}");
@@ -77,7 +79,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     child: Stack(
                       overflow: Overflow.visible,
                       alignment: const FractionalOffset(0, 0.5),
-                      children: avatarOverlap( context, laudUserInfo),
+                      children: avatarOverlap(context, laudUserInfo),
                     )),
               );
             }, selector: (context, notifier) {
@@ -109,7 +111,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 横排重叠头像
-  avatarOverlap( BuildContext context, List<String> laudUserInfo) {
+  avatarOverlap(BuildContext context, List<String> laudUserInfo) {
     List<Widget> avatarList = [];
     List<String> userInfo = [];
     // 只展示前三个点赞头像
@@ -118,36 +120,50 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
         userInfo.add(laudUserInfo[i]);
       }
     }
+    bool isShow = false;
     // 默认用户的头像点赞了显示用户本人头像
     if (context.select((TokenNotifier tokenNotifier) => tokenNotifier.isLoggedIn)) {
-      avatarList.add(
-        AnimatedContainer(
-            height: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-                ? 21
-                : 0,
-            width: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-                ? 21
-                : 0,
-            alignment: Alignment.center,
-            child: roundedAvatar(
-              context,
+      for (String item in userInfo) {
+        int index = userInfo.indexOf(item);
+        if (index != 0 && item == myAvatar) {
+          isShow = true;
+          break;
+        }
+      }
+      if (!isShow) {
+        avatarList.add(
+          AnimatedContainer(
+              height: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                  ? 21
+                  : 0,
+              width: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                  ? 21
+                  : 0,
+              alignment: Alignment.center,
+              child: roundedAvatar(
+                context,
                 myAvatar,
-            ),
-            duration: const Duration(milliseconds: 200)),
-      );
+              ),
+              duration: const Duration(milliseconds: 200)),
+        );
+      }
     }
     // 其他用户点赞的头像
     for (String item in userInfo) {
       int index = userInfo.indexOf(item);
       // 这里判断去掉了用户本人的显示
-      if (index <= 3 &&
-          item != myAvatar) {
+      if (isShow) {
+        avatarList.add(AnimatedPositioned(
+            left: avatarOffset(userInfo, index, item: item),
+            duration: const Duration(milliseconds: 200),
+            child: animatedZoom(userInfo, index, item: item)));
+      } else if (item != myAvatar) {
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(userInfo, index, item: item),
             duration: const Duration(milliseconds: 200),
@@ -160,9 +176,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 内部缩放动画
   animatedZoom(List<String> userInfo, int index, {String item}) {
     // 当存在用户本人点赞时，第4个头像缩放
-    if (userInfo.contains(myAvatar)
-        && index
-        == 3) {
+    if (userInfo.contains(myAvatar) && index == 3) {
       return AnimatedContainer(
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
@@ -218,9 +232,10 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       if (model.code == CODE_BLACKED) {
         ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
       } else {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0, myAvatar, widget.model.id);
+        context.read<FeedMapNotifier>().setLaud(
+            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+            myAvatar,
+            widget.model.id);
         // model
         context
             .read<UserInteractiveNotifier>()
@@ -239,8 +254,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             height: 21,
             width: 21,
             // 调整磁盘缓存中图像大小
-            maxHeightDiskCache: 150,
-            maxWidthDiskCache: 150,
+            // maxHeightDiskCache: 150,
+            // maxWidthDiskCache: 150,
+            // 指定缓存宽高
+            memCacheWidth: 150,
+            memCacheHeight: 150,
             imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
