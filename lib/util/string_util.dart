@@ -12,6 +12,7 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -607,7 +608,7 @@ class StringUtil {
               if (contentArray[i].type == "@") {
                 print('---------------------userMap[(i)]----${userMap[(i).toString()]}--');
                 getUserInfo(uid: userMap[(i).toString()]).then((value) {
-                  AppRouter.navigateToMineDetail(context, value.uid,
+                  jumpToUserProfilePage(context, value.uid,
                       avatarUrl: value.avatarUri, userName: value.nickName);
                 });
               } else if (contentArray[i].type == "#") {

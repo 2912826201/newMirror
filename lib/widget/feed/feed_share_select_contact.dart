@@ -12,6 +12,7 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -577,7 +578,7 @@ class _FriendsPageState extends State<FriendsPage> {
     } else if (widget.type == 1) {
       //-----------------------------------------------查看群成员的个人信息------------
       Navigator.of(context).pop();
-      AppRouter.navigateToMineDetail(context, userId,avatarUrl: avatar,userName: name);
+      jumpToUserProfilePage(context, userId,avatarUrl: avatar,userName: name);
     } else if (widget.type == 4) {
       //--------------------------------------------分享消息到群聊---------------
       if (await jumpShareMessage(

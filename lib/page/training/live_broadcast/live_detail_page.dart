@@ -18,6 +18,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
@@ -838,7 +839,7 @@ class LiveDetailPageState extends XCState {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid,
+    jumpToUserProfilePage(context, liveModel.coachDto?.uid,
         avatarUrl: liveModel.coachDto?.avatarUri, userName: liveModel.coachDto?.nickName, callback: (dynamic r) {
         bool result=context.read<UserInteractiveNotifier>().profileUiChangeModel[liveModel.coachDto.uid].isFollow;
       print("result:$result");
