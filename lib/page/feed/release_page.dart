@@ -220,7 +220,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   // 头部布局
-                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller),
+                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller,videoCourseId: widget.videoCourseId,),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图

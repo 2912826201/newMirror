@@ -37,7 +37,7 @@ const String VIDEOSCAN = "/third/green/videoScan";
 // 首页推荐教练
 const String RECOMMENDCOACH = "/sport/course/RecommendCoach";
 // 首页新推荐教练
-const String  NEWRECOMMENDCOACH= "/sport/web/liveCourse/recommendCoach";
+const String NEWRECOMMENDCOACH = "/sport/web/liveCourse/recommendCoach";
 // 删除动态
 const String DELETEFEED = "/appuser/web/feed/delete";
 // 动态详情
@@ -54,7 +54,7 @@ Future<DataResponseModel> getPullList({@required int type, @required int size, i
   if (targetId != null) {
     params["targetId"] = targetId;
   }
-  if(lastTime!=null) {
+  if (lastTime != null) {
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
@@ -75,7 +75,6 @@ Future<DataResponseModel> getHotList({@required size}) async {
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(PULLHOTLIST, params);
   if (responseModel.isSuccess) {
-
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
@@ -132,17 +131,20 @@ Future<Map> feedVideoScan({@required String url}) async {
 }
 
 // 发布动态
-Future<Map> publishFeed(
-    {@required int type,
-    @required String content,
-    String picUrls,
-    String videos,
-    String atUsers,
-    String cityCode,
-    String longitude,
-    String latitude,
-    String address,
-    String topics}) async {
+Future<Map> publishFeed({
+  @required int type,
+  @required String content,
+  String picUrls,
+  String videos,
+  String atUsers,
+  String cityCode,
+  String longitude,
+  String latitude,
+  String address,
+  String topics,
+  int videoCourseId,
+  int liveCourseId,
+}) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
   params["content"] = content;
@@ -169,6 +171,12 @@ Future<Map> publishFeed(
   }
   if (topics != null) {
     params["topics"] = topics;
+  }
+  if(videoCourseId != null) {
+    params["videoCourseId"] = videoCourseId;
+  }
+  if (liveCourseId != null) {
+    params["liveCourseId"] = liveCourseId;
   }
   BaseResponseModel responseModel = await requestApi(PUBLISHFEED, params);
   if (responseModel.isSuccess) {
@@ -227,14 +235,14 @@ Future<BaseResponseModel> publish(
 
 // 获取评论列表热度
 Future<Map> queryListByHot2(
-    {@required int targetId, @required int targetType, int page, int lastId,String ids, @required int size}) async {
+    {@required int targetId, @required int targetType, int page, int lastId, String ids, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
-  if(ids!=null&&ids!="") {
+  if (ids != null && ids != "") {
     params["ids"] = ids;
   }
-  if(lastId!=null) {
+  if (lastId != null) {
     params["lastId"] = lastId;
   }
   params["size"] = size;
@@ -245,15 +253,17 @@ Future<Map> queryListByHot2(
     return null;
   }
 }
-  //获取一条评论
-  Future<CommentDtoModel> getComment(int commentId)async{
-    BaseResponseModel responseModel = await requestApi(GET_COMMENT, {"commentId":commentId});
-    if (responseModel.isSuccess) {
-      return CommentDtoModel.fromJson(responseModel.data);
-    } else {
-      return null;
-    }
+
+//获取一条评论
+Future<CommentDtoModel> getComment(int commentId) async {
+  BaseResponseModel responseModel = await requestApi(GET_COMMENT, {"commentId": commentId});
+  if (responseModel.isSuccess) {
+    return CommentDtoModel.fromJson(responseModel.data);
+  } else {
+    return null;
   }
+}
+
 // 更新获取评论列表热度接口返回数据方式
 Future<List> queryListByHot(
     {@required int targetId, @required int targetType, @required int page, @required int size}) async {
@@ -283,14 +293,14 @@ Future<List> queryListByHot(
 
 // 获取评论列表时间
 Future<Map> queryListByTime(
-    {@required int targetId, @required int targetType, int page, int lastId,String ids,  @required int size}) async {
+    {@required int targetId, @required int targetType, int page, int lastId, String ids, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
-  if(ids!=null&&ids!="") {
+  if (ids != null && ids != "") {
     params["ids"] = ids;
   }
-  if(lastId!=null) {
+  if (lastId != null) {
     params["lastId"] = lastId;
   }
   params["size"] = size;
@@ -328,11 +338,11 @@ Future<int> laudComment({@required int commentId, @required int laud}) async {
 }
 
 //   动态点赞列表  GETFEEDLAUDLIST
-Future<DataResponseModel> getFeedLaudList({@required int targetId,  @required int size,int lastTime}) async {
+Future<DataResponseModel> getFeedLaudList({@required int targetId, @required int size, int lastTime}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["size"] = size;
-  if(lastTime != null) {
+  if (lastTime != null) {
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(GETFEEDLAUDLIST, params);
@@ -346,6 +356,7 @@ Future<DataResponseModel> getFeedLaudList({@required int targetId,  @required in
     return null;
   }
 }
+
 // 首页推荐教练
 Future<List> recommendCoach() async {
   BaseResponseModel responseModel = await requestApi(RECOMMENDCOACH, {});
@@ -368,7 +379,7 @@ Future<List> recommendCoach() async {
 
 // 新首页推荐教练
 Future<List> newRecommendCoach() async {
-  BaseResponseModel responseModel = await requestApi( NEWRECOMMENDCOACH, {});
+  BaseResponseModel responseModel = await requestApi(NEWRECOMMENDCOACH, {});
   List<CourseModel> liveVideoModel = [];
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
@@ -385,6 +396,7 @@ Future<List> newRecommendCoach() async {
     return null;
   }
 }
+
 // 删除动态
 Future<Map> deletefeed({@required int id}) async {
   Map<String, dynamic> params = {};
@@ -396,6 +408,7 @@ Future<Map> deletefeed({@required int id}) async {
     return null;
   }
 }
+
 // 获取动态详情 DETAIL
 Future<BaseResponseModel> feedDetail({@required int id}) async {
   Map<String, dynamic> params = {};
@@ -408,11 +421,11 @@ Future<BaseResponseModel> feedDetail({@required int id}) async {
   }
 }
 
-Future<int> getUnReadFeedCount()async{
-  BaseResponseModel responseModel = await requestApi(getUnReadFeed,{});
-  if(responseModel.isSuccess&&responseModel.data!=null){
+Future<int> getUnReadFeedCount() async {
+  BaseResponseModel responseModel = await requestApi(getUnReadFeed, {});
+  if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["amount"];
-  }else{
+  } else {
     return null;
   }
 }

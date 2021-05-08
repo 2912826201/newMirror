@@ -317,7 +317,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               latitude: postModel.latitude,
               longitude: postModel.longitude,
               cityCode: postModel.cityCode,
-              topics: jsonEncode(postModel.topics));
+              topics: jsonEncode(postModel.topics),
+              videoCourseId:postModel.videoCourseId);
           print("发不接受发布结束：feedModel$feedModel");
 
           if (feedModel != null) {
