@@ -131,11 +131,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 重新登录替换关注页布局
     EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+
+    // Build完成第一帧绘制完成回调
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print("关注页Build完成第一帧绘制完成回调");
       context.read<FeedMapNotifier>().setBuildCallBack(true);
-      // 动态未读数
-      /* EventBus.getDefault()
-          .registerSingleParameter(_feedUnreadCallBack, EVENTBUS_ATTENTION_PAGE, registerName: EVENTBUS__FEED_UNREAD);*/
+      //持久帧的回调
+      // WidgetsBinding.instance.addPersistentFrameCallback((callback) {
+      //   print("关注页持久帧的回调");
+      // });
     });
   }
 
@@ -382,7 +386,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: CustomScrollView(
               key: globalKey,
               controller: _controller,
-              physics:  context.watch<FeedMapNotifier>().value.isDropDown
+              physics: context.watch<FeedMapNotifier>().value.isDropDown
                   ? AlwaysScrollableScrollPhysics()
                   : NeverScrollableScrollPhysics(),
               slivers: [
