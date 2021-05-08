@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -176,7 +177,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
         ),
       ),
       onTap: (){
-        AppRouter.navigateToMineDetail(context, buddyModel.uid,avatarUrl: buddyModel.avatarUri,userName: buddyModel.nickName);
+        jumpToUserProfilePage(context, buddyModel.uid,avatarUrl: buddyModel.avatarUri,userName: buddyModel.nickName);
       },
     );
   }

@@ -102,7 +102,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     }
     Future.delayed(Duration.zero,(){
       // 同步数据
-      context.read<FeedMapNotifier>().updateFeedMap(followModel);
+      if(mounted){
+        context.read<FeedMapNotifier>().updateFeedMap(followModel);
+      }
+
     });
   }
 

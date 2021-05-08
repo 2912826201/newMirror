@@ -61,11 +61,13 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
 
   _requestDataList() async {
     ListModel<TrainingGalleryDayModel> listModel = await getAlbum(_pageSize, lastTime: _lastTime);
-    _hasNext = listModel.hasNext == 1;
-    _lastTime = listModel.lastTime;
-    _dataList.addAll(listModel.list);
-    if (_hasNext) {
-      await _requestDataList();
+    if (listModel != null) {
+      _hasNext = listModel?.hasNext == 1;
+      _lastTime = listModel?.lastTime;
+      _dataList.addAll(listModel.list);
+      if (_hasNext) {
+        await _requestDataList();
+      }
     }
   }
 
@@ -129,8 +131,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                 height: 224,
                 width: 224,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                  image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
                 ),
               ),
               SizedBox(

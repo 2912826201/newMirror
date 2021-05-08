@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -120,7 +121,7 @@ class _ManagerQRCodePageState extends State<ManagerQRCodePage> {
                 ),
               ),
               onTap: (){
-                AppRouter.navigateToMineDetail(context,uid, avatarUrl: image, userName: name);
+                jumpToUserProfilePage(context,uid, avatarUrl: image, userName: name);
               },
             )
           ],

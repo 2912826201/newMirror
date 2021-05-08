@@ -15,6 +15,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
+import '../profile_detail_page.dart';
+
 //黑名单
 class BlackListPage extends StatefulWidget {
   @override
@@ -109,7 +111,7 @@ class _BlackListState extends State<BlackListPage> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, blackList[index].uid,
+              jumpToUserProfilePage(context, blackList[index].uid,
                   avatarUrl: blackList[index].avatarUri, userName: blackList[index].nickName, callback: (result) {
                 if (context.read<UserInteractiveNotifier>().removeId != null) {
                   List<blackUserModel> list = [];

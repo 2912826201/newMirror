@@ -24,6 +24,7 @@ import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 import '../../../widget/overscroll_behavior.dart';
+import '../profile_detail_page.dart';
 
 class QueryFollowList extends StatefulWidget {
   //传1为关注，传2为粉丝，3为话题
@@ -847,7 +848,7 @@ class _FollowItemState extends State<QueryFollowItem> {
           InkWell(
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
-                  AppRouter.navigateToMineDetail(context, uid, avatarUrl: avatarUrl, userName: userName,
+                  jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName,
                       callback: (result) {
                     widget.userFollowChangeCallBack();
                   });

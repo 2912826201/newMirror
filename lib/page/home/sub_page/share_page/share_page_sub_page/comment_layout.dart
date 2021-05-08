@@ -6,6 +6,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -28,7 +29,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.name + ":"}",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
+            jumpToUserProfilePage(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));
@@ -38,7 +39,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.replyName}  ",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.replyId,avatarUrl:value.avatarUrl,userName:value.name);
+            jumpToUserProfilePage(context, value.replyId,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));
@@ -51,7 +52,7 @@ class CommentLayout extends StatelessWidget {
         text: "${value.name + ":"}",
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.navigateToMineDetail(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
+            jumpToUserProfilePage(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
         style: AppStyle.textMedium13,
       ));
