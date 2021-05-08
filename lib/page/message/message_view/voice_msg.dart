@@ -428,12 +428,19 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     duration = Duration(milliseconds: 300);
     Timer.periodic(duration, (timer) {
       try {
-        if (context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String: urlMd5String)) {
+        bool isPlaying = false;
+        String filePathMd5 = _getUrlMd5String();
+        if (context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String: filePathMd5)) {
+          isPlaying = true;
+        } else if (context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String: urlMd5String)) {
+          isPlaying = true;
+        }
+        if (isPlaying) {
           getWidgetArrayState++;
           if (getWidgetArrayState > 3) {
             getWidgetArrayState = 0;
           }
-          if(mounted) {
+          if (mounted) {
             setState(() {});
           }
         }
