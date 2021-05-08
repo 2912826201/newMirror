@@ -11,6 +11,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/icon.dart';
 
@@ -145,7 +146,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
               child: CachedNetworkImage(
                 height: 40,
                 width: 40,
-                imageUrl: Application.profile.avatarUri,
+                imageUrl: FileUtil.getSmallImage(Application.profile.avatarUri),
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,

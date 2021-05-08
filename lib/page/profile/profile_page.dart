@@ -295,7 +295,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 text,
                 style: AppStyle.textRegular16,
               ),
-              Expanded(child: Container()),
+              Spacer(),
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_18,
                 18,

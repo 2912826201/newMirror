@@ -40,7 +40,7 @@ const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
 
 ///举报
-const String DENOUNCE = "/appuser/web/user/denounce";
+const String DENOUNCE = "/appuser/web/report/sendReport";
 
 ///更新用户信息
 const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
@@ -186,7 +186,7 @@ Future<BlackModel> ProfileCheckBlack(int checkId) async {
 Future<bool> ProfileMoreDenounce(int targetId, int targetType) async {
   BaseResponseModel responseModel = await requestApi(DENOUNCE, {
     "targetId": targetId,
-    "targetType": targetType,
+    "type": targetType,
   });
   if (responseModel.isSuccess&&responseModel.data!=null) {
     return responseModel.data["state"];
@@ -442,6 +442,7 @@ Future<Map> relation(int uid,int targetId) async {
     return null;
   }
 }
+//粉丝未读数
 Future<int> fansUnread()async{
   BaseResponseModel responseModel = await requestApi(FANS_UNREAD, {});
   if(responseModel.isSuccess&&responseModel.data!=null){

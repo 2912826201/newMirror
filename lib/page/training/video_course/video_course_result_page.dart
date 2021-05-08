@@ -10,7 +10,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
-import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -332,7 +332,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               child: CachedNetworkImage(
                 height: 32,
                 width: 32,
-                imageUrl: widget.course.coachDto.avatarUri,
+                imageUrl: FileUtil.getSmallImage(widget.course.coachDto.avatarUri),
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
