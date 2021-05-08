@@ -11,12 +11,12 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class LordQRCodePage extends StatefulWidget {
+class ManagerQRCodePage extends StatefulWidget {
   @override
-  _LordQRCodePageState createState() => _LordQRCodePageState();
+  _ManagerQRCodePageState createState() => _ManagerQRCodePageState();
 }
 
-class _LordQRCodePageState extends State<LordQRCodePage> {
+class _ManagerQRCodePageState extends State<ManagerQRCodePage> {
   String codeData;
   int uid=1002885;
   String name="大灰狼";

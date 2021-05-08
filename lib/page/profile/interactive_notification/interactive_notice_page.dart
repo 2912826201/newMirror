@@ -53,9 +53,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   String hintText;
   int hasNext = 0;
   String defaultImage = DefaultImage.nodata;
-  int timeStamp;
   ScrollController scrollController = ScrollController();
-  String footerText = "没有更多了";
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
@@ -177,7 +175,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
               backgroundColor: AppColor.white,
               appBar: CustomAppBar(
                 leadingOnTap: () {
-                  Navigator.pop(context, timeStamp);
+                  Navigator.pop(context);
                 },
                 titleString: widget.type == 0
                     ? "评论"

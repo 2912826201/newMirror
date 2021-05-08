@@ -66,7 +66,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
             child: StreamBuilder<ImageDownloadFinished>(
                 initialData: imageDownloadFinished,
                 stream: streamController.stream,
-                builder: (BuildContext stramContext, AsyncSnapshot<ImageDownloadFinished> snapshot) {
+                builder: (BuildContext streamContext, AsyncSnapshot<ImageDownloadFinished> snapshot) {
                   if (snapshot.data.afterImage && snapshot.data.beforeImage) {
                     Loading.hideLoading(context);
                   }

@@ -11,6 +11,8 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/test/verification_codeInput_demo_page.dart';
+import 'package:mirror/page/test/verification_codeInput_demo_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -72,6 +74,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //   return SliverListDemoPage();
                 // }));
+                // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                //   return VerificationCodeInputDemoPage();
+                // }));
               },
               child: Container(
                 margin: EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
@@ -80,11 +85,13 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     height: 28,
                     width: 28,
                     // 调整磁盘缓存中图像大小
-                    maxHeightDiskCache: 150,
-                    maxWidthDiskCache: 150,
-                    imageUrl: context.watch<TokenNotifier>().isLoggedIn&&context.watch<ProfileNotifier>().profile
-                        .avatarUri !=
-                        null
+                    // maxHeightDiskCache: 150,
+                    // maxWidthDiskCache: 150,
+                    // 指定缓存宽高
+                    memCacheWidth: 150,
+                    memCacheHeight: 150,
+                    imageUrl: context.watch<TokenNotifier>().isLoggedIn &&
+                            context.watch<ProfileNotifier>().profile.avatarUri != null
                         ? FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri)
                         : "",
                     fit: BoxFit.cover,

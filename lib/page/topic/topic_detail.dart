@@ -279,8 +279,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                         clipBehavior: Clip.antiAlias,
                                         child: CachedNetworkImage(
                                           // 调整磁盘缓存中图像大小
-                                          maxHeightDiskCache: 150,
-                                          maxWidthDiskCache: 150,
+                                          // maxHeightDiskCache: 150,
+                                          // maxWidthDiskCache: 150,
+                                          // 指定缓存宽高
+                                          memCacheWidth: 150,
+                                          memCacheHeight: 150,
                                           imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
                                               ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
                                               : "",

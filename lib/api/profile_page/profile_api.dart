@@ -40,7 +40,7 @@ const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
 
 ///举报
-const String DENOUNCE = "/appuser/web/user/denounce";
+const String DENOUNCE = "/appuser/web/report/sendReport";
 
 ///更新用户信息
 const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
@@ -74,6 +74,8 @@ const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 
 ///用户推送列表
 const String QUERY_MSG_LIST = "/appuser/web/message/queryMsgList";
+///粉丝新增未读
+const String FANS_UNREAD = "/appuser/web/user/follow/getUnReadAddFansCount";
 //关注
 //0-普通场景1-直播中关注教练
 Future<int> ProfileAddFollow(int id,{int type=0}) async {
@@ -184,7 +186,7 @@ Future<BlackModel> ProfileCheckBlack(int checkId) async {
 Future<bool> ProfileMoreDenounce(int targetId, int targetType) async {
   BaseResponseModel responseModel = await requestApi(DENOUNCE, {
     "targetId": targetId,
-    "targetType": targetType,
+    "type": targetType,
   });
   if (responseModel.isSuccess&&responseModel.data!=null) {
     return responseModel.data["state"];
@@ -437,6 +439,15 @@ Future<Map> relation(int uid,int targetId) async {
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
+    return null;
+  }
+}
+//粉丝未读数
+Future<int> fansUnread()async{
+  BaseResponseModel responseModel = await requestApi(FANS_UNREAD, {});
+  if(responseModel.isSuccess&&responseModel.data!=null){
+    return responseModel.data["amount"];
+  }else{
     return null;
   }
 }

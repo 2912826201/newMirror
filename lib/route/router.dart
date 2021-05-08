@@ -605,10 +605,13 @@ class AppRouter {
     _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
 
-  static void navigateToReleasePage(BuildContext context, {int topicId}) {
+  static void navigateToReleasePage(BuildContext context, {int topicId, int videoCourseId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
       map["topicId"] = topicId;
+    }
+    if (videoCourseId != null) {
+      map["videoCourseId"] = videoCourseId;
     }
     _navigateToPage(context, pathRelease, map, isFromBottom: true);
   }

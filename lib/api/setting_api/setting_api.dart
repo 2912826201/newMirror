@@ -11,7 +11,7 @@ const String SET_USER_NOTICE = "/appuser/web/user/setUserSetting";
 ///获取用户通知设置
 const String GET_USER_NOTICE = "/appuser/web/user/getUserSetting";
 ///用户反馈
-const String FEED_BACK = "/appuser/web/user/submitAdvise";
+const String FEED_BACK = "/appuser/web/user/feedback";
 
 ///获取黑名单
 Future<BlackListModel> SettingBlackList()async{
@@ -45,9 +45,10 @@ Future<UserNoticeModel> getUserNotice()async{
     return null;
   }
 }
+//反馈
 Future<bool> putFeedBack(String content,String picUrls)async{
-  BaseResponseModel responseModel = await requestApi(FEED_BACK,{"content":content,"picUrls":picUrls});
-  if(responseModel.isSuccess){
+  BaseResponseModel responseModel = await requestApi(FEED_BACK,{"description":content,"picUrls":picUrls});
+  if(responseModel.isSuccess&&responseModel.data!=null){
     print("==================这是接口请求成功的输出");
     return responseModel.data["state"];
   }else{

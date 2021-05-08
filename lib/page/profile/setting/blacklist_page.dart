@@ -109,9 +109,8 @@ class _BlackListState extends State<BlackListPage> {
         children: [
           InkWell(
             onTap: () {
-              AppRouter.navigateToMineDetail(context, blackList[index].uid,avatarUrl:blackList[index].avatarUri,
-                  userName:blackList[index].nickName, callback:
-                  (result) {
+              AppRouter.navigateToMineDetail(context, blackList[index].uid,
+                  avatarUrl: blackList[index].avatarUri, userName: blackList[index].nickName, callback: (result) {
                 if (context.read<UserInteractiveNotifier>().removeId != null) {
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {
@@ -129,7 +128,7 @@ class _BlackListState extends State<BlackListPage> {
               child: CachedNetworkImage(
                 height: 38,
                 width: 38,
-                imageUrl: blackList[index].avatarUri!=null?FileUtil.getSmallImage(blackList[index].avatarUri):" ",
+                imageUrl: blackList[index].avatarUri != null ? FileUtil.getSmallImage(blackList[index].avatarUri) : " ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,

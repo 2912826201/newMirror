@@ -39,7 +39,7 @@ class pageScrollPhysics extends PageScrollPhysics {
     if (target != position.pixels)
       return ScrollSpringSimulation(
           SpringDescription(
-            mass: 3, //质量，控制滚动的惯性
+            mass: 4, //质量，控制滚动的惯性
             stiffness: 100,//刚性，滚动收尾速度
             damping: 15,//阻尼，俗称摩擦力
           ),

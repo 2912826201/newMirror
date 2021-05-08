@@ -11,11 +11,11 @@ class DateUtil {
       int minute = ms % 3600 ~/ 60;
       int second = ms % 60;
       if (hour > 0) {
-        return "${hour}时${minute}分${second}秒";
+        return "$hour时$minute分$second秒";
       } else if (minute > 0) {
-        return "${minute}分${second}秒";
+        return "$minute分$second秒";
       } else {
-        return "${second}秒";
+        return "$second秒";
       }
     }
   }
