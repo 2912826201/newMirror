@@ -754,7 +754,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             List<MachineModel> machineList = await getMachineStatusInfo();
             if (machineList != null && machineList.isNotEmpty) {
               machineModel = machineList.first;
-              if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1) {
+              if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1&&
+                  machineModel.timestamp!=null||machineModel.startCourse!=null) {
                 if (machineModel.timestamp < machineModel.startCourse) {
                   _currentPosition = 0;
                 } else {
