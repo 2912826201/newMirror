@@ -405,55 +405,65 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomAppBarIconButton(
-                    svgName: AppIcon.nav_return,
-                    iconColor: AppColor.black,
-                    onTap: () {
-                      Navigator.pop(this.context,
-                          context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
-                    },
-                  ),
-                  Spacer(),
+                  Expanded(
+                      child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CustomAppBarIconButton(
+                      svgName: AppIcon.nav_return,
+                      iconColor: AppColor.black,
+                      onTap: () {
+                        Navigator.pop(this.context,
+                            context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+                      },
+                    ),
+                  )),
                   Text(
                     "$_textName",
                     style: TextStyle(
                         fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.black.withOpacity(snapshot.data)),
                   ),
-                  Spacer(),
-                  CustomAppBarIconButton(
-                    svgName: AppIcon.nav_share,
-                    iconColor: AppColor.black,
-                    onTap: () {
-                      openShareBottomSheet(
-                          context: context,
-                          map: userModel.toJson(),
-                          chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                          sharedType: 1);
-                    },
-                  ),
-                  !isMselfId
-                      ? CustomAppBarIconButton(
-                          svgName: AppIcon.nav_more,
-                          iconColor: AppColor.black,
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                              return ProfileDetailsMore(
-                                userId: widget.userId,
-                                userName: _textName,
-                              );
-                            })).then((value) {
-                              _getFollowCount(id: widget.userId);
-                            });
-                          },
-                        )
-                      : Container(
-                          width: 0,
-                        ),
-                  !isMselfId
-                      ? SizedBox(
-                          width: 8,
-                        )
-                      : Container()
+                  Expanded(
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              CustomAppBarIconButton(
+                                svgName: AppIcon.nav_share,
+                                iconColor: AppColor.black,
+                                onTap: () {
+                                  openShareBottomSheet(
+                                      context: context,
+                                      map: userModel.toJson(),
+                                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                                      sharedType: 1);
+                                },
+                              ),
+                              !isMselfId
+                                  ? CustomAppBarIconButton(
+                                      svgName: AppIcon.nav_more,
+                                      iconColor: AppColor.black,
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                          return ProfileDetailsMore(
+                                            userId: widget.userId,
+                                            userName: _textName,
+                                          );
+                                        })).then((value) {
+                                          _getFollowCount(id: widget.userId);
+                                        });
+                                      },
+                                    )
+                                  : Container(
+                                      width: 0,
+                                    ),
+                              !isMselfId
+                                  ? SizedBox(
+                                      width: 8,
+                                    )
+                                  : Container()
+                            ],
+                          )))
                 ],
               ),
             ),

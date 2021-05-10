@@ -118,7 +118,7 @@ class FeedSharePopups extends StatelessWidget {
                       switch (shareViewModel[index].name) {
                         case "站内好友":
                           if (!(context != null && context.read<TokenNotifier>().isLoggedIn)) {
-                            ToastShow.show(msg: "请先登陆app!", context: context);
+                            ToastShow.show(msg: "请先登录app!", context: context);
                             AppRouter.navigateToLoginPage(context);
                             return;
                           }

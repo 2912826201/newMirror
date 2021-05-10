@@ -428,7 +428,7 @@ class LiveDetailPageState extends XCState {
 
     EdgeInsetsGeometry tempEd = (liveModel.getGetPlayType() == "回放" ? marginRight32 : marginRight16);
     Widget widget1 = getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, tempEd);
-    Widget widget2 = getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, tempEd);
+    Widget widget2 = getBtnUi(false, "登录终端使用终端播放", textStyle, double.infinity, 40, tempEd);
     Widget widget4 = getBtnUi(false, "回放", textStyle, 94, 40, marginLeft32Right16);
     Widget widget5 = getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, tempEd);
     Widget widget6 = getBtnUi(false, liveModel.getGetPlayType(), textStyle, double.infinity, 40, margin_32);
@@ -924,7 +924,7 @@ class LiveDetailPageState extends XCState {
 
   //去登陆
   void _login() {
-    ToastShow.show(msg: "请先登陆app!", context: context);
+    ToastShow.show(msg: "请先登录app!", context: context);
     // 去登录
     AppRouter.navigateToLoginPage(context);
   }

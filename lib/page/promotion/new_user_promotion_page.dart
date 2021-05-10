@@ -79,7 +79,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
               ),
               onTap: (){
                 if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-                  ToastShow.show(msg: "请先登陆app!", context: context);
+                  ToastShow.show(msg: "请先登录app!", context: context);
                   AppRouter.navigateToLoginPage(context);
                   return;
                 }

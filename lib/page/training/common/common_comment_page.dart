@@ -551,7 +551,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               }
             } else {
               if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-                ToastShow.show(msg: "请先登陆app!", context: context);
+                ToastShow.show(msg: "请先登录app!", context: context);
                 AppRouter.navigateToLoginPage(context);
                 return;
               }
@@ -1485,7 +1485,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //点赞-取消点赞
   _laudComment(int commentId, bool laud, int chatUserId) async {
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -1533,7 +1533,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -1560,7 +1560,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-      ToastShow.show(msg: "请先登陆app!", context: context);
+      ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
