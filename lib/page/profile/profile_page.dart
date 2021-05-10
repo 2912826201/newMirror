@@ -334,7 +334,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "关注",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followingCount)),
                     onTap: () {
@@ -349,7 +349,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "粉丝",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followerCount)),
                   ),
@@ -363,7 +363,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "动态",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .feedCount)),
                   )
@@ -436,7 +436,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 return Positioned(
                     top: 0,
                     right: 0,
-                    child: notifier.fansUnreadCount > 0 && text == "粉丝"
+                    child: notifier.value.fansUnreadCount > 0 && text == "粉丝"
                         ? ClipOval(
                             child: Container(
                               height: 8,

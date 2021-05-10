@@ -37,7 +37,8 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-void jumpToUserProfilePage(BuildContext context, int uId, {String avatarUrl, String userName, Function(dynamic result) callback}) {
+void jumpToUserProfilePage(BuildContext context, int uId,
+    {String avatarUrl, String userName, Function(dynamic result) callback}) {
   if (!context.read<TokenNotifier>().isLoggedIn) {
     AppRouter.navigateToLoginPage(context);
     return;
@@ -391,6 +392,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   Widget appBar() {
+    double userNameWidth = 0;
+    userNameWidth = width - (CustomAppBar.appBarButtonWidth * 2 + 32);
+    if (!isMselfId) {
+      //居中所以其实左右都是两个icon的宽度
+      userNameWidth = width - (CustomAppBar.appBarButtonWidth * 4 + 8 + 32);
+    }
     return StreamBuilder<double>(
         initialData: 0,
         stream: appBarOpacityStreamController.stream,
@@ -412,19 +419,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       iconColor: AppColor.black,
                       onTap: () {
                         Navigator.pop(this.context,
-                            context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow);
+                            context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow);
                       },
                     ),
                   )),
-                  Text(
-                    "$_textName",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.black.withOpacity(snapshot.data)),
+                  Container(
+                    width: userNameWidth,
+                    child: Text(
+                        _textName != null ? "$_textName" : "",
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: AppColor.black.withOpacity(snapshot.data)),
+                      ),
                   ),
                   Expanded(
-                      child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
+                      child:  Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               CustomAppBarIconButton(
@@ -460,9 +473,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                                   ? SizedBox(
                                       width: 8,
                                     )
-                                  : Container()
+                                  : Container(width: 0,)
                             ],
-                          )))
+                          ))
                 ],
               ),
             ),
@@ -585,7 +598,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: _textAndNumber(
                           "关注",
                           StringUtil.getNumber(
-                              notifier.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
+                              notifier.value.profileUiChangeModel[widget.userId].attentionModel.followingCount)),
                     ),
                     SizedBox(
                       width: 61,
@@ -597,13 +610,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       child: _textAndNumber(
                           "粉丝",
                           StringUtil.getNumber(
-                              notifier.profileUiChangeModel[widget.userId].attentionModel.followerCount)),
+                              notifier.value.profileUiChangeModel[widget.userId].attentionModel.followerCount)),
                     ),
                     SizedBox(
                       width: 61,
                     ),
-                    _textAndNumber("获赞",
-                        StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId].attentionModel.laudedCount)),
+                    _textAndNumber(
+                        "获赞",
+                        StringUtil.getNumber(
+                            notifier.value.profileUiChangeModel[widget.userId].attentionModel.laudedCount)),
                   ],
                 ),
               );
@@ -630,7 +645,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   _getUserInfo();
                 });
               } else {
-                if (notifier.profileUiChangeModel[widget.userId].isFollow) {
+                if (notifier.value.profileUiChangeModel[widget.userId].isFollow) {
                   loadingStreamController.sink.add(true);
                   canOnClick = false;
                   _checkBlackStatus();
@@ -646,7 +661,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             width: 72,
             decoration: BoxDecoration(
                 color: !isMselfId
-                    ? notifier.profileUiChangeModel[widget.userId].isFollow
+                    ? notifier.value.profileUiChangeModel[widget.userId].isFollow
                         ? AppColor.mainRed
                         : AppColor.transparent
                     : AppColor.transparent,
@@ -655,7 +670,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     width: 0.5,
                     color: isMselfId
                         ? AppColor.black
-                        : !notifier.profileUiChangeModel[widget.userId].isFollow
+                        : !notifier.value.profileUiChangeModel[widget.userId].isFollow
                             ? AppColor.black
                             : AppColor.transparent)),
 
@@ -683,7 +698,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Spacer(),
-                      !notifier.profileUiChangeModel[widget.userId].isFollow
+                      !notifier.value.profileUiChangeModel[widget.userId].isFollow
                           ? Icon(
                               Icons.message,
                               size: 16,
@@ -693,8 +708,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         width: 2,
                       ),
                       Text(
-                        notifier.profileUiChangeModel[widget.userId].isFollow ? "关注" : "私聊",
-                        style: notifier.profileUiChangeModel[widget.userId].isFollow
+                        notifier.value.profileUiChangeModel[widget.userId].isFollow ? "关注" : "私聊",
+                        style: notifier.value.profileUiChangeModel[widget.userId].isFollow
                             ? TextStyle(color: AppColor.white, fontSize: 12)
                             : AppStyle.textRegular12,
                       ),

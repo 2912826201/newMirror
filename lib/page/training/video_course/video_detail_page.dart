@@ -968,7 +968,7 @@ class VideoDetailPageState extends XCState {
     }
     jumpToUserProfilePage(context, videoModel.coachDto?.uid,
         avatarUrl: videoModel.coachDto?.avatarUri, userName: videoModel.coachDto?.nickName, callback: (dynamic r) {
-          bool result=context.read<UserInteractiveNotifier>().profileUiChangeModel[videoModel.coachDto.uid].isFollow;
+          bool result=context.read<UserInteractiveNotifier>().value.profileUiChangeModel[videoModel.coachDto.uid].isFollow;
           print("result:$result");
           if (null != result && result is bool) {
             videoModel.coachDto.relation = result ? 0 : 1;

@@ -69,7 +69,7 @@ class MainPageState extends XCState {
   }
   _getUnReadFansCount() {
     fansUnread().then((value) {
-      if (mounted && value != null && value != context.read<UserInteractiveNotifier>().fansUnreadCount) {
+      if (mounted && value != null && value != context.read<UserInteractiveNotifier>().value.fansUnreadCount) {
         context.read<UserInteractiveNotifier>().changeUnreadFansCount(value);
       }
     });
@@ -98,7 +98,7 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            if(Application.appContext.read<UserInteractiveNotifier>().fansUnreadCount==0){
+            if(Application.appContext.read<UserInteractiveNotifier>().value.fansUnreadCount==0){
               _getUnReadFansCount();
             }
             Future.delayed(Duration.zero, () {

@@ -300,7 +300,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             dismissProgressDialog();
           });
         }
-        if (context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
+        if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
           print('====================================个人主页的方法进了');
           context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
           context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId), false);

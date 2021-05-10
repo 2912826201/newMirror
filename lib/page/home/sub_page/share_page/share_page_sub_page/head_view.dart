@@ -142,8 +142,8 @@ class HeadViewState extends State<HeadView> {
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
       if (context.watch<TokenNotifier>().isLoggedIn &&
-          (notifier.profileUiChangeModel[widget.model.pushId] == null ||
-              notifier.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
+          (notifier.value.profileUiChangeModel[widget.model.pushId] == null ||
+              notifier.value.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
         streamController = StreamController<TextStyle>();
         return GestureDetector(
@@ -229,10 +229,10 @@ class HeadViewState extends State<HeadView> {
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
           .read<UserInteractiveNotifier>()
-          .profileUiChangeModel[widget.model.pushId]
+          .value.profileUiChangeModel[widget.model.pushId]
           .feedStringList
           .contains("删除")) {
-        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+        context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
       }
     } else {
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
@@ -343,12 +343,12 @@ class HeadViewState extends State<HeadView> {
                         isFillet: true,
                         lists: context
                             .read<UserInteractiveNotifier>()
-                            .profileUiChangeModel[widget.model.pushId]
+                            .value.profileUiChangeModel[widget.model.pushId]
                             .feedStringList,
                         onItemClickListener: (index) {
                           switch (context
                               .read<UserInteractiveNotifier>()
-                              .profileUiChangeModel[widget.model.pushId]
+                              .value.profileUiChangeModel[widget.model.pushId]
                               .feedStringList[index]) {
                             case "删除":
                               deleteFeed();

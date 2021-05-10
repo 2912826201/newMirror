@@ -431,7 +431,7 @@ class _IFTabBarState extends State<IFTabBar> {
                           top: 0,
                           right: 4,
                           child:
-                              notifier.fansUnreadCount>0
+                              notifier.value.fansUnreadCount>0
                                   ? ClipOval(
                             child: Container(
                               height: 8,

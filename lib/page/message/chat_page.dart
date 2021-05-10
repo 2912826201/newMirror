@@ -1816,7 +1816,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       _insertMessageMenu("你拉黑了这个用户!");
       if (context
           .read<UserInteractiveNotifier>()
-          .profileUiChangeModel
+          .value.profileUiChangeModel
           .containsKey(int.parse(conversation.conversationId))) {
         context.read<UserInteractiveNotifier>().removeUserFollowId(int.parse(conversation.conversationId));
       }
@@ -1854,7 +1854,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(conversation.conversationId), true);
           if (context
               .read<UserInteractiveNotifier>()
-              .profileUiChangeModel
+              .value.profileUiChangeModel
               .containsKey(int.parse(conversation.conversationId))) {
             print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(conversation.conversationId));

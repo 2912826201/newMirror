@@ -70,7 +70,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
           height: 0.5,
           color: AppColor.bgWhite.withOpacity(0.65),
         ),
-        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
+        !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? Container(
                 width: width,
                 height: 12,
@@ -100,14 +100,14 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
           },
           child: _itemSelect(AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
         ),
-        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
+        !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? Container(
                 width: width,
                 height: 12,
                 color: AppColor.bgWhite.withOpacity(0.65),
               )
             : Container(),
-        !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
+        !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? InkWell(
                 onTap: () {
                   Loading.showLoading(context);

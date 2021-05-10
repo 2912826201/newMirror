@@ -81,7 +81,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserInteractiveNotifier>().showImageFrame = false;
+    context.read<UserInteractiveNotifier>().value.showImageFrame = false;
     _initAppBar();
     _initData();
   }
@@ -120,7 +120,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  context.watch<UserInteractiveNotifier>().showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
+      appBar:  context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
     );
   }
@@ -229,7 +229,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
     TrainingGalleryImageModel imageModel = _dataList[dayIndex].list[index];
     bool isSelected = false;
-    if (context.read<UserInteractiveNotifier>().showImageFrame) {
+    if (context.read<UserInteractiveNotifier>().value.showImageFrame) {
       for (TrainingGalleryImageModel selected in _selectedImageList) {
         if (selected.id == imageModel.id) {
           isSelected = true;
@@ -239,7 +239,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
     return GestureDetector(
       onTap: () {
-        if (context.read<UserInteractiveNotifier>().showImageFrame) {
+        if (context.read<UserInteractiveNotifier>().value.showImageFrame) {
           if (isSelected) {
             //已选中 取消选择
             setState(() {
@@ -445,7 +445,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   Widget _buildBottomView() {
-    if (context.watch<UserInteractiveNotifier>().showImageFrame) {
+    if (context.watch<UserInteractiveNotifier>().value.showImageFrame) {
       return Container(
         padding: EdgeInsets.fromLTRB(16, 0, 16, ScreenUtil.instance.bottomBarHeight),
         height: 145 + ScreenUtil.instance.bottomBarHeight,
