@@ -259,6 +259,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
           if (results.isSuccess == false) {
             print('================================上传七牛云失败');
+            // Note 给产品看区分为什么重新发布发布不出去
+            ToastShow.show(msg: "图片上传七牛云失败", context: context);
             // 设置不可发布
             postprogressModel.plannedSpeed = -1.0;
             streamProgress.sink.add(postprogressModel);
@@ -289,6 +291,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
           if (results.isSuccess == false) {
             print('================================上传七牛云失败');
+            // Note 给产品看区分为什么重新发布发布不出去
+            ToastShow.show(msg: "视频上传七牛云失败", context: context);
             // 设置不可发布
             postprogressModel.plannedSpeed = -1.0;
             streamProgress.sink.add(postprogressModel);
@@ -345,6 +349,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               postprogressModel.plannedSpeed = 0.0;
             });
           } else {
+            // Note 给产品看区分为什么重新发布发布不出去
+            ToastShow.show(msg: "接口上传失败", context: context);
             // 发布失败
             print('================================发布失败');
             postprogressModel.plannedSpeed = -1.0;
