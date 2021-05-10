@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -51,7 +52,7 @@ class MainPageState extends XCState {
 
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
-      if (attentionModel != null) {
+      if (mounted && attentionModel != null) {
         context
             .read<UserInteractiveNotifier>()
             .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
@@ -61,14 +62,14 @@ class MainPageState extends XCState {
 
   _getUnReadFeedCount() {
     getUnReadFeedCount().then((value) {
-      if (value != null && value != context.read<FeedMapNotifier>().value.unReadFeedCount) {
+      if (mounted && value != null && value != context.read<FeedMapNotifier>().value.unReadFeedCount) {
         context.read<FeedMapNotifier>().setUnReadFeedCount(value);
       }
     });
   }
   _getUnReadFansCount() {
     fansUnread().then((value) {
-      if (value != null && value != context.read<UserInteractiveNotifier>().fansUnreadCount) {
+      if (mounted && value != null && value != context.read<UserInteractiveNotifier>().fansUnreadCount) {
         context.read<UserInteractiveNotifier>().changeUnreadFansCount(value);
       }
     });
@@ -97,7 +98,7 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            if(context.read<UserInteractiveNotifier>().fansUnreadCount==0){
+            if(Application.appContext.read<UserInteractiveNotifier>().fansUnreadCount==0){
               _getUnReadFansCount();
             }
             Future.delayed(Duration.zero, () {

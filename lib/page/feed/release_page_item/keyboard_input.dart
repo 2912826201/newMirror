@@ -186,22 +186,32 @@ class KeyboardInputState extends State<KeyboardInput> {
     print("搜索字段：：：：：：：：$keyWork");
     List<BuddyModel> searchFollowList = [];
     SearchUserModel model = await ProfileSearchUser(keyWork, 20);
-    if (model.list.isNotEmpty) {
-      model.list.forEach((element) {
-        BuddyModel followModel = BuddyModel();
-        followModel.nickName = element.nickName + " ";
-        followModel.uid = element.uid;
-        followModel.avatarUri = element.avatarUri;
-        searchFollowList.add(followModel);
-      });
-      if (model.hasNext == 0) {
-        context.read<ReleaseFeedInputNotifier>().searchLoadText = "";
-        context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+    if (model != null) {
+      if (model.list.isNotEmpty) {
+        model.list.forEach((element) {
+          BuddyModel followModel = BuddyModel();
+          followModel.nickName = element.nickName + " ";
+          followModel.uid = element.uid;
+          followModel.avatarUri = element.avatarUri;
+          searchFollowList.add(followModel);
+        });
+        if (model.hasNext == 0) {
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchLoadText = "";
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
       }
+      // 记录搜索状态
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchLastTime = model.lastTime;
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchHasNext = model.hasNext;
     }
-    // 记录搜索状态
-    context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
-    context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
     if (context.read<ReleaseFeedInputNotifier>().atScrollController.hasClients) {
       context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
@@ -224,46 +234,60 @@ class KeyboardInputState extends State<KeyboardInput> {
     List<TopicDtoModel> searchTopicList = [];
     TopicDtoModel createTopModel = TopicDtoModel();
     DataResponseModel model = await searchTopic(key: keyWork, size: 20);
-    if (model.list.isNotEmpty) {
-      model.list.forEach((v) {
-        searchTopicList.add(TopicDtoModel.fromJson(v));
-      });
+    if(model != null) {
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          searchTopicList.add(TopicDtoModel.fromJson(v));
+        });
 
-      bool isCreated = true;
-      searchTopicList.forEach((v) {
-        print(v.name);
-        print(keyWork);
-        print(v.name.codeUnits);
-        print(keyWork.codeUnits);
-        print(v.name.codeUnits == keyWork.codeUnits);
-        print(v.name == keyWork + " ");
-        // 去掉右边空格比较
-        if (keyWork == v.name.trimRight()) {
-          isCreated = false;
+        bool isCreated = true;
+        searchTopicList.forEach((v) {
+          print(v.name);
+          print(keyWork);
+          print(v.name.codeUnits);
+          print(keyWork.codeUnits);
+          print(v.name.codeUnits == keyWork.codeUnits);
+          print(v.name == keyWork + " ");
+          // 去掉右边空格比较
+          if (keyWork == v.name.trimRight()) {
+            isCreated = false;
+          }
+          v.name = "#" + v.name;
+        });
+        if (isCreated) {
+          createTopModel.name = "#" + keyWork + " ";
+          createTopModel.id = -1;
+          searchTopicList.insert(0, createTopModel);
+          print("createTopModel.name ::${createTopModel.name}_____${createTopModel.name.length}");
         }
-        v.name = "#" + v.name;
-      });
-      if (isCreated) {
+        if (model.hasNext == 0) {
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchTopLoadText = "";
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
+      } else {
         createTopModel.name = "#" + keyWork + " ";
         createTopModel.id = -1;
         searchTopicList.insert(0, createTopModel);
         print("createTopModel.name ::${createTopModel.name}_____${createTopModel.name.length}");
+        context
+            .read<ReleaseFeedInputNotifier>()
+            .searchTopLoadText = "";
+        context
+            .read<ReleaseFeedInputNotifier>()
+            .searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
       }
-      if (model.hasNext == 0) {
-        context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
-        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
-      }
-    } else {
-      createTopModel.name = "#" + keyWork + " ";
-      createTopModel.id = -1;
-      searchTopicList.insert(0, createTopModel);
-      print("createTopModel.name ::${createTopModel.name}_____${createTopModel.name.length}");
-      context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
-      context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+      // 记录搜索状态
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchLastScore = model.lastScore;
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchTopHasNext = model.hasNext;
     }
-    // 记录搜索状态
-    context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
-    context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
     if (context.read<ReleaseFeedInputNotifier>().topScrollController.hasClients) {
       context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);

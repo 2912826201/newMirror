@@ -20,6 +20,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
       print("======onPlayerCompletion");
       isPlaying = false;
       isPause = false;
+      idMd5String = "";
+      Application.audioPlayer.stop();
       notifyListeners();
     });
   }
@@ -29,6 +31,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
       print("======onPlayerError");
       isPlaying = false;
       isPause = false;
+      idMd5String = "";
+      Application.audioPlayer.stop();
       notifyListeners();
     });
   }
@@ -36,16 +40,16 @@ class VoiceSettingNotifier extends ChangeNotifier {
   onAudioPositionChanged() {
     Application.audioPlayer.onAudioPositionChanged.listen((event) {
       // print("======onAudioPositionChanged");
-      isPlaying = true;
-      isPause = false;
-      showTime = event.inMilliseconds % 1000 > 0 ? (event.inMilliseconds ~/ 1000) + 1 : (event.inMilliseconds ~/ 1000);
-      notifyListeners();
+      // isPlaying = true;
+      // isPause = false;
+      // showTime = event.inMilliseconds % 1000 > 0 ? (event.inMilliseconds ~/ 1000) + 1 : (event.inMilliseconds ~/ 1000);
+      // notifyListeners();
     });
   }
 
   //获取一个音频播放器是否在播放
   bool getIsPlaying({String idMd5String}) {
-    // print("======getIsPlaying");
+    // print("======getIsPlaying:$isPlaying");
     if (isPlaying) {
       if (idMd5String != null && idMd5String == this.idMd5String) {
         return true;
@@ -176,6 +180,8 @@ class VoiceSettingNotifier extends ChangeNotifier {
     if (result == 1) {
       // success
       print('resume success');
+      isPlaying = true;
+      isPause = false;
     } else {
       print('resume failed');
     }

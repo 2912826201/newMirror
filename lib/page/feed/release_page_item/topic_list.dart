@@ -85,19 +85,21 @@ class TopicListState extends State<TopicList> {
       return;
     }
     DataResponseModel model = await getUserRecommendTopic(size: 20);
-    if (dataPage == 1) {
-      if (model != null && model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          topics.add(TopicDtoModel.fromJson(v));
-        });
-        topics.forEach((v) {
-          v.name = "#" + v.name;
-        });
-        loadText = "";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
+    if (model != null) {
+      if (dataPage == 1) {
+        if (model != null && model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            topics.add(TopicDtoModel.fromJson(v));
+          });
+          topics.forEach((v) {
+            v.name = "#" + v.name;
+          });
+          loadText = "";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
       }
+      hasNext = model.hasNext;
     }
-    hasNext = model.hasNext;
     // 存入话题显示数据
     context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
     // 搜索时会替换话题显示数据，备份一份数据
@@ -124,21 +126,33 @@ class TopicListState extends State<TopicList> {
     }
     DataResponseModel model =
         await searchTopic(key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore);
-    if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastScore != null) {
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          searchList.add(TopicDtoModel.fromJson(v));
-        });
-        searchList.forEach((v) {
-          v.name = "#" + v.name;
-        });
-        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
-        context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "加载中...";
+    if(model != null) {
+      if (searchDataPage > 1 && context
+          .read<ReleaseFeedInputNotifier>()
+          .searchLastScore != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            searchList.add(TopicDtoModel.fromJson(v));
+          });
+          searchList.forEach((v) {
+            v.name = "#" + v.name;
+          });
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
+          context
+              .read<ReleaseFeedInputNotifier>()
+              .searchTopLoadText = "加载中...";
+        }
       }
+      // 记录搜索状态
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchLastScore = model.lastScore;
+      context
+          .read<ReleaseFeedInputNotifier>()
+          .searchTopHasNext = model.hasNext;
     }
-    // 记录搜索状态
-    context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
-    context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     setState(() {});
     // 把在输入框回调内的第一页数据插入
     searchList.insertAll(0, context.read<ReleaseFeedInputNotifier>().topicList);

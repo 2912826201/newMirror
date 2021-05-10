@@ -111,6 +111,15 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
     return responseModel;
   }
 }
+/*
+   * 取消请求
+   *
+   * 同一个cancel token 可以用于多个请求，当一个cancel token取消时，所有使用该cancel token的请求都会被取消。
+   * 所以参数可选
+   */
+void cancelRequests(CancelToken token) {
+  token.cancel("cancelled");
+}
 
 //获取dio单例
 Dio _getDioPostInstance() {
