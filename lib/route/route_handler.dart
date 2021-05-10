@@ -443,6 +443,7 @@ var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context,
   return RemoteControllerPage(
     courseId: data["courseId"],
     modeType: data["modeType"],
+    liveRoomId: data["liveRoomId"],
   );
 });
 

@@ -309,8 +309,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         print("数据请求发不打印${postModel.toString()}");
         if (mounted) {
           Map<String, dynamic> feedModel = Map();
-          print(
-              '--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
+          print('--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
           feedModel = await publishFeed(
               type: 0,
               content: postModel.content,

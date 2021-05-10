@@ -155,7 +155,8 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     return Padding(
-      child: Column(children: [
+      child: Column(
+          children: [
         textArea,
       ]),
       padding: EdgeInsets.only(bottom: 37),

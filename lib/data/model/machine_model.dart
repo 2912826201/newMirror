@@ -30,6 +30,7 @@ class MachineModel {
   int progressBar;
   int timestamp;
   int startCourse;
+  int liveRoomId;
 
   MachineModel(
       {this.isConnect,
@@ -48,7 +49,8 @@ class MachineModel {
       this.type,
       this.progressBar,
       this.timestamp,
-      this.startCourse});
+      this.startCourse,
+      this.liveRoomId});
 
   MachineModel.fromJson(Map<String, dynamic> json) {
     isConnect = json["isConnect"];
@@ -68,6 +70,7 @@ class MachineModel {
     progressBar = json["progressBar"];
     timestamp = json["timestamp"];
     startCourse = json["startCourse"];
+    liveRoomId = json["liveRoomId"];
   }
 
   Map<String, dynamic> toJson() {
@@ -89,6 +92,7 @@ class MachineModel {
     map["progressBar"] = progressBar;
     map["timestamp"] = timestamp;
     map["startCourse"] = startCourse;
+    map["liveRoomId"] = liveRoomId;
     return map;
   }
 }

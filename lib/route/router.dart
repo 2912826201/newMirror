@@ -699,10 +699,11 @@ class AppRouter {
   //
   ///courseId：课程id,直播课程id或者视频课程的id
   ///modeTye:类型,[CourseMode]
-  static void navigateToMachineRemoteController(BuildContext context, {int courseId, String modeType = mode_null}) {
+  static void navigateToMachineRemoteController(BuildContext context, {int courseId,int liveRoomId, String modeType = mode_null}) {
     Map<String, dynamic> map = Map();
     map["courseId"] = courseId;
     map["modeType"] = modeType;
+    map["liveRoomId"] = liveRoomId;
     _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
   }
 
@@ -765,11 +766,11 @@ class AppRouter {
   }
 
   static void navigateToTrainingGalleryComparisonPage(
-      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2) {
+      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2, {Function(dynamic) callBack}) {
     Map<String, dynamic> map = Map();
     map["image1"] = image1.toJson();
     map["image2"] = image2.toJson();
-    _navigateToPage(context, pathTrainingGalleryComparison, map);
+    _navigateToPage(context, pathTrainingGalleryComparison, map,callback: callBack);
   }
 
   static void navigateToMeCoursePage(BuildContext context) {
