@@ -699,10 +699,11 @@ class AppRouter {
   //
   ///courseId：课程id,直播课程id或者视频课程的id
   ///modeTye:类型,[CourseMode]
-  static void navigateToMachineRemoteController(BuildContext context, {int courseId, String modeType = mode_null}) {
+  static void navigateToMachineRemoteController(BuildContext context, {int courseId,int liveRoomId, String modeType = mode_null}) {
     Map<String, dynamic> map = Map();
     map["courseId"] = courseId;
     map["modeType"] = modeType;
+    map["liveRoomId"] = liveRoomId;
     _navigateToPage(context, pathMachineRemoteController, map, isFromBottom: true);
   }
 

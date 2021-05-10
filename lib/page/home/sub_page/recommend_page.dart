@@ -570,7 +570,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         print("+-++++++++++++++++++++++++++++++++++++++++++++++");
         if (!AppRouter.isHaveMachineRemoteControllerPage()) {
           BuildContext context = Application.navigatorKey.currentState.overlay.context;
-          AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_live);
+          AppRouter.navigateToMachineRemoteController(context,
+              courseId: model.courseId, liveRoomId: model.liveRoomId, modeType: mode_live);
         }
       }
     }

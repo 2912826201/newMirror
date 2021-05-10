@@ -682,6 +682,7 @@ class VideoDetailPageState extends XCState {
     }
     if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
       for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
+        print("map[videoUrl]:${map["videoUrl"]}");
         String path = await FileUtil().getDownloadedPath(map["videoUrl"]);
         if (path != null) {
           videoPathMap[map["videoUrl"]] = path;

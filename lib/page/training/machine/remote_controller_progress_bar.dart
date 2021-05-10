@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/video_course_circle_progressbar.dart';
@@ -12,14 +13,33 @@ class RemoteControllerProgressBar extends StatefulWidget {
   final Map<int, int> indexMapWithoutRest;
   final int partAmountWithoutRest;
   final bool isLiveRoomController;
+  final CourseModel liveVideoModel;
+  final int startCourse;
 
-  RemoteControllerProgressBar(Key key, this.partList, this.currentPartIndex, this.partProgress, this.remainingPartTime,
-      this.indexMapWithoutRest, this.partAmountWithoutRest, this.isLiveRoomController)
+  RemoteControllerProgressBar(
+      Key key,
+      this.partList,
+      this.currentPartIndex,
+      this.partProgress,
+      this.remainingPartTime,
+      this.indexMapWithoutRest,
+      this.partAmountWithoutRest,
+      this.isLiveRoomController,
+      this.liveVideoModel,
+      this.startCourse)
       : super(key: key);
 
   @override
-  RemoteControllerProgressBarState createState() => RemoteControllerProgressBarState(partList, currentPartIndex,
-      partProgress, remainingPartTime, indexMapWithoutRest, partAmountWithoutRest, isLiveRoomController);
+  RemoteControllerProgressBarState createState() => RemoteControllerProgressBarState(
+      partList,
+      currentPartIndex,
+      partProgress,
+      remainingPartTime,
+      indexMapWithoutRest,
+      partAmountWithoutRest,
+      isLiveRoomController,
+      liveVideoModel,
+      startCourse);
 }
 
 class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar> {
@@ -31,12 +51,31 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
   int partAmountWithoutRest;
   bool isLiveRoomController;
   double currentPosition;
+  CourseModel liveVideoModel;
+  int startCourse;
 
-  RemoteControllerProgressBarState(this.partList, this.currentPartIndex, this.partProgress, this.remainingPartTime,
-      this.indexMapWithoutRest, this.partAmountWithoutRest, this.isLiveRoomController);
+  RemoteControllerProgressBarState(
+      this.partList,
+      this.currentPartIndex,
+      this.partProgress,
+      this.remainingPartTime,
+      this.indexMapWithoutRest,
+      this.partAmountWithoutRest,
+      this.isLiveRoomController,
+      this.liveVideoModel,
+      this.startCourse);
 
-  void setStateData(List<VideoCoursePart> partList, int currentPartIndex, double partProgress, int remainingPartTime,
-      Map<int, int> indexMapWithoutRest, int partAmountWithoutRest, bool isLiveRoomController, double currentPosition) {
+  void setStateData(
+      List<VideoCoursePart> partList,
+      int currentPartIndex,
+      double partProgress,
+      int remainingPartTime,
+      Map<int, int> indexMapWithoutRest,
+      int partAmountWithoutRest,
+      bool isLiveRoomController,
+      double currentPosition,
+      CourseModel liveVideoModel,
+      int startCourse) {
     this.partList = partList;
     this.currentPartIndex = currentPartIndex;
     this.partProgress = partProgress;
@@ -45,6 +84,8 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
     this.partAmountWithoutRest = partAmountWithoutRest;
     this.isLiveRoomController = isLiveRoomController;
     this.currentPosition = currentPosition;
+    this.liveVideoModel = liveVideoModel;
+    this.startCourse = startCourse;
     try {
       if (mounted) {
         setState(() {});
@@ -56,6 +97,17 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
   Widget build(BuildContext context) {
     if (isLiveRoomController && currentPosition != null) {
       remainingPartTime = currentPosition.toInt();
+    }
+    String remainingPartString = DateUtil.formatMillisecondToMinuteAndSecond(remainingPartTime * 1000);
+    if (isLiveRoomController && remainingPartTime == 0 && startCourse == null && liveVideoModel != null) {
+      if (DateTime.now().millisecondsSinceEpoch <
+          DateUtil.stringToDateTime(liveVideoModel.startTime).millisecondsSinceEpoch) {
+        int subValue = DateUtil.stringToDateTime(liveVideoModel.startTime).millisecondsSinceEpoch -
+            DateTime.now().millisecondsSinceEpoch;
+        remainingPartString = DateUtil.formatSecondToStringNumShowMinute(subValue ~/ 1000);
+      } else {
+        remainingPartString = "即将开始";
+      }
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,10 +122,10 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
               ),
               Center(
                 child: Text(
-                  DateUtil.formatMillisecondToMinuteAndSecond(remainingPartTime * 1000),
+                  remainingPartString,
                   style: TextStyle(
                     color: AppColor.textPrimary1,
-                    fontSize: 32,
+                    fontSize: remainingPartString.contains("即将开始") ? 16 : 32,
                     fontWeight: FontWeight.w500,
                     fontFamily: "BebasNeue",
                   ),
