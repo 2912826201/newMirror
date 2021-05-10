@@ -37,8 +37,7 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-void jumpToUserProfilePage(BuildContext context, int uId,
-    {String avatarUrl, String userName, Function(dynamic result) callback}) {
+void jumpToUserProfilePage(BuildContext context, int uId, {String avatarUrl, String userName, Function(dynamic result) callback}) {
   if (!context.read<TokenNotifier>().isLoggedIn) {
     AppRouter.navigateToLoginPage(context);
     return;

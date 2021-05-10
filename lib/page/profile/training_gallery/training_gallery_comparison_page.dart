@@ -99,7 +99,8 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                           context: context,
                           chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
                           map: model.toJson(),
-                          sharedType: 2);
+                          sharedType: 2,
+                          fromTraingGallery: true);
                       _isBusy = false;
                     },
                   );

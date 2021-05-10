@@ -126,17 +126,17 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     return DateFormat('MM月dd日 HH:mm').format(DateTime.fromMillisecondsSinceEpoch(_imageList[_currentIndex].createTime));
   }
 
-  _showMorePopup(BuildContext context, TrainingGalleryImageModel image) {
+  _showMorePopup(BuildContext pageContext, TrainingGalleryImageModel image) {
     showModalBottomSheet(
-        context: context,
+        context: pageContext,
         elevation: 0,
         backgroundColor: AppColor.transparent,
         builder: (context) {
-          return _buildMorePopup(image);
+          return _buildMorePopup(image,pageContext);
         });
   }
 
-  _buildMorePopup(TrainingGalleryImageModel image) {
+  _buildMorePopup(TrainingGalleryImageModel image,BuildContext pageContext) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
@@ -242,5 +242,6 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     if (result["isSuccess"] == true) {
       ToastShow.show(msg: "保存成功", context: context);
     }
+    Navigator.pop(context);
   }
 }

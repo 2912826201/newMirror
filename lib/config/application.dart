@@ -89,6 +89,8 @@ class Application {
   // 动态子评论
   static CommentDtoModel replysModel;
 
+  //对比图是否保存分享
+  static bool imageIsSaveOrShared = false;
   //互动通知未读数时间戳
   static int unreadNoticeTimeStamp;
   // 用于传递所选图片视频内容，用完后需要删除

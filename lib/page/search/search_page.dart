@@ -215,7 +215,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           });
         }
       }
-      if (context.read<TokenNotifier>().isLoggedIn) {
+      if (mounted && context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
       List<CourseModel> liveList = [];
