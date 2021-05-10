@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
 import 'package:mirror/page/training/machine/remote_controller_progress_bar.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/material.dart';
@@ -35,12 +35,14 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 //机器遥控器页
 
 ///courseId：课程id,直播课程id或者视频课程的id
+///liveRoomId：直播间id
 ///modeType:类型,[CourseMode]
 class RemoteControllerPage extends StatefulWidget {
   final int courseId;
+  final int liveRoomId;
   final String modeType;
 
-  RemoteControllerPage({this.courseId, this.modeType = mode_null});
+  RemoteControllerPage({this.courseId, this.liveRoomId, this.modeType = mode_null});
 
   @override
   _RemoteControllerState createState() => _RemoteControllerState(courseId, modeType);
@@ -48,6 +50,8 @@ class RemoteControllerPage extends StatefulWidget {
 
 class _RemoteControllerState extends State<RemoteControllerPage> {
   String _title = "终端遥控";
+
+  int liveRoomId;
 
   int courseId;
   String modeType;
@@ -87,12 +91,14 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   MachineModel machineModel;
 
+  CourseModel liveVideoModel;
+
   @override
   void dispose() {
     super.dispose();
-    if (isLiveRoomController()) {
+    if (isLiveRoomController() && liveRoomId != null) {
       //退出聊天室
-      Application.rongCloud.quitChatRoom(courseId.toString());
+      Application.rongCloud.quitChatRoom(liveRoomId.toString());
     }
     _unRegisterEventBus();
     if (timer != null) {
@@ -111,10 +117,6 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _luminance = context.read<MachineNotifier>().machine?.luminance;
     _status = context.read<MachineNotifier>().machine?.status;
 
-    if (isLiveRoomController()) {
-      //加入聊天室
-      Application.rongCloud.joinChatRoom(courseId.toString());
-    }
     _getCourseInformation();
     _initEventBus();
   }
@@ -172,14 +174,47 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   @override
   Widget build(BuildContext context) {
+    return WillPopScope(
+        child: _annotatedRegionUi(),
+        onWillPop: _requestPop);
+  }
+
+
+  // 监听返回
+  Future<bool> _requestPop() async{
+    print("isNullCourse:${isNullCourse()}");
+    print("machineModel:${machineModel!=null}");
+    print("machineModel:${machineModel.machineId!=null}");
+    if(!isNullCourse()&&machineModel!=null&&machineModel.machineId!=null){
+      print("00000000000000000000000000000000000000");
+      bool result = await remoteControlPause(machineModel.machineId, courseId);
+      if (result != null && result) {
+        print("11111111111111111111111111111");
+        _showPauseDialog();
+        return new Future.value(false);
+      }
+      print("22222222222222222222222222");
+    }
+    print("444444444444444444444444444444");
+    return new Future.value(true);
+  }
+
+  _leadingOnTap()async{
+    if(await _requestPop()){
+      Navigator.of(context).pop();
+    }
+  }
+
+  Widget _annotatedRegionUi(){
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         appBar: CustomAppBar(
           titleString: _title,
+          leadingOnTap:_leadingOnTap,
           actions: [
             Visibility(
-              visible: isLiveRoomController(),
+              visible: isLiveRoomController() && liveRoomId != null,
               child: CustomAppBarIconButton(
                   svgName: AppIcon.nav_danmaku,
                   iconColor: AppColor.black,
@@ -223,6 +258,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       ),
     );
   }
+
 
   Widget _buildBody(MachineNotifier notifier) {
     return SingleChildScrollView(
@@ -273,6 +309,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _indexMapWithoutRest,
       _partAmountWithoutRest,
       isLiveRoomController(),
+      liveVideoModel,
+      machineModel == null ? 0 : machineModel.startCourse,
     );
     //
     // if(isLiveRoomController()){
@@ -410,66 +448,67 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             height: 12,
           ),
           SizedBox(
-              height: 48,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  notifier.machine.status == 0
-                      ? AppIcon.getAppIcon(
-                          AppIcon.machine_disconnected_28,
-                          28,
-                          color: AppColor.textPrimary2,
-                        )
-                      : AppIcon.getAppIcon(
-                          AppIcon.machine_connected_28,
-                          28,
-                          color: AppColor.textPrimary2,
-                        ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Text(
-                    "${notifier.machine.name}连接状态",
-                    style: AppStyle.textRegular15,
-                  ),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      // 需求修改 无论是否状态为已连接 都可以进入机器信息页
-                      // if (notifier.machine.status != 0) {
-                      AppRouter.navigateToMachineConnectionInfo(context);
-                      // }
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          notifier.machine.status != 0 ? "已连接" : "未连接",
-                          style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          height: 12,
-                          width: 12,
-                          child: Container(
-                            height: 4,
-                            width: 4,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: notifier.machine.status != 0 ? AppColor.lightGreen : AppColor.mainRed,
-                            ),
+            height: 48,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                notifier.machine.status == 0
+                    ? AppIcon.getAppIcon(
+                        AppIcon.machine_disconnected_28,
+                        28,
+                        color: AppColor.textPrimary2,
+                      )
+                    : AppIcon.getAppIcon(
+                        AppIcon.machine_connected_28,
+                        28,
+                        color: AppColor.textPrimary2,
+                      ),
+                SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "${notifier.machine.name}连接状态",
+                  style: AppStyle.textRegular15,
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    // 需求修改 无论是否状态为已连接 都可以进入机器信息页
+                    // if (notifier.machine.status != 0) {
+                    AppRouter.navigateToMachineConnectionInfo(context);
+                    // }
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        notifier.machine.status != 0 ? "已连接" : "未连接",
+                        style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        height: 12,
+                        width: 12,
+                        child: Container(
+                          height: 4,
+                          width: 4,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: notifier.machine.status != 0 ? AppColor.lightGreen : AppColor.mainRed,
                           ),
                         ),
-                        AppIcon.getAppIcon(
-                          AppIcon.arrow_right_16,
-                          16,
-                          color: AppColor.textHint,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              )),
+                      ),
+                      AppIcon.getAppIcon(
+                        AppIcon.arrow_right_16,
+                        16,
+                        color: AppColor.textHint,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
           SizedBox(
             height: 46,
           ),
@@ -478,17 +517,18 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             height: 44,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(3)),
-              color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+              color: !isNullCourse() ? AppColor.textPrimary2 : AppColor.textHint,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 AppIconButton(
                   iconSize: 28,
+                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.25) : AppColor.white,
                   svgName: AppIcon.skip_previous_28,
                   onTap: () {
-                    print("上一段");
-                    if (!isNullCourse()) {
+                    if (isVideoRoomController()) {
+                      print("上一段");
                       remoteControlPrevious(notifier.machine.machineId, courseId);
                     }
                   },
@@ -497,10 +537,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 ),
                 AppIconButton(
                   iconSize: 28,
+                  iconColor: AppColor.white,
                   svgName: AppIcon.pause_28,
                   onTap: () async {
-                    print("暂停");
                     if (!isNullCourse()) {
+                      print("暂停");
                       bool result = await remoteControlPause(notifier.machine.machineId, courseId);
                       if (result != null && result) {
                         _showPauseDialog();
@@ -513,9 +554,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 AppIconButton(
                   iconSize: 28,
                   svgName: AppIcon.skip_next_28,
+                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.25) : AppColor.white,
                   onTap: () {
-                    print("下一段");
-                    if (!isNullCourse()) {
+                    if (isVideoRoomController()) {
+                      print("下一段");
                       remoteControlNext(notifier.machine.machineId, courseId);
                     }
                   },
@@ -593,25 +635,26 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     width: 53,
                   ),
                   GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () async {
-                        await remoteControlResume(context.read<MachineNotifier>().machine.machineId, courseId);
-                        Navigator.pop(context);
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          AppIcon.getAppIcon(AppIcon.remocon_play_74, 74),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Text(
-                            "继续训练",
-                            style: TextStyle(color: AppColor.white, fontSize: 14),
-                          )
-                        ],
-                      )),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () async {
+                      await remoteControlResume(context.read<MachineNotifier>().machine.machineId, courseId);
+                      Navigator.pop(context);
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AppIcon.getAppIcon(AppIcon.remocon_play_74, 74),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "继续训练",
+                          style: TextStyle(color: AppColor.white, fontSize: 14),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -627,7 +670,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       return;
     }
     print("发送弹幕：$content");
-    if (null == content || content.length < 1 && courseId != null) {
+    if (null == content || content.length < 1) {
+      ToastShow.show(msg: "发送内容为空", context: context);
+      return;
+    }
+    if (liveRoomId != null) {
+      ToastShow.show(msg: "进入直播间错误",context: context);
       return;
     }
     _sendChatRoomMsg(content);
@@ -643,12 +691,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     msg.sendUserInfo = userInfo;
     Map<String, dynamic> textMap = Map();
     textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
-    textMap["toUserId"] = courseId;
+    textMap["toUserId"] = liveRoomId;
     textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
     textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
     textMap["data"] = text;
     msg.content = jsonEncode(textMap);
-    await Application.rongCloud.sendChatRoomMessage(courseId.toString(), msg);
+    await Application.rongCloud.sendChatRoomMessage(liveRoomId.toString(), msg);
   }
 
   _showDisconnectPopup() {
@@ -734,11 +782,22 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       return;
     }
     getMachineStatusInfoCount = 0;
-    CourseModel liveVideoModel = await getCourseModel(courseId: courseId, type: modeType);
+    liveVideoModel = await getCourseModel(courseId: courseId, type: modeType);
     if (liveVideoModel == null) {
       courseId = null;
       modeType = mode_null;
     } else {
+      if (isLiveRoomController() && liveRoomId != null) {
+        //退出聊天室
+        Application.rongCloud.quitChatRoom(liveRoomId.toString());
+      }
+      liveRoomId = liveVideoModel.coachDto.uid;
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (isLiveRoomController() && liveRoomId != null) {
+          //加入聊天室
+          Application.rongCloud.joinChatRoom(liveRoomId.toString());
+        }
+      });
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
       if (isLiveRoomController()) {
@@ -754,12 +813,19 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             List<MachineModel> machineList = await getMachineStatusInfo();
             if (machineList != null && machineList.isNotEmpty) {
               machineModel = machineList.first;
-              if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1&&
-                  machineModel.timestamp!=null&&machineModel.startCourse!=null) {
-                if (machineModel.timestamp < machineModel.startCourse) {
+              if (machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1) {
+                if (machineModel.timestamp == null) {
+                  machineModel.timestamp = new DateTime.now().millisecondsSinceEpoch;
+                }
+                if (machineModel.startCourse == null) {
                   _currentPosition = 0;
+                  // machineModel.startCourse=DateUtil.stringToDateTime(liveVideoModel.startTime).millisecondsSinceEpoch;
                 } else {
-                  _currentPosition = (machineModel.timestamp - machineModel.startCourse) / 1000;
+                  if (machineModel.timestamp < machineModel.startCourse) {
+                    _currentPosition = 0;
+                  } else {
+                    _currentPosition = (machineModel.timestamp - machineModel.startCourse) / 1000;
+                  }
                 }
               }
             }
@@ -789,6 +855,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
     EventBus.getDefault()
         .registerSingleParameter(_startTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
+
+    EventBus.getDefault()
+        .registerSingleParameter(_startLiveCourse, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_LIVE_COURSE);
 
     EventBus.getDefault().registerSingleParameter(_scheduleTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE,
         registerName: SCHEDULE_TRAINING_VIDEO);
@@ -820,6 +889,20 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       modeType = list[1];
       _currentPosition = 0;
       _getCourseInformation();
+    }
+  }
+
+  //机器开始直播课件
+  _startLiveCourse(List list) {
+    if (isLiveRoomController() && list[0] == 4) {
+      if (liveRoomId != null && liveRoomId == list[1]) {
+        if (machineModel != null) {
+          machineModel.startCourse = list[2];
+        } else {
+          machineModel = MachineModel();
+          machineModel.startCourse = list[2];
+        }
+      }
     }
   }
 
@@ -932,6 +1015,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       _partAmountWithoutRest,
       isLiveRoomController(),
       _currentPosition,
+      liveVideoModel,
+      machineModel == null ? 0 : machineModel.startCourse,
     );
   }
 }

@@ -223,6 +223,8 @@ const String TRAINING_PAGE_GET_DATA = "main_page_jump_page";
 const String END_OF_TRAINING = "end_of_training";
 // 机器开始训练
 const String START_TRAINING = "start_training";
+// 机器开始直播课件
+const String START_LIVE_COURSE = "start_live_course";
 // 机器训练中
 const String SCHEDULE_TRAINING_VIDEO = "schedule_training_video";
 //双击tabbar

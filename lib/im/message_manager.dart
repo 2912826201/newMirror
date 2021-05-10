@@ -79,10 +79,10 @@ class MessageManager {
         //将旧数据的创建时间赋值过来
         dto.createTime = exist.createTime;
         //将未读数累加
-        if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
-            Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
-          dto.unreadCount =0;
-        }else{
+        if (Application.appContext.read<ChatMessageProfileNotifier>() != null &&
+            Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)) {
+          dto.unreadCount = 0;
+        } else {
           dto.unreadCount += exist.unreadCount;
         }
       }
@@ -174,10 +174,9 @@ class MessageManager {
       return null;
     }
 
-    if(!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)){
+    if (!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)) {
       return null;
     }
-
 
     ConversationDto dto = ConversationDto();
     //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
@@ -247,10 +246,10 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
-      if(Application.appContext.read<ChatMessageProfileNotifier>()!=null&&
-          Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)){
+      if (Application.appContext.read<ChatMessageProfileNotifier>() != null &&
+          Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)) {
         dto.unreadCount = 0;
-      }else{
+      } else {
         if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
           if (contentMap["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
@@ -504,6 +503,15 @@ class MessageManager {
           list.add(dataMap["courseId"]);
           EventBus.getDefault().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
+        case 4:
+          //4-课件开始
+          print("课件开始");
+          List list = [];
+          list.add(4);
+          list.add(dataMap["liveRoomId"]);
+          list.add(dataMap["timestamp"]);
+          EventBus.getDefault().post(msg: list, registerName: START_LIVE_COURSE);
+          break;
         default:
           break;
       }
@@ -715,11 +723,13 @@ class MessageManager {
       if (dataMap["courseType"] == 0) {
         //courseType-0--直播
         BuildContext context = Application.navigatorKey.currentState.overlay.context;
-        AppRouter.navigateToMachineRemoteController(context, courseId: dataMap["courseId"], modeType: mode_live);
+        AppRouter.navigateToMachineRemoteController(context,
+            courseId: dataMap["courseId"], liveRoomId: dataMap["liveRoomId"], modeType: mode_live);
       } else {
         //courseType-0--视频
         BuildContext context = Application.navigatorKey.currentState.overlay.context;
-        AppRouter.navigateToMachineRemoteController(context, courseId: dataMap["courseId"], modeType: mode_video);
+        AppRouter.navigateToMachineRemoteController(context,
+            courseId: dataMap["courseId"], liveRoomId: dataMap["liveRoomId"], modeType: mode_video);
       }
     }
   }
