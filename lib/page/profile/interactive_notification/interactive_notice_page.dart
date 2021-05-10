@@ -124,12 +124,14 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     });
     _getMsgList(widget.type);
   }
-@override
+
+  @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    Application.unreadNoticeTimeStamp=null;
+    Application.unreadNoticeTimeStamp = null;
   }
+
   @override
   void initState() {
     hintText = "这里什么都没有呢";
@@ -156,12 +158,11 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     }
     msgList.clear();
     msgList.addAll(list);
-    if(msgList.length==0&&hasNext==0){
+    if (msgList.length == 0 && hasNext == 0) {
       controller.requestLoading();
-      setState(() {
-      });
+      setState(() {});
       streamController.sink.add(msgList);
-    }else{
+    } else {
       streamController.sink.add(msgList);
     }
   }
@@ -170,44 +171,44 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return  StreamBuilder<List<QueryModel>>(
-          initialData: msgList,
-          stream: streamController.stream,
-          builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
-            return Scaffold(
-              backgroundColor: AppColor.white,
-              appBar: CustomAppBar(
-                leadingOnTap: () {
-                  Navigator.pop(context);
-                },
-                titleString: widget.type == 0
-                    ? "评论"
-                    : widget.type == 1
-                        ? "@我"
-                        : "点赞",
-              ),
-              body: Container(
+    return StreamBuilder<List<QueryModel>>(
+        initialData: msgList,
+        stream: streamController.stream,
+        builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
+          return Scaffold(
+            backgroundColor: AppColor.white,
+            appBar: CustomAppBar(
+              leadingOnTap: () {
+                Navigator.pop(context);
+              },
+              titleString: widget.type == 0
+                  ? "评论"
+                  : widget.type == 1
+                      ? "@我"
+                      : "点赞",
+            ),
+            body: Container(
                 width: width,
                 height: height,
-                child:ScrollConfiguration(
-                        behavior: OverScrollBehavior(),
-                        child: SmartRefresher(
-                          controller: controller,
-                          enablePullUp: true,
-                          enablePullDown: true,
-                          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-                          header: SmartRefresherHeadFooter.init().getHeader(),
-                          onRefresh: _onRefresh,
-                          onLoading: () {
-                            if(msgList.length!=0){
-                              setState(() {
-                                showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                              });
-                            }
-                            _onLoading();
-                          },
-                          child: snapshot.data.isNotEmpty
-                              ?  ListView.builder(
+                child: ScrollConfiguration(
+                    behavior: OverScrollBehavior(),
+                    child: SmartRefresher(
+                      controller: controller,
+                      enablePullUp: true,
+                      enablePullDown: true,
+                      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                      header: SmartRefresherHeadFooter.init().getHeader(),
+                      onRefresh: _onRefresh,
+                      onLoading: () {
+                        if (msgList.length != 0) {
+                          setState(() {
+                            showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                          });
+                        }
+                        _onLoading();
+                      },
+                      child: snapshot.data.isNotEmpty
+                          ? ListView.builder(
                               controller: scrollController,
                               shrinkWrap: true,
                               //解决无限高度问题
@@ -220,33 +221,38 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                   index: index,
                                   globalKey: index == snapshot.data.length - 1 ? globalKey : null,
                                 );
-                              }):fristRequestIsOver?Center(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height: height * 0.22,
-                                ),
-                                Container(
-                                  width: 285,
-                                  height: 285,
-                                  child: Image.asset(defaultImage),
-                                ),
-                                SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  hintText,
-                                  style: AppStyle.textPrimary3Regular14,
+                              })
+                          : fristRequestIsOver
+                              ? Center(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: height * 0.22,
+                                      ),
+                                      Container(
+                                        width: 285,
+                                        height: 285,
+                                        child: Image.asset(defaultImage),
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text(
+                                        hintText,
+                                        style: AppStyle.textPrimary3Regular14,
+                                      )
+                                    ],
+                                  ),
                                 )
-                              ],
-                            ),
-                          ):Container(height: height,width: width,color: AppColor.white,),
-                        ))
-
-              ),
-            );
-          });
+                              : Container(
+                                  height: height,
+                                  width: width,
+                                  color: AppColor.white,
+                                ),
+                    ))),
+          );
+        });
   }
 }
 
@@ -405,7 +411,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl:senderAvatarUrl!=null?FileUtil.getSmallImage(senderAvatarUrl):" ",
+                        memCacheWidth: 150,
+                        memCacheHeight: 150,
+                        imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,
@@ -479,7 +487,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       child: CachedNetworkImage(
                         height: 38,
                         width: 38,
-                        imageUrl:coverImage!=null?FileUtil.getSmallImage(coverImage):" ",
+                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,

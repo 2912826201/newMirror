@@ -195,7 +195,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         children: [
           Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
             print("头像地址:$avatar");
-            return  CachedNetworkImage(
+            return CachedNetworkImage(
               height: gaussianBlurHeight,
               width: width,
               imageUrl: avatar != null ? avatar : "",
@@ -334,7 +334,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "关注",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followingCount)),
                     onTap: () {
@@ -349,7 +350,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "粉丝",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followerCount)),
                   ),
@@ -363,7 +365,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         "动态",
                         StringUtil.getNumber(context
                             .watch<UserInteractiveNotifier>()
-                            .value.profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .value
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .feedCount)),
                   )
@@ -391,6 +394,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 child: CachedNetworkImage(
                   height: avatarSize,
                   width: avatarSize,
+                  memCacheWidth: 250,
+                  memCacheHeight: 250,
                   imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
@@ -414,8 +419,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget _textAndNumber(String text, String number) {
     print('__________________________$number');
     Size fansCountSize;
-    if(text=="粉丝"){
-      fansCountSize = calculateTextWidth(number,AppStyle.textMedium18,userDetaileIconSize,1).size;
+    if (text == "粉丝") {
+      fansCountSize = calculateTextWidth(number, AppStyle.textMedium18, userDetaileIconSize, 1).size;
     }
     return Container(
       height: userDetaileIconSize,
@@ -427,11 +432,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           Stack(
             children: [
               Container(
-                width: text=="粉丝"?fansCountSize.width+6:null,
+                width: text == "粉丝" ? fansCountSize.width + 6 : null,
                 child: Text(
-                number,
-                style: AppStyle.textMedium18,
-              ),),
+                  number,
+                  style: AppStyle.textMedium18,
+                ),
+              ),
               Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
                 return Positioned(
                     top: 0,

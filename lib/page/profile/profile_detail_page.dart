@@ -740,6 +740,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         child: CachedNetworkImage(
           height: avatarSize,
           width: avatarSize,
+          memCacheHeight: 250,
+          memCacheWidth: 250,
           useOldImageOnUrlChange: true,
           imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
           fit: BoxFit.cover,
