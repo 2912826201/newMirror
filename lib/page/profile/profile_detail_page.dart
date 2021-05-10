@@ -425,7 +425,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   )),
                   Container(
                     width: userNameWidth,
-                    child: Text(
+                    child: Center(
+                      child: Text(
                         _textName != null ? "$_textName" : "",
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
@@ -435,47 +436,50 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                             fontSize: 18,
                             color: AppColor.black.withOpacity(snapshot.data)),
                       ),
+                    ),
                   ),
                   Expanded(
-                      child:  Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CustomAppBarIconButton(
-                                svgName: AppIcon.nav_share,
-                                iconColor: AppColor.black,
-                                onTap: () {
-                                  openShareBottomSheet(
-                                      context: context,
-                                      map: userModel.toJson(),
-                                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                                      sharedType: 1);
-                                },
-                              ),
-                              !isMselfId
-                                  ? CustomAppBarIconButton(
-                                      svgName: AppIcon.nav_more,
-                                      iconColor: AppColor.black,
-                                      onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                          return ProfileDetailsMore(
-                                            userId: widget.userId,
-                                            userName: _textName,
-                                          );
-                                        })).then((value) {
-                                          _getFollowCount(id: widget.userId);
-                                        });
-                                      },
-                                    )
-                                  : Container(
-                                      width: 0,
-                                    ),
-                              !isMselfId
-                                  ? SizedBox(
-                                      width: 8,
-                                    )
-                                  : Container(width: 0,)
-                            ],
-                          ))
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomAppBarIconButton(
+                        svgName: AppIcon.nav_share,
+                        iconColor: AppColor.black,
+                        onTap: () {
+                          openShareBottomSheet(
+                              context: context,
+                              map: userModel.toJson(),
+                              chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                              sharedType: 1);
+                        },
+                      ),
+                      !isMselfId
+                          ? CustomAppBarIconButton(
+                              svgName: AppIcon.nav_more,
+                              iconColor: AppColor.black,
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                  return ProfileDetailsMore(
+                                    userId: widget.userId,
+                                    userName: _textName,
+                                  );
+                                })).then((value) {
+                                  _getFollowCount(id: widget.userId);
+                                });
+                              },
+                            )
+                          : Container(
+                              width: 0,
+                            ),
+                      !isMselfId
+                          ? SizedBox(
+                              width: 8,
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    ],
+                  ))
                 ],
               ),
             ),
