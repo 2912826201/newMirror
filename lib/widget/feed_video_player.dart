@@ -81,7 +81,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     }
 
     eventListener = (BetterPlayerEvent event) {
-      print("event: ${event.betterPlayerEventType}, params: ${event.parameters}");
+      // print("event: ${event.betterPlayerEventType}, params: ${event.parameters}");
 
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
@@ -190,7 +190,6 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   }
   @override
   void dispose() {
-    // controller.dispose();
     super.dispose();
   }
 

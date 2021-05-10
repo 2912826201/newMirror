@@ -63,19 +63,23 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     if (widget.betterPlayerListVideoPlayerController != null) {
       widget.betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
     }
+    print("初始化的播放器控制器::::${_betterPlayerController.hashCode}");
   }
 
   @override
   void dispose() {
     print("视频测试dispose");
     _betterPlayerController.removeEventsListener(widget.configuration.eventListener);
-    _betterPlayerController.dispose();
+    print("销毁的播放器控制器::::${_betterPlayerController.hashCode}");
+    // 不能在此销毁在better_player文件内有销毁流程，在此销毁会引发notifyListeners的报错
+    // _betterPlayerController.dispose();
     _isDisposing = true;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     // super.build(context);
     return AspectRatio(
       aspectRatio: _betterPlayerController.getAspectRatio() ?? BetterPlayerUtils.calculateAspectRatio(context),
