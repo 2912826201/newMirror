@@ -104,22 +104,24 @@ class AtListState extends State<AtList> {
     }
     SearchUserModel model =
         await ProfileSearchUser(keyWork, 20, lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
-    if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          BuddyModel followModel = BuddyModel();
-          followModel.nickName = v.nickName + " ";
-          followModel.uid = v.uid;
-          followModel.avatarUri = v.avatarUri;
-          searchFollowList.add(followModel);
-        });
-        context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_IDEL;
-        context.read<ReleaseFeedInputNotifier>().searchLoadText = "加载中...";
+    if (model != null) {
+      if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            BuddyModel followModel = BuddyModel();
+            followModel.nickName = v.nickName + " ";
+            followModel.uid = v.uid;
+            followModel.avatarUri = v.avatarUri;
+            searchFollowList.add(followModel);
+          });
+          context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_IDEL;
+          context.read<ReleaseFeedInputNotifier>().searchLoadText = "加载中...";
+        }
       }
+      // 记录搜索状态
+      context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
+      context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     }
-    // 记录搜索状态
-    context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
-    context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     setState(() {});
     // 把在输入框回调内的第一页数据插入
     searchFollowList.insertAll(0, context.read<ReleaseFeedInputNotifier>().followList);
@@ -153,30 +155,32 @@ class AtListState extends State<AtList> {
       return;
     }
     BuddyListModel model = await GetFollowList(20, lastTime: lastTime);
-    if (dataPage == 1) {
-      if (model.list.isNotEmpty) {
-        print(model.list.length);
-        followList = model.list;
-        followList.forEach((element) {
-          element.nickName = element.nickName + " ";
-        });
-        if (model.hasNext == 0) {
-          loadText = "";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
+    if (model != null) {
+      if (dataPage == 1) {
+        if (model.list.isNotEmpty) {
+          print(model.list.length);
+          followList = model.list;
+          followList.forEach((element) {
+            element.nickName = element.nickName + " ";
+          });
+          if (model.hasNext == 0) {
+            loadText = "";
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
+        }
+      } else if (dataPage > 1 && lastTime != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            v.nickName = v.nickName + " ";
+          });
+          followList.addAll(model.list);
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
         }
       }
-    } else if (dataPage > 1 && lastTime != null) {
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          v.nickName = v.nickName + " ";
-        });
-        followList.addAll(model.list);
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
-      }
+      lastTime = model.lastTime;
+      hasNext = model.hasNext;
     }
-    lastTime = model.lastTime;
-    hasNext = model.hasNext;
     // 存入@显示数据
     context.read<ReleaseFeedInputNotifier>().setFollowList(followList);
     // 搜索时会替换@显示数据，备份一份数据

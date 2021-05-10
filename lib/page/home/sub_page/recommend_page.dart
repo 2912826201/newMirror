@@ -215,15 +215,17 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       if (dataModel == null) {
         _refreshController.loadNoData();
       }
-      if (dataModel != null && dataModel.list.isNotEmpty) {
-        print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
-        dataModel.list.forEach((v) {
-          recommendIdList.add(HomeFeedModel.fromJson(v).id);
-          recommendModelList.add(HomeFeedModel.fromJson(v));
-        });
-        _refreshController.loadComplete();
+      if (dataModel != null) {
+        if (dataModel.list.isNotEmpty) {
+          print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
+          dataModel.list.forEach((v) {
+            recommendIdList.add(HomeFeedModel.fromJson(v).id);
+            recommendModelList.add(HomeFeedModel.fromJson(v));
+          });
+          _refreshController.loadComplete();
+        }
+        hasNext = dataModel.hasNext;
       }
-      hasNext = dataModel.hasNext;
     }
     if (hasNext == 0) {
       _refreshController.loadNoData();

@@ -73,16 +73,18 @@ class FeedFlowState extends State<FeedFlow> {
   requestFeednIterface() async {
     if (widget.feedHasNext != 0) {
       DataResponseModel model = await searchFeed(key: widget.searchKeyWords, size: 20, lastTime: widget.feedLastTime);
-      widget.feedLastTime = model.lastTime;
-      widget.feedHasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          widget.feedList.add(HomeFeedModel.fromJson(v));
-        });
-        _refreshController.loadComplete();
+      if(model != null) {
+        widget.feedLastTime = model.lastTime;
+        widget.feedHasNext = model.hasNext;
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            widget.feedList.add(HomeFeedModel.fromJson(v));
+          });
+          _refreshController.loadComplete();
+        }
+        // 更新全局内没有的数据
+        context.read<FeedMapNotifier>().updateFeedMap(widget.feedList);
       }
-      // 更新全局内没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap(widget.feedList);
     }
     if (widget.feedHasNext == 0) {
       // 加载完毕
@@ -99,13 +101,15 @@ class FeedFlowState extends State<FeedFlow> {
     widget.feedLastTime = null;
     widget.feedList.clear();
     DataResponseModel model = await searchFeed(key: widget.searchKeyWords, size: 20, lastTime: widget.feedLastTime);
-    widget.feedLastTime = model.lastTime;
-    widget.feedHasNext = model.hasNext;
-    if (model.list.isNotEmpty) {
-      model.list.forEach((v) {
-        widget.feedList.add(HomeFeedModel.fromJson(v));
-      });
-      _refreshController.refreshCompleted();
+    if(model != null) {
+      widget.feedLastTime = model.lastTime;
+      widget.feedHasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          widget.feedList.add(HomeFeedModel.fromJson(v));
+        });
+        _refreshController.refreshCompleted();
+      }
     }
     if (widget.feedHasNext == 0) {
       // 加载完毕

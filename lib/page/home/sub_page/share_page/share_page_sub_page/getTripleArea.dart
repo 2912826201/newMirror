@@ -229,17 +229,19 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       BaseResponseModel model = await laud(
           id: widget.model.id,
           laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
-      if (model.code == CODE_BLACKED) {
-        ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-      } else {
-        context.read<FeedMapNotifier>().setLaud(
-            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
-            myAvatar,
-            widget.model.id);
-        // model
-        context
-            .read<UserInteractiveNotifier>()
-            .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+      if (model != null) {
+        if (model.code == CODE_BLACKED) {
+          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+        } else {
+          context.read<FeedMapNotifier>().setLaud(
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+              myAvatar,
+              widget.model.id);
+          // model
+          context
+              .read<UserInteractiveNotifier>()
+              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+        }
       }
     } else {
       // 去登录
