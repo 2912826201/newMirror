@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -25,6 +26,7 @@ Future openShareBottomSheet({
   @required Map<String, dynamic> map,
   @required String chatTypeModel,
   @required int sharedType,
+  bool fromTraingGallery = false,
 }) async {
   await showModalBottomSheet(
     isScrollControlled: true,
@@ -43,6 +45,7 @@ Future openShareBottomSheet({
           map: map,
           chatTypeModel: chatTypeModel,
           sharedType: sharedType,
+          fromTraingGallery: fromTraingGallery,
         ),
       );
     },
@@ -53,8 +56,8 @@ class FeedSharePopups extends StatelessWidget {
   String chatTypeModel;
   Map<String, dynamic> map;
   int sharedType;
-
-  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType});
+  bool fromTraingGallery;
+  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType,this.fromTraingGallery});
 
   List<ShareViewModel> shareViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
@@ -114,6 +117,9 @@ class FeedSharePopups extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () async {
+                      if(fromTraingGallery){
+                        Application.imageIsSaveOrShared = true;
+                      }
                       print("点击了￥${shareViewModel[index].name}");
                       switch (shareViewModel[index].name) {
                         case "站内好友":
@@ -130,6 +136,8 @@ class FeedSharePopups extends StatelessWidget {
                           var result = await ImageGallerySaver.saveFile(map["file"]);
                           if (result["isSuccess"] == true) {
                             ToastShow.show(msg: "保存成功", context: context);
+                          }else{
+                            ToastShow.show(msg: "保存失败", context: context);
                           }
                           Navigator.of(context).pop(1);
                           break;

@@ -765,11 +765,11 @@ class AppRouter {
   }
 
   static void navigateToTrainingGalleryComparisonPage(
-      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2) {
+      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2, {Function(dynamic) callBack}) {
     Map<String, dynamic> map = Map();
     map["image1"] = image1.toJson();
     map["image2"] = image2.toJson();
-    _navigateToPage(context, pathTrainingGalleryComparison, map);
+    _navigateToPage(context, pathTrainingGalleryComparison, map,callback: callBack);
   }
 
   static void navigateToMeCoursePage(BuildContext context) {

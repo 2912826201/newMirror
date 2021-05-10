@@ -49,6 +49,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   final List<TrainingGalleryImageModel> _selectedImageList = [];
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd');
 
+
   _initData() async {
     await _requestDataList();
 
@@ -71,6 +72,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
   }
 
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+  }
   @override
   void initState() {
     super.initState();
@@ -464,10 +470,22 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                         DateTime time1 = _dateTimeFormat.parse(_selectedImageList[1].dateTime);
                         if (time1.isBefore(time0)) {
                           AppRouter.navigateToTrainingGalleryComparisonPage(
-                              context, _selectedImageList[1], _selectedImageList[0]);
+                              context, _selectedImageList[1], _selectedImageList[0], callBack: (result) {
+                                if(Application.imageIsSaveOrShared!=null&&Application.imageIsSaveOrShared){
+                                  _isSelectionMode = false;
+                                  setState(() {});
+                                  Application.imageIsSaveOrShared = false;
+                                }
+                          });
                         } else {
                           AppRouter.navigateToTrainingGalleryComparisonPage(
-                              context, _selectedImageList[0], _selectedImageList[1]);
+                              context, _selectedImageList[0], _selectedImageList[1], callBack: (result) {
+                            if(Application.imageIsSaveOrShared!=null&&Application.imageIsSaveOrShared){
+                              _isSelectionMode = false;
+                              setState(() {});
+                              Application.imageIsSaveOrShared = false;
+                            }
+                          });
                         }
                       }
                     },

@@ -160,7 +160,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
               "退出登录",
               style: AppStyle.redRegular16,
             ),
-            Expanded(child: SizedBox())
+            Spacer()
           ],
         ),
       ),

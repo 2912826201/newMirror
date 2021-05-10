@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
