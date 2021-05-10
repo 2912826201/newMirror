@@ -7,6 +7,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/popup/share_popup.dart';
 import 'package:mirror/route/router.dart';
@@ -118,7 +119,7 @@ class FeedSharePopups extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       if(fromTraingGallery){
-                        Application.imageIsSaveOrShared = true;
+                        context.read<UserInteractiveNotifier>().changeShowImageFrame(false);
                       }
                       print("点击了￥${shareViewModel[index].name}");
                       switch (shareViewModel[index].name) {

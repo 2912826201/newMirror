@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +81,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   void initState() {
     super.initState();
+    context.read<UserInteractiveNotifier>().showImageFrame = false;
     _initAppBar();
     _initData();
   }
@@ -98,9 +100,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     _selectionModeAppBar = CustomAppBar(
       titleString: "健身相册",
       leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, () {
-        setState(() {
-          _isSelectionMode = false;
-        });
+        context.read<UserInteractiveNotifier>().changeShowImageFrame(false);
       }),
     );
     _normalModeAppBar = CustomAppBar(
@@ -120,7 +120,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _isSelectionMode ? _selectionModeAppBar : _normalModeAppBar,
+      appBar:  context.watch<UserInteractiveNotifier>().showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
     );
   }
@@ -229,7 +229,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
     TrainingGalleryImageModel imageModel = _dataList[dayIndex].list[index];
     bool isSelected = false;
-    if (_isSelectionMode) {
+    if (context.read<UserInteractiveNotifier>().showImageFrame) {
       for (TrainingGalleryImageModel selected in _selectedImageList) {
         if (selected.id == imageModel.id) {
           isSelected = true;
@@ -239,7 +239,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
     return GestureDetector(
       onTap: () {
-        if (_isSelectionMode) {
+        if (context.read<UserInteractiveNotifier>().showImageFrame) {
           if (isSelected) {
             //已选中 取消选择
             setState(() {
@@ -445,7 +445,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   Widget _buildBottomView() {
-    if (_isSelectionMode) {
+    if (context.watch<UserInteractiveNotifier>().showImageFrame) {
       return Container(
         padding: EdgeInsets.fromLTRB(16, 0, 16, ScreenUtil.instance.bottomBarHeight),
         height: 145 + ScreenUtil.instance.bottomBarHeight,
@@ -470,22 +470,10 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                         DateTime time1 = _dateTimeFormat.parse(_selectedImageList[1].dateTime);
                         if (time1.isBefore(time0)) {
                           AppRouter.navigateToTrainingGalleryComparisonPage(
-                              context, _selectedImageList[1], _selectedImageList[0], callBack: (result) {
-                                if(Application.imageIsSaveOrShared!=null&&Application.imageIsSaveOrShared){
-                                  _isSelectionMode = false;
-                                  setState(() {});
-                                  Application.imageIsSaveOrShared = false;
-                                }
-                          });
+                              context, _selectedImageList[1], _selectedImageList[0]);
                         } else {
                           AppRouter.navigateToTrainingGalleryComparisonPage(
-                              context, _selectedImageList[0], _selectedImageList[1], callBack: (result) {
-                            if(Application.imageIsSaveOrShared!=null&&Application.imageIsSaveOrShared){
-                              _isSelectionMode = false;
-                              setState(() {});
-                              Application.imageIsSaveOrShared = false;
-                            }
-                          });
+                              context, _selectedImageList[0], _selectedImageList[1]);
                         }
                       }
                     },
@@ -585,7 +573,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           print("制作对比图");
           setState(() {
             _selectedImageList.clear();
-            _isSelectionMode = true;
+            context.read<UserInteractiveNotifier>().changeShowImageFrame(true);
           });
         },
         child: Container(
