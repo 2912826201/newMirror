@@ -45,7 +45,7 @@ class _BlackListState extends State<BlackListPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserInteractiveNotifier>().removeId = [];
+    context.read<UserInteractiveNotifier>().value.removeId = [];
     _getBlackList();
   }
 
@@ -113,10 +113,10 @@ class _BlackListState extends State<BlackListPage> {
             onTap: () {
               jumpToUserProfilePage(context, blackList[index].uid,
                   avatarUrl: blackList[index].avatarUri, userName: blackList[index].nickName, callback: (result) {
-                if (context.read<UserInteractiveNotifier>().removeId != null) {
+                if (context.read<UserInteractiveNotifier>().value.removeId != null) {
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {
-                    if (!context.read<UserInteractiveNotifier>().removeId.contains(element.uid)) {
+                    if (!context.read<UserInteractiveNotifier>().value.removeId.contains(element.uid)) {
                       list.add(element);
                     }
                   });

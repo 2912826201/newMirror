@@ -484,23 +484,23 @@ class _FollowButtonState extends State<FollowButton> {
         height: 24,
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
-          color: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
+          color: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
               ? AppColor.textPrimary1
               : AppColor.transparent,
           borderRadius: BorderRadius.all(Radius.circular(14)),
           border: Border.all(
-              width: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
+              width: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
         ),
         child: Center(
           child: Text(
-              context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
+              context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
                   ? widget.buttonType == FollowButtonType.FOLLOW || widget.buttonType == FollowButtonType.SERCH
                       ? "关注"
                       : widget.isMysList
                           ? "回粉"
                           : "关注"
                   : "已关注",
-              style: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
+              style: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
                   ? AppStyle.whiteRegular12
                   : AppStyle.textSecondaryRegular12),
         ),
@@ -511,7 +511,7 @@ class _FollowButtonState extends State<FollowButton> {
           AppRouter.navigateToLoginPage(context);
           return false;
         }
-        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow) {
+        if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow) {
           _checkBlackStatus();
         }
       },

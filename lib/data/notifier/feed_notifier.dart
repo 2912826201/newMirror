@@ -48,9 +48,7 @@ class FeedMap {
 
 class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     {
-  FeedMapNotifier(FeedMap value) : super(value) {
-    value.wrapper = this;
-  }
+  FeedMapNotifier(FeedMap value) : super(value) {value.wrapper = this;}
 
   // 是否是左滑
   bool isSwipeLeft;

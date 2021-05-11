@@ -169,6 +169,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
         border: InputBorder.none,
       ),
+
       inputFormatters: [
         ExpressionTeamDeleteFormatter(maxLength: 15,needWrap: false)
          ],

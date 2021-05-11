@@ -221,7 +221,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
       if (model != null) {
-        if (context.read<UserInteractiveNotifier>().fansUnreadCount != 0) {
+        if (context.read<UserInteractiveNotifier>().value.fansUnreadCount != 0) {
           context.read<UserInteractiveNotifier>().changeUnreadFansCount(0);
         }
         buddyList.clear();
@@ -403,13 +403,13 @@ class _QueryFollowState extends State<QueryFollowList> {
   void initState() {
     super.initState();
     hintText = "静悄悄的,什么都没有";
-    if (context.read<UserInteractiveNotifier>().userFollowChangeIdList == null) {
+    if (context.read<UserInteractiveNotifier>().value.userFollowChangeIdList == null) {
       userIdNeedClear = true;
-      context.read<UserInteractiveNotifier>().userFollowChangeIdList = [];
+      context.read<UserInteractiveNotifier>().value.userFollowChangeIdList = [];
     }
-    if (context.read<UserInteractiveNotifier>().removeId == null) {
+    if (context.read<UserInteractiveNotifier>().value.removeId == null) {
       idNeedClear = true;
-      context.read<UserInteractiveNotifier>().removeId = [];
+      context.read<UserInteractiveNotifier>().value.removeId = [];
     }
 
     if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
@@ -451,10 +451,10 @@ class _QueryFollowState extends State<QueryFollowList> {
     // TODO: implement deactivate
     super.deactivate();
     if (idNeedClear) {
-      context.read<UserInteractiveNotifier>().removeId = null;
+      context.read<UserInteractiveNotifier>().value.removeId = null;
     }
     if (userIdNeedClear) {
-      context.read<UserInteractiveNotifier>().userFollowChangeIdList = null;
+      context.read<UserInteractiveNotifier>().value.userFollowChangeIdList = null;
     }
   }
 
@@ -609,7 +609,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                     if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
                                         !context
                                             .watch<UserInteractiveNotifier>()
-                                            .profileUiChangeModel[buddyList[index].uid]
+                                            .value.profileUiChangeModel[buddyList[index].uid]
                                             .isFollow) {
                                       return QueryFollowItem(
                                         type: widget.type,
@@ -626,14 +626,14 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         userFollowChangeCallBack: () {
                                           if (context
                                               .read<UserInteractiveNotifier>()
-                                              .userFollowChangeIdList
+                                              .value.userFollowChangeIdList
                                               .isNotEmpty) {
                                             List<BuddyModel> list = [];
                                             buddyList.forEach((element) {
                                               if (element.uid != null &&
                                                   !context
                                                       .read<UserInteractiveNotifier>()
-                                                      .userFollowChangeIdList
+                                                      .value.userFollowChangeIdList
                                                       .contains(element.uid)) {
                                                 list.add(element);
                                               }
@@ -641,6 +641,9 @@ class _QueryFollowState extends State<QueryFollowList> {
                                             buddyList.clear();
                                             buddyList.addAll(list);
                                             buddyList.insert(0, BuddyModel());
+                                            context
+                                                .read<UserInteractiveNotifier>()
+                                                .value.userFollowChangeIdList = [];
                                             if (buddyList.length == 1) {
                                               if (hasNext == 0) {
                                                 buddyList.add(BuddyModel(uid: -1));
@@ -685,17 +688,18 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         : null,
                                     topicDeleteCallBack: () {
                                       print('=========================话题详情返回');
-                                      if (context.read<UserInteractiveNotifier>().removeId != null &&
-                                          context.read<UserInteractiveNotifier>().removeId.isNotEmpty) {
+                                      if (context.read<UserInteractiveNotifier>().value.removeId != null &&
+                                          context.read<UserInteractiveNotifier>().value.removeId.isNotEmpty) {
                                         List<TopicDtoModel> list = [];
                                         topicList.forEach((element) {
-                                          if (!context.read<UserInteractiveNotifier>().removeId.contains(element.id)) {
+                                          if (!context.read<UserInteractiveNotifier>().value.removeId.contains(element.id)) {
                                             list.add(element);
                                           }
                                         });
                                         topicList.clear();
                                         topicList.addAll(list);
                                         setState(() {});
+                                        context.read<UserInteractiveNotifier>().value.removeId = [];
                                       }
                                     },
                                   );

@@ -841,7 +841,7 @@ class LiveDetailPageState extends XCState {
     }
     jumpToUserProfilePage(context, liveModel.coachDto?.uid,
         avatarUrl: liveModel.coachDto?.avatarUri, userName: liveModel.coachDto?.nickName, callback: (dynamic r) {
-        bool result=context.read<UserInteractiveNotifier>().profileUiChangeModel[liveModel.coachDto.uid].isFollow;
+        bool result=context.read<UserInteractiveNotifier>().value.profileUiChangeModel[liveModel.coachDto.uid].isFollow;
       print("result:$result");
       if (null != result && result is bool) {
         liveModel.coachDto.relation = result ? 0 : 1;

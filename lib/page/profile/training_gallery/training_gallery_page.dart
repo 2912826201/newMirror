@@ -81,7 +81,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserInteractiveNotifier>().showImageFrame = false;
+    context.read<UserInteractiveNotifier>().value.showImageFrame = false;
     _initAppBar();
     _initData();
   }
@@ -120,7 +120,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  context.watch<UserInteractiveNotifier>().showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
+      appBar:  context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
     );
   }
@@ -229,7 +229,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
     TrainingGalleryImageModel imageModel = _dataList[dayIndex].list[index];
     bool isSelected = false;
-    if (context.read<UserInteractiveNotifier>().showImageFrame) {
+    if (context.read<UserInteractiveNotifier>().value.showImageFrame) {
       for (TrainingGalleryImageModel selected in _selectedImageList) {
         if (selected.id == imageModel.id) {
           isSelected = true;
@@ -239,7 +239,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
     return GestureDetector(
       onTap: () {
-        if (context.read<UserInteractiveNotifier>().showImageFrame) {
+        if (context.read<UserInteractiveNotifier>().value.showImageFrame) {
           if (isSelected) {
             //已选中 取消选择
             setState(() {
@@ -256,11 +256,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           }
         } else {
           AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
-            if (result == null) {
+            if (Application.galleryResult == null) {
               return;
             }
-
-            TrainingGalleryResult galleryResult = result as TrainingGalleryResult;
+            TrainingGalleryResult galleryResult = Application.galleryResult;
+            Application.galleryResult  = null;
             //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
             //要确保遍历后再进行增删操作
             if (galleryResult.operation == -1) {
@@ -445,7 +445,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   Widget _buildBottomView() {
-    if (context.watch<UserInteractiveNotifier>().showImageFrame) {
+    if (context.watch<UserInteractiveNotifier>().value.showImageFrame) {
       return Container(
         padding: EdgeInsets.fromLTRB(16, 0, 16, ScreenUtil.instance.bottomBarHeight),
         height: 145 + ScreenUtil.instance.bottomBarHeight,

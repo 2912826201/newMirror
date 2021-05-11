@@ -88,6 +88,9 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
       physics: BouncingScrollPhysics(),
       childrenDelegate: FirstEndItemChildrenDelegate(
         (BuildContext context, int index) {
+          if (index >= context.watch<FeedFlowDataNotifier>().homeFeedModelList.length+1) {
+            return Container();
+          }
           if (index == context.watch<FeedFlowDataNotifier>().homeFeedModelList.length) {
             return Container(
               color: Colors.transparent,
@@ -176,6 +179,9 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     }
     DataResponseModel model =
         await getPullList(type: widget.pullFeedType, size: 20, targetId: widget.pullFeedTargetId, lastTime: lastTime);
+    if(context==null||!mounted){
+      return;
+    }
     if (isRefresh) {
       context.read<FeedFlowDataNotifier>().clear();
     }

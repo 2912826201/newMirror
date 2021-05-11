@@ -28,7 +28,6 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
-import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
