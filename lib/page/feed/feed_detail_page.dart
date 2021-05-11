@@ -349,6 +349,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
           sizeInfo,
           ScreenUtil.instance.width,
           isInListView: true,
+          index: 0,
         ),
       ),
     );

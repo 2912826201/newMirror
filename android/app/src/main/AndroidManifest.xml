@@ -35,7 +35,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize"
-            android:largeHeap="false">
+            android:largeHeap="true">
 
             <!-- android:largeHeap="false" 会限制app应用申请的内存大小 -->
             <!--  android:hardwareAccelerated="true" 牺牲内存来加快图片的加载速度。 -->

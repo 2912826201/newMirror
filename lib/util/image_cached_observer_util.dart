@@ -11,7 +11,7 @@ class ImageCachedObserverUtil {
   //    清除缓存。
 
   static clearPendingCacheImage() {
-    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache?.clear();
   }
 
   ///从两个基于磁盘文件的缓存系统中逐出映像

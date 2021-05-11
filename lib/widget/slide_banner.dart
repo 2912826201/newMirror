@@ -476,7 +476,9 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       print("轮播图清除缓存");
       if (widget.model != null && widget.model.picUrls.length > 0) {
         widget.model.picUrls.forEach((element) {
-          ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
+          if(element.url != null) {
+            ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
+          }
         });
       }
     } catch (e) {

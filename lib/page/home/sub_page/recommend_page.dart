@@ -327,7 +327,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                     print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                                   },
                                 );
-                              }, childCount: recommendIdList.length + 1),
+                              }, childCount: recommendIdList.length),
                             )
                           : SliverToBoxAdapter(
                               child: Container(

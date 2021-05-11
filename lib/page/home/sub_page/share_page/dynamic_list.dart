@@ -74,82 +74,94 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
     print('==============================动态itembuild');
     return widget.model != null
         ? Column(
-            children: [
-              // 头部头像时间
-              HeadView(
-                  model: widget.model,
-                  isShowConcern: widget.isShowConcern,
-                  pageName: widget.pageName,
-                  mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
-                  deleteFeedChanged: (id) {
-                    widget.deleteFeedChanged(id);
-                  },
-                  removeFollowChanged: (m) {
-                    widget.removeFollowChanged(m);
-                  }),
-              // 图片区域
-              widget.model.picUrls.length > 0
-                  ? SlideBanner(
-                      height: widget.model.picUrls[0].height.toDouble(),
-                      model: widget.model,
-                      index: widget.index,
-                      pageName: widget.pageName,
-                      isHero: widget.isHero,
-                    )
-                  : Container(),
-              // 视频区域
-              widget.model.videos.isNotEmpty ? getVideo(feedModel: widget.model) : Container(),
-              // 点赞，转发，评论三连区域 getTripleArea
-              GetTripleArea(model: widget.model, index: widget.index),
-              // 课程信息和地址
-              Offstage(
-                offstage: (widget.model.address == null && widget.model.courseDto == null),
-                child: Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16),
-                  width: ScreenUtil.instance.width,
-                  child: getCourseInfo(widget.model, context),
-                ),
-              ),
+      children: [
+        // 头部头像时间
+        HeadView(
+            model: widget.model,
+            isShowConcern: widget.isShowConcern,
+            pageName: widget.pageName,
+            mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
+            deleteFeedChanged: (id) {
+              widget.deleteFeedChanged(id);
+            },
+            removeFollowChanged: (m) {
+              widget.removeFollowChanged(m);
+            }),
+        // 图片区域
+        widget.model.picUrls.length > 0
+            ? SlideBanner(
+          height: widget.model.picUrls[0].height.toDouble(),
+          model: widget.model,
+          index: widget.index,
+          pageName: widget.pageName,
+          isHero: widget.isHero,
+        )
+            : Container(),
+        // 视频区域
+        widget.model.videos.isNotEmpty ? getVideo(feedModel: widget.model, index: widget.index) : Container(),
+        // 点赞，转发，评论三连区域 getTripleArea
+        GetTripleArea(model: widget.model, index: widget.index),
+        // 课程信息和地址
+        Offstage(
+          offstage: (widget.model.address == null && widget.model.courseDto == null),
+          child: Container(
+            margin: const EdgeInsets.only(left: 16, right: 16),
+            width: ScreenUtil.instance.width,
+            child: getCourseInfo(widget.model, context),
+          ),
+        ),
 
-              // 文本文案
-              Offstage(
-                offstage: widget.model.content.length == 0,
-                child: Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
-                  width: ScreenUtil.instance.screenWidthDp,
-                  child: ExpandableText(
-                    text: widget.model.content,
-                    topicId: widget.topicId,
-                    model: widget.model,
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-                  ),
-                ),
-              ),
+        // 文本文案
+        Offstage(
+          offstage: widget.model.content.length == 0,
+          child: Container(
+            margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+            width: ScreenUtil.instance.screenWidthDp,
+            child: ExpandableText(
+              text: widget.model.content,
+              topicId: widget.topicId,
+              model: widget.model,
+              maxLines: 2,
+              style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+            ),
+          ),
+        ),
 
-              // 评论文本
-              (context.watch<FeedMapNotifier>().value.feedMap != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id] != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments != null &&
-                      context.watch<FeedMapNotifier>().value.feedMap[widget.model.id].comments.length != 0)
-                  ? CommentLayout(model: widget.model)
-                  : Container(),
-              // 输入框
-              CommentInputBox(feedModel: widget.model),
-              // Note 推荐用户 暂时屏蔽
-              // getAttention(widget.index, widget.isShowRecommendUser),
-              // 分割块
-              Container(
-                height: 18,
-                color: AppColor.white,
-              )
-            ],
-          )
+        // 评论文本
+        (context
+            .watch<FeedMapNotifier>()
+            .value
+            .feedMap != null &&
+            context
+                .watch<FeedMapNotifier>()
+                .value
+                .feedMap[widget.model.id] != null &&
+            context
+                .watch<FeedMapNotifier>()
+                .value
+                .feedMap[widget.model.id].comments != null &&
+            context
+                .watch<FeedMapNotifier>()
+                .value
+                .feedMap[widget.model.id].comments.length != 0)
+            ? CommentLayout(model: widget.model)
+            : Container(),
+        // 输入框
+        CommentInputBox(feedModel: widget.model),
+        // Note 推荐用户 暂时屏蔽
+        // getAttention(widget.index, widget.isShowRecommendUser),
+        // 分割块
+        Container(
+          height: 18,
+          color: AppColor.white,
+        )
+      ],
+    )
         : Container();
   }
 
 // 视频
-  Widget getVideo({HomeFeedModel feedModel}) {
+  Widget getVideo({HomeFeedModel feedModel, int index}) {
     List<VideosModel> videos = feedModel.videos;
     SizeInfo sizeInfo = SizeInfo();
     if (videos != null) {
@@ -179,24 +191,26 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       );*/
       return widget.isHero
           ? Hero(
-              tag: widget.pageName + "${widget.model.id}${widget.index}",
-              child: FeedVideoPlayer(
-                videos.first.url,
-                sizeInfo,
-                ScreenUtil.instance.width,
-                model: feedModel,
-                durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-                isInListView: true,
-              ),
-            )
+        tag: widget.pageName + "${widget.model.id}${widget.index}",
+        child: FeedVideoPlayer(
+          videos.first.url,
+          sizeInfo,
+          ScreenUtil.instance.width,
+          model: feedModel,
+          durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+          isInListView: true,
+          index: widget.index,
+        ),
+      )
           : FeedVideoPlayer(
-              videos.first.url,
-              sizeInfo,
-              ScreenUtil.instance.width,
-              model: feedModel,
-              durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-              isInListView: true,
-            );
+        videos.first.url,
+        sizeInfo,
+        ScreenUtil.instance.width,
+        model: feedModel,
+        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+        isInListView: true,
+        index: widget.index,
+      );
     }
   }
 
