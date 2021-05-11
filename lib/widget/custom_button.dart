@@ -575,7 +575,7 @@ class _FollowButtonState extends State<FollowButton> {
     return AnimatedOpacity(
         opacity: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 1 : 0,
         duration: Duration(milliseconds: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget
-            .id].isFollow?1:1500),
+            .id].isFollow?1:1000),
         child: GestureDetector(
           child: Container(
             width: 56,
