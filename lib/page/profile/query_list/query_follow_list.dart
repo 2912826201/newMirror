@@ -872,6 +872,8 @@ class _FollowItemState extends State<QueryFollowItem> {
                             child: CachedNetworkImage(
                               height: 38,
                               width: 38,
+                              memCacheWidth: 150,
+                              memCacheHeight: 150,
                               imageUrl: avatarUrl != null ? FileUtil.getSmallImage(avatarUrl) : " ",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
