@@ -34,7 +34,7 @@ class Loading {
                   return Container(
                       width: ScreenUtil.instance.screenWidthDp,
                       height: ScreenUtil.instance.height,
-                      color: AppColor.bgWhite.withOpacity(0.6),
+                      color: AppColor.white.withOpacity(0.24),
                       child: Stack(
                         children: [
                           Container(

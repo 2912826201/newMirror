@@ -10,6 +10,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +81,8 @@ class Application {
   // 是否唤起键盘上方输入框
   static bool isArouse = false;
 
+  //健身照片详情页返回内容
+  static TrainingGalleryResult galleryResult;
   // 评论类型
   static CommentTypes commentTypes = CommentTypes.commentFeed;
 
