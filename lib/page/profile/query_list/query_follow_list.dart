@@ -926,16 +926,14 @@ class _FollowItemState extends State<QueryFollowItem> {
           SizedBox(
             width: 16,
           ),
-          FollowButton(
+          widget.type != 3?FollowButton(
             id: uid,
-            isFollow: isFollow,
-            isMysList: widget.isMySelf,
+            relation: widget.type == 3?0:widget.buddyModel.relation,
+            isMyList: widget.isMySelf,
             buttonType: widget.type == 1
                 ? FollowButtonType.FOLLOW
-                : widget.type == 2
-                    ? FollowButtonType.FANS
-                    : FollowButtonType.TOPIC,
-          )
+                :FollowButtonType.FANS,
+          ):Container()
         ],
       ),
     );

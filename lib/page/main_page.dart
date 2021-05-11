@@ -39,9 +39,6 @@ class MainPageState extends XCState {
     super.dispose();
   }
 
-  _feedUnreadCallBack(int unread) {
-    _unReadFeedCount = unread;
-  }
 
   List pages = [
     HomePage(key: homePageKey),

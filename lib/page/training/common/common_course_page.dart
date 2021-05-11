@@ -8,13 +8,14 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/page/training/common/follow_button.dart';
+
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 
 Widget getNoCompleteTitle(BuildContext context, String text) {
@@ -135,8 +136,8 @@ Widget getTitleWidget(CourseModel videoModel, BuildContext context, GlobalKey gl
 }
 
 //获取教练的名字
-Widget getCoachItem(CourseModel videoModel, BuildContext context, Function(int attntionResult) onClickAttention, Function onClickCoach,
-    GlobalKey globalKey,Function resetDataListener) {
+Widget getCoachItem(CourseModel videoModel, BuildContext context, Function(int attntionResult) onClickAttention,
+    Function onClickCoach, GlobalKey globalKey, Function resetDataListener) {
   return SliverToBoxAdapter(
     child: GestureDetector(
       onTap: onClickCoach,
@@ -176,7 +177,14 @@ Widget getCoachItem(CourseModel videoModel, BuildContext context, Function(int a
               ),
             ),
             Expanded(child: SizedBox()),
-            FollowButton(videoModel.coachDto,onClickAttention,resetDataListener),
+            FollowButton(
+              id: videoModel.coachDto.uid,
+              relation: videoModel.coachDto.relation,
+              buttonType: FollowButtonType.COACH,
+              resetDataListener: resetDataListener,
+              onClickAttention: onClickAttention,
+            ),
+            SizedBox(width: 16,)
             // getFollowButton(context,videoModel.coachDto,onClickAttention),
           ],
         ),
@@ -184,7 +192,6 @@ Widget getCoachItem(CourseModel videoModel, BuildContext context, Function(int a
     ),
   );
 }
-
 
 //获取横线
 Widget getLineView() {
