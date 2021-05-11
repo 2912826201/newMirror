@@ -37,9 +37,10 @@ class FeedVideoPlayer extends StatefulWidget {
   final String thumbPath;
   final String durationString;
   final HomeFeedModel model;
+  final int index;
 
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
-      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString, this.model})
+      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString, this.model,this.index})
       : super(key: key);
 
   @override
@@ -61,6 +62,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
+
   // Function(double visibilityFraction) playerVisibilityChangedBehavior;
 
   // 开启关闭音量的监听
@@ -78,6 +80,9 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       dataSource = BetterPlayerDataSource.file(widget.url);
     } else {
       dataSource = BetterPlayerDataSource.network(widget.url);
+      if (mounted) {
+        setState(() {});
+      }
     }
 
     eventListener = (BetterPlayerEvent event) {
@@ -181,6 +186,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
       controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     }
   }
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -188,6 +194,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     print("销毁更好的播放器页面了");
     controller?.removeEventsListener(eventListener);
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -261,6 +268,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                           configuration: configuration,
                           playFraction:
                               0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
+                          index: widget.index,
                         )
                       : BetterPlayer(
                           controller: controller,

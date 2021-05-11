@@ -21,6 +21,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
+import 'package:visibility_detector/src/visibility_detector_controller.dart';
 
 enum Status {
   notLoggedIn, //未登录
@@ -128,6 +129,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     } else {
       getRecommendFeed(refreshOrLoading: true);
     }
+
+
     // 上拉加载
     super.initState();
     // 重新登录替换关注页布局
@@ -217,6 +220,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       // 上拉加载可以滑动
       context.read<FeedMapNotifier>().setDropDown(true);
     }
+    VisibilityDetectorController.instance.updateInterval =  Duration(milliseconds: 200);
     if (mounted) {
       setState(() {});
     }
@@ -393,11 +397,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   : NeverScrollableScrollPhysics(),
               slivers: [
                 SliverList(
-                  // controller: _controller,
                   delegate: SliverChildBuilderDelegate((content, index) {
                     if (status == Status.noConcern) {
                       return pageDisplay(0, HomeFeedModel());
                     }
+                    // VisibilityDetectorController
+                    // VisibilityDetectorLayer
                     // 获取动态id
                     int id;
                     // 获取动态id指定model

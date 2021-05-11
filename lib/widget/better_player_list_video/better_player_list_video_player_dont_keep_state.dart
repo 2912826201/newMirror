@@ -4,6 +4,7 @@ import 'package:better_player/src/configuration/better_player_data_source.dart';
 import 'package:better_player/src/core/better_player_utils.dart';
 import 'package:better_player/src/list/better_player_list_video_player_controller.dart';
 import 'package:flutter/material.dart';
+
 ///Special version of Better Player which is used to play video in list view.
 class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
   ///Video to show
@@ -24,6 +25,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
   final bool autoPause;
 
   final BetterPlayerListVideoPlayerController betterPlayerListVideoPlayerController;
+  final int index;
 
   const BetterPlayerListVideoPlayerDontKeep(
     this.dataSource, {
@@ -32,6 +34,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
     this.autoPlay = true,
     this.autoPause = true,
     this.betterPlayerListVideoPlayerController,
+    this.index,
     Key key,
   })  : assert(dataSource != null, "Data source can't be null"),
         assert(configuration != null, "Configuration can't be null"),
@@ -79,7 +82,6 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
 
   @override
   Widget build(BuildContext context) {
-
     // super.build(context);
     return AspectRatio(
       aspectRatio: _betterPlayerController.getAspectRatio() ?? BetterPlayerUtils.calculateAspectRatio(context),
@@ -93,9 +95,22 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
   void onVisibilityChanged(double visibleFraction) async {
     final bool isPlaying = _betterPlayerController.isPlaying();
     final bool initialized = _betterPlayerController.isVideoInitialized();
+    print("视频曝光的比例是：：：：：：$visibleFraction 当前要显示的比例是：：：${widget.playFraction}");
+    print("widget.autoPlay::::${widget.autoPlay}");
+    print("initialized::::$initialized");
+    print("!isPlaying ::::::${!isPlaying}");
+    print("!_isDisposing::::${!_isDisposing}");
+    print("widget.index:::${widget.index}");
     if (visibleFraction >= widget.playFraction) {
-      if (widget.autoPlay && initialized && !isPlaying && !_isDisposing) {
-        _betterPlayerController.play();
+      // if (initialized) {}
+      if (widget.index != null && widget.index == 0) {
+        if (widget.autoPlay && !isPlaying && !_isDisposing) {
+          _betterPlayerController.play();
+        }
+      } else {
+        if (widget.autoPlay && initialized && !isPlaying && !_isDisposing) {
+          _betterPlayerController.play();
+        }
       }
     } else {
       if (widget.autoPause && initialized && isPlaying && !_isDisposing) {
