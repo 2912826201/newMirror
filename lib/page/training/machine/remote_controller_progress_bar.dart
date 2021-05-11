@@ -104,7 +104,7 @@ class RemoteControllerProgressBarState extends State<RemoteControllerProgressBar
           DateUtil.stringToDateTime(liveVideoModel.startTime).millisecondsSinceEpoch) {
         int subValue = DateUtil.stringToDateTime(liveVideoModel.startTime).millisecondsSinceEpoch -
             DateTime.now().millisecondsSinceEpoch;
-        remainingPartString = DateUtil.formatSecondToStringNumShowMinute(subValue ~/ 1000);
+        remainingPartString = DateUtil.formatSecondToStringNumShowMinute1((subValue+500) ~/ 1000);
       } else {
         remainingPartString = "即将开始";
       }
