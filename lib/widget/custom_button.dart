@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -414,16 +415,18 @@ class _CustomRedButtonState extends State<CustomRedButton> {
   }
 }
 
-enum FollowButtonType { FANS, FOLLOW, SERCH, TOPIC }
+enum FollowButtonType { FANS, FOLLOW, SERCH,COACH }
 
 class FollowButton extends StatefulWidget {
   static double FOLLOW_BUTTON_WIDTH = 56;
-  bool isFollow;
+  int relation;
   int id;
   FollowButtonType buttonType;
-  bool isMysList;
-  int type;
-  FollowButton({this.isFollow, this.id, this.buttonType, this.isMysList, this.type});
+  bool isMyList;
+  Function resetDataListener;
+  Function(int attntionResult) onClickAttention;
+  FollowButton({this.relation, this.id, this.buttonType, this.isMyList = false, this.resetDataListener,this
+      .onClickAttention});
 
   @override
   State<StatefulWidget> createState() {
@@ -433,24 +436,35 @@ class FollowButton extends StatefulWidget {
 
 class _FollowButtonState extends State<FollowButton> {
   bool isMySelf = false;
+  StreamController<double> streamTextController = StreamController<double>();
+  bool isFollow;
+  bool requestOver = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    isFollow = widget.relation == 1 || widget.relation == 3 ? false : true;
   }
 
   ///请求黑名单关系
   _checkBlackStatus() async {
+    if(!requestOver){
+      return false;
+    }
+    requestOver = false;
     BlackModel model = await ProfileCheckBlack(widget.id);
     if (model != null) {
       if (model.inYouBlack == 1) {
+        requestOver = true;
         ToastShow.show(msg: "关注失败，你已将对方加入黑名单", context: context);
       } else if (model.inThisBlack == 1) {
+        requestOver = true;
         ToastShow.show(msg: "关注失败，你已被对方加入黑名单", context: context);
       } else {
         _getAttention(widget.id);
       }
-    }else{
+    } else {
+      requestOver = true;
       ToastShow.show(msg: "关注失败", context: context);
     }
   }
@@ -458,64 +472,138 @@ class _FollowButtonState extends State<FollowButton> {
   ///这是关注
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
+    if(attntionResult==null){
+      requestOver = true;
+      ToastShow.show(msg: "关注失败!", context: context);
+      return;
+    }
+
     print('关注监听=========================================$attntionResult');
+    if(widget.onClickAttention!=null){
+      widget.onClickAttention(attntionResult);
+    }
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, false, id);
+      Future.delayed(Duration(milliseconds: 200), () {
+        streamTextController.sink.add(1);
+      });
       context.read<UserInteractiveNotifier>().changeFollowCount(id, true);
-      context.read<UserInteractiveNotifier>().removeUserFollowId(id,isAdd: false);
+      context.read<UserInteractiveNotifier>().removeUserFollowId(id, isAdd: false);
+    }
+    requestOver = true;
+  }
+
+  bool isOfflineBool = false;
+  //网络状态判断
+  Future<bool> isOffline() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      if (isOfflineBool) {
+        isOfflineBool = false;
+        if (widget.resetDataListener != null) {
+          widget.resetDataListener();
+        }
+      }
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      if (isOfflineBool) {
+        isOfflineBool = false;
+        if (widget.resetDataListener != null) {
+          widget.resetDataListener();
+        }
+      }
+      return false;
+    } else {
+      isOfflineBool = true;
+      return true;
+    }
+  }
+  //按钮中动画文字
+  Widget getTextAnimation() {
+    if (!context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow) {
+      streamTextController = StreamController<double>();
+      return StreamBuilder<double>(
+          initialData: 0,
+          stream: streamTextController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+            print("22222");
+            return AnimatedOpacity(
+              opacity: snapshot.data,
+              duration: Duration(milliseconds: 300),
+              child: Text(
+                "已关注",
+                textAlign: TextAlign.center,
+                style: AppStyle.whiteRegular12,
+              ),
+            );
+          });
+    } else {
+      print("1111111");
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          widget.buttonType == FollowButtonType.COACH
+              ? Text("+", style: TextStyle(color: AppColor.white, fontSize: 15))
+              : Container(),
+          widget.buttonType == FollowButtonType.COACH ? SizedBox(width: 5) : Container(),
+          Text(
+              widget.buttonType == FollowButtonType.FOLLOW ||
+                      widget.buttonType == FollowButtonType.SERCH ||
+                      widget.buttonType == FollowButtonType.COACH
+                  ? "关注"
+                  : widget.isMyList
+                      ? "回粉"
+                      : "关注",
+              style: TextStyle(color: AppColor.white, fontSize: 11)),
+        ],
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    //自己不显示
     if (context.watch<ProfileNotifier>().profile.uid == widget.id) {
       isMySelf = true;
     }
-    if (isMySelf ||
-        (widget.buttonType == FollowButtonType.FOLLOW && widget.isMysList) ||
-        widget.buttonType == FollowButtonType.TOPIC) {
+
+    if (isMySelf || (widget.buttonType == FollowButtonType.FOLLOW && widget.isMyList)) {
       return Container();
     }
-    context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
-    return GestureDetector(
-      child: Container(
-        width: 56,
-        height: 24,
-        alignment: Alignment.centerRight,
-        decoration: BoxDecoration(
-          color: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
-              ? AppColor.textPrimary1
-              : AppColor.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(14)),
-          border: Border.all(
-              width: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
-        ),
-        child: Center(
-          child: Text(
-              context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
-                  ? widget.buttonType == FollowButtonType.FOLLOW || widget.buttonType == FollowButtonType.SERCH
-                      ? "关注"
-                      : widget.isMysList
-                          ? "回粉"
-                          : "关注"
-                  : "已关注",
-              style: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow
-                  ? AppStyle.whiteRegular12
-                  : AppStyle.textSecondaryRegular12),
-        ),
-      ),
-      onTap: () {
-        if (!context.read<TokenNotifier>().isLoggedIn) {
-          ToastShow.show(msg: "请先登录", context: context);
-          AppRouter.navigateToLoginPage(context);
-          return false;
-        }
-        if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow) {
-          _checkBlackStatus();
-        }
-      },
-    );
+    context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: isFollow);
+    return AnimatedOpacity(
+        opacity: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 1 : 0,
+        duration: Duration(milliseconds: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget
+            .id].isFollow?1:1000),
+        child: GestureDetector(
+          child: Container(
+            width: 56,
+            height: 24,
+            alignment: Alignment.centerRight,
+            decoration: BoxDecoration(
+              color: AppColor.textPrimary1,
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+            ),
+            child: Center(
+              child: getTextAnimation(),
+            ),
+          ),
+          onTap: () async {
+            if (await isOffline()) {
+              ToastShow.show(msg: "请检查网络!", context: context);
+              return false;
+            }
+            if (!context.read<TokenNotifier>().isLoggedIn) {
+              ToastShow.show(msg: "请先登录", context: context);
+              AppRouter.navigateToLoginPage(context);
+              return false;
+            }
+            if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow) {
+              _checkBlackStatus();
+            }
+          },
+        ));
   }
 }
 

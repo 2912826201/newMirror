@@ -68,7 +68,6 @@ class scanCodePageState extends State<ScanCodePage> {
       if(DateTime.now().millisecondsSinceEpoch-timeStamp>2000){
         timeStamp =DateTime.now().millisecondsSinceEpoch;
         resolveScanResult(scanData.code);
-
       }
     });
   }
@@ -292,7 +291,7 @@ class scanCodePageState extends State<ScanCodePage> {
       ToastShow.show(msg: "不支持的二维码", context: context);
       return;
     } else if (uri.startsWith("if://")) {
-      controller.pauseCamera();
+      controller.stopCamera();
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
       List<String> strs = uri.split("?");
       String command = strs.first;
@@ -354,14 +353,14 @@ class scanCodePageState extends State<ScanCodePage> {
           break;
       }
     } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-      controller.pauseCamera();
+      controller.stopCamera();
       //网页 需要再细致区分处理 暂时先不处理
       ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       Navigator.pop(context);
       AppRouter.navigateToScanCodeResultPage(context, model);
     } else {
-      controller.pauseCamera();
+      controller.stopCamera();
       ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       Navigator.pop(context);

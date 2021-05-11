@@ -63,7 +63,7 @@ class HeadView extends StatefulWidget {
 class HeadViewState extends State<HeadView> {
   double opacity = 0;
   bool isMySelf = false;
-  StreamController<TextStyle> streamController = StreamController<TextStyle>();
+  StreamController<double> streamController = StreamController<double>();
   Stream stream;
 
   // 删除动态
@@ -125,7 +125,9 @@ class HeadViewState extends State<HeadView> {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
           context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, true);
           ToastShow.show(msg: "关注成功!", context: context);
-          streamController.sink.add(TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1));
+          Future.delayed(Duration(milliseconds: 200),(){
+            streamController.sink.add(1);
+          });
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
             opacity = 0;
@@ -145,7 +147,7 @@ class HeadViewState extends State<HeadView> {
           (notifier.value.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.value.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
-        streamController = StreamController<TextStyle>();
+        streamController = StreamController<double>();
         return GestureDetector(
           onTap: () {
             if (!context.read<TokenNotifier>().isLoggedIn) {
@@ -200,15 +202,16 @@ class HeadViewState extends State<HeadView> {
                 borderRadius: BorderRadius.circular((14.0)),
               ),
               child: Center(
-                child: StreamBuilder<TextStyle>(
-                    initialData: TextStyle(fontSize: 1, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                child: StreamBuilder<double>(
+                    initialData: 0,
                     stream: streamController.stream,
-                    builder: (BuildContext stramContext, AsyncSnapshot<TextStyle> snapshot) {
-                      return AnimatedDefaultTextStyle(
-                        duration: Duration(milliseconds: 200),
-                        style: snapshot.data,
+                    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                      return AnimatedOpacity(
+                        duration: Duration(milliseconds: 250),
+                        opacity: snapshot.data,
                         child: Text(
                           "已关注",
+                          style:TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
                         ),
                       );
                     }),

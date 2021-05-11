@@ -299,9 +299,8 @@ class _SearchState extends State<SearchUserItem> {
           const Spacer(),
           FollowButton(
             id: widget.model.uid,
-            isFollow: isFollow,
+            relation: widget.model.relation,
             buttonType: FollowButtonType.SERCH,
-            type: widget.type,
           )
         ],
       ),
