@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -32,7 +33,7 @@ class TrainingGalleryDetailPage extends StatefulWidget {
 }
 
 class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
-  TrainingGalleryResult _galleryResult;
+
 
   List<TrainingGalleryImageModel> _imageList = [];
   int _currentIndex = 0;
@@ -63,16 +64,11 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, _galleryResult);
-        return false;
-      },
-      child: Scaffold(
+    return  Scaffold(
         appBar: CustomAppBar(
           titleString: _title,
           leadingOnTap: () {
-            Navigator.pop(context, _galleryResult);
+            Navigator.pop(context);
           },
           actions: [
             CustomAppBarIconButton(
@@ -84,8 +80,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
           ],
         ),
         body: _buildBody(),
-      ),
-    );
+      );
   }
 
   Widget _buildBody() {
@@ -215,18 +210,18 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     for (TrainingGalleryImageModel image in _imageList) {
       if (image.id == id) {
         _imageList.remove(image);
-        if (_galleryResult == null) {
-          _galleryResult = TrainingGalleryResult();
-          _galleryResult.operation = -1;
-          _galleryResult.list = [];
+        if (Application.galleryResult == null) {
+          Application.galleryResult = TrainingGalleryResult();
+          Application.galleryResult.operation = -1;
+          Application.galleryResult.list = [];
         }
-        _galleryResult.list.add(image);
+        Application.galleryResult.list.add(image);
         break;
       }
     }
 
     if (_imageList.isEmpty) {
-      Navigator.pop(context, _galleryResult);
+      Navigator.pop(context);
     } else if (_currentIndex >= _imageList.length) {
       setState(() {
         _controller.move(_imageList.length - 1);
