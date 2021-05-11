@@ -119,7 +119,27 @@ class DateUtil {
   }
 
   /// 将秒转换为数字 01:12
-  /// 显示分-00:01
+  /// 显示分-00:01-----没有小时
+  static String formatSecondToStringNumShowMinute1(int ms) {
+    if (ms < 60) {
+      if (ms < 10) {
+        return "00:0" + ms.toString();
+      }
+      return "00:" + ms.toString();
+    } else {
+      int hour = ms ~/ 3600;
+      int minute = ms % 3600 ~/ 60+hour*60;
+      int second = ms % 60;
+      if (minute > 0) {
+        return "${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
+      } else {
+        return "00:${second > 10 ? second : "0" + second.toString()}";
+      }
+    }
+  }
+
+  /// 将秒转换为数字 01:12
+  /// 显示分-00:01--有小时
   static String formatSecondToStringNumShowMinute(int ms) {
     if (ms < 60) {
       if (ms < 10) {

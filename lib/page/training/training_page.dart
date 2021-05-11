@@ -56,6 +56,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     _requestCourse();
     _resetData();
     EventBus.getDefault().registerNoParameter(_resetData, EVENTBUS_TRAINING_PAGE,registerName: TRAINING_PAGE_GET_DATA);
+    EventBus.getDefault().registerNoParameter(_requestCourse, EVENTBUS_TRAINING_PAGE,
+        registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
   }
 
   _resetData(){
