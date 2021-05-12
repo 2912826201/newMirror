@@ -698,6 +698,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _getConversationAvatar(List<String> avatarList, int isTop) {
+    print("avatarList:::${avatarList.length}");
     if (avatarList.length == 1) {
       return ClipOval(
         child: CachedNetworkImage(
@@ -705,6 +706,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           width: 45,
           imageUrl: avatarList.first,
           fit: BoxFit.cover,
+          memCacheWidth: 150,
+          memCacheHeight: 150,
+          /// imageUrl的淡入动画的持续时间。
+          fadeInDuration: Duration(milliseconds: 0),
           placeholder: (context, url) => Container(
             color: AppColor.bgWhite,
           ),
@@ -725,6 +730,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 width: 28,
                 imageUrl: avatarList.first,
                 fit: BoxFit.cover,
+                memCacheWidth: 150,
+                memCacheHeight: 150,
+                /// imageUrl的淡入动画的持续时间。
+                fadeInDuration: Duration(milliseconds: 0),
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
                 ),
@@ -747,6 +756,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   width: 28,
                   imageUrl: avatarList[1],
                   fit: BoxFit.cover,
+                  memCacheWidth: 150,
+                  memCacheHeight: 150,
+                  /// imageUrl的淡入动画的持续时间。
+                  fadeInDuration: Duration(milliseconds: 0),
                   placeholder: (context, url) => Container(
                     color: AppColor.bgWhite,
                   ),

@@ -40,7 +40,13 @@ class FeedVideoPlayer extends StatefulWidget {
   final int index;
 
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
-      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath, this.durationString, this.model,this.index})
+      {Key key,
+      this.isInListView = false,
+      this.isFile = false,
+      this.thumbPath,
+      this.durationString,
+      this.model,
+      this.index})
       : super(key: key);
 
   @override
@@ -121,9 +127,11 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
                 width: videoSize.width,
                 height: videoSize.height,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
-                ),
+                // placeholder: (context, url) {
+                //   return Container(
+                //     color: AppColor.bgWhite,
+                //   );
+                // },
                 errorWidget: (context, url, error) => Container(
                   color: AppColor.bgWhite,
                 ),
@@ -197,6 +205,8 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
 
   @override
   void dispose() {
+    streamController.close();
+    streamHeight.close();
     super.dispose();
   }
 

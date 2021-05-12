@@ -140,11 +140,15 @@ class MainPageState extends XCState {
             }
           },
         ),
-        body: PageView.custom(
-          controller: pageController,
-          childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        body: PageView.builder(
+          itemBuilder: (BuildContext context,int index) {
             return pages[index];
-          }, childCount: 4),
+          },
+          itemCount: 4,
+          controller: pageController,
+          // itemBuilder: SliverChildBuilderDelegate((BuildContext context, int index) {
+          //   return pages[index];
+          // }, childCount: 4),
           // 提前预加载当前pageView的下一个视图
           allowImplicitScrolling: true,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
