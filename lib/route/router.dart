@@ -939,4 +939,16 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLordQRCodePage, map);
   }
+
+  //判断用户是不是在活动界面
+  static bool isHaveNewUserPromotionPage() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathNewUserPromotionPage)) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
 }
