@@ -518,7 +518,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           // attentionIdList.clear();
           attentionModelList.clear();
           lastTime = null;
-          getRecommendFeed();
+          getRecommendFeed(refreshOrLoading: true);
         } else {
           print("进入了222222");
           setState(() {
