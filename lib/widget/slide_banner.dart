@@ -183,9 +183,14 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 // useOldImageOnUrlChange: true,
                 fit: BoxFit.cover,
                 imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
-                ),
+                placeholder: (context, url) {
+                  // if (indexs == 0) {
+                  //   return Container();
+                  // }
+                  return Container(
+                    color: AppColor.bgWhite,
+                  );
+                },
                 errorWidget: (context, url, e) {
                   return Container(
                     color: AppColor.bgWhite,
@@ -202,9 +207,11 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     fadeInDuration: Duration(milliseconds: 0),
                     fit: BoxFit.cover,
                     imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-                    placeholder: (context, url) => Container(
-                      color: AppColor.bgWhite,
-                    ),
+                    placeholder: (context, url) {
+                      return Container(
+                        color: AppColor.bgWhite,
+                      );
+                    },
                     errorWidget: (context, url, e) {
                       return Container(
                         color: AppColor.bgWhite,
@@ -476,7 +483,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       print("轮播图清除缓存");
       if (widget.model != null && widget.model.picUrls.length > 0) {
         widget.model.picUrls.forEach((element) {
-          if(element.url != null) {
+          if (element.url != null) {
             ImageCachedObserverUtil.clearCacheNetworkImageMemory(element.url);
           }
         });
