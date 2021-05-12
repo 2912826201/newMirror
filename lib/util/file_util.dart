@@ -63,7 +63,7 @@ class FileUtil {
     });
     for (int i = 0; i < fileList.length; i++) {
       // 生成文件名
-      String key = _genKey(fileList[i]);
+      String key = await _genKey(fileList[i]);
       // 上传文件
       UploadResultModel resultModel = UploadResultModel();
       resultModel.isSuccess = false;
@@ -109,7 +109,7 @@ class FileUtil {
     return _upload(fileList, 2, progressCallback);
   }
 
-  String _genKey(File file) {
+  Future<String> _genKey(File file) async{
     String ext = "";
     if (file.path.contains('.')) {
       ext = '.' + file.path.split('.').last;
@@ -121,7 +121,10 @@ class FileUtil {
     } else {
       uid = Application.token.uid;
     }
-    return "ifapp/$uid/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
+    String fileMd5=await StringUtil.calculateMD5SumAsyncWithPlugin(file.path);
+
+    // return "ifapp/$uid/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
+    return "ifapp/$uid/" + fileMd5 + ext;
   }
 
   cancelUpload() {

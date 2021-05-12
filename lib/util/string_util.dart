@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:md5_plugin/md5_plugin.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -45,6 +47,24 @@ class StringUtil {
     var digest = md5.convert(content);
     // 这里其实就是 digest.toString()
     return hex.encode(digest.bytes);
+  }
+
+
+  static Future<String> calculateMD5SumAsyncWithPlugin(String filePath) async {
+    var ret = '';
+    var file = File(filePath);
+    if (await file.exists()) {
+      try {
+        ret = await Md5Plugin.getMD5WithPath(filePath);
+      } catch (exception) {
+        print('Unable to evaluate the MD5 sum :$exception');
+        return null;
+      }
+    } else {
+      print('`$filePath` does not exits so unable to evaluate its MD5 sum.');
+      return null;
+    }
+    return ret;
   }
 
   static RegExp _ipv4Maybe = new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
