@@ -12,6 +12,7 @@ import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
@@ -160,10 +161,15 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
 
 var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  UserModel userModel;
+  if(data["userModel"] != null){
+      userModel = UserModel.fromJson(data["userModel"]);
+  }
   return ProfileDetailPage(
     userId: data["userId"],
     userName: data["userName"] != null ? data["userName"] : null,
     imageUrl: data["imageUrl"] != null ? data["imageUrl"] : null,
+    userModel:userModel
   );
 });
 var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

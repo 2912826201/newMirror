@@ -21,7 +21,7 @@ class ProfileDetailsMore extends StatefulWidget {
   ProfileDetailsMore({this.userId, this.isFollow, this.userName});
 
   @override
-  State<StatefulWidget> createState() {
+  _DetailsMoreState createState() {
     return _DetailsMoreState();
   }
 }

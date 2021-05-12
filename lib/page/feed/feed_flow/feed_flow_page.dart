@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -65,6 +66,7 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
 
   Widget getBody() {
     return Container(
+      color: AppColor.white,
       child: getSmartRefresher(),
     );
   }
@@ -113,14 +115,17 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
       key: ValueKey(index),
       controller: controller,
       index: index,
-      child: DynamicListLayout(
-        index: index,
-        pageName: widget.pageName,
-        isShowRecommendUser: false,
-        isHero: isHero,
-        model: homeFeedModel,
-        // 可选参数 子Item的个数
-        key: GlobalObjectKey("attention$index"),
+      child: Container(
+        color: AppColor.white,
+        child: DynamicListLayout(
+          index: index,
+          pageName: widget.pageName,
+          isShowRecommendUser: false,
+          isHero: isHero,
+          model: homeFeedModel,
+          // 可选参数 子Item的个数
+          key: GlobalObjectKey("attention$index"),
+        ),
       ),
     );
   }

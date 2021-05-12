@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 /// base_response_model
 /// Created by yangjiayi on 2020/11/2.
 

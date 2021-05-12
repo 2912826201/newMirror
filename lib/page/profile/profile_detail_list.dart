@@ -28,7 +28,7 @@ class ProfileDetailsList extends StatefulWidget {
   ProfileDetailsList({this.key, this.type, this.id, this.isMySelf});
 
   @override
-  State<StatefulWidget> createState() {
+  ProfileDetailsListState createState() {
     return ProfileDetailsListState();
   }
 }

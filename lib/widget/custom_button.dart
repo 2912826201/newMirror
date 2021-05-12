@@ -415,7 +415,7 @@ class _CustomRedButtonState extends State<CustomRedButton> {
   }
 }
 
-enum FollowButtonType { FANS, FOLLOW, SERCH,COACH }
+enum FollowButtonType { FANS, FOLLOW, SERCH, COACH }
 
 class FollowButton extends StatefulWidget {
   static double FOLLOW_BUTTON_WIDTH = 56;
@@ -425,8 +425,9 @@ class FollowButton extends StatefulWidget {
   bool isMyList;
   Function resetDataListener;
   Function(int attntionResult) onClickAttention;
-  FollowButton({this.relation, this.id, this.buttonType, this.isMyList = false, this.resetDataListener,this
-      .onClickAttention});
+
+  FollowButton(
+      {this.relation, this.id, this.buttonType, this.isMyList = false, this.resetDataListener, this.onClickAttention});
 
   @override
   State<StatefulWidget> createState() {
@@ -439,6 +440,8 @@ class _FollowButtonState extends State<FollowButton> {
   StreamController<double> streamTextController = StreamController<double>();
   bool isFollow;
   bool requestOver = true;
+  bool isOfflineBool = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -448,7 +451,7 @@ class _FollowButtonState extends State<FollowButton> {
 
   ///请求黑名单关系
   _checkBlackStatus() async {
-    if(!requestOver){
+    if (!requestOver) {
       return false;
     }
     requestOver = false;
@@ -472,14 +475,13 @@ class _FollowButtonState extends State<FollowButton> {
   ///这是关注
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
-    if(attntionResult==null){
+    if (attntionResult == null) {
       requestOver = true;
       ToastShow.show(msg: "关注失败!", context: context);
       return;
     }
-
     print('关注监听=========================================$attntionResult');
-    if(widget.onClickAttention!=null){
+    if (widget.onClickAttention != null) {
       widget.onClickAttention(attntionResult);
     }
     if (attntionResult == 1 || attntionResult == 3) {
@@ -494,7 +496,6 @@ class _FollowButtonState extends State<FollowButton> {
     requestOver = true;
   }
 
-  bool isOfflineBool = false;
   //网络状态判断
   Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
@@ -519,6 +520,7 @@ class _FollowButtonState extends State<FollowButton> {
       return true;
     }
   }
+
   //按钮中动画文字
   Widget getTextAnimation() {
     if (!context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow) {
@@ -563,19 +565,19 @@ class _FollowButtonState extends State<FollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    //自己不显示
     if (context.watch<ProfileNotifier>().profile.uid == widget.id) {
       isMySelf = true;
     }
-
+    //自己不显示
     if (isMySelf || (widget.buttonType == FollowButtonType.FOLLOW && widget.isMyList)) {
       return Container();
     }
     context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: isFollow);
     return AnimatedOpacity(
         opacity: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 1 : 0,
-        duration: Duration(milliseconds: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget
-            .id].isFollow?1:1000),
+        duration: Duration(
+            milliseconds:
+                context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 1 : 1000),
         child: GestureDetector(
           child: Container(
             width: 56,

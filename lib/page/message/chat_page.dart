@@ -585,6 +585,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       isHaveAtMeMsgPr = false;
       Application.atMesGroupModel.remove(atMeMsg);
       chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
         if (chatDataList[i].msg.messageUId == atMeMsg.messageUId) {
@@ -596,6 +597,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
+          ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           if(chatTopAtMarkChildKey!=null&&chatTopAtMarkChildKey.currentState!=null&&
               chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs!=null) {
             chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
@@ -630,6 +632,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveAtMeMsgIndex = -1;
         Application.atMesGroupModel.remove(atMeMsg);
         chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       } else {
         if (!isHaveAtMeMsg) {
           isHaveAtMeMsg = true;
@@ -672,6 +675,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           return;
         }
         if (isHaveAtMeMsgIndex > 0) {
@@ -702,6 +706,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveAtMeMsgPr = false;
         Application.atMesGroupModel.remove(atMeMsg);
         chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       });
     });
   }
@@ -740,6 +745,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
         }
 

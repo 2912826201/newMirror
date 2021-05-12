@@ -37,26 +37,33 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-void jumpToUserProfilePage(BuildContext context, int uId,
-    {String avatarUrl, String userName, Function(dynamic result) callback}) {
-  if (!context.read<TokenNotifier>().isLoggedIn) {
-    AppRouter.navigateToLoginPage(context);
-    return;
-  }
-  AppRouter.navigateToMineDetail(context, uId, avatarUrl: avatarUrl, userName: userName, callback: callback);
+Future<void> jumpToUserProfilePage(BuildContext context, int uId,
+    {String avatarUrl, String userName, Function(dynamic result) callback}) async {
+  UserModel userModel;
+    if(avatarUrl==null||userName==null){
+     userModel = await getUserInfo(uid: uId);
+      if(userModel!=null){
+        avatarUrl = userModel.avatarUri;
+        userName = userModel.nickName;
+      }
+    }
+  AppRouter.navigateToMineDetail(context, uId, avatarUrl: avatarUrl, userName: userName,userModel: userModel, callback:
+  callback);
 }
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
   final String imageUrl;
   final String userName;
-
-  ProfileDetailPage({this.userId, this.userName, this.imageUrl});
+  UserModel userModel;
+  ProfileDetailPage({this.userId, this.userName, this.imageUrl,this.userModel});
 
   @override
   _ProfileDetailState createState() {
-    return _ProfileDetailState();
+   return _ProfileDetailState();
   }
+
+
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
@@ -112,12 +119,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    if (widget.userName != null) {
-      _textName = widget.userName;
-    }
-    if (widget.imageUrl != null) {
-      _avatar = widget.imageUrl;
-    }
+      _textName = widget.userName??"";
+      _avatar = widget.imageUrl??"";
     print('==============================个人主页initState');
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
@@ -216,7 +219,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///获取用户信息
   _getUserInfo({int id}) async {
-    userModel = await getUserInfo(uid: id);
+    if(widget.userModel==null){
+      userModel = await getUserInfo(uid: id);
+    }
+    userModel = widget.userModel;
+    widget.userModel = null;
     if (userModel != null) {
       _avatar = userModel.avatarUri;
       _signature = userModel.description;
@@ -643,6 +650,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       return GestureDetector(
           onTap: () {
             if (canOnClick) {
+              if (!context.read<TokenNotifier>().isLoggedIn) {
+                AppRouter.navigateToLoginPage(context);
+                return;
+              }
               if (isMselfId) {
                 ///这里跳转到编辑资料页
                 AppRouter.navigateToEditInfomation(context, (result) {
