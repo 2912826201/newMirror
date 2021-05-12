@@ -273,9 +273,10 @@ class FeedMsg extends StatelessWidget {
 
   //底部文字
   Widget _getBottomText() {
+    double bottomHeight = 75.0 - ((homeFeedMode.content == null || homeFeedMode.content.length < 1) ? 16 : 0);
     return Container(
       width: double.infinity,
-      height: 75.0,
+      height: bottomHeight,
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
@@ -318,16 +319,18 @@ class FeedMsg extends StatelessWidget {
               ),
             ),
           )),
-          Expanded(
+          if (homeFeedMode.content != null && homeFeedMode.content.length > 0)
+            Expanded(
               child: SizedBox(
-            child: Center(
-              child: Container(
-                width: double.infinity,
-                child: Text(homeFeedMode.content,
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textPrimary2Regular16),
+                child: Center(
+                  child: Container(
+                    width: double.infinity,
+                    child: Text(homeFeedMode.content,
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textPrimary2Regular16),
+                  ),
+                ),
               ),
             ),
-          )),
         ],
       ),
     );
@@ -335,26 +338,28 @@ class FeedMsg extends StatelessWidget {
 
   //获取动态的高度
   double _getFeedHeight() {
+    double bottomHeight = 75.0 - ((homeFeedMode.content == null || homeFeedMode.content.length < 1) ? 16 : 0);
+
     if (isPicOrVideo == 0) {
       double value = homeFeedMode.picUrls[0].width / homeFeedMode.picUrls[0].height;
       if (value == 1) {
-        return 180.0 + 75.0;
+        return 180.0 + bottomHeight;
       } else if (value == 0.8) {
-        return 225.0 + 75.0;
+        return 225.0 + bottomHeight;
       } else {
-        return 95.0 + 75.0;
+        return 95.0 + bottomHeight;
       }
     } else if (isPicOrVideo == 1) {
       double value = homeFeedMode.videos[0].width / homeFeedMode.videos[0].height;
       if (value == 1) {
-        return 180.0 + 75.0;
+        return 180.0 + bottomHeight;
       } else if (value == 0.8) {
-        return 225.0 + 75.0;
+        return 225.0 + bottomHeight;
       } else {
-        return 95.0 + 75.0;
+        return 95.0 + bottomHeight;
       }
     } else {
-      return 75.0;
+      return bottomHeight;
     }
   }
 
