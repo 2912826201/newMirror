@@ -104,7 +104,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: videoSize.width / videoSize.height,
-        eventListener: eventListener,
+        // eventListener: eventListener,
         autoPlay: !widget.isInListView,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动

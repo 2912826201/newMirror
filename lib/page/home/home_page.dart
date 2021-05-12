@@ -72,7 +72,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   initState() {
     super.initState();
     print("homePage初始化");
-    controller = TabController(length: 2, vsync: this, initialIndex: 0);
+    controller = TabController(length: 2, vsync: this, initialIndex: 1);
     // 登录页重新登录获取发布失败model通知
     EventBus.getDefault()
         .registerNoParameter(postModelAssignment, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_GET_FAILURE_MODEL);
