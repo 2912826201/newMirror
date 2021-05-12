@@ -548,7 +548,7 @@ class AppRouter {
   }
   ///跳转个人主页使用处理过未登录情况的方法，
   static void navigateToMineDetail(BuildContext context, int uId,
-      {String avatarUrl, String userName, Function(dynamic result) callback}) {
+      {String avatarUrl, String userName,UserModel userModel, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
     if (userName != null) {
@@ -557,7 +557,9 @@ class AppRouter {
     if (avatarUrl != null) {
       map["imageUrl"] = avatarUrl;
     }
-
+    if(userModel!=null){
+      map["userModel"] = userModel.toJson();
+    }
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 

@@ -26,6 +26,7 @@ class Loading {
           // barrierLabel: '',
           barrierDismissible: false, // 是否能通过点击空白处关闭
           transitionDuration: const Duration(milliseconds: 300), // 动画时长
+          useRootNavigator: false,
           pageBuilder: (BuildContext context, Animation animation, Animation secondaryAnimation) {
             return StreamBuilder<bool>(
                 initialData: true,

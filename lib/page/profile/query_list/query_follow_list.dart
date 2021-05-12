@@ -854,7 +854,9 @@ class _FollowItemState extends State<QueryFollowItem> {
                 if (widget.type == 1 || widget.type == 2) {
                   jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName,
                       callback: (result) {
-                    widget.userFollowChangeCallBack();
+                    if(widget.userFollowChangeCallBack!=null){
+                      widget.userFollowChangeCallBack();
+                    }
                   });
                 } else {
                   // TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
