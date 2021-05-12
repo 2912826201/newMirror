@@ -20,6 +20,8 @@ class LiveBroadcastPageState extends XCState {
   //设置只能加载多少个日期
   var getDateNumber = 7;
 
+  int _currentIndex=0;
+
   //所有加载数据的日期
   var stringDateList = <DateTime>[];
 
@@ -34,11 +36,21 @@ class LiveBroadcastPageState extends XCState {
 
   //标题被点击时回调  滚动body页面
   void _titleItemClickCall(int pos) {
-    _pageController.animateToPage(pos, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+    if(pos==_currentIndex){
+      return;
+    }
+    if((pos-_currentIndex).abs()!=1){
+      _currentIndex = pos;
+      _pageController.jumpToPage(pos);
+    }else {
+      _currentIndex = pos;
+      _pageController.animateToPage(pos, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+    }
   }
 
   void _pageChange(int pos) {
     if (pageCall != null) {
+      _currentIndex=pos;
       pageCall(pos);
     }
   }
