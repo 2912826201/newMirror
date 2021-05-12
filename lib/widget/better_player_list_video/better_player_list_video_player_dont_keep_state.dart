@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:better_player/better_player.dart';
 import 'package:better_player/src/configuration/better_player_configuration.dart';
 import 'package:better_player/src/configuration/better_player_data_source.dart';
@@ -51,6 +53,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
 class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVideoPlayerDontKeep> {
   BetterPlayerController _betterPlayerController;
   bool _isDisposing = false;
+  double visibleDouble = 0.0;
 
   @override
   void initState() {
@@ -58,6 +61,7 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     _betterPlayerController = BetterPlayerController(
       widget.configuration.copyWith(
         playerVisibilityChangedBehavior: onVisibilityChanged,
+        eventListener: onEventListener,
       ),
       betterPlayerDataSource: widget.dataSource,
       betterPlayerPlaylistConfiguration: const BetterPlayerPlaylistConfiguration(),
@@ -92,6 +96,20 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     );
   }
 
+  void onEventListener(BetterPlayerEvent event) {
+    switch (event.betterPlayerEventType) {
+      case BetterPlayerEventType.initialized:
+        print("visibleDouble:::::$visibleDouble");
+        _betterPlayerController?.setVolume(0);
+        if (widget.index == 0 && visibleDouble != 0.0) {
+          onVisibilityChanged(visibleDouble);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   void onVisibilityChanged(double visibleFraction) async {
     final bool isPlaying = _betterPlayerController.isPlaying();
     final bool initialized = _betterPlayerController.isVideoInitialized();
@@ -102,16 +120,15 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     print("!_isDisposing::::${!_isDisposing}");
     print("widget.index:::${widget.index}");
     if (visibleFraction >= widget.playFraction) {
-      // if (initialized) {}
+      visibleDouble = visibleFraction;
       if (widget.index != null && widget.index == 0) {
-        if (widget.autoPlay && !isPlaying && !_isDisposing) {
-          _betterPlayerController.play();
-        }
-      } else {
-        if (widget.autoPlay && initialized && !isPlaying && !_isDisposing) {
-          _betterPlayerController.play();
-        }
+        visibleDouble = visibleFraction;
       }
+      // } else {
+      if (widget.autoPlay && initialized && !isPlaying && !_isDisposing) {
+        _betterPlayerController.play();
+      }
+      // }
     } else {
       if (widget.autoPause && initialized && isPlaying && !_isDisposing) {
         _betterPlayerController.pause();

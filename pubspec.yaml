@@ -148,6 +148,8 @@ dependencies:
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
   another_flushbar: ^1.10.11
+  #获取文件的MD5
+  md5_plugin: ^1.0.2
 
 
 

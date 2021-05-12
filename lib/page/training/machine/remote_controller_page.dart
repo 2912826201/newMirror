@@ -93,6 +93,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   CourseModel liveVideoModel;
 
+  bool _showDialog=false;
+
   @override
   void dispose() {
     super.dispose();
@@ -524,7 +526,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
               children: [
                 AppIconButton(
                   iconSize: 28,
-                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.25) : AppColor.white,
+                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.36) : AppColor.white,
                   svgName: AppIcon.skip_previous_28,
                   onTap: () {
                     if (isVideoRoomController()) {
@@ -554,7 +556,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 AppIconButton(
                   iconSize: 28,
                   svgName: AppIcon.skip_next_28,
-                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.25) : AppColor.white,
+                  iconColor: isLiveRoomController() ? AppColor.white.withOpacity(0.36) : AppColor.white,
                   onTap: () {
                     if (isVideoRoomController()) {
                       print("下一段");
@@ -594,6 +596,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   _showPauseDialog() {
+    if(_showDialog){
+      return;
+    }
+    _showDialog=true;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -616,6 +622,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                           await finishVideoCourse(context.read<MachineNotifier>().machine.machineId, courseId);
                         }
                         Navigator.pop(context);
+                        _showDialog=false;
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -639,6 +646,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     onTap: () async {
                       await remoteControlResume(context.read<MachineNotifier>().machine.machineId, courseId);
                       Navigator.pop(context);
+                      _showDialog=false;
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -953,7 +961,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     print(
         "model:${model.index},${model.progressBar},$_currentPosition,$_remainingPartTime,$_partProgress,${model.timestamp - timeSchedule},$_currentPartIndex");
     _currentPositionNoConstant = false;
-    if (model.index == _currentPartIndex) {
+    if(model.pause==0){
+      _currentPositionNoConstant=true;
+      _showPauseDialog();
+    }else if (model.index == _currentPartIndex) {
       if (_currentPosition <= currentPosition) {
         print("_currentPositionNoConstant小于:_currentPosition$_currentPosition,$currentPosition");
         _currentPosition = currentPosition;

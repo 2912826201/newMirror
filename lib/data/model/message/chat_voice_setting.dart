@@ -101,7 +101,9 @@ class VoiceSettingNotifier extends ChangeNotifier {
     if (urlMd5String == this.idMd5String) {
       if (isPlaying) {
         print("暂停");
-        pause();
+        //本来应该是暂停-但是需求是暂停后再次点击要重新播放所以改为停止
+        // pause();
+        stop();
       } else if (isPause) {
         print("重播");
         resetPlay();
@@ -112,7 +114,9 @@ class VoiceSettingNotifier extends ChangeNotifier {
       this.idMd5String = urlMd5String;
     } else {
       if (this.isPlaying) {
-        await pause();
+        //本来应该是暂停-但是需求是暂停后再次点击要重新播放所以改为停止
+        // await pause();
+        await stop();
       }
       this.idMd5String = urlMd5String;
       startPlayer(url, context, urlMd5String);
@@ -156,7 +160,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
     }
   }
 
-  //暂停
+  //停止
   stop() async {
     print("---------isPlaying:${isPlaying}");
     if (isPlaying || isPause) {
@@ -167,6 +171,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
         print('stop success');
         isPlaying = false;
         isPause = false;
+        this.idMd5String = "";
       } else {
         print('stop failed');
       }

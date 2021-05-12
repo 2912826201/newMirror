@@ -412,6 +412,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   void onImgVideoContentBoxClick(BuildContext context) {
     String imageUrl = sizeInfoMap["showImageUrl"];
+    // print("imageUrl:$imageUrl");
     if (isImgOrVideo) {
       print("___________________________${sizeInfoMap["messageId"]}");
       voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);

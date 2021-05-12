@@ -551,6 +551,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       } else if (AppPrefs.isFirstLaunchToDay()) {
         isShowNewUserDialog = true;
       }
+      if(AppRouter.isHaveNewUserPromotionPage()){
+        isShowNewUserDialog = false;
+      }
       if (isShowNewUserDialog) {
         Application.isShowNewUserDialog = false;
         this.isShowNewUserDialog = true;
