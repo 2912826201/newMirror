@@ -184,9 +184,9 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 fit: BoxFit.cover,
                 imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
                 placeholder: (context, url) {
-                  if (indexs == 0) {
-                    return Container();
-                  }
+                  // if (indexs == 0) {
+                  //   return Container();
+                  // }
                   return Container(
                     color: AppColor.bgWhite,
                   );
