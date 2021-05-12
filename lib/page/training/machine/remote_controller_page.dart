@@ -186,18 +186,14 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   Future<bool> _requestPop() async{
     print("isNullCourse:${isNullCourse()}");
     print("machineModel:${machineModel!=null}");
-    print("machineModel:${machineModel.machineId!=null}");
+    print("machineModel:${machineModel?.machineId!=null}");
     if(!isNullCourse()&&machineModel!=null&&machineModel.machineId!=null){
-      print("00000000000000000000000000000000000000");
       bool result = await remoteControlPause(machineModel.machineId, courseId);
       if (result != null && result) {
-        print("11111111111111111111111111111");
         _showPauseDialog();
         return new Future.value(false);
       }
-      print("22222222222222222222222222");
     }
-    print("444444444444444444444444444444");
     return new Future.value(true);
   }
 
