@@ -40,13 +40,13 @@ class InteractiveNoticePage extends StatefulWidget {
   InteractiveNoticePage({this.type});
 
   @override
-  State<StatefulWidget> createState() {
+  _InteractiveNoticeState createState() {
     return _InteractiveNoticeState();
   }
 }
 
 class _InteractiveNoticeState extends State<InteractiveNoticePage> {
-  RefreshController controller;
+  RefreshController controller = RefreshController(initialRefresh: true);
   int lastTime;
   int listPage = 1;
   List<QueryModel> msgList = [];
@@ -57,7 +57,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   String defaultImage = DefaultImage.nodata;
   ScrollController scrollController = ScrollController();
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
-  GlobalKey globalKey = GlobalKey();
+
+   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
 
   ///获取互动通知列表
@@ -135,11 +136,12 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   @override
   void initState() {
     hintText = "这里什么都没有呢";
-    Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
+    Application.unreadNoticeTimeStamp = DateTime
+        .now()
+        .millisecondsSinceEpoch;
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
-    controller = RefreshController(initialRefresh: true);
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {
@@ -171,88 +173,87 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return StreamBuilder<List<QueryModel>>(
-        initialData: msgList,
-        stream: streamController.stream,
-        builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
-          return Scaffold(
-            backgroundColor: AppColor.white,
-            appBar: CustomAppBar(
-              leadingOnTap: () {
-                Navigator.pop(context);
-              },
-              titleString: widget.type == 0
-                  ? "评论"
-                  : widget.type == 1
-                      ? "@我"
-                      : "点赞",
-            ),
-            body: Container(
-                width: width,
-                height: height,
-                child: ScrollConfiguration(
-                    behavior: OverScrollBehavior(),
-                    child: SmartRefresher(
-                      controller: controller,
-                      enablePullUp: true,
-                      enablePullDown: true,
-                      footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-                      header: SmartRefresherHeadFooter.init().getHeader(),
-                      onRefresh: _onRefresh,
-                      onLoading: () {
-                        if (msgList.length != 0) {
+    return Scaffold(
+        backgroundColor: AppColor.white,
+        appBar: CustomAppBar(
+          leadingOnTap: () {
+            Navigator.pop(context);
+          },
+          titleString: widget.type == 0
+              ? "评论"
+              : widget.type == 1
+              ? "@我"
+              : "点赞",
+        ),
+        body: ScrollConfiguration(
+            behavior: OverScrollBehavior(),
+            child: SmartRefresher(
+                controller: controller,
+                enablePullUp: true,
+                enablePullDown: true,
+                footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                header: SmartRefresherHeadFooter.init().getHeader(),
+                onRefresh: _onRefresh,
+                onLoading: () {
+                   if (msgList.length != 0) {
                           setState(() {
                             showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
                           });
                         }
-                        _onLoading();
-                      },
-                      child: snapshot.data.isNotEmpty
-                          ? ListView.builder(
-                              controller: scrollController,
-                              shrinkWrap: true,
-                              //解决无限高度问题
-                              physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (context, index) {
-                                return InteractiveNoticeItem(
-                                  type: widget.type,
-                                  msgModel: snapshot.data[index],
-                                  index: index,
-                                  globalKey: index == snapshot.data.length - 1 ? globalKey : null,
-                                );
-                              })
-                          : fristRequestIsOver
-                              ? Center(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: height * 0.22,
-                                      ),
-                                      Container(
-                                        width: 285,
-                                        height: 285,
-                                        child: Image.asset(defaultImage),
-                                      ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text(
-                                        hintText,
-                                        style: AppStyle.textPrimary3Regular14,
-                                      )
-                                    ],
-                                  ),
-                                )
-                              : Container(
-                                  height: height,
-                                  width: width,
-                                  color: AppColor.white,
-                                ),
-                    ))),
-          );
-        });
+                  _onLoading();
+                },
+                child: StreamBuilder<List<QueryModel>>(
+                    initialData: msgList,
+                    stream: streamController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
+                      if (snapshot.data.isNotEmpty) {
+                        return ListView.builder(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            //解决无限高度问题
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) {
+                              return InteractiveNoticeItem(
+                                type: widget.type,
+                                msgModel: snapshot.data[index],
+                                index: index,
+                                globalKey: index == snapshot.data.length - 1 ? globalKey : null,
+                              );
+                            });
+                      } else if (fristRequestIsOver) {
+                        return Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: height * 0.22,
+                              ),
+                              Container(
+                                width: 285,
+                                height: 285,
+                                child: Image.asset(defaultImage),
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                hintText,
+                                style: AppStyle.textPrimary3Regular14,
+                              )
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          height: height,
+                          width: width,
+                          color: AppColor.white,
+                        );
+                      }
+                    })
+            ))
+    );
   }
 }
 
@@ -261,17 +262,26 @@ class InteractiveNoticeItem extends StatefulWidget {
   QueryModel msgModel;
   bool isFrist = true;
   int index;
+
   GlobalKey globalKey;
 
-  InteractiveNoticeItem({this.type, this.msgModel, this.index, this.globalKey});
+  InteractiveNoticeItem({this.type, this.msgModel, this.index,  this.globalKey
+  });
 
   @override
-  State<StatefulWidget> createState() {
+  InteractiveNoticeItemState createState() {
     return InteractiveNoticeItemState();
   }
 }
 
 class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
+
+  final double avatarWidth = 38;
+
+  final double imageWidth = 38;
+
+  double contentWidth;
+
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
 
@@ -315,8 +325,12 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
       } else if (widget.msgModel.refData != null) {
-        atUserList = HomeFeedModel.fromJson(widget.msgModel.refData).atUsers;
-        comment = HomeFeedModel.fromJson(widget.msgModel.refData).content;
+        atUserList = HomeFeedModel
+            .fromJson(widget.msgModel.refData)
+            .atUsers;
+        comment = HomeFeedModel
+            .fromJson(widget.msgModel.refData)
+            .content;
       } else {
         commentIsDelete = true;
       }
@@ -355,13 +369,18 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     // TODO: implement initState
     super.initState();
     print('===============================itemInit   index${widget.index}');
+    contentWidth = ScreenUtil.instance.screenWidthDp - (avatarWidth + imageWidth + 32 + 27);
     Future.delayed(Duration.zero, () {
       if (widget.msgModel.refData != null) {
         if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
           getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
         } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
-          getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
-              CommentDtoModel.fromJson(widget.msgModel.refData).type);
+          getCommentFristPage(CommentDtoModel
+              .fromJson(widget.msgModel.refData)
+              .targetId,
+              CommentDtoModel
+                  .fromJson(widget.msgModel.refData)
+                  .type);
         }
       }
     });
@@ -383,15 +402,16 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
-          "$commentState$comment", AppStyle.textRegular14, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+          "$commentState$comment", AppStyle.textRegular14, contentWidth, 10);
       textHeight = testSize.height;
     } else {
       TextPainter testSize =
-          calculateTextWidth("$comment", AppStyle.textRegular14, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+      calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth, 10);
       textHeight = testSize.height;
     }
+    print('-----------------------textHeight---$textHeight');
     return Container(
-      key: widget.globalKey,
+       key: widget.globalKey!=null?widget.globalKey:null,
       width: ScreenUtil.instance.screenWidthDp,
       height: 59.5 + textHeight + 16,
       color: AppColor.white,
@@ -409,42 +429,43 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   children: [
                     ClipOval(
                       child: CachedNetworkImage(
-                        height: 38,
-                        width: 38,
+                        height: avatarWidth,
+                        width: avatarWidth,
                         memCacheWidth: 150,
                         memCacheHeight: 150,
                         imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
-                        ),
+                        placeholder: (context, url) =>
+                            Container(
+                              color: AppColor.bgWhite,
+                            ),
                       ),
                     ),
                     widget.msgModel.isRead == 0
                         ? Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              height: 10,
-                              width: 10,
-                              decoration: BoxDecoration(
-                                  color: AppColor.mainRed,
-                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
-                                  border: Border.all(width: 0.5, color: AppColor.white)),
-                            ),
-                          )
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(
+                            color: AppColor.mainRed,
+                            borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                            border: Border.all(width: 0.5, color: AppColor.white)),
+                      ),
+                    )
                         : Container()
                   ],
                 )),
           ),
-          Spacer(),
+          SizedBox(width: 11,),
           InkWell(
             onTap: () {
               _jumpToDetailPage(context);
             },
             child: Container(
               alignment: Alignment.centerLeft,
-              width: ScreenUtil.instance.screenWidthDp * 0.64,
+              width: contentWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -460,9 +481,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   !commentIsDelete
                       ? RichText(text: TextSpan(children: _atText(context)))
                       : Text(
-                          "该评论已删除",
-                          style: AppStyle.textHintRegular13,
-                        ),
+                    "该评论已删除",
+                    style: AppStyle.textHintRegular13,
+                  ),
                   SizedBox(
                     height: 7,
                   ),
@@ -474,45 +495,46 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
               ),
             ),
           ),
-          Spacer(),
+          SizedBox(width: 16,),
           !feedIsDelete
               ? InkWell(
-                  onTap: () {
-                    print('========================点击了${widget.msgModel.refId}');
-                    _jumpToDetailPage(context);
-                  },
-                  child: Container(
-                    alignment: Alignment.topRight,
-                    child: ClipRect(
-                      child: CachedNetworkImage(
-                        height: 38,
-                        width: 38,
-                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
-                        ),
+            onTap: () {
+              print('========================点击了${widget.msgModel.refId}');
+              _jumpToDetailPage(context);
+            },
+            child: Container(
+              alignment: Alignment.topRight,
+              child: ClipRect(
+                child: CachedNetworkImage(
+                  height: imageWidth,
+                  width: imageWidth,
+                  imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Container(
+                        color: AppColor.bgWhite,
                       ),
-                    ),
-                  ),
-                )
+                ),
+              ),
+            ),
+          )
               : InkWell(
-                  onTap: () {
-                    Toast.show("该内容已删除", context);
-                  },
-                  child: Container(
-                    height: 38,
-                    width: 38,
-                    alignment: Alignment.topRight,
-                    color: AppColor.bgWhite,
-                    child: Center(
-                      child: Text(
-                        "已删除",
-                        style: AppStyle.textHintRegular10,
-                      ),
-                    ),
-                  ),
-                )
+            onTap: () {
+              Toast.show("该内容已删除", context);
+            },
+            child: Container(
+              height: 38,
+              width: 38,
+              alignment: Alignment.topRight,
+              color: AppColor.bgWhite,
+              child: Center(
+                child: Text(
+                  "已删除",
+                  style: AppStyle.textHintRegular10,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -526,8 +548,14 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     }
     try {
       if (widget.msgModel.commentData != null &&
-          context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list != null) {
-        context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
+          context
+              .read<FeedMapNotifier>()
+              .value
+              .courseCommentHot[widget.msgModel.commentData.id].list != null) {
+        context
+            .read<FeedMapNotifier>()
+            .value
+            .courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
           if (element.replys.isNotEmpty) {
             element.replys.clear();
           }
@@ -568,7 +596,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   ///获取对应内容第一页评论
   getCommentFristPage(int targetId, int targetType) async {
     Map<String, dynamic> commentModel =
-        await queryListByHot2(targetId: targetId, targetType: targetType, lastId: null, size: 15);
+    await queryListByHot2(targetId: targetId, targetType: targetType, lastId: null, size: 15);
     if (commentModel != null && widget.msgModel.commentData != null) {
       context.read<FeedMapNotifier>().interacticeNoticeChange(
           courseCommentHots: CommentModel.fromJson(commentModel), commentId: widget.msgModel.commentData.id);

@@ -1108,20 +1108,25 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   _getImage(BuildContext context, String id, {bool toData = false}) async {
     print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
     _isGettingImage = true;
-    ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
+    try {
+      ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
 
-    print("1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
-    print(image);
-    context.read<SelectedMapNotifier>().addImage(id, image);
-    // 将图片数据先转好可节省后续转换的用时
-    if (toData) {
-      ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-      Uint8List picBytes = byteData.buffer.asUint8List();
-      print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-      context.read<SelectedMapNotifier>().addImageData(id, picBytes);
+      print("1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
+      print(image);
+      context.read<SelectedMapNotifier>().addImage(id, image);
+      // 将图片数据先转好可节省后续转换的用时
+      if (toData) {
+        ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        Uint8List picBytes = byteData.buffer.asUint8List();
+        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+        context.read<SelectedMapNotifier>().addImageData(id, picBytes);
+      }
+    } catch (e) {
+      print("裁剪图片失败：$e");
+    } finally {
+      _isGettingImage = false;
     }
-    _isGettingImage = false;
   }
 
   _changeCurrentRatio() {

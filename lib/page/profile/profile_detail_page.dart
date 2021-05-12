@@ -221,8 +221,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getUserInfo({int id}) async {
     if(widget.userModel==null){
       userModel = await getUserInfo(uid: id);
+    }else{
+      userModel = widget.userModel;
     }
-    userModel = widget.userModel;
     widget.userModel = null;
     if (userModel != null) {
       _avatar = userModel.avatarUri;
