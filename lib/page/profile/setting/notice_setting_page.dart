@@ -34,6 +34,9 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
   //设置用户通知设置
   Future<bool> _setUserNotice(int type, int isOpen) async {
     var noticeState = await setUserNotice(type, isOpen);
+    if(noticeState!=null&&noticeState){
+      changeModelNotify(type,init: false);
+    }
     return noticeState;
   }
 
@@ -42,28 +45,33 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     UserNoticeModel model = await getUserNotice();
     if (model != null) {
       model.list.forEach((element) {
-        switch (element.type + 1) {
-          case 1:
-            settingNotifileModel.notFollow = element.isOpen == 0 ? false : true;
-            break;
-          case 2:
-            settingNotifileModel.followBuddy = element.isOpen == 0 ? false : true;
-            break;
-          case 3:
-            settingNotifileModel.mentionedMe = element.isOpen == 0 ? false : true;
-            break;
-          case 4:
-            settingNotifileModel.comment = element.isOpen == 0 ? false : true;
-            break;
-          case 5:
-            settingNotifileModel.laud = element.isOpen == 0 ? false : true;
-            break;
-        }
-        streamController.sink.add(settingNotifileModel);
+          changeModelNotify(element.type,status:element.isOpen!=0);
       });
     }
   }
 
+  void changeModelNotify(int type, {bool status,bool init = true}){
+    switch (type) {
+      case 0:
+        settingNotifileModel.notFollow = init?status:!settingNotifileModel.notFollow;
+        break;
+      case 1:
+        settingNotifileModel.followBuddy = init?status:!settingNotifileModel.followBuddy;
+        break;
+      case 2:
+        settingNotifileModel.mentionedMe = init?status:!settingNotifileModel.mentionedMe;
+        break;
+      case 3:
+        settingNotifileModel.comment = init?status:!settingNotifileModel.comment;
+        break;
+      case 4:
+        settingNotifileModel.laud = init?status:!settingNotifileModel.laud;
+        break;
+    }
+    if(init){
+      streamController.sink.add(settingNotifileModel);
+    }
+  }
   ///获取系统通知状态
   Future<String> getCheckNotificationPermStatus(bool isFirst) {
     return NotificationPermissions.getNotificationPermissionStatus().then((status) {
