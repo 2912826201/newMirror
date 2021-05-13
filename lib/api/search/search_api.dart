@@ -1,4 +1,5 @@
 // 搜索动态列表
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -50,9 +51,9 @@ Future<DataResponseModel> searchCourse({@required String key, @required int size
 }
 
 // 获取推荐课程
-Future<List<CourseModel>> recommendCourse() async {
+Future<List<CourseModel>> recommendCourse(CancelToken token) async {
   Map<String, dynamic> params = {};
-  BaseResponseModel responseModel = await requestApi(RECOMMENDCOURSE, params);
+  BaseResponseModel responseModel = await requestApi(RECOMMENDCOURSE, params,token: token);
   if (responseModel.isSuccess) {
     List<CourseModel> list = [];
     if (responseModel.data["list"] != null) {

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -43,10 +44,10 @@ Future<DataResponseModel> searchTopic({@required String key, @required int size,
 }
 
 //获取推荐话题列表
-Future<DataResponseModel> getRecommendTopic({@required int size}) async {
+Future<DataResponseModel> getRecommendTopic({@required int size,CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
-  BaseResponseModel responseModel = await requestApi(GETRECOMMENDTOPIC, params);
+  BaseResponseModel responseModel = await requestApi(GETRECOMMENDTOPIC, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {

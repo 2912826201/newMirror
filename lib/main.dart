@@ -114,8 +114,8 @@ Future _initApp() async {
   WidgetsBinding.instance.addObserver(observer);
   //缓存个数 100
   PaintingBinding.instance.imageCache.maximumSize = 100;
-  //缓存大小 50m
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 50 << 20;
+  //缓存大小 100m
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 100 << 20;
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
