@@ -118,7 +118,7 @@ Future<Map> cancelFollowTopic({@required int topicId}) async {
 }
 
 //   PULLTOPICLIST
-Future<DataResponseModel> pullTopicList({@required int type, @required int size, int targetId, int lastTime}) async {
+Future<DataResponseModel> pullTopicList({@required int type, @required int size, int targetId, int lastTime,CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
   params["size"] = size;
@@ -128,7 +128,7 @@ Future<DataResponseModel> pullTopicList({@required int type, @required int size,
   if (lastTime != null) {
     params["lastTime"] = lastTime;
   }
-  BaseResponseModel responseModel = await requestApi(PULLTOPICLIST, params);
+  BaseResponseModel responseModel = await requestApi(PULLTOPICLIST, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel = DataResponseModel();
     if (responseModel.data != null) {
