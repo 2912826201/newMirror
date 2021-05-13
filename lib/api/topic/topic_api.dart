@@ -26,12 +26,12 @@ const String GETUSERRECOMMENDTOPIC = "/appuser/web/topic/getUserRecommendTopic";
 // 获取话题详情页背景配置图
 const String GETBACKGROUNDCONFIG = "//appuser/web/sys/getBackgroundConfig";
 //获取搜索话题列表
-Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore}) async {
+Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore, CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["key"] = key;
   params["size"] = size;
   params["lastScore"] = lastScore;
-  BaseResponseModel responseModel = await requestApi(SEARCHTOPIC, params);
+  BaseResponseModel responseModel = await requestApi(SEARCHTOPIC, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
@@ -60,10 +60,10 @@ Future<DataResponseModel> getRecommendTopic({@required int size,CancelToken toke
 }
 
 //获取推荐话题列表
-Future<DataResponseModel> getUserRecommendTopic({@required int size}) async {
+Future<DataResponseModel> getUserRecommendTopic({@required int size,CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
-  BaseResponseModel responseModel = await requestApi(GETUSERRECOMMENDTOPIC, params);
+  BaseResponseModel responseModel = await requestApi(GETUSERRECOMMENDTOPIC, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
@@ -118,7 +118,7 @@ Future<Map> cancelFollowTopic({@required int topicId}) async {
 }
 
 //   PULLTOPICLIST
-Future<DataResponseModel> pullTopicList({@required int type, @required int size, int targetId, int lastTime}) async {
+Future<DataResponseModel> pullTopicList({@required int type, @required int size, int targetId, int lastTime,CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
   params["size"] = size;
@@ -128,7 +128,7 @@ Future<DataResponseModel> pullTopicList({@required int type, @required int size,
   if (lastTime != null) {
     params["lastTime"] = lastTime;
   }
-  BaseResponseModel responseModel = await requestApi(PULLTOPICLIST, params);
+  BaseResponseModel responseModel = await requestApi(PULLTOPICLIST, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel = DataResponseModel();
     if (responseModel.data != null) {

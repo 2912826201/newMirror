@@ -63,7 +63,7 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
     Response response;
     if (requestMethod == METHOD_GET) {
       _setHeaders(authType, _getDioGetInstance());
-      response = await _getDioGetInstance().get(path, queryParameters: queryParameters);
+      response = await _getDioGetInstance().get(path, queryParameters: queryParameters,cancelToken: token);
       print("response：${response.toString()}");
     } else {
       _setHeaders(authType, _getDioPostInstance());

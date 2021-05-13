@@ -41,6 +41,12 @@ class GetTripleArea extends StatefulWidget {
 class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMixin {
   String myAvatar = "";
 
+  // 是否可点赞
+  bool isSetUpLuad = true;
+
+  // 是否可分享
+  bool isShare = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -227,22 +233,25 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      BaseResponseModel model = await laud(
-          id: widget.model.id,
-          laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
-      if (model != null) {
-        if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-        } else {
-          context.read<FeedMapNotifier>().setLaud(
-              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
-              myAvatar,
-              widget.model.id);
-          // model
-          context
-              .read<UserInteractiveNotifier>()
-              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+      if (isSetUpLuad) {
+        isSetUpLuad = false;
+        BaseResponseModel model = await laud(
+            id: widget.model.id,
+            laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+        if (model != null) {
+          if (model.code == CODE_BLACKED) {
+            ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+          } else {
+            context.read<FeedMapNotifier>().setLaud(
+                context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+                myAvatar,
+                widget.model.id);
+            // model
+            context.read<UserInteractiveNotifier>().laudedChange(
+                widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+          }
         }
+        isSetUpLuad = true;
       }
     } else {
       // 去登录
@@ -322,15 +331,14 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.comment_feed,
             iconSize: 24,
             onTap: () {
-                openFeedCommentBottomSheet(
-                    context: context,
-                    feedId: widget.model.id,
-                    callback: () {
-                      if (widget.back != null) {
-                        widget.back();
-                      }
-                    });
-
+              openFeedCommentBottomSheet(
+                  context: context,
+                  feedId: widget.model.id,
+                  callback: () {
+                    if (widget.back != null) {
+                      widget.back();
+                    }
+                  });
             },
           ),
         ),
@@ -340,7 +348,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.share_feed,
             iconSize: 24,
             onTap: () {
-              if(!context.read<TokenNotifier>().isLoggedIn){
+              if (!context.read<TokenNotifier>().isLoggedIn) {
                 openShareBottomSheet(
                     context: context,
                     map: widget.model.toJson(),
@@ -348,6 +356,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     sharedType: 1);
                 return;
               }
+
+              if (isShare) {
+                isShare = false;
                 InquireCheckBlack(
                     checkId: widget.model.pushId,
                     inquireCheckBlackCallback: (BlackModel blackModel) {
@@ -357,14 +368,19 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                       }
                       if (promptText != "") {
                         ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                        isShare = true;
                         return;
                       }
                       openShareBottomSheet(
                           context: context,
                           map: widget.model.toJson(),
                           chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                          sharedType: 1);
+                          sharedType: 1,
+                          callback: () {
+                            isShare = true;
+                          });
                     });
+              }
             },
           ),
         ),

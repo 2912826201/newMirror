@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -41,6 +43,17 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   RefreshController _refreshController = new RefreshController();
   String defaultImage = DefaultImage.nodata;
   ScrollController scrollController = ScrollController();
+
+// Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // 取消网络请求
+    cancelRequests(token: token);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -91,7 +104,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     }
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
-    SearchUserModel model = await ProfileSearchUser(text, 15, lastTime: _lastTime);
+    SearchUserModel model = await ProfileSearchUser(text, 15, lastTime: _lastTime, token: token);
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
@@ -156,7 +169,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   onRefresh: _onRefresh,
                   onLoading: _onLoading,
                   child: ListView.builder(
-                    controller: scrollController,
+                      controller: scrollController,
                       itemCount: modelList.length,
                       itemExtent: 58,
                       itemBuilder: (context, index) {
