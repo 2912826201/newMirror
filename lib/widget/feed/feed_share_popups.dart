@@ -21,12 +21,15 @@ import '../icon.dart';
 import 'feed_friends_cell.dart';
 
 // import '../bottom_sheet.dart';
+// 因为showModalBottomSheet没有关闭回调，只有自己写showModalBottomSheet返回一个“ Future”，因此您可以使用它。
+typedef ValueChangedCallback = void Function();
 
 Future openShareBottomSheet({
   @required BuildContext context,
   @required Map<String, dynamic> map,
   @required String chatTypeModel,
   @required int sharedType,
+  ValueChangedCallback callback,
   bool fromTraingGallery = false,
 }) async {
   await showModalBottomSheet(
@@ -41,7 +44,6 @@ Future openShareBottomSheet({
       ),
     ),
     builder: (BuildContext context) {
-
       return SingleChildScrollView(
         child: FeedSharePopups(
           map: map,
@@ -51,7 +53,11 @@ Future openShareBottomSheet({
         ),
       );
     },
-  );
+  ).then((value) {
+    if (callback != null) {
+      callback();
+    }
+  });
 }
 
 class FeedSharePopups extends StatelessWidget {
@@ -59,7 +65,8 @@ class FeedSharePopups extends StatelessWidget {
   Map<String, dynamic> map;
   int sharedType;
   bool fromTraingGallery;
-  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType,this.fromTraingGallery});
+
+  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType, this.fromTraingGallery});
 
   List<ShareViewModel> shareViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
@@ -119,7 +126,7 @@ class FeedSharePopups extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () async {
-                      if(fromTraingGallery){
+                      if (fromTraingGallery) {
                         context.read<UserInteractiveNotifier>().changeShowImageFrame(false);
                       }
                       print("点击了￥${shareViewModel[index].name}");
@@ -138,7 +145,7 @@ class FeedSharePopups extends StatelessWidget {
                           var result = await ImageGallerySaver.saveFile(map["file"]);
                           if (result["isSuccess"] == true) {
                             ToastShow.show(msg: "保存成功", context: context);
-                          }else{
+                          } else {
                             ToastShow.show(msg: "保存失败", context: context);
                           }
                           Navigator.of(context).pop(1);
