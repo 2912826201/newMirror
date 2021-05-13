@@ -106,6 +106,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   void didUpdateWidget(covariant AttentionPage oldWidget) {
     print("didUpdateWidget：：：：：：关注页");
     // context.read<FeedMapNotifier>().clearBuildCount();
+
     super.didUpdateWidget(oldWidget);
   }
 

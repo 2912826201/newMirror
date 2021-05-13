@@ -56,7 +56,8 @@ Dio _dioPost;
 
 //通用的请求api的方法，请在具体的子api中进行入参封装和结果处理 authType只在特定的接口中赋值
 Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryParameters,
-    {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST, bool autoHandleLogout = true}) async {
+    {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST, bool autoHandleLogout = true,
+      CancelToken token}) async {
   BaseResponseModel responseModel;
   try {
     Response response;
@@ -66,7 +67,7 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
       print("response：${response.toString()}");
     } else {
       _setHeaders(authType, _getDioPostInstance());
-      response = await _getDioPostInstance().post(path, queryParameters: queryParameters);
+      response = await _getDioPostInstance().post(path, queryParameters: queryParameters,cancelToken: token);
     }
     responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
     //302为未登录 一般统一自动处理 登出清数据断开一些组件连接等操作
@@ -111,14 +112,22 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
     return responseModel;
   }
 }
+
 /*
    * 取消请求
    *
    * 同一个cancel token 可以用于多个请求，当一个cancel token取消时，所有使用该cancel token的请求都会被取消。
    * 所以参数可选
    */
-void cancelRequests(CancelToken token) {
-  token.cancel("cancelled");
+void cancelRequests({CancelToken token}) {
+  if (token == null) {
+    var token1 = CancelToken();
+    print("取消请求");
+    token1.cancel("cancelled");
+  } else {
+    print("取消请求1");
+    token.cancel("cancelled");
+  }
 }
 
 //获取dio单例
