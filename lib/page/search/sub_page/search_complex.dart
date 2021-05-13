@@ -102,6 +102,10 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     });
     // 上拉加载
     _scrollController.addListener(() {
+      if(widget.focusNode.hasFocus){
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        FocusScope.of(context).requestFocus(FocusNode());
+      }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         requestFeednIterface();
       }

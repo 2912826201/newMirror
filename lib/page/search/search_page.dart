@@ -53,12 +53,17 @@ class SearchPage extends StatelessWidget {
                       SearchHeader(
                         focusNode: focusNode,
                       ),
-                      context.watch<SearchEnterNotifier>().enterText.length > 0
+                  InkWell(
+                  onTap: (){
+                    //点击空白处移除焦点
+                  focusNode.unfocus();
+                  },
+                  child: context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
                               defaultIndex: defaultIndex,
                             )
-                          : SearchMiddleView(),
+                          : SearchMiddleView(),)
                     ],
                   );
                 })));
@@ -129,6 +134,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                 AppIcon.getAppIcon(AppIcon.input_search, 24),
                 Expanded(
                   child: TextField(
+                    focusNode: widget.focusNode,
                     controller: controller,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (text) {
@@ -228,7 +234,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted) {
         setState(() {});
       }
-    });/*.catchError((e) {
+    });
+    /*.catchError((e) {
       print("报错了");
       print(e);
     });*/
@@ -621,9 +628,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
-                  text: context.watch<SearchEnterNotifier>().enterText,
-                  width: ScreenUtil.instance.screenWidthDp,
-                  textController: context.watch<SearchEnterNotifier>().textController),
+                text: context.watch<SearchEnterNotifier>().enterText,
+                width: ScreenUtil.instance.screenWidthDp,
+                textController: context.watch<SearchEnterNotifier>().textController,
+                focusNode: widget.focusNode,
+              ),
               // RecommendPage()
             ],
           ),
