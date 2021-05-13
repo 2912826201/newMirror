@@ -1,8 +1,10 @@
 // 动态输入框
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -35,7 +37,15 @@ class KeyboardInputState extends State<KeyboardInput> {
 
 // 判断是否只是切换光标
   bool isSwitchCursor = true;
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
 
+  @override
+  void dispose() {
+    // 取消网络请求
+    cancelRequests(token: token);
+    super.dispose();
+  }
   @override
   void initState() {
     widget.controller.addListener(() {
@@ -185,7 +195,7 @@ class KeyboardInputState extends State<KeyboardInput> {
   requestSearchFollowList(String keyWork) async {
     print("搜索字段：：：：：：：：$keyWork");
     List<BuddyModel> searchFollowList = [];
-    SearchUserModel model = await ProfileSearchUser(keyWork, 20);
+    SearchUserModel model = await ProfileSearchUser(keyWork, 20,token: token);
     if (model != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((element) {
@@ -196,45 +206,39 @@ class KeyboardInputState extends State<KeyboardInput> {
           searchFollowList.add(followModel);
         });
         if (model.hasNext == 0) {
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchLoadText = "";
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+          context.read<ReleaseFeedInputNotifier>().searchLoadText = "";
+          context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
         }
       }
       // 记录搜索状态
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchLastTime = model.lastTime;
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchHasNext = model.hasNext;
+      context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
+      context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     }
-    // 列表回到顶部，不然无法上拉加载下一页
-    if (context.read<ReleaseFeedInputNotifier>().atScrollController.hasClients) {
-      context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
-    }
-    // 获取关注@数据
-    List<BuddyModel> followList = [];
-    context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
-      if (v.nickName.contains(keyWork)) {
-        followList.add(v);
+    if (mounted) {
+      // 列表回到顶部，不然无法上拉加载下一页
+      if (context.read<ReleaseFeedInputNotifier>().atScrollController.hasClients) {
+        context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
       }
-    });
-    // 筛选全局的@用户数据
-    List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
-    filterFollowList.insertAll(0, followList);
-    context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
+      // 获取关注@数据
+      List<BuddyModel> followList = [];
+      context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
+        if (v.nickName.contains(keyWork)) {
+          followList.add(v);
+        }
+      });
+      // 筛选全局的@用户数据
+      List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
+      filterFollowList.insertAll(0, followList);
+      context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
+    }
   }
 
   // 搜索话题第一页
   requestSearchTopicList(String keyWork) async {
     List<TopicDtoModel> searchTopicList = [];
     TopicDtoModel createTopModel = TopicDtoModel();
-    DataResponseModel model = await searchTopic(key: keyWork, size: 20);
-    if(model != null) {
+    DataResponseModel model = await searchTopic(key: keyWork, size: 20,token: token);
+    if (model != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
           searchTopicList.add(TopicDtoModel.fromJson(v));
@@ -261,38 +265,28 @@ class KeyboardInputState extends State<KeyboardInput> {
           print("createTopModel.name ::${createTopModel.name}_____${createTopModel.name.length}");
         }
         if (model.hasNext == 0) {
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchTopLoadText = "";
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+          context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
+          context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
         }
       } else {
         createTopModel.name = "#" + keyWork + " ";
         createTopModel.id = -1;
         searchTopicList.insert(0, createTopModel);
         print("createTopModel.name ::${createTopModel.name}_____${createTopModel.name.length}");
-        context
-            .read<ReleaseFeedInputNotifier>()
-            .searchTopLoadText = "";
-        context
-            .read<ReleaseFeedInputNotifier>()
-            .searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
       }
       // 记录搜索状态
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchLastScore = model.lastScore;
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchTopHasNext = model.hasNext;
+      context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
+      context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     }
-    // 列表回到顶部，不然无法上拉加载下一页
-    if (context.read<ReleaseFeedInputNotifier>().topScrollController.hasClients) {
-      context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
+    if (mounted) {
+      // 列表回到顶部，不然无法上拉加载下一页
+      if (context.read<ReleaseFeedInputNotifier>().topScrollController.hasClients) {
+        context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
+      }
+      context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
     }
-    context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
   }
 
   /// 获得文本输入框样式
