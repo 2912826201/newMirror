@@ -392,6 +392,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               print("头像地址:$avatar");
               return ClipOval(
                 child: CachedNetworkImage(
+                  useOldImageOnUrlChange:true,
                   height: avatarSize,
                   width: avatarSize,
                   memCacheWidth: 250,

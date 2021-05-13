@@ -165,7 +165,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   Widget getListView() {
     int childCount = getChildCount();
     return ListView.custom(
-      physics: BouncingScrollPhysics(),
+      physics: isShowTop ? ClampingScrollPhysics() : BouncingScrollPhysics(),
       controller: widget.scrollController,
       padding: EdgeInsets.symmetric(horizontal: 16),
       reverse: true,
@@ -297,17 +297,19 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   }
 
   _initData() {
+    print("1111");
     isShowHaveAnimation = MessageItemHeightUtil.init()
         .judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
+    print("isShowHaveAnimation:$isShowHaveAnimation");
     isShowTop = !isShowHaveAnimation;
     if (isShowTop) {
       loadStatus = LoadingStatus.STATUS_COMPLETED;
-    }else{
+    } else {
       loadStatus = LoadingStatus.STATUS_IDEL;
     }
     if (loadStatus != LoadingStatus.STATUS_COMPLETED) {
       isHaveLoadAnimation = true;
-    }else{
+    } else {
       isHaveLoadAnimation = false;
     }
   }

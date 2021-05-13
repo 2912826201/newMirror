@@ -76,6 +76,10 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     requestFeednIterface(refreshOrLoading:true);
     // 上拉加载
     _scrollController.addListener(() {
+      if(widget.focusNode.hasFocus){
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
+      }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         requestFeednIterface(refreshOrLoading:false);
       }

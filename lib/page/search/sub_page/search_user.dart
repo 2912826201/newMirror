@@ -18,10 +18,10 @@ import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 class SearchUser extends StatefulWidget {
   String text;
   double width;
-
+  FocusNode focusNode;
   TextEditingController textController;
 
-  SearchUser({this.text, this.width, this.textController});
+  SearchUser({this.text, this.width, this.textController, this.focusNode});
 
   @override
   State<StatefulWidget> createState() {
@@ -40,6 +40,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   String lastString;
   RefreshController _refreshController = new RefreshController();
   String defaultImage = DefaultImage.nodata;
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -54,6 +55,12 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
           lastString = widget.textController.text;
           _getSearchUser(lastString);
         }
+      }
+    });
+    scrollController.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
       }
     });
   }
@@ -149,6 +156,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   onRefresh: _onRefresh,
                   onLoading: _onLoading,
                   child: ListView.builder(
+                    controller: scrollController,
                       itemCount: modelList.length,
                       itemExtent: 58,
                       itemBuilder: (context, index) {
