@@ -259,7 +259,7 @@ Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, in
 }
 
 ///关注列表
-Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async {
+Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime,CancelToken token}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uid"] = uid;
@@ -268,7 +268,7 @@ Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async
     map["lastTime"] = lastTime;
   }
   map["size"] = size;
-  BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
+  BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map,token: token);
   if (responseModel.isSuccess && responseModel.data != null) {
     print('用户关注列表请求接口=============================');
     BuddyListModel model;

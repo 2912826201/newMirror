@@ -162,7 +162,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     } else {
       topicList.clear();
     }
-    if (feedModel != null && feedModel.list.length != 0) {
+    if (feedModel != null && feedModel.list.length != 0 && mounted) {
       feedModel.list.forEach((v) {
         feedList.add(HomeFeedModel.fromJson(v));
         lastTime = feedModel.lastTime;
@@ -201,7 +201,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime,token: token);
       hasNext = model.hasNext;
       lastTime = model.lastTime;
-      if (hasNext != 0) {
+      if (hasNext != 0 && mounted) {
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             feedList.add(HomeFeedModel.fromJson(v));

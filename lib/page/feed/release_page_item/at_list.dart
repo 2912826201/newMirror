@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -57,9 +59,14 @@ class AtListState extends State<AtList> {
   // 数据加载页数
   int searchDataPage = 1;
 
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
   @override
   void dispose() {
     _scrollController.dispose();
+    // 取消网络请求
+    cancelRequests(token: token);
     super.dispose();
   }
 
@@ -67,7 +74,9 @@ class AtListState extends State<AtList> {
   void initState() {
     requestBothFollowList();
     Future.delayed(Duration.zero, () {
-      context.read<ReleaseFeedInputNotifier>().setAtScrollController(_scrollController);
+      if (mounted) {
+        context.read<ReleaseFeedInputNotifier>().setAtScrollController(_scrollController);
+      }
     });
     _scrollController.addListener(() {
       // 搜索全局用户关键字
@@ -102,8 +111,8 @@ class AtListState extends State<AtList> {
       print("返回不请求搜索数据");
       return;
     }
-    SearchUserModel model =
-        await ProfileSearchUser(keyWork, 20, lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
+    SearchUserModel model = await ProfileSearchUser(keyWork, 20,
+        lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime, token: token);
     if (model != null) {
       if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
         if (model.list.isNotEmpty) {
@@ -122,20 +131,22 @@ class AtListState extends State<AtList> {
       context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
       context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     }
-    setState(() {});
-    // 把在输入框回调内的第一页数据插入
-    searchFollowList.insertAll(0, context.read<ReleaseFeedInputNotifier>().followList);
-    // 获取关注@数据
-    List<BuddyModel> followList = [];
-    context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
-      if (v.nickName.contains(keyWork)) {
-        followList.add(v);
-      }
-    });
-    // 筛选全局的@用户数据
-    List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
-    filterFollowList.insertAll(0, followList);
-    context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
+    if (mounted) {
+      setState(() {});
+      // 把在输入框回调内的第一页数据插入
+      searchFollowList.insertAll(0, context.read<ReleaseFeedInputNotifier>().followList);
+      // 获取关注@数据
+      List<BuddyModel> followList = [];
+      context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
+        if (v.nickName.contains(keyWork)) {
+          followList.add(v);
+        }
+      });
+      // 筛选全局的@用户数据
+      List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
+      filterFollowList.insertAll(0, followList);
+      context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
+    }
   }
 
   // 请求好友列表
@@ -154,7 +165,7 @@ class AtListState extends State<AtList> {
       });
       return;
     }
-    BuddyListModel model = await GetFollowList(20, lastTime: lastTime);
+    BuddyListModel model = await GetFollowList(20, lastTime: lastTime, token: token);
     if (model != null) {
       if (dataPage == 1) {
         if (model.list.isNotEmpty) {
@@ -181,11 +192,13 @@ class AtListState extends State<AtList> {
       lastTime = model.lastTime;
       hasNext = model.hasNext;
     }
-    // 存入@显示数据
-    context.read<ReleaseFeedInputNotifier>().setFollowList(followList);
-    // 搜索时会替换@显示数据，备份一份数据
-    context.read<ReleaseFeedInputNotifier>().setBackupFollowList(followList);
-    setState(() {});
+    if(mounted) {
+      // 存入@显示数据
+      context.read<ReleaseFeedInputNotifier>().setFollowList(followList);
+      // 搜索时会替换@显示数据，备份一份数据
+      context.read<ReleaseFeedInputNotifier>().setBackupFollowList(followList);
+      setState(() {});
+    }
   }
 
   @override

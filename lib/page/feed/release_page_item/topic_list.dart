@@ -1,8 +1,10 @@
 // 话题列表
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -46,9 +48,15 @@ class TopicListState extends State<TopicList> {
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
   @override
   void dispose() {
     _scrollController.dispose();
+    print("TopicListState销毁");
+    // 取消网络请求
+    cancelRequests(token: token);
     super.dispose();
   }
 
@@ -56,7 +64,9 @@ class TopicListState extends State<TopicList> {
   void initState() {
     requestRecommendTopic();
     Future.delayed(Duration.zero, () {
-      context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+      if (mounted) {
+        context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+      }
     });
     _scrollController.addListener(() {
       // 搜索全局用户关键字
@@ -84,7 +94,7 @@ class TopicListState extends State<TopicList> {
       print("返回不请求数据");
       return;
     }
-    DataResponseModel model = await getUserRecommendTopic(size: 20);
+    DataResponseModel model = await getUserRecommendTopic(size: 20,token: token);
     if (model != null) {
       if (dataPage == 1) {
         if (model != null && model.list.isNotEmpty) {
@@ -100,11 +110,13 @@ class TopicListState extends State<TopicList> {
       }
       hasNext = model.hasNext;
     }
-    // 存入话题显示数据
-    context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
-    // 搜索时会替换话题显示数据，备份一份数据
-    context.read<ReleaseFeedInputNotifier>().setBackupTopicList(topics);
-    setState(() {});
+    if(mounted) {
+      // 存入话题显示数据
+      context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
+      // 搜索时会替换话题显示数据，备份一份数据
+      context.read<ReleaseFeedInputNotifier>().setBackupTopicList(topics);
+      setState(() {});
+    }
   }
 
   // 搜索话题
@@ -125,11 +137,9 @@ class TopicListState extends State<TopicList> {
       return;
     }
     DataResponseModel model =
-        await searchTopic(key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore);
-    if(model != null) {
-      if (searchDataPage > 1 && context
-          .read<ReleaseFeedInputNotifier>()
-          .searchLastScore != null) {
+        await searchTopic(key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore,token: token);
+    if (model != null) {
+      if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastScore != null) {
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             searchList.add(TopicDtoModel.fromJson(v));
@@ -137,26 +147,22 @@ class TopicListState extends State<TopicList> {
           searchList.forEach((v) {
             v.name = "#" + v.name;
           });
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .searchTopLoadText = "加载中...";
+          context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
+          context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "加载中...";
         }
       }
       // 记录搜索状态
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchLastScore = model.lastScore;
-      context
-          .read<ReleaseFeedInputNotifier>()
-          .searchTopHasNext = model.hasNext;
+      context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
+      context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     }
-    setState(() {});
-    // 把在输入框回调内的第一页数据插入
-    searchList.insertAll(0, context.read<ReleaseFeedInputNotifier>().topicList);
-    context.read<ReleaseFeedInputNotifier>().setTopicList(searchList);
+    if(mounted) {
+      setState(() {});
+      // 把在输入框回调内的第一页数据插入
+      searchList.insertAll(0, context
+          .read<ReleaseFeedInputNotifier>()
+          .topicList);
+      context.read<ReleaseFeedInputNotifier>().setTopicList(searchList);
+    }
   }
 
   @override

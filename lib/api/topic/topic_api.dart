@@ -60,10 +60,10 @@ Future<DataResponseModel> getRecommendTopic({@required int size,CancelToken toke
 }
 
 //获取推荐话题列表
-Future<DataResponseModel> getUserRecommendTopic({@required int size}) async {
+Future<DataResponseModel> getUserRecommendTopic({@required int size,CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
-  BaseResponseModel responseModel = await requestApi(GETUSERRECOMMENDTOPIC, params);
+  BaseResponseModel responseModel = await requestApi(GETUSERRECOMMENDTOPIC, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
