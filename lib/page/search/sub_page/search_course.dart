@@ -52,6 +52,10 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
     requestSearchCourse(refreshOrLoading:true);
     // 上拉加载
     _scrollController.addListener(() {
+      if(widget.focusNode.hasFocus){
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
+      }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         requestSearchCourse(refreshOrLoading:false);
       }
