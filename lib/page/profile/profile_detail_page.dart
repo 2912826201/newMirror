@@ -115,7 +115,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   StreamController<bool> loadingStreamController = StreamController<bool>();
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();
-
+  bool isBlack = false;
   @override
   void initState() {
     super.initState();
@@ -130,6 +130,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       isMselfId = true;
     } else {
       isMselfId = false;
+      _initBlackStatus();
     }
     _mController = TabController(length: 2, vsync: this);
     if (isMselfId) {
@@ -197,7 +198,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       context.read<UserInteractiveNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
-
+  ///请求黑名单关系
+  _initBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(widget.userId);
+    if (model != null) {
+      if (model.inYouBlack == 1) {
+        isBlack = true;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
   ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.userId);
@@ -468,6 +480,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                                   return ProfileDetailsMore(
+                                    isBlack: isBlack,
                                     userId: widget.userId,
                                     userName: _textName,
                                   );

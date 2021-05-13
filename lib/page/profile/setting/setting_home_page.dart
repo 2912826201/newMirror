@@ -148,7 +148,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
         //清楚通知的数量
         Application.unreadMessageNumber=0;
         Application.unreadNoticeNumber=0;
-        await Application.appLogout();
+        await Application.appLogout(context: context);
       },
       child: Container(
         height: 48,

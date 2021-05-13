@@ -322,8 +322,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.comment_feed,
             iconSize: 24,
             onTap: () {
-              bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-              if (isLoggedIn) {
                 openFeedCommentBottomSheet(
                     context: context,
                     feedId: widget.model.id,
@@ -332,10 +330,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                         widget.back();
                       }
                     });
-              } else {
-                // 去登录
-                AppRouter.navigateToLoginPage(context);
-              }
+
             },
           ),
         ),
@@ -345,7 +340,14 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.share_feed,
             iconSize: 24,
             onTap: () {
-              if (context.read<TokenNotifier>().isLoggedIn) {
+              if(!context.read<TokenNotifier>().isLoggedIn){
+                openShareBottomSheet(
+                    context: context,
+                    map: widget.model.toJson(),
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                    sharedType: 1);
+                return;
+              }
                 InquireCheckBlack(
                     checkId: widget.model.pushId,
                     inquireCheckBlackCallback: (BlackModel blackModel) {
@@ -363,10 +365,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                           chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
                           sharedType: 1);
                     });
-              } else {
-                // 去登录
-                AppRouter.navigateToLoginPage(context);
-              }
             },
           ),
         ),

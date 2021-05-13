@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -181,7 +182,10 @@ class Application {
   // 话题详情页背景图配置表
   static List<TopicBackgroundConfigModel> topicBackgroundConfig = [];
   //公共登出方法
-  static appLogout({bool isKicked = false}) async {
+  static appLogout({BuildContext context,bool isKicked = false}) async {
+    if(context!=null){
+      Loading.showLoading(context,infoText: "正在登出...");
+    }
     //先取个匿名token
     BaseResponseModel responseModel = await login("anonymous", null, null, null);
     if (responseModel != null && responseModel.code == 200) {
@@ -207,6 +211,9 @@ class Application {
         }else {
           Application.pagePopRouterName.clear();
         }
+        if(context!=null){
+          Loading.hideLoading(context);
+        }
         navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
         //TODO 这个弹窗待定
         if (isKicked) {
@@ -220,13 +227,21 @@ class Application {
           });
         }
       } else {
+        if(context!=null){
+          Loading.hideLoading(context);
+        }
         print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了匿名用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
         //如果本来就是匿名token那么换个token就行 不用清任何东西也不用跳转页面
         await TokenDBHelper().insertToken(tokenDto);
         appContext.read<TokenNotifier>().setToken(tokenDto);
       }
     } else {
-      ToastShow.show(msg: responseModel.message, context: appContext);
+      if(context!=null){
+        Loading.hideLoading(context);
+      }
+      if(context!=null){
+        ToastShow.show(msg: "退出登录失败", context: context);
+      }
       //失败的情况下 登出将无token可用 所以不能继续登出
       print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫登出流程获取token失败🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
     }
