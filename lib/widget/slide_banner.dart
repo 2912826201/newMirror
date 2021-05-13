@@ -78,6 +78,9 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   final StreamController<int> paginationTabStreamController = StreamController<int>();
   List<Widget> cupertinoButtonList = [];
 
+  // 是否可点赞
+  bool isSetUpLuad = true;
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -267,21 +270,25 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      BaseResponseModel model = await laud(
-          id: widget.model.id,
-          laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
-      print('===================================model.code==${model.code}');
-      // 点赞/取消赞成功
-      if (model.code == CODE_BLACKED) {
-        ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-      } else {
-        context.read<FeedMapNotifier>().setLaud(
-            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
-            context.read<ProfileNotifier>().profile.avatarUri,
-            widget.model.id);
-        context
-            .read<UserInteractiveNotifier>()
-            .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+      if (isSetUpLuad) {
+        isSetUpLuad = false;
+        BaseResponseModel model = await laud(
+            id: widget.model.id,
+            laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+        print('===================================model.code==${model.code}');
+        // 点赞/取消赞成功
+        if (model.code == CODE_BLACKED) {
+          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+        } else {
+          context.read<FeedMapNotifier>().setLaud(
+              context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+              context.read<ProfileNotifier>().profile.avatarUri,
+              widget.model.id);
+          context
+              .read<UserInteractiveNotifier>()
+              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+        }
+        isSetUpLuad = true;
       }
     } else {
       // 去登录
