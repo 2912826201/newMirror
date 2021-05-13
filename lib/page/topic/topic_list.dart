@@ -1,5 +1,7 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -38,11 +40,19 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   // 是否显示缺省图
   bool isShowDefaultMap;
-
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // 取消网络请求
+    cancelRequests(token: token);
+    super.dispose();
+  }
   // 请求推荐话题动态接口
   requestRecommendTopic({bool refreshOrLoading}) async {
     if (recommendHasNext != 0) {
-      DataResponseModel model = await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId);
+      DataResponseModel model = await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId,token: token);
       if(refreshOrLoading) {
         recommendTopicList.clear();
       }
