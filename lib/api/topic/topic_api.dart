@@ -26,12 +26,12 @@ const String GETUSERRECOMMENDTOPIC = "/appuser/web/topic/getUserRecommendTopic";
 // 获取话题详情页背景配置图
 const String GETBACKGROUNDCONFIG = "//appuser/web/sys/getBackgroundConfig";
 //获取搜索话题列表
-Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore}) async {
+Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore, CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["key"] = key;
   params["size"] = size;
   params["lastScore"] = lastScore;
-  BaseResponseModel responseModel = await requestApi(SEARCHTOPIC, params);
+  BaseResponseModel responseModel = await requestApi(SEARCHTOPIC, params,token: token);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
     if (responseModel.data != null) {

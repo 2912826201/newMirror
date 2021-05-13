@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -45,6 +47,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   String lastString;
 
+// Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
   @override
   void deactivate() {
     print("State 被暂时从视图树中移除时");
@@ -56,9 +61,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
     requestFeednIterface(refreshOrLoading: true);
     // 上拉加载
     _scrollController.addListener(() {
-      if(widget.focusNode.hasFocus){
+      if (widget.focusNode.hasFocus) {
         print('-------------------focusNode---focusNode----focusNode--focusNode');
-       widget.focusNode.unfocus();
+        widget.focusNode.unfocus();
       }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         requestFeednIterface(refreshOrLoading: false);
@@ -89,6 +94,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   void dispose() {
     print("话题页销毁了页面");
     _scrollController.dispose();
+    // 取消网络请求
+    cancelRequests(token: token);
 
     ///取消延时任务
     if (timer != null) {
@@ -106,7 +113,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
           loadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore);
+      DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore, token: token);
       if (refreshOrLoading) {
         topicList.clear();
       }
@@ -219,7 +226,7 @@ class SearchTopiciItem extends StatelessWidget {
       onTap: () async {
         FocusScope.of(context).requestFocus(FocusNode());
         TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
-        AppRouter.navigateToTopicDetailPage(context,  model.id);
+        AppRouter.navigateToTopicDetailPage(context, model.id);
       },
       child: Container(
         width: ScreenUtil.instance.width,

@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
@@ -70,9 +72,13 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   int lastTime;
   // 是否显示缺省图
   bool isShowDefaultMap;
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
   @override
   void dispose() {
     _scrollController.dispose();
+    // 取消网络请求
+    cancelRequests(token: token);
     if (timer != null) {
       timer.cancel();
     }
@@ -117,13 +123,13 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   mergeRequest() async {
     var result = await Future.wait([
       // 请求相关用户
-      ProfileSearchUser(widget.keyWord, 3),
+      ProfileSearchUser(widget.keyWord, 3,token: token),
       // 请求相关话题
-      searchTopic(key: widget.keyWord, size: 3),
+      searchTopic(key: widget.keyWord, size: 3,token: token),
       // 请求相关动态
-      searchFeed(key: widget.keyWord, size: 20),
+      searchFeed(key: widget.keyWord, size: 20,token: token),
       // 请求相关课程
-      searchCourse(key: widget.keyWord, size: 2),
+      searchCourse(key: widget.keyWord, size: 2,token: token),
     ]);
     SearchUserModel userModel;
     userModel = result[0];
@@ -192,7 +198,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           loadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
+      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime,token: token);
       hasNext = model.hasNext;
       lastTime = model.lastTime;
       if (hasNext != 0) {

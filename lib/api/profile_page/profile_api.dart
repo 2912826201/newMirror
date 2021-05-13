@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -74,16 +75,17 @@ const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 
 ///用户推送列表
 const String QUERY_MSG_LIST = "/appuser/web/message/queryMsgList";
+
 ///粉丝新增未读
 const String FANS_UNREAD = "/appuser/web/user/follow/getUnReadAddFansCount";
 //关注
 //0-普通场景1-直播中关注教练
-Future<int> ProfileAddFollow(int id,{int type=0}) async {
-  BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id,"type": type});
+Future<int> ProfileAddFollow(int id, {int type = 0}) async {
+  BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id, "type": type});
   int backCode;
   if (responseModel.isSuccess) {
     Map<String, dynamic> result = responseModel.data;
-    if (null!=result&&result.isNotEmpty) {
+    if (null != result && result.isNotEmpty) {
       backCode = result["relation"];
       return backCode;
     }
@@ -175,7 +177,7 @@ Future<bool> ProfileCancelBlack(int blackId) async {
 ///检测黑名单关系
 Future<BlackModel> ProfileCheckBlack(int checkId) async {
   BaseResponseModel responseModel = await requestApi(CHECK_BLACK, {"checkId": checkId});
-  if (responseModel.isSuccess&&responseModel.data!=null) {
+  if (responseModel.isSuccess && responseModel.data != null) {
     return BlackModel.fromJson(responseModel.data);
   } else {
     return null;
@@ -188,7 +190,7 @@ Future<bool> ProfileMoreDenounce(int targetId, int targetType) async {
     "targetId": targetId,
     "type": targetType,
   });
-  if (responseModel.isSuccess&&responseModel.data!=null) {
+  if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["state"];
   } else {
     return null;
@@ -222,8 +224,8 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName, String avatarUri,
   BaseResponseModel responseModel = await requestApi(UPDATA_USERINFO, map);
   if (responseModel.isSuccess) {
     UserModel model;
-    if(responseModel.data!=null){
-    model = UserModel.fromJson(responseModel.data);
+    if (responseModel.data != null) {
+      model = UserModel.fromJson(responseModel.data);
     }
     return model;
   } else {
@@ -232,7 +234,7 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName, String avatarUri,
 }
 
 ///搜索用户
-Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, int lastTime}) async {
+Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, int lastTime, CancelToken token}) async {
   Map<String, dynamic> map = Map();
   if (uids != null) {
     map["uids"] = uids;
@@ -242,7 +244,7 @@ Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, in
   }
   map["key"] = key;
   map["size"] = size;
-  BaseResponseModel responseModel = await requestApi(SEARCH_USER, map);
+  BaseResponseModel responseModel = await requestApi(SEARCH_USER, map, token: token);
   if (responseModel.isSuccess) {
     print('查询用户接口请求成功=============================');
     SearchUserModel model;
@@ -267,7 +269,7 @@ Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async
   }
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
-  if (responseModel.isSuccess&&responseModel.data!=null) {
+  if (responseModel.isSuccess && responseModel.data != null) {
     print('用户关注列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
@@ -290,7 +292,7 @@ Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) a
   }
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
-  if (responseModel.isSuccess&&responseModel.data!=null) {
+  if (responseModel.isSuccess && responseModel.data != null) {
     print('用户互相关注列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
@@ -327,51 +329,53 @@ Future<SearchUserModel> searchFollowUser(String key, int size, {String uids, int
 }
 
 ///粉丝列表
-Future<BuddyListModel> GetFansList(int LastTime,int size,{int uid})async{
-  Map<String,dynamic> map = Map();
+Future<BuddyListModel> GetFansList(int LastTime, int size, {int uid}) async {
+  Map<String, dynamic> map = Map();
   map["LastTime"] = LastTime;
   map["size"] = size;
-  if(uid!=null){
+  if (uid != null) {
     map["uid"] = uid;
   }
-  BaseResponseModel responseModel = await requestApi(FANS_LIST,map);
-  if(responseModel.isSuccess&&responseModel.data!=null){
+  BaseResponseModel responseModel = await requestApi(FANS_LIST, map);
+  if (responseModel.isSuccess && responseModel.data != null) {
     print('用户粉丝列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
     return model;
-  }else{
+  } else {
     print('用户粉丝列表请求接口失败============================================');
     return null;
   }
 }
+
 ///话题列表
-Future<TopicListModel> GetTopicList(int lastTime,int size,{int uid})async{
-  Map<String,dynamic> map = Map();
-  if(uid!=null){
+Future<TopicListModel> GetTopicList(int lastTime, int size, {int uid}) async {
+  Map<String, dynamic> map = Map();
+  if (uid != null) {
     map["uid"] = uid;
   }
   map["lastTime"] = lastTime;
   map["size"] = size;
-  BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);
-  if(responseModel.isSuccess){
+  BaseResponseModel responseModel = await requestApi(TOPIC_LIST, map);
+  if (responseModel.isSuccess) {
     print('用户关注话题列表请求接口成功=============================');
     TopicListModel model;
     model = TopicListModel.fromJson(responseModel.data);
     return model;
-  }else{
+  } else {
     print('用户关注话题列表请求接口失败============================================');
     return null;
   }
 }
+
 ///搜索关注话题
 Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore}) async {
   Map<String, dynamic> map = Map();
-  if(lastScore!=null){
+  if (lastScore != null) {
     map["lastScore"] = lastScore;
   }
-    map["key"] = key;
-    map["size"] = size;
+  map["key"] = key;
+  map["size"] = size;
   BaseResponseModel responseModel = await requestApi(SEARCH_FOLLOW_TOPIC, map);
   if (responseModel.isSuccess) {
     print('搜索话题接口请求成功=============================');
@@ -385,17 +389,18 @@ Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore})
     return null;
   }
 }
+
 ///健身信息录入
-Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,String keyParts,int
-timesOfWeek}) async {
-  Map<String,dynamic> map = Map();
-  map["height"] =height;
+Future<FitnessEntryModel> userFitnessEntry(
+    {int height, int weight, int bodyType, int target, int level, String keyParts, int timesOfWeek}) async {
+  Map<String, dynamic> map = Map();
+  map["height"] = height;
   map["weight"] = weight;
-  map["bodyType"] =bodyType ;
+  map["bodyType"] = bodyType;
   map["target"] = target;
   map["level"] = level;
-  map["keyParts"] =keyParts;
-  map["timesOfWeek"] =timesOfWeek;
+  map["keyParts"] = keyParts;
+  map["timesOfWeek"] = timesOfWeek;
   BaseResponseModel responseModel = await requestApi(FITNESS_ENTRY, map);
   if (responseModel.isSuccess) {
     print('健身信息录入接口请求成功=============================');
@@ -409,9 +414,10 @@ timesOfWeek}) async {
     return null;
   }
 }
-Future<QueryListModel> queryMsgList(int type,int size ,int lastTime) async {
+
+Future<QueryListModel> queryMsgList(int type, int size, int lastTime) async {
   Map<String, dynamic> map = Map();
-  if(lastTime!=null){
+  if (lastTime != null) {
     map["lastTime"] = lastTime;
   }
   map["type"] = type;
@@ -431,7 +437,7 @@ Future<QueryListModel> queryMsgList(int type,int size ,int lastTime) async {
 }
 
 //查询用户关系
-Future<Map> relation(int uid,int targetId) async {
+Future<Map> relation(int uid, int targetId) async {
   Map<String, dynamic> map = Map();
   map["uid"] = uid;
   map["targetId"] = targetId;
@@ -442,12 +448,13 @@ Future<Map> relation(int uid,int targetId) async {
     return null;
   }
 }
+
 //粉丝未读数
-Future<int> fansUnread()async{
+Future<int> fansUnread() async {
   BaseResponseModel responseModel = await requestApi(FANS_UNREAD, {});
-  if(responseModel.isSuccess&&responseModel.data!=null){
+  if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["amount"];
-  }else{
+  } else {
     return null;
   }
 }
