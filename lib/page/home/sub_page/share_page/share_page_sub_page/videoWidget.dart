@@ -43,6 +43,9 @@ class _VideoWidgetState extends State<VideoWidget> {
   StreamController<bool> streamController = StreamController<bool>();
   StreamController<double> streamHeight = StreamController<double>();
 
+  // 播放器控制器
+  VideoPlayerController controller;
+
   @override
   void initState() {
     super.initState();
@@ -60,20 +63,19 @@ class _VideoWidgetState extends State<VideoWidget> {
     print(widget.feedModel.id);
     widget.play = videoIsPlay;
     if (videoIsPlay.id == widget.feedModel.id) {
-      if (widget.feedModel.videos.first.controller != null) {
+      if (controller != null) {
         if (videoIsPlay.isPlay) {
-          if (widget.feedModel.videos.first.controller.value.isPlaying) {
+          if (controller.value.isPlaying) {
             return;
           }
-
-          widget.feedModel.videos.first.controller.play();
-          streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
-          widget.feedModel.videos.first.controller.setLooping(true);
+          controller.play();
+          streamController.sink.add(controller.value.volume > 0);
+          controller.setLooping(true);
         } else {
-          if (!widget.feedModel.videos.first.controller.value.isPlaying) {
+          if (!controller.value.isPlaying) {
             return;
           }
-          widget.feedModel.videos.first.controller.pause();
+          controller.pause();
         }
       } else {
         print("初始化了啊啊啊啊");
@@ -83,9 +85,9 @@ class _VideoWidgetState extends State<VideoWidget> {
   }
 
   init() async {
-    widget.feedModel.videos.first.controller = VideoPlayerController.network(widget.feedModel.videos.first.url);
-    widget.feedModel.videos.first.controller.setVolume(0);
-    await widget.feedModel.videos.first.controller.initialize().then((_) {
+    controller = VideoPlayerController.network(widget.feedModel.videos.first.url);
+    controller.setVolume(0);
+    await controller.initialize().then((_) {
       if (mounted) {
         setState(() {});
       }
@@ -95,13 +97,13 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   void didUpdateWidget(VideoWidget oldWidget) {
     print("此回调什么时候又");
-    if (oldWidget.play != widget.play) {
+    if (oldWidget.play.id != widget.play.id) {
       if (widget.play.isPlay) {
-        widget.feedModel.videos.first.controller.play();
-        streamController.sink.add(widget.feedModel.videos.first.controller.value.volume > 0);
-        widget.feedModel.videos.first.controller.setLooping(true);
+        controller.play();
+        streamController.sink.add(controller.value.volume > 0);
+        controller.setLooping(true);
       } else {
-        widget.feedModel.videos.first.controller.pause();
+        controller.pause();
       }
     }
     super.didUpdateWidget(oldWidget);
@@ -110,8 +112,8 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   void dispose() {
     print("视频页销毁————————————————————————————————————————————————");
-    widget.feedModel.videos.first.controller?.pause();
-    widget.feedModel.videos.first.controller.dispose();
+    controller?.pause();
+    controller?.dispose();
     super.dispose();
   }
 
@@ -136,8 +138,8 @@ class _VideoWidgetState extends State<VideoWidget> {
               child: SizedBox(
                 width: videoSize.width,
                 height: videoSize.height,
-                child: widget.feedModel.videos.first.controller.value.initialized
-                    ? VideoPlayer(widget.feedModel.videos.first.controller)
+                child: controller.value.initialized
+                    ? VideoPlayer(controller)
                     : CachedNetworkImage(
                         imageUrl: widget.feedModel.videos.first.coverUrl,
                         fit: BoxFit.fitWidth,
@@ -154,7 +156,7 @@ class _VideoWidgetState extends State<VideoWidget> {
               ),
             ),
           ),
-          widget.feedModel.videos.first.controller.value.initialized
+          controller.value.initialized
               ? Positioned(
                   bottom: 0,
                   child: StreamBuilder<double>(
@@ -185,18 +187,17 @@ class _VideoWidgetState extends State<VideoWidget> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   StreamBuilder<bool>(
-                                      initialData: widget.feedModel.videos.first.controller.value.volume > 0,
+                                      initialData: controller.value.volume > 0,
                                       stream: streamController.stream,
                                       builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
                                         return GestureDetector(
                                           onTap: () {
-                                            if (widget.feedModel.videos.first.controller.value.volume > 0) {
-                                              widget.feedModel.videos.first.controller.setVolume(0.0);
+                                            if (controller.value.volume > 0) {
+                                              controller.setVolume(0.0);
                                             } else {
-                                              widget.feedModel.videos.first.controller.setVolume(1.0);
+                                              controller.setVolume(1.0);
                                             }
-                                            streamController.sink
-                                                .add(widget.feedModel.videos.first.controller.value.volume > 0);
+                                            streamController.sink.add(controller.value.volume > 0);
                                           },
                                           child: AppIcon.getAppIcon(
                                             snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
