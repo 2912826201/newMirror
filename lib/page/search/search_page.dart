@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -53,12 +55,17 @@ class SearchPage extends StatelessWidget {
                       SearchHeader(
                         focusNode: focusNode,
                       ),
-                      context.watch<SearchEnterNotifier>().enterText.length > 0
+                  InkWell(
+                  onTap: (){
+                    //点击空白处移除焦点
+                  focusNode.unfocus();
+                  },
+                  child: context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
                               defaultIndex: defaultIndex,
                             )
-                          : SearchMiddleView(),
+                          : SearchMiddleView(),)
                     ],
                   );
                 })));
@@ -129,6 +136,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                 AppIcon.getAppIcon(AppIcon.input_search, 24),
                 Expanded(
                   child: TextField(
+                    focusNode: widget.focusNode,
                     controller: controller,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (text) {
@@ -193,17 +201,26 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
+  // Token can be shared with different requests.
+  CancelToken token = CancelToken();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // 取消网络请求
+    cancelRequests(token: token);
+    super.dispose();
+  }
 
   @override
   void initState() {
     // 合并请求
     Future.wait([
       // 请求推荐话题接口
-      getRecommendTopic(size: 20),
+      getRecommendTopic(size: 20,token: token),
       // 请求历史记录
       SearchHistoryDBHelper().querySearchHistory(
           context.read<ProfileNotifier>().profile != null ? context.read<ProfileNotifier>().profile.uid : -1),
-      recommendCourse(),
+      recommendCourse(token),
       // 请求热门课程
     ]).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
@@ -228,7 +245,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted) {
         setState(() {});
       }
-    });/*.catchError((e) {
+    }).catchError((e) {
+      print("报错了");
+      print(e);
+    }).catchError((e) {
+      if (CancelToken.isCancel(e)) {
+        print("报错了");
+        print(e);
+      }
+    });
+    /*.catchError((e) {
       print("报错了");
       print(e);
     });*/
@@ -621,9 +647,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
-                  text: context.watch<SearchEnterNotifier>().enterText,
-                  width: ScreenUtil.instance.screenWidthDp,
-                  textController: context.watch<SearchEnterNotifier>().textController),
+                text: context.watch<SearchEnterNotifier>().enterText,
+                width: ScreenUtil.instance.screenWidthDp,
+                textController: context.watch<SearchEnterNotifier>().textController,
+                focusNode: widget.focusNode,
+              ),
               // RecommendPage()
             ],
           ),

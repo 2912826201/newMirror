@@ -527,8 +527,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         ),
       ),
       onLongPress: () {
+        if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+          ToastShow.show(msg: "请先登录app!", context: context);
+          AppRouter.navigateToLoginPage(context);
+          return;
+        }
         List<String> list = [];
-
         if (value.uid == Application.profile.uid && context.read<TokenNotifier>().isLoggedIn) {
           list.add("删除");
           list.add("回复");
@@ -550,11 +554,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                 ToastShow.show(msg: "已复制", context: context);
               }
             } else {
-              if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-                ToastShow.show(msg: "请先登录app!", context: context);
-                AppRouter.navigateToLoginPage(context);
-                return;
-              }
               if (list[index] == "删除") {
                 showAppDialog(context,
                     title: "删除确认",

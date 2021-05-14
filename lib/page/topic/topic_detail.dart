@@ -148,7 +148,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 请求关注话题
   requestFollowTopic() async {
     Map<String, dynamic> map = await followTopic(topicId: model.id);
-    if (map != null && map["state"] == true) {
+    if (map != null && map["state"] == true && mounted) {
       setState(() {
         model.isFollow = 1;
       });
@@ -163,7 +163,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 请求取消关注话题
   requestCancelFollowTopic() async {
     Map<String, dynamic> map = await cancelFollowTopic(topicId: model.id);
-    if (map != null && map["state"] == true) {
+    if (map != null && map["state"] == true && mounted) {
       setState(() {
         model.isFollow = 0;
       });
@@ -556,6 +556,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
+          if(!context.read<TokenNotifier>().isLoggedIn){
+            AppRouter.navigateToLoginPage(context);
+            return;
+          }
           if (model.isFollow == 0) {
             requestFollowTopic();
           } else {

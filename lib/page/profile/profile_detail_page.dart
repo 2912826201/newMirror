@@ -40,15 +40,15 @@ import 'package:toast/toast.dart';
 Future<void> jumpToUserProfilePage(BuildContext context, int uId,
     {String avatarUrl, String userName, Function(dynamic result) callback}) async {
   UserModel userModel;
-    if(avatarUrl==null||userName==null){
-     userModel = await getUserInfo(uid: uId);
-      if(userModel!=null){
-        avatarUrl = userModel.avatarUri;
-        userName = userModel.nickName;
-      }
+  if (avatarUrl == null || userName == null) {
+    userModel = await getUserInfo(uid: uId);
+    if (userModel != null) {
+      avatarUrl = userModel.avatarUri;
+      userName = userModel.nickName;
     }
-  AppRouter.navigateToMineDetail(context, uId, avatarUrl: avatarUrl, userName: userName,userModel: userModel, callback:
-  callback);
+  }
+  AppRouter.navigateToMineDetail(context, uId,
+      avatarUrl: avatarUrl, userName: userName, userModel: userModel, callback: callback);
 }
 
 class ProfileDetailPage extends StatefulWidget {
@@ -56,14 +56,13 @@ class ProfileDetailPage extends StatefulWidget {
   final String imageUrl;
   final String userName;
   UserModel userModel;
-  ProfileDetailPage({this.userId, this.userName, this.imageUrl,this.userModel});
+
+  ProfileDetailPage({this.userId, this.userName, this.imageUrl, this.userModel});
 
   @override
   _ProfileDetailState createState() {
-   return _ProfileDetailState();
+    return _ProfileDetailState();
   }
-
-
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
@@ -115,12 +114,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   StreamController<bool> loadingStreamController = StreamController<bool>();
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();
+  bool isBlack = false;
 
   @override
   void initState() {
     super.initState();
-      _textName = widget.userName??"";
-      _avatar = widget.imageUrl??"";
+    _textName = widget.userName ?? "";
+    _avatar = widget.imageUrl ?? "";
     print('==============================个人主页initState');
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
@@ -130,6 +130,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       isMselfId = true;
     } else {
       isMselfId = false;
+      _initBlackStatus();
     }
     _mController = TabController(length: 2, vsync: this);
     if (isMselfId) {
@@ -199,6 +200,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///请求黑名单关系
+  _initBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(widget.userId);
+    if (model != null && model.inYouBlack == 1) {
+      context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true, needNotify: false);
+    }
+  }
+
+  ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
@@ -219,10 +228,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///获取用户信息
   _getUserInfo({int id}) async {
-    if(widget.userModel==null){
+    if (widget.userModel == null) {
       userModel = await getUserInfo(uid: id);
+    } else {
+      userModel = widget.userModel;
     }
-    userModel = widget.userModel;
     widget.userModel = null;
     if (userModel != null) {
       _avatar = userModel.avatarUri;
@@ -468,7 +478,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                                   return ProfileDetailsMore(
                                     userId: widget.userId,
-                                    userName: _textName,
                                   );
                                 })).then((value) {
                                   _getFollowCount(id: widget.userId);

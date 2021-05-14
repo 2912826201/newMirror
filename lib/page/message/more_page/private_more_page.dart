@@ -300,12 +300,15 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             dismissProgressDialog();
           });
         }
-        if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
-          print('====================================个人主页的方法进了');
-          context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
-          context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId), false);
+        try{
+          if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
+            context.read<UserInteractiveNotifier>().changeBalckStatus( int.parse(widget.chatUserId), true, needNotify: false);
+            context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
+            context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId), false);
+          }
+        }catch(e){
+          print('------------------这是聊天页更多里面个人主页的方法报的错-----$e');
         }
-        print('====================================个人主页的方法完了');
       } else {
         ToastShow.show(msg: "拉黑失败", context: context);
         dismissProgressDialog();
@@ -331,6 +334,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             dismissProgressDialog();
           });
         }
+        context.read<UserInteractiveNotifier>().changeBalckStatus( int.parse(widget.chatUserId), false, needNotify:
+        false);
       } else {
         ToastShow.show(msg: "解除拉黑失败", context: context);
         dismissProgressDialog();

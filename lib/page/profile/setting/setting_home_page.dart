@@ -72,7 +72,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                 height: 12,
               ),
               InkWell(
-                child: _rowItem(width, "账户与安全"),
+                child: _rowItem(width, "账号与安全"),
                 onTap: () {
                   AppRouter.navigateToSettingAccountSecurity(context);
                 },
@@ -148,7 +148,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
         //清楚通知的数量
         Application.unreadMessageNumber=0;
         Application.unreadNoticeNumber=0;
-        await Application.appLogout();
+        await Application.appLogout(context: context);
       },
       child: Container(
         height: 48,

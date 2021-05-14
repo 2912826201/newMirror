@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -18,10 +20,10 @@ import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 class SearchUser extends StatefulWidget {
   String text;
   double width;
-
+  FocusNode focusNode;
   TextEditingController textController;
 
-  SearchUser({this.text, this.width, this.textController});
+  SearchUser({this.text, this.width, this.textController, this.focusNode});
 
   @override
   State<StatefulWidget> createState() {
@@ -40,6 +42,18 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   String lastString;
   RefreshController _refreshController = new RefreshController();
   String defaultImage = DefaultImage.nodata;
+  ScrollController scrollController = ScrollController();
+
+// Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // 取消网络请求
+    cancelRequests(token: token);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -54,6 +68,12 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
           lastString = widget.textController.text;
           _getSearchUser(lastString);
         }
+      }
+    });
+    scrollController.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
       }
     });
   }
@@ -84,7 +104,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     }
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
-    SearchUserModel model = await ProfileSearchUser(text, 15, lastTime: _lastTime);
+    SearchUserModel model = await ProfileSearchUser(text, 15, lastTime: _lastTime, token: token);
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
@@ -149,6 +169,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   onRefresh: _onRefresh,
                   onLoading: _onLoading,
                   child: ListView.builder(
+                      controller: scrollController,
                       itemCount: modelList.length,
                       itemExtent: 58,
                       itemBuilder: (context, index) {

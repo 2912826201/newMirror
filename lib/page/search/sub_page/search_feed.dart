@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -65,6 +66,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   String lastString;
 
+// Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
   @override
   void deactivate() {
     print("State 被暂时从视图树中移除时");
@@ -73,11 +77,15 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 
   @override
   void initState() {
-    requestFeednIterface(refreshOrLoading:true);
+    requestFeednIterface(refreshOrLoading: true);
     // 上拉加载
     _scrollController.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
+      }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestFeednIterface(refreshOrLoading:false);
+        requestFeednIterface(refreshOrLoading: false);
       }
     });
     widget.textController.addListener(() {
@@ -92,7 +100,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
             lastTime = null;
             hasNext = null;
           }
-          requestFeednIterface(refreshOrLoading:true);
+          requestFeednIterface(refreshOrLoading: true);
         }
       });
       lastString = widget.keyWord;
@@ -104,6 +112,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   void dispose() {
     print("销毁了页面");
     _scrollController.dispose();
+    // 取消网络请求
+    cancelRequests(token: token);
 
     ///取消延时任务
     if (timer != null) {
@@ -121,8 +131,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           loadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
-      if(refreshOrLoading) {
+      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime, token: token);
+      if (refreshOrLoading) {
         feedList.clear();
       }
       if (model != null && model.list.isNotEmpty) {
@@ -168,7 +178,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                     hasNext = null;
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    requestFeednIterface(refreshOrLoading:true);
+                    requestFeednIterface(refreshOrLoading: true);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -47,13 +49,20 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   String lastString;
 
+// Token can be shared with different requests.
+  CancelToken token = CancelToken();
+
   @override
   void initState() {
-    requestSearchCourse(refreshOrLoading:true);
+    requestSearchCourse(refreshOrLoading: true);
     // 上拉加载
     _scrollController.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        print('-------------------focusNode---focusNode----focusNode--focusNode');
+        widget.focusNode.unfocus();
+      }
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestSearchCourse(refreshOrLoading:false);
+        requestSearchCourse(refreshOrLoading: false);
       }
     });
     widget.textController.addListener(() {
@@ -68,7 +77,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
             lastTime = null;
             hasNext = null;
           }
-          requestSearchCourse(refreshOrLoading:true);
+          requestSearchCourse(refreshOrLoading: true);
         }
       });
       lastString = widget.keyWord;
@@ -80,6 +89,8 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   void dispose() {
     print("课程页销毁了页面");
     _scrollController.dispose();
+    // 取消网络请求
+    cancelRequests(token: token);
 
     ///取消延时任务
     if (timer != null) {
@@ -97,7 +108,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
           loadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
+      DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime, token: token);
       if (refreshOrLoading) {
         liveVideoList.clear();
       }
@@ -136,7 +147,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
                     hasNext = null;
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    requestSearchCourse(refreshOrLoading:true);
+                    requestSearchCourse(refreshOrLoading: true);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,

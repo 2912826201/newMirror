@@ -16,9 +16,7 @@ import 'package:provider/provider.dart';
 class ProfileDetailsMore extends StatefulWidget {
   int userId;
   bool isFollow;
-  String userName;
-
-  ProfileDetailsMore({this.userId, this.isFollow, this.userName});
+  ProfileDetailsMore({this.userId, this.isFollow});
 
   @override
   _DetailsMoreState createState() {
@@ -27,27 +25,14 @@ class ProfileDetailsMore extends StatefulWidget {
 }
 
 class _DetailsMoreState extends State<ProfileDetailsMore> {
-  bool isBlack = false;
   final double width = ScreenUtil.instance.screenWidthDp;
   final double height = ScreenUtil.instance.height;
   @override
   void initState() {
     super.initState();
-    _checkBlackStatus();
   }
 
-  ///请求黑名单关系
-  _checkBlackStatus() async {
-    BlackModel model = await ProfileCheckBlack(widget.userId);
-    if (model != null) {
-      if (model.inYouBlack == 1) {
-        isBlack = true;
-        if (mounted) {
-          setState(() {});
-        }
-      }
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +76,15 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         ),
         InkWell(
           onTap: () {
-            if (isBlack) {
+            if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].inMyBlack) {
               Loading.showLoading(context);
               _cancelBlack();
             } else {
               _showDialog(2);
             }
           },
-          child: _itemSelect(AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(AppStyle.textRegular16, context.watch<UserInteractiveNotifier>().value
+              .profileUiChangeModel[widget.userId].inMyBlack ? "取消拉黑" : "拉黑"),
         ),
         !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? Container(
@@ -187,8 +173,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     bool blackStatus = await ProfileAddBlack(widget.userId);
     print('拉黑是否成功====================================$blackStatus');
     if (blackStatus == true) {
-      isBlack = true;
-      setState(() {});
+      context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       context.read<UserInteractiveNotifier>().removeListId(widget.userId,isAdd: false);
       context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId);
@@ -205,8 +190,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     if (blackStatus != null) {
       if (blackStatus == true) {
         ToastShow.show(msg: "解除拉黑成功", context: context);
-        isBlack = false;
-        setState(() {});
+        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, false);
         context.read<UserInteractiveNotifier>().removeListId(widget.userId);
       } else {
         ToastShow.show(msg: "操作失败", context: context);
