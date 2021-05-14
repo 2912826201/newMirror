@@ -51,7 +51,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   // 发布动态model
   PostprogressModel postprogressModel = PostprogressModel();
-
+  bool publishFeedOver = true;
   double animalHeight = 0;
   StreamSubscription<ConnectivityResult> connectivityListener;
   StreamController<double> streamController = StreamController<double>();
@@ -166,6 +166,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 发布动态
   pulishFeed(PostprogressModel postprogress, {isPostPageJump = true}) async {
     print("进来了绿绿绿绿绿绿绿");
+    if(!publishFeedOver) {
+      print('-------------------上次发布未结束，退回');
+      return;
+    }
+    publishFeedOver = false;
     if (mounted) {
       postprogressModel = postprogress;
       // 才从发布动态页跳转回来时
@@ -229,7 +234,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
       AppPrefs.setPublishFeedLocalInsertData(
           "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
           jsonEncode(postprogressModel.toJson()));
-
+      print('-------------------------存进去了');
       List<File> fileList = [];
       UploadResults results;
       List<PicUrlsModel> picUrls = [];
@@ -264,6 +269,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 设置不可发布
             postprogressModel.plannedSpeed = -1.0;
             streamProgress.sink.add(postprogressModel);
+            publishFeedOver = true;
             return;
           }
           for (int i = 0; i < results.resultMap.length; i++) {
@@ -296,6 +302,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 设置不可发布
             postprogressModel.plannedSpeed = -1.0;
             streamProgress.sink.add(postprogressModel);
+            publishFeedOver = true;
             return;
           }
           print("resultsErroe:${results.isSuccess}");
@@ -356,6 +363,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             postprogressModel.showPulishView = true;
             streamProgress.sink.add(postprogressModel);
           }
+          publishFeedOver = true;
         }
       }
     }

@@ -1,16 +1,16 @@
 
 class BlackListModel{
-  List<blackUserModel> list;
+  List<BlackUserModel> list;
   BlackListModel({this.list});
 
   BlackListModel.fromJson(dynamic json) {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        if(v is blackUserModel){
+        if(v is BlackUserModel){
           list.add(v);
         }else{
-          list.add(blackUserModel.fromJson(v));
+          list.add(BlackUserModel.fromJson(v));
         }
 
       });
@@ -25,14 +25,14 @@ class BlackListModel{
     return map;
   }
 }
-class blackUserModel{
+class BlackUserModel{
   int uid;
   String nickName;
   String avatarUri;
   int sex;
-  blackUserModel({this.uid,this.nickName,this.avatarUri,this.sex});
+  BlackUserModel({this.uid,this.nickName,this.avatarUri,this.sex});
 
-  blackUserModel.fromJson(Map<String, dynamic> json) {
+  BlackUserModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
     nickName = json["nickName"];
     avatarUri = json["avatarUri"];
