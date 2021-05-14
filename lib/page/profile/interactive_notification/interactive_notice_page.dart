@@ -131,6 +131,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     // TODO: implement deactivate
     super.deactivate();
     Application.unreadNoticeTimeStamp = null;
+
   }
 
   @override
@@ -159,7 +160,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     msgList.clear();
     msgList.addAll(list);
     if (msgList.length == 0 && hasNext == 0) {
-      controller.requestLoading();
+      controller.requestRefresh();
     }
     setState(() {});
   }

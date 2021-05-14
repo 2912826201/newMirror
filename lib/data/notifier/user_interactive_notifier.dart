@@ -93,7 +93,12 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
     }
     notifyListeners();
   }
-
+  void changeBalckStatus(int id,bool status,{bool needNotify = true}) {
+    value.profileUiChangeModel[id].inMyBlack  = status;
+    if(needNotify){
+      notifyListeners();
+    }
+  }
   //初始化model
   void setFirstModel(int id, {bool isFollow}) {
     if (!value._profileUiChangeModel.containsKey(id)) {
@@ -169,4 +174,5 @@ class ProfileUiChangeModel {
   bool isFollow = false;
   ProfileModel attentionModel = ProfileModel();
   List<String> feedStringList = [];
+  bool inMyBlack = false;
 }
