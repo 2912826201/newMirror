@@ -79,62 +79,63 @@ class FeedHeader extends StatelessWidget {
     if (inputText.length > 0) {
       // 检测文本
       Map<String, dynamic> textModel = await feedTextScan(text: inputText);
-      if (textModel["state"]) {
-        print("feedModel.content${feedModel.content}");
-        for (Rule rule in rules) {
-          if (rule.isAt) {
-            PostAtUserModel atModel = PostAtUserModel();
-            atModel.index = rule.startIndex;
-            atModel.len = rule.endIndex;
-            atModel.uid = rule.id;
-            atUsersModel.add(atModel);
-          } else {
-            print("查看发布话题动态——————————————————————————————");
-            print(rule.toString());
-            PostTopicModel topicDtoModel = PostTopicModel();
-
-            if (rule.id != -1) {
-              topicDtoModel.id = rule.id;
-              topicDtoModel.index = rule.startIndex;
-              topicDtoModel.len = rule.endIndex;
-            } else {
-              topicDtoModel.name = rule.params.substring(1, rule.params.length);
-              topicDtoModel.index = rule.startIndex;
-              topicDtoModel.len = rule.endIndex;
-            }
-            topics.add(topicDtoModel);
-          }
-        }
-        if (poi != null) {
-          address = poi.name;
-          longitude = poi.location.split(",")[0];
-          latitude = poi.location.split(",")[1];
-          cityCode = poi.citycode;
-        }
-        if (videoCourseId != null) {
-          feedModel.videoCourseId = videoCourseId;
-        }
-        if (liveCourseId != null) {
-          feedModel.liveCourseId = liveCourseId;
-        }
-        feedModel.atUsersModel = atUsersModel;
-        feedModel.address = address;
-        feedModel.cityCode = cityCode;
-        feedModel.latitude = latitude;
-        feedModel.longitude = longitude;
-        feedModel.topics = topics;
-
-        feedModel.selectedMediaFiles = selectedMediaFiles;
-        postprogressModel.postFeedModel = feedModel;
-        print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
-        context.read<ReleaseFeedInputNotifier>().rules.clear();
-        context.read<ReleaseFeedInputNotifier>().selectAddress = null;
-        print('--------------Navigator------Navigator-------------Navigator------');
-        print("打印结束");
-      } else {
+      if (!textModel["state"]) {
         ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
+        return;
+        // print("feedModel.content${feedModel.content}");
+        // for (Rule rule in rules) {
+        //   if (rule.isAt) {
+        //     PostAtUserModel atModel = PostAtUserModel();
+        //     atModel.index = rule.startIndex;
+        //     atModel.len = rule.endIndex;
+        //     atModel.uid = rule.id;
+        //     atUsersModel.add(atModel);
+        //   } else {
+        //     print("查看发布话题动态——————————————————————————————");
+        //     print(rule.toString());
+        //     PostTopicModel topicDtoModel = PostTopicModel();
+        //
+        //     if (rule.id != -1) {
+        //       topicDtoModel.id = rule.id;
+        //       topicDtoModel.index = rule.startIndex;
+        //       topicDtoModel.len = rule.endIndex;
+        //     } else {
+        //       topicDtoModel.name = rule.params.substring(1, rule.params.length);
+        //       topicDtoModel.index = rule.startIndex;
+        //       topicDtoModel.len = rule.endIndex;
+        //     }
+        //     topics.add(topicDtoModel);
+        //   }
+        // }
+        // if (poi != null) {
+        //   address = poi.name;
+        //   longitude = poi.location.split(",")[0];
+        //   latitude = poi.location.split(",")[1];
+        //   cityCode = poi.citycode;
+        // }
+        // if (videoCourseId != null) {
+        //   feedModel.videoCourseId = videoCourseId;
+        // }
+        // if (liveCourseId != null) {
+        //   feedModel.liveCourseId = liveCourseId;
+        // }
+        // feedModel.atUsersModel = atUsersModel;
+        // feedModel.address = address;
+        // feedModel.cityCode = cityCode;
+        // feedModel.latitude = latitude;
+        // feedModel.longitude = longitude;
+        // feedModel.topics = topics;
+        //
+        // feedModel.selectedMediaFiles = selectedMediaFiles;
+        // postprogressModel.postFeedModel = feedModel;
+        // print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+        // context.read<ReleaseFeedInputNotifier>().rules.clear();
+        // context.read<ReleaseFeedInputNotifier>().selectAddress = null;
+        // print('--------------Navigator------Navigator-------------Navigator------');
+        // print("打印结束");
       }
-    } else {
+    }
+    // else {
       for (Rule rule in rules) {
         if (rule.isAt) {
           PostAtUserModel atModel = PostAtUserModel();
@@ -186,7 +187,7 @@ class FeedHeader extends StatelessWidget {
       FocusScope.of(context).requestFocus(FocusNode());
       // EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
       print('--------------Navigator------Navigator-------------Navigator------');
-    }
+    // }
     print("postprogressModel:::${postprogressModel.toString()}");
     Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     print("5555455555");
