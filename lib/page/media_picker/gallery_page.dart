@@ -309,6 +309,15 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   ? Container()
                                   : Stack(
                                       children: [
+                                        Image.memory(
+                                          _thumbMap[entity.id] ?? Uint8List.fromList([]),
+                                          fit: BoxFit.cover,
+                                          width: _previewMaxHeight,
+                                          height: _previewMaxHeight,
+                                        ),
+                                        Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
                                         entity.type == AssetType.video
                                             ? _fileMap[entity.id] != null
                                                 ? Center(
@@ -318,27 +327,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                                         context.select((SelectedMapNotifier notifier) =>
                                                             notifier.useOriginalRatio)),
                                                   )
-                                                : Stack(
-                                                    children: [
-                                                      Image.memory(
-                                                        _thumbMap[entity.id] ?? Uint8List.fromList([]),
-                                                        fit: BoxFit.cover,
-                                                        width: _previewMaxHeight,
-                                                        height: _previewMaxHeight,
-                                                      ),
-                                                      Center(
-                                                        child: CircularProgressIndicator(),
-                                                      ),
-                                                    ],
-                                                  )
+                                                : Container()
                                             : entity.type == AssetType.image
                                                 ? _fileMap[entity.id] != null
                                                     ? CropperImage(
-                                                        // _fileMap[entity.id] != null
-                                                        //     ?
-                                                        FileImage(_fileMap[entity.id])
-                                                        // : MemoryImage(_thumbMap[entity.id] ?? Uint8List.fromList([]))
-                                                        ,
+                                                        FileImage(_fileMap[entity.id]),
                                                         round: 0,
                                                         maskPadding: 0,
                                                         outHeight: (selectedSize == null
@@ -360,18 +353,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                                         backBoxColor0: AppColor.transparent,
                                                         backBoxColor1: AppColor.transparent,
                                                       )
-                                                    : Image.memory(
-                                                        _thumbMap[entity.id] ?? Uint8List.fromList([]),
-                                                        fit: BoxFit.cover,
-                                                        width: _previewMaxHeight,
-                                                        height: _previewMaxHeight,
-                                                      )
+                                                    : Container()
                                                 : Container(),
-                                        _fileMap[entity.id] == null
-                                            ? Center(
-                                                child: CircularProgressIndicator(),
-                                              )
-                                            : Container(),
                                       ],
                                     );
                             },
