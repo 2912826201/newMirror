@@ -226,10 +226,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
       }
 
       // 存入数据
-      AppPrefs.setPublishFeedLocalInsertData(
-          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-          jsonEncode(postprogressModel.toJson()));
-
+      if (AppPrefs.getPublishFeedLocalInsertData(
+              "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") ==
+          null) {
+        AppPrefs.setPublishFeedLocalInsertData(
+            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
+            jsonEncode(postprogressModel.toJson()));
+      }
       List<File> fileList = [];
       UploadResults results;
       List<PicUrlsModel> picUrls = [];
@@ -284,9 +287,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
           });
           results = await FileUtil().uploadMedias(fileList, (percent) {
             print("percent：${percent}");
-            postprogressModel.plannedSpeed = percent;
-            // postprogressModel.plannedSpeed = percent;
-            streamProgress.sink.add(postprogressModel);
+            if (postprogressModel.plannedSpeed < percent) {
+              postprogressModel.plannedSpeed = percent;
+              // postprogressModel.plannedSpeed = percent;
+              streamProgress.sink.add(postprogressModel);
+            }
             print("percent结束了:");
           });
           if (results.isSuccess == false) {
@@ -309,7 +314,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         print("数据请求发不打印${postModel.toString()}");
         if (mounted) {
           Map<String, dynamic> feedModel = Map();
-          print('--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
+          print(
+              '--------jsonEncode(postModel.topics)--------jsonEncode(postModel.topics)---------${jsonEncode(postModel.topics)}');
           feedModel = await publishFeed(
               type: 0,
               content: postModel.content,
@@ -321,7 +327,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               longitude: postModel.longitude,
               cityCode: postModel.cityCode,
               topics: jsonEncode(postModel.topics),
-              videoCourseId:postModel.videoCourseId);
+              videoCourseId: postModel.videoCourseId);
           print("发不接受发布结束：feedModel$feedModel");
 
           if (feedModel != null) {
@@ -335,8 +341,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             // 延迟器:
             new Future.delayed(Duration(seconds: 3), () {
               //  清除图片路径
-              if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
-                  .contains(AppConfig.getAppPublishDir())) {
+              if (postprogressModel != null &&
+                  postprogressModel.postFeedModel != null &&
+                  postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                      .contains(AppConfig.getAppPublishDir())) {
                 _clearCache(AppConfig.getAppPublishDir());
               }
               // 清空发布model
@@ -498,7 +506,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               Expanded(
                 child: TabBarView(
                   controller: controller,
-                  physics:  context.watch<FeedMapNotifier>().value.isDropDown ? pageScrollPhysics() : NeverScrollableScrollPhysics(),
+                  physics: context.watch<FeedMapNotifier>().value.isDropDown
+                      ? pageScrollPhysics()
+                      : NeverScrollableScrollPhysics(),
                   children: [
                     AttentionPage(
                       key: attentionKey,
@@ -525,8 +535,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                         AppPrefs.removePublishFeed(
                             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
                         //  清除图片路径
-                        if (postprogressModel != null && postprogressModel.postFeedModel != null && postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
-                            .contains(AppConfig.getAppPublishDir())) {
+                        if (postprogressModel != null &&
+                            postprogressModel.postFeedModel != null &&
+                            postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                                .contains(AppConfig.getAppPublishDir())) {
                           _clearCache(AppConfig.getAppPublishDir());
                         }
                         // 清空发布model
