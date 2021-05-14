@@ -183,15 +183,19 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
 
   // 监听返回
-  Future<bool> _requestPop() async{
-    print("isNullCourse:${isNullCourse()}");
-    print("machineModel:${machineModel!=null}");
-    print("machineModel:${machineModel?.machineId!=null}");
-    if(!isNullCourse()&&machineModel!=null&&machineModel.machineId!=null){
-      bool result = await remoteControlPause(machineModel.machineId, courseId);
-      if (result != null && result) {
-        _showPauseDialog();
-        return new Future.value(false);
+  Future<bool> _requestPop() async {
+    // print("isNullCourse:${isNullCourse()}");
+    // print("machineModel:${machineModel!=null}");
+    // print("machineModel:${machineModel?.machineId!=null}");
+    if (!isNullCourse()) {
+      if (machineModel != null) {
+        if (machineModel.machineId != null) {
+          bool result = await remoteControlPause(machineModel.machineId, courseId);
+          if (result != null && result) {
+            _showPauseDialog();
+            return new Future.value(false);
+          }
+        }
       }
     }
     return new Future.value(true);
@@ -804,7 +808,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       });
       _parseModelToPartList(liveVideoModel);
       _parsePartList();
-      if (isLiveRoomController()) {
+      if (!isNullCourse()) {
+        print("机器状态：${machineModel == null}");
         while (!(machineModel != null && machineModel.isConnect == 1 && machineModel.inGame == 1)) {
           getMachineStatusInfoCount++;
           Duration duration;
