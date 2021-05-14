@@ -14,6 +14,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
@@ -30,10 +31,9 @@ class FeedBackPage extends StatefulWidget {
 }
 
 class _feedBackPage extends State<FeedBackPage> {
-  String editText;
+  String editText = "";
   List<Uint8List> imageDataList = [];
   List<File> fileList = [];
-  double upLoadProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -129,8 +129,8 @@ class _feedBackPage extends State<FeedBackPage> {
                 color: Color(0xFFFFFFFF),
               ),
           itemBuilder: (context, index) {
-            if (imageDataList != null&&index != imageDataList.length) {
-                return _item(index);
+            if (imageDataList != null && index != imageDataList.length) {
+              return _item(index);
             } else {
               return _addImageItem();
             }
@@ -159,6 +159,7 @@ class _feedBackPage extends State<FeedBackPage> {
               iconSize: 18,
               onTap: () {
                 imageDataList.removeAt(index);
+                fileList.removeAt(index);
                 setState(() {});
               },
             ),
@@ -192,7 +193,7 @@ class _feedBackPage extends State<FeedBackPage> {
 
   //从相册获取照片
   _getImage() {
-    AppRouter.navigateToMediaPickerPage(context, 8, typeImage, true, startPageGallery, false, (result) {
+    AppRouter.navigateToMediaPickerPage(context, 8, typeImage, false, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -228,30 +229,32 @@ class _feedBackPage extends State<FeedBackPage> {
   }
 
   _uploadImage() async {
+    if (fileList.length == 0 || editText.length == 0) {
+      ToastShow.show(msg: "图片和文字不可为空", context: context);
+      return;
+    }
     Loading.showLoading(context);
     List<String> list = [];
-    if (fileList.length!=0&&editText.length!=0) {
-      var result = await FileUtil().uploadPics(fileList, (percent) {
-        print('===========================正在上传%%$percent');
-      });
-      if (result.resultMap.values != null) {
-        result.resultMap.values.forEach((element) {
-          print('上传成功的图片===========================${element.url}');
-          list.add(element.url);
-        });
-      }
-      bool model = await putFeedBack(StringUtil.textWrapMatch(editText), jsonEncode(list));
-      if (model != null && model) {
-        Toast.show("反馈成功!", context);
-        Loading.hideLoading(context);
-        Navigator.pop(context);
-      } else {
-        Toast.show("反馈失败!", context);
-        Loading.hideLoading(context);
-      }
-    } else {
+    var result = await FileUtil().uploadPics(fileList, (percent) {
+      print('===========================正在上传%%$percent');
+    });
+    if (result.resultMap.values == null) {
+      Toast.show("图片上传失败!", context);
       Loading.hideLoading(context);
-      Toast.show("反馈内容为空", context);
+      return;
+    }
+    result.resultMap.values.forEach((element) {
+      print('上传成功的图片===========================${element.url}');
+      list.add(element.url);
+    });
+    bool model = await putFeedBack(StringUtil.textWrapMatch(editText), jsonEncode(list));
+    if (model != null && model) {
+      Toast.show("反馈成功!", context);
+      Loading.hideLoading(context);
+      Navigator.pop(context);
+    } else {
+      Toast.show("反馈失败!", context);
+      Loading.hideLoading(context);
     }
   }
 }

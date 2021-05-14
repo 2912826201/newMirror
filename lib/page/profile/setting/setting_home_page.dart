@@ -72,7 +72,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                 height: 12,
               ),
               InkWell(
-                child: _rowItem(width, "账户与安全"),
+                child: _rowItem(width, "账号与安全"),
                 onTap: () {
                   AppRouter.navigateToSettingAccountSecurity(context);
                 },
