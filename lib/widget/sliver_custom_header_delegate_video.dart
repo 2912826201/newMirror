@@ -170,15 +170,15 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
               ),
             ),
           ),
-          //数据显示
-          Positioned(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: _getTitleWidgetArray(),
-            ),
-            bottom: 0,
-            left: 0,
-          ),
+          // //数据显示
+          // Positioned(
+          //   child: Container(
+          //     width: MediaQuery.of(context).size.width,
+          //     child: _getTitleWidgetArray(),
+          //   ),
+          //   bottom: 0,
+          //   left: 0,
+          // ),
           //中间文字
           Positioned(
             child: Container(
@@ -197,7 +197,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                     overflow: TextOverflow.ellipsis,
                   )),
             ),
-            bottom: 53,
+            bottom: 16,
             left: 0,
           ),
           //头部信息
