@@ -14,6 +14,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
@@ -355,39 +356,50 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               size: 16,
             ),
             Spacer(),
-            InkWell(
-                onTap: () {
-                  if (widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2) {
-                    ProfileAddFollow(widget.course.coachId).then((relation) {
-                      if (relation != null) {
-                        setState(() {
-                          widget.course.coachDto.relation = relation;
-                        });
-                      }
-                    });
-                  }
-                },
-                child: Container(
-                  width: 56,
-                  height: 24,
-                  alignment: Alignment.centerRight,
-                  decoration: BoxDecoration(
-                    color: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
-                        ? AppColor.textPrimary1
-                        : AppColor.transparent,
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    border: Border.all(
-                        width:
-                            widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? 0.5 : 0.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                        widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? "关注" : "已关注",
-                        style: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
-                            ? AppStyle.whiteRegular12
-                            : AppStyle.textSecondaryRegular12),
-                  ),
-                ))
+
+            FollowButton(
+              id: widget.course.coachDto.uid,
+              relation: widget.course.coachDto.relation,
+              buttonType: FollowButtonType.COACH,
+              resetDataListener: (){},
+              onClickAttention: (int relation){
+                widget.course.coachDto.relation = relation;
+              },
+            ),
+
+            // InkWell(
+            //     onTap: () {
+            //       if (widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2) {
+            //         ProfileAddFollow(widget.course.coachId).then((relation) {
+            //           if (relation != null) {
+            //             setState(() {
+            //               widget.course.coachDto.relation = relation;
+            //             });
+            //           }
+            //         });
+            //       }
+            //     },
+            //     child: Container(
+            //       width: 56,
+            //       height: 24,
+            //       alignment: Alignment.centerRight,
+            //       decoration: BoxDecoration(
+            //         color: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+            //             ? AppColor.textPrimary1
+            //             : AppColor.transparent,
+            //         borderRadius: BorderRadius.all(Radius.circular(14)),
+            //         border: Border.all(
+            //             width:
+            //                 widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? 0.5 : 0.0),
+            //       ),
+            //       child: Center(
+            //         child: Text(
+            //             widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? "关注" : "已关注",
+            //             style: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+            //                 ? AppStyle.whiteRegular12
+            //                 : AppStyle.textSecondaryRegular12),
+            //       ),
+            //     ))
           ],
         ),
       ),
