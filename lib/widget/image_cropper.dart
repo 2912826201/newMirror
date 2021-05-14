@@ -395,9 +395,11 @@ class CropperImageRender extends RenderProxyBox {
       canvas.rotate(rotate1);
       canvas.scale(scale);
       canvas.drawImage(_image, Offset(-_image.width / 2, -_image.height / 2), Paint());
-      if (_imageLoadCompleteCallBack != null) {
-        _imageLoadCompleteCallBack();
-      }
+      try{
+        if (_imageLoadCompleteCallBack != null) {
+          _imageLoadCompleteCallBack();
+        }
+      }catch (e){}
       canvas.restore();
     }
 

@@ -64,7 +64,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   _requestDataList() async {
     ListModel<TrainingGalleryDayModel> listModel = await getAlbum(_pageSize, lastTime: _lastTime);
     if (listModel != null) {
-      _hasNext = listModel?.hasNext == 1;
+      if(listModel.hasNext!=null&& listModel.hasNext is int) {
+        _hasNext = listModel.hasNext == 1;
+      }else{
+        _hasNext=false;
+      }
       _lastTime = listModel?.lastTime;
       _dataList.addAll(listModel.list);
       if (_hasNext) {

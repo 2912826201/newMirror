@@ -288,7 +288,9 @@ class scanCodePageState extends State<ScanCodePage> {
 
   _resolveUri(String uri) async {
     if (uri == null) {
-      ToastShow.show(msg: "不支持的二维码", context: context);
+      if(mounted&&context!=null) {
+        ToastShow.show(msg: "不支持的二维码", context: context);
+      }
       return;
     } else if (uri.startsWith("if://")) {
       controller.stopCamera();
