@@ -950,8 +950,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     case AssetType.image:
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.croppedImageData = notifier.imageDataMap[orderedEntity.entity.id];
-                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage?.height??0;
-                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage?.width??0;
+                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
+                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
                       mediaFileModel.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
                       break;
                     case AssetType.video:
