@@ -39,7 +39,6 @@ Future<BaseResponseModel> login(String grant_type, String username, String code,
 //发送短信验证码
 //type说明 0-登录验证码
 Future<BaseResponseModel> sendSms(String phoneNumber, int type) async {
-  print('------------------------${Application.token.accessToken.toString()}');
   BaseResponseModel responseModel = await requestApi(
       SENDSMS, {"phoneNumber": phoneNumber, "type": type, "anonymousToken": Application.token.accessToken},
       authType: AUTH_TYPE_NONE);

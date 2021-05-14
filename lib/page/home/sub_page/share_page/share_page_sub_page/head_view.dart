@@ -125,7 +125,7 @@ class HeadViewState extends State<HeadView> {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
           context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, true);
           ToastShow.show(msg: "关注成功!", context: context);
-          Future.delayed(Duration(milliseconds: 200),(){
+          Future.delayed(Duration(milliseconds: 200), () {
             streamController.sink.add(1);
           });
           opacity = 1;
@@ -143,7 +143,7 @@ class HeadViewState extends State<HeadView> {
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-      if (context.watch<TokenNotifier>().isLoggedIn &&
+      if (notifier.value.profileUiChangeModel.containsKey(widget.model.pushId) &&
           (notifier.value.profileUiChangeModel[widget.model.pushId] == null ||
               notifier.value.profileUiChangeModel[widget.model.pushId].isFollow == true) &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
@@ -152,6 +152,8 @@ class HeadViewState extends State<HeadView> {
           onTap: () {
             if (!context.read<TokenNotifier>().isLoggedIn) {
               AppRouter.navigateToLoginPage(context);
+              ToastShow.show(msg: "请先登录", context: context);
+              return;
             }
             _checkBlackStatus(widget.model.pushId, context, false);
           },
@@ -211,7 +213,7 @@ class HeadViewState extends State<HeadView> {
                         opacity: snapshot.data,
                         child: Text(
                           "已关注",
-                          style:TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
                         ),
                       );
                     }),
@@ -232,10 +234,16 @@ class HeadViewState extends State<HeadView> {
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
           .read<UserInteractiveNotifier>()
-          .value.profileUiChangeModel[widget.model.pushId]
+          .value
+          .profileUiChangeModel[widget.model.pushId]
           .feedStringList
           .contains("删除")) {
-        context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+        context
+            .read<UserInteractiveNotifier>()
+            .value
+            .profileUiChangeModel[widget.model.pushId]
+            .feedStringList
+            .add("删除");
       }
     } else {
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
@@ -247,131 +255,137 @@ class HeadViewState extends State<HeadView> {
   Widget build(BuildContext context) {
     print("动态头部build");
     return Container(
-            height: 62,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                    child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-                onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    jumpToUserProfilePage(context, widget.model.pushId,
-                        avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
-                },
-                child:Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 16, right: 11),
-                      child: ClipOval(
-                        // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                        child: widget.model.avatarUrl != null
-                            ? CachedNetworkImage(
-                                width: 38,
-                                height: 38,
-
-                                /// imageUrl的淡入动画的持续时间。
-                                // fadeInDuration: Duration(milliseconds: 0),
-                                imageUrl: FileUtil.getSmallImage(isMySelf
-                                    ? context.watch<ProfileNotifier>().profile.avatarUri
-                                    : widget.model.avatarUrl),
-                                fit: BoxFit.cover,
-                                // 调整磁盘缓存中图像大小
-                                // maxHeightDiskCache: 150,
-                                // maxWidthDiskCache: 150,
-                          // 指定缓存宽高
-                          memCacheWidth: 150,
-                          memCacheHeight: 150,
-                                placeholder: (context, url) => Container(
-                                  color: AppColor.bgWhite,
-                                ),
-                                errorWidget: (context, url, e) {
-                                  return Container(
-                                    color: AppColor.bgWhite,
-                                  );
-                                },
-                              )
-                            // NetworkImage(
-                            //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
-                            : Container(
-                                color: AppColor.bgWhite,
-                              ),
-                      ),
-                    ),
-                    Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        height: 62,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+                child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      jumpToUserProfilePage(context, widget.model.pushId,
+                          avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // GestureDetector(
-                        //   child:
-                        Text(
-                          isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
-                          style: TextStyle(fontSize: 15),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        // onTap: () {},
-                        // ),
                         Container(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColor.textSecondary,
-                              )),
-                        )
+                          margin: const EdgeInsets.only(left: 16, right: 11),
+                          child: ClipOval(
+                            // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                            child: widget.model.avatarUrl != null
+                                ? CachedNetworkImage(
+                                    width: 38,
+                                    height: 38,
+
+                                    /// imageUrl的淡入动画的持续时间。
+                                    // fadeInDuration: Duration(milliseconds: 0),
+                                    imageUrl: FileUtil.getSmallImage(isMySelf
+                                        ? context.watch<ProfileNotifier>().profile.avatarUri
+                                        : widget.model.avatarUrl),
+                                    fit: BoxFit.cover,
+                                    // 调整磁盘缓存中图像大小
+                                    // maxHeightDiskCache: 150,
+                                    // maxWidthDiskCache: 150,
+                                    // 指定缓存宽高
+                                    memCacheWidth: 150,
+                                    memCacheHeight: 150,
+                                    placeholder: (context, url) => Container(
+                                      color: AppColor.bgWhite,
+                                    ),
+                                    errorWidget: (context, url, e) {
+                                      return Container(
+                                        color: AppColor.bgWhite,
+                                      );
+                                    },
+                                  )
+                                // NetworkImage(
+                                //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
+                                : Container(
+                                    color: AppColor.bgWhite,
+                                  ),
+                          ),
+                        ),
+                        Expanded(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // GestureDetector(
+                            //   child:
+                            Text(
+                              isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
+                              style: TextStyle(fontSize: 15),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            // onTap: () {},
+                            // ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColor.textSecondary,
+                                  )),
+                            )
+                          ],
+                        )),
                       ],
-                    )),
-                  ],
-                ))),
-                widget.isShowConcern ? isShowFollowButton(context) : Container(),
-                SizedBox(
-                  width: 6,
-                ),
-                AppIconButton(
-                  svgName: AppIcon.more_feed,
-                  iconSize: 24,
-                  onTap: () {
-                    print("点击更多按钮了");
-                    // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                    //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
-                    //         Application.insertFeedId) {
-                    //   // ToastShow.show(msg: "不响应", context: context);
-                    // } else {
-                    // ignore: missing_return
-                    openMoreBottomSheet(
-                        context: context,
-                        isFillet: true,
-                        lists: context
-                            .read<UserInteractiveNotifier>()
-                            .value.profileUiChangeModel[widget.model.pushId]
-                            .feedStringList,
-                        onItemClickListener: (index) {
-                          switch (context
-                              .read<UserInteractiveNotifier>()
-                              .value.profileUiChangeModel[widget.model.pushId]
-                              .feedStringList[index]) {
-                            case "删除":
-                              deleteFeed();
-                              break;
-                            case "取消关注":
-                              _checkBlackStatus(widget.model.pushId, context, true);
-                              break;
-                            case "举报":
-                              _showDialog();
-                              break;
+                    ))),
+            widget.isShowConcern ? isShowFollowButton(context) : Container(),
+            SizedBox(
+              width: 6,
+            ),
+            AppIconButton(
+              svgName: AppIcon.more_feed,
+              iconSize: 24,
+              onTap: () {
+                print("点击更多按钮了");
+                // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+                //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
+                //         Application.insertFeedId) {
+                //   // ToastShow.show(msg: "不响应", context: context);
+                // } else {
+                // ignore: missing_return
+                openMoreBottomSheet(
+                    context: context,
+                    isFillet: true,
+                    lists: context
+                        .read<UserInteractiveNotifier>()
+                        .value
+                        .profileUiChangeModel[widget.model.pushId]
+                        .feedStringList,
+                    onItemClickListener: (index) {
+                      switch (context
+                          .read<UserInteractiveNotifier>()
+                          .value
+                          .profileUiChangeModel[widget.model.pushId]
+                          .feedStringList[index]) {
+                        case "删除":
+                          deleteFeed();
+                          break;
+                        case "取消关注":
+                          _checkBlackStatus(widget.model.pushId, context, true);
+                          break;
+                        case "举报":
+                          if(!context.read<TokenNotifier>().isLoggedIn){
+                            ToastShow.show(msg: "请先登录·", context: context);
+                            return;
                           }
-                        });
-                    // }
-                  },
-                ),
-                SizedBox(
-                  width: 16,
-                )
-              ],
-            ));
+                          _showDialog();
+                          break;
+                      }
+                    });
+                // }
+              },
+            ),
+            SizedBox(
+              width: 16,
+            )
+          ],
+        ));
   }
 
   void _showDialog() {

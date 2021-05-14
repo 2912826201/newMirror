@@ -452,7 +452,7 @@ class _FollowButtonState extends State<FollowButton> {
   ///请求黑名单关系
   _checkBlackStatus() async {
     if (!requestOver) {
-      return false;
+      return;
     }
     requestOver = false;
     BlackModel model = await ProfileCheckBlack(widget.id);

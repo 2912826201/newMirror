@@ -54,7 +54,6 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
     value._fansUnreadCount = count;
     notifyListeners();
   }
-
   //改变点赞数
   void laudedChange(int id, int lauded) {
     if (lauded == 0) {

@@ -556,6 +556,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
+          if(!context.read<TokenNotifier>().isLoggedIn){
+            AppRouter.navigateToLoginPage(context);
+            return;
+          }
           if (model.isFollow == 0) {
             requestFollowTopic();
           } else {

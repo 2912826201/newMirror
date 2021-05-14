@@ -331,20 +331,14 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.comment_feed,
             iconSize: 24,
             onTap: () {
-              bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-              if (isLoggedIn) {
-                openFeedCommentBottomSheet(
-                    context: context,
-                    feedId: widget.model.id,
-                    callback: () {
-                      if (widget.back != null) {
-                        widget.back();
-                      }
-                    });
-              } else {
-                // 去登录
-                AppRouter.navigateToLoginPage(context);
-              }
+              openFeedCommentBottomSheet(
+                  context: context,
+                  feedId: widget.model.id,
+                  callback: () {
+                    if (widget.back != null) {
+                      widget.back();
+                    }
+                  });
             },
           ),
         ),
@@ -354,34 +348,38 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             svgName: AppIcon.share_feed,
             iconSize: 24,
             onTap: () {
-              if (context.read<TokenNotifier>().isLoggedIn) {
-                if (isShare) {
-                  isShare = false;
-                  InquireCheckBlack(
-                      checkId: widget.model.pushId,
-                      inquireCheckBlackCallback: (BlackModel blackModel) {
-                        String promptText = "";
-                        if (blackModel.inThisBlack == 1) {
-                          promptText = "分享失败，你已被对方加入黑名单";
-                        }
-                        if (promptText != "") {
-                          ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
-                          isShare = true;
-                          return;
-                        }
-                        openShareBottomSheet(
-                            context: context,
-                            map: widget.model.toJson(),
-                            chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                            sharedType: 1,
-                            callback: () {
-                              isShare = true;
-                            });
-                      });
-                }
-              } else {
-                // 去登录
-                AppRouter.navigateToLoginPage(context);
+              if (!context.read<TokenNotifier>().isLoggedIn) {
+                openShareBottomSheet(
+                    context: context,
+                    map: widget.model.toJson(),
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                    sharedType: 1);
+                return;
+              }
+
+              if (isShare) {
+                isShare = false;
+                InquireCheckBlack(
+                    checkId: widget.model.pushId,
+                    inquireCheckBlackCallback: (BlackModel blackModel) {
+                      String promptText = "";
+                      if (blackModel.inThisBlack == 1) {
+                        promptText = "分享失败，你已被对方加入黑名单";
+                      }
+                      if (promptText != "") {
+                        ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                        isShare = true;
+                        return;
+                      }
+                      openShareBottomSheet(
+                          context: context,
+                          map: widget.model.toJson(),
+                          chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                          sharedType: 1,
+                          callback: () {
+                            isShare = true;
+                          });
+                    });
               }
             },
           ),

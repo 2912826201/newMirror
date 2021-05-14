@@ -58,7 +58,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   ScrollController scrollController = ScrollController();
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
 
-   GlobalKey globalKey = GlobalKey();
+  GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
 
   ///获取互动通知列表
@@ -136,9 +136,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   @override
   void initState() {
     hintText = "这里什么都没有呢";
-    Application.unreadNoticeTimeStamp = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
@@ -162,11 +160,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     msgList.addAll(list);
     if (msgList.length == 0 && hasNext == 0) {
       controller.requestLoading();
-      setState(() {});
-      streamController.sink.add(msgList);
-    } else {
-      streamController.sink.add(msgList);
     }
+    setState(() {});
   }
 
   @override
@@ -182,8 +177,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
           titleString: widget.type == 0
               ? "评论"
               : widget.type == 1
-              ? "@我"
-              : "点赞",
+                  ? "@我"
+                  : "点赞",
         ),
         body: ScrollConfiguration(
             behavior: OverScrollBehavior(),
@@ -195,65 +190,56 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                 header: SmartRefresherHeadFooter.init().getHeader(),
                 onRefresh: _onRefresh,
                 onLoading: () {
-                   if (msgList.length != 0) {
-                          setState(() {
-                            showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                          });
-                        }
+                  if (msgList.length != 0) {
+                    setState(() {
+                      showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                    });
+                  }
                   _onLoading();
                 },
-                child: StreamBuilder<List<QueryModel>>(
-                    initialData: msgList,
-                    stream: streamController.stream,
-                    builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
-                      if (snapshot.data.isNotEmpty) {
-                        return ListView.builder(
-                            controller: scrollController,
-                            shrinkWrap: true,
-                            //解决无限高度问题
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return InteractiveNoticeItem(
-                                type: widget.type,
-                                msgModel: snapshot.data[index],
-                                index: index,
-                                globalKey: index == snapshot.data.length - 1 ? globalKey : null,
-                              );
-                            });
-                      } else if (fristRequestIsOver) {
-                        return Center(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: height * 0.22,
-                              ),
-                              Container(
-                                width: 285,
-                                height: 285,
-                                child: Image.asset(defaultImage),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              Text(
-                                hintText,
-                                style: AppStyle.textPrimary3Regular14,
-                              )
-                            ],
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          height: height,
-                          width: width,
-                          color: AppColor.white,
-                        );
-                      }
-                    })
-            ))
-    );
+                child: msgList != null && msgList.isNotEmpty
+                    ? ListView.builder(
+                        controller: scrollController,
+                        shrinkWrap: true,
+                        //解决无限高度问题
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: msgList.length,
+                        itemBuilder: (context, index) {
+                          return InteractiveNoticeItem(
+                            type: widget.type,
+                            msgModel: msgList[index],
+                            index: index,
+                            globalKey: index == msgList.length - 1 ? globalKey : null,
+                          );
+                        })
+                    : fristRequestIsOver
+                        ? Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: height * 0.22,
+                                ),
+                                Container(
+                                  width: 285,
+                                  height: 285,
+                                  child: Image.asset(defaultImage),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  hintText,
+                                  style: AppStyle.textPrimary3Regular14,
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(
+                            height: height,
+                            width: width,
+                            color: AppColor.white,
+                          ))));
   }
 }
 
@@ -265,8 +251,7 @@ class InteractiveNoticeItem extends StatefulWidget {
 
   GlobalKey globalKey;
 
-  InteractiveNoticeItem({this.type, this.msgModel, this.index,  this.globalKey
-  });
+  InteractiveNoticeItem({this.type, this.msgModel, this.index, this.globalKey});
 
   @override
   InteractiveNoticeItemState createState() {
@@ -275,7 +260,6 @@ class InteractiveNoticeItem extends StatefulWidget {
 }
 
 class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
-
   final double avatarWidth = 38;
 
   final double imageWidth = 38;
@@ -304,6 +288,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   bool commentIsDelete = false;
   String commentState;
   CommentDtoModel feedData;
+  bool requestOver = true;
 
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
@@ -325,12 +310,8 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
       } else if (widget.msgModel.refData != null) {
-        atUserList = HomeFeedModel
-            .fromJson(widget.msgModel.refData)
-            .atUsers;
-        comment = HomeFeedModel
-            .fromJson(widget.msgModel.refData)
-            .content;
+        atUserList = HomeFeedModel.fromJson(widget.msgModel.refData).atUsers;
+        comment = HomeFeedModel.fromJson(widget.msgModel.refData).content;
       } else {
         commentIsDelete = true;
       }
@@ -375,12 +356,8 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
           getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
         } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
-          getCommentFristPage(CommentDtoModel
-              .fromJson(widget.msgModel.refData)
-              .targetId,
-              CommentDtoModel
-                  .fromJson(widget.msgModel.refData)
-                  .type);
+          getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
+              CommentDtoModel.fromJson(widget.msgModel.refData).type);
         }
       }
     });
@@ -401,17 +378,15 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
 
       ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth(
-          "$commentState$comment", AppStyle.textRegular14, contentWidth, 10);
+      TextPainter testSize = calculateTextWidth("$commentState$comment", AppStyle.textRegular14, contentWidth, 10);
       textHeight = testSize.height;
     } else {
-      TextPainter testSize =
-      calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth, 10);
+      TextPainter testSize = calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth, 10);
       textHeight = testSize.height;
     }
     print('-----------------------textHeight---$textHeight');
     return Container(
-       key: widget.globalKey!=null?widget.globalKey:null,
+      key: widget.globalKey != null ? widget.globalKey : null,
       width: ScreenUtil.instance.screenWidthDp,
       height: 59.5 + textHeight + 16,
       color: AppColor.white,
@@ -435,30 +410,31 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                         memCacheHeight: 150,
                         imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
                         fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Container(
-                              color: AppColor.bgWhite,
-                            ),
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
+                        ),
                       ),
                     ),
                     widget.msgModel.isRead == 0
                         ? Positioned(
-                      top: 0,
-                      left: 0,
-                      child: Container(
-                        height: 10,
-                        width: 10,
-                        decoration: BoxDecoration(
-                            color: AppColor.mainRed,
-                            borderRadius: BorderRadius.all(Radius.circular(18.5)),
-                            border: Border.all(width: 0.5, color: AppColor.white)),
-                      ),
-                    )
+                            top: 0,
+                            left: 0,
+                            child: Container(
+                              height: 10,
+                              width: 10,
+                              decoration: BoxDecoration(
+                                  color: AppColor.mainRed,
+                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                                  border: Border.all(width: 0.5, color: AppColor.white)),
+                            ),
+                          )
                         : Container()
                   ],
                 )),
           ),
-          SizedBox(width: 11,),
+          SizedBox(
+            width: 11,
+          ),
           InkWell(
             onTap: () {
               _jumpToDetailPage(context);
@@ -481,9 +457,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   !commentIsDelete
                       ? RichText(text: TextSpan(children: _atText(context)))
                       : Text(
-                    "该评论已删除",
-                    style: AppStyle.textHintRegular13,
-                  ),
+                          "该评论已删除",
+                          style: AppStyle.textHintRegular13,
+                        ),
                   SizedBox(
                     height: 7,
                   ),
@@ -495,46 +471,47 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
               ),
             ),
           ),
-          SizedBox(width: 16,),
+          SizedBox(
+            width: 16,
+          ),
           !feedIsDelete
               ? InkWell(
-            onTap: () {
-              print('========================点击了${widget.msgModel.refId}');
-              _jumpToDetailPage(context);
-            },
-            child: Container(
-              alignment: Alignment.topRight,
-              child: ClipRect(
-                child: CachedNetworkImage(
-                  height: imageWidth,
-                  width: imageWidth,
-                  imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Container(
-                        color: AppColor.bgWhite,
+                  onTap: () {
+                    print('========================点击了${widget.msgModel.refId}');
+                    _jumpToDetailPage(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.topRight,
+                    child: ClipRect(
+                      child: CachedNetworkImage(
+                        height: imageWidth,
+                        width: imageWidth,
+                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: AppColor.bgWhite,
+                        ),
                       ),
-                ),
-              ),
-            ),
-          )
+                    ),
+                  ),
+                )
               : InkWell(
-            onTap: () {
-              Toast.show("该内容已删除", context);
-            },
-            child: Container(
-              height: 38,
-              width: 38,
-              alignment: Alignment.topRight,
-              color: AppColor.bgWhite,
-              child: Center(
-                child: Text(
-                  "已删除",
-                  style: AppStyle.textHintRegular10,
-                ),
-              ),
-            ),
-          )
+                  onTap: () {
+                    Toast.show("该内容已删除", context);
+                  },
+                  child: Container(
+                    height: 38,
+                    width: 38,
+                    alignment: Alignment.topRight,
+                    color: AppColor.bgWhite,
+                    child: Center(
+                      child: Text(
+                        "已删除",
+                        style: AppStyle.textHintRegular10,
+                      ),
+                    ),
+                  ),
+                )
         ],
       ),
     );
@@ -548,23 +525,25 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     }
     try {
       if (widget.msgModel.commentData != null &&
-          context
-              .read<FeedMapNotifier>()
-              .value
-              .courseCommentHot[widget.msgModel.commentData.id].list != null) {
-        context
-            .read<FeedMapNotifier>()
-            .value
-            .courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
+          context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list != null) {
+        context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
           if (element.replys.isNotEmpty) {
             element.replys.clear();
           }
         });
       }
       if (widget.msgModel.refType == 0 || (widget.type == 3 && widget.msgModel.commentData == null)) {
+        if (!requestOver) {
+          return;
+        }
+        requestOver = false;
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
+          if (!requestOver) {
+            return;
+          }
+          requestOver = false;
           getFeedDetail(context, fatherCommentModel.targetId,
               comment: widget.msgModel.commentData, fatherModel: fatherCommentModel);
         } else if (fatherCommentModel.type == 1) {
@@ -595,16 +574,17 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   ///获取对应内容第一页评论
   getCommentFristPage(int targetId, int targetType) async {
-    Map<String, dynamic> commentModel =
-    await queryListByHot2(targetId: targetId, targetType: targetType, lastId: null, size: 15);
-    if (commentModel != null && widget.msgModel.commentData != null) {
-      context.read<FeedMapNotifier>().interacticeNoticeChange(
-          courseCommentHots: CommentModel.fromJson(commentModel), commentId: widget.msgModel.commentData.id);
-    }
+    queryListByHot2(targetId: targetId, targetType: targetType, lastId: null, size: 15).then((commentModel) {
+      if (commentModel != null && widget.msgModel.commentData != null) {
+        context.read<FeedMapNotifier>().interacticeNoticeChange(
+            courseCommentHots: CommentModel.fromJson(commentModel), commentId: widget.msgModel.commentData.id);
+      }
+    });
   }
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
+    requestOver = true;
     if (feedModel != null && feedModel.data != null) {
       List<HomeFeedModel> list = [];
       list.add(HomeFeedModel.fromJson(feedModel.data));
