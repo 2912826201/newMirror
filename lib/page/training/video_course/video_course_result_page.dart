@@ -1,22 +1,26 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:provider/provider.dart';
 
 /// video_course_result_page
 /// Created by yangjiayi on 2021/1/14.
@@ -329,14 +333,17 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipOval(
-              child: CachedNetworkImage(
-                height: 32,
-                width: 32,
-                imageUrl: FileUtil.getSmallImage(widget.course.coachDto.avatarUri),
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+            GestureDetector(
+              onTap: () {},
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  height: 32,
+                  width: 32,
+                  imageUrl: FileUtil.getSmallImage(widget.course.coachDto.avatarUri),
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
+                  ),
                 ),
               ),
             ),
@@ -361,8 +368,8 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               id: widget.course.coachDto.uid,
               relation: widget.course.coachDto.relation,
               buttonType: FollowButtonType.COACH,
-              resetDataListener: (){},
-              onClickAttention: (int relation){
+              resetDataListener: () {},
+              onClickAttention: (int relation) {
                 widget.course.coachDto.relation = relation;
               },
             ),
@@ -531,6 +538,40 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         ),
       ),
     );
+  }
+
+  ///点击了教练
+  onClickCoach() async {
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
+    jumpToUserProfilePage(context, widget.course.coachDto.uid,
+        avatarUrl: widget.course.coachDto?.avatarUri,
+        userName: widget.course.coachDto?.nickName, callback: (dynamic r) {
+      if (mounted && context != null) {
+        bool result =
+            context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.course.coachDto.uid].isFollow;
+        print("result:$result");
+        if (null != result && result is bool) {
+          widget.course.coachDto.relation = result ? 0 : 1;
+          if (mounted) {
+            setState(() {});
+          }
+        }
+      }
+    });
+  }
+
+  Future<bool> isOffline() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 
