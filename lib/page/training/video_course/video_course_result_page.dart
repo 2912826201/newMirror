@@ -334,7 +334,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {},
+              onTap: onClickCoach,
               child: ClipOval(
                 child: CachedNetworkImage(
                   height: 32,

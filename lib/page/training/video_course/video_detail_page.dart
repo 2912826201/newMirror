@@ -651,16 +651,17 @@ class VideoDetailPageState extends XCState {
           print('----------wifi-----------------wifi');
           break;
         case ConnectivityResult.none:
-          dio.lock();
-          try{
-            if(context!=null&&mounted) {
-              ToastShow.show(msg: "下载异常，请重试", context: context);
+          if(isDownLoading) {
+            dio.lock();
+            try {
+              if (context != null && mounted) {
+                ToastShow.show(msg: "网络异常", context: context);
+              }
+            } catch (e) {}
+            _progressText = "下载异常";
+            if (mounted) {
+              setState(() {});
             }
-          }catch (e){
-          }
-          _progressText = "下载异常";
-          if(mounted){
-            setState(() {});
           }
           break;
       }
@@ -668,7 +669,11 @@ class VideoDetailPageState extends XCState {
   }
 
   //没有登陆点击事件
-  void onNoLoginClickListener() {
+  void onNoLoginClickListener() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     ToastShow.show(msg: "请先登录app!", context: context);
     // 去登录
     AppRouter.navigateToLoginPage(context);
@@ -992,7 +997,11 @@ class VideoDetailPageState extends XCState {
   }
 
   //登陆终端按钮
-  void _loginTerminalBtn() {
+  void _loginTerminalBtn() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (Application.token.anonymous == 0) {
       AppRouter.navigateToScanCodePage(context);
     } else {
@@ -1139,12 +1148,20 @@ class VideoDetailPageState extends XCState {
   }
 
   //开通vip
-  void _openVip() {
+  void _openVip() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     AppRouter.navigateToVipPage(context, VipState.NOTOPEN, openOrNot: false);
   }
 
   //使用终端进行训练
-  void _useTerminal() {
+  void _useTerminal() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     print("绑定了终端");
     startVideoCourse(Application.machine.machineId, videoCourseId);
     AppRouter.navigateToMachineRemoteController(context);
