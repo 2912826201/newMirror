@@ -70,8 +70,6 @@ class GalleryPage extends StatefulWidget {
 // 需求修改 去掉了保留状态的需求
 // class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
 class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
-  var _cropperKey = GlobalKey<_GalleryPageState>();
-
   double _screenWidth = 0;
   double _itemSize = 0;
   double _previewMaxHeight = 0;
@@ -274,9 +272,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     // super.build(context);
     // 获取屏幕宽以设置各布局大小
     _screenWidth = ScreenUtil.instance.screenWidthDp;
-    print("屏幕宽为：$_screenWidth");
+    // print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
-    print("item宽为：$_itemSize");
+    // print("item宽为：$_itemSize");
     return _permissionGranted != null && _permissionGranted
         ? Scaffold(
             appBar: _buildAppBar(),
@@ -311,6 +309,15 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   ? Container()
                                   : Stack(
                                       children: [
+                                        Image.memory(
+                                          _thumbMap[entity.id] ?? Uint8List.fromList([]),
+                                          fit: BoxFit.cover,
+                                          width: _previewMaxHeight,
+                                          height: _previewMaxHeight,
+                                        ),
+                                        Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
                                         entity.type == AssetType.video
                                             ? _fileMap[entity.id] != null
                                                 ? Center(
@@ -320,50 +327,34 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                                         context.select((SelectedMapNotifier notifier) =>
                                                             notifier.useOriginalRatio)),
                                                   )
-                                                : Stack(
-                                                    children: [
-                                                      Image.memory(
-                                                        _thumbMap[entity.id] ?? Uint8List.fromList([]),
-                                                        fit: BoxFit.cover,
-                                                        width: _previewMaxHeight,
-                                                        height: _previewMaxHeight,
-                                                      ),
-                                                      Center(
-                                                        child: CircularProgressIndicator(),
-                                                      ),
-                                                    ],
-                                                  )
+                                                : Container()
                                             : entity.type == AssetType.image
-                                                ? CropperImage(
-                                                    _fileMap[entity.id] != null
-                                                        ? FileImage(_fileMap[entity.id])
-                                                        : MemoryImage(_thumbMap[entity.id] ?? Uint8List.fromList([])),
-                                                    round: 0,
-                                                    maskPadding: 0,
-                                                    outHeight: (selectedSize == null
-                                                            ? _getImageOutSize(
-                                                                entity,
-                                                                context.select((SelectedMapNotifier notifier) =>
-                                                                    notifier.useOriginalRatio))
-                                                            : selectedSize)
-                                                        .height,
-                                                    outWidth: (selectedSize == null
-                                                            ? _getImageOutSize(
-                                                                entity,
-                                                                context.select((SelectedMapNotifier notifier) =>
-                                                                    notifier.useOriginalRatio))
-                                                            : selectedSize)
-                                                        .width,
-                                                    key: _cropperKey,
-                                                    backBoxColor0: AppColor.transparent,
-                                                    backBoxColor1: AppColor.transparent,
-                                                  )
+                                                ? _fileMap[entity.id] != null
+                                                    ? CropperImage(
+                                                        FileImage(_fileMap[entity.id]),
+                                                        round: 0,
+                                                        maskPadding: 0,
+                                                        outHeight: (selectedSize == null
+                                                                ? _getImageOutSize(
+                                                                    entity,
+                                                                    context.select((SelectedMapNotifier notifier) =>
+                                                                        notifier.useOriginalRatio))
+                                                                : selectedSize)
+                                                            .height,
+                                                        outWidth: (selectedSize == null
+                                                                ? _getImageOutSize(
+                                                                    entity,
+                                                                    context.select((SelectedMapNotifier notifier) =>
+                                                                        notifier.useOriginalRatio))
+                                                                : selectedSize)
+                                                            .width,
+                                                        key: context.select(
+                                                            (SelectedMapNotifier notifier) => notifier.cropperKey),
+                                                        backBoxColor0: AppColor.transparent,
+                                                        backBoxColor1: AppColor.transparent,
+                                                      )
+                                                    : Container()
                                                 : Container(),
-                                        _fileMap[entity.id] == null
-                                            ? Center(
-                                                child: CircularProgressIndicator(),
-                                              )
-                                            : Container(),
                                       ],
                                     );
                             },
@@ -504,7 +495,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   }
 
   // item本体点击事件
-  _onGridItemTap(BuildContext context, AssetEntity entity) async {
+  _onGridItemTap(BuildContext context, AssetEntity entity, {bool isTapCheckBox = false}) async {
     if (_isGettingImage) {
       return;
     }
@@ -520,11 +511,17 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     if (widget.needCrop) {
       if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
         //如果当前的file尚未获取到 则不能继续
+        print(
+            "🔰🔰🔰file${notifier.currentEntity.id}是否存在：${_fileMap[notifier.currentEntity.id].toString()} ${DateTime.now().millisecondsSinceEpoch}");
         if (_fileMap[notifier.currentEntity.id] == null) {
           ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
           return;
         } else {
-          _getImage(context, notifier.currentEntity.id, toData: false);
+          bool cropResult = await _getImage(context, notifier.currentEntity.id, toData: false);
+          if (!cropResult) {
+            ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
+            return;
+          }
         }
       }
     }
@@ -549,6 +546,10 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
         //TODO 非裁剪模式跳转展示大图
       }
     }
+
+    if (isTapCheckBox) {
+      notifier.handleMapChange(entity);
+    }
   }
 
   // item选框点击事件
@@ -571,9 +572,17 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
         }
       }
     }
-    bool isNew = notifier.handleMapChange(entity);
-    if (isNew) {
-      _onGridItemTap(context, entity);
+
+    //当为新选中文件的情况要设置预览 但因为有可能不满足预览条件 所以把选中交给本体点击事件处理
+    if (notifier.isNew(entity)) {
+      if (notifier.currentEntity != null && notifier.currentEntity.id == entity.id) {
+        //已经在预览的情况 直接设置选中即可
+        notifier.handleMapChange(entity);
+      } else {
+        _onGridItemTap(context, entity, isTapCheckBox: true);
+      }
+    } else {
+      notifier.handleMapChange(entity);
     }
   }
 
@@ -884,6 +893,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     ToastShow.show(msg: "有选中的文件正在加载中，请耐心等待", context: context);
                     return;
                   } else {
+                    //TODO 这里考虑到人手速不会快到连点选择图片和发布 所以暂时不重试 如果有必要也加一下
                     await _getImage(context, notifier.currentEntity.id, toData: false);
                   }
                 }
@@ -923,8 +933,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     case AssetType.image:
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.croppedImageData = notifier.imageDataMap[orderedEntity.entity.id];
-                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage?.height??0;
-                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage?.width??0;
+                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
+                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
                       mediaFileModel.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
                       break;
                     case AssetType.video:
@@ -1105,13 +1115,16 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     );
   }
 
-  _getImage(BuildContext context, String id, {bool toData = false}) async {
-    print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
+  Future<bool> _getImage(BuildContext context, String id, {bool toData = false}) async {
+    print("🔰🔰🔰开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
     _isGettingImage = true;
+    bool result = false;
     try {
-      ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
+      GlobalKey cropperKey = context.read<SelectedMapNotifier>().cropperKey;
+      print("cropperKey: " + cropperKey.toString());
+      ui.Image image = await (cropperKey.currentContext as CropperImageElement).outImage();
 
-      print("1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
+      print("🔰🔰🔰1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
       print(image);
       context.read<SelectedMapNotifier>().addImage(id, image);
       // 将图片数据先转好可节省后续转换的用时
@@ -1122,11 +1135,14 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
         print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
         context.read<SelectedMapNotifier>().addImageData(id, picBytes);
       }
+      result = image != null;
     } catch (e) {
+      result = false;
       print("裁剪图片失败：$e");
     } finally {
       _isGettingImage = false;
     }
+    return result;
   }
 
   _changeCurrentRatio() {
@@ -1154,8 +1170,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
         print("取到媒体文件：" + entity.id + ":" + value.path);
         if (context.read<SelectedMapNotifier>().currentEntity.id == entity.id) {
           //如果当前预览的和正在加载的是一致的 则刷新界面
-          print("相册刷新了界面");
-          setState(() {});
+          setState(() {
+            print("🔰🔰🔰相册刷新了界面：${DateTime.now().millisecondsSinceEpoch}");
+          });
         }
       }
     }).catchError((e) {
@@ -1229,6 +1246,11 @@ class SelectedMapNotifier with ChangeNotifier {
 
   Size get selectedImageSize => _fixedImageSize == null ? _selectedImageSize : _fixedImageSize;
 
+  // 裁剪组件用的GlobalKey
+  GlobalKey _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: "-1");
+
+  GlobalKey get cropperKey => _cropperKey;
+
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
     _OrderedAssetEntity orderedEntity = _selectedMap[entity.id];
@@ -1271,6 +1293,21 @@ class SelectedMapNotifier with ChangeNotifier {
     return _selectedMap.length >= maxAmount;
   }
 
+  bool isNew(AssetEntity entity) {
+    bool isNewEntity = false;
+    if (_selectedType != null && entity.type != _selectedType) {
+      // 已选类型不为空 且与所选文件类型不符时不做操作
+      return isNewEntity;
+    }
+    if (_selectedMap.keys.contains(entity.id)) {
+      //已在所选列表中
+    } else if (!isFull()) {
+      //未在所选列表中 且已选数量未达到上限
+      isNewEntity = true;
+    }
+    return isNewEntity;
+  }
+
   bool handleMapChange(AssetEntity entity) {
     bool isNewEntity = false;
     if (_selectedType != null && entity.type != _selectedType) {
@@ -1299,6 +1336,11 @@ class SelectedMapNotifier with ChangeNotifier {
     // 判断是否真的变化 如果一方为null时 统一视为变化
     if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
       _currentEntity = entity;
+      if (entity == null) {
+        _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: "-1");
+      } else {
+        _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: entity.id);
+      }
       notifyListeners();
     }
   }

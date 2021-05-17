@@ -166,7 +166,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
         await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude);
-    if (locationInformationEntity.status == "1") {
+    if (locationInformationEntity!=null&&locationInformationEntity.status == "1") {
       print('请求成功');
       if (locationInformationEntity.pois.isNotEmpty) {
         pois = locationInformationEntity.pois;

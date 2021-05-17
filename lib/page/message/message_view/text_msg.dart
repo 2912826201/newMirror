@@ -29,6 +29,7 @@ class TextMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   TextMsg(
       {this.text,
@@ -43,6 +44,7 @@ class TextMsg extends StatelessWidget {
       this.mentionedInfo,
       this.position,
       this.voidMessageClickCallBack,
+      this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
 
   TextStyle textStyle = const TextStyle(
@@ -153,6 +155,8 @@ class TextMsg extends StatelessWidget {
             content: text);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      setCallRemoveOverlay:setCallRemoveOverlay,
+      position:position,
       isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
       isMySelf: isMyself,

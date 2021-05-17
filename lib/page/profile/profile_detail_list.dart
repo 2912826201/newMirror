@@ -105,7 +105,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       if(mounted){
         context.read<FeedMapNotifier>().updateFeedMap(followModel);
       }
-
     });
   }
 

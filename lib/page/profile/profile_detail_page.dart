@@ -249,9 +249,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         setState(() {});
       }
       if (userModel.relation == 0 || userModel.relation == 2) {
-        context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
+        if(mounted&&context!=null){
+          context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
+        }
       } else if (userModel.relation == 1 || userModel.relation == 3) {
-        context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
+        if(mounted&&context!=null) {
+          context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
+        }
       }
     }
   }

@@ -37,6 +37,7 @@ class ImgVideoMsg extends StatelessWidget {
   final Map<String, dynamic> sizeInfoMap;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   ImgVideoMsg(
       {this.isMyself,
@@ -54,7 +55,8 @@ class ImgVideoMsg extends StatelessWidget {
       this.imageMessage,
       this.sizeInfoMap,
       this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack});
+      this.voidItemLongClickCallBack,
+      this.setCallRemoveOverlay});
 
   double width = 200.0;
   double height = 200.0;
@@ -172,6 +174,8 @@ class ImgVideoMsg extends StatelessWidget {
         );
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      setCallRemoveOverlay:setCallRemoveOverlay,
+      position:position,
       isCanLongClick: isCanLongClick,
       contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO,
       isMySelf: isMyself,

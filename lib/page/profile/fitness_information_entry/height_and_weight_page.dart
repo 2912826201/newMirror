@@ -32,7 +32,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
       return false;
     },
     child: Scaffold(
-      resizeToAvoidBottomPadding: true,
+     /* resizeToAvoidBottomPadding: false,*/
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         hasDivider: false,
@@ -75,7 +75,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
             ),
             _heightAndWeightItem("体重", "KG", width),
             SizedBox(
-              height: 62,
+              height: 200,
             ),
             Container(
               width: width,

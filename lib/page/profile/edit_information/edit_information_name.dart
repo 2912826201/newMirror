@@ -171,7 +171,7 @@ class _EditInformationNameState extends State<EditInformationName> {
       ),
 
       inputFormatters: [
-        ExpressionTeamDeleteFormatter(maxLength: 15,needWrap: false)
+        ExpressionTeamDeleteFormatter(maxLength: 15,needFilter: true)
          ],
     );
     return Container(padding: EdgeInsets.only(left: 16, right: 16), child: putFiled);

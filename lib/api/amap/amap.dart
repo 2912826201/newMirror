@@ -23,8 +23,12 @@ Future<PeripheralInformationEntity> aroundForHttp(double longitude, double latit
       .catchError((e) {
     print(e);
   });
-  PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
-  return baseBean;
+  if(resp!=null&&resp.data!=null) {
+    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
+    return baseBean;
+  }else{
+    return null;
+  }
 }
 
 //高德接口搜索

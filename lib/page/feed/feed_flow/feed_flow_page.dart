@@ -53,15 +53,12 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        child: Scaffold(
-          appBar: CustomAppBar(
-            titleString: "动态流",
-            leadingOnTap: requestPop,
-          ),
-          body: getBody(),
-        ),
-        onWillPop: _requestPop);
+    return Scaffold(
+      appBar: CustomAppBar(
+        titleString: "TA们刚刚完成训练",
+      ),
+      body: getBody(),
+    );
   }
 
   Widget getBody() {

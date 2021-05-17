@@ -521,9 +521,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToHeightAndWeigetPage(context);
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("测试" == title) {
-      showImageDialog(context, onClickListener: () {
+      AppRouter.navigateToHeightAndWeigetPage(context);
+      /*showImageDialog(context, onClickListener: () {
         AppRouter.navigateNewUserPromotionPage(context);
-      });
+      });*/
       // List<MachineModel> machineList = await getMachineStatusInfo();
       // if (machineList != null && machineList.isNotEmpty) {
       //   context.read<MachineNotifier>().setMachine(machineList.first);

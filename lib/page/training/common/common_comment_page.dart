@@ -1464,7 +1464,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //热门评论点击
-  onHotCommentTitleClickBtn() {
+  onHotCommentTitleClickBtn() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!isHotOrTime) {
       widget.refreshController.loadComplete();
       isHotOrTime = !isHotOrTime;
@@ -1473,7 +1477,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //时间评论点击
-  onTimeCommentTitleClickBtn() {
+  onTimeCommentTitleClickBtn() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (isHotOrTime) {
       widget.refreshController.loadComplete();
       isHotOrTime = !isHotOrTime;
@@ -1483,6 +1491,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //点赞-取消点赞
   _laudComment(int commentId, bool laud, int chatUserId) async {
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);

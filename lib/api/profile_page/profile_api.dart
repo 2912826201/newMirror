@@ -357,7 +357,7 @@ Future<TopicListModel> GetTopicList(int lastTime, int size, {int uid}) async {
   map["lastTime"] = lastTime;
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(TOPIC_LIST, map);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     print('用户关注话题列表请求接口成功=============================');
     TopicListModel model;
     model = TopicListModel.fromJson(responseModel.data);
@@ -377,7 +377,7 @@ Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore})
   map["key"] = key;
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(SEARCH_FOLLOW_TOPIC, map);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess&&responseModel.data!=null) {
     print('搜索话题接口请求成功=============================');
     TopicListModel model;
     if (responseModel.data != null) {

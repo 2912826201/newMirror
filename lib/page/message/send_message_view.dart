@@ -35,9 +35,19 @@ class SendMessageView extends StatefulWidget {
   final String chatId;
   final int conversationDtoType;
   final bool isShowChatUserName;
+  final Function(void Function()) setCallRemoveLongPanel;
 
-  SendMessageView(this.model, this.chatId, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
-      this.chatUserName, this.isShowChatUserName, this.conversationDtoType);
+  SendMessageView(
+      this.model,
+      this.chatId,
+      this.position,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack,
+      this.chatUserName,
+      this.isShowChatUserName,
+      this.conversationDtoType,
+      this.setCallRemoveLongPanel,
+  );
 
   @override
   State<StatefulWidget> createState() {
@@ -338,6 +348,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -356,6 +367,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -373,6 +385,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -395,6 +408,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -415,6 +429,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -433,6 +448,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,
+        setCallRemoveOverlay:widget.setCallRemoveLongPanel,
         status: status);
   }
 
@@ -460,6 +476,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
       voidMessageClickCallBack: widget.voidMessageClickCallBack,
       voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
       position: widget.position,
+      setCallRemoveOverlay:widget.setCallRemoveLongPanel,
     );
   }
 

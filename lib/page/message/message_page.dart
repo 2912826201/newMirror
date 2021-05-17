@@ -140,7 +140,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   //获取未读互动通知数
   _getUnreadMsgCount() async {
-    Unreads model = await getUnReads();
+    await getUnReads();
   }
 
   @override

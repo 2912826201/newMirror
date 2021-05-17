@@ -31,6 +31,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   LiveVideoCourseMsg(
       {this.liveVideoModel,
@@ -46,6 +47,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       this.position,
       this.isLiveOrVideo,
       this.voidMessageClickCallBack,
+      this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
 
   @override
@@ -153,6 +155,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
           contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
         );
       },
+      setCallRemoveOverlay:setCallRemoveOverlay,
+      position:position,
       isCanLongClick: isCanLongClick,
       contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
       isMySelf: isMyself,

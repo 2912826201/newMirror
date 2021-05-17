@@ -94,6 +94,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   CourseModel liveVideoModel;
 
   bool _showDialog=false;
+  BuildContext contextDialog;
 
   @override
   void dispose() {
@@ -604,6 +605,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
+        contextDialog=context;
         return WillPopScope(
           onWillPop: () async => false,
           child: Dialog(
@@ -621,8 +623,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                         } else if (isVideoRoomController()) {
                           await finishVideoCourse(context.read<MachineNotifier>().machine.machineId, courseId);
                         }
-                        Navigator.pop(context);
                         _showDialog=false;
+                        Navigator.pop(context);
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -645,8 +647,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     behavior: HitTestBehavior.opaque,
                     onTap: () async {
                       await remoteControlResume(context.read<MachineNotifier>().machine.machineId, courseId);
-                      Navigator.pop(context);
                       _showDialog=false;
+                      Navigator.pop(context);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -965,22 +967,29 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     if(model.pause==0){
       _currentPositionNoConstant=true;
       _showPauseDialog();
-    }else if (model.index == _currentPartIndex) {
-      if (_currentPosition <= currentPosition) {
-        print("_currentPositionNoConstant小于:_currentPosition$_currentPosition,$currentPosition");
-        _currentPosition = currentPosition;
-      } else if (_currentPosition - currentPosition >= 4) {
-        print("_currentPositionNoConstant大于4秒:_currentPosition$_currentPosition,$currentPosition");
-        _currentPosition = currentPosition;
-      } else if (_currentPosition - currentPosition >= 2) {
-        print("_currentPositionNoConstant大于2秒:_currentPosition$_currentPosition,$currentPosition");
-        _currentPositionNoConstant = true;
-      } else {
-        print("_currentPositionNoConstant小于2秒:_currentPosition$_currentPosition,$currentPosition");
+    }else {
+      if(_showDialog&&contextDialog!=null){
+        print("...");
+        _showDialog=false;
+        Navigator.pop(contextDialog);
       }
-    } else {
-      print("_currentPositionNoConstant：index不同:_currentPosition$_currentPosition,$currentPosition");
-      _currentPosition = currentPosition;
+      if (model.index == _currentPartIndex) {
+        if (_currentPosition <= currentPosition) {
+          print("_currentPositionNoConstant小于:_currentPosition$_currentPosition,$currentPosition");
+          _currentPosition = currentPosition;
+        } else if (_currentPosition - currentPosition >= 4) {
+          print("_currentPositionNoConstant大于4秒:_currentPosition$_currentPosition,$currentPosition");
+          _currentPosition = currentPosition;
+        } else if (_currentPosition - currentPosition >= 2) {
+          print("_currentPositionNoConstant大于2秒:_currentPosition$_currentPosition,$currentPosition");
+          _currentPositionNoConstant = true;
+        } else {
+          print("_currentPositionNoConstant小于2秒:_currentPosition$_currentPosition,$currentPosition");
+        }
+      } else {
+        print("_currentPositionNoConstant：index不同:_currentPosition$_currentPosition,$currentPosition");
+        _currentPosition = currentPosition;
+      }
     }
 
     if (isVideoRoomController()) {

@@ -6,6 +6,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
@@ -49,7 +50,7 @@ Future openShareBottomSheet({
           map: map,
           chatTypeModel: chatTypeModel,
           sharedType: sharedType,
-          fromTraingGallery: fromTraingGallery,
+          fromTrainingGallery: fromTraingGallery,
         ),
       );
     },
@@ -61,12 +62,12 @@ Future openShareBottomSheet({
 }
 
 class FeedSharePopups extends StatelessWidget {
-  String chatTypeModel;
-  Map<String, dynamic> map;
-  int sharedType;
-  bool fromTraingGallery;
+  final Map<String, dynamic> map;
+  final String chatTypeModel;
+  final int sharedType; //1-预设分享选项不做修改 2-增加保存本地 3-去掉站内好友
+  final bool fromTrainingGallery;
 
-  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType, this.fromTraingGallery});
+  FeedSharePopups({this.map, this.chatTypeModel, this.sharedType, this.fromTrainingGallery});
 
   List<ShareViewModel> shareViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
@@ -85,13 +86,19 @@ class FeedSharePopups extends StatelessWidget {
       shareViewModel.add(a);
     }
     if (sharedType == 2) {
-      ShareViewModel a = ShareViewModel(
+      if (fromTrainingGallery) {
+        ShareViewModel feed = ShareViewModel(
+          name: "动态",
+          icon: AppIcon.share_download_circle,
+        );
+        shareViewModel.insert(1, feed);
+      }
+      ShareViewModel download = ShareViewModel(
         name: "保存本地",
         icon: AppIcon.share_download_circle,
       );
-      shareViewModel.insert(0, a);
-    }
-    if (sharedType == 3) {
+      shareViewModel.insert(0, download);
+    } else if (sharedType == 3) {
       shareViewModel.removeWhere((element) {
         return element.name == "站内好友";
       });
@@ -126,7 +133,7 @@ class FeedSharePopups extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () async {
-                      if (fromTraingGallery) {
+                      if (fromTrainingGallery) {
                         context.read<UserInteractiveNotifier>().changeShowImageFrame(false);
                       }
                       print("点击了￥${shareViewModel[index].name}");
@@ -149,6 +156,21 @@ class FeedSharePopups extends StatelessWidget {
                             ToastShow.show(msg: "保存失败", context: context);
                           }
                           Navigator.of(context).pop(1);
+                          break;
+                        case "动态":
+                          MediaFileModel media = MediaFileModel();
+                          media.file = File(map["file"]);
+                          media.sizeInfo.height = map["height"];
+                          media.sizeInfo.width = map["width"];
+                          SelectedMediaFiles files = SelectedMediaFiles();
+                          files.type = mediaTypeKeyImage;
+                          files.list = [media];
+
+                          Application.selectedMediaFiles = files;
+
+                          Navigator.of(context).pop(1);
+
+                          AppRouter.navigateToReleasePage(context);
                           break;
                         case "微信好友":
                           Navigator.of(context).pop(1);

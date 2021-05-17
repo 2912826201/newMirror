@@ -29,6 +29,7 @@ class FeedMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   FeedMsg({
     this.userUrl,
@@ -43,6 +44,7 @@ class FeedMsg extends StatelessWidget {
     this.position,
     this.voidMessageClickCallBack,
     this.voidItemLongClickCallBack,
+    this.setCallRemoveOverlay,
   });
 
   //0--pic    1-video  -1-都不是------动态
@@ -152,6 +154,8 @@ class FeedMsg extends StatelessWidget {
             position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      position:position,
+      setCallRemoveOverlay:setCallRemoveOverlay,
       isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       isMySelf: isMyself,

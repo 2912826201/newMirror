@@ -21,7 +21,7 @@ class AppConfig {
   // static const String _PROD_HOST = "http://ifdev.i-fitness.cn";
   static const String _DEV_HOST =
       // "http://14.119.109.139:18940";
-       "http://ifdev.aimymusic.com";
+       "http://ifdev2.aimymusic.com:18940";
   static const String _MIRROR_HOST = "http://ifdev.aimymusic.com";
   static const String _PROD_HOST = "http://ifdev.aimymusic.com";
 
