@@ -11,7 +11,8 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
-import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/videoWidget.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/better_video_player.dart';
+import 'package:mirror/page/test/viewer_video_test.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -164,24 +165,13 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-      VideoIsPlay videoIsPlay = VideoIsPlay();
-      // return VideoExposure(
-      //   key: Key('video_${widget.model.id}'),
-      //  child: VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),),
-      //  onExposure: (visibilityInfo) {
-      //    videoIsPlay.id = feedModel.id;
-      //     if(visibilityInfo.visibleFraction == 1.0) {
-      //       videoIsPlay.isPlay = true;
-      //       EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
-      //     } else if(visibilityInfo.visibleFraction < 1.0 && visibilityInfo.visibleFraction >= 0.0){
-      //       videoIsPlay.isPlay = false;
-      //       EventBus.getDefault().post(msg: videoIsPlay ,registerName:EVENTBUS__VIDEO_PLAYORPAUSE);
-      //     }
-      //
-      //    print('视频第${widget.index}个模块曝光,展示比例为${visibilityInfo.visibleFraction}');
-      //  },
-      //   // child:
-      // );
+
+      return betterVideoPlayer(
+        feedModel: feedModel,
+        sizeInfo: sizeInfo,
+        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+      );
+      // VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),);
       return widget.isHero
           ? Hero(
               tag: widget.pageName + "${widget.model.id}${widget.index}",
