@@ -6,8 +6,8 @@ import 'package:mirror/util/string_util.dart';
 class ExpressionTeamDeleteFormatter extends TextInputFormatter {
   int maxLength;
   //这是用于判断是否可以输入换行但是需要筛选
-  bool needWrap;
-  ExpressionTeamDeleteFormatter({this.maxLength,this.needWrap = true});
+  bool needFilter;
+  ExpressionTeamDeleteFormatter({this.maxLength,this.needFilter = false});
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
@@ -32,31 +32,29 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
         inputText = newValue.text.characters.getRange(inputFristIndex, inputLastIndex).string;
         print('-----------------inputText$inputText');
         print('----------------------------预输入拦截');
-        if(!needWrap){
-          print('4444444444444444444444444444');
-          inputText = StringUtil.textWrapMatch(inputText,wantWrapCount: 0);
-        }
         ///这是需要返回的字符
         String backText = "";
 
         ///这里先将新输入的文字之前的字符加进去
         backText += newValue.text.substring(0, oldValue.selection.baseOffset);
-
         ///这里用写好的通用截取字符方法去将新输入的字符截取成我们想要的格式
-        String interceptInputText = StringUtil.maxLength(inputText, needCount, isOmit: false);
-        backText += interceptInputText;
+        String interceptInputText = "";
+        if(needFilter){
+          print('4444444444444444444444444444$inputText');
+          inputText = StringUtil.textWrapMatch(inputText,wantWrapCount: 0);
+          print('5555555555555555555555555555$inputText');
+        }
+        if(inputText!=null){
+         interceptInputText = StringUtil.maxLength(inputText, needCount, isOmit: false);
+          backText += interceptInputText;
+        }
         backText += newValue.text.substring(newValue.selection.baseOffset, newValue.text.length);
         print('------------------------backText$backText');
-        return TextEditingValue(
-            text: backText,
-            selection: TextSelection(
-              baseOffset: oldValue.selection.baseOffset + interceptInputText.length,
-              extentOffset: oldValue.selection.baseOffset + interceptInputText.length,
-            ));
-      if (newValue.text.length > maxLength) {
-        print('----------------------------正常拦截');
-        return oldValue;
-      }
+        newValue = TextEditingValue(text: backText,selection: TextSelection(
+          baseOffset: oldValue.selection.baseOffset + interceptInputText.length,
+          extentOffset: oldValue.selection.baseOffset + interceptInputText.length,
+        ));
+        return newValue;
       }
     }
     print("oldValue::::$oldValue");
@@ -82,6 +80,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
           print('--------------------${backText}');
         } else if (choseIndex == null) {
           choseIndex = i;
+          print('-----------------------被删掉的内容${oldValue.text.characters.toList()[i]}');
         } else if (choseIndex != i) {
           backText += oldValue.text.characters.toList()[i];
         }

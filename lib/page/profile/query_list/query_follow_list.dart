@@ -848,7 +848,6 @@ class _FollowItemState extends State<QueryFollowItem> {
                     }
                   });
                 } else {
-                  // TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
                   AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id, isTopicList: true,
                       callback: (result) {
                     if(widget.topicDeleteCallBack!=null){
