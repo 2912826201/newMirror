@@ -24,6 +24,7 @@ class SelectMsg extends StatelessWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   SelectMsg({
     this.userUrl,
@@ -38,6 +39,7 @@ class SelectMsg extends StatelessWidget {
     this.sendTime,
     this.voidMessageClickCallBack,
     this.voidItemLongClickCallBack,
+    this.setCallRemoveOverlay,
   });
 
   String text = "选择适合你的难度";
@@ -198,6 +200,8 @@ class SelectMsg extends StatelessWidget {
             contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
             content: text);
       },
+      setCallRemoveOverlay:setCallRemoveOverlay,
+      position:position,
       isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
       isMySelf: isMyself,

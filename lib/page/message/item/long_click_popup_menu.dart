@@ -23,6 +23,8 @@ class LongClickPopupMenu extends StatefulWidget {
     this.contentWidth = 180,
     this.contentHeight = 0,
     this.leftAndRightWidth = 112,
+    this.setCallRemoveOverlay,
+    this.position,
   });
 
   final ValueChanged<int> onValueChanged;
@@ -37,12 +39,22 @@ class LongClickPopupMenu extends StatefulWidget {
   final double leftAndRightWidth;
   final String contentType;
   final bool isMySelf;
+  final int position;
+  final Function(void Function()) setCallRemoveOverlay;
 
   @override
-  _LongClickPopupMenuState createState() => _LongClickPopupMenuState();
+  _LongClickPopupMenuState createState() => _LongClickPopupMenuState(setCallRemoveOverlay);
 }
 
 class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
+
+
+  void Function(void Function()) setCallRemoveOverlay;
+
+  _LongClickPopupMenuState(this.setCallRemoveOverlay){
+    setCallRemoveOverlay(null);
+  }
+
   double width;
   double height;
   RenderBox button;
@@ -109,11 +121,16 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       return menuWidget;
     });
     Overlay.of(context).insert(entry);
+    setCallRemoveOverlay(removeOverlay);
   }
 
   void removeOverlay() {
-    entry.remove();
-    entry = null;
+    // print("removeOverlay:${widget.position}");
+    if(entry!=null) {
+      entry.remove();
+      entry = null;
+      setCallRemoveOverlay(null);
+    }
   }
 }
 
