@@ -206,7 +206,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
           inputFormatters: [
-            ExpressionTeamDeleteFormatter(maxLength: maxTextLength,needWrap: false)
+            ExpressionTeamDeleteFormatter(maxLength: maxTextLength,needFilter: true)
             ],
     );
   }

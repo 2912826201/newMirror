@@ -654,17 +654,16 @@ class StringUtil {
     if (text.length != 0) {
       int wrapCount = 0;
       String backText = "";
-      for (int i = 0; i < text.characters
-          .toList()
-          .length; i++) {
-        if (text.characters.toList()[i] == "\n"||text.characters.toList()[i] == "\r"||text.characters.toList()[i] ==
+      for (int i = 0; i < text.length; i++) {
+        if (text[i] == "\n"||text[i] == "\r"||text[i] ==
             "\r\n") {
+          print('------textWrapMatch----------textWrapMatch---------$i');
           wrapCount++;
         } else {
           wrapCount = 0;
         }
         if (wrapCount <= wantWrapCount || wrapCount == 0) {
-          backText += text.characters.toList()[i];
+          backText += text[i];
         }
       }
       return backText;

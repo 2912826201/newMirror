@@ -151,7 +151,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
               border: InputBorder.none,
             ),
-            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30,needWrap: false)],
+            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30,needFilter: true)],
           ),
           Container(
             alignment: Alignment.bottomRight,
