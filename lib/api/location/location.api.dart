@@ -37,10 +37,10 @@ class Http {
     _dio.options.baseUrl = _config.base_url;
     _dio.options.connectTimeout = _config.connectTimeout;
     _dio.options.receiveTimeout = _config.receiveTimeout;
-    _dio.options.headers["aimy-drivers"] =
-    "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
-    _dio.options.headers["Authorization"] = Application.token.accessToken;
-    _dio.options.headers["user-agent"] = "IFITNESS";
+    // _dio.options.headers["aimy-drivers"] =
+    // "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
+    // _dio.options.headers["Authorization"] = Application.token.accessToken;
+    // _dio.options.headers["user-agent"] = "IFITNESS";
     //https证书校验
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
       client.badCertificateCallback = (X509Certificate cert, String host, int port) {

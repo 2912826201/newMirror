@@ -53,6 +53,7 @@ class Application {
   static List<String> pagePopRouterName;
 
   //当前token
+  //NOTE 当网络不通或服务端异常时可能取不到token此值可能为null
   static TokenDto token;
 
   //临时token 在用户需要绑定手机号或完善用户资料时该用户的token无法用在其他场景 暂存在这里

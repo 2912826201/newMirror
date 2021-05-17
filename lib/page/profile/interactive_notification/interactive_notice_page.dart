@@ -144,21 +144,19 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {
-    List<QueryModel> list = [];
-    for (int i = 0; i < msgList.length; i++) {
-      if (msgList[i].refType == 0 && msgList[i].refId != deleteId.toString()) {
-        list.add(msgList[i]);
-      } else if (msgList[i].refType == 2) {
-        if (msgList[i].refData != null) {
-          CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
+    msgList.removeWhere((element){
+      if (element.refType == 0 && element.refId == deleteId.toString()) {
+        return;
+      } else if (element.refType == 2) {
+        if (element.refData != null) {
+          CommentDtoModel fatherComment = CommentDtoModel.fromJson(element.refData);
           if (fatherComment.targetId != deleteId && fatherComment.id != deleteId) {
-            list.add(msgList[i]);
+            return;
           }
         }
       }
-    }
-    msgList.clear();
-    msgList.addAll(list);
+      return;
+    });
     if (msgList.length == 0 && hasNext == 0) {
       controller.requestRefresh();
     }
