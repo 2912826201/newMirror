@@ -469,7 +469,6 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveTextLen = true;
       }
     } else {
-      _textController.text = "";
       Application.appContext.read<ChatEnterNotifier>().clearRules();
       if (isHaveTextLen) {
         isReset = true;

@@ -76,7 +76,6 @@ abstract class StateKeyboard<T extends StatefulWidget> extends State<T> with Wid
       timerBottomHeight.cancel();
       timerBottomHeight = null;
     }
-    debugPrint("XCState dispose");
   }
 
 

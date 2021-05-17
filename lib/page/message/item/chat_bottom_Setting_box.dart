@@ -51,7 +51,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   @override
   void initState() {
-    EventBus.getDefault().registerNoParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.getDefault().registerSingleParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
     super.initState();
     _initData();
   }
@@ -62,7 +62,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
-  _resetPostBtn() {
+  _resetPostBtn(bool isVoiceState) {
     if (mounted) {
       setState(() {});
     }
@@ -114,6 +114,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   Widget bottomSettingPanel(double keyboardHeight) {
     print("bottomSettingPanelState:$bottomSettingPanelState");
+    print("widget.textController:${widget.textController.text},${widget.textController.selection.baseOffset}");
     double height = bottomSettingPanelState ? keyboardHeight : 0.0;
     return AnimatedContainer(
       duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),
