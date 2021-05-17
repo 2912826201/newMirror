@@ -56,7 +56,6 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     return Scaffold(
       appBar: CustomAppBar(
         titleString: "TA们刚刚完成训练",
-        leadingOnTap: requestPop,
       ),
       body: getBody(),
     );
