@@ -628,19 +628,12 @@ class _QueryFollowState extends State<QueryFollowList> {
                                               .read<UserInteractiveNotifier>()
                                               .value.userFollowChangeIdList
                                               .isNotEmpty) {
-                                            List<BuddyModel> list = [];
-                                            buddyList.forEach((element) {
-                                              if (element.uid != null &&
-                                                  !context
-                                                      .read<UserInteractiveNotifier>()
-                                                      .value.userFollowChangeIdList
-                                                      .contains(element.uid)) {
-                                                list.add(element);
-                                              }
+                                            buddyList.removeWhere((element){
+                                              return element.uid!=null&&context
+                                                  .read<UserInteractiveNotifier>()
+                                                  .value.userFollowChangeIdList
+                                                  .contains(element.uid);
                                             });
-                                            buddyList.clear();
-                                            buddyList.addAll(list);
-                                            buddyList.insert(0, BuddyModel());
                                             context
                                                 .read<UserInteractiveNotifier>()
                                                 .value.userFollowChangeIdList = [];
@@ -690,14 +683,10 @@ class _QueryFollowState extends State<QueryFollowList> {
                                       print('=========================话题详情返回');
                                       if (context.read<UserInteractiveNotifier>().value.removeId != null &&
                                           context.read<UserInteractiveNotifier>().value.removeId.isNotEmpty) {
-                                        List<TopicDtoModel> list = [];
-                                        topicList.forEach((element) {
-                                          if (!context.read<UserInteractiveNotifier>().value.removeId.contains(element.id)) {
-                                            list.add(element);
-                                          }
+                                        topicList.removeWhere((element){
+                                          return context.read<UserInteractiveNotifier>().value.removeId.contains
+                                            (element.id);
                                         });
-                                        topicList.clear();
-                                        topicList.addAll(list);
                                         setState(() {});
                                         context.read<UserInteractiveNotifier>().value.removeId = [];
                                       }
@@ -862,7 +851,9 @@ class _FollowItemState extends State<QueryFollowItem> {
                   // TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
                   AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id, isTopicList: true,
                       callback: (result) {
-                    widget.topicDeleteCallBack();
+                    if(widget.topicDeleteCallBack!=null){
+                      widget.topicDeleteCallBack();
+                    }
                   });
 
                   ///这里处理话题跳转

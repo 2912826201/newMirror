@@ -114,14 +114,9 @@ class _BlackListState extends State<BlackListPage> {
               jumpToUserProfilePage(context, blackList[index].uid,
                   avatarUrl: blackList[index].avatarUri, userName: blackList[index].nickName, callback: (result) {
                 if (context.read<UserInteractiveNotifier>().value.removeId != null) {
-                  List<BlackUserModel> list = [];
-                  blackList.forEach((element) {
-                    if (!context.read<UserInteractiveNotifier>().value.removeId.contains(element.uid)) {
-                      list.add(element);
-                    }
+                  blackList.removeWhere((element){
+                    return context.read<UserInteractiveNotifier>().value.removeId.contains(element.uid);
                   });
-                  blackList.clear();
-                  blackList.addAll(list);
                   setState(() {});
                 }
               });
