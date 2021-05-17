@@ -110,7 +110,7 @@ class TopicListState extends State<TopicList> {
       }
       hasNext = model.hasNext;
     }
-    if(mounted) {
+    if(mounted&&context!=null) {
       // 存入话题显示数据
       context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
       // 搜索时会替换话题显示数据，备份一份数据

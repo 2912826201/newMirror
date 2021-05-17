@@ -923,7 +923,13 @@ class LiveDetailPageState extends XCState {
   ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
 
   //去登陆
-  void _login() {
+  void _login() async{
+
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
+
     ToastShow.show(msg: "请先登录app!", context: context);
     // 去登录
     AppRouter.navigateToLoginPage(context);
@@ -956,7 +962,12 @@ class LiveDetailPageState extends XCState {
   }
 
   //回放和试听--看视频
-  void _seeVideo() {
+  void _seeVideo() async{
+
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (liveModel.playType == 3) {
       ToastShow.show(msg: "回放", context: context);
     } else {
@@ -981,6 +992,11 @@ class LiveDetailPageState extends XCState {
 
   //使用终端进行训练
   void _useTerminal() async {
+
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!(judgeIsStart())) {
       ToastShow.show(msg: "没有开始直播", context: context);
       return;
@@ -992,8 +1008,8 @@ class LiveDetailPageState extends XCState {
 
   //登陆终端进行训练
   void _loginTerminal() async {
-    if (!(judgeIsStart())) {
-      ToastShow.show(msg: "没有开始直播", context: context);
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
     print("登陆终端进行训练");
@@ -1005,7 +1021,11 @@ class LiveDetailPageState extends XCState {
   }
 
   //开通vip
-  void _openVip() {
+  void _openVip() async{
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     AppRouter.navigateToVipPage(context, VipState.NOTOPEN, openOrNot: false);
   }
 
