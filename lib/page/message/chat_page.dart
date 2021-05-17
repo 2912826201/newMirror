@@ -351,6 +351,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: firstEndCallbackListView,
+      setCallRemoveLongPanel: _setCallRemoveLongPanel,
     );
   }
 
@@ -461,6 +462,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //当改变了输入框内的文字个数
   _changTextLen(String text) {
     // 存入最新的值
+    _removeLongPanelCall();
     context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
     if (text!=null&&text.length>0) {
@@ -469,7 +471,6 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         isHaveTextLen = true;
       }
     } else {
-      _textController.text = "";
       Application.appContext.read<ChatEnterNotifier>().clearRules();
       if (isHaveTextLen) {
         isReset = true;
@@ -1220,6 +1221,11 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
               getHistoryMessage(dataModel);
             }
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            Future.delayed(Duration(milliseconds: 100),(){
+              if(mounted){
+                EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+              }
+            });
             return;
           }
         }
@@ -2022,6 +2028,27 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+  }
+
+
+  //取消长按界面
+
+  void Function() removeLongPanelCall;
+
+  void _setCallRemoveLongPanel(void Function() call) {
+    print("111111");
+    this.removeLongPanelCall = call;
+  }
+
+  //取消长按界面
+  void _removeLongPanelCall() {
+    print("取消长按界面");
+    if (removeLongPanelCall != null) {
+      print("取消长按界面-有");
+      removeLongPanelCall();
+    }else{
+      print("取消长按界面-無");
+    }
   }
 
   //所有的item长按事件

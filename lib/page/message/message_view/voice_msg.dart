@@ -33,6 +33,7 @@ class VoiceMsg extends StatefulWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   VoiceMsg(
       {this.chatVoiceModel,
@@ -48,6 +49,7 @@ class VoiceMsg extends StatefulWidget {
       this.status,
       this.position,
       this.voidMessageClickCallBack,
+      this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
 
   @override
@@ -179,7 +181,9 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      setCallRemoveOverlay:widget.setCallRemoveOverlay,
       isCanLongClick: widget.isCanLongClick,
+      position:widget.position,
       contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
       isMySelf: widget.isMyself,
       actions: longClickStringList,

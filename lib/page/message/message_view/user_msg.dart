@@ -27,6 +27,7 @@ class UserMsg extends StatelessWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final Function(void Function()) setCallRemoveOverlay;
 
   UserMsg(
       {this.userModel,
@@ -40,6 +41,7 @@ class UserMsg extends StatelessWidget {
       this.sendChatUserId,
       this.position,
       this.voidMessageClickCallBack,
+      this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
 
   @override
@@ -142,6 +144,8 @@ class UserMsg extends StatelessWidget {
             position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_USER);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      setCallRemoveOverlay:setCallRemoveOverlay,
+      position:position,
       isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_USER,
       isMySelf: isMyself,

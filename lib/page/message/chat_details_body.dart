@@ -31,6 +31,7 @@ class ChatDetailsBody extends StatefulWidget {
   final String chatId;
   final LoadingStatus loadStatus;
   final Key chatTopAtMarkChildKey;
+  final Function(void Function()) setCallRemoveLongPanel;
 
   ChatDetailsBody(
       {Key key,
@@ -49,6 +50,7 @@ class ChatDetailsBody extends StatefulWidget {
       this.voidMessageClickCallBack,
       this.onAtUiClickListener,
       this.chatTopAtMarkChildKey,
+      this.setCallRemoveLongPanel,
       this.voidItemLongClickCallBack})
       : super(key: key);
 
@@ -292,8 +294,17 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   }
 
   Widget getBodyItem(ChatDataModel model, int position) {
-    return SendMessageView(model, widget.chatId, position, widget.voidMessageClickCallBack,
-        widget.voidItemLongClickCallBack, widget.chatName, widget.isShowChatUserName, widget.conversationDtoType);
+    return SendMessageView(
+        model,
+        widget.chatId,
+        position,
+        widget.voidMessageClickCallBack,
+        widget.voidItemLongClickCallBack,
+        widget.chatName,
+        widget.isShowChatUserName,
+        widget.conversationDtoType,
+        widget.setCallRemoveLongPanel,
+    );
   }
 
   _initData() {
