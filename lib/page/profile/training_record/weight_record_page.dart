@@ -128,7 +128,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         if (mounted) {
           setState(() {});
         }
-        context.read<ProfileNotifier>().setWeight(0);
+
+        context.read<ProfileNotifier>().setWeight(weightDataModel.recordList.isNotEmpty?weightDataModel.recordList.first
+            .weight:0);
       },
     );
   }
