@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 
 class DateUtil {
@@ -349,8 +351,9 @@ class DateUtil {
     return ((bDate.millisecondsSinceEpoch - aDate.millisecondsSinceEpoch) / 1000 / 60 / 60) ~/ 1;
   }
 
-  //获取两个时间的天数相差数
+  //获取两个时间的天数相差数7天之内的
   static int twoDateTimeDay(DateTime aDate, DateTime bDate) {
+    print("时间有问题1111：$aDate,$bDate");
     if (aDateEqualBDate(aDate, bDate)) {
       return 0;
     }
@@ -364,15 +367,16 @@ class DateUtil {
       smallDate = aDate;
     }
     int countDay = 0;
-    while (!aDateEqualBDate(bigDate, smallDate)) {
-      smallDate.add(Duration(days: 1));
+    DateTime dateTime=smallDate;
+    while (!aDateEqualBDate(bigDate, dateTime)) {
       countDay++;
+      dateTime=smallDate.add(Duration(days: countDay));
       if (countDay > 7) {
         print("时间有问题：$bigDate,$smallDate");
         break;
       }
     }
-    return countDay;
+    return min(7, countDay);
   }
 
   //判断输入的日期是否在今天这个日期的输入天数内

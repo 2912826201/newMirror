@@ -96,7 +96,8 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     super.initState();
     _initData();
     _initWidget();
-    EventBus.getDefault().registerNoParameter(resetChatMessageCount, EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    EventBus.getDefault()
+        .registerNoParameter(resetChatMessageCount, EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
   }
 
   @override
@@ -143,7 +144,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
           // }
           // 滚动开始
           // print('滚动开始');
-          if(widget.onTap!=null){
+          if (widget.onTap != null) {
             widget.onTap();
           }
           isScroll = true;
@@ -295,15 +296,15 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
 
   Widget getBodyItem(ChatDataModel model, int position) {
     return SendMessageView(
-        model,
-        widget.chatId,
-        position,
-        widget.voidMessageClickCallBack,
-        widget.voidItemLongClickCallBack,
-        widget.chatName,
-        widget.isShowChatUserName,
-        widget.conversationDtoType,
-        widget.setCallRemoveLongPanel,
+      model,
+      widget.chatId,
+      position,
+      widget.voidMessageClickCallBack,
+      widget.voidItemLongClickCallBack,
+      widget.chatName,
+      widget.isShowChatUserName,
+      widget.conversationDtoType,
+      widget.setCallRemoveLongPanel,
     );
   }
 

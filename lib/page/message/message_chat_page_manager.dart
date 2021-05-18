@@ -50,18 +50,14 @@ int imPostSecondNumber = 5;
 
 //去对应的聊天界面
 //目前是从用户详情页的私聊过来的
-void jumpChatPageUser(
-  BuildContext context,
-  UserModel userModel,
-{String textContent}
-) {
+void jumpChatPageUser(BuildContext context, UserModel userModel, {String textContent}) {
   ConversationDto conversation = new ConversationDto();
   conversation.conversationId = userModel.uid.toString();
   conversation.uid = Application.profile.uid;
   conversation.name = userModel.nickName;
   conversation.avatarUri = userModel.avatarUri;
   conversation.type = PRIVATE_TYPE;
-  jumpChatPageConversationDto(context, conversation,textContent: textContent);
+  jumpChatPageConversationDto(context, conversation, textContent: textContent);
 }
 
 //分享跳转界面
@@ -118,14 +114,14 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
-  EventBus.getDefault().post(msg: message,registerName: CHAT_GET_MSG);
+  EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
   return true;
   // _jumpChatPage(context: context, conversation: conversation, shareMessage: message);
 }
 
 //去聊天界面
-void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation,{String textContent}) {
-  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null,textContent: textContent);
+void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation, {String textContent}) {
+  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null, textContent: textContent);
 }
 
 //去群聊界面
@@ -144,14 +140,14 @@ void jumpChatPageTest(BuildContext context) {
 }
 
 //跳转界面-去聊天界面-先获取群成员
-void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Message shareMessage,String textContent}) async {
-
+void _jumpJudgeChatPage(
+    {BuildContext context, ConversationDto conversation, Message shareMessage, String textContent}) async {
   if (conversation.type == GROUP_TYPE) {
-    textContent=null;
+    textContent = null;
     context.read<GroupUserProfileNotifier>().clearAllUser();
   }
 
-  _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage,textContent: textContent);
+  _jumpChatPage(context: context, conversation: conversation, shareMessage: shareMessage, textContent: textContent);
 
   if (conversation.type == GROUP_TYPE) {
     int groupManNumber = await getChatGroupUserModelList(conversation.conversationId, context);
@@ -162,7 +158,8 @@ void _jumpJudgeChatPage({BuildContext context, ConversationDto conversation, Mes
 }
 
 //跳转界面-去聊天界面
-void _jumpChatPage({BuildContext context, ConversationDto conversation, Message shareMessage,String textContent}) async {
+void _jumpChatPage(
+    {BuildContext context, ConversationDto conversation, Message shareMessage, String textContent}) async {
   List<ChatDataModel> chatDataModelList;
   int systemPage = 0;
   String systemLastTime;
@@ -586,7 +583,7 @@ Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultM
 }
 
 //发送语音
-void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType,VoidCallback voidCallback) async {
+void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType, VoidCallback voidCallback) async {
   chatDataModel.msg = await postMessageManagerVoice(targetId, chatDataModel.chatVoiceModel, conversationType);
   chatDataModel.isTemporary = false;
   voidCallback();
@@ -729,7 +726,9 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
       chatGroupUserModelList.add(model);
       GroupChatUserInformationDBHelper().update(chatGroupUserModel: model, groupId: groupChatId);
     });
-    Application.appContext.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
+    Application.appContext
+        .read<GroupUserProfileNotifier>()
+        .addAll(chatGroupUserModelList, chatGroupUserModelList.length);
   } else {
     Application.appContext.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
   }
@@ -764,8 +763,6 @@ String getChatTypeModel(ChatDataModel chatDataModel) {
     return chatDataModel.msg.objectName;
   }
 }
-
-
 
 //获取时间戳
 ChatDataModel getTimeAlertModel(int sentTime, String chatId) {
