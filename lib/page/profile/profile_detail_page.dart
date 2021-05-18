@@ -602,7 +602,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               height: _signatureHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
-              child: Text(_signature != null ? _signature : "      ", softWrap: true, style: AppStyle.textRegular14),
+              child: Text(_signature != null ? _signature : " ", softWrap: true, style: AppStyle.textRegular14),
             ),
             SizedBox(
               height: 16,
