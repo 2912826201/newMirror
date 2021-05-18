@@ -37,7 +37,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getNewVersion();
+   /* _getNewVersion();*/
   }
 
   _getNewVersion() async {
@@ -117,7 +117,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                 },
                 child: _rowItem(width, "清除缓存"),
               ),
-              InkWell(
+              /*InkWell(
                 onTap: () {
                   AppRouter.navigateToSettingFeedBack(context);
                 },
@@ -128,7 +128,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                 onTap: () {
                   AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
                 },
-              ),
+              ),*/
               Container(
                 height: 12,
                 color: AppColor.bgWhite,

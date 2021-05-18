@@ -433,27 +433,26 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         color: AppColor.transparent,
         child: IntrinsicHeight(
           child: AnimatedPhysicalModel(
-              shape: BoxShape.rectangle,
-              color: value.itemChose ? AppColor.bgWhite : AppColor.white,
-              elevation: 0,
-              shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
-              duration: Duration(seconds: 1),
-              child: Container(
-                padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 16, top: 8, bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      child: getUserImage(value.avatarUrl, isSubComment ? 32 : 42, isSubComment ? 32 : 42),
-                      onTap: () {
-                        jumpToUserProfilePage(context, value.uid,
-                            avatarUrl: value.avatarUrl, userName: value.name);
-                      },
-                    ),
-                    SizedBox(width: 15),
-                    // //中间信息
-                    Expanded(
-                        child: SizedBox(
+            shape: BoxShape.rectangle,
+            color: value.itemChose ? AppColor.bgWhite : AppColor.white,
+            elevation: 0,
+            shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
+            duration: Duration(seconds: 1),
+            child: Container(
+              padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 16, top: 8, bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    child: getUserImage(value.avatarUrl, isSubComment ? 32 : 42, isSubComment ? 32 : 42),
+                    onTap: () {
+                      jumpToUserProfilePage(context, value.uid, avatarUrl: value.avatarUrl, userName: value.name);
+                    },
+                  ),
+                  SizedBox(width: 15),
+                  // //中间信息
+                  Expanded(
+                    child: SizedBox(
                       child: GestureDetector(
                         child: Container(
                           width: double.infinity,
@@ -497,33 +496,35 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                         ),
                         onTap: () => onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name),
                       ),
-                    )),
-                    SizedBox(width: 16),
-                    Container(
-                      child: GestureDetector(
-                        child: Column(
-                          children: [
-                            AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
-                            SizedBox(
-                              height: 7,
-                            ),
-                            Text(
-                              IntegerUtil.formatIntegerEn(value.laudCount),
-                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (ClickUtil.isFastClick()) {
-                            return;
-                          }
-                          _laudComment(value.id, value.isLaud == 0, value.uid);
-                        },
-                      ),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                  SizedBox(width: 16),
+                  Container(
+                    child: GestureDetector(
+                      child: Column(
+                        children: [
+                          AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Text(
+                            IntegerUtil.formatIntegerEn(value.laudCount),
+                            style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        if (ClickUtil.isFastClick()) {
+                          return;
+                        }
+                        _laudComment(value.id, value.isLaud == 0, value.uid);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       onLongPress: () {
@@ -684,8 +685,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           text: "${value.replyName}  ",
           recognizer: new TapGestureRecognizer()
             ..onTap = () {
-              jumpToUserProfilePage(context, value.replyId,
-                  avatarUrl: value.avatarUrl, userName: value.replyName);
+              jumpToUserProfilePage(context, value.replyId, avatarUrl: value.avatarUrl, userName: value.replyName);
             },
           style: AppStyle.textMedium15,
         ));
@@ -740,8 +740,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             if (userMap[(i).toString()] != null) {
               print('--------------------------userMap[(i).toString()]----${userMap[(i).toString()]}-');
               getUserInfo(uid: userMap[(i).toString()]).then((value) {
-                jumpToUserProfilePage(context, value.uid,
-                    avatarUrl: value.avatarUri, userName: value.nickName);
+                jumpToUserProfilePage(context, value.uid, avatarUrl: value.avatarUri, userName: value.nickName);
               });
             }
           },
@@ -877,7 +876,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     await postComments(
       targetId: targetId,
       targetType: targetType,
-      contentext: StringUtil.replaceLineBlanks(text,rules),
+      contentext: StringUtil.replaceLineBlanks(text, rules),
       atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
@@ -1089,12 +1088,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //加载网络数据
-  void getDataAction({bool isFold = false,bool isRefresh=false}) async {
+  void getDataAction({bool isFold = false, bool isRefresh = false}) async {
     if (await isOffline()) {
       loadingStatusComment = LoadingStatus.STATUS_IDEL;
-      if(isRefresh){
+      if (isRefresh) {
         widget.refreshController.refreshCompleted();
-      }else{
+      } else {
         widget.refreshController.loadNoData();
       }
       courseCommentHot = null;
@@ -1104,7 +1103,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       }
       return;
     }
-    if(isRefresh){
+    if (isRefresh) {
       courseCommentHot = null;
       courseCommentTime = null;
     }
@@ -1213,15 +1212,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex, false);
         }
 
-        if(isRefresh){
+        if (isRefresh) {
           widget.refreshController.refreshCompleted();
-        }else{
+        } else {
           widget.refreshController.loadComplete();
         }
       } else {
-        if(isRefresh){
+        if (isRefresh) {
           widget.refreshController.refreshCompleted();
-        }else{
+        } else {
           widget.refreshController.loadNoData();
         }
       }
@@ -1236,15 +1235,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         courseCommentPageTime++;
         setCommentListSubSetting(courseCommentTime, isFold: isFold);
 
-        if(isRefresh){
+        if (isRefresh) {
           widget.refreshController.loadComplete();
-        }else{
+        } else {
           widget.refreshController.loadNoData();
         }
       } else {
-        if(isRefresh){
+        if (isRefresh) {
           widget.refreshController.refreshCompleted();
-        }else{
+        } else {
           widget.refreshController.loadNoData();
         }
       }
@@ -1351,14 +1350,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
   }
 
-  void onRefresh(){
-    onLoading(isRefresh:true);
+  void onRefresh() {
+    onLoading(isRefresh: true);
   }
 
   //加载更多的评论
-  void onLoading({bool isRefresh=false}) async {
-    if ((isHotOrTime ? courseCommentHot : courseCommentTime) == null||isRefresh) {
-      getDataAction(isRefresh:isRefresh);
+  void onLoading({bool isRefresh = false}) async {
+    if ((isHotOrTime ? courseCommentHot : courseCommentTime) == null || isRefresh) {
+      getDataAction(isRefresh: isRefresh);
       return;
     }
     Future.delayed(Duration.zero, () async {
@@ -1464,7 +1463,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //热门评论点击
-  onHotCommentTitleClickBtn() async{
+  onHotCommentTitleClickBtn() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
@@ -1477,7 +1476,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //时间评论点击
-  onTimeCommentTitleClickBtn() async{
+  onTimeCommentTitleClickBtn() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
