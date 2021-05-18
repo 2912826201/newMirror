@@ -3,12 +3,12 @@ import 'dart:async';
 // Project imports:
 import 'package:better_player/better_player.dart';
 import 'package:better_player/src/core/better_player_with_controls.dart';
-
+import 'package:visibility_detector/visibility_detector.dart';
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-
+typedef BetterPlayerExposureCallback = void Function( double visibilityFraction);
 class BetterPlayer extends StatefulWidget {
   const BetterPlayer({Key key, @required this.controller})
       : assert(controller != null, 'You must provide a better player controller'),
@@ -37,7 +37,6 @@ class BetterPlayer extends StatefulWidget {
       );
 
   final BetterPlayerController controller;
-
   @override
   _BetterPlayerState createState() {
     return _BetterPlayerState();
