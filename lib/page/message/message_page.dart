@@ -50,7 +50,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   double _screenWidth = 0.0;
   int _listLength = 0;
   int choseUnreadType;
-  StreamController<ConversationAnimationModel> streamController = StreamController<ConversationAnimationModel>.broadcast();
+  StreamController<ConversationAnimationModel> streamController =
+      StreamController<ConversationAnimationModel>.broadcast();
 
   @override
   bool get wantKeepAlive => true;
@@ -459,7 +460,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos=false}) {
+  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos = false}) {
     int messageCount = conversation.unreadCount;
     NoPromptUidModel model =
         NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));
@@ -477,7 +478,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     bool isMentioned;
     AtMsg atMeMsg = Application.atMesGroupModel.getAtMsg(conversation.conversationId);
     if (atMeMsg == null) {
-      isMentioned=false;
+      isMentioned = false;
     } else {
       isMentioned = true;
     }
@@ -708,6 +709,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           fit: BoxFit.cover,
           memCacheWidth: 150,
           memCacheHeight: 150,
+
           /// imageUrl的淡入动画的持续时间。
           fadeInDuration: Duration(milliseconds: 0),
           placeholder: (context, url) => Container(
@@ -732,6 +734,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 fit: BoxFit.cover,
                 memCacheWidth: 150,
                 memCacheHeight: 150,
+
                 /// imageUrl的淡入动画的持续时间。
                 fadeInDuration: Duration(milliseconds: 0),
                 placeholder: (context, url) => Container(
@@ -758,6 +761,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   fit: BoxFit.cover,
                   memCacheWidth: 150,
                   memCacheHeight: 150,
+
                   /// imageUrl的淡入动画的持续时间。
                   fadeInDuration: Duration(milliseconds: 0),
                   placeholder: (context, url) => Container(
