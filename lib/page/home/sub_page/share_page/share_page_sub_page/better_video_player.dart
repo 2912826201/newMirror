@@ -282,8 +282,7 @@ class betterVideoPlayer extends StatefulWidget {
   final SizeInfo sizeInfo;
   final String durationString;
 
-  betterVideoPlayer({Key key, this.sizeInfo, this.feedModel, this.durationString})
-      : super(key: key);
+  betterVideoPlayer({Key key, this.sizeInfo, this.feedModel, this.durationString}) : super(key: key);
 
   @override
   _betterVideoPlayerState createState() => _betterVideoPlayerState();
@@ -308,7 +307,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
-
+  VideoIsPlay isPlay = VideoIsPlay();
   @override
   void initState() {
     super.initState();
@@ -394,6 +393,20 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
       // 去登录
       AppRouter.navigateToLoginPage(context);
     }
+  }
+
+  @override
+  void didUpdateWidget(betterVideoPlayer oldWidget) {
+    print("此回调什么时候又：：：：${isPlay.isPlay}");
+    print("controller.videoPlayerController.value.volume::::::::${controller.videoPlayerController.value.volume}");
+    if (isPlay.isPlay) {
+      controller.play();
+      streamController.sink.add(controller.videoPlayerController.value.volume > 0);
+      controller.setLooping(true);
+    } else {
+      controller.pause();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -502,10 +515,12 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         if (visibilityInfo.visibleFraction == 1.0) {
           if (!controller.isPlaying()) {
             controller.play();
+            isPlay.isPlay = false;
           }
         } else if (visibilityInfo.visibleFraction < 1.0 && visibilityInfo.visibleFraction >= 0.0) {
           if (controller.isPlaying()) {
             controller.pause();
+            isPlay.isPlay = true;
           }
         }
       },
