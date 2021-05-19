@@ -400,7 +400,10 @@ class MessageManager {
           break;
         case 9:
           //9-训练结束
-          EventBus.getDefault().post(registerName: END_OF_TRAINING);
+          print('训练结束');
+          Future.delayed(Duration(seconds: 1),(){
+            EventBus.getDefault().post(registerName: END_OF_TRAINING);
+          });
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
@@ -735,10 +738,33 @@ class MessageManager {
   }
 
   //机器训练进度的返回---只有视频课程
-  static void _trainingSchedule(TrainingScheduleModel model) {
-    if (model.courseId == null) {
+  static void _trainingSchedule(TrainingScheduleModel scheduleModel) {
+    if (scheduleModel.courseId == null) {
       return;
     }
+    if(Application.isBackGround){
+      return;
+    }
+    // print("DateTime.now().millisecondsSinceEpoch-Application.openAppTime:${DateTime.now().millisecondsSinceEpoch-Application.openAppTime}");
+    if(DateTime.now().millisecondsSinceEpoch-Application.openAppTime<10000){
+      getMachineStatusInfo().then((list) {
+        if (list != null && list.isNotEmpty) {
+          MachineModel model = list.first;
+          if (model != null && model.isConnect == 1 && model.inGame == 1) {
+            if (model.type == 1) {
+              _openMachineRemoteControllerPage(scheduleModel);
+            }
+            return;
+          }
+        }
+      }).catchError((e) {
+      });
+    }else{
+      _openMachineRemoteControllerPage(scheduleModel);
+    }
+  }
+
+  static _openMachineRemoteControllerPage(TrainingScheduleModel model){
     if (AppRouter.isHaveMachineRemoteControllerPage()) {
       EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
     } else {
