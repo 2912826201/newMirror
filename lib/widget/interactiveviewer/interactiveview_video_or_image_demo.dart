@@ -308,7 +308,19 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                 ? BetterPlayer(
                     controller: controller,
                   )
-                : Container(),
+                : CachedNetworkImage(
+                    imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
+                    width: ScreenUtil.instance.width,
+                    height: setAspectRatio(),
+                    placeholder: (context, url) {
+                      return Container(
+                        color: AppColor.bgWhite,
+                      );
+                    },
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColor.bgWhite,
+                    ),
+                  ),
             // )
           ),
         ),
