@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -542,6 +543,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   _showImageDialog() {
+    if(!AppConfig.needShowTraining){
+      return;
+    }
     if (context.read<TokenNotifier>().isLoggedIn &&
         !this.isShowNewUserDialog &&
         Application.profile.uid != coachIsAccountId) {
