@@ -1,3 +1,4 @@
+import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -211,5 +212,107 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
     // : Theme(
     //     data: ThemeData(cupertinoOverrideTheme: CupertinoThemeData(brightness: Brightness.dark)),
     //     child: CupertinoActivityIndicator(radius: 30));
+  }
+}
+
+class DemoVideoItem2 extends StatefulWidget {
+  final DemoSourceEntity source;
+  final bool isFocus;
+
+  DemoVideoItem2(this.source, {this.isFocus});
+
+  @override
+  _DemoVideoItem2State createState() => _DemoVideoItem2State();
+}
+
+class _DemoVideoItem2State extends State<DemoVideoItem2> {
+  BetterPlayerController controller;
+  BetterPlayerDataSource dataSource;
+  BetterPlayerConfiguration configuration;
+  Function(BetterPlayerEvent) eventListener;
+
+  // _DemoVideoItem2State() {
+  //
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState: ${widget.source.heroId}');
+    init();
+  }
+
+  init() async {
+    dataSource = BetterPlayerDataSource.network(widget.source.url);
+    eventListener = (BetterPlayerEvent event) {
+      if (!mounted) {
+        return;
+      }
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.initialized:
+          setState(() {});
+          break;
+        default:
+          break;
+      }
+    };
+    configuration = BetterPlayerConfiguration(
+        // 如果不加上这个比例，在播放本地视频时宽高比不正确
+        aspectRatio: ScreenUtil.instance.width / setAspectRatio(),
+        autoPlay: true,
+        eventListener: eventListener,
+        looping: true,
+        //定义按下播放器时播放器是否以全屏启动
+        fullScreenByDefault: false,
+        placeholder: CachedNetworkImage(
+          imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
+          width: ScreenUtil.instance.width,
+          height: setAspectRatio(),
+          placeholder: (context, url) {
+            return Container(
+              color: AppColor.bgWhite,
+            );
+          },
+          errorWidget: (context, url, error) => Container(
+            color: AppColor.bgWhite,
+          ),
+        ),
+        controlsConfiguration: BetterPlayerControlsConfiguration(
+          showControls: false,
+        ));
+    controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+// 计算长宽比
+  double setAspectRatio() {
+    double videoWidth = ScreenUtil.instance.width;
+    return (videoWidth / widget.source.width) * widget.source.height;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Hero(
+          tag: widget.source.heroId,
+          child: Container(
+            width: ScreenUtil.instance.width,
+            height: setAspectRatio(),
+            child: controller.isVideoInitialized()
+                ? BetterPlayer(
+                    controller: controller,
+                  )
+                : Container(),
+            // )
+          ),
+        ),
+      ],
+    );
   }
 }
