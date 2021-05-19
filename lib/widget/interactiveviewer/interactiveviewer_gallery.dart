@@ -205,6 +205,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
           controller: _pageController,
           physics: _enablePageView ? null : const NeverScrollableScrollPhysics(),
           itemCount: widget.sources.length,
+          // allowImplicitScrolling: true,
           itemBuilder: (BuildContext context, int index) {
             return GestureDetector(
               onDoubleTapDown: (TapDownDetails details) {
