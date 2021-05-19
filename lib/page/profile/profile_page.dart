@@ -5,9 +5,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/version_api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -57,7 +60,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ScrollController controller = ScrollController();
   double width = ScreenUtil.instance.width;
   double height = ScreenUtil.instance.height;
-
+  bool haveNewVersion = false;
+  String content;
+  String url;
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -74,13 +79,26 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     pageHeaderHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 17 + userAvatarAndButtonHeight;
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 45;
     getProfileModel();
+    _getNewVersion();
     controller.addListener(() {
       if (controller.position.maxScrollExtent < controller.offset) {
         controller.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
       }
     });
   }
-
+  _getNewVersion() async {
+    VersionModel model = await getNewVersion();
+    if (model != null) {
+      if (model.version != AppConfig.version) {
+        haveNewVersion = true;
+        content = model.description;
+        url = model.url;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     if (extraInfoModel != null) {
@@ -174,7 +192,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 28,
               ),
               _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
+              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
               Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
               // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
               /*
@@ -297,6 +316,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 style: AppStyle.textRegular16,
               ),
               Spacer(),
+              text == "关于" && haveNewVersion
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 64,
+                  height: 18,
+                  color: AppColor.mainRed,
+                  child: Center(
+                    child: Text(
+                      "有新版本",
+                      style: AppStyle.whiteRegular12,
+                    ),
+                  ),
+                ),
+              ):Container(),
+              SizedBox(
+                width: 12,
+              ),
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_18,
                 18,
@@ -519,6 +556,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
       AppRouter.navigateToHeightAndWeigetPage(context);
+      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
+    }  else if ("意见反馈" == title) {
+      AppRouter.navigateToSettingFeedBack(context);
+      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
+    }  else if ("关于" == title) {
+      AppRouter.navigateToSettingAbout(context,url,haveNewVersion,content);
       // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
     } else if ("测试" == title) {
       AppRouter.navigateToHeightAndWeigetPage(context);

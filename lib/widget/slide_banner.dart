@@ -185,13 +185,36 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 fadeInDuration: Duration(milliseconds: 0),
                 // useOldImageOnUrlChange: true,
                 fit: BoxFit.cover,
-                imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
+                imageUrl: item.url != null
+                    ?
+                    // FileUtil.getThumbnail(item.url)
+                    FileUtil.getImageSlim(item.url)
+                    : "",
                 placeholder: (context, url) {
-                  // if (indexs == 0) {
-                  //   return Container();
-                  // }
-                  return Container(
-                    color: AppColor.bgWhite,
+                  return  CachedNetworkImage(
+                    /// imageUrl的淡入动画的持续时间。
+                    fadeInDuration: Duration(milliseconds: 0),
+                    // useOldImageOnUrlChange: true,
+                    fit: BoxFit.cover,
+                    imageUrl: item.url != null
+                        ?
+                    // FileUtil.getThumbnail(item.url)
+                    FileUtil.getThumbnail(item.url)
+                        : "",
+                    placeholder: (context, url) {
+                      return Container(
+                        color: AppColor.bgWhite,
+                      );
+                    },
+                    errorWidget: (context, url, e) {
+                      return Container(
+                        color: AppColor.bgWhite,
+                      );
+                    },
+                  );
+                  return Image.network(
+                    FileUtil.getThumbnail(item.url),
+                    fit: BoxFit.cover,
                   );
                 },
                 errorWidget: (context, url, e) {
@@ -211,9 +234,13 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     fit: BoxFit.cover,
                     imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
                     placeholder: (context, url) {
-                      return Container(
-                        color: AppColor.bgWhite,
+                      return Image.network(
+                        FileUtil.getThumbnail(item.url),
+                        fit: BoxFit.cover,
                       );
+                      // return Container(
+                      //   color: AppColor.bgWhite,
+                      // );
                     },
                     errorWidget: (context, url, e) {
                       return Container(
