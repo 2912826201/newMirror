@@ -820,6 +820,15 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               svgName: AppIcon.nav_close,
               iconColor: AppColor.white,
               onTap: () {
+                //关闭页面时 将之前的视频播放停止
+                context.read<SelectedMapNotifier>().controllerList.forEach((controller) {
+                  try{
+                    controller.pause();
+                  }catch(e){
+                    print(e);
+                  }
+                });
+                context.read<SelectedMapNotifier>().controllerList.clear();
                 Navigator.pop(context);
               }),
       titleWidget: _albums.length > 0
@@ -990,6 +999,16 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               files.list = mediaFileList;
 
               Application.selectedMediaFiles = files;
+
+              //跳转时 将之前的视频播放停止
+              notifier.controllerList.forEach((controller) {
+                try{
+                  controller.pause();
+                }catch(e){
+                  print(e);
+                }
+              });
+              notifier.controllerList.clear();
 
               if (widget.publishMode == 1) {
                 Navigator.pop(context, true);
@@ -1270,6 +1289,10 @@ class SelectedMapNotifier with ChangeNotifier {
 
   Map<String, bool> get videoErrorMap => _videoErrorMap;
 
+  List<VideoPlayerController> _controllerList = [];
+
+  List<VideoPlayerController> get controllerList => _controllerList;
+
   // 记录已选的图片裁剪尺寸
   Size _selectedImageSize;
 
@@ -1372,6 +1395,15 @@ class SelectedMapNotifier with ChangeNotifier {
       } else {
         _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: entity.id);
       }
+      //切换时 将之前的视频播放停止
+      _controllerList.forEach((controller) {
+        try{
+          controller.pause();
+        }catch(e){
+          print(e);
+        }
+      });
+      _controllerList.clear();
       notifyListeners();
     }
   }
@@ -1554,19 +1586,22 @@ class VideoPreviewState extends State<VideoPreviewArea> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // 可能会打开视频出错
+            SelectedMapNotifier notifier = context.watch<SelectedMapNotifier>();
             print("errorDescription:${_controller.value.errorDescription}");
             if (_controller.value.errorDescription != null) {
-              context.watch<SelectedMapNotifier>().videoErrorMap[widget.id] = true;
+              notifier.videoErrorMap[widget.id] = true;
               return Container();
             } else {
-              context.watch<SelectedMapNotifier>().videoErrorMap[widget.id] = false;
+              notifier.videoErrorMap[widget.id] = false;
               print("aspectRatio:${_controller.value.aspectRatio}");
               if (!_controller.value.isPlaying) {
+                //将controller加到列表中
+                notifier.controllerList.add(_controller);
                 _controller.play();
               }
               _VideoPreviewSize _previewSize =
                   _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
-              context.watch<SelectedMapNotifier>().setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
+              notifier.setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
               //初始位置就是(0，0)所以暂不做初始偏移值的处理
               return ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
