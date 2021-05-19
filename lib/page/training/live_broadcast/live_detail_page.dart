@@ -1014,7 +1014,11 @@ class LiveDetailPageState extends XCState {
     }
     print("登陆终端进行训练");
     if (Application.token.anonymous == 0) {
-      AppRouter.navigateToScanCodePage(context);
+      Permission.camera.request().then((value) {
+        if (value.isGranted) {
+          AppRouter.navigateToScanCodePage(context);
+        }
+      });
     } else {
       AppRouter.navigateToLoginPage(context);
     }

@@ -7,6 +7,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/live_label_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +239,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           GestureDetector(
               onTap: () {
                 if (Application.token.anonymous == 0) {
-                  AppRouter.navigateToScanCodePage(context);
+                  Permission.camera.request().then((value) {
+                    if (value.isGranted) {
+                      AppRouter.navigateToScanCodePage(context);
+                    }
+                  });
                 } else {
                   AppRouter.navigateToLoginPage(context);
                 }
