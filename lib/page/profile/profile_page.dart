@@ -346,6 +346,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里因为头像和关注等是水平，所以放在一起
   Widget _getUserImage() {
+    double nameMaxWidth = width - userAvatarHeight - 12 - 24 - 49 - 32;
+    double textWidth =
+        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18, nameMaxWidth, 1)
+            .width;
+    if (textWidth > nameMaxWidth) {
+      textWidth = nameMaxWidth;
+    }
     return Container(
         height: userAvatarHeight,
         width: width,
@@ -357,11 +364,14 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             SizedBox(
               width: 12,
             ),
-            Text(
-              context.watch<ProfileNotifier>().profile.nickName,
-              style: AppStyle.textMedium18,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+            Container(
+              width: textWidth,
+              child: Text(
+                context.watch<ProfileNotifier>().profile.nickName,
+                style: AppStyle.textMedium18,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
             Container(
               height: 24,
