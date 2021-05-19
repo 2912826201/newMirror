@@ -55,6 +55,17 @@ class _DemoImageItemState extends State<DemoImageItem> {
     print('dispose: ${widget.source.heroId}');
   }
 
+  // 计算长宽比
+  double setAspectRatio() {
+    double videoWidth = ScreenUtil.instance.width;
+    print(videoWidth);
+    print(widget.source.width);
+    print(ScreenUtil.instance.height);
+    print(widget.source.height);
+    print((videoWidth / widget.source.width) * widget.source.height);
+    return (videoWidth / widget.source.width) * widget.source.height;
+  }
+
   @override
   Widget build(BuildContext context) {
     print("图片Item:${widget.source.url}");
@@ -128,10 +139,13 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
 
   init() async {
     _controller = VideoPlayerController.network(widget.source.url);
+
     // loop play
     _controller.setLooping(true);
-    await _controller.initialize();
-    setState(() {});
+    await _controller.initialize().then((value) {
+      _controller.play();
+      setState(() {});
+    });
     _controller.addListener(listener);
   }
 
@@ -158,51 +172,44 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
   double setAspectRatio() {
     double videoWidth = ScreenUtil.instance.width;
     return (videoWidth / widget.source.width) * widget.source.height;
-    if (widget.source.height > widget.source.width) {
-      return (widget.source.height / widget.source.width);
-    } else {
-      return (widget.source.width / widget.source.height);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _controller.value.initialized
-        ? Stack(
-            alignment: Alignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _controller.value.isPlaying ? _controller.pause() : _controller.play();
-                  });
-                },
-                child: Hero(
-                  tag: widget.source.heroId,
-                  child: Container(
-                    width: ScreenUtil.instance.width,
-                    height: setAspectRatio(),
-                    // child: AspectRatio(
-                    //   aspectRatio: widget.source.height > widget.source.width ? _controller.value.aspectRatio : setAspectRatio(),
-                    child: VideoPlayer(_controller),
-                    // )
-                  ),
-                ),
-              ),
-              _controller.value.isPlaying == true
-                  ? const SizedBox()
-                  : const IgnorePointer(
-                      ignoring: true,
-                      child: Icon(
-                        Icons.play_arrow,
-                        size: 100,
-                        color: Colors.white,
-                      ),
-                    ),
-            ],
-          )
-        : Theme(
-            data: ThemeData(cupertinoOverrideTheme: CupertinoThemeData(brightness: Brightness.dark)),
-            child: CupertinoActivityIndicator(radius: 30));
+    return
+        // _controller.value.initialized
+        //   ?
+        Stack(
+      alignment: Alignment.center,
+      children: [
+        Hero(
+          tag: widget.source.heroId,
+          child: Container(
+            width: ScreenUtil.instance.width,
+            height: setAspectRatio(),
+            // child: AspectRatio(
+            //   aspectRatio: widget.source.height > widget.source.width ? _controller.value.aspectRatio : setAspectRatio(),
+            child: VideoPlayer(_controller),
+            // )
+          ),
+        ),
+      ],
+    );
+    // : CachedNetworkImage(
+    //     imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
+    //     width: ScreenUtil.instance.width,
+    //     height: setAspectRatio(),
+    //     placeholder: (context, url) {
+    //       return Container(
+    //         color: AppColor.bgWhite,
+    //       );
+    //     },
+    //     errorWidget: (context, url, error) => Container(
+    //       color: AppColor.bgWhite,
+    //     ),
+    //   );
+    // : Theme(
+    //     data: ThemeData(cupertinoOverrideTheme: CupertinoThemeData(brightness: Brightness.dark)),
+    //     child: CupertinoActivityIndicator(radius: 30));
   }
 }

@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
-import 'package:interactiveviewer_gallery/interactiveviewer_gallery.dart';
+// import 'package:interactiveviewer_gallery/interactiveviewer_gallery.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -45,6 +45,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -2176,8 +2177,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
             Map<String, dynamic> mapModel = json.decode(textMessage.content);
             Map<String, dynamic> map = json.decode(mapModel["data"]);
             String imageUrl = map["showImageUrl"];
+
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'image', imageUrl);
+              print("map::::::$map");
+              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'image', imageUrl, height: map["height"], width: map["width"], );
               sourceList.add(demoSourceEntity);
             }
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
@@ -2211,8 +2214,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     print("图片索引值:$initIndex");
     Navigator.of(context).push(
       HeroDialogRoute<void>(
-        builder: (BuildContext context) => InteractiveviewerGallery<DemoSourceEntity>(
-            sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
+        builder: (BuildContext context) =>
+            // InteractiveviewerGallery<DemoSourceEntity>(
+            // sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
+        InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder)
       ),
     );
   }
