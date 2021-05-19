@@ -176,6 +176,9 @@ class FileUtil {
   static String getSmallImage(String imageUrl){
     return _getMaxSizeImage(imageUrl, maxImageSizeSmall, maxImageSizeSmall);
   }
+  static String getThumbnail(String imageUrl){
+    return _getMaxSizeImage(imageUrl, maxImageThumbnail, maxImageThumbnail);
+  }
 
   static String getMediumImage(String imageUrl){
     return _getMaxSizeImage(imageUrl, maxImageSizeMedium, maxImageSizeMedium);

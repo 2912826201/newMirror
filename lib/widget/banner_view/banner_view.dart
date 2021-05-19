@@ -3,6 +3,8 @@ library banner_view;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/widget/banner_view/page_scroll_physics.dart';
+import 'package:mirror/widget/banner_view/preload_page_view.dart' hide PageMetrics;
+// import 'package:preload_page_view/preload_page_view.dart' hide PageMetrics;
 
 //indicator container builder
 ///[indicatorWidget] indicator widget, position the indicator widget into container
@@ -71,6 +73,7 @@ class _BannerViewState extends State<BannerView> {
   List<Widget> _banners = [];
   Duration _duration;
   PageController _pageController;
+  PreloadPageController _preloadPageController;
   int _currentIndex = 0;
 
   @override
@@ -94,7 +97,7 @@ class _BannerViewState extends State<BannerView> {
 
     this._duration = widget.intervalDuration;
     this._pageController = widget.controller ?? PageController(initialPage: this._currentIndex);
-
+    this._preloadPageController = PreloadPageController(initialPage: this._currentIndex);
     this._nextBannerTask();
   }
 
@@ -143,6 +146,7 @@ class _BannerViewState extends State<BannerView> {
     this._currentIndex = this._currentIndex % this._banners.length;
     if (0 == this._currentIndex) {
       this._pageController.jumpToPage(this._currentIndex);
+      this._preloadPageController.jumpToPage(this._currentIndex);
       this._nextBannerTask();
       setState(() {});
     } else {
@@ -161,6 +165,18 @@ class _BannerViewState extends State<BannerView> {
         // _Logger.d(TAG, '=========animationEnd');
         // this._nextBannerTask();
         // setState(() {});
+      });
+      this
+          ._preloadPageController
+          .animateToPage(
+            this._currentIndex,
+            duration: widget.animationDuration,
+            curve: widget.curve,
+          )
+          .whenComplete(() {
+        if (!mounted) {
+          return;
+        }
       });
     }
   }
@@ -206,7 +222,31 @@ class _BannerViewState extends State<BannerView> {
     //   },
     //   // physics: new ClampingScrollPhysics(),
     // );
-    Widget pageView = new PageView(
+    Widget pageView =
+
+    // PreloadPageView.builder(
+    //     itemCount: this._banners.length,
+    //     // 必需设置为false下面直定义的滑动才会生效 此时是否自定义滚动行为
+    //     pageSnapping: false,
+    //     // 自定义滚动行为
+    //     physics: pageScrollPhysics(),
+    //     controller: _preloadPageController,
+    //     preloadPagesCount:this._banners.length ,
+    //     onPageChanged: (index) {
+    //       _Logger.d(TAG, '**********   changed  index: $index  cu: $_currentIndex');
+    //       this._currentIndex = index;
+    //       if (!(this._timer?.isActive ?? false)) {
+    //         this._nextBannerTask();
+    //       }
+    //       setState(() {});
+    //       if (null != widget.onPageChanged) {
+    //         widget.onPageChanged(index);
+    //       }
+    //     },
+    //     itemBuilder: (context, index) {
+    //       return this._banners[index];
+    //     });
+    new PageView(
       children: this._banners,
       // 必需设置为false下面直定义的滑动才会生效 此时是否自定义滚动行为
       pageSnapping: false,
@@ -246,8 +286,10 @@ class _BannerViewState extends State<BannerView> {
       try {
         if (this._currentIndex == 0) {
           this._pageController.jumpToPage(this._banners.length - 2);
+          this._preloadPageController.jumpToPage(this._banners.length - 2);
         } else if (this._currentIndex == this._banners.length - 1) {
           this._pageController.jumpToPage(1);
+          this._preloadPageController.jumpToPage(1);
         }
       } catch (e) {
         print('Exception: ${e?.toString()}');
@@ -309,6 +351,7 @@ class _BannerViewState extends State<BannerView> {
   @override
   void dispose() {
     _pageController?.dispose();
+    _preloadPageController?.dispose();
     _cancel();
     super.dispose();
   }

@@ -17,6 +17,7 @@ const int maxRecordVoiceDuration=60;
 const int minRecordVoiceDuration=1;
 
 //缩略图尺寸
+const int maxImageThumbnail = 10;
 const int maxImageSizeSmall = 150;
 const int maxImageSizeMedium = 250;
 const int maxImageSizeLarge = 500;

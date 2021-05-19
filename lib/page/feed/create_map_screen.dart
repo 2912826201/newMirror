@@ -28,15 +28,18 @@ class createMapScreen extends StatefulWidget {
 class _createMapScreenState extends State<createMapScreen> {
   AmapController _controller;
   String formatted_address;
-
+  Location currentAddressInfo; //当前位置的信息
   @override
   void initState() {
     aroundHttp();
+    //flutter定位只能获取到经纬度信息
     super.initState();
   }
 
   // 查询定位信息
   aroundHttp() async {
+    currentAddressInfo = await AmapLocation.instance.fetchLocation();
+
     PeripheralInformationEntity locationInformationEntity =
         await reverseGeographyHttp(widget.longitude, widget.latitude);
     if (locationInformationEntity.status == "1") {
@@ -120,8 +123,9 @@ class _createMapScreenState extends State<createMapScreen> {
                         /// 地图创建完成回调
                         onMapCreated: (controller) async {
                           _controller = controller;
-                          // 标记
-                          _controller.addMarker(
+                          List<MarkerOption> MarkerOptionList = [];
+                          // currentAddressInfo.latLng.latitude
+                          MarkerOptionList.add(
                             MarkerOption(
                               coordinate: LatLng(widget.latitude, widget.longitude),
                               widget: Image.asset(
@@ -130,6 +134,26 @@ class _createMapScreenState extends State<createMapScreen> {
                                 height: 36,
                               ),
                             ),
+                          );
+                          MarkerOptionList.add(
+                            MarkerOption(
+                              coordinate: LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
+                              widget: Icon(
+                                Icons.wrong_location_outlined,size: 36,color: Colors.amberAccent,
+                              ),
+                            ),
+                          );
+                          // 标记
+                          _controller.addMarkers(
+                              MarkerOptionList
+                            // MarkerOption(
+                            //   coordinate: LatLng(widget.latitude, widget.longitude),
+                            //   widget: Image.asset(
+                            //     'images/test/map.png',
+                            //     width: 36,
+                            //     height: 36,
+                            //   ),
+                            // ),
                           );
                         },
                       )),
