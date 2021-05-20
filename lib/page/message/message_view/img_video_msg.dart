@@ -362,7 +362,7 @@ class ImgVideoMsg extends StatelessWidget {
       offstage: isImgOrVideo,
       child: Container(
         child: Center(
-          child: AppIcon.getAppIcon(AppIcon.play_28, 28),
+          child: AppIcon.getAppIcon(AppIcon.play_circle_28, 28),
         ),
       ),
     );
