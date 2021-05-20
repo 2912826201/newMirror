@@ -16,6 +16,9 @@ import 'package:mirror/util/chunk_download.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:uuid/uuid.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'string_util.dart';
 
@@ -139,6 +142,7 @@ class FileUtil {
     return file;
   }
 
+
   //===========================上传部分end===========================
 
   //获取视频第一帧的图片
@@ -189,6 +193,10 @@ class FileUtil {
   }
   static String getLargeVideoFirstImage(String videoUrl){
     return _getMaxSizeImage(getVideoFirstPhoto(videoUrl), maxImageSizeLarge, maxImageSizeLarge);
+  }
+
+  static String getSlimVideoFirstImage(String videoUrl){
+    return getImageSlim(getVideoFirstPhoto(videoUrl));
   }
 
   //===========================下载部分start===========================
@@ -336,6 +344,64 @@ class FileUtil {
       path += v;
     });
     return path;
+  }
+
+
+  static saveNetworkImageCache(String imageUrl)async{
+    try{
+      if (imageUrl == null) throw '保存失败，图片不存在！';
+
+      if(!StringUtil.isURL(imageUrl)) throw '不是网址';
+
+      /// 权限检测
+      PermissionStatus storageStatus = await Permission.storage.status;
+      if (storageStatus != PermissionStatus.granted) {
+        storageStatus = await Permission.storage.request();
+        if (storageStatus != PermissionStatus.granted) {
+          throw '无法存储图片，请先授权！';
+        }
+      }
+
+      /// 保存的图片数据
+      Uint8List imageBytes;
+
+      /// 保存网络图片
+      CachedNetworkImage image = CachedNetworkImage(imageUrl: imageUrl);
+      DefaultCacheManager manager = image.cacheManager ?? DefaultCacheManager();
+      Map<String, String> headers = image.httpHeaders;
+      File file = await manager.getSingleFile(
+        image.imageUrl,
+        headers: headers,
+      );
+      imageBytes = await file.readAsBytes();
+      writeImageDataToFileChatPage(imageBytes,StringUtil.generateMd5(imageUrl));
+    }catch (e){
+      print(e.toString());
+    }
+  }
+
+  static Future<File> writeImageDataToFileChatPage(Uint8List imageData, String fileName) async {
+    if(imageData!=null) {
+      // 由入参来控制文件名 避免同一时间生成的文件名相同
+      String filePath = AppConfig.getAppChatImageDir() + "/" + fileName + ".png";
+      File file = File(filePath);
+      file.writeAsBytesSync(imageData);
+      return file;
+    }
+    return null;
+  }
+
+  static bool isHaveChatImageFile(String imageUrl){
+    String path=getChatImagePath(imageUrl);
+    if(path==null||path.length<1){
+      return false;
+    }
+    File file=File(path);
+    return file.existsSync();
+  }
+
+  static getChatImagePath(String imageUrl){
+    return AppConfig.getAppChatImageDir() + "/" + StringUtil.generateMd5(imageUrl) + ".png";
   }
 //===========================下载部分end===========================
 }

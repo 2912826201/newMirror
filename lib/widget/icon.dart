@@ -71,6 +71,8 @@ class AppIcon {
   static const String volume = "assets/svg/volume.svg";
   static const String luminance = "assets/svg/luminance.svg";
   static const String filter = "assets/svg/filter.svg";
+  static const String play_circle_28 = "assets/svg/play_circle_28.svg";
+  static const String play_circle_48 = "assets/svg/play_circle_48.svg";
   static const String play_28 = "assets/svg/play_28.svg";
   static const String play_48 = "assets/svg/play_48.svg";
   static const String pause_28 = "assets/svg/pause_28.svg";

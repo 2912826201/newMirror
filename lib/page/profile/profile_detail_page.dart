@@ -845,10 +845,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   // 大图预览内部的Item
-  Widget itemBuilder(BuildContext context, int index, bool isFocus) {
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocu) {
     DemoSourceEntity sourceEntity = sourceList[index];
     print("____sourceEntity:${sourceEntity.toString()}");
-    return DemoImageItem(sourceEntity);
+    return DemoImageItem(sourceEntity,isFocus,index,setFocu);
   }
 
   ///这是关注粉丝获赞

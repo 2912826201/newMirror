@@ -2234,7 +2234,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         HeroDialogRoute<void>(builder: (BuildContext context) {
           // InteractiveviewerGallery<DemoSourceEntity>(
           // sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
-
+          print("chat_page:$initIndex");
           return InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder);
         }),
       );
@@ -2242,16 +2242,23 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   }
 
 // 大图预览内部的Item
-  Widget itemBuilder(BuildContext context, int index, bool isFocus) {
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus) {
     DemoSourceEntity sourceEntity = sourceList[index];
-    print("____sourceEntity:${sourceEntity.toString()}");
+    print("____sourceEntity:index,$index,isFocus:$isFocus:${sourceEntity.toString()}");
     if (sourceEntity.type == 'video') {
       return DemoVideoItem2(
         sourceEntity,
-        isFocus: isFocus,
+        isFocus,
+        index,
+        setFocus,
       );
     } else {
-      return DemoImageItem(sourceEntity);
+      return DemoImageItem(
+        sourceEntity,
+        isFocus,
+        index,
+        setFocus,
+      );
     }
   }
 

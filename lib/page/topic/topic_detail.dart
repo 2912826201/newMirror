@@ -448,12 +448,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
               ));
   }
   // 大图预览内部的Item
-  Widget itemBuilder(BuildContext context, int index, bool isFocus) {
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus) {
     TopicDtoModel topicDtoModel = topicDtoModelList[index];
     DemoSourceEntity sourceEntity = DemoSourceEntity(topicDtoModel.id," image", topicDtoModel.avatarUrl.coverUrl,);
     print("____sourceEntity:${sourceEntity.toString()}");
-    return DemoImageItem(sourceEntity);
+    return DemoImageItem(sourceEntity,isFocus,index,setFocus);
   }
+
   Widget appBar() {
     return StreamBuilder<TopicUiChangeModel>(
         initialData: topicUiChangeModel,

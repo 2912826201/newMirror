@@ -6,7 +6,20 @@ import 'package:mirror/constant/color.dart';
 /// Created by yangjiayi on 2021/1/4.
 
 class AppSeekBar extends StatelessWidget {
-  AppSeekBar(this.max, this.min, this.value, this.disabled, this.onDragging, this.onDragCompleted, {Key key})
+  AppSeekBar(this.max,
+      this.min,
+      this.value,
+      this.disabled,
+      this.onDragging,
+      this.onDragCompleted,
+      {Key key,
+        this.activeTrackBarColor=AppColor.textPrimary2,
+        this.inactiveTrackBarColor=AppColor.bgWhite,
+        this.activeDisabledTrackBarColor=AppColor.textHint,
+        this.inactiveDisabledTrackBarColor=AppColor.bgWhite,
+        this.handler1Color=AppColor.textHint,
+        this.handler2Color=AppColor.textPrimary2,
+      })
       : super(key: key);
 
   final double max;
@@ -15,6 +28,12 @@ class AppSeekBar extends StatelessWidget {
   final bool disabled;
   final Function(int handlerIndex, dynamic lowerValue, dynamic upperValue) onDragging;
   final Function(int handlerIndex, dynamic lowerValue, dynamic upperValue) onDragCompleted;
+  final Color activeTrackBarColor;
+  final Color inactiveTrackBarColor;
+  final Color activeDisabledTrackBarColor;
+  final Color inactiveDisabledTrackBarColor;
+  final Color handler1Color;
+  final Color handler2Color;
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +44,15 @@ class AppSeekBar extends StatelessWidget {
       min: 0,
       trackBar: FlutterSliderTrackBar(
         activeTrackBar: BoxDecoration(
-          color: AppColor.textPrimary2,
+          color: activeTrackBarColor,
         ),
         inactiveTrackBar: BoxDecoration(
-          color: AppColor.bgWhite,
+          color: inactiveTrackBarColor,
         ),
         activeTrackBarHeight: 2,
         inactiveTrackBarHeight: 2,
-        activeDisabledTrackBarColor: AppColor.textHint,
-        inactiveDisabledTrackBarColor: AppColor.bgWhite,
+        activeDisabledTrackBarColor: activeDisabledTrackBarColor,
+        inactiveDisabledTrackBarColor: inactiveDisabledTrackBarColor,
       ),
       handlerAnimation: FlutterSliderHandlerAnimation(scale: 1),
       handler: FlutterSliderHandler(
@@ -41,7 +60,7 @@ class AppSeekBar extends StatelessWidget {
           decoration: BoxDecoration(
               color: AppColor.white,
               shape: BoxShape.circle,
-              border: Border.all(width: 2, color: disabled ? AppColor.textHint : AppColor.textPrimary2))),
+              border: Border.all(width: 2, color: disabled ? handler1Color : handler2Color))),
       handlerHeight: 12,
       handlerWidth: 12,
       tooltip: FlutterSliderTooltip(
