@@ -12,6 +12,8 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 
+import 'animated_list_demo.dart';
+
 class SliverListDemoPage extends StatefulWidget {
   @override
   _SliverListDemoPageState createState() => _SliverListDemoPageState();
@@ -504,12 +506,7 @@ class _SliverListDemoPageState extends State<SliverListDemoPage> with SingleTick
                 child: TabBarView(
                   controller: _tabController,
                   children: <Widget>[
-                    Container(
-                      height: double.infinity,
-                      padding: EdgeInsets.only(left: 10),
-                      alignment: Alignment.centerLeft,
-                      color: AppColor.bgBlack,
-                    ),
+                    AnimatedListDemo(),
                     // 推荐话题
                     Container(
                       height: double.infinity,
