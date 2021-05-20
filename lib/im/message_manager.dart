@@ -18,6 +18,7 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -540,7 +541,7 @@ class MessageManager {
             case ChatTypeModel.MESSAGE_TYPE_FEED:
               return "[动态]";
             case ChatTypeModel.MESSAGE_TYPE_USER:
-              return "[用户名片]";
+              return _getUserMessage(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE:
               return "[直播课程]";
             case ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE:
@@ -571,6 +572,16 @@ class MessageManager {
         return msg.content.encode();
     }
   }
+
+  static String _getUserMessage(Map<String, dynamic> contentMap){
+    try{
+      UserModel userModel = UserModel.fromJson(json.decode(contentMap["data"]));
+      return "[用户名片] ${userModel.nickName}";
+    }catch (e){
+      return "[用户名片]";
+    }
+  }
+
 
   static String _parseGrpNtf(Map<String, dynamic> content, {bool isTextMessageGrpNtf = true}) {
     Map<String, dynamic> dataMap;
