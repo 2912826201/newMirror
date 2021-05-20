@@ -12,6 +12,7 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -116,6 +117,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    EventBus.getDefault().registerNoParameter(() {
+      _stopPlayingVideo();
+    }, EVENTBUS_GALLERY_PAGE, registerName: GALLERY_LEAVE);
     //从notifier中取值
     _previewMaxHeight = context.read<PreviewHeightNotifier>().maxHeight;
     _previewMinHeight = context.read<PreviewHeightNotifier>().minHeight;
@@ -162,6 +166,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_GALLERY_PAGE, registerName: GALLERY_LEAVE);
     //停掉所有timer
     _timerList.forEach((timer) {
       timer.cancel();
@@ -182,6 +187,18 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused) {
       _isPaused = true;
     }
+  }
+
+  //停止播放视频
+  _stopPlayingVideo() {
+    context.read<SelectedMapNotifier>().controllerList.forEach((controller) {
+      try {
+        controller.pause();
+      } catch (e) {
+        print(e);
+      }
+    });
+    context.read<SelectedMapNotifier>().controllerList.clear();
   }
 
   // 获取相册数据
@@ -821,14 +838,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               iconColor: AppColor.white,
               onTap: () {
                 //关闭页面时 将之前的视频播放停止
-                context.read<SelectedMapNotifier>().controllerList.forEach((controller) {
-                  try{
-                    controller.pause();
-                  }catch(e){
-                    print(e);
-                  }
-                });
-                context.read<SelectedMapNotifier>().controllerList.clear();
+                _stopPlayingVideo();
                 Navigator.pop(context);
               }),
       titleWidget: _albums.length > 0
@@ -1002,9 +1012,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
               //跳转时 将之前的视频播放停止
               notifier.controllerList.forEach((controller) {
-                try{
+                try {
                   controller.pause();
-                }catch(e){
+                } catch (e) {
                   print(e);
                 }
               });
@@ -1397,9 +1407,9 @@ class SelectedMapNotifier with ChangeNotifier {
       }
       //切换时 将之前的视频播放停止
       _controllerList.forEach((controller) {
-        try{
+        try {
           controller.pause();
-        }catch(e){
+        } catch (e) {
           print(e);
         }
       });
