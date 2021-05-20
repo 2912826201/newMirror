@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class IntegerUtil {
@@ -28,23 +29,39 @@ class IntegerUtil {
   }
 
   //将卡转换为千卡
-  static String formationCalorie(int calorie,{bool isHaveCompany=true}){
-    if(null==calorie||calorie<=0){
-      return "0${isHaveCompany?"千卡":""}";
+  static String formationCalorie(int calorie, {bool isHaveCompany = true}) {
+    if (null == calorie || calorie <= 0) {
+      return "0${isHaveCompany ? "千卡" : ""}";
     }
-    return "${calorie/1000}${isHaveCompany?"千卡":""}";
+    return "${calorie / 1000}${isHaveCompany ? "千卡" : ""}";
   }
 
-  static bool showNoMore(GlobalKey key,{lastItemToTop = false}){
+  static bool showNoMore(GlobalKey key, {lastItemToTop = false,bool isRenderSliverList = false}) {
     double itemHeight = 0;
-      RenderBox renderBox = key.currentContext.findRenderObject();
-      if(lastItemToTop){
-        itemHeight =  renderBox.localToGlobal(Offset.zero).dy;
-      }else{
-        itemHeight =   renderBox.size.height;
+    RenderSliverList renderSliverList;
+    RenderBox renderBox;
+    if(isRenderSliverList) {
+       renderSliverList = key.currentContext.findRenderObject();
+    } else {
+       renderBox = key.currentContext.findRenderObject();
+    }
+    if (lastItemToTop) {
+      if(isRenderSliverList) {
+        renderSliverList.lastChild.localToGlobal(Offset.zero).dy;
+      } else {
+        itemHeight = renderBox
+            .localToGlobal(Offset.zero)
+            .dy;
       }
+    } else {
+      if(isRenderSliverList) {
+        renderSliverList.lastChild.size.height;
+      } else {
+        itemHeight = renderBox.size.height;
+      }
+    }
     print('--itemHeight---itemHeight--------itemHeight---------itemHeight----------$itemHeight}');
-    if(itemHeight>ScreenUtil.instance.height/2){
+    if (itemHeight > ScreenUtil.instance.height / 2) {
       return true;
     }
     return false;
