@@ -1,10 +1,11 @@
 library interactiveviewer_gallery;
+
 import 'package:flutter/material.dart';
 import 'package:interactiveviewer_gallery/custom_dismissible.dart';
 import 'package:interactiveviewer_gallery/interactive_viewer_boundary.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 
 import 'interactiveview_video_or_image_demo.dart';
-
 
 /// Builds a carousel controlled by a [PageView] for the tweet media sources.
 ///
@@ -213,11 +214,13 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
               },
               onDoubleTap: onDoubleTap,
               onTap: () {
-                if(widget.sources[index] is DemoSourceEntity ) {
-                  if (widget.sources[index].type == "image") {
-                    Navigator.of(context).pop();
-                  }
+                if(widget.sources[index] is TopicDtoModel) {
+                  Navigator.of(context).pop();
                 }
+                if (widget.sources[index].type == "image") {
+                  Navigator.of(context).pop();
+                }
+
               },
               child: widget.itemBuilder(context, index, index == currentIndex),
             );
@@ -237,17 +240,42 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
       targetScale = widget.maxScale * 0.6;
     }
 
-    double offSetX = targetScale == 1.0 ? 0.0 : -(_doubleTapLocalPosition.dx / MediaQuery.of(context).size.width) * (targetScale * 1.7 * MediaQuery.of(context).size.width) + MediaQuery.of(context).size.width;
+    double offSetX = targetScale == 1.0
+        ? 0.0
+        : -(_doubleTapLocalPosition.dx / MediaQuery.of(context).size.width) *
+                (targetScale * 1.7 * MediaQuery.of(context).size.width) +
+            MediaQuery.of(context).size.width;
     if (offSetX > 0) offSetX = 0.0;
     double offSetXBoundary = (1 - targetScale) * MediaQuery.of(context).size.width;
     if (offSetX < offSetXBoundary) offSetX = offSetXBoundary;
 
-    double offSetY = targetScale == 1.0 ? 0.0 : -(_doubleTapLocalPosition.dy / MediaQuery.of(context).size.height) * (targetScale * 1.7 * MediaQuery.of(context).size.height) + MediaQuery.of(context).size.height;
+    double offSetY = targetScale == 1.0
+        ? 0.0
+        : -(_doubleTapLocalPosition.dy / MediaQuery.of(context).size.height) *
+                (targetScale * 1.7 * MediaQuery.of(context).size.height) +
+            MediaQuery.of(context).size.height;
     if (offSetY > 0) offSetY = 0.0;
     double offSetYBoundary = (1 - targetScale) * MediaQuery.of(context).size.height;
     if (offSetY < offSetYBoundary) offSetY = offSetYBoundary;
 
-    matrix = Matrix4.fromList([targetScale, matrix.row1.x, matrix.row2.x, matrix.row3.x, matrix.row0.y, targetScale, matrix.row2.y, matrix.row3.y, matrix.row0.z, matrix.row1.z, targetScale, matrix.row3.z, offSetX, offSetY, matrix.row2.w, matrix.row3.w]);
+    matrix = Matrix4.fromList([
+      targetScale,
+      matrix.row1.x,
+      matrix.row2.x,
+      matrix.row3.x,
+      matrix.row0.y,
+      targetScale,
+      matrix.row2.y,
+      matrix.row3.y,
+      matrix.row0.z,
+      matrix.row1.z,
+      targetScale,
+      matrix.row3.z,
+      offSetX,
+      offSetY,
+      matrix.row2.w,
+      matrix.row3.w
+    ]);
     _animation = Matrix4Tween(
       begin: _transformationController.value,
       end: matrix,
@@ -257,4 +285,3 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
     _animationController.forward(from: 0).whenComplete(() => _onScaleChanged(targetScale));
   }
 }
-

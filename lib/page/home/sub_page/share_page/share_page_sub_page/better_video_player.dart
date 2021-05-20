@@ -362,6 +362,19 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
           width: videoSize.width,
           height: videoSize.height,
           placeholder: (context, url) {
+            // return CachedNetworkImage(
+            //   imageUrl: FileUtil.getThumbnailVideoFirstImage(widget.feedModel.videos.first.url),
+            //   width: videoSize.width,
+            //   height: videoSize.height,
+            //   placeholder: (context, url) {
+            //     return Container(
+            //       color: AppColor.bgWhite,
+            //     );
+            //   },
+            //   errorWidget: (context, url, error) => Container(
+            //     color: AppColor.bgWhite,
+            //   ),
+            // );
             return Container(
               color: AppColor.bgWhite,
             );

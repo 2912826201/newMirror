@@ -187,7 +187,6 @@ class FileUtil {
   static String getLargeImage(String imageUrl){
     return _getMaxSizeImage(imageUrl, maxImageSizeLarge, maxImageSizeLarge);
   }
-
   static String getLargeVideoFirstImage(String videoUrl){
     return _getMaxSizeImage(getVideoFirstPhoto(videoUrl), maxImageSizeLarge, maxImageSizeLarge);
   }
