@@ -106,6 +106,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
   bool _isGettingImage = false;
 
+  //定时器列表
+  List<Timer> _timerList = [];
+
   // @override
   // bool get wantKeepAlive => true;
 
@@ -159,6 +162,10 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    //停掉所有timer
+    _timerList.forEach((timer) {
+      timer.cancel();
+    });
     super.dispose();
   }
 
@@ -322,6 +329,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                             ? _fileMap[entity.id] != null
                                                 ? Center(
                                                     child: VideoPreviewArea(
+                                                        entity.id,
                                                         _fileMap[entity.id],
                                                         _previewMaxHeight,
                                                         context.select((SelectedMapNotifier notifier) =>
@@ -812,6 +820,15 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               svgName: AppIcon.nav_close,
               iconColor: AppColor.white,
               onTap: () {
+                //关闭页面时 将之前的视频播放停止
+                context.read<SelectedMapNotifier>().controllerList.forEach((controller) {
+                  try{
+                    controller.pause();
+                  }catch(e){
+                    print(e);
+                  }
+                });
+                context.read<SelectedMapNotifier>().controllerList.clear();
                 Navigator.pop(context);
               }),
       titleWidget: _albums.length > 0
@@ -983,6 +1000,16 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
               Application.selectedMediaFiles = files;
 
+              //跳转时 将之前的视频播放停止
+              notifier.controllerList.forEach((controller) {
+                try{
+                  controller.pause();
+                }catch(e){
+                  print(e);
+                }
+              });
+              notifier.controllerList.clear();
+
               if (widget.publishMode == 1) {
                 Navigator.pop(context, true);
                 AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
@@ -1153,13 +1180,32 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   _getFile(BuildContext context, AssetEntity entity) {
     _doGetFile(context, entity);
     //每隔一段时间检查一次 如果没有取到就重新获取 取到了则中断定时器
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _timerList.add(Timer.periodic(Duration(milliseconds: 500), (timer) {
+      print("正在获取文件：${timer.tick} ${_fileMap[entity.id]}");
       if (_fileMap[entity.id] != null) {
-        timer.cancel();
+        //如果是视频且正在裁剪预览 需要检查它的播放初始化状态
+        if (widget.needCrop &&
+            entity.type == AssetType.video &&
+            context.read<SelectedMapNotifier>().currentEntity.id == entity.id) {
+          bool error = context.read<SelectedMapNotifier>().videoErrorMap[entity.id];
+          if (error == null) {
+            //仍在加载中 未有结果 不作操作 等下次tick再判断
+          } else if (error) {
+            //iCloud刚下载的文件地址可能是临时地址 完成下载后会转存 原地址会打不开 所以得把临时地址删了要重新获取一下地址
+            _fileMap.remove(entity.id);
+            _doGetFile(context, entity);
+          } else {
+            _timerList.remove(timer);
+            timer.cancel();
+          }
+        } else {
+          _timerList.remove(timer);
+          timer.cancel();
+        }
       } else {
         _doGetFile(context, entity);
       }
-    });
+    }));
   }
 
   _doGetFile(BuildContext context, AssetEntity entity) {
@@ -1238,6 +1284,14 @@ class SelectedMapNotifier with ChangeNotifier {
   Map<String, Uint8List> _imageDataMap = {};
 
   Map<String, Uint8List> get imageDataMap => _imageDataMap;
+
+  Map<String, bool> _videoErrorMap = {};
+
+  Map<String, bool> get videoErrorMap => _videoErrorMap;
+
+  List<VideoPlayerController> _controllerList = [];
+
+  List<VideoPlayerController> get controllerList => _controllerList;
 
   // 记录已选的图片裁剪尺寸
   Size _selectedImageSize;
@@ -1341,6 +1395,15 @@ class SelectedMapNotifier with ChangeNotifier {
       } else {
         _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: entity.id);
       }
+      //切换时 将之前的视频播放停止
+      _controllerList.forEach((controller) {
+        try{
+          controller.pause();
+        }catch(e){
+          print(e);
+        }
+      });
+      _controllerList.clear();
       notifyListeners();
     }
   }
@@ -1470,8 +1533,9 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class VideoPreviewArea extends StatefulWidget {
-  VideoPreviewArea(this.file, this.previewWidth, this.useOriginalRatio, {Key key}) : super(key: key);
+  VideoPreviewArea(this.id, this.file, this.previewWidth, this.useOriginalRatio, {Key key}) : super(key: key);
 
+  final String id;
   final File file;
   final double previewWidth;
   final bool useOriginalRatio;
@@ -1521,61 +1585,74 @@ class VideoPreviewState extends State<VideoPreviewArea> {
         future: _initVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            print("aspectRatio:${_controller.value.aspectRatio}");
-            if (!_controller.value.isPlaying) {
-              _controller.play();
-            }
-            _VideoPreviewSize _previewSize =
-                _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
-            context.watch<SelectedMapNotifier>().setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
-            //初始位置就是(0，0)所以暂不做初始偏移值的处理
-            return ScrollConfiguration(
-              behavior: NoBlueEffectBehavior(),
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification notification) {
-                  ScrollMetrics metrics = notification.metrics;
-                  // 注册通知回调
-                  if (notification is ScrollStartNotification) {
-                    // 滚动开始
-                  } else if (notification is ScrollUpdateNotification) {
-                    // 滚动位置更新
-                    // 当前位置
-                    // print("metrics.pixels当前值是：${metrics.pixels}");
-                    if (_controller.value.aspectRatio > 1) {
-                      //横向
-                      double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
-                      context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
-                    } else {
-                      //纵向
-                      double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
-                      context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+            // 可能会打开视频出错
+            SelectedMapNotifier notifier = context.watch<SelectedMapNotifier>();
+            print("errorDescription:${_controller.value.errorDescription}");
+            if (_controller.value.errorDescription != null) {
+              notifier.videoErrorMap[widget.id] = true;
+              return Container();
+            } else {
+              notifier.videoErrorMap[widget.id] = false;
+              print("aspectRatio:${_controller.value.aspectRatio}");
+              if (!_controller.value.isPlaying) {
+                //将controller加到列表中
+                notifier.controllerList.add(_controller);
+                _controller.play();
+              }
+              _VideoPreviewSize _previewSize =
+                  _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
+              notifier.setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
+              //初始位置就是(0，0)所以暂不做初始偏移值的处理
+              return ScrollConfiguration(
+                behavior: NoBlueEffectBehavior(),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification notification) {
+                    ScrollMetrics metrics = notification.metrics;
+                    // 注册通知回调
+                    if (notification is ScrollStartNotification) {
+                      // 滚动开始
+                    } else if (notification is ScrollUpdateNotification) {
+                      // 滚动位置更新
+                      // 当前位置
+                      // print("metrics.pixels当前值是：${metrics.pixels}");
+                      if (_controller.value.aspectRatio > 1) {
+                        //横向
+                        double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
+                        context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
+                      } else {
+                        //纵向
+                        double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
+                        context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+                      }
+                    } else if (notification is ScrollEndNotification) {
+                      // 滚动结束
                     }
-                  } else if (notification is ScrollEndNotification) {
-                    // 滚动结束
-                  }
-                  return false;
-                },
-                child: SingleChildScrollView(
-                  //禁止回弹效果
-                  physics: ClampingScrollPhysics(),
-                  //根据比例设置方向
-                  scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: _previewSize.width,
-                    height: _previewSize.height,
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    //禁止回弹效果
+                    physics: ClampingScrollPhysics(),
+                    //根据比例设置方向
+                    scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: _previewSize.width,
+                      height: _previewSize.height,
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
+            }
           } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            // 因为背景会有loading圈所以这里可以不显示loading圈了
+            // return Center(
+            //   child: CircularProgressIndicator(),
+            // );
+            return Container();
           }
         });
   }

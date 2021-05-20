@@ -44,16 +44,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   UserModel userModel;
-  double avatarSize = 87;
 
-  //关注，粉丝，点赞三块的尺寸
-  double userDetaileIconSize = 73;
-
-  //头像和按钮的row的高度
-  double userAvatarAndButtonHeight = 100.5;
-
-  //整个资料版高度
-  double pageHeaderHeight;
+  //头像的高度
+  double userAvatarHeight = 71;
 
   //高斯模糊高度
   double gaussianBlurHeight;
@@ -63,6 +56,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -76,8 +70,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
-    pageHeaderHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 17 + userAvatarAndButtonHeight;
-    gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 45;
+    gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
     _getNewVersion();
     controller.addListener(() {
@@ -86,6 +79,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       }
     });
   }
+
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if (model != null) {
@@ -99,6 +93,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       }
     }
   }
+
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     if (extraInfoModel != null) {
@@ -131,84 +126,110 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       children: [
         _blurrectAvatar(),
         SizedBox(
-          height: 28,
+          height: 20,
         ),
         Container(
           padding: EdgeInsets.only(left: 16, right: 16),
-          child: Column(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: (width - 65) / 3,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "训练记录",
-                      style: AppStyle.textRegular12,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 16.5,
-                  ),
-                  Container(
-                    width: (width - 65) / 3,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "体重记录",
-                      style: AppStyle.textRegular12,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 16.5,
-                  ),
-                  Container(
-                    width: (width - 65) / 3,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "健身相册",
-                      style: AppStyle.textRegular12,
-                    ),
-                  ),
-                ],
-              ),
+              if (AppConfig.needShowTraining)
+                _secondRecordData("训练记录", context.watch<ProfileNotifier>().trainingSeconds,
+                    AppIcon.getAppIcon(AppIcon.profile_record, 18)),
+              if (AppConfig.needShowTraining)
+                SizedBox(
+                  width: 16,
+                ),
+              _secondRecordData(
+                  "体重记录", context.watch<ProfileNotifier>().weight, AppIcon.getAppIcon(AppIcon.profile_weight, 18)),
               SizedBox(
-                height: 8,
+                width: 16,
               ),
-              Row(
-                children: [
-                  _secondData(
-                      AppIcon.getAppIcon(AppIcon.profile_record, 18),
-                      DateTime.fromMillisecondsSinceEpoch(context.watch<ProfileNotifier>().trainingSeconds).minute,
-                      "训练记录"),
-                  Spacer(),
-                  _secondData(
-                      AppIcon.getAppIcon(AppIcon.profile_weight, 18), context.watch<ProfileNotifier>().weight, "体重记录"),
-                  Spacer(),
-                  _secondData(AppIcon.getAppIcon(AppIcon.profile_gallery, 18),
-                      context.watch<ProfileNotifier>().albumNum, "健身相册"),
-                ],
-              ),
-              SizedBox(
-                height: 28,
-              ),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
-              Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
-              // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
-              /*
-              _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
+              _secondRecordData(
+                  "健身相册", context.watch<ProfileNotifier>().albumNum, AppIcon.getAppIcon(AppIcon.profile_gallery, 18)),
             ],
           ),
         ),
+        SizedBox(
+          height: 36,
+        ),
+        if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.nav_scan, 24), "扫一扫"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
+        Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
+        // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
+        /*
+     _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
       ],
+    );
+  }
+
+  Widget _secondRecordData(String title, num number, Widget icons) {
+    double boxWidth;
+    boxWidth = (width - 16 * 3) / 2;
+    if (AppConfig.needShowTraining) boxWidth = (width - 16 * 4) / 3;
+    return InkWell(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$title",
+            style: AppStyle.textMedium14,
+          ),
+          SizedBox(
+            height: 7.5,
+          ),
+          Stack(
+            children: [
+              Container(
+                height: (width - 65) / 3,
+                width: boxWidth,
+                color: AppColor.bgWhite,
+              ),
+              Container(
+                height: (width - 65) / 3,
+                width: boxWidth,
+                padding: AppConfig.needShowTraining ? EdgeInsets.all(0) : EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: AppConfig.needShowTraining ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                  children: [
+                    if (AppConfig.needShowTraining)
+                      SizedBox(
+                        height: 22,
+                      ),
+                    AppConfig.needShowTraining
+                        ? icons
+                        : Text(
+                            number != 0 && number != null ? "$number" : "--",
+                            style: AppStyle.textRegular14,
+                          ),
+                    SizedBox(
+                      height: AppConfig.needShowTraining ? 6.5 : 31,
+                    ),
+                    AppConfig.needShowTraining
+                        ? Text(
+                            number != 0 && number != null ? "$number" : "--",
+                            style: AppStyle.textRegular14,
+                          )
+                        : icons,
+                  ],
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+      onTap: () {
+        onClickListener(title);
+      },
     );
   }
 
   ///这里设置高斯模糊和白蒙层
   Widget _blurrectAvatar() {
     return Container(
-      height: pageHeaderHeight,
+      height: gaussianBlurHeight + 72,
       width: width,
       child: Stack(
         children: [
@@ -237,25 +258,30 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           )),
           Container(
             width: width,
+            height: gaussianBlurHeight + 72,
             clipBehavior: Clip.hardEdge,
             // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
             decoration: BoxDecoration(),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-
-              ///这里是顶部appbar和头像关注
               child: Container(
-                height: pageHeaderHeight,
+                height: gaussianBlurHeight,
                 child: Column(
                   children: [
                     SizedBox(
                       height: ScreenUtil.instance.statusBarHeight,
                     ),
-                    _getTopText(),
                     SizedBox(
-                      height: 17,
+                      height: CustomAppBar.appBarHeight,
+                    ),
+                    SizedBox(
+                      height: 12,
                     ),
                     _getUserImage(),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    _userFollowRow(),
                   ],
                 ),
               ),
@@ -266,44 +292,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这是扫一扫
-  Widget _getTopText() {
-    return Container(
-      padding: const EdgeInsets.only(
-          left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
-      height: CustomAppBar.appBarHeight,
-      width: width,
-      child: Center(
-        child: Row(
-          children: [
-            CustomAppBarIconButton(
-                svgName: AppIcon.nav_scan,
-                iconColor: AppColor.black,
-                onTap: () {
-                  Permission.camera.request().then((value) {
-                    if (value.isGranted) {
-                      AppRouter.navigateToScanCodePage(context, showMyCode: true);
-                    }
-                  });
-                }),
-            Spacer(),
-            CustomAppBarIconButton(
-                svgName: AppIcon.nav_settings,
-                iconColor: AppColor.black,
-                onTap: () {
-                  AppRouter.navigateToSettingHomePage(context);
-                }),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _bottomSetting(Widget icon, String text) {
     return GestureDetector(
       child: Container(
         color: AppColor.transparent,
         height: 48,
+        margin: EdgeInsets.only(left: 16, right: 16),
         child: Center(
           child: Row(
             children: [
@@ -318,19 +312,20 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               Spacer(),
               text == "关于" && haveNewVersion
                   ? ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: 64,
-                  height: 18,
-                  color: AppColor.mainRed,
-                  child: Center(
-                    child: Text(
-                      "有新版本",
-                      style: AppStyle.whiteRegular12,
-                    ),
-                  ),
-                ),
-              ):Container(),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 64,
+                        height: 18,
+                        color: AppColor.mainRed,
+                        child: Center(
+                          child: Text(
+                            "有新版本",
+                            style: AppStyle.whiteRegular12,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(),
               SizedBox(
                 width: 12,
               ),
@@ -351,72 +346,78 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里因为头像和关注等是水平，所以放在一起
   Widget _getUserImage() {
+    double nameMaxWidth = width - userAvatarHeight - 12 - 24 - 49 - 32;
+    double textWidth =
+        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18, nameMaxWidth, 1)
+            .width;
+    if (textWidth > nameMaxWidth) {
+      textWidth = nameMaxWidth;
+    }
     return Container(
-        height: userAvatarAndButtonHeight,
+        height: userAvatarHeight,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
-        child: Stack(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              child: _imgAvatar(),
+            _imgAvatar(),
+            SizedBox(
+              width: 12,
             ),
-            Positioned(
-                right: 0,
-                bottom: 0,
-                child: Row(children: [
-                  InkWell(
-                    child: _textAndNumber(
-                        "关注",
-                        StringUtil.getNumber(context
-                            .watch<UserInteractiveNotifier>()
-                            .value
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
-                            .attentionModel
-                            .followingCount)),
-                    onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 1, context.read<ProfileNotifier>().profile.uid);
-                    },
-                  ),
-                  InkWell(
-                    onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 2, context.read<ProfileNotifier>().profile.uid);
-                    },
-                    child: _textAndNumber(
-                        "粉丝",
-                        StringUtil.getNumber(context
-                            .watch<UserInteractiveNotifier>()
-                            .value
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
-                            .attentionModel
-                            .followerCount)),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
-                          avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
-                          userName: context.read<ProfileNotifier>().profile.nickName);
-                    },
-                    child: _textAndNumber(
-                        "动态",
-                        StringUtil.getNumber(context
-                            .watch<UserInteractiveNotifier>()
-                            .value
-                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
-                            .attentionModel
-                            .feedCount)),
-                  )
-                ]))
+            Container(
+              width: textWidth,
+              child: Text(
+                context.watch<ProfileNotifier>().profile.nickName,
+                style: AppStyle.textMedium18,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+            Container(
+              height: 24,
+              width: 24,
+              color: AppColor.bgBlack,
+            ),
           ],
         ));
+  }
+
+  Widget _userFollowRow() {
+    return Container(
+      child: Row(children: [
+        _textAndNumber(
+            "关注",
+            StringUtil.getNumber(context
+                .watch<UserInteractiveNotifier>()
+                .value
+                .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                .attentionModel
+                .followingCount)),
+        _textAndNumber(
+            "粉丝",
+            StringUtil.getNumber(context
+                .watch<UserInteractiveNotifier>()
+                .value
+                .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                .attentionModel
+                .followerCount)),
+        _textAndNumber(
+            "动态",
+            StringUtil.getNumber(context
+                .watch<UserInteractiveNotifier>()
+                .value
+                .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                .attentionModel
+                .feedCount)),
+      ]),
+    );
   }
 
   ///这是头像
   Widget _imgAvatar() {
     return Container(
-      width: avatarSize,
-      height: avatarSize,
+      width: userAvatarHeight,
+      height: userAvatarHeight,
       child: InkWell(
         onTap: () {
           jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
@@ -429,9 +430,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               print("头像地址:$avatar");
               return ClipOval(
                 child: CachedNetworkImage(
-                  useOldImageOnUrlChange:true,
-                  height: avatarSize,
-                  width: avatarSize,
+                  useOldImageOnUrlChange: true,
+                  height: userAvatarHeight,
+                  width: userAvatarHeight,
                   memCacheWidth: 250,
                   memCacheHeight: 250,
                   imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
@@ -458,49 +459,54 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     print('__________________________$number');
     Size fansCountSize;
     if (text == "粉丝") {
-      fansCountSize = calculateTextWidth(number, AppStyle.textMedium18, userDetaileIconSize, 1).size;
+      fansCountSize = calculateTextWidth(number, AppStyle.textMedium18, width / 3, 1).size;
     }
-    return Container(
-      height: userDetaileIconSize,
-      width: userDetaileIconSize,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Container(
-                width: text == "粉丝" ? fansCountSize.width + 6 : null,
-                child: Text(
-                  number,
-                  style: AppStyle.textMedium18,
+    return InkWell(
+      child: Container(
+        height: 60,
+        width: width / 3,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  width: text == "粉丝" ? fansCountSize.width + 6 : null,
+                  child: Text(
+                    number,
+                    style: AppStyle.textMedium18,
+                  ),
                 ),
-              ),
-              Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-                return Positioned(
-                    top: 0,
-                    right: 0,
-                    child: notifier.value.fansUnreadCount > 0 && text == "粉丝"
-                        ? ClipOval(
-                            child: Container(
-                              height: 8,
-                              width: 8,
-                              color: AppColor.mainRed,
-                            ),
-                          )
-                        : Container());
-              })
-            ],
-          ),
-          SizedBox(
-            height: 2,
-          ),
-          Text(
-            text,
-            style: AppStyle.textRegular12,
-          ),
-        ],
+                Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                  return Positioned(
+                      top: 0,
+                      right: 0,
+                      child: notifier.value.fansUnreadCount > 0 && text == "粉丝"
+                          ? ClipOval(
+                              child: Container(
+                                height: 8,
+                                width: 8,
+                                color: AppColor.mainRed,
+                              ),
+                            )
+                          : Container());
+                })
+              ],
+            ),
+            SizedBox(
+              height: 2,
+            ),
+            Text(
+              text,
+              style: AppStyle.textRegular12,
+            ),
+          ],
+        ),
       ),
+      onTap: () {
+        onClickListener(text);
+      },
     );
   }
 
@@ -546,36 +552,54 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //点击事件Training record
   void onClickListener(String title) async {
-    if ("训练记录" == title) {
-      AppRouter.navigateToTrainingRecordPage(context);
-    } else if ("体重记录" == title) {
-      AppRouter.navigateToWeightRecordPage(context);
-    } else if ("健身相册" == title) {
-      AppRouter.navigateToTrainingGalleryPage(context);
-    } else if ("我的课程" == title) {
-      AppRouter.navigateToMeCoursePage(context);
-    } else if ("我的订单" == title) {
-      AppRouter.navigateToHeightAndWeigetPage(context);
-      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
-    }  else if ("意见反馈" == title) {
-      AppRouter.navigateToSettingFeedBack(context);
-      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
-    }  else if ("关于" == title) {
-      AppRouter.navigateToSettingAbout(context,url,haveNewVersion,content);
-      // AppRouter.navigateToVipPage(context, VipState.RENEW, openOrNot: true);
-    } else if ("测试" == title) {
-      AppRouter.navigateToHeightAndWeigetPage(context);
-      /*showImageDialog(context, onClickListener: () {
-        AppRouter.navigateNewUserPromotionPage(context);
-      });*/
-      // List<MachineModel> machineList = await getMachineStatusInfo();
-      // if (machineList != null && machineList.isNotEmpty) {
-      //   context.read<MachineNotifier>().setMachine(machineList.first);
-      // } else {
-      //   context.read<MachineNotifier>().setMachine(null);
-      // }
-    } else if ("融云" == title) {
-      AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
+    switch (title) {
+      case "关注":
+        AppRouter.navigateToQueryFollowList(context, 1, context.read<ProfileNotifier>().profile.uid);
+        break;
+      case "粉丝":
+        AppRouter.navigateToQueryFollowList(context, 2, context.read<ProfileNotifier>().profile.uid);
+        break;
+      case "动态":
+        jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
+            avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
+            userName: context.read<ProfileNotifier>().profile.nickName);
+        break;
+      case "训练记录":
+        AppRouter.navigateToTrainingRecordPage(context);
+        break;
+      case "体重记录":
+        AppRouter.navigateToWeightRecordPage(context);
+        break;
+      case "健身相册":
+        AppRouter.navigateToTrainingGalleryPage(context);
+        break;
+      case "我的课程":
+        AppRouter.navigateToMeCoursePage(context);
+        break;
+      case "我的订单":
+        AppRouter.navigateToHeightAndWeigetPage(context);
+        break;
+      case "意见反馈":
+        AppRouter.navigateToSettingFeedBack(context);
+        break;
+      case "关于":
+        AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
+        break;
+      case "扫码":
+        Permission.camera.request().then((value) {
+          if (value.isGranted) {
+            AppRouter.navigateToScanCodePage(context, showMyCode: true);
+          }
+        });
+        break;
+      case "设置":
+        AppRouter.navigateToSettingHomePage(context);
+        break;
+      case "测试":
+        break;
+      case "融云":
+        AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
+        break;
     }
   }
 }

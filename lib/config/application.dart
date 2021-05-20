@@ -137,6 +137,12 @@ class Application {
   //系统平台 0-android 1-ios
   static int platform;
 
+  static int openAppTime=0;
+
+  static bool isBackGround=false;
+
+  static bool isShowWidget=false;
+
   //用户所登录的机器
   static MachineModel machine;
 

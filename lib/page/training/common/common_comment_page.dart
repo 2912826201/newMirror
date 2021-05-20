@@ -157,6 +157,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     courseCommentTime = null;
     isHotOrTime = true;
     if (widget.isBottomSheetAndHomePage && widget.commentDtoModel != null) {
+      print('----isBottomSheetAndHomePage---${widget.commentDtoModel
+          .id}---------------isBottomSheetAndHomePage-------${widget.commentDtoModel.content}');
       bottomCommentInit();
     } else {
       print(
@@ -178,14 +180,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     print('=========………………………………………==============底部弹窗进');
     widget.commentDtoModel.itemChose = true;
     if (widget.commentDtoModel.type == 2) {
-      CommentDtoModel model = await getComment(widget.commentDtoModel.targetId);
-      if (model != null) {
-        print('============================@@@@@父评论请求成功');
-        widget.fatherComment = model;
-      }
-      if (mounted) {
-        setState(() {});
-      }
+      getComment(widget.commentDtoModel.targetId).then((model) {
+        if (model != null) {
+          print('============================@@@@@父评论请求成功');
+          widget.fatherComment = model;
+        }
+        if (mounted) {
+          setState(() {});
+        }
+      });
     }
   }
 
@@ -415,7 +418,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         isFirstScroll = false;
       });
     }
-    if (widget.commentDtoModel != null || value.itemChose) {
+    if (widget.commentDtoModel != null && value.itemChose) {
+      print('-----value.itemChose--------value.itemChose--------value.itemChose--${value.content}');
       int milliseconds = 3000;
       if (value.itemChose) {
         Future.delayed(Duration(milliseconds: milliseconds), () {
