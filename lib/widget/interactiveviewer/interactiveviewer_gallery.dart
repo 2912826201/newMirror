@@ -17,7 +17,7 @@ import 'interactiveview_video_or_image_demo.dart';
 /// source is hit after zooming in to disable or enable the swiping gesture of
 /// the [PageView].
 ///
-typedef IndexedFocusedWidgetBuilder = Widget Function(BuildContext context, int index, bool isFocus);
+typedef IndexedFocusedWidgetBuilder = Widget Function(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus);
 
 typedef IndexedTagStringBuilder = String Function(int index);
 
@@ -172,6 +172,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
   void _onPageChanged(int page) {
     setState(() {
       currentIndex = page;
+      setFocus(currentIndex);
     });
     if (_transformationController.value != Matrix4.identity()) {
       // animate the reset for the transformation of the interactive viewer
@@ -206,8 +207,9 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
           controller: _pageController,
           physics: _enablePageView ? null : const NeverScrollableScrollPhysics(),
           itemCount: widget.sources.length,
-          // allowImplicitScrolling: true,
+          allowImplicitScrolling: false,
           itemBuilder: (BuildContext context, int index) {
+            print("currentIndex:$currentIndex,$index");
             return GestureDetector(
               onDoubleTapDown: (TapDownDetails details) {
                 _doubleTapLocalPosition = details.localPosition;
@@ -220,15 +222,28 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
                 if (widget.sources[index].type == "image") {
                   Navigator.of(context).pop();
                 }
-
               },
-              child: widget.itemBuilder(context, index, index == currentIndex),
+              child: widget.itemBuilder(context, index, index == currentIndex,setFocusListener),
             );
           },
         ),
       ),
     );
   }
+
+  Map<int,Function(bool isFocus)> setFocusListenerMap=Map();
+
+
+  setFocusListener(Function(bool isFocus) function,int index){
+    setFocusListenerMap[index]=function;
+  }
+
+  setFocus(int currentIndex){
+    setFocusListenerMap.forEach((key, value) {
+      value(key==currentIndex);
+    });
+  }
+
 
   onDoubleTap() {
     Matrix4 matrix = _transformationController.value.clone();

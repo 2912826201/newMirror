@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -41,17 +42,34 @@ class DemoSourceEntity {
 
 class DemoImageItem extends StatefulWidget {
   final DemoSourceEntity source;
+  final bool isFocus;
+  final int index;
+  final Function(Function(bool isFocus),int) setFocus;
 
-  DemoImageItem(this.source);
+  DemoImageItem(this.source,this.isFocus,this.index,this.setFocus);
 
   @override
-  _DemoImageItemState createState() => _DemoImageItemState();
+  _DemoImageItemState createState() => _DemoImageItemState(isFocus);
 }
 
 class _DemoImageItemState extends State<DemoImageItem> {
+  bool isFocus=false;
+
+
+  _DemoImageItemState(this.isFocus);
+
+  setFocus(bool isFocus){
+    this.isFocus=isFocus;
+    setState(() {
+
+    });
+  }
+
+
   @override
   void initState() {
     super.initState();
+    widget.setFocus(setFocus,widget.index);
     print('initState: ${widget.source.heroId}');
   }
 
@@ -83,24 +101,8 @@ class _DemoImageItemState extends State<DemoImageItem> {
         Align(
           alignment: Alignment.center,
           child: Hero(
-            tag: widget.source.heroId,
-            child: CachedNetworkImage(
-              placeholder: (context, url) {
-                return Image.network(
-                  FileUtil.getImageSlim(widget.source.url),
-                  fit: BoxFit.cover,
-                );
-              },
-
-              /// imageUrl的淡入动画的持续时间。
-              fadeInDuration: Duration(milliseconds: 0),
-              useOldImageOnUrlChange: true,
-              fit: BoxFit.cover,
-              imageUrl: widget.source.url != null ? widget.source.url : "",
-              errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
-              ),
-            ),
+            tag: isFocus?widget.source.heroId:"",
+            child: getImageUi(),
             // child: CachedNetworkImage(
             //   imageUrl: widget.source.url,
             //   fit: BoxFit.contain,
@@ -110,6 +112,57 @@ class _DemoImageItemState extends State<DemoImageItem> {
       ],
     );
   }
+
+  //获取图片的展示
+  Widget getImageUi() {
+    if(widget.source.url==null){
+      return getErrorWidgetImage();
+    }
+    String imagePath=FileUtil.getImageSlim(widget.source.url);
+    // String imagePath=widget.source.url;
+    if(FileUtil.isHaveChatImageFile(imagePath)){
+      print("有:$imagePath");
+      File imageFile = File(FileUtil.getChatImagePath(imagePath));
+      return getImageFile(imageFile);
+    }else{
+      print("没有:$imagePath");
+      return getCachedNetworkImage(imagePath);
+    }
+  }
+
+  Widget getImageFile(File file) {
+    return Image.file(
+      file,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget getCachedNetworkImage(String imageUrl) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl ?? "",
+      fit: BoxFit.cover,
+      fadeInDuration: Duration(milliseconds: 0),
+      placeholder: (context, url) => getPlaceholderImage(),
+      errorWidget: (context, url, error) => getErrorWidgetImage(),
+    );
+  }
+
+  Widget getPlaceholderImage(){
+    String imageSlimPath=FileUtil.getImageSlim(widget.source.url);
+    if(FileUtil.isHaveChatImageFile(imageSlimPath)){
+      File imageFile = File(FileUtil.getChatImagePath(imageSlimPath));
+      return getImageFile(imageFile);
+    }else{
+      return getErrorWidgetImage();
+    }
+  }
+
+  Widget getErrorWidgetImage() {
+    return Container(
+      color: AppColor.bgWhite,
+    );
+  }
+
 }
 
 class DemoVideoItem extends StatefulWidget {
@@ -223,11 +276,12 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
 class DemoVideoItem2 extends StatefulWidget {
   final DemoSourceEntity source;
   final bool isFocus;
-
-  DemoVideoItem2(this.source, {this.isFocus});
+  final int index;
+  final Function(Function(bool isFocus),int) setFocus;
+  DemoVideoItem2(this.source,this.isFocus,this.index,this.setFocus);
 
   @override
-  _DemoVideoItem2State createState() => _DemoVideoItem2State();
+  _DemoVideoItem2State createState() => _DemoVideoItem2State(isFocus);
 }
 
 class _DemoVideoItem2State extends State<DemoVideoItem2> {
@@ -237,19 +291,44 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   Function(BetterPlayerEvent) eventListener;
   bool isShowController = false;
   bool isPlaying = true;
+  bool isFocus = true;
 
-  // _DemoVideoItem2State() {
-  //
-  // }
+
+  _DemoVideoItem2State(this.isFocus);
+
+
+  setFocus(bool isFocus){
+    print("123546213");
+    this.isFocus=isFocus;
+    if(isFocus){
+      if(controller.isVideoInitialized()){
+        controller.play();
+      }
+    }else{
+      if(controller.isVideoInitialized()){
+        controller.pause();
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    print('initState: ${widget.source.heroId}');
+    print('initStatevideo: ${widget.source.heroId}');
+    widget.setFocus(setFocus,widget.index);
     init();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    controller.pause();
+    controller.dispose();
+    controller=null;
+  }
+
   init() async {
+    print("widget.source.url:${widget.source.url}");
     dataSource = BetterPlayerDataSource.network(widget.source.url);
     eventListener = (BetterPlayerEvent event) {
       if (!mounted) {
@@ -267,7 +346,12 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
 
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
-          setState(() {});
+          print("初始化完成");
+          setState(() {
+            if(isFocus){
+              controller.play();
+            }
+          });
           break;
         default:
           break;
@@ -276,7 +360,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: ScreenUtil.instance.width / setAspectRatio(),
-        autoPlay: true,
+        autoPlay: false,
         eventListener: eventListener,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
@@ -304,10 +388,6 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
 // 计算长宽比
   double setAspectRatio() {
@@ -322,7 +402,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
         alignment: Alignment.center,
         children: [
           Hero(
-            tag: widget.source.heroId,
+            tag: isFocus?widget.source.heroId:"",
             child: Container(
               width: ScreenUtil.instance.width,
               height: setAspectRatio(),
@@ -357,6 +437,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                     setPlayOrPause,
                     isShowController,
                     setShowController,
+                    controller.isPlaying(),
                   )
                 : Container(),
           ),
@@ -465,6 +546,7 @@ class VideoControl extends StatefulWidget {
   final Function setPlayOrPause;
   final Function setShowController;
   final bool isShowController;
+  final bool isPlaying;
 
   VideoControl(
     this.setVideoPlayProgress,
@@ -472,10 +554,11 @@ class VideoControl extends StatefulWidget {
     this.setPlayOrPause,
     this.isShowController,
     this.setShowController,
+    this.isPlaying,
   );
 
   @override
-  _VideoControlState createState() => _VideoControlState(isShowController);
+  _VideoControlState createState() => _VideoControlState(isShowController,isPlaying);
 }
 
 class _VideoControlState extends State<VideoControl> {
@@ -484,10 +567,10 @@ class _VideoControlState extends State<VideoControl> {
   String progressString = "00:00";
   String durationString = "00:00";
   bool isDragging = false;
-  bool isPlaying = true;
+  bool isPlaying = false;
   bool isShowController = false;
 
-  _VideoControlState(this.isShowController);
+  _VideoControlState(this.isShowController,this.isPlaying);
 
   @override
   void initState() {

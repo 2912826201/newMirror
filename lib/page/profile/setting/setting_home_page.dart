@@ -101,6 +101,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
                     confirm: AppDialogButton("清除", () {
                       //清掉拍照截图、录制视频、录制语言的文件夹内容
                       _clearCache(AppConfig.getAppPicDir());
+                      _clearCache(AppConfig.getAppChatImageDir());
                       _clearCache(AppConfig.getAppVideoDir());
                       _clearCache(AppConfig.getAppVoiceDir());
                       _clearCache(AppConfig.getAppDownloadDir());

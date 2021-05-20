@@ -15,6 +15,8 @@ import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:mirror/config/config.dart';
+import 'package:mirror/util/string_util.dart';
 
 import 'currency_msg.dart';
 
@@ -283,7 +285,24 @@ class ImgVideoMsg extends StatelessWidget {
           return getImagePlaceHolder();
         }
       } else {
-        return getCachedNetworkImage(FileUtil.getLargeImage(sizeInfoMap["showImageUrl"]));
+        String imageLargePath=FileUtil.getLargeImage(sizeInfoMap["showImageUrl"]);
+        String imageSlimPath=FileUtil.getImageSlim(sizeInfoMap["showImageUrl"]);
+        String imagePath=sizeInfoMap["showImageUrl"];
+        if(FileUtil.isHaveChatImageFile(imageLargePath)){
+          File imageFile = File(FileUtil.getChatImagePath(imageLargePath));
+          if(!FileUtil.isHaveChatImageFile(imagePath)){
+            _saveImageCached(imagePath);
+          }
+          if(!FileUtil.isHaveChatImageFile(imageSlimPath)){
+            _saveImageCached(imageSlimPath);
+          }
+          return getImageFile(imageFile);
+        }else{
+          _saveImageCached(imageLargePath);
+          _saveImageCached(imagePath);
+          _saveImageCached(imageSlimPath);
+          return getCachedNetworkImage(imageLargePath);
+        }
       }
     }
   }
@@ -428,4 +447,10 @@ class ImgVideoMsg extends StatelessWidget {
 
     }
   }
+
+
+  _saveImageCached(String imageUrl){
+    FileUtil.saveNetworkImageCache(imageUrl);
+  }
+
 }
