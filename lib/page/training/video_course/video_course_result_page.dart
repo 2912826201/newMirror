@@ -12,6 +12,7 @@ import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -26,8 +27,8 @@ import 'package:provider/provider.dart';
 /// Created by yangjiayi on 2021/1/14.
 
 class VideoCourseResultPage extends StatefulWidget {
-  final TrainingCompleteResultModel result;
-  final CourseModel course;
+  TrainingCompleteResultModel result;
+  CourseModel course;
 
   VideoCourseResultPage(this.result, this.course, {Key key}) : super(key: key);
 
@@ -40,10 +41,28 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
   bool _isFeedbacking = false;
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE,registerName: VIDEO_COURSE_RESULT);
+  }
+
+  @override
   void initState() {
     super.initState();
     //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
+    EventBus.getDefault().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE,registerName: VIDEO_COURSE_RESULT);
   }
+
+
+  setData(List list){
+    widget.result=list[0];
+    widget.course=list[1];
+    setState(() {
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {

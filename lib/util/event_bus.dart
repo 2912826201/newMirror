@@ -165,6 +165,8 @@ const String EVENTBUS_TRAINING_PAGE = "training_page";
 const String EVENTBUS_REMOTE_CONTROLLER_PAGE = "remote_controller_page";
 // 相册页
 const String EVENTBUS_GALLERY_PAGE = "gallery_page";
+// 视频课结果页
+const String VIDEO_COURSE_RESULT_PAGE = "video_course_result_page";
 
 ///广播类型
 //发布动态
@@ -237,3 +239,5 @@ const String GET_MACHINE_STATUS_INFO = "get_machine_status_info";
 const String SHOW_IMAGE_DIALOG = "show_new_user_image_dialog";
 //相册页离开页面
 const String GALLERY_LEAVE = "gallery_leave";
+//视频课结果页
+const String VIDEO_COURSE_RESULT = "video_course_result";
