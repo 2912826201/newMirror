@@ -111,7 +111,7 @@ class _BetterPlayerState extends State<BetterPlayer> with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    widget.controller.setAppLifecycleState(state);
+    widget.controller?.setAppLifecycleState(state);
   }
 }
 
