@@ -429,6 +429,7 @@ class MessageManager {
           break;
         case 10:
           //10-开始训练-StartTraining
+          print("开始训练-StartTraining");
           _startTraining(dataMap);
           break;
         default:
@@ -716,6 +717,24 @@ class MessageManager {
 
   //机器训练开始
   static void _startTraining(Map<String, dynamic> dataMap) {
+    if(Application.isBackGround){
+      return;
+    }
+    getMachineStatusInfo().then((list) {
+      if (list != null && list.isNotEmpty) {
+        MachineModel model = list.first;
+        if (model != null && model.isConnect == 1 && model.inGame == 1) {
+          if(dataMap["courseType"]==model.type) {
+            _startTrainingCourse(dataMap);
+          }
+          return;
+        }
+      }
+    }).catchError((e) {
+    });
+  }
+
+  static _startTrainingCourse(Map<String, dynamic> dataMap){
     if (dataMap["courseId"] == null || dataMap["courseType"] == null) {
       print("dataMap[courseType]:${dataMap["courseType"]},courseId：${dataMap["courseId"]}");
       return;
@@ -747,6 +766,7 @@ class MessageManager {
       }
     }
   }
+
 
   //机器训练进度的返回---只有视频课程
   static void _trainingSchedule(TrainingScheduleModel scheduleModel) {

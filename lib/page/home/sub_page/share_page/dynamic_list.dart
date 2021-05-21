@@ -86,6 +86,10 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   pageName: widget.pageName,
                   mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
                   deleteFeedChanged: (id) {
+                    if(widget.topicId != null) {
+                      // 话题详情页删除动态
+                      EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
+                    }
                     widget.deleteFeedChanged(id);
                   },
                   removeFollowChanged: (m) {

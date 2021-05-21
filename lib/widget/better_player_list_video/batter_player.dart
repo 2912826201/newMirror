@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 typedef BetterPlayerExposureCallback = void Function( double visibilityFraction);
+// ignore: must_be_immutable
 class BetterPlayer extends StatefulWidget {
-  const BetterPlayer({Key key, @required this.controller})
+  BetterPlayer({Key key, @required this.controller})
       : assert(controller != null, 'You must provide a better player controller'),
         super(key: key);
 
@@ -36,7 +37,7 @@ class BetterPlayer extends StatefulWidget {
         ),
       );
 
-  final BetterPlayerController controller;
+  BetterPlayerController controller;
   @override
   _BetterPlayerState createState() {
     return _BetterPlayerState();
@@ -83,6 +84,7 @@ class _BetterPlayerState extends State<BetterPlayer> with WidgetsBindingObserver
     ///full screen is on, then full screen route must be pop and return to normal
     ///state.
     widget.controller.dispose();
+    widget.controller=null;
     super.dispose();
   }
 
@@ -109,7 +111,7 @@ class _BetterPlayerState extends State<BetterPlayer> with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    widget.controller.setAppLifecycleState(state);
+    widget.controller?.setAppLifecycleState(state);
   }
 }
 
