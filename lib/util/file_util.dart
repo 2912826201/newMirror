@@ -353,13 +353,11 @@ class FileUtil {
 
       if(!StringUtil.isURL(imageUrl)) throw '不是网址';
 
+
       /// 权限检测
-      PermissionStatus storageStatus = await Permission.storage.status;
-      if (storageStatus != PermissionStatus.granted) {
-        storageStatus = await Permission.storage.request();
-        if (storageStatus != PermissionStatus.granted) {
-          throw '无法存储图片，请先授权！';
-        }
+      bool isGranted = (await Permission.storage.status)?.isGranted;
+      if(!isGranted){
+        throw '无法存储图片，请先授权！';
       }
 
       /// 保存的图片数据
