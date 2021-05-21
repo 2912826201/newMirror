@@ -46,7 +46,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         body: Container(height: height, width: width, color: AppColor.white, child: _columnLayOut()));
   }
 
-  ///关注的布局
   Widget _columnLayOut() {
     return Column(
       children: [

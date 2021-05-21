@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide TabBar;
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
