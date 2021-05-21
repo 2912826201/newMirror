@@ -92,7 +92,7 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   }
 
 // 更新全局动态map
-  void updateFeedMap(List<HomeFeedModel> _feedList) {
+  void updateFeedMap(List<HomeFeedModel> _feedList, {bool needNotify = true}) {
     _feedList.forEach((element) {
       value._feedMap[element.id] = element;
       value._feedMap[element.id].hotComment = [];
@@ -104,7 +104,9 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
         value._feedMap[element.id].hotComment.addAll(element.comments);
       }
     });
-    notifyListeners();
+    if(needNotify){
+      notifyListeners();
+    }
   }
 
   // 插入动态Map

@@ -301,14 +301,25 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     print("123546213");
     this.isFocus=isFocus;
     if(isFocus){
-      if(controller.isVideoInitialized()){
-        controller.play();
-        resetControllerListener();
+      if(controller!=null) {
+        if (controller.isVideoInitialized()) {
+          controller.play();
+          resetControllerListener();
+        }
+      }else{
+        init();
       }
     }else{
-      if(controller.isVideoInitialized()){
-        controller.pause();
-        resetControllerListener();
+      if(controller!=null) {
+        if (controller.isVideoInitialized()) {
+          controller.pause();
+          controller.dispose();
+          controller = null;
+          resetControllerListener();
+          if(mounted){
+            setState(() {});
+          }
+        }
       }
     }
   }
@@ -318,15 +329,23 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     super.initState();
     print('initStatevideo: ${widget.source.heroId}');
     widget.setFocus(setFocus,widget.index);
-    init();
+    if(isFocus) {
+      init();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.pause();
-    controller.dispose();
-    controller=null;
+    try{
+      if(controller!=null) {
+        controller.pause();
+        controller.dispose();
+        controller = null;
+      }
+    }catch (e){
+
+    }
   }
 
   init() async {
@@ -393,6 +412,12 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
 
 // 计算长宽比
   double setAspectRatio() {
+    if(widget.source.width==null||widget.source.width<1){
+      return ScreenUtil.instance.height;
+    }
+    if(widget.source.height==null||widget.source.height<1){
+      return ScreenUtil.instance.height;
+    }
     double videoWidth = ScreenUtil.instance.width;
     return (videoWidth / widget.source.width) * widget.source.height;
   }
@@ -408,7 +433,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
             child: Container(
               width: ScreenUtil.instance.width,
               height: setAspectRatio(),
-              child: controller.isVideoInitialized()
+              child: controller!=null&&controller.isVideoInitialized()
                   ? BetterPlayer(
                       controller: controller,
                     )
@@ -432,7 +457,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
           Container(
             width: ScreenUtil.instance.width,
             height: ScreenUtil.instance.height,
-            child: controller.isVideoInitialized()
+            child: controller!=null&&controller.isVideoInitialized()
                 ? VideoControl(
                     setVideoPlayProgress,
                     onDragCompletedListener,
@@ -595,7 +620,11 @@ class _VideoControlState extends State<VideoControl> {
 
 
   resetControllerListener(){
-    this.isPlaying= widget.controller.isPlaying();
+    if(widget.controller!=null) {
+      this.isPlaying = widget.controller.isPlaying();
+    }else{
+      this.isPlaying=false;
+    }
     if(mounted){
       setState(() {
 
@@ -627,7 +656,7 @@ class _VideoControlState extends State<VideoControl> {
                       visible: !isPlaying,
                       child: AppIconButton(
                         iconSize: 48,
-                        svgName: AppIcon.play_circle_48,
+                        pngName: "assets/png/play_circle_48.png",
                         buttonHeight: 60,
                         buttonWidth: 60,
                         onTap: () {

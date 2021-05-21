@@ -7,6 +7,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/search_history_db_helper.dart';
@@ -55,17 +56,18 @@ class SearchPage extends StatelessWidget {
                       SearchHeader(
                         focusNode: focusNode,
                       ),
-                  InkWell(
-                  onTap: (){
-                    //点击空白处移除焦点
-                  focusNode.unfocus();
-                  },
-                  child: context.watch<SearchEnterNotifier>().enterText.length > 0
-                          ? SearchTabBarView(
-                              focusNode: focusNode,
-                              defaultIndex: defaultIndex,
-                            )
-                          : SearchMiddleView(),)
+                      InkWell(
+                        onTap: () {
+                          //点击空白处移除焦点
+                          focusNode.unfocus();
+                        },
+                        child: context.watch<SearchEnterNotifier>().enterText.length > 0
+                            ? SearchTabBarView(
+                                focusNode: focusNode,
+                                defaultIndex: defaultIndex,
+                              )
+                            : SearchMiddleView(),
+                      )
                     ],
                   );
                 })));
@@ -201,8 +203,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
+
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -213,16 +217,18 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
   @override
   void initState() {
-    // 合并请求
-    Future.wait([
-      // 请求推荐话题接口
-      getRecommendTopic(size: 20,token: token),
-      // 请求历史记录
+    List<Future> requestList = [];
+    // 请求推荐话题接口
+    requestList.add(getRecommendTopic(size: 20, token: token));
+    // 请求历史记录
+    requestList.add(
       SearchHistoryDBHelper().querySearchHistory(
           context.read<ProfileNotifier>().profile != null ? context.read<ProfileNotifier>().profile.uid : -1),
-      recommendCourse(token),
-      // 请求热门课程
-    ]).then((results) {
+    );
+    // 请求热门课程
+    if (AppConfig.needShowTraining) requestList.add(recommendCourse(token));
+    // 合并请求
+    Future.wait(requestList).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
       if (results[0] != null) {
         DataResponseModel model = results[0];
@@ -235,11 +241,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted && context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
-      List<CourseModel> liveList = [];
-      if (results[2] != null) {
-        liveList = results[2];
-        if (liveList.isNotEmpty) {
-          liveVideoList.addAll(liveList);
+      if (AppConfig.needShowTraining) {
+        List<CourseModel> liveList = [];
+        if (results[2] != null) {
+          liveList = results[2];
+          if (liveList.isNotEmpty) {
+            liveVideoList.addAll(liveList);
+          }
         }
       }
       if (mounted) {
@@ -586,6 +594,7 @@ class SearchTabBarView extends StatefulWidget {
 class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerProviderStateMixin {
   // taBar和TabBarView必要的
   TabController controller;
+  List<Widget> tabList = [];
 
   @override
   void dispose() {
@@ -595,8 +604,13 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
   @override
   void initState() {
-    controller = TabController(length: 5, vsync: this, initialIndex: widget.defaultIndex);
+    controller =
+        TabController(length: AppConfig.needShowTraining ? 5 : 4, vsync: this, initialIndex: widget.defaultIndex);
     super.initState();
+    tabList = [Text("综合"), Text("话题"), Text("动态"), Text("用户 ")];
+    if (AppConfig.needShowTraining) {
+      tabList.insert(1, Text("课程"));
+    }
   }
 
   @override
@@ -609,7 +623,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           width: ScreenUtil.instance.width,
           child: TabBar(
             controller: controller,
-            tabs: const [Text("综合"), Text("课程"), Text("话题"), Text("动态"), Text("用户 ")],
+            tabs: tabList,
             labelStyle: TextStyle(fontSize: 18),
             labelColor: Colors.black,
             unselectedLabelStyle: TextStyle(fontSize: 16),
@@ -633,10 +647,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   focusNode: widget.focusNode,
                   controller: controller,
                   textController: context.watch<SearchEnterNotifier>().textController),
-              SearchCourse(
-                  keyWord: context.watch<SearchEnterNotifier>().enterText,
-                  focusNode: widget.focusNode,
-                  textController: context.watch<SearchEnterNotifier>().textController),
+              if (AppConfig.needShowTraining)
+                SearchCourse(
+                    keyWord: context.watch<SearchEnterNotifier>().enterText,
+                    focusNode: widget.focusNode,
+                    textController: context.watch<SearchEnterNotifier>().textController),
               SearchTopic(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
                   focusNode: widget.focusNode,

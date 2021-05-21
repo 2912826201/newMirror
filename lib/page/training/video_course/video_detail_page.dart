@@ -994,7 +994,7 @@ class VideoDetailPageState extends XCState {
     }
     context.read<FeedFlowDataNotifier>().pageSelectPosition = onClickPosition;
     double scrollHeight = specifyItemHeight(onClickPosition);
-    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id, 7, scrollHeight, pageName, duration: 1000);
+    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id, 7, scrollHeight, pageName, duration: 0);
   }
 
   //登陆终端按钮

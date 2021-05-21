@@ -153,11 +153,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           height: 36,
         ),
         if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.nav_scan, 24), "扫一扫"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "扫一扫"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
-        Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
+        // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
@@ -291,7 +291,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
-
+  //底部功能列表
   Widget _bottomSetting(Widget icon, String text) {
     return GestureDetector(
       child: Container(
@@ -344,16 +344,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这里因为头像和关注等是水平，所以放在一起
+  //头像昵称
   Widget _getUserImage() {
-    double nameMaxWidth = width - userAvatarHeight - 12 - 24 - 49 - 32;
-    double textWidth =
-        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18, nameMaxWidth, 1)
-            .width;
-    if (textWidth > nameMaxWidth) {
-      textWidth = nameMaxWidth;
-    }
-    return Container(
+    return InkWell(
+      onTap: (){
+        jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
+            avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
+            userName: context.read<ProfileNotifier>().profile.nickName);
+      },
+      child: Container(
         height: userAvatarHeight,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -364,8 +363,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             SizedBox(
               width: 12,
             ),
-            Container(
-              width: textWidth,
+            Expanded(
               child: Text(
                 context.watch<ProfileNotifier>().profile.nickName,
                 style: AppStyle.textMedium18,
@@ -373,15 +371,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 maxLines: 1,
               ),
             ),
-            Container(
-              height: 24,
-              width: 24,
-              color: AppColor.bgWhite,
-            ),
+            SizedBox(width: 72.5,)
           ],
-        ));
+        )),);
   }
-
+  //关注，粉丝，动态数
   Widget _userFollowRow() {
     return Container(
       child: Row(children: [
@@ -418,13 +412,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Container(
       width: userAvatarHeight,
       height: userAvatarHeight,
-      child: InkWell(
-        onTap: () {
-          jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
-              avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
-              userName: context.read<ProfileNotifier>().profile.nickName);
-        },
-        child: Stack(
+      child: Stack(
           children: [
             Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
               print("头像地址:$avatar");
@@ -450,7 +438,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             }),
           ],
         ),
-      ),
+
     );
   }
 
@@ -512,7 +500,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
 
 
-  //点击事件Training record
+  //点击事件
   void onClickListener(String title) async {
     switch (title) {
       case "关注":

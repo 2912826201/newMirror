@@ -147,7 +147,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       List<HomeFeedModel> feedModel = [];
       try {
         // 更新数据
-        context.read<FeedMapNotifier>().updateFeedMap(feedList);
+        context.read<FeedMapNotifier>().updateFeedMap(feedList, needNotify: mounted);
       } catch (e) {
         print('-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$e');
       }

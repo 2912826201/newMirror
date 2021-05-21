@@ -2065,7 +2065,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
-      ToastShow.show(msg: "删除-第$position个", context: _context);
+      print("删除-第$position个");
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
