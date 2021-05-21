@@ -334,13 +334,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                                 type: 2,
                                 id: widget.userId,
                                 isMySelf: isMselfId,
-                                pageKey: Key("tab0"),
+                                pageKey: Key("Tab0"),
                               ),
                               ProfileDetailsList(
                                 type: 6,
                                 isMySelf: isMselfId,
                                 id: widget.userId,
-                                pageKey: Key("tab1"),
+                                pageKey: Key("Tab1"),
                               )
                             ],
                           )

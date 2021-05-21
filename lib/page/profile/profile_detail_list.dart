@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
+import 'package:flutter/cupertino.dart'hide NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -193,7 +193,38 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   Widget _showDataUi() {
     return !listNoData
-        ? ListView.builder(
+        ? CustomScrollView(
+      slivers: [
+        SliverList(
+        delegate: SliverChildBuilderDelegate((content, index) {
+           HomeFeedModel model;
+              model = followModel[index];
+              return ExposureDetector(
+                key: widget.type == 2
+                    ? Key('profile_feed_${followModel[index].id}')
+                    : Key('profile_like_${followModel[index].id}'),
+                child: DynamicListLayout(
+                    index: index,
+                    pageName: "profileDetails",
+                    isShowRecommendUser: false,
+                    isShowConcern: false,
+                    model: model,
+                    isMySelf: widget.isMySelf,
+                    mineDetailId: widget.id,
+                    removeFollowChanged: (model) {},
+                    deleteFeedChanged: (feedId) {}),
+                onExposure: (visibilityInfo) {
+                  // 如果没有显示
+                  if (model.isShowInputBox) {
+                    context.read<FeedMapNotifier>().showInputBox(model.id);
+                  }
+                  print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                },
+              );
+            },
+            childCount: followModel.length))
+      ],
+    )/*ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
@@ -225,7 +256,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
               );
-            })
+            })*/
         :  ListView(
               children: [
                 Center(
