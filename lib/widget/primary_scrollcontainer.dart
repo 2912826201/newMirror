@@ -196,4 +196,5 @@ class ScrollControllerWrapper implements ScrollController {
   bool operator ==(other) {
     return hashCode == (other.hashCode);
   }
+
 }
