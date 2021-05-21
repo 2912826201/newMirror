@@ -656,7 +656,7 @@ class _VideoControlState extends State<VideoControl> {
                       visible: !isPlaying,
                       child: AppIconButton(
                         iconSize: 48,
-                        svgName: AppIcon.play_circle_48,
+                        pngName: "assets/png/play_circle_48.png",
                         buttonHeight: 60,
                         buttonWidth: 60,
                         onTap: () {

@@ -381,7 +381,12 @@ class ImgVideoMsg extends StatelessWidget {
       offstage: isImgOrVideo,
       child: Container(
         child: Center(
-          child: AppIcon.getAppIcon(AppIcon.play_circle_28, 28),
+          child: Image.asset(
+            "assets/png/play_circle_28.png",
+            height: 28,
+            width: 28,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );

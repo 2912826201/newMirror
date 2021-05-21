@@ -71,8 +71,6 @@ class AppIcon {
   static const String volume = "assets/svg/volume.svg";
   static const String luminance = "assets/svg/luminance.svg";
   static const String filter = "assets/svg/filter.svg";
-  static const String play_circle_28 = "assets/svg/play_circle_28.svg";
-  static const String play_circle_48 = "assets/svg/play_circle_48.svg";
   static const String play_28 = "assets/svg/play_28.svg";
   static const String play_48 = "assets/svg/play_48.svg";
   static const String pause_28 = "assets/svg/pause_28.svg";
@@ -178,6 +176,7 @@ class AppIconButton extends StatefulWidget {
     Key key,
     this.icon,
     this.svgName,
+    this.pngName,
     @required this.iconSize,
     this.buttonHeight,
     this.buttonWidth,
@@ -185,12 +184,13 @@ class AppIconButton extends StatefulWidget {
     this.bgColor = AppColor.transparent,
     this.isCircle = false,
     this.onTap,
-  })  : assert(icon != null || svgName != null),
+  })  : assert(icon != null || svgName != null || pngName != null),
         assert(iconSize != null),
         super(key: key);
 
   final IconData icon;
   final String svgName;
+  final String pngName;
   final Color iconColor;
   final Color bgColor;
   final Function() onTap;
@@ -213,11 +213,17 @@ class _AppIconButtonState extends State<AppIconButton> {
       child: isPressed
           ? Opacity(
               opacity: 0.5,
-              child: widget.icon != null ? _buildIcon() : _buildAppIcon(),
+              child: widget.icon != null
+                  ? _buildIcon()
+                  : widget.pngName != null
+                      ? _buildPngIcon()
+                      : _buildAppIcon(),
             )
           : widget.icon != null
               ? _buildIcon()
-              : _buildAppIcon(),
+              : widget.pngName != null
+                  ? _buildPngIcon()
+                  : _buildAppIcon(),
       onTapDown: (details) {
         setState(() {
           isPressed = true;
@@ -241,9 +247,7 @@ class _AppIconButtonState extends State<AppIconButton> {
     return Container(
       width: widget.buttonWidth == null ? widget.iconSize : widget.buttonWidth,
       height: widget.buttonHeight == null ? widget.iconSize : widget.buttonHeight,
-      color: widget.isCircle
-          ? null
-          : widget.bgColor,
+      color: widget.isCircle ? null : widget.bgColor,
       decoration: widget.isCircle
           ? BoxDecoration(
               color: widget.bgColor,
@@ -268,6 +272,27 @@ class _AppIconButtonState extends State<AppIconButton> {
       color: widget.iconColor,
       bgColor: widget.bgColor,
       isCircle: widget.isCircle,
+    );
+  }
+
+  Widget _buildPngIcon() {
+    return Container(
+      width: widget.buttonWidth == null ? widget.iconSize : widget.buttonWidth,
+      height: widget.buttonHeight == null ? widget.iconSize : widget.buttonHeight,
+      color: widget.isCircle ? null : widget.bgColor,
+      decoration: widget.isCircle
+          ? BoxDecoration(
+              color: widget.bgColor,
+              shape: BoxShape.circle,
+            )
+          : null,
+      alignment: Alignment.center,
+      child: Image.asset(
+        widget.pngName,
+        width: widget.iconSize,
+        height: widget.iconSize,
+        fit: BoxFit.contain,
+      ),
     );
   }
 }
