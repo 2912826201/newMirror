@@ -153,7 +153,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           height: 36,
         ),
         if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.nav_scan, 24), "扫一扫"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "扫一扫"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
