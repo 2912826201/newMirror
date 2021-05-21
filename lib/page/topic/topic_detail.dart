@@ -2,11 +2,11 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
 // hide NestedScrollView, NestedScrollViewState;
 import 'package:flutter/material.dart';
+import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 
 // hide NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -32,6 +32,8 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -83,7 +85,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     "assets/png/pic_topic_banner_element_5.png",
     "assets/png/pic_topic_banner_element_6.png"
   ];
-
+  List<TopicDtoModel> topicDtoModelList = [];
   @override
   void dispose() {
     _tabController.dispose();
@@ -142,6 +144,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 请求话题详情页信息
   requestTopicInfo() async {
     model = await getTopicInfo(topicId: widget.topicId);
+    topicDtoModelList.add(model);
     setState(() {});
   }
 
@@ -153,7 +156,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 1;
       });
       if (widget.isTopicList) {
-        context.read<UserInteractiveNotifier>().removeListId(model.id,isAdd: false);
+        context.read<UserInteractiveNotifier>().removeListId(model.id, isAdd: false);
       }
     } else {
       ToastShow.show(msg: "关注失败", context: context);
@@ -259,45 +262,48 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                           25 +
                                           13)
                                       : 13,
-                                  child: Container(
-                                    width: 71,
-                                    height: 71,
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: const BoxDecoration(
-                                        // 圆角
-                                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                        color: AppColor.white),
-                                    child: Container(
-                                        decoration: BoxDecoration(
-                                            // 圆角
-                                            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                            // image: DecorationImage(
-                                            //     image: NetworkImage(widget.model.avatarUrl + "?imageslim"  ??
-                                            //         "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"+"?imageslim" ),
-                                            //     fit: BoxFit.cover),
-                                            color: AppColor.white),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: CachedNetworkImage(
-                                          // 调整磁盘缓存中图像大小
-                                          // maxHeightDiskCache: 150,
-                                          // maxWidthDiskCache: 150,
-                                          // 指定缓存宽高
-                                          memCacheWidth: 150,
-                                          memCacheHeight: 150,
-                                          imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
-                                              ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
-                                              : "",
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => Container(
-                                            color: AppColor.bgWhite,
-                                          ),
-                                          errorWidget: (context, url, e) {
-                                            return Container(
-                                              color: AppColor.bgWhite,
+                                  child: Hero(
+                                      tag: model.id,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              HeroDialogRoute<void>(builder: (BuildContext context) {
+                                                return InteractiveviewerGallery(sources:topicDtoModelList , initIndex: 0, itemBuilder: itemBuilder);
+                                              }),
                                             );
                                           },
-                                        )),
-                                  )),
+                                          child: Container(
+                                            width: 71,
+                                            height: 71,
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: const BoxDecoration(
+                                                // 圆角
+                                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                                color: AppColor.white),
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    // 圆角
+                                                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                                                    color: AppColor.white),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: CachedNetworkImage(
+                                                  // 指定缓存宽高
+                                                  memCacheWidth: 150,
+                                                  memCacheHeight: 150,
+                                                  imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
+                                                      ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
+                                                      : "",
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) => Container(
+                                                    color: AppColor.bgWhite,
+                                                  ),
+                                                  errorWidget: (context, url, e) {
+                                                    return Container(
+                                                      color: AppColor.bgWhite,
+                                                    );
+                                                  },
+                                                )),
+                                          )))),
                               // 话题内容
                               Positioned(
                                   bottom: model.description != null
@@ -441,6 +447,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 ),
               ));
   }
+  // 大图预览内部的Item
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus) {
+    TopicDtoModel topicDtoModel = topicDtoModelList[index];
+    DemoSourceEntity sourceEntity = DemoSourceEntity(topicDtoModel.id," image", topicDtoModel.avatarUrl.coverUrl,);
+    print("____sourceEntity:${sourceEntity.toString()}");
+    return DemoImageItem(sourceEntity,isFocus,index,setFocus);
+  }
 
   Widget appBar() {
     return StreamBuilder<TopicUiChangeModel>(
@@ -556,7 +569,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
-          if(!context.read<TokenNotifier>().isLoggedIn){
+          if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
             return;
           }

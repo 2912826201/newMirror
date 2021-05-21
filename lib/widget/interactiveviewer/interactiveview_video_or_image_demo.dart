@@ -1,10 +1,16 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/seekbar.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
@@ -36,17 +42,34 @@ class DemoSourceEntity {
 
 class DemoImageItem extends StatefulWidget {
   final DemoSourceEntity source;
+  final bool isFocus;
+  final int index;
+  final Function(Function(bool isFocus),int) setFocus;
 
-  DemoImageItem(this.source);
+  DemoImageItem(this.source,this.isFocus,this.index,this.setFocus);
 
   @override
-  _DemoImageItemState createState() => _DemoImageItemState();
+  _DemoImageItemState createState() => _DemoImageItemState(isFocus);
 }
 
 class _DemoImageItemState extends State<DemoImageItem> {
+  bool isFocus=false;
+
+
+  _DemoImageItemState(this.isFocus);
+
+  setFocus(bool isFocus){
+    this.isFocus=isFocus;
+    setState(() {
+
+    });
+  }
+
+
   @override
   void initState() {
     super.initState();
+    widget.setFocus(setFocus,widget.index);
     print('initState: ${widget.source.heroId}');
   }
 
@@ -78,24 +101,8 @@ class _DemoImageItemState extends State<DemoImageItem> {
         Align(
           alignment: Alignment.center,
           child: Hero(
-            tag: widget.source.heroId,
-            child: CachedNetworkImage(
-              placeholder: (context, url) {
-                return Image.network(
-                  FileUtil.getImageSlim(widget.source.url),
-                  fit: BoxFit.cover,
-                );
-              },
-
-              /// imageUrl的淡入动画的持续时间。
-              fadeInDuration: Duration(milliseconds: 0),
-              useOldImageOnUrlChange: true,
-              fit: BoxFit.cover,
-              imageUrl: widget.source.url != null ? widget.source.url : "",
-              errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
-              ),
-            ),
+            tag: isFocus?widget.source.heroId:"",
+            child: getImageUi(),
             // child: CachedNetworkImage(
             //   imageUrl: widget.source.url,
             //   fit: BoxFit.contain,
@@ -105,6 +112,57 @@ class _DemoImageItemState extends State<DemoImageItem> {
       ],
     );
   }
+
+  //获取图片的展示
+  Widget getImageUi() {
+    if(widget.source.url==null){
+      return getErrorWidgetImage();
+    }
+    String imagePath=FileUtil.getImageSlim(widget.source.url);
+    // String imagePath=widget.source.url;
+    if(FileUtil.isHaveChatImageFile(imagePath)){
+      print("有:$imagePath");
+      File imageFile = File(FileUtil.getChatImagePath(imagePath));
+      return getImageFile(imageFile);
+    }else{
+      print("没有:$imagePath");
+      return getCachedNetworkImage(imagePath);
+    }
+  }
+
+  Widget getImageFile(File file) {
+    return Image.file(
+      file,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget getCachedNetworkImage(String imageUrl) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl ?? "",
+      fit: BoxFit.cover,
+      fadeInDuration: Duration(milliseconds: 0),
+      placeholder: (context, url) => getPlaceholderImage(),
+      errorWidget: (context, url, error) => getErrorWidgetImage(),
+    );
+  }
+
+  Widget getPlaceholderImage(){
+    String imageSlimPath=FileUtil.getImageSlim(widget.source.url);
+    if(FileUtil.isHaveChatImageFile(imageSlimPath)){
+      File imageFile = File(FileUtil.getChatImagePath(imageSlimPath));
+      return getImageFile(imageFile);
+    }else{
+      return getErrorWidgetImage();
+    }
+  }
+
+  Widget getErrorWidgetImage() {
+    return Container(
+      color: AppColor.bgWhite,
+    );
+  }
+
 }
 
 class DemoVideoItem extends StatefulWidget {
@@ -218,11 +276,12 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
 class DemoVideoItem2 extends StatefulWidget {
   final DemoSourceEntity source;
   final bool isFocus;
-
-  DemoVideoItem2(this.source, {this.isFocus});
+  final int index;
+  final Function(Function(bool isFocus),int) setFocus;
+  DemoVideoItem2(this.source,this.isFocus,this.index,this.setFocus);
 
   @override
-  _DemoVideoItem2State createState() => _DemoVideoItem2State();
+  _DemoVideoItem2State createState() => _DemoVideoItem2State(isFocus);
 }
 
 class _DemoVideoItem2State extends State<DemoVideoItem2> {
@@ -230,27 +289,71 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
+  bool isShowController = false;
+  bool isPlaying = true;
+  bool isFocus = true;
 
-  // _DemoVideoItem2State() {
-  //
-  // }
+
+  _DemoVideoItem2State(this.isFocus);
+
+
+  setFocus(bool isFocus){
+    print("123546213");
+    this.isFocus=isFocus;
+    if(isFocus){
+      if(controller.isVideoInitialized()){
+        controller.play();
+        resetControllerListener();
+      }
+    }else{
+      if(controller.isVideoInitialized()){
+        controller.pause();
+        resetControllerListener();
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    print('initState: ${widget.source.heroId}');
+    print('initStatevideo: ${widget.source.heroId}');
+    widget.setFocus(setFocus,widget.index);
     init();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    controller.pause();
+    controller.dispose();
+    controller=null;
+  }
+
   init() async {
+    print("widget.source.url:${widget.source.url}");
     dataSource = BetterPlayerDataSource.network(widget.source.url);
     eventListener = (BetterPlayerEvent event) {
       if (!mounted) {
         return;
       }
+
+      if (betterPlayerEventListener != null) {
+        betterPlayerEventListener(event);
+      }
+      // event.parameters.forEach((key, value) {
+      //   print("value:$key,$value,${value is Duration}");
+      // });
+
+      // print("BetterPlayerEvent:${event.parameters.toString()}");
+
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
-          setState(() {});
+          print("初始化完成");
+          setState(() {
+            if(isFocus){
+              controller.play();
+            }
+          });
           break;
         default:
           break;
@@ -259,7 +362,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: ScreenUtil.instance.width / setAspectRatio(),
-        autoPlay: true,
+        autoPlay: false,
         eventListener: eventListener,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
@@ -279,14 +382,14 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
         ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
+          // enableSkips:false,
+          // enableMute:false,
+          // enableFullscreen:false,
+          // controlBarColor:AppColor.transparent,
         ));
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
 // 计算长宽比
   double setAspectRatio() {
@@ -296,35 +399,415 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Hero(
-          tag: widget.source.heroId,
-          child: Container(
-            width: ScreenUtil.instance.width,
-            height: setAspectRatio(),
-            child: controller.isVideoInitialized()
-                ? BetterPlayer(
-                    controller: controller,
-                  )
-                : CachedNetworkImage(
-                    imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
-                    width: ScreenUtil.instance.width,
-                    height: setAspectRatio(),
-                    placeholder: (context, url) {
-                      return Container(
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Hero(
+            tag: isFocus?widget.source.heroId:"",
+            child: Container(
+              width: ScreenUtil.instance.width,
+              height: setAspectRatio(),
+              child: controller.isVideoInitialized()
+                  ? BetterPlayer(
+                      controller: controller,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
+                      width: ScreenUtil.instance.width,
+                      height: setAspectRatio(),
+                      placeholder: (context, url) {
+                        return Container(
+                          color: AppColor.bgWhite,
+                        );
+                      },
+                      errorWidget: (context, url, error) => Container(
                         color: AppColor.bgWhite,
-                      );
-                    },
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColor.bgWhite,
+                      ),
+                    ),
+              // )
+            ),
+          ),
+          getOccludeUi(),
+          Container(
+            width: ScreenUtil.instance.width,
+            height: ScreenUtil.instance.height,
+            child: controller.isVideoInitialized()
+                ? VideoControl(
+                    setVideoPlayProgress,
+                    onDragCompletedListener,
+                    setPlayOrPause,
+                    isShowController,
+                    setShowController,
+                    controller,
+                    resetController,
+                  )
+                : Container(),
+          ),
+          Positioned(
+            left: 0,
+            top: ScreenUtil.instance.statusBarHeight - 6,
+            child: Visibility(
+              visible: isShowController,
+              child: AppIconButton(
+                iconSize: 24,
+                svgName: AppIcon.close_24,
+                buttonHeight: 40,
+                buttonWidth: 40,
+                iconColor: AppColor.white,
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+      // body: GestureDetector(
+      //   onTap: (){
+      //     isShowController=!isShowController;
+      //     showControllerCount=0;
+      //     setState(() {
+      //
+      //     });
+      //   },
+      //   child: ,
+      // ),
+    );
+  }
+
+  setShowController(bool isShowController) {
+    this.isShowController = isShowController;
+    setState(() {});
+  }
+
+  Function(BetterPlayerEvent event) betterPlayerEventListener;
+
+  setVideoPlayProgress(Function(BetterPlayerEvent event) function) {
+    betterPlayerEventListener = function;
+  }
+
+  onDragCompletedListener(Duration moment) {
+    controller.seekTo(moment);
+  }
+
+  Function() resetControllerListener;
+
+  resetController(Function() function){
+    resetControllerListener=function;
+  }
+
+
+
+  setPlayOrPause(bool isPlaying) {
+    this.isPlaying = isPlaying;
+    if (isPlaying) {
+      controller.play();
+    } else {
+      controller.pause();
+    }
+  }
+
+  //遮挡
+  Widget getOccludeUi() {
+    return Container(
+      width: ScreenUtil.instance.width,
+      height: ScreenUtil.instance.height,
+      color: AppColor.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            height: 64,
+            width: ScreenUtil.instance.width,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColor.textPrimary1.withOpacity(0.35),
+                  AppColor.textPrimary1.withOpacity(0.001),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            height: 64,
+            width: ScreenUtil.instance.width,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColor.textPrimary1.withOpacity(0.001),
+                  AppColor.textPrimary1.withOpacity(0.35),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VideoControl extends StatefulWidget {
+  final Function(Function(BetterPlayerEvent event)) setVideoPlayProgress;
+  final Function(Function()) resetController;
+  final Function onDragCompletedListener;
+  final Function setPlayOrPause;
+  final Function setShowController;
+  final bool isShowController;
+  final BetterPlayerController controller;
+
+  VideoControl(
+    this.setVideoPlayProgress,
+    this.onDragCompletedListener,
+    this.setPlayOrPause,
+    this.isShowController,
+    this.setShowController,
+    this.controller,
+    this.resetController,
+  );
+
+  @override
+  _VideoControlState createState() => _VideoControlState(isShowController,controller.isPlaying());
+}
+
+class _VideoControlState extends State<VideoControl> {
+  double maxValue = 100;
+  double value = 0;
+  String progressString = "00:00";
+  String durationString = "00:00";
+  bool isDragging = false;
+  bool isPlaying = false;
+  bool isShowController = false;
+
+  _VideoControlState(this.isShowController,this.isPlaying);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.setVideoPlayProgress(setVideoPlayProgress);
+    widget.resetController(resetControllerListener);
+    iniTimeShowController();
+  }
+
+
+  resetControllerListener(){
+    this.isPlaying= widget.controller.isPlaying();
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: ScreenUtil.instance.width,
+      height: ScreenUtil.instance.height,
+      child: Column(
+        children: [
+          Expanded(
+            child: SizedBox(
+              child: GestureDetector(
+                onTap: () {
+                  if (isPlaying) {
+                    isShowController = !isShowController;
+                    widget.setShowController(isShowController);
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  color: AppColor.transparent,
+                  child: Center(
+                    child: Visibility(
+                      visible: !isPlaying,
+                      child: AppIconButton(
+                        iconSize: 48,
+                        svgName: AppIcon.play_circle_48,
+                        buttonHeight: 60,
+                        buttonWidth: 60,
+                        onTap: () {
+                          isPlaying = !isPlaying;
+                          try {
+                            setState(() {});
+                            if (widget.setPlayOrPause != null) {
+                              widget.setPlayOrPause(isPlaying);
+                            }
+                          } catch (e) {
+                            isPlaying = !isPlaying;
+                          }
+                        },
+                      ),
                     ),
                   ),
-            // )
+                ),
+              ),
+            ),
           ),
-        ),
-      ],
+          Visibility(
+              visible: isShowController,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  children: [
+                    SizedBox(width: 12),
+                    AppIconButton(
+                      iconSize: 28,
+                      svgName: isPlaying ? AppIcon.pause_28 : AppIcon.play_28,
+                      buttonHeight: 30,
+                      buttonWidth: 30,
+                      iconColor: AppColor.white,
+                      onTap: () {
+                        isPlaying = !isPlaying;
+                        try {
+                          setState(() {});
+                          if (widget.setPlayOrPause != null) {
+                            widget.setPlayOrPause(isPlaying);
+                          }
+                        } catch (e) {
+                          isPlaying = !isPlaying;
+                        }
+                      },
+                    ),
+                    SizedBox(width: 14),
+                    Text(progressString, style: TextStyle(fontSize: 12, color: AppColor.white)),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: AppSeekBar(
+                        100,
+                        0,
+                        value,
+                        false,
+                        _onDragging,
+                        _onDragCompleted,
+                        activeDisabledTrackBarColor: AppColor.white.withOpacity(0.5),
+                        inactiveDisabledTrackBarColor: AppColor.white,
+                        inactiveTrackBarColor:AppColor.white.withOpacity(0.5),
+                        activeTrackBarColor:AppColor.white,
+                        handler1Color: AppColor.white,
+                        handler2Color: AppColor.white,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Text(durationString, style: TextStyle(fontSize: 12, color: AppColor.white)),
+                    SizedBox(width: 16),
+                  ],
+                ),
+              )),
+        ],
+      ),
     );
+  }
+
+  setVideoPlayProgress(BetterPlayerEvent event) {
+    if (isDragging) {
+      return;
+    }
+    if (event == null || event.parameters == null) {
+      return;
+    }
+    double progress;
+    double maxValue;
+    event.parameters.forEach((key, value) {
+      switch (key) {
+        case "progress":
+          progress = (value as Duration).inSeconds.toDouble()+1;
+          break;
+        case "duration":
+          maxValue = (value as Duration).inSeconds.toDouble();
+          break;
+      }
+    });
+
+    setProgress(progress, maxValue);
+  }
+
+  setProgress(double progress, double maxValue) {
+    if (progress == null || maxValue == null) {
+      return;
+    }
+    this.progressString = DateUtil.formatSecondToStringNumShowMinute1(progress.toInt());
+    this.durationString = DateUtil.formatSecondToStringNumShowMinute1(maxValue.toInt());
+    value = progress / maxValue * 100;
+    this.maxValue = maxValue;
+    try {
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {}
+  }
+
+  _onDragging(int handlerIndex, dynamic lowerValue, dynamic upperValue) {
+    isDragging = true;
+    print("_onDragging:$handlerIndex,$lowerValue,$upperValue");
+    setProgress(lowerValue / 100 * this.maxValue, this.maxValue);
+  }
+
+  _onDragCompleted(int handlerIndex, dynamic lowerValue, dynamic upperValue) {
+    print("_onDragCompleted:$handlerIndex,$lowerValue,$upperValue");
+    double progress = lowerValue / 100 * this.maxValue;
+    setProgress(progress, this.maxValue);
+    if (widget.onDragCompletedListener != null) {
+      Duration moment = Duration(seconds: progress.toInt());
+      widget.onDragCompletedListener(moment);
+    }
+    isDragging = false;
+  }
+
+  Timer _time;
+  int showControllerCount = 0;
+
+  iniTimeShowController() {
+    _time = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (isShowController) {
+        if(isDragging){
+          showControllerCount = 0;
+        }else {
+          if (isPlaying) {
+            showControllerCount++;
+            if (showControllerCount > 50) {
+              if (isShowController) {
+                isShowController = false;
+                if (mounted) {
+                  try {
+                    setState(() {});
+
+                    widget.setShowController(isShowController);
+                  } catch (e) {}
+                } else {
+                  if (_time != null) {
+                    _time.cancel();
+                    _time = null;
+                  }
+                }
+              }
+            }
+          } else {
+            showControllerCount = 0;
+          }
+        }
+      } else {
+        if (!isPlaying) {
+          isShowController = true;
+          if (mounted) {
+            try {
+              setState(() {});
+
+              widget.setShowController(isShowController);
+            } catch (e) {}
+          } else {
+            if (_time != null) {
+              _time.cancel();
+              _time = null;
+            }
+          }
+        }
+        showControllerCount = 0;
+      }
+    });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
@@ -153,6 +154,9 @@ class _MediaPickerState extends State<MediaPickerPage> {
         if (timeStamp - _lastTimeStamp < _tabSwitchInterval) {
           return;
         }
+
+        EventBus.getDefault().post(registerName: GALLERY_LEAVE);
+
         setState(() {
           _lastTimeStamp = timeStamp;
           _recordMode = 0;
@@ -187,6 +191,9 @@ class _MediaPickerState extends State<MediaPickerPage> {
         if (timeStamp - _lastTimeStamp < _tabSwitchInterval) {
           return;
         }
+
+        EventBus.getDefault().post(registerName: GALLERY_LEAVE);
+
         setState(() {
           _lastTimeStamp = timeStamp;
           _recordMode = 1;

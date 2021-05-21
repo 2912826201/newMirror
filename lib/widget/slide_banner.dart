@@ -12,6 +12,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/image_cached_observer_util.dart';
@@ -130,49 +131,49 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       //   item.url = null;
       // }
       // 查看大图设置
-      /* cupertinoButtons.add(CupertinoButton(
-          borderRadius: BorderRadius.zero,
-          padding: EdgeInsets.zero,
-        */ /*  onPressed: () {
-            print('---------------------------------大图预览');
-            */ /**/ /*ImagePreview.preview(
-              context,
-              initialIndex: indexs,
-              onIndexChanged: (ind) {
-                // 移动到指定下标，设置不播放动画
-                swiperController.move(ind, animation: false);
-                autoPlay(ind);
-              },
-              images: List.generate(widget.model.picUrls.length, (index) {
-                return ImageOptions(
-                  url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
-                  tag: widget.model.picUrls[index].url + "$indexs",
-                );
-              }),
-            ).then((value) {
-              context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
-            });*/ /**/ /*
-          },*/ /*
-          child: ImagePreviewHero(
-            tag: item.url + "$indexs",
-            child: CachedNetworkImage(
-              /// imageUrl的淡入动画的持续时间。
-              // fadeInDuration: Duration(milliseconds: 0),
-              imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
-              width: ScreenUtil.instance.width,
-              height: height,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
-              ),
-              errorWidget: (context, url, e) {
-                return Container(
-                  color: AppColor.bgWhite,
-                );
-              },
-            ),
-          ),
-        ));*/
+ // cupertinoButtons.add(CupertinoButton(
+ //          borderRadius: BorderRadius.zero,
+ //          padding: EdgeInsets.zero,
+ //          onPressed: () {
+ //            print('---------------------------------大图预览');
+ //            ImagePreview.preview(
+ //              context,
+ //              initialIndex: indexs,
+ //              onIndexChanged: (ind) {
+ //                // 移动到指定下标，设置不播放动画
+ //                swiperController.move(ind, animation: false);
+ //                autoPlay(ind);
+ //              },
+ //              images: List.generate(widget.model.picUrls.length, (index) {
+ //                return ImageOptions(
+ //                  url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
+ //                  tag: widget.model.picUrls[index].url + "$indexs",
+ //                );
+ //              }),
+ //            ).then((value) {
+ //              context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
+ //            });
+ //          },
+ //          child: ImagePreviewHero(
+ //            tag: item.url + "$indexs",
+ //            child: CachedNetworkImage(
+ //              /// imageUrl的淡入动画的持续时间。
+ //              // fadeInDuration: Duration(milliseconds: 0),
+ //              imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
+ //              width: ScreenUtil.instance.width,
+ //              height: height,
+ //              fit: BoxFit.cover,
+ //              placeholder: (context, url) => Container(
+ //                color: AppColor.bgWhite,
+ //              ),
+ //              errorWidget: (context, url, e) {
+ //                return Container(
+ //                  color: AppColor.bgWhite,
+ //                );
+ //              },
+ //            ),
+ //          ),
+ //        ));
 
       // 轮播图设置
       cupertinoButtons.add((!widget.isHero)

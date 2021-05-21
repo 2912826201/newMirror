@@ -63,8 +63,11 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
   @override
   Future didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
+    Application.isBackGround=true;
     if (state == AppLifecycleState.paused) {
       FocusScope.of(context).requestFocus(FocusNode());
+    }else if(state == AppLifecycleState.resumed){
+      Application.isBackGround=false;
     }
   }
 

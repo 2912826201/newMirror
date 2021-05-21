@@ -146,6 +146,8 @@ Future _initApp() async {
           ? 1
           : -1;
 
+  Application.openAppTime=DateTime.now().millisecondsSinceEpoch;
+
   // 申请通知权限
   // 检查是否已有读写内存的权限
   bool status = await Permission.notification.isGranted;

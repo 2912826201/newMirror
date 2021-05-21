@@ -2049,6 +2049,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //所有的item长按事件
   void onItemLongClickCallBack(
       {int position, String settingType, Map<String, dynamic> map, String contentType, String content}) {
+    print("所有的item长按事件");
     if (conversation.type == MANAGER_TYPE && position != null) {
       position--;
     }
@@ -2057,14 +2058,14 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       //print("暂无此配置");
     } else if (settingType == "删除") {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
-        //print("====" + code.toString());
+        print("====" + code.toString());
         updateMessagePageAlert(conversation, context);
         if (mounted) {
           chatDataList.removeAt(position);
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
-      // ToastShow.show(msg: "删除-第$position个", context: _context);
+      ToastShow.show(msg: "删除-第$position个", context: _context);
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
@@ -2234,7 +2235,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
         HeroDialogRoute<void>(builder: (BuildContext context) {
           // InteractiveviewerGallery<DemoSourceEntity>(
           // sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
-
+          print("chat_page:$initIndex");
           return InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder);
         }),
       );
@@ -2242,16 +2243,23 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   }
 
 // 大图预览内部的Item
-  Widget itemBuilder(BuildContext context, int index, bool isFocus) {
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus) {
     DemoSourceEntity sourceEntity = sourceList[index];
-    print("____sourceEntity:${sourceEntity.toString()}");
+    print("____sourceEntity:index,$index,isFocus:$isFocus:${sourceEntity.toString()}");
     if (sourceEntity.type == 'video') {
       return DemoVideoItem2(
         sourceEntity,
-        isFocus: isFocus,
+        isFocus,
+        index,
+        setFocus,
       );
     } else {
-      return DemoImageItem(sourceEntity);
+      return DemoImageItem(
+        sourceEntity,
+        isFocus,
+        index,
+        setFocus,
+      );
     }
   }
 

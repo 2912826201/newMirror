@@ -18,6 +18,7 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_schedule_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -400,7 +401,10 @@ class MessageManager {
           break;
         case 9:
           //9-训练结束
-          EventBus.getDefault().post(registerName: END_OF_TRAINING);
+          print('训练结束');
+          Future.delayed(Duration(seconds: 1),(){
+            EventBus.getDefault().post(registerName: END_OF_TRAINING);
+          });
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
@@ -537,7 +541,7 @@ class MessageManager {
             case ChatTypeModel.MESSAGE_TYPE_FEED:
               return "[动态]";
             case ChatTypeModel.MESSAGE_TYPE_USER:
-              return "[用户名片]";
+              return _getUserMessage(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE:
               return "[直播课程]";
             case ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE:
@@ -568,6 +572,16 @@ class MessageManager {
         return msg.content.encode();
     }
   }
+
+  static String _getUserMessage(Map<String, dynamic> contentMap){
+    try{
+      UserModel userModel = UserModel.fromJson(json.decode(contentMap["data"]));
+      return "[用户名片] ${userModel.nickName}";
+    }catch (e){
+      return "[用户名片]";
+    }
+  }
+
 
   static String _parseGrpNtf(Map<String, dynamic> content, {bool isTextMessageGrpNtf = true}) {
     Map<String, dynamic> dataMap;
@@ -735,10 +749,33 @@ class MessageManager {
   }
 
   //机器训练进度的返回---只有视频课程
-  static void _trainingSchedule(TrainingScheduleModel model) {
-    if (model.courseId == null) {
+  static void _trainingSchedule(TrainingScheduleModel scheduleModel) {
+    if (scheduleModel.courseId == null) {
       return;
     }
+    if(Application.isBackGround){
+      return;
+    }
+    // print("DateTime.now().millisecondsSinceEpoch-Application.openAppTime:${DateTime.now().millisecondsSinceEpoch-Application.openAppTime}");
+    if(DateTime.now().millisecondsSinceEpoch-Application.openAppTime<10000){
+      getMachineStatusInfo().then((list) {
+        if (list != null && list.isNotEmpty) {
+          MachineModel model = list.first;
+          if (model != null && model.isConnect == 1 && model.inGame == 1) {
+            if (model.type == 1) {
+              _openMachineRemoteControllerPage(scheduleModel);
+            }
+            return;
+          }
+        }
+      }).catchError((e) {
+      });
+    }else{
+      _openMachineRemoteControllerPage(scheduleModel);
+    }
+  }
+
+  static _openMachineRemoteControllerPage(TrainingScheduleModel model){
     if (AppRouter.isHaveMachineRemoteControllerPage()) {
       EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
     } else {

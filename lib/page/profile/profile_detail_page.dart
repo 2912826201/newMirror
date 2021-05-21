@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide TabBar;
+import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -15,6 +16,8 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/image_preview/image_preview_page.dart';
+import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
@@ -32,6 +35,8 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -115,6 +120,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   StreamController<double> appBarHeightStreamController = StreamController<double>();
   bool isBlack = false;
+
+  // 大图预览组装数据
+  List<DemoSourceEntity> sourceList = [];
 
   @override
   void initState() {
@@ -249,11 +257,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         setState(() {});
       }
       if (userModel.relation == 0 || userModel.relation == 2) {
-        if(mounted&&context!=null){
+        if (mounted && context != null) {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
         }
       } else if (userModel.relation == 1 || userModel.relation == 3) {
-        if(mounted&&context!=null) {
+        if (mounted && context != null) {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
         }
       }
@@ -759,25 +767,88 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///头像
   Widget _mineAvatar() {
-    return Container(
-      child: ClipOval(
-        child: CachedNetworkImage(
-          height: avatarSize,
-          width: avatarSize,
-          memCacheHeight: 250,
-          memCacheWidth: 250,
-          useOldImageOnUrlChange: true,
-          imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
-          ),
-          /*errorWidget:(context, url, e) {
+    DemoSourceEntity demoSourceEntity = DemoSourceEntity(widget.userId, 'image', _avatar);
+    sourceList.clear();
+    sourceList.add(demoSourceEntity);
+    // return CupertinoButton(
+    //   borderRadius: BorderRadius.zero,
+    //   padding: EdgeInsets.zero,
+    //   onPressed: () {
+    //     print('---------------------------------大图预览');
+    //     ImagePreview.preview(
+    //       context,
+    //       initialIndex: 0,
+    //       images: List.generate(sourceList.length, (index) {
+    //         return ImageOptions(
+    //           url: sourceList[index].url != null ? sourceList[index].url : "",
+    //           tag: widget.userId.toString(),
+    //         );
+    //       }),
+    //     ).then((value) {
+    //       // context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
+    //     });
+    //   },
+    //   child: ImagePreviewHero(
+    //     tag: widget.userId.toString(),
+    //     child: Container(
+    //       child: ClipOval(
+    //         child: CachedNetworkImage(
+    //           height: avatarSize,
+    //           width: avatarSize,
+    //           memCacheHeight: 250,
+    //           memCacheWidth: 250,
+    //           useOldImageOnUrlChange: true,
+    //           imageUrl: sourceList[0].url != null ? FileUtil.getImageSlim(sourceList[0].url) : "",
+    //           fit: BoxFit.cover,
+    //           placeholder: (context, url) => Container(
+    //             color: AppColor.bgWhite,
+    //           ),
+    //           /*errorWidget:(context, url, e) {
+    //         return Container(color: AppColor.bgWhite,);
+    //       },*/
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
+
+    return Hero(
+        tag: widget.userId,
+        child: GestureDetector(
+          onTap: () {
+            // Navigator.of(context).push(
+            //   HeroDialogRoute<void>(builder: (BuildContext context) {
+            //     return InteractiveviewerGallery(sources: sourceList, initIndex: 0, itemBuilder: itemBuilder);
+            //   }),
+            // );
+          },
+          child: Container(
+            child: ClipOval(
+              child: CachedNetworkImage(
+                height: avatarSize,
+                width: avatarSize,
+                memCacheHeight: 250,
+                memCacheWidth: 250,
+                useOldImageOnUrlChange: true,
+                imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
+                ),
+                /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/
-        ),
-      ),
-    );
+              ),
+            ),
+          ),
+        ));
+  }
+
+  // 大图预览内部的Item
+  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocu) {
+    DemoSourceEntity sourceEntity = sourceList[index];
+    print("____sourceEntity:${sourceEntity.toString()}");
+    return DemoImageItem(sourceEntity,isFocus,index,setFocu);
   }
 
   ///这是关注粉丝获赞

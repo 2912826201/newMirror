@@ -251,7 +251,7 @@ class FeedMsg extends StatelessWidget {
                   height: double.infinity,
                   width: double.infinity,
                   child: Center(
-                    child: AppIcon.getAppIcon(AppIcon.play_28, 28),
+                    child: AppIcon.getAppIcon(AppIcon.play_circle_28, 28),
                   ),
                 ),
               ),
