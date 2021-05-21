@@ -1613,44 +1613,50 @@ class VideoPreviewState extends State<VideoPreviewArea> {
                   _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
               notifier.setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
               //初始位置就是(0，0)所以暂不做初始偏移值的处理
-              return ScrollConfiguration(
-                behavior: NoBlueEffectBehavior(),
-                child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification notification) {
-                    ScrollMetrics metrics = notification.metrics;
-                    // 注册通知回调
-                    if (notification is ScrollStartNotification) {
-                      // 滚动开始
-                    } else if (notification is ScrollUpdateNotification) {
-                      // 滚动位置更新
-                      // 当前位置
-                      // print("metrics.pixels当前值是：${metrics.pixels}");
-                      if (_controller.value.aspectRatio > 1) {
-                        //横向
-                        double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
-                        context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
-                      } else {
-                        //纵向
-                        double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
-                        context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+              return Container(
+                alignment: Alignment.center,
+                width: widget.previewWidth,
+                height: widget.previewWidth,
+                color: AppColor.black,
+                child: ScrollConfiguration(
+                  behavior: NoBlueEffectBehavior(),
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification notification) {
+                      ScrollMetrics metrics = notification.metrics;
+                      // 注册通知回调
+                      if (notification is ScrollStartNotification) {
+                        // 滚动开始
+                      } else if (notification is ScrollUpdateNotification) {
+                        // 滚动位置更新
+                        // 当前位置
+                        // print("metrics.pixels当前值是：${metrics.pixels}");
+                        if (_controller.value.aspectRatio > 1) {
+                          //横向
+                          double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
+                          context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
+                        } else {
+                          //纵向
+                          double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
+                          context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+                        }
+                      } else if (notification is ScrollEndNotification) {
+                        // 滚动结束
                       }
-                    } else if (notification is ScrollEndNotification) {
-                      // 滚动结束
-                    }
-                    return false;
-                  },
-                  child: SingleChildScrollView(
-                    //禁止回弹效果
-                    physics: ClampingScrollPhysics(),
-                    //根据比例设置方向
-                    scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: _previewSize.width,
-                      height: _previewSize.height,
-                      child: AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
+                      return false;
+                    },
+                    child: SingleChildScrollView(
+                      //禁止回弹效果
+                      physics: ClampingScrollPhysics(),
+                      //根据比例设置方向
+                      scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: _previewSize.width,
+                        height: _previewSize.height,
+                        child: AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller),
+                        ),
                       ),
                     ),
                   ),
