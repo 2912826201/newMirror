@@ -291,7 +291,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
-
+  //底部功能列表
   Widget _bottomSetting(Widget icon, String text) {
     return GestureDetector(
       child: Container(
@@ -344,16 +344,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这里因为头像和关注等是水平，所以放在一起
+  //头像昵称
   Widget _getUserImage() {
     double nameMaxWidth = width - userAvatarHeight - 12 - 24 - 49 - 32;
     double textWidth =
-        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18, nameMaxWidth, 1)
+        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18,width, 1)
             .width;
     if (textWidth > nameMaxWidth) {
       textWidth = nameMaxWidth;
     }
-    return Container(
+    return InkWell(
+      onTap: (){
+        jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
+            avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
+            userName: context.read<ProfileNotifier>().profile.nickName);
+      },
+      child: Container(
         height: userAvatarHeight,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -376,12 +382,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Container(
               height: 24,
               width: 24,
-              color: AppColor.bgWhite,
+             child: Icon(Icons.auto_fix_normal),
             ),
           ],
-        ));
+        )),);
   }
-
+  //关注，粉丝，动态数
   Widget _userFollowRow() {
     return Container(
       child: Row(children: [
@@ -418,13 +424,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Container(
       width: userAvatarHeight,
       height: userAvatarHeight,
-      child: InkWell(
-        onTap: () {
-          jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
-              avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
-              userName: context.read<ProfileNotifier>().profile.nickName);
-        },
-        child: Stack(
+      child: Stack(
           children: [
             Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
               print("头像地址:$avatar");
@@ -450,7 +450,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             }),
           ],
         ),
-      ),
+
     );
   }
 
@@ -512,7 +512,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
 
 
-  //点击事件Training record
+  //点击事件
   void onClickListener(String title) async {
     switch (title) {
       case "关注":
