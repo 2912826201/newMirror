@@ -9,6 +9,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -16,13 +17,14 @@ import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class TopicList extends StatefulWidget {
-  TopicList({this.topicId, this.type,this.tabKey});
+  TopicList({this.topicId, this.type, this.tabKey});
 
   int type;
 
   // 话题ID
   int topicId;
   final Key tabKey;
+
   @override
   TopicListState createState() => TopicListState();
 }
@@ -50,6 +52,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // TODO: implement dispose
     // 取消网络请求
     cancelRequests(token: token);
+    EventBus.getDefault().unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
     super.dispose();
   }
 
@@ -108,11 +111,31 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // TODO: implement initState
     super.initState();
     // requestRecommendTopic(refreshOrLoading:true);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
+    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
+        registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Future.delayed(Duration(milliseconds: 250), () {
       //   requestRecommendTopic(refreshOrLoading: true);
       // });
+    // });
+  }
+
+  _deleteFeedCallBack(int id) {
+    // 动画删除item
+    setState(() {
+      int _index;
+      recommendTopicList.forEach((element) {
+        if (element.id == id) {
+          _index = recommendTopicList.indexOf(element);
+        }
+      });
+      if (_index != null) {
+        _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
+        recommendTopicList.removeWhere((v) => v.id == id);
+        context.read<FeedMapNotifier>().deleteFeed(id);
+      }
+      // 更新全局监听
+      context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
     });
   }
 
@@ -122,32 +145,15 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
         child: ExposureDetector(
           key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
           child: DynamicListLayout(
-              index: index,
-              topicId: widget.topicId,
-              pageName: "topicRecommend",
-              isShowRecommendUser: false,
-              isShowConcern: false,
-              model: recommendTopicList[index],
-              // 可选参数 子Item的个数
-              key: GlobalObjectKey("attention$index"),
-              deleteFeedChanged: (id) {
-                // 动画删除item
-                setState(() {
-                  int _index;
-                  recommendTopicList.forEach((element) {
-                    if (element.id == id) {
-                      _index = recommendTopicList.indexOf(element);
-                    }
-                  });
-                  if (_index != null) {
-                    _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
-                    recommendTopicList.removeWhere((v) => v.id == id);
-                    context.read<FeedMapNotifier>().deleteFeed(id);
-                  }
-                  // 更新全局监听
-                  context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
-                });
-              }),
+            index: index,
+            topicId: widget.topicId,
+            pageName: "topicRecommend",
+            isShowRecommendUser: false,
+            isShowConcern: false,
+            model: recommendTopicList[index],
+            // 可选参数 子Item的个数
+            key: GlobalObjectKey("attention$index"),
+          ),
           onExposure: (visibilityInfo) {
             // 如果没有显示
             if (context.read<FeedMapNotifier>().value.feedMap[recommendTopicList[index].id].isShowInputBox) {
@@ -156,14 +162,13 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
             print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
           },
         ));
-
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     // return
-     final child = Container(
+    final child = Container(
         color: AppColor.white,
         child: MediaQuery.removePadding(
             removeTop: true,
@@ -220,47 +225,44 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                 ],
                               ),
                             ),
-                ))
-     )
-    );
+                ))));
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child);
-        // margin: EdgeInsets.only(left: 16, right: 16),
-        // child: WaterfallFlow.builder(
-        //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-        //     crossAxisCount: 2,
-        //     // 上下间隔
-        //     mainAxisSpacing: 4.0,
-        //     //   // 左右间隔
-        //     crossAxisSpacing: 8.0,
-        //   ),
-        //   itemBuilder: (context, index) {
-        //     // 获取动态id
-        //     int id;
-        //     // 获取动态id指定model
-        //     HomeFeedModel model;
-        //     if (index < widget.topicList.length) {
-        //       id = widget.topicList[index].id;
-        //       model = context.read<FeedMapNotifier>().feedMap[id];
-        //     }
-        //     // if (feedList.isNotEmpty) {
-        //     if (index == widget.topicList.length) {
-        //       return LoadingView(
-        //         loadText: widget.loadText,
-        //         loadStatus: widget.loadStatus,
-        //       );
-        //     } else if (index == widget.topicList.length + 1) {
-        //       return Container();
-        //     } else {
-        //       return SearchFeeditem(
-        //         model: model,
-        //         list: widget.topicList,
-        //         index: index,
-        //         pageName: "topicRecommend",
-        //       );
-        //     }
-        //   },
-        //   itemCount: widget.topicList.length + 1,
-        // )
-
+    // margin: EdgeInsets.only(left: 16, right: 16),
+    // child: WaterfallFlow.builder(
+    //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+    //     crossAxisCount: 2,
+    //     // 上下间隔
+    //     mainAxisSpacing: 4.0,
+    //     //   // 左右间隔
+    //     crossAxisSpacing: 8.0,
+    //   ),
+    //   itemBuilder: (context, index) {
+    //     // 获取动态id
+    //     int id;
+    //     // 获取动态id指定model
+    //     HomeFeedModel model;
+    //     if (index < widget.topicList.length) {
+    //       id = widget.topicList[index].id;
+    //       model = context.read<FeedMapNotifier>().feedMap[id];
+    //     }
+    //     // if (feedList.isNotEmpty) {
+    //     if (index == widget.topicList.length) {
+    //       return LoadingView(
+    //         loadText: widget.loadText,
+    //         loadStatus: widget.loadStatus,
+    //       );
+    //     } else if (index == widget.topicList.length + 1) {
+    //       return Container();
+    //     } else {
+    //       return SearchFeeditem(
+    //         model: model,
+    //         list: widget.topicList,
+    //         index: index,
+    //         pageName: "topicRecommend",
+    //       );
+    //     }
+    //   },
+    //   itemCount: widget.topicList.length + 1,
+    // )
   }
 }
