@@ -85,7 +85,6 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
   // 声明定时器
   Timer timer;
 
-  GlobalKey globalKey = GlobalKey();
   final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
   @override
@@ -398,7 +397,6 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
                   getRecommendFeed(refreshOrLoading: true);
                 },
                 child: CustomScrollView(
-                    // key: globalKey,
                     controller: _controller,
                     physics: context.watch<FeedMapNotifier>().value.isDropDown
                         ? AlwaysScrollableScrollPhysics()

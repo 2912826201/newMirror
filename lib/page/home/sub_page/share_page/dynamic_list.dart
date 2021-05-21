@@ -38,7 +38,7 @@ class DynamicListLayout extends StatefulWidget {
     this.isMySelf,
     this.isShowConcern = false,
   }) : super(key: key);
-  final index;
+  final int index;
   bool isShowRecommendUser;
   HomeFeedModel model;
   int mineDetailId;
