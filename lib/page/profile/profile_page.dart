@@ -346,13 +346,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   //头像昵称
   Widget _getUserImage() {
-    double nameMaxWidth = width - userAvatarHeight - 12 - 24 - 49 - 32;
-    double textWidth =
-        calculateTextWidth(context.watch<ProfileNotifier>().profile.nickName, AppStyle.textMedium18,width, 1)
-            .width;
-    if (textWidth > nameMaxWidth) {
-      textWidth = nameMaxWidth;
-    }
     return InkWell(
       onTap: (){
         jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
@@ -370,8 +363,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             SizedBox(
               width: 12,
             ),
-            Container(
-              width: textWidth,
+            Expanded(
               child: Text(
                 context.watch<ProfileNotifier>().profile.nickName,
                 style: AppStyle.textMedium18,
@@ -379,11 +371,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 maxLines: 1,
               ),
             ),
-            Container(
-              height: 24,
-              width: 24,
-             child: Icon(Icons.auto_fix_normal),
-            ),
+            SizedBox(width: 72.5,)
           ],
         )),);
   }
