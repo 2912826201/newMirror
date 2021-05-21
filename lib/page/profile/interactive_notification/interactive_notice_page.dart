@@ -377,10 +377,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
 
       ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth("$commentState$comment", AppStyle.textRegular14, contentWidth, 10);
+      TextPainter testSize = calculateTextWidth("$commentState$comment", AppStyle.textRegular14, contentWidth);
       textHeight = testSize.height;
     } else {
-      TextPainter testSize = calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth, 10);
+      TextPainter testSize = calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth);
       textHeight = testSize.height;
     }
     print('-----------------------textHeight---$textHeight');

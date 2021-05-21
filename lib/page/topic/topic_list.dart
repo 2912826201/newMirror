@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
@@ -40,8 +39,10 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   // 是否显示缺省图
   bool isShowDefaultMap;
+
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -49,11 +50,13 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     cancelRequests(token: token);
     super.dispose();
   }
+
   // 请求推荐话题动态接口
   requestRecommendTopic({bool refreshOrLoading}) async {
     if (recommendHasNext != 0) {
-      DataResponseModel model = await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId,token: token);
-      if(refreshOrLoading) {
+      DataResponseModel model = await pullTopicList(
+          type: widget.type, size: 20, targetId: widget.topicId, token: token);
+      if (refreshOrLoading) {
         recommendTopicList.clear();
       }
       if (model != null) {
@@ -101,7 +104,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Future.delayed(Duration(milliseconds: 250), () {
-        //   requestRecommendTopic(refreshOrLoading: true);
+      //   requestRecommendTopic(refreshOrLoading: true);
       // });
     });
   }
@@ -133,96 +136,100 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   child: isShowDefaultMap == null
                       ? Container()
                       : isShowDefaultMap
-                          ? ListView.builder(
-                              itemCount: recommendTopicList.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return ExposureDetector(
-                                  key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
-                                  child: DynamicListLayout(
-                                    index: index,
-                                    topicId: widget.topicId,
-                                    pageName: "topicRecommend",
-                                    isShowRecommendUser: false,
-                                    isShowConcern: false,
-                                    model: recommendTopicList[index],
-                                    // 可选参数 子Item的个数
-                                    key: GlobalObjectKey("attention$index"),
-                                  ),
-                                  onExposure: (visibilityInfo) {
-                                    // 如果没有显示
-                                    if (context
-                                        .read<FeedMapNotifier>()
-                                        .value
-                                        .feedMap[recommendTopicList[index].id]
-                                        .isShowInputBox) {
-                                      context.read<FeedMapNotifier>().showInputBox(recommendTopicList[index].id);
-                                    }
-                                    print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                                  },
-                                );
-                              })
-                          : Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 224,
-                                    height: 224,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
-                                    ),
-                                    margin: const EdgeInsets.only(bottom: 16),
-                                  ),
-                                  const Text(
-                                    "这里空空如也，去推荐看看吧",
-                                    style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      ? ListView.builder(
+                      itemCount: recommendTopicList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return ExposureDetector(
+                          key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
+                          child: DynamicListLayout(
+                              index: index,
+                              topicId: widget.topicId,
+                              pageName: "topicRecommend",
+                              isShowRecommendUser: false,
+                              isShowConcern: false,
+                              model: recommendTopicList[index],
+                              // 可选参数 子Item的个数
+                              key: GlobalObjectKey("attention$index"),
+                              deleteFeedChanged: (id) {
+                                print("删除的话题Id::::::$id");
+                              }
+                          ),
+                          onExposure: (visibilityInfo) {
+                            // 如果没有显示
+                            if (context
+                                .read<FeedMapNotifier>()
+                                .value
+                                .feedMap[recommendTopicList[index].id]
+                                .isShowInputBox) {
+                              context.read<FeedMapNotifier>().showInputBox(recommendTopicList[index].id);
+                            }
+                            print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                          },
+
+                        );
+                      })
+                      : Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 224,
+                          height: 224,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                          ),
+                          margin: const EdgeInsets.only(bottom: 16),
+                        ),
+                        const Text(
+                          "这里空空如也，去推荐看看吧",
+                          style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
                 )))
-        // margin: EdgeInsets.only(left: 16, right: 16),
-        // child: WaterfallFlow.builder(
-        //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-        //     crossAxisCount: 2,
-        //     // 上下间隔
-        //     mainAxisSpacing: 4.0,
-        //     //   // 左右间隔
-        //     crossAxisSpacing: 8.0,
-        //   ),
-        //   itemBuilder: (context, index) {
-        //     // 获取动态id
-        //     int id;
-        //     // 获取动态id指定model
-        //     HomeFeedModel model;
-        //     if (index < widget.topicList.length) {
-        //       id = widget.topicList[index].id;
-        //       model = context.read<FeedMapNotifier>().feedMap[id];
-        //     }
-        //     // if (feedList.isNotEmpty) {
-        //     if (index == widget.topicList.length) {
-        //       return LoadingView(
-        //         loadText: widget.loadText,
-        //         loadStatus: widget.loadStatus,
-        //       );
-        //     } else if (index == widget.topicList.length + 1) {
-        //       return Container();
-        //     } else {
-        //       return SearchFeeditem(
-        //         model: model,
-        //         list: widget.topicList,
-        //         index: index,
-        //         pageName: "topicRecommend",
-        //       );
-        //     }
-        //   },
-        //   itemCount: widget.topicList.length + 1,
-        // )
-        );
+      // margin: EdgeInsets.only(left: 16, right: 16),
+      // child: WaterfallFlow.builder(
+      //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+      //     crossAxisCount: 2,
+      //     // 上下间隔
+      //     mainAxisSpacing: 4.0,
+      //     //   // 左右间隔
+      //     crossAxisSpacing: 8.0,
+      //   ),
+      //   itemBuilder: (context, index) {
+      //     // 获取动态id
+      //     int id;
+      //     // 获取动态id指定model
+      //     HomeFeedModel model;
+      //     if (index < widget.topicList.length) {
+      //       id = widget.topicList[index].id;
+      //       model = context.read<FeedMapNotifier>().feedMap[id];
+      //     }
+      //     // if (feedList.isNotEmpty) {
+      //     if (index == widget.topicList.length) {
+      //       return LoadingView(
+      //         loadText: widget.loadText,
+      //         loadStatus: widget.loadStatus,
+      //       );
+      //     } else if (index == widget.topicList.length + 1) {
+      //       return Container();
+      //     } else {
+      //       return SearchFeeditem(
+      //         model: model,
+      //         list: widget.topicList,
+      //         index: index,
+      //         pageName: "topicRecommend",
+      //       );
+      //     }
+      //   },
+      //   itemCount: widget.topicList.length + 1,
+      // )
+    );
   }
 }

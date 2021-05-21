@@ -10,9 +10,9 @@ Size getTextSize(String text, TextStyle style,int maxLine,[double width]) {
   return textPainter.size;
 }
 TextPainter calculateTextWidth(
-    String value,TextStyle style, double maxWidth, int maxLines) {
+    String value,TextStyle style, double maxWidth,[int maxLines]) {
   TextPainter painter = TextPainter(
-      maxLines: maxLines,
+      maxLines: maxLines??null,
       textDirection: TextDirection.ltr,
       text: TextSpan(
           text: value,
