@@ -167,6 +167,8 @@ const String EVENTBUS_REMOTE_CONTROLLER_PAGE = "remote_controller_page";
 const String EVENTBUS_GALLERY_PAGE = "gallery_page";
 // 视频课结果页
 const String VIDEO_COURSE_RESULT_PAGE = "video_course_result_page";
+// 话题详情页
+const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 
 ///广播类型
 //发布动态
@@ -241,3 +243,5 @@ const String SHOW_IMAGE_DIALOG = "show_new_user_image_dialog";
 const String GALLERY_LEAVE = "gallery_leave";
 //视频课结果页
 const String VIDEO_COURSE_RESULT = "video_course_result";
+//话题详情删除动态
+const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
