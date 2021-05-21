@@ -117,9 +117,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   StreamController<double> appBarHeightStreamController = StreamController<double>();
   bool isBlack = false;
 
-  // 大图预览组装数据
-  List<DemoSourceEntity> sourceList = [];
-
   @override
   void initState() {
     super.initState();
@@ -763,88 +760,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///头像
   Widget _mineAvatar() {
-    DemoSourceEntity demoSourceEntity = DemoSourceEntity(widget.userId, 'image', _avatar);
-    sourceList.clear();
-    sourceList.add(demoSourceEntity);
-    // return CupertinoButton(
-    //   borderRadius: BorderRadius.zero,
-    //   padding: EdgeInsets.zero,
-    //   onPressed: () {
-    //     print('---------------------------------大图预览');
-    //     ImagePreview.preview(
-    //       context,
-    //       initialIndex: 0,
-    //       images: List.generate(sourceList.length, (index) {
-    //         return ImageOptions(
-    //           url: sourceList[index].url != null ? sourceList[index].url : "",
-    //           tag: widget.userId.toString(),
-    //         );
-    //       }),
-    //     ).then((value) {
-    //       // context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
-    //     });
-    //   },
-    //   child: ImagePreviewHero(
-    //     tag: widget.userId.toString(),
-    //     child: Container(
-    //       child: ClipOval(
-    //         child: CachedNetworkImage(
-    //           height: avatarSize,
-    //           width: avatarSize,
-    //           memCacheHeight: 250,
-    //           memCacheWidth: 250,
-    //           useOldImageOnUrlChange: true,
-    //           imageUrl: sourceList[0].url != null ? FileUtil.getImageSlim(sourceList[0].url) : "",
-    //           fit: BoxFit.cover,
-    //           placeholder: (context, url) => Container(
-    //             color: AppColor.bgWhite,
-    //           ),
-    //           /*errorWidget:(context, url, e) {
-    //         return Container(color: AppColor.bgWhite,);
-    //       },*/
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
-
-    return Hero(
-        tag: widget.userId,
-        child: GestureDetector(
-          onTap: () {
-            // Navigator.of(context).push(
-            //   HeroDialogRoute<void>(builder: (BuildContext context) {
-            //     return InteractiveviewerGallery(sources: sourceList, initIndex: 0, itemBuilder: itemBuilder);
-            //   }),
-            // );
-          },
-          child: Container(
-            child: ClipOval(
-              child: CachedNetworkImage(
-                height: avatarSize,
-                width: avatarSize,
-                memCacheHeight: 250,
-                memCacheWidth: 250,
-                useOldImageOnUrlChange: true,
-                imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
-                ),
-                /*errorWidget:(context, url, e) {
+    return Container(
+      child: ClipOval(
+        child: CachedNetworkImage(
+          height: avatarSize,
+          width: avatarSize,
+          memCacheHeight: 250,
+          memCacheWidth: 250,
+          useOldImageOnUrlChange: true,
+          imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: AppColor.bgWhite,
+          ),
+          /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/
-              ),
-            ),
-          ),
-        ));
-  }
-
-  // 大图预览内部的Item
-  Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocu) {
-    DemoSourceEntity sourceEntity = sourceList[index];
-    print("____sourceEntity:${sourceEntity.toString()}");
-    return DemoImageItem(sourceEntity,isFocus,index,setFocu);
+        ),
+      ),
+    );
   }
 
   ///这是关注粉丝获赞
