@@ -376,7 +376,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Container(
               height: 24,
               width: 24,
-              color: AppColor.bgBlack,
+              color: AppColor.bgWhite,
             ),
           ],
         ));
@@ -413,7 +413,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这是头像
+  ///这是头像+
   Widget _imgAvatar() {
     return Container(
       width: userAvatarHeight,
@@ -510,45 +510,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这里是训练计划，体重记录，健身相册的
-  ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(Widget icon, number, String text) {
-    var _userPlate = Stack(
-      children: [
-        Container(
-          height: (width - 65) / 3,
-          width: (width - 65) / 3,
-          color: AppColor.bgWhite,
-        ),
-        Container(
-          height: (width - 65) / 3,
-          width: (width - 65) / 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 22,
-              ),
-              icon,
-              SizedBox(
-                height: 6.5,
-              ),
-              Text(
-                number != 0 && number != null ? "$number" : "--",
-                style: AppStyle.textRegular14,
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-    return GestureDetector(
-      child: _userPlate,
-      onTap: () {
-        onClickListener(text);
-      },
-    );
-  }
+
 
   //点击事件Training record
   void onClickListener(String title) async {
@@ -585,7 +547,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       case "关于":
         AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
         break;
-      case "扫码":
+      case "扫一扫":
         Permission.camera.request().then((value) {
           if (value.isGranted) {
             AppRouter.navigateToScanCodePage(context, showMyCode: true);
