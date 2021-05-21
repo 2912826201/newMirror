@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' hide TabBar;
+import 'package:flutter/material.dart' hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -30,6 +31,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
@@ -110,13 +112,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   int relation;
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
-  List<GlobalKey> scrollChildKeys;
-  GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
-  GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   StreamController<bool> loadingStreamController = StreamController<bool>();
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
-  StreamController<double> appBarHeightStreamController = StreamController<double>();
   bool isBlack = false;
+  final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
 
   @override
   void initState() {
@@ -135,17 +134,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       _initBlackStatus();
     }
     _mController = TabController(length: 2, vsync: this);
-    if (isMselfId) {
-      scrollChildKeys = [leftKey, rightKey];
-      _mController.addListener(() {
-        for (int i = 0; i < scrollChildKeys.length; i++) {
-          GlobalKey<PrimaryScrollContainerState> key = scrollChildKeys[i];
-          if (key.currentState != null) {
-            key.currentState.onPageChange(_mController.index == i); //控制是否当前显示
-          }
-        }
-      });
-    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('=========================个人主页addPostFrameCallback');
       Future.delayed(Duration(milliseconds: 250), () {
@@ -155,29 +143,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= userDetailBoardHeight) {
-        appBarOpacityStreamController.sink.add(1);
         if (!isScroll) {
-          appBarHeightStreamController.sink.add(ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight);
           canOnClick = false;
           isScroll = true;
         }
       } else {
-        if (scrollController.offset <= ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight) {
-          ///这里是因为快速滑动会出现负的offset，会报size.height<0为true的错
-          if (scrollController.offset > 0) {
-            appBarHeightStreamController.sink.add(scrollController.offset);
-          } else {
-            appBarHeightStreamController.sink.add(0);
-          }
-        }
-        if (scrollController.offset >= ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight &&
-            scrollController.offset < userDetailBoardHeight) {
-          double offset =
-              (scrollController.offset - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight)) /
-                  (userDetailBoardHeight - (ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight));
+        double offset = scrollController.offset /
+            (userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight);
+        if (offset <= 1) {
           appBarOpacityStreamController.sink.add(offset);
-        } else {
-          appBarOpacityStreamController.sink.add(0);
         }
         if (isScroll) {
           canOnClick = true;
@@ -305,113 +279,97 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody() {
     return NestedScrollView(
+        key: _key,
         controller: scrollController,
+        pinnedHeaderSliverHeightBuilder: () {
+          return ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
+        },
+        innerScrollPositionKeyBuilder: () {
+          String index = 'Tab';
+
+          index += _mController.index.toString();
+
+          return Key(index);
+        },
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          print('=====================innerBoxIsScrolled$innerBoxIsScrolled');
           return <Widget>[
-            ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
-            StreamBuilder<double>(
-                initialData: 0,
-                stream: appBarHeightStreamController.stream,
-                builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                  return SliverPersistentHeader(
-                    pinned: true,
-                    //自定义用来占位置的吸顶透明布局
-                    delegate: fillingContainerDelegate(
-                        height: snapshot.data,
-                        color: AppColor.transparent,
-                        child: Container(
-                          height: snapshot.data,
-                        )),
-                  );
-                }),
             SliverToBoxAdapter(
               child: profileDetailData(userDetailBoardHeight),
             ),
-
-            ///根据布尔值返回视图
-            isMselfId
-                ? SliverPersistentHeader(
-                    /// 可以吸顶的TabBar
-                    pinned: true,
-                    delegate: StickyTabBarDelegate(
-                      width: width,
-                      child: TabBar(
-                        unselectedLabelStyle: AppStyle.textHintRegular16,
-                        unselectedLabelColor: AppColor.textSecondary,
-                        labelStyle: AppStyle.textMedium18,
-                        labelColor: AppColor.black,
-                        indicatorColor: AppColor.black,
-                        controller: _mController,
-                        onDoubleTap: (value) {
-                          EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
-                        },
-                        indicatorSize: TabBarIndicatorSize.label,
-                        indicator: RoundUnderlineTabIndicator(
-                            insets: EdgeInsets.only(bottom: 0),
-                            wantWidth: 20,
-                            borderSide: BorderSide(width: 2, color: AppColor.black)),
-                        tabs: <Widget>[
-                          Tab(text: '动态'),
-                          Tab(text: '喜欢'),
-                        ],
-                      ),
-                    ),
-                  )
-                : SliverToBoxAdapter(
-                    child: Container(),
-                  )
           ];
         },
 
         ///根据布尔值返回body
-        body: userStatus != 1
-            ? isMselfId
-                ? TabBarView(
+        body: Column(
+          children: [
+            isMselfId
+                ? TabBar(
+                    unselectedLabelStyle: AppStyle.textHintRegular16,
+                    unselectedLabelColor: AppColor.textSecondary,
+                    labelStyle: AppStyle.textMedium18,
+                    labelColor: AppColor.black,
+                    indicatorColor: AppColor.black,
                     controller: _mController,
-                    children: <Widget>[
-                      PrimaryScrollContainer(
-                        scrollChildKeys[0],
-                        ProfileDetailsList(
-                          type: 2,
-                          id: widget.userId,
-                          isMySelf: isMselfId,
-                        ),
-                      ),
-                      PrimaryScrollContainer(
-                        scrollChildKeys[1],
-                        ProfileDetailsList(
-                          type: 6,
-                          isMySelf: isMselfId,
-                          id: widget.userId,
-                        ),
-                      ),
+                    onDoubleTap: (value) {
+                      EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                    },
+                    indicatorSize: TabBarIndicatorSize.label,
+                    indicator: RoundUnderlineTabIndicator(
+                        insets: EdgeInsets.only(bottom: 0),
+                        wantWidth: 20,
+                        borderSide: BorderSide(width: 2, color: AppColor.black)),
+                    tabs: <Widget>[
+                      Tab(text: '动态'),
+                      Tab(text: '喜欢'),
                     ],
                   )
-                : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
-            : Container(
-                padding: EdgeInsets.only(top: 12),
-                color: AppColor.white,
-                child: Column(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 224,
-                        height: 224,
-                        child: Image.asset(DefaultImage.error),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Center(
-                      child: Text(
-                        "该账号封禁中·",
-                        style: AppStyle.textPrimary3Regular14,
-                      ),
-                    )
-                  ],
-                )));
+                : Container(),
+            Expanded(
+                child: userStatus != 1
+                    ? isMselfId
+                        ? TabBarView(
+                            controller: _mController,
+                            children: <Widget>[
+                              ProfileDetailsList(
+                                type: 2,
+                                id: widget.userId,
+                                isMySelf: isMselfId,
+                                pageKey: Key("tab0"),
+                              ),
+                              ProfileDetailsList(
+                                type: 6,
+                                isMySelf: isMselfId,
+                                id: widget.userId,
+                                pageKey: Key("tab1"),
+                              )
+                            ],
+                          )
+                        : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId)
+                    : Container(
+                        padding: EdgeInsets.only(top: 12),
+                        color: AppColor.white,
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Container(
+                                width: 224,
+                                height: 224,
+                                child: Image.asset(DefaultImage.error),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            Center(
+                              child: Text(
+                                "该账号封禁中·",
+                                style: AppStyle.textPrimary3Regular14,
+                              ),
+                            )
+                          ],
+                        )))
+          ],
+        ));
   }
 
   Widget appBar() {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -23,9 +24,8 @@ class ProfileDetailsList extends StatefulWidget {
   int type;
   int id;
   bool isMySelf;
-  Key key;
-
-  ProfileDetailsList({this.key, this.type, this.id, this.isMySelf});
+  Key pageKey;
+  ProfileDetailsList({this.pageKey,this.type, this.id, this.isMySelf});
 
   @override
   ProfileDetailsListState createState() {
@@ -167,7 +167,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-    return Container(
+    Widget child = Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
       ///刷新控件
@@ -187,6 +187,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               onRefresh: _onRefresh,
               child: _showDataUi())),
     );
+    return  NestedScrollViewInnerScrollPositionKeyWidget(
+      widget.pageKey,child);
   }
 
   Widget _showDataUi() {
