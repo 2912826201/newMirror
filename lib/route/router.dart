@@ -22,6 +22,7 @@ import 'package:mirror/page/training/live_broadcast/live_room_video_operation_pa
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -392,11 +393,33 @@ class AppRouter {
 
   static void navigateToVideoCourseResult(
       BuildContext context, TrainingCompleteResultModel trainingResult, CourseModel course) {
-    Map<String, dynamic> map = Map();
-    map["result"] = trainingResult.toJson();
-    map["course"] = course.toJson();
-    _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
+    if(!isHaveVideoCourseResult()) {
+      Map<String, dynamic> map = Map();
+      map["result"] = trainingResult.toJson();
+      map["course"] = course.toJson();
+      _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
+    }else{
+      Future.delayed(Duration(milliseconds: 100),(){
+        List list=[];
+        list.add(trainingResult);
+        list.add(course);
+        EventBus.getDefault().post(msg: list,registerName:VIDEO_COURSE_RESULT);
+      });
+    }
   }
+
+  //判断用户是不是在活动界面
+  static bool isHaveVideoCourseResult() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathNewUserPromotionPage)) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId,
       {String heroTag,

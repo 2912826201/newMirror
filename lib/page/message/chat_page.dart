@@ -2049,6 +2049,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   //所有的item长按事件
   void onItemLongClickCallBack(
       {int position, String settingType, Map<String, dynamic> map, String contentType, String content}) {
+    print("所有的item长按事件");
     if (conversation.type == MANAGER_TYPE && position != null) {
       position--;
     }
@@ -2057,14 +2058,14 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       //print("暂无此配置");
     } else if (settingType == "删除") {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
-        //print("====" + code.toString());
+        print("====" + code.toString());
         updateMessagePageAlert(conversation, context);
         if (mounted) {
           chatDataList.removeAt(position);
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
-      // ToastShow.show(msg: "删除-第$position个", context: _context);
+      ToastShow.show(msg: "删除-第$position个", context: _context);
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
