@@ -55,7 +55,7 @@ class IntegerUtil {
       }
     } else {
       if(isRenderSliverList) {
-        renderSliverList.lastChild.size.height;
+        itemHeight = renderSliverList.constraints.scrollOffset;
       } else {
         itemHeight = renderBox.size.height;
       }

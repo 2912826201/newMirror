@@ -5,11 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 
 // hide NestedScrollView, NestedScrollViewState;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TabBar, TabBarView;
 import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 
 // hide NestedScrollView, NestedScrollViewState;
-import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -19,7 +18,6 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
@@ -30,6 +28,8 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
@@ -37,7 +37,6 @@ import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class TopicDetail extends StatefulWidget {
   TopicDetail({Key key, this.isTopicList, this.topicId}) : super(key: key);
