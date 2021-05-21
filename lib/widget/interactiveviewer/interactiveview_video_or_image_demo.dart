@@ -303,10 +303,12 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     if(isFocus){
       if(controller.isVideoInitialized()){
         controller.play();
+        resetControllerListener();
       }
     }else{
       if(controller.isVideoInitialized()){
         controller.pause();
+        resetControllerListener();
       }
     }
   }
@@ -437,7 +439,8 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                     setPlayOrPause,
                     isShowController,
                     setShowController,
-                    controller.isPlaying(),
+                    controller,
+                    resetController,
                   )
                 : Container(),
           ),
@@ -487,6 +490,14 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   onDragCompletedListener(Duration moment) {
     controller.seekTo(moment);
   }
+
+  Function() resetControllerListener;
+
+  resetController(Function() function){
+    resetControllerListener=function;
+  }
+
+
 
   setPlayOrPause(bool isPlaying) {
     this.isPlaying = isPlaying;
@@ -542,11 +553,12 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
 
 class VideoControl extends StatefulWidget {
   final Function(Function(BetterPlayerEvent event)) setVideoPlayProgress;
+  final Function(Function()) resetController;
   final Function onDragCompletedListener;
   final Function setPlayOrPause;
   final Function setShowController;
   final bool isShowController;
-  final bool isPlaying;
+  final BetterPlayerController controller;
 
   VideoControl(
     this.setVideoPlayProgress,
@@ -554,11 +566,12 @@ class VideoControl extends StatefulWidget {
     this.setPlayOrPause,
     this.isShowController,
     this.setShowController,
-    this.isPlaying,
+    this.controller,
+    this.resetController,
   );
 
   @override
-  _VideoControlState createState() => _VideoControlState(isShowController,isPlaying);
+  _VideoControlState createState() => _VideoControlState(isShowController,controller.isPlaying());
 }
 
 class _VideoControlState extends State<VideoControl> {
@@ -576,7 +589,18 @@ class _VideoControlState extends State<VideoControl> {
   void initState() {
     super.initState();
     widget.setVideoPlayProgress(setVideoPlayProgress);
+    widget.resetController(resetControllerListener);
     iniTimeShowController();
+  }
+
+
+  resetControllerListener(){
+    this.isPlaying= widget.controller.isPlaying();
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
 
   @override
