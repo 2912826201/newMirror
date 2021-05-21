@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -21,9 +22,13 @@ import 'count_badge.dart';
 /// Created by yangjiayi on 2021/3/20.
 
 class IFTabBar extends StatefulWidget {
-  Function(int) tabBarClickListener;
+  //单击事件
+  final Function(int) tabBarClickListener;
+
+  //双击事件
   final ValueChanged<int> onDoubleTap;
-  IFTabBar({this.tabBarClickListener,this.onDoubleTap});
+
+  IFTabBar({this.tabBarClickListener, this.onDoubleTap});
 
   @override
   _IFTabBarState createState() => _IFTabBarState();
@@ -48,8 +53,8 @@ class _IFTabBarState extends State<IFTabBar> {
   double selectedButtonWidth = 90;
 
   //边距
-  double iconMargin = 32;
-  double selectedButtonMargin = 16;
+  double iconMargin = AppConfig.needShowTraining ? 32 : 50;
+  double selectedButtonMargin = AppConfig.needShowTraining ? 16 : 18;
 
   //选中后按钮图标和字的间距
   double selectedButtonSpace = 8;
@@ -84,6 +89,12 @@ class _IFTabBarState extends State<IFTabBar> {
   double leftMarginText3;
   double leftMarginText4;
 
+  //各图标在的位置左边距
+  double onClickWidth1;
+  double onClickWidth2;
+  double onClickWidth3;
+  double onClickWidth4;
+
   //选中的按钮在的位置左边距
   double leftMarginSelectedButton;
 
@@ -92,6 +103,7 @@ class _IFTabBarState extends State<IFTabBar> {
   List<double> leftMarginList2 = [];
   List<double> leftMarginList3 = [];
   List<double> leftMarginList4 = [];
+
   List<double> onClickWidthList1 = [];
   List<double> onClickWidthList2 = [];
   List<double> onClickWidthList3 = [];
@@ -114,8 +126,7 @@ class _IFTabBarState extends State<IFTabBar> {
           .registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
       EventBus.getDefault()
           .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      EventBus.getDefault()
-          .registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
+      EventBus.getDefault().registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
@@ -130,10 +141,14 @@ class _IFTabBarState extends State<IFTabBar> {
     Size textSize = calculateTextWidth("首页", selectedButtonTextStyle, screenWidth, 1).size;
     selectedButtonTextWidth = textSize.width;
     selectedButtonTextHeight = textSize.height;
+    //已选中按钮中 图标和文字距离左右的边距
     selectedButtonPadding = (selectedButtonWidth - iconSize - selectedButtonSpace - selectedButtonTextWidth) / 2;
+    //图标和图标的间距比较大
     innerPaddingBig = (screenWidth - iconSize * 3 - selectedButtonWidth - iconMargin - selectedButtonMargin) / 3;
+    //选中框不在左右两边时，图标和选中框的间距比较小
     innerPaddingSmall = (screenWidth - iconSize * 3 - selectedButtonWidth - iconMargin * 2 - innerPaddingBig) / 2;
 
+    //第一个按钮选中时的数值
     calculateLeftMargin(0);
     leftMarginList1.add(leftMarginIcon1);
     leftMarginList1.add(leftMarginIcon2);
@@ -141,10 +156,12 @@ class _IFTabBarState extends State<IFTabBar> {
     leftMarginList1.add(leftMarginIcon4);
     leftMarginList1.add(leftMarginSelectedButton);
     leftMarginText1 = leftMarginSelectedButton + selectedButtonPadding + iconSize + selectedButtonSpace;
-    onClickWidthList1.add(selectedButtonWidth + selectedButtonMargin);
-    onClickWidthList1.add(innerPaddingBig + iconSize + (innerPaddingBig / 2));
-    onClickWidthList1.add(innerPaddingBig + iconSize);
-    onClickWidthList1.add((innerPaddingBig / 2) + iconSize + iconMargin);
+    calculateOnClickWidth(0);
+    onClickWidthList1.add(onClickWidth1);
+    onClickWidthList1.add(onClickWidth2);
+    onClickWidthList1.add(onClickWidth3);
+    onClickWidthList1.add(onClickWidth4);
+    //第二个按钮选中时的数值
     calculateLeftMargin(1);
     leftMarginList2.add(leftMarginIcon1);
     leftMarginList2.add(leftMarginIcon2);
@@ -152,10 +169,12 @@ class _IFTabBarState extends State<IFTabBar> {
     leftMarginList2.add(leftMarginIcon4);
     leftMarginList2.add(leftMarginSelectedButton);
     leftMarginText2 = leftMarginSelectedButton + selectedButtonPadding + iconSize + selectedButtonSpace;
-    onClickWidthList2.add(iconMargin + iconSize + innerPaddingSmall);
-    onClickWidthList2.add(selectedButtonWidth);
-    onClickWidthList2.add(innerPaddingSmall + iconSize + (innerPaddingBig / 2));
-    onClickWidthList2.add((innerPaddingBig / 2) + iconSize + iconMargin);
+    calculateOnClickWidth(1);
+    onClickWidthList2.add(onClickWidth1);
+    onClickWidthList2.add(onClickWidth2);
+    onClickWidthList2.add(onClickWidth3);
+    onClickWidthList2.add(onClickWidth4);
+    //第三个按钮选中时的数值
     calculateLeftMargin(2);
     leftMarginList3.add(leftMarginIcon1);
     leftMarginList3.add(leftMarginIcon2);
@@ -163,10 +182,12 @@ class _IFTabBarState extends State<IFTabBar> {
     leftMarginList3.add(leftMarginIcon4);
     leftMarginList3.add(leftMarginSelectedButton);
     leftMarginText3 = leftMarginSelectedButton + selectedButtonPadding + iconSize + selectedButtonSpace;
-    onClickWidthList3.add(iconMargin + iconSize + (innerPaddingBig / 2));
-    onClickWidthList3.add(innerPaddingSmall + iconSize + (innerPaddingBig / 2));
-    onClickWidthList3.add(selectedButtonWidth);
-    onClickWidthList3.add(innerPaddingSmall + iconSize + iconMargin);
+    calculateOnClickWidth(2);
+    onClickWidthList3.add(onClickWidth1);
+    onClickWidthList3.add(onClickWidth2);
+    onClickWidthList3.add(onClickWidth3);
+    onClickWidthList3.add(onClickWidth4);
+    //第四个按钮选中时的数值
     calculateLeftMargin(3);
     leftMarginList4.add(leftMarginIcon1);
     leftMarginList4.add(leftMarginIcon2);
@@ -174,10 +195,11 @@ class _IFTabBarState extends State<IFTabBar> {
     leftMarginList4.add(leftMarginIcon4);
     leftMarginList4.add(leftMarginSelectedButton);
     leftMarginText4 = leftMarginSelectedButton + selectedButtonPadding + iconSize + selectedButtonSpace;
-    onClickWidthList4.add(iconMargin + iconSize + (innerPaddingBig / 2));
-    onClickWidthList4.add(innerPaddingBig + iconSize);
-    onClickWidthList4.add(iconSize + (innerPaddingBig / 2) + innerPaddingBig);
-    onClickWidthList4.add(selectedButtonWidth + selectedButtonMargin);
+    calculateOnClickWidth(3);
+    onClickWidthList4.add(onClickWidth1);
+    onClickWidthList4.add(onClickWidth2);
+    onClickWidthList4.add(onClickWidth3);
+    onClickWidthList4.add(onClickWidth4);
   }
 
   _postFeedCallBack(PostprogressModel postprogress) {
@@ -187,14 +209,13 @@ class _IFTabBarState extends State<IFTabBar> {
   }
 
   _jumpPage(int pageIndex) {
-    if(widget.tabBarClickListener!=null) {
+    if (widget.tabBarClickListener != null) {
       widget.tabBarClickListener(pageIndex);
     }
-    if(streamController!=null) {
+    if (streamController != null) {
       streamController.sink.add(pageIndex);
     }
   }
-
 
   _resetUnreadMessage() {
     Future.delayed(Duration(milliseconds: 200), () {
@@ -219,7 +240,7 @@ class _IFTabBarState extends State<IFTabBar> {
               child: Stack(
                 children: [
                   Center(
-                    child: _animatoContainer(snapshot),
+                    child: _animatedContainer(snapshot),
                   ),
                   Center(
                     child: _iconRow(snapshot),
@@ -260,7 +281,7 @@ class _IFTabBarState extends State<IFTabBar> {
               _onClickListener(0);
             },
             onDoubleTap: () {
-              if(widget.onDoubleTap != null) {
+              if (widget.onDoubleTap != null) {
                 widget.onDoubleTap(0);
               }
             },
@@ -269,17 +290,19 @@ class _IFTabBarState extends State<IFTabBar> {
               height: tabBarHeight,
             ),
           ),
-          InkWell(
-            highlightColor: AppColor.transparent,
-            radius: 0,
-            onTap: () {
-              _onClickListener(1);
-            },
-            child: Container(
-              width: getItemClickWidth(snapshot.data)[1],
-              height: tabBarHeight,
-            ),
-          ),
+          AppConfig.needShowTraining
+              ? InkWell(
+                  highlightColor: AppColor.transparent,
+                  radius: 0,
+                  onTap: () {
+                    _onClickListener(1);
+                  },
+                  child: Container(
+                    width: getItemClickWidth(snapshot.data)[1],
+                    height: tabBarHeight,
+                  ),
+                )
+              : Container(),
           InkWell(
             highlightColor: AppColor.transparent,
             radius: 0,
@@ -306,7 +329,7 @@ class _IFTabBarState extends State<IFTabBar> {
     );
   }
 
-  Widget _animatoContainer(AsyncSnapshot<int> snapshot) {
+  Widget _animatedContainer(AsyncSnapshot<int> snapshot) {
     return Container(
       height: tabBarHeight,
       width: screenWidth,
@@ -354,32 +377,35 @@ class _IFTabBarState extends State<IFTabBar> {
                           right: 0,
                           child: notifier.value.unReadFeedCount != 0
                               ? ClipOval(
-                            child: Container(
-                              height: 8,
-                              width: 8,
-                              color: AppColor.mainRed,
-                            ),
-                          )
-                              : Container());})
+                                  child: Container(
+                                    height: 8,
+                                    width: 8,
+                                    color: AppColor.mainRed,
+                                  ),
+                                )
+                              : Container());
+                    })
                   ],
                 ),
               ),
             ),
           ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
-            child: Container(
-              height: tabBarHeight,
-              width: 80,
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: 24,
-                height: 24,
-                child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
-              ),
-            ),
-          ),
+          AppConfig.needShowTraining
+              ? AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
+                  child: Container(
+                    height: tabBarHeight,
+                    width: 80,
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+                    ),
+                  ),
+                )
+              : Container(),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon3(snapshot.data)),
@@ -421,28 +447,27 @@ class _IFTabBarState extends State<IFTabBar> {
               width: 80,
               alignment: Alignment.centerLeft,
               child: Container(
-                width: 24,
-                height: 24,
-                child:Stack(
-                  children: [
-                    snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
-                    Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-                      return Positioned(
-                          top: 0,
-                          right: 4,
-                          child:
-                              notifier.value.fansUnreadCount>0
-                                  ? ClipOval(
-                            child: Container(
-                              height: 8,
-                              width: 8,
-                              color: AppColor.mainRed,
-                            ),
-                          )
-                         : Container());})
-                  ],
-                )
-              ),
+                  width: 24,
+                  height: 24,
+                  child: Stack(
+                    children: [
+                      snapshot.data == 3 ? selectedIcons[3] : normalIcons[3],
+                      Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                        return Positioned(
+                            top: 0,
+                            right: 4,
+                            child: notifier.value.fansUnreadCount > 0
+                                ? ClipOval(
+                                    child: Container(
+                                      height: 8,
+                                      width: 8,
+                                      color: AppColor.mainRed,
+                                    ),
+                                  )
+                                : Container());
+                      })
+                    ],
+                  )),
             ),
           ),
         ],
@@ -468,14 +493,16 @@ class _IFTabBarState extends State<IFTabBar> {
               ),
             ),
           ),
-          AnimatedOpacity(
-            opacity: snapshot.data == 1 ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
-            child: Container(
-              margin: EdgeInsets.only(left: leftMarginText2),
-              child: const Text("训练", style: AppStyle.whiteMedium15),
-            ),
-          ),
+          AppConfig.needShowTraining
+              ? AnimatedOpacity(
+                  opacity: snapshot.data == 1 ? 1 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  child: Container(
+                    margin: EdgeInsets.only(left: leftMarginText2),
+                    child: const Text("训练", style: AppStyle.whiteMedium15),
+                  ),
+                )
+              : Container(),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
             duration: const Duration(milliseconds: 250),
@@ -575,37 +602,107 @@ class _IFTabBarState extends State<IFTabBar> {
     }
   }
 
+  //计算图标及选中按钮距离左边的边距
   calculateLeftMargin(int index) {
     //根据所选按钮的index计算各位置
-    switch (index) {
-      case 0: //首页
-        leftMarginSelectedButton = selectedButtonMargin;
-        leftMarginIcon1 = leftMarginSelectedButton + selectedButtonPadding;
-        leftMarginIcon2 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingBig;
-        leftMarginIcon3 = leftMarginIcon2 + iconSize + innerPaddingBig;
-        leftMarginIcon4 = leftMarginIcon3 + iconSize + innerPaddingBig;
-        break;
-      case 1: //训练
-        leftMarginIcon1 = iconMargin;
-        leftMarginSelectedButton = leftMarginIcon1 + iconSize + innerPaddingSmall;
-        leftMarginIcon2 = leftMarginSelectedButton + selectedButtonPadding;
-        leftMarginIcon3 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingSmall;
-        leftMarginIcon4 = leftMarginIcon3 + iconSize + innerPaddingBig;
-        break;
-      case 2: //消息
-        leftMarginIcon1 = iconMargin;
-        leftMarginIcon2 = leftMarginIcon1 + iconSize + innerPaddingBig;
-        leftMarginSelectedButton = leftMarginIcon2 + iconSize + innerPaddingSmall;
-        leftMarginIcon3 = leftMarginSelectedButton + selectedButtonPadding;
-        leftMarginIcon4 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingSmall;
-        break;
-      case 3: //我的
-        leftMarginIcon1 = iconMargin;
-        leftMarginIcon2 = leftMarginIcon1 + iconSize + innerPaddingBig;
-        leftMarginIcon3 = leftMarginIcon2 + iconSize + innerPaddingBig;
-        leftMarginSelectedButton = leftMarginIcon3 + iconSize + innerPaddingBig;
-        leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
-        break;
+    //是否有训练按钮是两套方案 无法通过数据微调套用公式 所以完全分开写
+    if (AppConfig.needShowTraining) {
+      switch (index) {
+        case 0: //首页
+          leftMarginSelectedButton = selectedButtonMargin;
+          leftMarginIcon1 = leftMarginSelectedButton + selectedButtonPadding;
+          leftMarginIcon2 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingBig;
+          leftMarginIcon3 = leftMarginIcon2 + iconSize + innerPaddingBig;
+          leftMarginIcon4 = leftMarginIcon3 + iconSize + innerPaddingBig;
+          break;
+        case 1: //训练
+          leftMarginIcon1 = iconMargin;
+          leftMarginSelectedButton = leftMarginIcon1 + iconSize + innerPaddingSmall;
+          leftMarginIcon2 = leftMarginSelectedButton + selectedButtonPadding;
+          leftMarginIcon3 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingSmall;
+          leftMarginIcon4 = leftMarginIcon3 + iconSize + innerPaddingBig;
+          break;
+        case 2: //消息
+          leftMarginIcon1 = iconMargin;
+          leftMarginIcon2 = leftMarginIcon1 + iconSize + innerPaddingBig;
+          leftMarginSelectedButton = leftMarginIcon2 + iconSize + innerPaddingSmall;
+          leftMarginIcon3 = leftMarginSelectedButton + selectedButtonPadding;
+          leftMarginIcon4 = leftMarginSelectedButton + selectedButtonWidth + innerPaddingSmall;
+          break;
+        case 3: //我的
+          leftMarginIcon1 = iconMargin;
+          leftMarginIcon2 = leftMarginIcon1 + iconSize + innerPaddingBig;
+          leftMarginIcon3 = leftMarginIcon2 + iconSize + innerPaddingBig;
+          leftMarginSelectedButton = leftMarginIcon3 + iconSize + innerPaddingBig;
+          leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
+          break;
+      }
+    } else {
+      //训练按钮的数据写成和首页一样
+      switch (index) {
+        case 0: //首页
+          leftMarginSelectedButton = selectedButtonMargin;
+          leftMarginIcon1 = leftMarginSelectedButton + selectedButtonPadding;
+          leftMarginIcon2 = leftMarginIcon1;
+          leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
+          leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
+          break;
+        case 1: //训练 没有训练按钮所以不做重新计算
+          break;
+        case 2: //消息
+          leftMarginIcon1 = iconMargin;
+          leftMarginIcon2 = leftMarginIcon1;
+          leftMarginSelectedButton = (ScreenUtil.instance.screenWidthDp - selectedButtonWidth) / 2;
+          leftMarginIcon3 = leftMarginSelectedButton + selectedButtonPadding;
+          leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
+          break;
+        case 3: //我的
+          leftMarginIcon1 = iconMargin;
+          leftMarginIcon2 = leftMarginIcon1;
+          leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
+          leftMarginSelectedButton = ScreenUtil.instance.screenWidthDp - selectedButtonMargin - selectedButtonWidth;
+          leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
+          break;
+      }
+    }
+  }
+
+  //计算响应点击事件的宽度
+  calculateOnClickWidth(int index) {
+    //是否有训练按钮是两套方案 无法通过数据微调套用公式 所以完全分开写
+    if (AppConfig.needShowTraining) {
+      switch (index) {
+        case 0: //首页
+          onClickWidth1 = selectedButtonWidth + selectedButtonMargin;
+          onClickWidth2 = innerPaddingBig + iconSize + (innerPaddingBig / 2);
+          onClickWidth3 = innerPaddingBig + iconSize;
+          onClickWidth4 = (innerPaddingBig / 2) + iconSize + iconMargin;
+          break;
+        case 1: //训练
+          onClickWidth1 = iconMargin + iconSize + innerPaddingSmall;
+          onClickWidth2 = selectedButtonWidth;
+          onClickWidth3 = innerPaddingSmall + iconSize + (innerPaddingBig / 2);
+          onClickWidth4 = (innerPaddingBig / 2) + iconSize + iconMargin;
+          break;
+        case 2: //消息
+          onClickWidth1 = iconMargin + iconSize + (innerPaddingBig / 2);
+          onClickWidth2 = innerPaddingSmall + iconSize + (innerPaddingBig / 2);
+          onClickWidth3 = selectedButtonWidth;
+          onClickWidth4 = innerPaddingSmall + iconSize + iconMargin;
+          break;
+        case 3: //我的
+          onClickWidth1 = iconMargin + iconSize + (innerPaddingBig / 2);
+          onClickWidth2 = innerPaddingBig + iconSize;
+          onClickWidth3 = iconSize + (innerPaddingBig / 2) + innerPaddingBig;
+          onClickWidth4 = selectedButtonWidth + selectedButtonMargin;
+          break;
+      }
+    } else {
+      //全都是屏幕宽的1/3
+      onClickWidth1 = ScreenUtil.instance.screenWidthDp / 3;
+      onClickWidth2 = onClickWidth1;
+      onClickWidth3 = onClickWidth1;
+      onClickWidth4 = onClickWidth1;
     }
   }
 }
