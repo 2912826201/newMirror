@@ -154,8 +154,8 @@ class FeedMsg extends StatelessWidget {
             position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
-      position:position,
-      setCallRemoveOverlay:setCallRemoveOverlay,
+      position: position,
+      setCallRemoveOverlay: setCallRemoveOverlay,
       isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       isMySelf: isMyself,
@@ -251,7 +251,12 @@ class FeedMsg extends StatelessWidget {
                   height: double.infinity,
                   width: double.infinity,
                   child: Center(
-                    child: AppIcon.getAppIcon(AppIcon.play_circle_28, 28),
+                    child: Image.asset(
+                      "assets/png/play_circle_28.png",
+                      height: 28,
+                      width: 28,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
