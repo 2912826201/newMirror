@@ -172,7 +172,10 @@ class scanCodePageState extends State<ScanCodePage> {
                   svgName: AppIcon.qrcode,
                   bgColor: AppColor.white,
                   onTap: () {
-                    AppRouter.navigateToMyQrCodePage(context, (result) {});
+                    controller.pauseCamera();
+                    AppRouter.navigateToMyQrCodePage(context, (result) {
+                    controller.resumeCamera();
+                    });
                   },
                 )
               : Container(),
