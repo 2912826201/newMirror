@@ -59,16 +59,23 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           height: ScreenUtil.instance.height * 0.07,
         ),
         Container(
-          height: 156,
-          width: 156,
-          color: AppColor.bgWhite,
+          height: 224,
+          width: 224,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
+                  ? "assets/png/scan_code_login_machine_success.png"
+                  : "assets/png/scan_code_error.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         SizedBox(
           height: 16,
         ),
         Text(
           widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
-              ? "登录设备成功"
+              ? "当前账号登录成功"
               : widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
                   ? "二维码已过期"
                   : widget.resultModel.type == ScanCodeResultType.CODE_INVALID
@@ -77,14 +84,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           style: AppStyle.textRegular16,
         ),
         SizedBox(
-          height: 6,
-        ),
-        Opacity(
-          opacity: widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess ? 1 : 0,
-          child: Text("当前账号登录$name成功"),
-        ),
-        SizedBox(
-          height: 98,
+          height: 36,
         ),
         Opacity(
           opacity: widget.resultModel.type == ScanCodeResultType.CODE_INVALID ? 0 : 1,
