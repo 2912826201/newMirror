@@ -170,6 +170,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
   ///
   /// Additionally the swipe up / down to dismiss gets enabled.
   void _onPageChanged(int page) {
+    // print("_onPageChanged111111111111111");
     setState(() {
       currentIndex = page;
       setFocus(currentIndex);
@@ -240,7 +241,9 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
 
   setFocus(int currentIndex){
     setFocusListenerMap.forEach((key, value) {
-      value(key==currentIndex);
+      if(value!=null) {
+        value(key == currentIndex);
+      }
     });
   }
 

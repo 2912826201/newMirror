@@ -60,9 +60,11 @@ class _DemoImageItemState extends State<DemoImageItem> {
 
   setFocus(bool isFocus){
     this.isFocus=isFocus;
-    setState(() {
+    if(mounted) {
+      setState(() {
 
-    });
+      });
+    }
   }
 
 
