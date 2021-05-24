@@ -188,6 +188,33 @@ class DateUtil {
     }
   }
 
+
+  /// 分钟-秒 01'12''
+  /// 不显示时 01
+  /// ms 毫秒级
+  static String formatMinuteSecond(int ms) {
+    ms~/=1000;
+    if (ms < 60) {
+      if (ms < 10) {
+        return "00'0$ms''";
+      }
+      return "00'$ms''";
+    } else {
+      int hour = ms ~/ 3600;
+      int minute = ms % 3600 ~/ 60;
+      int second = ms % 60;
+      if (hour > 0||minute > 0) {
+        int timeMinute=minute+hour*60;
+        return "${timeMinute > 10 ? timeMinute : "0" + timeMinute.toString()}"
+            "'${second > 10 ? second : "0" + second.toString()}''";
+      }else {
+        return "00'${second > 10 ? second : "0" + second.toString()}''";
+      }
+    }
+  }
+
+
+
   //获取聊天框内消息提示的格式
   //---小时数，十位数为0时，不显示十位
   //

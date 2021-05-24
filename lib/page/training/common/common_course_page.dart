@@ -318,8 +318,7 @@ Widget getActionUiVideo(CourseModel videoModel, BuildContext context, TextStyle 
               longTime = 0;
             }
             if (longTime > 0) {
-              timeString =
-                  DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+              timeString = DateUtil.formatMinuteSecond(longTime);
             }
             return Container(
               width: 136,
@@ -417,7 +416,7 @@ Widget getActionUiLive(
       longTime = 0;
     }
     if (longTime > 0) {
-      timeString = DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+      timeString = DateUtil.formatMinuteSecond(longTime);
     }
 
     widgetArray.add(
