@@ -53,7 +53,7 @@ class LiveRoomVideoOperationPage extends StatefulWidget {
   _LiveRoomVideoOperationPageState createState() => _LiveRoomVideoOperationPageState(coachRelation);
 }
 
-class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> with WidgetsBindingObserver{
+class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperationPage> with WidgetsBindingObserver {
   _LiveRoomVideoOperationPageState(this.coachRelation);
 
   //与教练的关系
@@ -62,6 +62,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   List<UserMessageModel> messageChatList = [];
 
   ScrollController textScrollController = ScrollController();
+
   ///输入框的监听
   TextEditingController _textController = TextEditingController();
 
@@ -113,11 +114,10 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
     EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
-    EventBus.getDefault().registerNoParameter(_onClickBodyListener, EVENTBUS_ROOM_OPERATION_PAGE,
-        registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.getDefault()
+        .registerNoParameter(_onClickBodyListener, EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
     EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: LIVE_COURSE_LIVE_START_OR_END);
-
 
     urlImageList.add("");
     urlImageList.add(widget.coachUrl);
@@ -143,17 +143,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     _initTimeDuration();
   }
 
-  void _liveCourseStatus(List list){
-    if(list!=null&&list[1]==widget.liveCourseId){
-      switch(list[0]){
+  void _liveCourseStatus(List list) {
+    if (list != null && list[1] == widget.liveCourseId) {
+      switch (list[0]) {
         case 0:
-        //0-直播开始
+          //0-直播开始
           print("直播开始");
           break;
         case 3:
-        //0-直播结束
+          //0-直播结束
           print("直播结束");
-          ToastShow.show(msg: "直播已结束", context: context,duration: Toast.LENGTH_LONG);
+          ToastShow.show(msg: "直播已结束", context: context, duration: Toast.LENGTH_LONG);
           _exitPage();
           break;
         default:
@@ -406,16 +406,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           ),
         ),
         Container(
-          color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite||_emojiStateOld)
+          color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite || _emojiStateOld)
               ? AppColor.white
               : AppColor.transparent,
           child: Column(
             children: [
               Container(
-                height: _emojiState ? 0.0 : MediaQuery
-                    .of(context)
-                    .padding
-                    .bottom,
+                height: _emojiState ? 0.0 : MediaQuery.of(context).padding.bottom,
                 color: (_focusNode.hasFocus || isShowEditPlan || _emojiState || bottomBarHeightColorIsWhite)
                     ? AppColor.white
                     : AppColor.transparent,
@@ -470,14 +467,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget getBottomBarAnimatedContainer() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
-      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState||_emojiStateOld) ? 48.0 : 0.0,
+      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState || _emojiStateOld) ? 48.0 : 0.0,
       child: getBottomBarEditTextPanel(),
     );
   }
 
   Widget getBottomBarEditTextPanel() {
     return Container(
-      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState||_emojiStateOld) ? 48.0 : 0.0,
+      height: (_focusNode.hasFocus || isShowEditPlan || _emojiState || _emojiStateOld) ? 48.0 : 0.0,
       // height: 48.0,
       child: SingleChildScrollView(
         child: Container(
@@ -500,14 +497,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                       if (ClickUtil.isFastClick()) {
                         return;
                       }
-                      _emojiStateOld=_emojiState;
+                      _emojiStateOld = _emojiState;
                       if (isShowEmojiBtn) {
                         _emojiState = isShowEmojiBtn;
                         isShowEditPlan = false;
                         isShowEmojiBtn = !isShowEmojiBtn;
                         if (_focusNode.hasFocus) {
                           _focusNode.unfocus();
-                        }else{
+                        } else {
                           setState(() {
                             print("setState-111111111111111111");
                           });
@@ -516,7 +513,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                         _emojiState = isShowEmojiBtn;
                         isShowEditPlan = false;
                         isShowEmojiBtn = !isShowEmojiBtn;
-                        _bottomSettingPanelState=!_emojiState;
+                        _bottomSettingPanelState = !_emojiState;
                         FocusScope.of(context).requestFocus(_focusNode);
                         // Future.delayed(Duration(milliseconds: 100),(){
                         //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
@@ -556,10 +553,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       keyboardHeight = 300.0;
     }
 
-    keyboardHeight -= MediaQuery
-        .of(context)
-        .padding
-        .bottom;
+    keyboardHeight -= MediaQuery.of(context).padding.bottom;
     widgetList.add(bottomSettingPanel(keyboardHeight));
 
     if ((_emojiState ? keyboardHeight : 0.0) > 0) {
@@ -577,9 +571,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     print("bottomSettingPanel:$_bottomSettingPanelState,$keyboardHeight");
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
-      height: _bottomSettingPanelState||_emojiState ? keyboardHeight : 0.0,
+      height: _bottomSettingPanelState || _emojiState ? keyboardHeight : 0.0,
       child: Container(
-        height: _bottomSettingPanelState||_emojiState ? keyboardHeight : 0.0,
+        height: _bottomSettingPanelState || _emojiState ? keyboardHeight : 0.0,
         width: double.infinity,
         color: AppColor.white,
       ),
@@ -631,10 +625,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                 ),
                 SliverToBoxAdapter(
                   child: Container(
-                    height: MediaQuery
-                        .of(context)
-                        .padding
-                        .bottom,
+                    height: MediaQuery.of(context).padding.bottom,
                     color: Colors.white,
                   ),
                 ),
@@ -650,17 +641,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   //获取表情头部的 内嵌的表情
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: keyboardHeight - 45.0 - MediaQuery
-          .of(context)
-          .padding
-          .bottom,
+      height: keyboardHeight - 45.0 - MediaQuery.of(context).padding.bottom,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
       child: GridView.builder(
         padding: const EdgeInsets.only(top: 10),
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -762,7 +750,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   Widget edit() {
     return TextSpanField(
       onTap: () {
-        _emojiStateOld=_emojiState;
+        _emojiStateOld = _emojiState;
         pageHeightStopCanvas = true;
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
@@ -781,7 +769,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         // setState(() {});
       },
       onLongTap: () {
-        _emojiStateOld=_emojiState;
+        _emojiStateOld = _emojiState;
         pageHeightStopCanvas = true;
         oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
@@ -813,8 +801,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       style: TextStyle(
         fontSize: 14,
         color: AppColor.textPrimary1,
-        background: Paint()
-          ..color = AppColor.bgWhite,
+        background: Paint()..color = AppColor.bgWhite,
       ),
       //内容改变的回调
       onChanged: (text) {
@@ -963,14 +950,14 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Map<String, dynamic> map = await roomInfo(widget.coachId, count: 3);
-    if (null !=map["data"]&&null != map["data"]["userList"]) {
+    if (null != map["data"] && null != map["data"]["userList"]) {
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel = BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));
         onlineManUidList.add(buddyModel.uid);
       });
     }
-    if (null !=onlineManList) {
+    if (null != onlineManList) {
       resetOnlineUserNumber(onlineManList.length);
     }
     getAllOnlineUserNumber(onlineUserNumber + 1);
@@ -982,7 +969,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     Future.delayed(Duration(seconds: 2), () async {
       print("number:$number");
       Map<String, dynamic> map = await roomInfo(widget.coachId, count: number);
-      if (null != map["data"]["userList"]) {
+      if (null != map && null != map["data"] && null != map["data"]["userList"]) {
         onlineManList.clear();
         onlineManUidList.clear();
         map["data"]["userList"].forEach((v) {
@@ -1019,8 +1006,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     if (null == number || !(number is int)) {
       return;
     }
-    if(number < onlineManList.length){
-      number=onlineManList.length;
+    if (number < onlineManList.length) {
+      number = onlineManList.length;
     }
     onlineUserNumber = number;
     if (mounted) {
@@ -1097,11 +1084,11 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   // 监听返回事件
   Future<bool> _requestPop() {
-    if(_emojiState){
-      _emojiStateOld=false;
+    if (_emojiState) {
+      _emojiStateOld = false;
       _onClickBodyListener();
       return new Future.value(false);
-    }else {
+    } else {
       return new Future.value(true);
     }
   }
@@ -1121,19 +1108,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         }));
   }
 
-  void _exitPage(){
+  void _exitPage() {
     Navigator.of(context).pop();
   }
 
-
-  _closeData(){
+  _closeData() {
     EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
-    EventBus.getDefault()
-        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
     EventBus.getDefault()
         .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
     if (timer != null) {
@@ -1145,19 +1130,17 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     messageCantSendStream.close();
   }
 
-
   @override
   Future didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     print("didChangeAppLifecycleState:$state");
     if (state == AppLifecycleState.paused) {
-      if(_emojiState){
-        _emojiStateOld=false;
+      if (_emojiState) {
+        _emojiStateOld = false;
         _onClickBodyListener();
       }
     }
   }
-
 
   @override
   void dispose() {
@@ -1257,8 +1240,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
     switch (type) {
       case "joinLiveRoom":
-        print("22222222222222222:type:$type，${textMessage.sendUserInfo?.portraitUri},${textMessage.sendUserInfo
-            ?.userId}");
+        print(
+            "22222222222222222:type:$type，${textMessage.sendUserInfo?.portraitUri},${textMessage.sendUserInfo?.userId}");
         //加入直播间
 
         print("33333333:type:$type");
@@ -1281,7 +1264,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         }
         break;
       case "quitLiveRoom":
-      //退出直播间
+        //退出直播间
         print("${textMessage.sendUserInfo.name}退出了直播间");
 
         subLiveRoom(textMessage);
@@ -1296,7 +1279,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-  void _onDoubleClickBodyListener(){
+  void _onDoubleClickBodyListener() {
     print("双击");
   }
 
@@ -1497,7 +1480,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
         if (mounted) {
           setState(() {
-            print("setState-aaaaaaaaaaaaaaaaaaaaaa");});
+            print("setState-aaaaaaaaaaaaaaaaaaaaaa");
+          });
         }
       }
     }
@@ -1507,7 +1491,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   void startCanvasPage(bool isOpen) {
     print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
     print("_bottomSettingPanelState:是$_bottomSettingPanelState");
-    if(isOpen) {
+    if (isOpen) {
       if (!_emojiStateOld) {
         if (_bottomSettingPanelState != isOpen) {
           _bottomSettingPanelState = isOpen;
@@ -1519,7 +1503,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           }
         }
       }
-    }else{
+    } else {
       _bottomSettingPanelState = false;
       print("_bottomSettingPanelState:是$_bottomSettingPanelState");
       if (mounted) {
@@ -1528,8 +1512,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         });
       }
     }
-    if(isOpen){
-      _emojiStateOld=false;
+    if (isOpen) {
+      _emojiStateOld = false;
     }
   }
 

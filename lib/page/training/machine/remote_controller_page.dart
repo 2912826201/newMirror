@@ -971,7 +971,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       if(_showDialog&&contextDialog!=null){
         print("...");
         _showDialog=false;
-        Navigator.pop(contextDialog);
+        try{
+          Navigator.pop(contextDialog);
+        }catch (e){}
       }
       if (model.index == _currentPartIndex) {
         if (_currentPosition <= currentPosition) {
