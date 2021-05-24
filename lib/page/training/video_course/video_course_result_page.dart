@@ -44,25 +44,21 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE,registerName: VIDEO_COURSE_RESULT);
+    EventBus.getDefault().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
   @override
   void initState() {
     super.initState();
     //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
-    EventBus.getDefault().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE,registerName: VIDEO_COURSE_RESULT);
+    EventBus.getDefault().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
-
-  setData(List list){
-    widget.result=list[0];
-    widget.course=list[1];
-    setState(() {
-
-    });
+  setData(List list) {
+    widget.result = list[0];
+    widget.course = list[1];
+    setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -376,13 +372,8 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             SizedBox(
               width: 4,
             ),
-            Icon(
-              Icons.check_circle,
-              color: AppColor.textPrimary2,
-              size: 16,
-            ),
+            AppIcon.getAppIcon(AppIcon.identity_coach, 16),
             Spacer(),
-
             FollowButton(
               id: widget.course.coachDto.uid,
               relation: widget.course.coachDto.relation,

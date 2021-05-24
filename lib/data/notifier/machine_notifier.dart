@@ -18,7 +18,9 @@ class MachineNotifier with ChangeNotifier {
     _machine = machineModel;
     //要将全局的token赋值
     Application.machine = machineModel;
-    EventBus.getDefault().post(msg: machineModel,registerName: GET_MACHINE_STATUS_INFO);
+    if(machineModel!=null) {
+      EventBus.getDefault().post(msg: machineModel, registerName: GET_MACHINE_STATUS_INFO);
+    }
     notifyListeners();
   }
 }
