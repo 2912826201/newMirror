@@ -138,7 +138,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                           children: [
                             AppIconButton(
                               iconSize: 18,
-                              svgName: AppIcon.trash_bucket,
+                              svgName: AppIcon.retry_publish,
                               buttonHeight: 30,
                               buttonWidth: 30,
                               onTap: widget.resendFeedChanged,

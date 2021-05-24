@@ -77,7 +77,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     "assets/png/pic_topic_banner_element_6.png"
   ];
   List<TopicDtoModel> topicDtoModelList = [];
-
+  bool isScrollCanChange = true;
   final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
 
   @override
@@ -95,12 +95,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
     _scrollController
       ..addListener(() {
+        print('--------$headSlideHeight-------------${_scrollController.offset}');
         if (_scrollController.hasClients) {
           if (_scrollController.offset >= headSlideHeight) {
-            topicUiChangeModel.opacity = 1;
-            topicUiChangeModel.canOnclick = true;
-            appBarStreamController.sink.add(topicUiChangeModel);
-          } else {
+              topicUiChangeModel.opacity = 1;
+              topicUiChangeModel.canOnclick = true;
+              appBarStreamController.sink.add(topicUiChangeModel);
+          } else if(headSlideHeight-_scrollController.offset > 1){
             if (_scrollController.offset < headSlideHeight) {
               double offset = _scrollController.offset / headSlideHeight;
               topicUiChangeModel.opacity = offset;

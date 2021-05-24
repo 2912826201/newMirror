@@ -45,10 +45,12 @@ class AppIcon {
   static const String check_follow = "assets/svg/check_follow.svg";
   static const String topic = "assets/svg/topic.svg";
   static const String trash_bucket = "assets/svg/trash_bucket.svg";
+  static const String retry_publish = "assets/svg/retry_publish.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
+  static const String arrow_left_18 = "assets/svg/arrow_left_18.svg";
   static const String double_arrow_down_16 = "assets/svg/double_arrow_down_16.svg";
   static const String close_18 = "assets/svg/close_18.svg";
   static const String close_24 = "assets/svg/close_24.svg";
@@ -135,6 +137,7 @@ class AppIcon {
   static const String volume_off_16 = "assets/svg/volume_off_16.svg";
   static const String pin_bubble_index_bar = "assets/svg/pin_bubble_index_bar.svg";
   static const String error_circle = "assets/svg/error_circle.svg";
+  static const String identity_coach = "assets/svg/identity_coach.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

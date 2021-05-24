@@ -303,25 +303,29 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         body: Column(
           children: [
             isMselfId
-                ? TabBar(
-                    unselectedLabelStyle: AppStyle.textHintRegular16,
-                    unselectedLabelColor: AppColor.textSecondary,
-                    labelStyle: AppStyle.textMedium18,
-                    labelColor: AppColor.black,
-                    indicatorColor: AppColor.black,
-                    controller: _mController,
-                    onDoubleTap: (value) {
-                      EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
-                    },
-                    indicatorSize: TabBarIndicatorSize.label,
-                    indicator: RoundUnderlineTabIndicator(
-                        insets: EdgeInsets.only(bottom: 0),
-                        wantWidth: 20,
-                        borderSide: BorderSide(width: 2, color: AppColor.black)),
-                    tabs: <Widget>[
-                      Tab(text: '动态'),
-                      Tab(text: '喜欢'),
-                    ],
+                ? Container(
+                    color: AppColor.white,
+                    padding: EdgeInsets.only(left: width/4,right: width/4),
+                    child: TabBar(
+                      unselectedLabelStyle: AppStyle.textHintRegular16,
+                      unselectedLabelColor: AppColor.textSecondary,
+                      labelStyle: AppStyle.textMedium18,
+                      labelColor: AppColor.black,
+                      indicatorColor: AppColor.black,
+                      controller: _mController,
+                      onDoubleTap: (value) {
+                        EventBus.getDefault().post(msg: value == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                      },
+                      indicatorSize: TabBarIndicatorSize.label,
+                      indicator: RoundUnderlineTabIndicator(
+                          insets: EdgeInsets.only(bottom: 0),
+                          wantWidth: 20,
+                          borderSide: BorderSide(width: 2, color: AppColor.black)),
+                      tabs: <Widget>[
+                        Tab(text: '动态'),
+                        Tab(text: '喜欢'),
+                      ],
+                    ),
                   )
                 : Container(),
             Expanded(
