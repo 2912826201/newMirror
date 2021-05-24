@@ -348,7 +348,7 @@ class _SharePopupState extends State<_SharePopup> {
             children: [
               AppIconButton(
                 iconSize: 18,
-                icon: Icons.chevron_left,
+                svgName: AppIcon.arrow_left_18,
                 iconColor: AppColor.textHint,
                 buttonHeight: 48,
                 buttonWidth: 50,

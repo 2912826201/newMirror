@@ -436,7 +436,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             children: [
               AppIconButton(
                 iconSize: 18,
-                icon: Icons.chevron_left,
+                svgName: AppIcon.arrow_left_18,
                 iconColor: AppColor.textHint,
                 buttonHeight: 48,
                 buttonWidth: 50,
