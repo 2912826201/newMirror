@@ -33,6 +33,7 @@ import 'package:mirror/widget/my_widgets_binding_observer.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 import 'api/training/course_api.dart';
 import 'api/message_api.dart';
@@ -324,6 +325,8 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     //需要APP环境的初始化
+    //设置友盟收集模式
+    UmengCommonSdk.setPageCollectionModeAuto();
     //融云的状态管理者
     Application.rongCloud.initStatusManager(context);
     //融云的收信管理者

@@ -150,6 +150,8 @@ dependencies:
   another_flushbar: ^1.10.11
   #获取文件的MD5
   md5_plugin: ^1.0.2
+  #友盟
+  umeng_common_sdk: 1.1.0
 
 
 
