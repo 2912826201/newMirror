@@ -155,13 +155,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   // 合并请求
   mergeRequest() {
-    // 合并请求
-    Future.wait([
+    List<Future> requestList = [
       // 请求推荐接口
       getHotList(size: 20),
-      // 请求推荐教练
-      newRecommendCoach(),
-    ]).then((results) {
+    ];
+    if(AppConfig.needShowTraining)requestList.add(newRecommendCoach());
+    // 合并请求
+    Future.wait(requestList).then((results) {
       if (mounted) {
         if (recommendModelList.isNotEmpty) {
           recommendIdList.clear();
@@ -171,7 +171,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           liveVideoModel.clear();
         }
         setState(() {
-          if (results[1] != null) {
+          if (AppConfig.needShowTraining&&results[1] != null) {
             // initHeight += 93;
             liveVideoModel = results[1];
             print("推荐教练书剑返回");
@@ -183,7 +183,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             if (dataModel.list.isNotEmpty) {
               print('==========================dataModel.list.isNotEmpty');
               dataModel.list.forEach((v) {
-                context.read<UserInteractiveNotifier>().value.profileUiChangeModel.remove(HomeFeedModel.fromJson(v).pushId);
+                context
+                    .read<UserInteractiveNotifier>()
+                    .value
+                    .profileUiChangeModel
+                    .remove(HomeFeedModel.fromJson(v).pushId);
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });
@@ -543,7 +547,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   _showImageDialog() {
-    if(!AppConfig.needShowTraining){
+    if (!AppConfig.needShowTraining) {
       return;
     }
     if (context.read<TokenNotifier>().isLoggedIn &&
@@ -555,7 +559,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       } else if (AppPrefs.isFirstLaunchToDay()) {
         isShowNewUserDialog = true;
       }
-      if(AppRouter.isHaveNewUserPromotionPage()){
+      if (AppRouter.isHaveNewUserPromotionPage()) {
         isShowNewUserDialog = false;
       }
       if (isShowNewUserDialog) {

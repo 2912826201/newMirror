@@ -79,6 +79,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   List<TopicDtoModel> topicDtoModelList = [];
   bool isScrollCanChange = true;
   final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
+  StreamController<double> followStreamController;
+  StreamController<double> notFollowStreamController;
+  bool followOrNot = false;
 
   @override
   void dispose() {
@@ -89,6 +92,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   @override
   void initState() {
+    followStreamController = StreamController.broadcast();
+    notFollowStreamController = StreamController.broadcast();
     // 请求话题详情页数据
     requestTopicInfo();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
@@ -98,10 +103,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         print('--------$headSlideHeight-------------${_scrollController.offset}');
         if (_scrollController.hasClients) {
           if (_scrollController.offset >= headSlideHeight) {
-              topicUiChangeModel.opacity = 1;
-              topicUiChangeModel.canOnclick = true;
-              appBarStreamController.sink.add(topicUiChangeModel);
-          } else if(headSlideHeight-_scrollController.offset > 1){
+            topicUiChangeModel.opacity = 1;
+            topicUiChangeModel.canOnclick = true;
+            appBarStreamController.sink.add(topicUiChangeModel);
+          } else if (headSlideHeight - _scrollController.offset > 1) {
             if (_scrollController.offset < headSlideHeight) {
               double offset = _scrollController.offset / headSlideHeight;
               topicUiChangeModel.opacity = offset;
@@ -119,6 +124,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 请求话题详情页信息
   requestTopicInfo() async {
     model = await getTopicInfo(topicId: widget.topicId);
+    if (model != null) {
+      if (model.isFollow == 1) followOrNot = true;
+    }
     topicDtoModelList.add(model);
     setState(() {});
   }
@@ -130,6 +138,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
       setState(() {
         model.isFollow = 1;
       });
+      notFollowStreamController.sink.add(0);
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id, isAdd: false);
       }
@@ -145,6 +154,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
       setState(() {
         model.isFollow = 0;
       });
+      followStreamController.sink.add(0);
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id);
       }
@@ -351,7 +361,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             controller: _tabController,
                             labelStyle: const TextStyle(fontSize: 16),
                             unselectedLabelColor: AppColor.textHint,
-                            onDoubleTap: ( index) {
+                            onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // 刷新产品暂时没提空在这
 
@@ -570,7 +580,54 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
                 border: Border.all(width: 1, color: AppColor.bgBlack)),
-            child: model.isFollow == 0
+            child: Stack(
+              children: [
+                StreamBuilder<double>(
+                    initialData: followOrNot ? 0 : 1,
+                    stream: notFollowStreamController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                      return AnimatedOpacity(
+                        opacity: snapshot.data,
+                        duration: Duration(milliseconds: 250),
+                        child: Center(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add, size: 16, color: AppColor.black),
+                            Text("关注",
+                                style:
+                                    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1))
+                          ],
+                        )),
+                        onEnd: () {
+                          if (model.isFollow == 1) {
+                            followStreamController.sink.add(1);
+                          }
+                        },
+                      );
+                    }),
+                StreamBuilder<double>(
+                    initialData: !followOrNot ? 0 : 1,
+                    stream: followStreamController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                      return AnimatedOpacity(
+                        opacity: snapshot.data,
+                        duration: Duration(milliseconds: 250),
+                        child: Center(
+                          child: Text("已关注",
+                              style:
+                                  TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1)),
+                        ),
+                        onEnd: () {
+                          if (model.isFollow == 0) {
+                            notFollowStreamController.sink.add(1);
+                          }
+                        },
+                      );
+                    })
+              ],
+            ) /* model.isFollow == 0
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -583,7 +640,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 : Center(
                     child: Text("已关注",
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1)),
-                  )));
+                  )*/
+            ));
   }
 }
 
