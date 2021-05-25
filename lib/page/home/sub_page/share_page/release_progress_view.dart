@@ -46,8 +46,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
             onEnd: () {
               if (widget.postprogressModel.postFeedModel == null) {
                 widget.postprogressModel.showPulishView = false;
-                setState(() {
-                });
+                setState(() {});
               }
             },
           )
@@ -119,10 +118,11 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                             ? type ==
                                     // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
                                     mediaTypeKeyVideo
-                                ? Container(
-                                    width: 13,
-                                    height: 13,
-                                    color: AppColor.mainRed,
+                                ? Image.asset(
+                                    "assets/png/play_circle_28.png",
+                                    width: 14,
+                                    height: 14,
+                                    fit: BoxFit.contain,
                                   )
                                 : Container()
                             : Container()

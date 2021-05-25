@@ -312,14 +312,12 @@ Widget getActionUiVideo(CourseModel videoModel, BuildContext context, TextStyle 
             String timeString = "";
             int longTime = 0;
             try {
-              longTime = videoModel.coursewareDto?.actionMapList[index]["endTime"] -
-                  videoModel.coursewareDto?.actionMapList[index]["startTime"];
+              longTime = videoModel.coursewareDto?.actionMapList[index]["videoTime"];
             } catch (e) {
               longTime = 0;
             }
             if (longTime > 0) {
-              timeString =
-                  DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+              timeString = DateUtil.formatMinuteSecond(longTime);
             }
             return Container(
               width: 136,
@@ -411,13 +409,12 @@ Widget getActionUiLive(
     String timeString = "";
     int longTime = 0;
     try {
-      longTime =
-          liveModel.coursewareDto?.actionMapList[i]["endTime"] - liveModel.coursewareDto?.actionMapList[i]["startTime"];
+      longTime = liveModel.coursewareDto?.actionMapList[i]["videoTime"];
     } catch (e) {
       longTime = 0;
     }
     if (longTime > 0) {
-      timeString = DateUtil.formatSecondToStringNumNoShowMinute(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+      timeString = DateUtil.formatMinuteSecond(longTime);
     }
 
     widgetArray.add(

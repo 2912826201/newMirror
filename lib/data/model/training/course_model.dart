@@ -684,8 +684,7 @@ class CoursewareDto {
               for (int z = 0; z < _componentDtos[i]?.scriptToVideo[j].scriptIds?.length; z++) {
                 Map<String, dynamic> map = Map();
                 map["id"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.id;
-                map["startTime"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.startTime;
-                map["endTime"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.endTime;
+                map["videoTime"] = _componentDtos[i].scriptToVideo[j]?.videoTime;
 
                 if (_componentDtos[i].scripts != null) {
                   for (int n = 0; n < _componentDtos[i].scripts?.length; n++) {
