@@ -67,7 +67,7 @@ class _BodyTypeState extends State<BodyTypePage> {
             SizedBox(
               height: 42,
             ),
-            _ImageSwiper(height, width),
+            _imageSwiper(height, width),
             SizedBox(
               height: 12,
             ),
@@ -115,7 +115,7 @@ class _BodyTypeState extends State<BodyTypePage> {
     );
   }
 
-  Widget _ImageSwiper(double height, double width) {
+  Widget _imageSwiper(double height, double width) {
     return Container(
       height: 284,
       width: width,

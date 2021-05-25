@@ -404,6 +404,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //获取评论的item--每一个item
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
+    print('----_getCommentUi-----${value.itemChose}----${value.content}');
     if (courseCommentHot != null &&
         isFirstScroll &&
         widget.commentDtoModel != null &&
@@ -1168,10 +1169,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                   courseCommentHot.list.insert(0, widget.fatherComment);
                   screenOutHotIds.add(widget.fatherComment.id);
                 }
-                courseCommentHot.list[0].replys.insert(0, widget.commentDtoModel);
+                /*courseCommentHot.list[0].replys.insert(0, widget.commentDtoModel);
                 courseCommentHot.list[0].screenOutIds.add(widget.commentDtoModel.id);
                 courseCommentHot.list[0].pullNumber = 1;
-                courseCommentHot.list[0].replyCount -= 1;
+                courseCommentHot.list[0].replyCount -= 1;*/
               } else {
                 choseIndex = i;
               }
@@ -1182,12 +1183,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               print('=================不在第一页的子评论的父评论');
               courseCommentHot.list.insert(0, widget.fatherComment);
               screenOutHotIds.add(widget.fatherComment.id);
-              if (widget.isBottomSheetAndHomePage) {
+              /*if (widget.isBottomSheetAndHomePage) {
                 courseCommentHot.list[0].replys.insert(0, widget.commentDtoModel);
                 courseCommentHot.list[0].screenOutIds.add(widget.commentDtoModel.id);
                 courseCommentHot.list[0].replyCount -= 1;
                 courseCommentHot.list[0].pullNumber = 1;
-              }
+              }*/
             } else {
               print('=================不在第一页的父评论');
               widget.commentDtoModel.itemChose = true;
@@ -1304,8 +1305,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
           if (widget.commentDtoModel != null &&
               targetId == widget.commentDtoModel.targetId &&
-              childFirstLoading &&
-              !widget.isBottomSheetAndHomePage) {
+              childFirstLoading ) {
             print('===================第一次进初始化选中的评论');
             bool isFrist = false;
             for (int i = 0; i < commentModel.list.length; i++) {

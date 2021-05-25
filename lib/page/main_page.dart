@@ -4,6 +4,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -105,9 +106,10 @@ class MainPageState extends XCState {
               case 0:
                 break;
               case 1:
-                EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                if(AppConfig.needShowTraining)EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
                 break;
               case 2:
+                if(!AppConfig.needShowTraining) _getFollowCount();
                 break;
               case 3:
                 _getFollowCount();
