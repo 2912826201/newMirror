@@ -14,6 +14,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
+import 'package:mirror/widget/pull_to_refresh/src/smart_refresher.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 
 class SearchTopic extends StatefulWidget {
   SearchTopic({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
@@ -40,11 +42,12 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   // 是否存在下一页
   int hasNext;
 
-// 加载中默认文字
-  String loadText = "加载中...";
-
-  // 加载状态
-  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+// // 加载中默认文字
+//   String loadText = "加载中...";
+//
+//   // 加载状态
+//   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+  RefreshController _refreshController = RefreshController();
   String lastString;
 
 // Token can be shared with different requests.
@@ -59,16 +62,16 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   @override
   void initState() {
     requestFeednIterface(refreshOrLoading: true);
-    // 上拉加载
-    _scrollController.addListener(() {
-      if (widget.focusNode.hasFocus) {
-        print('-------------------focusNode---focusNode----focusNode--focusNode');
-        widget.focusNode.unfocus();
-      }
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestFeednIterface(refreshOrLoading: false);
-      }
-    });
+    // // 上拉加载
+    // _scrollController.addListener(() {
+    //   if (widget.focusNode.hasFocus) {
+    //     print('-------------------focusNode---focusNode----focusNode--focusNode');
+    //     widget.focusNode.unfocus();
+    //   }
+    //   if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    //     requestFeednIterface(refreshOrLoading: false);
+    //   }
+    // });
     widget.textController.addListener(() {
       // 取消延时器
       if (timer != null) {
@@ -107,12 +110,12 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   // 请求动态接口
   requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
-      if (loadStatus == LoadingStatus.STATUS_IDEL) {
-        // 先设置状态，防止下拉就直接加载
-        setState(() {
-          loadStatus = LoadingStatus.STATUS_LOADING;
-        });
-      }
+      // if (loadStatus == LoadingStatus.STATUS_IDEL) {
+      //   // 先设置状态，防止下拉就直接加载
+      //   setState(() {
+      //     loadStatus = LoadingStatus.STATUS_LOADING;
+      //   });
+      // }
       DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore, token: token);
       if (refreshOrLoading) {
         topicList.clear();
@@ -124,15 +127,32 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
           model.list.forEach((v) {
             topicList.add(TopicDtoModel.fromJson(v));
           });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
+          // loadStatus = LoadingStatus.STATUS_IDEL;
+          // loadText = "加载中...";
+        }
+        if (refreshOrLoading) {
+          _refreshController.refreshCompleted();
+        } else {
+          _refreshController.loadComplete();
+        }
+      } else {
+        if (refreshOrLoading) {
+          _refreshController.refreshFailed();
+        } else {
+          _refreshController.loadFailed();
         }
       }
     }
     if (hasNext == 0) {
+      if (refreshOrLoading) {
+        _refreshController.refreshCompleted();
+        _refreshController.loadComplete();
+      } else {
+        _refreshController.loadNoData();
+      }
       // 加载完毕
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      // loadText = "已加载全部动态";
+      // loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     if (mounted) {
       setState(() {});
@@ -146,13 +166,28 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
       return Container(
           child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
-              child: RefreshIndicator(
-                  onRefresh: () async {
+              // child: RefreshIndicator(
+              //     onRefresh: () async {
+              //       lastScore = null;
+              //       hasNext = null;
+              //       loadStatus = LoadingStatus.STATUS_LOADING;
+              //       loadText = "加载中...";
+              //       requestFeednIterface(refreshOrLoading: true);
+              //     },
+              child: SmartRefresher(
+                  enablePullDown: true,
+                  enablePullUp: true,
+                  footer: SmartRefresherHeadFooter.init().getFooter(),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
+                  controller: _refreshController,
+                  onRefresh: () {
                     lastScore = null;
                     hasNext = null;
-                    loadStatus = LoadingStatus.STATUS_LOADING;
-                    loadText = "加载中...";
+                    _refreshController.loadComplete();
                     requestFeednIterface(refreshOrLoading: true);
+                  },
+                  onLoading: () {
+                    requestFeednIterface(refreshOrLoading: false);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,
@@ -167,22 +202,12 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 primary: false,
-                                itemCount: topicList.length + 1,
+                                itemCount: topicList.length,
                                 itemExtent: 56,
                                 itemBuilder: (context, index) {
-                                  // if (feedList.isNotEmpty) {
-                                  if (index == topicList.length) {
-                                    return LoadingView(
-                                      loadText: loadText,
-                                      loadStatus: loadStatus,
-                                    );
-                                  } else if (index == topicList.length + 1) {
-                                    return Container();
-                                  } else {
-                                    return SearchTopiciItem(
-                                      model: topicList[index],
-                                    );
-                                  }
+                                  return SearchTopiciItem(
+                                    model: topicList[index],
+                                  );
                                   // }
                                 },
                               )),

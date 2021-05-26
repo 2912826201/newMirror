@@ -456,7 +456,6 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                             ? SliverAnimatedList(
                                 key: _listKey,
                                 itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-
                                   return _buildItem(index, animation);
                                 },
                                 initialItemCount: feedList.length)
@@ -467,9 +466,9 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   }
 
   _buildItem(int index, Animation animation) {
+    // 懒得发通知使用provider同步删除更新。
     return Consumer<FeedMapNotifier>(
       builder: (context, notifier, child) {
-        print("删除经栏吗？？？？？？？？？？？？？？？？？？？");
         HomeFeedModel feedModel;
         if (index < feedList.length) {
           feedModel = context.watch<FeedMapNotifier>().value.feedMap[feedList[index].id];
