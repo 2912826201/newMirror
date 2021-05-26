@@ -37,13 +37,14 @@ class DynamicListLayout extends StatefulWidget {
     this.topicId,
     this.isMySelf,
     this.isShowConcern = false,
+    this.itemHeightKey
   }) : super(key: key);
   final int index;
   bool isShowRecommendUser;
   HomeFeedModel model;
   int mineDetailId;
   String pageName;
-
+  GlobalKey itemHeightKey;
   // 话题详情页id
   int topicId;
   bool isHero;
@@ -78,6 +79,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
     print('==============================动态itembuild');
     return widget.model != null
         ? Column(
+            key: widget.itemHeightKey,
             children: [
               // 头部头像时间
               HeadView(

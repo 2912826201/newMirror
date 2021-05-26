@@ -600,7 +600,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                       return AnimatedOpacity(
                         opacity: snapshot.data,
-                        duration: Duration(milliseconds: 250),
+                        duration: Duration(milliseconds: 1000),
                         child: Center(
                             child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -625,7 +625,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                       return AnimatedOpacity(
                         opacity: snapshot.data,
-                        duration: Duration(milliseconds: 250),
+                        duration: Duration(milliseconds: 1000),
                         child: Center(
                           child: Text("已关注",
                               style:
