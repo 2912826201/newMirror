@@ -37,6 +37,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
@@ -212,6 +213,8 @@ class Application {
         //TODO 处理登出后需要清掉的用户的其他数据
         MessageManager.clearUserMessage(appContext);
         _clearUserRuntimeCache();
+        //友盟上报登出
+        UmengCommonSdk.onProfileSignOff();
         //跳转页面 移除所有页面 重新打开首页
         if(Application.pagePopRouterName==null){
           Application.pagePopRouterName=[];
