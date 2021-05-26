@@ -137,8 +137,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
         recommendTopicList.removeWhere((v) => v.id == id);
         context.read<FeedMapNotifier>().deleteFeed(id);
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
+      // // 更新全局监听
+      // context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
     });
   }
 
@@ -195,8 +195,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   child: isShowDefaultMap == null
                       ? Container()
                       : isShowDefaultMap
-                          ?
-                  CustomScrollView(
+                          ? CustomScrollView(
                               slivers: [
                                 SliverAnimatedList(
                                     key: _listKey,

@@ -364,7 +364,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // 刷新产品暂时没提空在这
-
+                                
                               } else {
                                 _tabController.animateTo(index);
                               }

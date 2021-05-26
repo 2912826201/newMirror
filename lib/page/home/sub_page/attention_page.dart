@@ -504,7 +504,7 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
           context.read<FeedMapNotifier>().deleteFeed(id);
           attentionModelList.removeWhere((v) => v.id == id);
           // 更新全局监听
-          context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+          // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
           print(attentionIdList.toString());
           if (attentionIdList.length == 0) {
             print("进入了00000");

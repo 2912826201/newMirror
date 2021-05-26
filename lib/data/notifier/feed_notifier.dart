@@ -158,6 +158,7 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   // 删除动态
   void deleteFeed(int id) {
     value._feedMap.remove(id);
+    notifyListeners();
   }
 
   // 关注or取消关注
