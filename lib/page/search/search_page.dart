@@ -149,10 +149,10 @@ class _SearchHeaderState extends State<SearchHeader> {
                     // onChanged: (text) {
                     //
                     // },
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                        hintText: '搜索用户、话题、课程、动态',
+                        hintText: '搜索用户、话题、${AppConfig.needShowTraining?"课程、":""}动态',
                         border: InputBorder.none),
                     inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                     // inputFormatters: [
