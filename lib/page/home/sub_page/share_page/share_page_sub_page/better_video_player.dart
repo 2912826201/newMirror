@@ -222,6 +222,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                                       stream: streamController.stream,
                                       builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
                                         return GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
                                           onTap: () {
                                             if (controller.value.volume > 0) {
                                               controller.setVolume(0.0);
@@ -234,6 +235,8 @@ class _VideoWidgetState extends State<VideoWidget> {
                                             snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
                                             16,
                                             color: AppColor.white,
+                                            containerHeight: 44,
+                                            containerWidth: 44,
                                           ),
                                         );
                                       }),
@@ -508,7 +511,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                                   ),
                                   width: ScreenUtil.instance.width,
                                   height: 40,
-                                  padding: const EdgeInsets.only(left: 16, right: 16),
+                                  padding: const EdgeInsets.only( left: 2,right: 16),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -532,6 +535,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                                                 snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
                                                 16,
                                                 color: AppColor.white,
+                                                containerHeight: 44,
+                                                containerWidth: 44,
                                               ),
                                             );
                                           }),

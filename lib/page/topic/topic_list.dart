@@ -9,12 +9,14 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicList extends StatefulWidget {
   TopicList({this.topicId, this.type, this.tabKey});
@@ -52,7 +54,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // TODO: implement dispose
     // 取消网络请求
     cancelRequests(token: token);
-    EventBus.getDefault().unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
+    EventBus.getDefault()
+        .unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
     super.dispose();
   }
 
@@ -114,9 +117,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // Future.delayed(Duration(milliseconds: 250), () {
-      //   requestRecommendTopic(refreshOrLoading: true);
-      // });
+    // Future.delayed(Duration(milliseconds: 250), () {
+    //   requestRecommendTopic(refreshOrLoading: true);
+    // });
     // });
   }
 
@@ -192,7 +195,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   child: isShowDefaultMap == null
                       ? Container()
                       : isShowDefaultMap
-                          ? CustomScrollView(
+                          ?
+                  CustomScrollView(
                               slivers: [
                                 SliverAnimatedList(
                                     key: _listKey,
@@ -202,6 +206,41 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                     initialItemCount: recommendTopicList.length)
                               ],
                             )
+                          // CustomScrollView(
+                          //     slivers: [
+                          //       SliverFillRemaining(
+                          //         // child: Container(
+                          //         //     margin: EdgeInsets.only(left: 16, right: 16),
+                          //             child: WaterfallFlow.builder(
+                          //               physics: NeverScrollableScrollPhysics(),
+                          //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                          //                 crossAxisCount: 2,
+                          //                 // 上下间隔
+                          //                 mainAxisSpacing: 4.0,
+                          //                 //   // 左右间隔
+                          //                 crossAxisSpacing: 8.0,
+                          //               ),
+                          //               itemBuilder: (context, index) {
+                          //                 // 获取动态id
+                          //                 int id;
+                          //                 // 获取动态id指定model
+                          //                 HomeFeedModel model;
+                          //                 if (index < recommendTopicList.length) {
+                          //                   id = recommendTopicList[index].id;
+                          //                   model = context.read<FeedMapNotifier>().value.feedMap[id];
+                          //                 }
+                          //                 return SearchFeeditem(
+                          //                   model: model,
+                          //                   list: recommendTopicList,
+                          //                   index: index,
+                          //                   pageName: "topicRecommend",
+                          //                 );
+                          //               },
+                          //               itemCount: recommendTopicList.length,
+                          //             )),
+                          //       // )
+                          //     ],
+                          //   )
                           : Container(
                               width: double.infinity,
                               height: double.infinity,
@@ -227,42 +266,5 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                             ),
                 ))));
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child);
-    // margin: EdgeInsets.only(left: 16, right: 16),
-    // child: WaterfallFlow.builder(
-    //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-    //     crossAxisCount: 2,
-    //     // 上下间隔
-    //     mainAxisSpacing: 4.0,
-    //     //   // 左右间隔
-    //     crossAxisSpacing: 8.0,
-    //   ),
-    //   itemBuilder: (context, index) {
-    //     // 获取动态id
-    //     int id;
-    //     // 获取动态id指定model
-    //     HomeFeedModel model;
-    //     if (index < widget.topicList.length) {
-    //       id = widget.topicList[index].id;
-    //       model = context.read<FeedMapNotifier>().feedMap[id];
-    //     }
-    //     // if (feedList.isNotEmpty) {
-    //     if (index == widget.topicList.length) {
-    //       return LoadingView(
-    //         loadText: widget.loadText,
-    //         loadStatus: widget.loadStatus,
-    //       );
-    //     } else if (index == widget.topicList.length + 1) {
-    //       return Container();
-    //     } else {
-    //       return SearchFeeditem(
-    //         model: model,
-    //         list: widget.topicList,
-    //         index: index,
-    //         pageName: "topicRecommend",
-    //       );
-    //     }
-    //   },
-    //   itemCount: widget.topicList.length + 1,
-    // )
   }
 }
