@@ -30,7 +30,9 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
+import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -59,12 +61,14 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   // 是否存在下一页
   int hasNext;
 
-// 加载中默认文字
-  String loadText = "加载中...";
-
-  // 加载状态
-  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+// // 加载中默认文字
+//   String loadText = "加载中...";
+//
+//   // 加载状态
+//   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   String lastString;
+  RefreshController _refreshController = RefreshController();
+  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
 // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -79,15 +83,15 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   void initState() {
     requestFeednIterface(refreshOrLoading: true);
     // 上拉加载
-    _scrollController.addListener(() {
-      if (widget.focusNode.hasFocus) {
-        print('-------------------focusNode---focusNode----focusNode--focusNode');
-        widget.focusNode.unfocus();
-      }
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        requestFeednIterface(refreshOrLoading: false);
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if (widget.focusNode.hasFocus) {
+    //     print('-------------------focusNode---focusNode----focusNode--focusNode');
+    //     widget.focusNode.unfocus();
+    //   }
+    //   if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    //     requestFeednIterface(refreshOrLoading: false);
+    //   }
+    // });
     widget.textController.addListener(() {
       // 取消延时
       if (timer != null) {
@@ -125,12 +129,12 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   // 请求动态接口
   requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
-      if (loadStatus == LoadingStatus.STATUS_IDEL) {
-        // 先设置状态，防止下拉就直接加载
-        setState(() {
-          loadStatus = LoadingStatus.STATUS_LOADING;
-        });
-      }
+      // if (loadStatus == LoadingStatus.STATUS_IDEL) {
+      //   // 先设置状态，防止下拉就直接加载
+      //   setState(() {
+      //     loadStatus = LoadingStatus.STATUS_LOADING;
+      //   });
+      // }
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime, token: token);
       if (refreshOrLoading) {
         feedList.clear();
@@ -140,9 +144,17 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         hasNext = model.hasNext;
         model.list.forEach((v) {
           feedList.add(HomeFeedModel.fromJson(v));
+          if (!refreshOrLoading) {
+            _listKey.currentState.insertItem(1);
+          }
         });
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
+        // loadStatus = LoadingStatus.STATUS_IDEL;
+        // loadText = "加载中...";
+        if (refreshOrLoading) {
+          _refreshController.refreshCompleted();
+        } else {
+          _refreshController.loadComplete();
+        }
       }
       List<HomeFeedModel> feedModel = [];
       try {
@@ -151,11 +163,23 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       } catch (e) {
         print('-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$e');
       }
+    } else {
+      if (refreshOrLoading) {
+        _refreshController.refreshFailed();
+      } else {
+        _refreshController.loadFailed();
+      }
     }
     if (hasNext == 0) {
+      if (refreshOrLoading) {
+        _refreshController.refreshCompleted();
+        _refreshController.loadComplete();
+      } else {
+        _refreshController.loadNoData();
+      }
       // 加载完毕
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      // loadText = "已加载全部动态";
+      // loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     if (mounted) {
       setState(() {});
@@ -172,13 +196,20 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           margin: const EdgeInsets.only(top: 12),
           child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
-              child: RefreshIndicator(
-                  onRefresh: () async {
+              child: SmartRefresher(
+                  enablePullDown: true,
+                  enablePullUp: true,
+                  footer: SmartRefresherHeadFooter.init().getFooter(),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
+                  controller: _refreshController,
+                  onRefresh: () {
                     lastTime = null;
                     hasNext = null;
-                    loadStatus = LoadingStatus.STATUS_LOADING;
-                    loadText = "加载中...";
+                    _refreshController.loadComplete();
                     requestFeednIterface(refreshOrLoading: true);
+                  },
+                  onLoading: () {
+                    requestFeednIterface(refreshOrLoading: false);
                   },
                   child: CustomScrollView(
                       controller: _scrollController,
@@ -235,37 +266,34 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                         //       )
                         //      ),
                         // )),
-                        SliverList(
-                            delegate: SliverChildBuilderDelegate((content, index) {
-                          if (index == feedList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == feedList.length + 1) {
-                            return Container();
-                          } else {
-                            return ExposureDetector(
-                              key: Key('search_feed_${feedList[index].id}'),
-                              child: DynamicListLayout(
-                                index: index,
-                                isShowConcern: false,
-                                pageName: "searchFeed",
-                                isShowRecommendUser: false,
-                                model: feedList[index],
-                                // 可选参数 子Item的个数
-                                key: GlobalObjectKey("attention$index"),
-                              ),
-                              onExposure: (visibilityInfo) {
-                                // 如果没有显示
-                                if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
-                                  context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
-                                }
-                                print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                              },
-                            );
-                          }
-                        }, childCount: feedList.length + 1))
+                        SliverAnimatedList(
+                            key: _listKey,
+                            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+                              return _buildItem(index, animation);
+                            },
+                            initialItemCount: feedList.length),
+                        // SliverList(
+                        //     delegate: SliverChildBuilderDelegate((content, index) {
+                        //   return ExposureDetector(
+                        //     key: Key('search_feed_${feedList[index].id}'),
+                        //     child: DynamicListLayout(
+                        //       index: index,
+                        //       isShowConcern: false,
+                        //       pageName: "searchFeed",
+                        //       isShowRecommendUser: false,
+                        //       model: feedList[index],
+                        //       // 可选参数 子Item的个数
+                        //       key: GlobalObjectKey("attention$index"),
+                        //     ),
+                        //     onExposure: (visibilityInfo) {
+                        //       // 如果没有显示
+                        //       if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
+                        //         context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
+                        //       }
+                        //       print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                        //     },
+                        //   );
+                        // }, childCount: feedList.length))
                       ]))));
     } else {
       return Container(
@@ -290,6 +318,53 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         ),
       );
     }
+  }
+
+  _buildItem(int index, Animation animation) {
+    // 懒得发通知使用provider同步删除更新。
+    return Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
+      HomeFeedModel feedModel;
+      if (index < feedList.length) {
+        feedModel = context.watch<FeedMapNotifier>().value.feedMap[feedList[index].id];
+      }
+      return SizeTransition(
+          sizeFactor: animation,
+          child: ExposureDetector(
+            key: Key('searchFeed${feedList[index].id}'),
+            child: DynamicListLayout(
+              index: index,
+              pageName: "searchFeed",
+              isShowRecommendUser: false,
+              isShowConcern: false,
+              model: feedModel,
+              // 可选参数 子Item的个数
+              key: GlobalObjectKey("searchFeed$index"),
+              deleteFeedChanged: (id) {
+                setState(() {
+                  // 动画删除item
+                  int _index;
+                  feedList.forEach((v) {
+                    if (v.id == id) {
+                      _index = feedList.indexOf(v);
+                    }
+                  });
+                  if (_index != null) {
+                    _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
+                    context.read<FeedMapNotifier>().deleteFeed(id);
+                    feedList.removeWhere((v) => v.id == id);
+                  }
+                });
+              },
+            ),
+            onExposure: (visibilityInfo) {
+              // 如果没有显示
+              if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
+                context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
+                print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+              }
+            },
+          ));
+    });
   }
 }
 

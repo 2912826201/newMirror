@@ -87,6 +87,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -364,7 +365,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // 刷新产品暂时没提空在这
-
+                                subpageRefresh();
                               } else {
                                 _tabController.animateTo(index);
                               }
@@ -391,12 +392,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             TopicList(
                               topicId: model.id,
                               type: 5,
+                              key: topicLisKey,
                               tabKey: Key('Tab0'),
                             ),
                             // 最新话题
                             TopicList(
                               topicId: model.id,
                               type: 4,
+                              key: topicLisKey1,
                               tabKey: Key('Tab1'),
                             ),
                           ],
@@ -438,6 +441,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
               ));
   }
 
+  // 子页面下拉刷新
+  subpageRefresh() {
+    if (_tabController.index == 0 &&  topicLisKey.currentState != null) {
+      topicLisKey.currentState.onDoubleTap();
+    } else if (_tabController.index == 1 && topicLisKey.currentState != null) {
+      topicLisKey1.currentState.onDoubleTap();
+    }
+  }
   // 大图预览内部的Item
   Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
     TopicDtoModel topicDtoModel = topicDtoModelList[index];

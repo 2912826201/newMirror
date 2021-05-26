@@ -17,9 +17,10 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
-
+GlobalKey<TopicListState> topicLisKey = GlobalKey();
+GlobalKey<TopicListState> topicLisKey1 = GlobalKey();
 class TopicList extends StatefulWidget {
-  TopicList({this.topicId, this.type, this.tabKey});
+  TopicList({Key key,this.topicId, this.type, this.tabKey}) : super(key: key);
 
   int type;
 
@@ -48,7 +49,10 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
   final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
-
+  // 双击刷新
+  onDoubleTap() {
+    refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -137,8 +141,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
         recommendTopicList.removeWhere((v) => v.id == id);
         context.read<FeedMapNotifier>().deleteFeed(id);
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
+      // // 更新全局监听
+      // context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
     });
   }
 
@@ -195,8 +199,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                   child: isShowDefaultMap == null
                       ? Container()
                       : isShowDefaultMap
-                          ?
-                  CustomScrollView(
+                          ? CustomScrollView(
                               slivers: [
                                 SliverAnimatedList(
                                     key: _listKey,
