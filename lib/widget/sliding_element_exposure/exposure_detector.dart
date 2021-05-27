@@ -19,7 +19,7 @@ class ExposureDetector extends SingleChildRenderObjectWidget {
 
   /// 回调触发曝光函数
   final ExposureCallback onExposure;
- bool isVideo;
+  bool isVideo;
   @override
   RenderExposureDetector createRenderObject(BuildContext context) {
     return RenderExposureDetector(

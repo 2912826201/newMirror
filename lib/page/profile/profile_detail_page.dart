@@ -726,8 +726,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///头像
   Widget _mineAvatar() {
-    return Container(
-      child: ClipOval(
+    return  ClipOval(
         child: CachedNetworkImage(
           height: avatarSize,
           width: avatarSize,
@@ -743,8 +742,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             return Container(color: AppColor.bgWhite,);
           },*/
         ),
-      ),
-    );
+      );
   }
 
   ///这是关注粉丝获赞

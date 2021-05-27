@@ -47,8 +47,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   StreamController<int> streamController;
-  AnimationController _controller;
-  Animation<double> _animation;
   Map<int,AnimationController> animationMap = {};
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -130,6 +128,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     _getDynamicData();
   }
 
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    animationMap.clear();
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -170,6 +175,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (followModel.length == 0) {
           listNoData = true;
         }
+        animationMap.remove(id);
         if (mounted) {
           setState(() {});
         }
