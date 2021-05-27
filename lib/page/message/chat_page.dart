@@ -2078,6 +2078,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         }
+
       }else {
         RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
           print("====" + code.toString());
