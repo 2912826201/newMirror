@@ -17,10 +17,12 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
+
 GlobalKey<TopicListState> topicLisKey = GlobalKey();
 GlobalKey<TopicListState> topicLisKey1 = GlobalKey();
+
 class TopicList extends StatefulWidget {
-  TopicList({Key key,this.topicId, this.type, this.tabKey}) : super(key: key);
+  TopicList({Key key, this.topicId, this.type, this.tabKey}) : super(key: key);
 
   int type;
 
@@ -49,10 +51,12 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
   final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
+
   // 双击刷新
   onDoubleTap() {
     refreshController.requestRefresh(duration: Duration(milliseconds: 250));
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -129,47 +133,94 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   _deleteFeedCallBack(int id) {
     // 动画删除item
-    setState(() {
-      int _index;
-      recommendTopicList.forEach((element) {
-        if (element.id == id) {
-          _index = recommendTopicList.indexOf(element);
-        }
-      });
-      if (_index != null) {
-        _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
-        recommendTopicList.removeWhere((v) => v.id == id);
-        context.read<FeedMapNotifier>().deleteFeed(id);
+    int _index;
+    recommendTopicList.forEach((element) {
+      if (element.id == id) {
+        _index = recommendTopicList.indexOf(element);
       }
-      // // 更新全局监听
-      // context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
     });
+    print("删除的动态：：：：${recommendTopicList[_index].content}:::::_index:::::$_index");
+    if (_index != null) {
+      HomeFeedModel model = recommendTopicList[_index];
+      _listKey.currentState.removeItem(
+        _index,
+        (context, animation) => _buildRemovedItem(
+          model,
+          animation,
+        ),
+      );
+      context.read<FeedMapNotifier>().deleteFeed(id);
+      recommendTopicList.removeWhere((v) => v.id == id);
+      if (recommendTopicList.length == 0) {
+        requestRecommendTopic(refreshOrLoading: true);
+      }
+    }
   }
 
-  _buildItem(int index, Animation animation) {
+  // 删除添加动画
+  _buildRemovedItem(
+    HomeFeedModel feedModel,
+    Animation<double> animation,
+  ) {
+    // 获取动态id
     return SizeTransition(
         sizeFactor: animation,
         child: ExposureDetector(
-          key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
+          key: Key('topic_list_${widget.type}_${feedModel.id}'),
           child: DynamicListLayout(
-            index: index,
             topicId: widget.topicId,
             pageName: "topicRecommend",
             isShowRecommendUser: false,
             isShowConcern: false,
-            model: recommendTopicList[index],
-            // 可选参数 子Item的个数
-            key: GlobalObjectKey("attention$index"),
+            model: feedModel,
           ),
-          onExposure: (visibilityInfo) {
-            // 如果没有显示
-            if (context.read<FeedMapNotifier>().value.feedMap[recommendTopicList[index].id].isShowInputBox) {
-              context.read<FeedMapNotifier>().showInputBox(recommendTopicList[index].id);
-            }
-            print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-          },
         ));
   }
+
+  _buildItem(HomeFeedModel feedModel, Animation animation) {
+    return ExposureDetector(
+      key: Key('topic_list_${widget.type}_${feedModel.id}'),
+      child: DynamicListLayout(
+        index: recommendTopicList.indexOf(feedModel),
+        pageName: "topicRecommend",
+        isShowRecommendUser: false,
+        isShowConcern: false,
+        model: feedModel,
+        topicId: widget.topicId,
+        // 可选参数 子Item的个数
+        key: GlobalObjectKey("topicRecommend${recommendTopicList.indexOf(feedModel)}"),
+      ),
+      onExposure: (visibilityInfo) {
+        // 如果没有显示
+        if (context.read<FeedMapNotifier>().value.feedMap[feedModel.id].isShowInputBox) {
+          context.read<FeedMapNotifier>().showInputBox(feedModel.id);
+          print('第${recommendTopicList.indexOf(feedModel)} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+        }
+      },
+    );
+  }
+
+  // return ExposureDetector(
+  //   key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
+  //   child: DynamicListLayout(
+  //     index: index,
+  //     topicId: widget.topicId,
+  //     pageName: "topicRecommend",
+  //     isShowRecommendUser: false,
+  //     isShowConcern: false,
+  //     model: recommendTopicList[index],
+  //     // 可选参数 子Item的个数
+  //     key: GlobalObjectKey("attention$index"),
+  //   ),
+  //   onExposure: (visibilityInfo) {
+  //     // 如果没有显示
+  //     if (context.read<FeedMapNotifier>().value.feedMap[recommendTopicList[index].id].isShowInputBox) {
+  //       context.read<FeedMapNotifier>().showInputBox(recommendTopicList[index].id);
+  //     }
+  //     print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+  //   },
+  // );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +255,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                 SliverAnimatedList(
                                     key: _listKey,
                                     itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                                      return _buildItem(index, animation);
+                                      HomeFeedModel model = recommendTopicList[index];
+                                      return _buildItem(model, animation);
                                     },
                                     initialItemCount: recommendTopicList.length)
                               ],
