@@ -345,6 +345,8 @@ class MyAppState extends State<MyApp> {
       MessageManager.loadConversationListFromDatabase(context);
       // 连接融云
       Application.rongCloud.connect();
+      // 友盟上报登录账号
+      UmengCommonSdk.onProfileSignIn("${Application.profile.uid}");
     }
 
     super.initState();

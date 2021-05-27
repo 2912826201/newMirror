@@ -17,7 +17,6 @@ import 'message_view/currency_msg.dart';
 class ChatDetailsBody extends StatefulWidget {
   final ScrollController scrollController;
   final List<ChatDataModel> chatDataList;
-  final TickerProvider vsync;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final String chatName;
@@ -43,7 +42,6 @@ class ChatDetailsBody extends StatefulWidget {
       this.isShowChatUserName,
       this.isHaveAtMeMsg,
       this.firstEndCallback,
-      this.vsync,
       this.chatName,
       this.onTap,
       this.isPersonalButler = false,
@@ -58,7 +56,7 @@ class ChatDetailsBody extends StatefulWidget {
   ChatDetailsBodyState createState() => ChatDetailsBodyState(loadStatus);
 }
 
-class ChatDetailsBodyState extends State<ChatDetailsBody> {
+class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderStateMixin {
   LoadingStatus loadStatus;
   bool isShowTop;
   bool isShowHaveAnimation;
@@ -247,7 +245,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     if (model.isHaveAnimation && isShowHaveAnimation) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 100),
-        vsync: widget.vsync,
+        vsync: this,
       );
       Future.delayed(Duration(milliseconds: 100), () {
         animationController.forward();
@@ -268,7 +266,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   //获取每一个item
   Widget getBodyAtItem(ChatDataModel model, int position) {
     if (atItemMessagePosition == position) {
-      _animationController = AnimationController(duration: Duration(seconds: 2), vsync: widget.vsync);
+      _animationController = AnimationController(duration: Duration(seconds: 2), vsync:this);
       _animation = DecorationTween(
           begin: BoxDecoration(
             gradient: const LinearGradient(

@@ -99,7 +99,7 @@ class ChatPage extends StatefulWidget {
   }
 }
 
-class ChatPageState extends StateKeyboard with TickerProviderStateMixin, WidgetsBindingObserver {
+class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   final ConversationDto conversation;
   final Message shareMessage;
   final BuildContext _context;
@@ -111,8 +111,15 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
   String textContent;
   int systemPage = 0;
 
-  ChatPageState(this.conversation, this.shareMessage, this._context, this.systemLastTime, this.systemPage,
-      this.chatDataList, this.textContent);
+  ChatPageState(
+      this.conversation,
+      this.shareMessage,
+      this._context,
+      this.systemLastTime,
+      this.systemPage,
+      this.chatDataList,
+      this.textContent
+  );
 
   //是否显示表情
   bool _emojiState = false;
@@ -331,7 +338,6 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       scrollController: _scrollController,
       chatDataList: chatDataList,
       chatId: conversation.conversationId,
-      vsync: this,
       onTap: _messageInputBodyClick,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
@@ -605,7 +611,7 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
@@ -838,6 +844,8 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
+    chatDataModel.id="${conversation.id}_${DateTime.now().microsecondsSinceEpoch}_${chatDataList.length}";
+    chatDataModel.conversationId=conversation.id;
     mentionedInfo.type = RCMentionedType.Users;
     atUserIdList.clear();
     // 获取输入框内的规则
@@ -910,6 +918,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
       chatDataModel.mediaFileModel = selectedMediaFiles.list[i];
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
+      chatDataModel.id="${conversation.id}_"
+          "${DateTime.now().microsecondsSinceEpoch}_"
+          "${chatDataList.length+modelList.length}";
+      chatDataModel.conversationId=conversation.id;
       modelList.add(chatDataModel);
       addTemporaryMessage(chatDataModel, conversation);
     }
@@ -952,6 +964,10 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     chatDataModel.chatVoiceModel = voiceModel;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
+    chatDataModel.id="${conversation.id}_"
+        "${DateTime.now().microsecondsSinceEpoch}_"
+        "${chatDataList.length}";
+    chatDataModel.conversationId=conversation.id;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
@@ -2057,15 +2073,26 @@ class ChatPageState extends StateKeyboard with TickerProviderStateMixin, Widgets
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       //print("暂无此配置");
     } else if (settingType == "删除") {
-      RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
-        print("====" + code.toString());
-        updateMessagePageAlert(conversation, context);
-        if (mounted) {
-          chatDataList.removeAt(position);
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      if(chatDataList[position].isTemporary){
+        if(chatDataList[position].id!=null){
+          cancelPostMessage.add(chatDataList[position].id);
+          if (mounted) {
+            chatDataList.removeAt(position);
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
         }
-      });
-      print("删除-第$position个");
+
+      }else {
+        RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
+          print("====" + code.toString());
+          updateMessagePageAlert(conversation, context);
+          if (mounted) {
+            chatDataList.removeAt(position);
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
+        });
+        print("删除-第$position个");
+      }
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
