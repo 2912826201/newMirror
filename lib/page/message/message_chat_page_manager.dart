@@ -541,9 +541,16 @@ void postImgOrVideo(
   });
 }
 
+List<String> cancelPostMessage=[];
+
 Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultModelList, List<ChatDataModel> modelList,
     String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
   for (int i = start; i < end; i++) {
+    if(cancelPostMessage.contains(modelList[i].id??"")){
+      cancelPostMessage.remove(modelList[i].id??"");
+      print("取消发送图片：$i,${modelList[i].id??""}");
+      continue;
+    }
     print("发送图片：$i");
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
