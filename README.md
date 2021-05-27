@@ -88,6 +88,8 @@ widget/     可复用的界面组件。
 ## 备忘
 flutter build apk --release --target-platform android-arm64
 flutter build apk --release --target-platform android-arm
+渠道运行/打包参数
+--flavor common --dart-define=APP_CHANNEL=common
 
 ## 打包流程（暂时只说明测试环境）
 一、准备阶段

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// config
@@ -7,22 +8,36 @@ import 'package:path_provider/path_provider.dart';
 
 //在这里配置各种环境参数
 class AppConfig {
-  //当前环境
-  static const Env ENV = Env.DEV;
+  //当前环境 镜像服还需扩展开发
+  static const Env env = kReleaseMode ? Env.PROD : Env.DEV;
+
+  //当前渠道
+  static const String channel = String.fromEnvironment("APP_CHANNEL", defaultValue: "");
+
+  static String get channelCode {
+    switch (channel) {
+      case "common":
+        return "10000";
+      default:
+        return "0";
+    }
+  }
 
   //版本号
   //在App启动时需要被重新赋值
   static String version = "0.0.1";
   static String buildNumber = "1";
+
   ///切换训练相关布局
   static bool needShowTraining = false;
+
   //各环境api请求基础路径
   // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
   // static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";
   // static const String _PROD_HOST = "http://ifdev.i-fitness.cn";
   static const String _DEV_HOST =
       // "http://14.119.109.139:18940";
-       "http://ifdev2.aimymusic.com:18940";
+      "http://ifdev2.aimymusic.com:18940";
   static const String _MIRROR_HOST = "http://ifdev.aimymusic.com";
   static const String _PROD_HOST = "http://ifdev.aimymusic.com";
 
@@ -33,7 +48,7 @@ class AppConfig {
 
   //根据环境获取api的host地址
   static String getApiHost() {
-    switch (AppConfig.ENV) {
+    switch (AppConfig.env) {
       case Env.DEV:
         return _DEV_HOST;
       case Env.MIRROR:
@@ -47,7 +62,7 @@ class AppConfig {
 
   //根据环境获取业务二维码基础路径
   static String getQrcodeHost() {
-    switch (AppConfig.ENV) {
+    switch (AppConfig.env) {
       case Env.DEV:
         return _DEV_QRCODE_HOST;
       case Env.MIRROR:
@@ -66,7 +81,7 @@ class AppConfig {
 
   //根据环境获取融云appkey
   static String getRCAppKey() {
-    switch (AppConfig.ENV) {
+    switch (AppConfig.env) {
       case Env.DEV:
         return _DEV_RCAPPKEY;
       case Env.MIRROR:
