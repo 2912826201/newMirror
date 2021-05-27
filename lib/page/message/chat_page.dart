@@ -845,6 +845,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataModel.id="${conversation.id}_${DateTime.now().microsecondsSinceEpoch}_${chatDataList.length}";
+    chatDataModel.conversationId=conversation.id;
     mentionedInfo.type = RCMentionedType.Users;
     atUserIdList.clear();
     // 获取输入框内的规则
@@ -920,6 +921,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       chatDataModel.id="${conversation.id}_"
           "${DateTime.now().microsecondsSinceEpoch}_"
           "${chatDataList.length+modelList.length}";
+      chatDataModel.conversationId=conversation.id;
       modelList.add(chatDataModel);
       addTemporaryMessage(chatDataModel, conversation);
     }
@@ -965,6 +967,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatDataModel.id="${conversation.id}_"
         "${DateTime.now().microsecondsSinceEpoch}_"
         "${chatDataList.length}";
+    chatDataModel.conversationId=conversation.id;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);

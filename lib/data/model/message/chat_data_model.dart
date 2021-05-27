@@ -14,4 +14,5 @@ class ChatDataModel {
   ChatVoiceModel chatVoiceModel;
   MentionedInfo mentionedInfo;
   String id;
+  String conversationId;
 }
