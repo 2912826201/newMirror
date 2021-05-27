@@ -145,7 +145,8 @@ class TextMsg extends StatelessWidget {
   //获取长按事件
   Widget textContentBoxUiLongClick(BuildContext context) {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+        getLongClickStringList(isMySelf: isMyself,
+            status: status,sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

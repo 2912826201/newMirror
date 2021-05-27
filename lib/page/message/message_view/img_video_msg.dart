@@ -166,6 +166,7 @@ class ImgVideoMsg extends StatelessWidget {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
         sendTime: sendTime,
+        status:status,
         contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO);
     return LongClickPopupMenu(
       onValueChanged: (int value) {

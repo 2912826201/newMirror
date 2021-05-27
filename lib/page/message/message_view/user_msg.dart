@@ -137,7 +137,8 @@ class UserMsg extends StatelessWidget {
 //长按事件
   Widget _getUserUiLongClick() {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+        getLongClickStringList(isMySelf: isMyself,
+            status: status, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

@@ -146,6 +146,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
         sendTime: sendTime,
+        status: status,
         contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {

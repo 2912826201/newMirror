@@ -147,6 +147,7 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       sendTime: sendTime,
+      status: status,
     );
     return LongClickPopupMenu(
       onValueChanged: (int value) {
