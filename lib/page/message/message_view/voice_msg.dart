@@ -33,7 +33,7 @@ class VoiceMsg extends StatefulWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   VoiceMsg(
       {this.chatVoiceModel,

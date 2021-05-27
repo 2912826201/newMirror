@@ -31,7 +31,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   LiveVideoCourseMsg(
       {this.liveVideoModel,

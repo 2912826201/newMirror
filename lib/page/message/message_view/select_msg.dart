@@ -24,7 +24,7 @@ class SelectMsg extends StatelessWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   SelectMsg({
     this.userUrl,

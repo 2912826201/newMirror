@@ -29,7 +29,7 @@ class TextMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   TextMsg(
       {this.text,

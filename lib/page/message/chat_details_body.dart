@@ -30,7 +30,7 @@ class ChatDetailsBody extends StatefulWidget {
   final String chatId;
   final LoadingStatus loadStatus;
   final Key chatTopAtMarkChildKey;
-  final Function(void Function()) setCallRemoveLongPanel;
+  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
 
   ChatDetailsBody(
       {Key key,

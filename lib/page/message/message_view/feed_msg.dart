@@ -29,7 +29,7 @@ class FeedMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   FeedMsg({
     this.userUrl,
