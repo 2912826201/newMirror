@@ -465,6 +465,39 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
               );
   }
 
+  // 删除添加动画
+  _buildRemovedItem(int index, Animation<double> animation) {
+    // 获取动态id
+    int id;
+    if (index < feedList.length) {
+      id = feedList[index].id;
+      new Future.delayed(Duration(milliseconds: 300), () {
+        feedList.removeWhere((v) => v.id == id);
+      });
+    }
+    return SizeTransition(
+        sizeFactor: animation,
+        child: ExposureDetector(
+          key: Key('search_complex_${feedList[index].id}'),
+          child: DynamicListLayout(
+            index: index,
+            pageName: "searchComplex",
+            isShowRecommendUser: false,
+            isShowConcern: false,
+            model: feedList[index],
+            // 可选参数 子Item的个数
+            key: GlobalObjectKey("searchComplex$index"),
+          ),
+          onExposure: (visibilityInfo) {
+            // 如果没有显示
+            if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
+              context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
+              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+            }
+          },
+        ));
+  }
+
   _buildItem(int index, Animation animation) {
     // 懒得发通知使用provider同步删除更新。
     return Consumer<FeedMapNotifier>(
@@ -473,43 +506,41 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         if (index < feedList.length) {
           feedModel = context.watch<FeedMapNotifier>().value.feedMap[feedList[index].id];
         }
-        return SizeTransition(
-            sizeFactor: animation,
-            child: ExposureDetector(
-              key: Key('search_complex_${feedList[index].id}'),
-              child: DynamicListLayout(
-                index: index,
-                pageName: "searchComplex",
-                isShowRecommendUser: false,
-                isShowConcern: false,
-                model: feedModel,
-                // 可选参数 子Item的个数
-                key: GlobalObjectKey("searchComplex$index"),
-                deleteFeedChanged: (id) {
-                  setState(() {
-                    // 动画删除item
-                    int _index;
-                    feedList.forEach((v) {
-                      if (v.id == id) {
-                        _index = feedList.indexOf(v);
-                      }
-                    });
-                    if (_index != null) {
-                      _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
-                      context.read<FeedMapNotifier>().deleteFeed(id);
-                      feedList.removeWhere((v) => v.id == id);
-                    }
-                  });
-                },
-              ),
-              onExposure: (visibilityInfo) {
-                // 如果没有显示
-                if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
-                  context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
-                  print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+        return ExposureDetector(
+          key: Key('search_complex_${feedList[index].id}'),
+          child: DynamicListLayout(
+            index: index,
+            pageName: "searchComplex",
+            isShowRecommendUser: false,
+            isShowConcern: false,
+            model: feedModel,
+            // 可选参数 子Item的个数
+            key: GlobalObjectKey("searchComplex$index"),
+            deleteFeedChanged: (id) {
+              // 动画删除item
+              int _index;
+              feedList.forEach((v) {
+                if (v.id == id) {
+                  _index = feedList.indexOf(v);
                 }
-              },
-            ));
+              });
+              if (_index != null) {
+                _listKey.currentState.removeItem(
+                  _index,
+                  (context, animation) => _buildRemovedItem(_index, animation),
+                );
+                context.read<FeedMapNotifier>().deleteFeed(id);
+              }
+            },
+          ),
+          onExposure: (visibilityInfo) {
+            // 如果没有显示
+            if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
+              context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
+              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+            }
+          },
+        );
       },
     );
     // return ;

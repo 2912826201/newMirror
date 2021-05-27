@@ -44,6 +44,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:toast/toast.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 ///这是完善资料页
 
@@ -324,6 +325,8 @@ class _PerfectUserState extends State<PerfectUserPage> {
         Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
       });
     }
+    // 友盟上报登录账号
+    UmengCommonSdk.onProfileSignIn("${Application.profile.uid}");
     AppRouter.navigateToLoginSucess(context);
   }
 

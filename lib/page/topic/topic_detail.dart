@@ -443,19 +443,20 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 子页面下拉刷新
   subpageRefresh() {
-    if (_tabController.index == 0 &&  topicLisKey.currentState != null) {
+    if (_tabController.index == 0 && topicLisKey.currentState != null) {
       topicLisKey.currentState.onDoubleTap();
     } else if (_tabController.index == 1 && topicLisKey.currentState != null) {
       topicLisKey1.currentState.onDoubleTap();
     }
   }
+
   // 大图预览内部的Item
   Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
     TopicDtoModel topicDtoModel = topicDtoModelList[index];
     DemoSourceEntity sourceEntity = DemoSourceEntity(
       topicDtoModel.id,
       " image",
-      topicDtoModel.avatarUrl.coverUrl,
+      topicDtoModel.avatarUrl?.coverUrl,
     );
     print("____sourceEntity:${sourceEntity.toString()}");
     return DemoImageItem(sourceEntity, isFocus, index, setFocus);
@@ -601,7 +602,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         opacity: snapshot.data,
                         duration: Duration(milliseconds: 400),
                         child: Center(
-                        child: Row(
+                            child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

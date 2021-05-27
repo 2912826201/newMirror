@@ -13,4 +13,6 @@ class ChatDataModel {
   MediaFileModel mediaFileModel;
   ChatVoiceModel chatVoiceModel;
   MentionedInfo mentionedInfo;
+  String id;
+  String conversationId;
 }

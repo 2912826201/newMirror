@@ -57,9 +57,7 @@ class SendMessageView extends StatefulWidget {
 
 ///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
-class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+class SendMessageViewState extends State<SendMessageView> {
 
   bool isMyself;
   String userUrl;
@@ -70,7 +68,6 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
 
     setSettingData();
 

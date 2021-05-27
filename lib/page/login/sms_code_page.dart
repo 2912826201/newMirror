@@ -34,6 +34,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 final _maxCodeLength = 4;
 
@@ -376,6 +377,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
           Application.topicBackgroundConfig.add(TopicBackgroundConfigModel.fromJson(v));
         });
       }
+      // 友盟上报登录账号
+      UmengCommonSdk.onProfileSignIn("${Application.profile.uid}");
       AppRouter.popToBeforeLogin(context);
     } else {
       ToastShow.show(msg: "登录失败！", context: context);
