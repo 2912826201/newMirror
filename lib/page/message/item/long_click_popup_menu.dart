@@ -54,7 +54,11 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
   String longClickString;
 
   _LongClickPopupMenuState(this.setCallRemoveOverlay){
-    longClickString ="${widget.actions.toString()}_${widget.isMySelf?"":"撤回"}";
+    try{
+      longClickString ="${widget.actions!=null?widget.actions.toString():""}_${widget.isMySelf?"":"撤回"}";
+    }catch (e){
+      longClickString="";
+    }
     setCallRemoveOverlay(null,longClickString);
   }
 

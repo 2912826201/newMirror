@@ -2048,7 +2048,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   void _setCallRemoveLongPanel(void Function() call,String longClickString) {
     print("111111");
-    if(removeLongPanelCall!=null&&!longClickString.contains("撤回")){
+    if(removeLongPanelCall!=null&&
+        longClickString!=null&&
+        longClickString!=""&&
+        !longClickString.contains("撤回")){
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     this.removeLongPanelCall = call;
