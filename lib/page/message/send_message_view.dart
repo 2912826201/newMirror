@@ -35,7 +35,7 @@ class SendMessageView extends StatefulWidget {
   final String chatId;
   final int conversationDtoType;
   final bool isShowChatUserName;
-  final Function(void Function()) setCallRemoveLongPanel;
+  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
 
   SendMessageView(
     this.model,

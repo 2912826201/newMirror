@@ -40,7 +40,7 @@ class LongClickPopupMenu extends StatefulWidget {
   final String contentType;
   final bool isMySelf;
   final int position;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   @override
   _LongClickPopupMenuState createState() => _LongClickPopupMenuState(setCallRemoveOverlay);
@@ -49,10 +49,17 @@ class LongClickPopupMenu extends StatefulWidget {
 class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
 
 
-  void Function(void Function()) setCallRemoveOverlay;
+  void Function(void Function(),String longClickString) setCallRemoveOverlay;
+
+  String longClickString;
 
   _LongClickPopupMenuState(this.setCallRemoveOverlay){
-    setCallRemoveOverlay(null);
+    try{
+      longClickString ="${widget.actions!=null?widget.actions.toString():""}_${widget.isMySelf?"":"撤回"}";
+    }catch (e){
+      longClickString="";
+    }
+    setCallRemoveOverlay(null,longClickString);
   }
 
   double width;
@@ -121,7 +128,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       return menuWidget;
     });
     Overlay.of(context).insert(entry);
-    setCallRemoveOverlay(removeOverlay);
+    setCallRemoveOverlay(removeOverlay,longClickString);
   }
 
   void removeOverlay() {
@@ -129,7 +136,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
     if(entry!=null) {
       entry.remove();
       entry = null;
-      setCallRemoveOverlay(null);
+      setCallRemoveOverlay(null,longClickString);
     }
   }
 }

@@ -33,7 +33,7 @@ class VoiceMsg extends StatefulWidget {
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   VoiceMsg(
       {this.chatVoiceModel,
@@ -172,7 +172,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   //长按事件
   Widget _getVoiceUiLongClick() {
     List<String> longClickStringList = getLongClickStringList(
-        isMySelf: widget.isMyself, sendTime: widget.sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+        isMySelf: widget.isMyself,
+        status: widget.status,
+        sendTime: widget.sendTime,
+        contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         widget.voidItemLongClickCallBack(

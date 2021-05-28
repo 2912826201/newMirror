@@ -29,7 +29,7 @@ class TextMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   TextMsg(
       {this.text,
@@ -145,7 +145,8 @@ class TextMsg extends StatelessWidget {
   //获取长按事件
   Widget textContentBoxUiLongClick(BuildContext context) {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+        getLongClickStringList(isMySelf: isMyself,
+            status: status,sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

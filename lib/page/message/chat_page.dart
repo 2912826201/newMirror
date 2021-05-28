@@ -1206,7 +1206,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
 
   //设置消息的状态
-  void resetSettingStatus(List<int> list) {
+  void resetSettingStatus(List<int> list) async{
     if (list == null || list.length < 2) {
       return;
     }
@@ -1225,10 +1225,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             if (status == RCSentStatus.Failed) {
               profileCheckBlack();
             } else if (status == RCSentStatus.Sent) {
-              getHistoryMessage(dataModel);
+              await getHistoryMessage(dataModel);
             }
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-            Future.delayed(Duration(milliseconds: 100), () {
+            Future.delayed(Duration(milliseconds: 500), () {
               if (mounted) {
                 EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
               }
@@ -1332,7 +1332,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   //获取数据库内的messageUId
-  void getHistoryMessage(ChatDataModel model) async {
+  Future<void> getHistoryMessage(ChatDataModel model) async {
     if (null == model.msg.messageUId || model.msg.messageUId.length < 1) {
       model.msg = await Application.rongCloud.getMessageById(model.msg.messageId);
     }
@@ -2046,8 +2046,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   void Function() removeLongPanelCall;
 
-  void _setCallRemoveLongPanel(void Function() call) {
+  void _setCallRemoveLongPanel(void Function() call,String longClickString) {
     print("111111");
+    if(removeLongPanelCall!=null&&
+        longClickString!=null&&
+        longClickString!=""&&
+        !longClickString.contains("撤回")){
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    }
     this.removeLongPanelCall = call;
   }
 
