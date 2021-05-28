@@ -230,7 +230,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               return SizeTransition(
                   sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
                     parent: animationMap[model.id],
-                    curve: Curves.fastOutSlowIn,
+                    curve: Cubic(1.0, 1.0, 0.5, 0.2),
                   )),
                   axis: Axis.vertical,
                   axisAlignment: 1.0,
