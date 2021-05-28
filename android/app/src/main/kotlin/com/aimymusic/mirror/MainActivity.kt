@@ -13,18 +13,22 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isDebug: Boolean = try {
-            val info: ApplicationInfo = context.applicationInfo
-            (info.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        } catch (e: Exception) {
-            false
-        }
-        val channel: String = try {
+        var isDebug: Boolean
+        var channel: String
+//        val isDebug: Boolean = try {
+//            val info: ApplicationInfo = context.applicationInfo
+//            (info.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+//        } catch (e: Exception) {
+//            false
+//        }
+        try {
             val appInfo: ApplicationInfo = context.packageManager.getApplicationInfo(context.packageName,
                     PackageManager.GET_META_DATA)
-            appInfo.metaData.getInt("CHANNEL", 0).toString()
+            channel = appInfo.metaData.getInt("CHANNEL", 0).toString()
+            isDebug = appInfo.metaData.getString("ENVIRONMENT", "") == "DEV"
         } catch (e: Exception) {
-            "0"
+            channel = "0"
+            isDebug = false
         }
 
         if (isDebug) {

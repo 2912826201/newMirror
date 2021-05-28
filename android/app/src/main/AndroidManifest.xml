@@ -32,6 +32,10 @@
         <meta-data
             android:name="CHANNEL"
             android:value="${CHANNEL_CODE}" />
+        <meta-data
+            android:name="ENVIRONMENT"
+            android:value="${ENVIRONMENT}" />
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

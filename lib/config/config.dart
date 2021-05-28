@@ -9,7 +9,17 @@ import 'package:path_provider/path_provider.dart';
 //在这里配置各种环境参数
 class AppConfig {
   //当前环境 镜像服还需扩展开发
-  static const Env env = kReleaseMode ? Env.PROD : Env.DEV;
+  // static const Env env = kReleaseMode ? Env.PROD : Env.DEV;
+  static Env get env {
+    switch (String.fromEnvironment("ENVIRONMENT", defaultValue: "")) {
+      case "debug":
+        return Env.DEV;
+      case "release":
+        return Env.PROD;
+      default:
+        return Env.PROD;
+    }
+  }
 
   //当前渠道
   static const String channel = String.fromEnvironment("APP_CHANNEL", defaultValue: "");
