@@ -5,7 +5,8 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter_holo_date_picker/date_picker.dart';
+import 'package:flutter_holo_date_picker/i18n/date_picker_i18n.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -27,6 +28,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/time_picker_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
@@ -58,7 +60,8 @@ class _EditInformationState extends State<EditInformation> {
   int buttonState = CustomRedButton.buttonStateNormal;
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
-
+  String cityCode;
+  String provinceCity;
   @override
   void initState() {
     super.initState();
@@ -80,10 +83,8 @@ class _EditInformationState extends State<EditInformation> {
         if (context.read<ProfileNotifier>().profile.cityCode == value.regionCode) {
           print('初始化城市=======================================cityCode=====${value.regionCode}');
           print('初始化城市=======================================cityName=====${value.regionName}');
-          Future.delayed(Duration.zero).then((e) {
-            context.read<AddressPickerNotifier>().changeCityText(value.regionName, " ");
-            context.read<AddressPickerNotifier>().changeCityCode(value.regionCode, value.longitude, value.latitude);
-          });
+          provinceCity = value.regionName;
+          cityCode = value.regionCode;
         }
       });
       cityMap.forEach((key, value) {
@@ -91,17 +92,14 @@ class _EditInformationState extends State<EditInformation> {
           if (context.read<ProfileNotifier>().profile.cityCode == element.regionCode) {
             print('初始化城市=======================================cityCode=====${element.regionCode}');
             print('初始化城市=======================================cityName=====${element.regionName}');
-            Future.delayed(Duration.zero).then((e) {
-              context
-                  .read<AddressPickerNotifier>()
-                  .changeCityText(element.regionName, provinceMap[element.parentId].regionName);
-              context
-                  .read<AddressPickerNotifier>()
-                  .changeCityCode(element.regionCode, element.longitude, element.latitude);
-            });
+            provinceCity = element.regionName+provinceMap[element.parentId].regionName;
+            cityCode = element.regionCode;
           }
         });
       });
+      if (mounted) {
+        setState(() {});
+      }
     }
     print('userSex==========================================$userSex');
     print('userBirthday==========================================$userBirthday');
@@ -127,7 +125,6 @@ class _EditInformationState extends State<EditInformation> {
         appBar: CustomAppBar(
           backgroundColor: AppColor.white,
           leadingOnTap: () {
-            context.read<AddressPickerNotifier>().cleanCityData();
             Navigator.pop(context);
           },
           titleString: "编辑资料",
@@ -258,7 +255,16 @@ class _EditInformationState extends State<EditInformation> {
                   ),
                   InkWell(
                     onTap: () {
-                      _showDatePicker();
+                      openTimePickerBottomSheet(
+                          context: context,
+                          firstTime: DateTime(1960),
+                          lastTime: DateTime.now(),
+                          initTime: DateTime.parse(userBirthday),
+                          timeFormat: "yyyy年,MM月,dd日",
+                          onConfirm: (date) {
+                            userBirthday = DateFormat("yyyy-MM-dd").format(date);
+                            setState(() {});
+                          });
                     },
                     child: _rowChose("生日", userBirthday),
                   ),
@@ -269,9 +275,18 @@ class _EditInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose("地区", context.watch<AddressPickerNotifier>().provinceCity),
+                    child: _rowChose("地区", provinceCity),
                     onTap: () {
-                      openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
+                      openaddressPickerBottomSheet(
+                          context: context,
+                          provinceMap: provinceMap,
+                          cityMap: cityMap,
+                          onConfirm: (provinceCity, cityCode, longitude, latitude) {
+                            this.provinceCity = provinceCity;
+                            this.cityCode = cityCode;
+                            setState(() {
+                            });
+                          });
                     },
                   ),
                   Container(
@@ -401,65 +416,6 @@ class _EditInformationState extends State<EditInformation> {
         ));
   }
 
-  ///时间选择器
-  void _showDatePicker() {
-    String choseTime = "1900-01-01";
-    DatePicker.showDatePicker(
-      context,
-      pickerTheme: DateTimePickerTheme(
-          showTitle: true,
-          title: Container(
-            height: 44,
-            width: ScreenUtil.instance.screenWidthDp,
-            padding: EdgeInsets.only(left: 16, right: 16),
-            decoration: BoxDecoration(
-                color: AppColor.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('取消', style: AppStyle.textHintRegular16),
-                ),
-                Spacer(),
-                InkWell(
-                    onTap: () {
-                      setState(() {
-                        userBirthday = choseTime;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Text('确定', style: AppStyle.redRegular16)),
-              ],
-            ),
-          ),
-          confirm: Text('确定', style: AppStyle.redRegular16),
-          cancel: Text('取消', style: AppStyle.textHintRegular16)),
-
-      minDateTime: DateTime.parse(choseTime),
-      //选择器上可选择的最早时间
-      maxDateTime: DateTime.parse(DateUtil.formatToDayDateString()),
-      //选择器上可选择的最晚时间
-      initialDateTime: DateTime.parse(choseTime),
-      //选择器的当前选中时间
-      dateFormat: "yyyy年,MM月,dd日",
-      //时间格式
-      locale: DateTimePickerLocale.zh_cn,
-      //国际化配置
-      onClose: () {},
-      onCancel: () => print('onCancel'),
-      onChange: (dateTime, List<int> index) {
-        choseTime = DateFormat("yyyy-MM-dd").format(dateTime);
-      },
-      onConfirm: (dateTime, List<int> index) {
-        print('-------------------------onConfirm');
-      },
-    );
-  }
-
   _upDataUserInfo() async {
     if (fileList.isNotEmpty) {
       var results = await FileUtil().uploadPics(fileList, (percent) {});
@@ -469,7 +425,7 @@ class _EditInformationState extends State<EditInformation> {
         description: _introduction,
         sex: userSex,
         birthday: userBirthday,
-        cityCode: context.read<AddressPickerNotifier>().cityCode);
+        cityCode: cityCode);
     if (model != null) {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);

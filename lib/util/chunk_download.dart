@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/data/model/upload/chunk_download_model.dart';
-import 'package:mirror/util/toast_util.dart';
 
 ///分段下载,断点续传，使用缓存管理下载不同下载任务
 class ChunkDownLaod {

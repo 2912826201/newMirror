@@ -145,8 +145,7 @@ dependencies:
   #url
   url_launcher: '5.7.10'
   #滚轮时间选择器
-  flutter_cupertino_date_picker:
-    git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
+  flutter_holo_date_picker: ^0.3.4+1
   another_flushbar: ^1.10.11
   #获取文件的MD5
   md5_plugin: ^1.0.2
