@@ -155,8 +155,12 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
   }
 
   // 双击刷新
-  onDoubleTap() {
-    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  onDoubleTap([bool isBottomNavigationBar = false]) {
+    if(isBottomNavigationBar) {
+      _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    } else {
+      _controller.jumpTo(0);
+    }
   }
 
   //

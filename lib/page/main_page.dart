@@ -127,7 +127,7 @@ class MainPageState extends XCState {
           onDoubleTap: (index) {
             print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
-              homePageKey.currentState.subpageRefresh();
+              homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
             }
             if (index == 0 && currentIndex != 0) {
               if (pageController.hasClients) {
