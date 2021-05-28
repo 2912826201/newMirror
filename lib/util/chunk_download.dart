@@ -121,7 +121,7 @@ class ChunkDownLaod {
       }
 
       ///这是合并文件，通过有序的命名拿到切割下载的文件，合并成最终想要的
-      mergeTempFiles(maxChunk);
+      await mergeTempFiles(maxChunk);
       await AppPrefs.removeDownLadTask(url);
       return Response(
         statusCode: 200,
