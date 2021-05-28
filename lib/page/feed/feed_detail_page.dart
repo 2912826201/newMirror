@@ -160,9 +160,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                             model: feedModel,
                                             deleteFeedChanged: (id) {
                                               // deleteFeedChanged(id);
+                                              context.read<FeedMapNotifier>().deleteFeed(id);
                                             },
                                             removeFollowChanged: (m) {
-                                              // removeFollowChanged(m);
+
                                             }),
                                         // 图片区域
                                         feedModel.picUrls.isNotEmpty
