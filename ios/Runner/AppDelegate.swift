@@ -9,7 +9,11 @@ import Flutter
   ) -> Bool {
 //    UMCommonLogSwift.setUpUMCommonLogManager()
     UMCommonSwift.setLogEnabled(bFlag: true)
-    UMCommonSwift.initWithAppkey(appKey: "60adbecc53b6726499109624", channel: "DEV")
+    #if DEBUG
+    UMCommonSwift.initWithAppkey(appKey: "60adbecc53b6726499109624", channel: "10000")
+    #else
+    UMCommonSwift.initWithAppkey(appKey: "60af5308dd01c71b57c7b05c", channel: "10000")
+    #endif
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
