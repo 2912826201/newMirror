@@ -92,6 +92,10 @@ flutter build apk --release --target-platform android-arm
 --flavor common --dart-define=APP_CHANNEL=common
 
 ## 打包流程
+多渠道打包配置参考文章：
+https://www.jianshu.com/p/ef86d6fafb25
+https://zhuanlan.zhihu.com/p/365347452
+程序原本的debug和release只区分运行及打包的模式，并不用来区分实际的服务运行环境，所以在配置渠道参数时同时配置环境参数。
 一、准备阶段
   1.确认代码已经更新到最新。
   2.修改pubspec.yaml文件中的版本号及build号：有版本更新时同时修改版本号和build号。版本号格式为a.b.c格式abc可以不止1位。
@@ -100,14 +104,15 @@ flutter build apk --release --target-platform android-arm
 二、build阶段
   1.iOS：
   1.1.在Terminal终端窗口，项目根目录下执行
-  flutter build ios --debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
-  flutter build ios --release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  flutter build ios --release --flavor Release-debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  flutter build ios --release --flavor Release-release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
   命令。待打印信息显示build完成。
   1.2.点击Android Studio上方的Tools → Flutter → Open iOS module in Xcode。
   1.3.在Xcode中点击上方的运行停止按钮右方选择对应环境的scheme（测试环境为Debug，正式环境为Release）
   1.4.在Xcode中点击上方的Product → Archive。（Xcode中的签名证书配置不在这里赘述）
   待打包完成后，Xcode会弹出Organizer窗口（也可通过Window → Organizer打开），选中打好的包，点击Distribute App按钮。
-  测试版本选择Development，下一步，下一步，Automatically manage signing（自动签名），下一步，下一步，然后点击Export导出到文件夹中。
+  测试版本选择Development，下一步，下一步，
+  测试版本选择Automatically manage signing（自动签名），下一步，下一步，然后点击Export导出到文件夹中。
   2.Android：
   2.1.打开项目中android/app/build.gradle文件，将中间defaultConfig中的
      ndk {

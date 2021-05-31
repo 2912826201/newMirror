@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// config
@@ -10,8 +9,10 @@ import 'package:path_provider/path_provider.dart';
 class AppConfig {
   //当前环境 镜像服还需扩展开发
   // static const Env env = kReleaseMode ? Env.PROD : Env.DEV;
+  static const String envName = String.fromEnvironment("ENVIRONMENT", defaultValue: "");
+
   static Env get env {
-    switch (String.fromEnvironment("ENVIRONMENT", defaultValue: "")) {
+    switch (envName) {
       case "debug":
         return Env.DEV;
       case "release":
@@ -48,8 +49,8 @@ class AppConfig {
   static const String _DEV_HOST =
       // "http://14.119.109.139:18940";
       "http://ifdev2.aimymusic.com:18940";
-  static const String _MIRROR_HOST = "http://ifdev.aimymusic.com";
-  static const String _PROD_HOST = "http://ifdev.aimymusic.com";
+  static const String _MIRROR_HOST = "https://if.aimymusic.com";
+  static const String _PROD_HOST = "https://if.aimymusic.com";
 
   //各环境业务二维码基础路径
   static const String _DEV_QRCODE_HOST = "http://codedev.i-fitness.cn";
