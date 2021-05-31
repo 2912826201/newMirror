@@ -142,20 +142,20 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
           //   onTap();
           // }
           // 滚动开始
-          // print('滚动开始');
+          // //print('滚动开始');
           if (widget.onTap != null) {
             widget.onTap();
           }
           isScroll = true;
         } else if (notification is ScrollUpdateNotification) {
           // 滚动位置更新
-          // print('滚动位置更新');
+          // //print('滚动位置更新');
           // 当前位置
-          // print("当前位置${metrics.pixels}");
+          // //print("当前位置${metrics.pixels}");
           isScroll = true;
         } else if (notification is ScrollEndNotification) {
           // 滚动结束
-          // print('滚动结束');
+          // //print('滚动结束');
           isScroll = false;
         }
         return false;
@@ -266,7 +266,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
   //获取每一个item
   Widget getBodyAtItem(ChatDataModel model, int position) {
     if (atItemMessagePosition == position) {
-      print("atItemMessagePosition:$atItemMessagePosition");
+      //print("atItemMessagePosition:$atItemMessagePosition");
       _animationController = AnimationController(duration: Duration(seconds: 2), vsync:this);
       _animation = DecorationTween(
           begin: BoxDecoration(
@@ -313,10 +313,10 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
   }
 
   _initData() {
-    print("1111");
+    //print("1111");
     isShowHaveAnimation = MessageItemHeightUtil.init()
         .judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
-    print("isShowHaveAnimation:$isShowHaveAnimation");
+    //print("isShowHaveAnimation:$isShowHaveAnimation");
     isShowTop = !isShowHaveAnimation;
     if (isShowTop) {
       loadStatus = LoadingStatus.STATUS_COMPLETED;

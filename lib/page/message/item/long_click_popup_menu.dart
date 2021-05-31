@@ -98,7 +98,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       onTap: () {
         if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
           if (button == null) {
-            print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+            //print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
           } else {
             onTap();
           }
@@ -107,7 +107,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       onLongPress: () {
         if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
           if (button == null) {
-            print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+            //print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
           } else {
             onTap();
           }
@@ -132,7 +132,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
   }
 
   void removeOverlay() {
-    // print("removeOverlay:${widget.position}");
+    // //print("removeOverlay:${widget.position}");
     if(entry!=null) {
       entry.remove();
       entry = null;
@@ -213,7 +213,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
   @override
   Widget build(BuildContext context) {
     if (position == null) {
-      print("位置信息为空！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+      //print("位置信息为空！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
       return Container();
     }
 
@@ -516,19 +516,19 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     // Find the ideal vertical position.
 
-    // print("contentHeight:${contentHeight}");
-    // print("contentWidth:${contentWidth}");
-    // print("childSize.height:${childSize.height}");
-    // print("childSize.width:${childSize.width}");
-    // print("position.top:${position.top}");
-    // print("position.bottom:${position.bottom}");
-    // print("position.left:${position.left}");
-    // print("position.right:${position.right}");
-    // print("size.height:${size.height}");
-    // print("size.width:${size.width}");
-    // print("selectedItemOffset:$selectedItemOffset");
-    // print("isInverted:$isInverted");
-    // print("menuWidth:$menuWidth");
+    // //print("contentHeight:${contentHeight}");
+    // //print("contentWidth:${contentWidth}");
+    // //print("childSize.height:${childSize.height}");
+    // //print("childSize.width:${childSize.width}");
+    // //print("position.top:${position.top}");
+    // //print("position.bottom:${position.bottom}");
+    // //print("position.left:${position.left}");
+    // //print("position.right:${position.right}");
+    // //print("size.height:${size.height}");
+    // //print("size.width:${size.width}");
+    // //print("selectedItemOffset:$selectedItemOffset");
+    // //print("isInverted:$isInverted");
+    // //print("menuWidth:$menuWidth");
 
     double y = 0;
     double x = 0;
@@ -552,8 +552,8 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
       y -= selectedItemOffset;
     }
 
-    // print("x:$x");
-    // print("y:$y");
+    // //print("x:$x");
+    // //print("y:$y");
 
     return Offset(x, y);
   }
