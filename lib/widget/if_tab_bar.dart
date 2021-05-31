@@ -270,6 +270,10 @@ class _IFTabBarState extends State<IFTabBar> {
   }
 
   Widget _onClickRow(AsyncSnapshot<int> snapshot) {
+    if(snapshot.data != 0){
+      beforTapTab = snapshot.data;
+      firstTapTime = null;
+    }
     return Container(
       width: screenWidth,
       height: tabBarHeight,
@@ -279,9 +283,9 @@ class _IFTabBarState extends State<IFTabBar> {
             highlightColor: AppColor.transparent,
             radius: 0,
             onTap: () {
-              if(beforTapTab!=snapshot.data){
+              if(beforTapTab!= 0){
                 firstTapTime = null;
-                beforTapTab = snapshot.data;
+                beforTapTab = 0;
                 _onClickListener(0);
                 return;
               }
@@ -293,20 +297,13 @@ class _IFTabBarState extends State<IFTabBar> {
                     widget.onDoubleTap(0);
                   }
                   firstTapTime = null;
-                  beforTapTab = snapshot.data;
                   return;
                 } else {
                   firstTapTime = DateTime.now().millisecondsSinceEpoch;
                 }
               }
-              beforTapTab = snapshot.data;
               _onClickListener(0);
             },
-            /*onDoubleTap: () {
-              if (widget.onDoubleTap != null) {
-                widget.onDoubleTap(0);
-              }
-            },*/
             child: Container(
               width: getItemClickWidth(snapshot.data)[0],
               height: tabBarHeight,
