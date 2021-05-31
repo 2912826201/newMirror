@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/page/test/sliver_list_test_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -57,7 +56,6 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
-import 'item/chat_top_at_mark.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
@@ -190,7 +188,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   GlobalKey<ChatBottomSettingBoxState> bottomSettingChildKey = GlobalKey();
   GlobalKey<MessageInputBarState> messageInputBarChildKey = GlobalKey();
-  GlobalKey<ChatTopAtMarkState> chatTopAtMarkChildKey = GlobalKey();
   GlobalKey<ChatDetailsBodyState> chatDetailsBodyChildKey = GlobalKey();
 
   StreamController<int> streamEditWidget = StreamController<int>();
@@ -200,7 +197,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    print("ChatPage-initState");
+    //print("ChatPage-initState");
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -234,8 +231,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print(
-        "conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
+    //print("conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
@@ -310,7 +306,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   @override
   Future didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
-    print("didChangeAppLifecycleState:$state");
+    //print("didChangeAppLifecycleState:$state");
     if (state == AppLifecycleState.paused) {
       _messageInputBodyClick();
     }
@@ -334,7 +330,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
-      chatTopAtMarkChildKey: chatTopAtMarkChildKey,
       scrollController: _scrollController,
       chatDataList: chatDataList,
       chatId: conversation.conversationId,
@@ -350,6 +345,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: firstEndCallbackListView,
       setCallRemoveLongPanel: _setCallRemoveLongPanel,
+      setHaveAtMeMsg: _setHaveAtMeMsg,
     );
   }
 
@@ -420,7 +416,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           if (text.isNotEmpty) {
             _postText(text);
           }
-          print("重新获取焦点");
+          //print("重新获取焦点");
           // 重新获取焦点 避免键盘收回
           FocusScope.of(context).requestFocus(_focusNode);
         },
@@ -556,6 +552,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //判断有没有at我的消息
   void judgeIsHaveAtMeMsg() {
+    //print("判断有没有at我的消息");
     if (Application.atMesGroupModel == null || Application.atMesGroupModel.atMsgMap == null) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
@@ -567,12 +564,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       } else {
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
+        setHaveAtMeMsg(isHaveAtMeMsg);
         judgeNowChatIsHaveAt();
-        if (chatTopAtMarkChildKey != null &&
-            chatTopAtMarkChildKey.currentState != null &&
-            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs != null) {
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-        }
       }
     }
   }
@@ -584,7 +577,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
       Application.atMesGroupModel.remove(atMeMsg);
-      chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      setHaveAtMeMsg(isHaveAtMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
@@ -598,11 +591,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-          if (chatTopAtMarkChildKey != null &&
-              chatTopAtMarkChildKey.currentState != null &&
-              chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs != null) {
-            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-          }
+          setHaveAtMeMsg(isHaveAtMeMsg);
           break;
         }
       }
@@ -611,7 +600,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    //print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    //print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
@@ -622,35 +612,35 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
       } else if (isHaveAtMeMsgIndex <= lastIndex) {
         if (isHaveAtMeMsg) {
           isHaveAtMeMsg = false;
-          //print('2--------------------------关闭标识at');
+          ////print('2--------------------------关闭标识at');
         }
-        //print('2--------------------------已经是关闭--关闭标识at');
+        ////print('2--------------------------已经是关闭--关闭标识at');
         isHaveAtMeMsgPr = false;
         isHaveAtMeMsgIndex = -1;
         Application.atMesGroupModel.remove(atMeMsg);
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       } else {
         if (!isHaveAtMeMsg) {
           isHaveAtMeMsg = true;
-          //print('3--------------------------显示标识at');
+          ////print('3--------------------------显示标识at');
         }
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
       }
     }
   }
 
   void onAtUiClickListener() async {
-    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
+    //print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (isHaveAtMeMsgIndex < 0) {
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
-        //print("chatDataList.len:${chatDataList.length}");
+        ////print("chatDataList.len:${chatDataList.length}");
         List msgList = new List();
         msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
             chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
@@ -662,7 +652,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
           if (dataList != null && dataList.length > 0) {
             ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
-            print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+            //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
             }
@@ -675,7 +665,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           return;
         }
@@ -686,6 +676,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     if (!isHaveAtMeMsg) {
+      setHaveAtMeMsg(isHaveAtMeMsg);
       return;
     }
 
@@ -695,18 +686,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     bool isShowName = conversation.getType() == RCConversationType.Group;
     double messageHeight = MessageItemHeightUtil.init().getMessageHeight(list, isShowName);
-    print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
-
+    //print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
+    //print("isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex");
+    int indexAtMsg=isHaveAtMeMsgIndex;
     EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     Future.delayed(Duration(milliseconds: 100), () {
       _animateToTopHeight(scrollExtent: messageHeight - 50);
-      Future.delayed(Duration(milliseconds: 200), () {
-        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(isHaveAtMeMsgIndex);
+      Future.delayed(Duration(milliseconds: 300), () {
+        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(indexAtMsg);
         isHaveAtMeMsgIndex = -1;
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
         Application.atMesGroupModel.remove(atMeMsg);
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       });
     });
@@ -714,13 +706,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //点击了at标识
   void onAtUiClickListener1() async {
-    //print("点击了at标识1");
+    ////print("点击了at标识1");
     if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
-      //print("滚动到第$isHaveAtMeMsgIndex个item位置");
+      ////print("滚动到第$isHaveAtMeMsgIndex个item位置");
     } else {
-      //print("加载更多的item");
+      ////print("加载更多的item");
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
-        //print("chatDataList.len:${chatDataList.length}");
+        ////print("chatDataList.len:${chatDataList.length}");
         List msgList = new List();
         msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
             chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
@@ -732,7 +724,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
           if (dataList != null && dataList.length > 0) {
             ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
-            print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+            //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
             }
@@ -745,7 +737,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
         }
@@ -759,21 +751,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           } catch (e) {}
         });
         if (isHaveAtMeMsgIndex > 0) {
-          //print("1滚动到第$isHaveAtMeMsgIndex个item位置");
+          ////print("1滚动到第$isHaveAtMeMsgIndex个item位置");
           break;
         }
       }
     }
     if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
-      //print("滚动滚动滚动滚动滚动滚动滚动滚动滚动");
+      ////print("滚动滚动滚动滚动滚动滚动滚动滚动滚动");
       //开启无限滚动直到滚动到那个位置
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
         await Future.delayed(Duration(milliseconds: 50), () {
-          //print("滚动次数+count：${count++}");
+          ////print("滚动次数+count：${count++}");
           try {
             animateToTop(milliseconds: 100);
           } catch (e) {
-            //print("滚动报错了e:$e");
+            ////print("滚动报错了e:$e");
           }
         });
       }
@@ -864,7 +856,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     addTemporaryMessage(chatDataModel, conversation);
     animateToBottom();
 
-    print("recallNotificationMessagePosition:$recallNotificationMessagePosition");
+    //print("recallNotificationMessagePosition:$recallNotificationMessagePosition");
     if (recallNotificationMessagePosition >= 0) {
       _updateRecallNotificationMessage();
     } else {
@@ -885,7 +877,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
     }
 
-    print("chatDataList[0]:${chatDataList[0]}");
+    //print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       _textController.text = "";
@@ -904,11 +896,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     List<ChatDataModel> modelList = <ChatDataModel>[];
     for (int i = 0; i < selectedMediaFiles.list.length; i++) {
       if (selectedMediaFiles.list[i].croppedImage != null) {
-        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        //print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
         ByteData byteData = await selectedMediaFiles.list[i].croppedImage.toByteData(format: ui.ImageByteFormat.png);
-        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        //print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
         Uint8List picBytes = byteData.buffer.asUint8List();
-        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+        //print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
         selectedMediaFiles.list[i].croppedImageData = picBytes;
       }
       ChatDataModel chatDataModel = new ChatDataModel();
@@ -940,15 +932,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
-      // modelList.forEach((element) {
-      //
-      //   List list=[];
-      //   list.add(0);
-      //   list.add(element.id);
-      //   EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
-      //   // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      // });
-
+      modelList.forEach((element) {
+        deleteCancelMessage(element.conversationId,element.id??"");
+      });
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
@@ -981,7 +967,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    // print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
+    // //print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
     postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
@@ -1105,7 +1091,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
     } else if (chatDataList[position].msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       TextMessage textMessage = ((chatDataList[position].msg.content) as TextMessage);
-      print("textMessage.content:${textMessage.content}");
+      //print("textMessage.content:${textMessage.content}");
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
       if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE ||
           mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
@@ -1212,7 +1198,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     int messageId = list[0];
     int status = list[1];
-    print("更新消息状态-----------messageId：$messageId, status:$status");
+    //print("更新消息状态-----------messageId：$messageId, status:$status");
     if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
       return;
     } else {
@@ -1269,7 +1255,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (message == null) {
       return;
     }
-    print("message.targetId:${message.targetId},${conversation.conversationId}");
+    //print("message.targetId:${message.targetId},${conversation.conversationId}");
     if (message.targetId != conversation.conversationId) {
       return;
     }
@@ -1282,7 +1268,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       return;
     }
     ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
-    print("scrollPositionPixels：$scrollPositionPixels");
+    //print("scrollPositionPixels：$scrollPositionPixels");
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     insertSourceList(chatDataModel);
@@ -1309,7 +1295,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   // 大图预览插入数据
   insertSourceList(ChatDataModel model) {
-    print("插入数据前sourceList：：${sourceList.length} ———————— ${sourceList.toString()}");
+    //print("插入数据前sourceList：：${sourceList.length} ———————— ${sourceList.toString()}");
     if (model.msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       TextMessage textMessage = ((model.msg.content) as TextMessage);
       try {
@@ -1328,7 +1314,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         // return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
       }
     }
-    print("插入数据后sourceList：：${sourceList.length} ____ ${sourceList.toString()}");
+    //print("插入数据后sourceList：：${sourceList.length} ____ ${sourceList.toString()}");
   }
 
   //获取数据库内的messageUId
@@ -1340,24 +1326,24 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
 //判断是否退出群聊或者加入群聊
   void _judgeResetPage(Message message) {
-    print("判断是否退出群聊或者加入群聊");
+    //print("判断是否退出群聊或者加入群聊");
 
     if (message == null) {
-      print(message == null);
+      //print(message == null);
       return;
     }
     Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
     if (dataMap["groupChatId"].toString() != conversation.conversationId) {
-      print("message.targetId:${message.targetId},${conversation.conversationId}");
+      //print("message.targetId:${message.targetId},${conversation.conversationId}");
       return;
     }
     _resetChatGroupUserModelList(message);
-    print("dataMap[subType]0:${dataMap["subType"]}");
+    //print("dataMap[subType]0:${dataMap["subType"]}");
     if (dataMap["subType"] == 0 || dataMap["subType"] == 2) {
-      print("dataMap[subType]0:${dataMap["subType"]}");
+      //print("dataMap[subType]0:${dataMap["subType"]}");
       insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
         if (code == 0) {
-          print("scrollPositionPixels加入：$scrollPositionPixels");
+          //print("scrollPositionPixels加入：$scrollPositionPixels");
           chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
           isHaveReceiveChatDataList = true;
           if (scrollPositionPixels < 500) {
@@ -1396,7 +1382,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   initScrollController() {
     _scrollController.addListener(() {
       scrollPositionPixels = _scrollController.position.pixels;
-      // print("scrollPositionPixels3：$scrollPositionPixels");
+      // //print("scrollPositionPixels3：$scrollPositionPixels");
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         if (loadStatus == LoadingStatus.STATUS_IDEL) {
           // 先设置状态，防止下拉就直接加载reload
@@ -1424,16 +1410,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       bottomSettingChildKey.currentState.setCursorIndexPr(cursorIndexPr);
     });
     _textController.addListener(() {
-      // print("值改变了");
-      print("监听文字光标${_textController.selection}");
+      // //print("值改变了");
+      //print("监听文字光标${_textController.selection}");
 
       List<Rule> rules = context.read<ChatEnterNotifier>().rules;
       int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
-      print("当前值￥${_textController.text}");
-      print(context.read<ChatEnterNotifier>().textFieldStr);
+      //print("当前值￥${_textController.text}");
+      //print(context.read<ChatEnterNotifier>().textFieldStr);
       // 获取光标位置
       int cursorIndex = _textController.selection.baseOffset;
-      print("实时光标位置$cursorIndex");
+      //print("实时光标位置$cursorIndex");
       // 在每次选择@用户后ios设置光标位置。 在每次选择@用户后ios设置光标位置。
       if (Platform.isIOS && (isClickAtUser || recallNotificationMessagePosition == -2)) {
         recallNotificationMessagePosition = -1;
@@ -1445,7 +1431,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         _textController.selection = setCursor;
       }
       if (Platform.isAndroid && isClickAtUser) {
-        print("at位置&$atIndex");
+        //print("at位置&$atIndex");
         var setCursor = TextSelection(
           baseOffset: atIndex,
           extentOffset: atIndex,
@@ -1501,7 +1487,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
-        print("打开@功能--str：$str------------------------");
+        //print("打开@功能--str：$str------------------------");
         bool isHaveUser = true;
         if (context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length > 0) {
           if (context.read<GroupUserProfileNotifier>().isNoHaveMe()) {
@@ -1524,16 +1510,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
-        print("取消艾特功能3");
-        print('----------------------------关闭视图');
+        //print("取消艾特功能3");
+        //print('----------------------------关闭视图');
         context.read<ChatEnterNotifier>().openAtCallback("");
         EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
           String topicSearchStr, bool isAdd) {
         rules = rules;
-        // //print("输入框值回调：$value");
-        // //print(rules);
+        // ////print("输入框值回调：$value");
+        // ////print(rules);
         isSwitchCursor = false;
         if (atIndex > 0) {
           context.read<ChatEnterNotifier>().getAtCursorIndex(atIndex);
@@ -1571,17 +1557,17 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //检查黑名单状态
   void profileCheckBlack() async {
-    print("-------------------------");
+    //print("-------------------------");
     if (conversation.type == PRIVATE_TYPE) {
-      print("22222222222222222");
+      //print("22222222222222222");
       BlackModel blackModel = await ProfileCheckBlack(int.parse(conversation.conversationId));
-      print("blackModel:${blackModel?.toJson().toString()}");
+      //print("blackModel:${blackModel?.toJson().toString()}");
       if (blackModel != null) {
         if (blackModel.inYouBlack == 1) {
-          print("发送失败，你已将对方加入黑名单");
+          //print("发送失败，你已将对方加入黑名单");
           ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: _context, gravity: 1);
         } else if (blackModel.inThisBlack == 1) {
-          print("发送失败，你已被对方加入黑名单");
+          //print("发送失败，你已被对方加入黑名单");
           ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: _context, gravity: 1);
         }
       }
@@ -1593,15 +1579,15 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //聊天内容的点击事件
   _messageInputBodyClick() {
-    print("_messageInputBodyClick");
+    //print("_messageInputBodyClick");
     try {
       if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0 || _bottomSettingPanelState) {
         _emojiStateOld = false;
-        print("_emojiStateOld1:$_emojiStateOld");
+        //print("_emojiStateOld1:$_emojiStateOld");
 
         if (_focusNode.hasFocus) {
           _focusNode.unfocus();
-          print("222222222222222222");
+          //print("222222222222222222");
         }
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -1636,7 +1622,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //输入框的点击事件
   textSpanFieldClickListener() {
     _emojiStateOld = _emojiState;
-    print("_emojiStateOld2:$_emojiStateOld");
+    //print("_emojiStateOld2:$_emojiStateOld");
     if (_emojiState) {
       _emojiState = !_emojiState;
       bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
@@ -1678,7 +1664,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _emojiState = false;
       if (_focusNode.hasFocus) {
         _focusNode.unfocus();
-        print("3333333333333333");
+        //print("3333333333333333");
       }
       readOnly = false;
       streamEditWidget.sink.add(0);
@@ -1703,13 +1689,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //图片的点击事件
   onPicAndVideoBtnClick() {
-    //print("=====图片的点击事件");
+    ////print("=====图片的点击事件");
     _messageInputBodyClick();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (true != result || files == null) {
-        //print("没有选择媒体文件");
+        ////print("没有选择媒体文件");
         return;
       }
       Application.selectedMediaFiles = null;
@@ -1775,7 +1761,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     bool isGranted = (await Permission.microphone.status)?.isGranted;
     if (isGranted) {
       _focusNode.unfocus();
-      print("4444444444444");
+      //print("4444444444444");
       // if(_textController.text.length>0){
       //   context.read<ChatEnterNotifier>().clearRules();
       //   _textController.text = "";
@@ -1824,7 +1810,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       // for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
       //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       // }
-      print("修改了用户名");
+      //print("修改了用户名");
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     } else if (type == 1) {
       conversation.name = name;
@@ -1879,7 +1865,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
               .value
               .profileUiChangeModel
               .containsKey(int.parse(conversation.conversationId))) {
-            print('=================个人主页同步');
+            //print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(conversation.conversationId));
             context
                 .read<UserInteractiveNotifier>()
@@ -1899,7 +1885,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //at 了那个用户
   void atListItemClick(ChatGroupUserModel userModel, int index) {
     isClickAtUser = true;
-    // //print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
+    // ////print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
     // At的文字长度
     int atLength = userModel.nickName.length + 1;
     // 获取输入框内的规则
@@ -1909,7 +1895,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       for (Rule rule in rules) {
         if (rule.clickIndex == userModel.uid && rule.isAt == true) {
           ToastShow.show(msg: "你已经@过Ta啦！", context: _context, gravity: Toast.CENTER);
-          //print("你已经@过Ta啦！");
+          ////print("你已经@过Ta啦！");
           return;
         }
       }
@@ -1927,16 +1913,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     // @后的文字
     String atRearStr = "";
-    //print(searchStr);
-    //print("controller.text:${_textController.text}");
-    //print("atBeforeStr$atBeforeStr");
+    ////print(searchStr);
+    ////print("controller.text:${_textController.text}");
+    ////print("atBeforeStr$atBeforeStr");
     // isSwitchCursor = false;
     if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
-      //print("atIndex:$atIndex");
-      //print("searchStr:$searchStr");
-      //print("controller.text:${_textController.text}");
+      ////print("atIndex:$atIndex");
+      ////print("searchStr:$searchStr");
+      ////print("controller.text:${_textController.text}");
       atRearStr = _textController.text.substring(atIndex + searchStr.length, _textController.text.length);
-      //print("atRearStr:$atRearStr");
+      ////print("atRearStr:$atRearStr");
     } else {
       atRearStr = _textController.text.substring(atIndex, _textController.text.length);
     }
@@ -1954,7 +1940,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     context.read<ChatEnterNotifier>().changeCallback(atBeforeStr + userModel.nickName + atRearStr);
     // isSwitchCursor = false;
-    //print("controller.text:${_textController.text}");
+    ////print("controller.text:${_textController.text}");
     // 这是替换输入的文本修改后面输入的@的规则
     if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
       int oldLength = searchStr.length;
@@ -1973,11 +1959,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     for (int i = 0; i < rules.length; i++) {
       // 当最新输入框内的文本对应不上之前的值时。
       if (rules[i].params != _textController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-        //print("进入");
-        //print(rules[i]);
+        ////print("进入");
+        ////print(rules[i]);
         rules[i] = Rule(rules[i].startIndex + atLength, rules[i].endIndex + atLength, rules[i].params,
             rules[i].clickIndex, rules[i].isAt);
-        //print(rules[i]);
+        ////print(rules[i]);
       }
     }
     // 存储规则
@@ -1985,7 +1971,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         .read<ChatEnterNotifier>()
         .addRules(Rule(atIndex - 1, atIndex + atLength, "@" + userModel.nickName + " ", userModel.uid, true));
 
-    print("取消艾特功能4");
+    //print("取消艾特功能4");
     context.read<ChatEnterNotifier>().setAtSearchStr("");
     // 关闭视图
     context.read<ChatEnterNotifier>().openAtCallback("");
@@ -2006,7 +1992,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
       if (dataList != null && dataList.length > 0) {
         ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
-        print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+        //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
         if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
           chatDataList.removeAt(chatDataList.length - 1);
         }
@@ -2047,7 +2033,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   void Function() removeLongPanelCall;
 
   void _setCallRemoveLongPanel(void Function() call,String longClickString) {
-    print("111111");
+    //print("111111");
     if(removeLongPanelCall!=null&&
         longClickString!=null&&
         longClickString!=""&&
@@ -2059,25 +2045,40 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //取消长按界面
   void _removeLongPanelCall() {
-    print("取消长按界面");
+    //print("取消长按界面");
     if (removeLongPanelCall != null) {
-      print("取消长按界面-有");
+      //print("取消长按界面-有");
       removeLongPanelCall();
     } else {
-      print("取消长按界面-無");
+      //print("取消长按界面-無");
+    }
+  }
+  //取消at标识
+  void Function(bool isHaveAtMeMsg) setHaveAtMeMsgCall;
+
+  void _setHaveAtMeMsg(void Function(bool isHaveAtMeMsg) call) {
+    this.setHaveAtMeMsgCall = call;
+  }
+
+  //取消at标识
+  void setHaveAtMeMsg(bool isHaveAtMeMsg) {
+    if (setHaveAtMeMsgCall != null) {
+      Future.delayed(Duration(milliseconds: 100),(){
+        setHaveAtMeMsgCall(isHaveAtMeMsg);
+      });
     }
   }
 
   //所有的item长按事件
   void onItemLongClickCallBack(
       {int position, String settingType, Map<String, dynamic> map, String contentType, String content}) {
-    print("所有的item长按事件");
+    //print("所有的item长按事件");
     if (conversation.type == MANAGER_TYPE && position != null) {
       position--;
     }
 
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
-      //print("暂无此配置");
+      ////print("暂无此配置");
     } else if (settingType == "删除") {
       if(chatDataList[position].isTemporary){
         if(chatDataList[position].id!=null){
@@ -2090,14 +2091,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
       }else {
         RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
-          print("====" + code.toString());
+          //print("====" + code.toString());
           updateMessagePageAlert(conversation, context);
           if (mounted) {
             chatDataList.removeAt(position);
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         });
-        print("删除-第$position个");
+        //print("删除-第$position个");
       }
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
@@ -2107,10 +2108,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         ToastShow.show(msg: "复制成功", context: _context);
       }
     } else {
-      //print("暂无此配置");
+      ////print("暂无此配置");
     }
-    //print("position:$position-----------------------------------------");
-    // //print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
+    ////print("position:$position-----------------------------------------");
+    // ////print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
   //所有的item点击事件
@@ -2121,7 +2122,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
-      //print("暂无此配置");
+      ////print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       _launchUrl(content);
@@ -2138,7 +2139,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _messageInputBodyClick();
       jumpToUserProfilePage(context, map["uid"], avatarUrl: map["avatarUri"], userName: map["nikeName"],
           callback: (dynamic result) {
-        print("result:$result");
+        //print("result:$result");
         getRelation();
       });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
@@ -2159,7 +2160,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = -2;
-      print("position:$position");
+      //print("position:$position");
       // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
@@ -2188,14 +2189,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       // _textController.text=content;
       _postText(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
-      print("点击了发送失败的按钮-重新发送：$position");
+      //print("点击了发送失败的按钮-重新发送：$position");
 
       // profileCheckBlack();
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);
     } else {
-      //print("暂无此类型");
+      ////print("暂无此类型");
     }
   }
 
@@ -2206,7 +2207,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       ChatDataModel v = chatDataList[i];
       if (v.msg != null) {
         String msgType = v.msg.objectName;
-        print("消息类型：$msgType");
+        //print("消息类型：$msgType");
         if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           TextMessage textMessage = ((v.msg.content) as TextMessage);
           try {
@@ -2215,7 +2216,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             String imageUrl = map["showImageUrl"];
 
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              print("map::::::$map");
+              //print("map::::::$map");
               DemoSourceEntity demoSourceEntity = DemoSourceEntity(
                 v.msg.messageId,
                 'image',
@@ -2226,11 +2227,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
               sourceList.add(demoSourceEntity);
             }
             if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-              print("map::::::$map");
-              print(map["height"] is double);
-              print(map["height"] is int);
-              print(map["duration"] is double);
-              print(map["duration"] is int);
+              //print("map::::::$map");
+              //print(map["height"] is double);
+              //print(map["height"] is int);
+              //print(map["duration"] is double);
+              //print(map["duration"] is int);
 
               DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'video', imageUrl,
                   height: map["height"], width: map["width"], duration: map["duration"]);
@@ -2243,19 +2244,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
       }
     }
-    print("查看sourceList长度：${sourceList.length} ------ ${sourceList.toString()}");
+    //print("查看sourceList长度：${sourceList.length} ------ ${sourceList.toString()}");
     int initIndex = 0;
-    print("position::$position");
-    print("当前点击的messageID：${chatDataList[position].msg.messageId}");
+    //print("position::$position");
+    //print("当前点击的messageID：${chatDataList[position].msg.messageId}");
     for (int i = sourceList.length - 1; i >= 0; i--) {
       DemoSourceEntity source = sourceList[i];
       if (source.heroId == chatDataList[position].msg.messageId) {
         initIndex = i;
       }
     }
-    print("图片索引值:$initIndex");
+    //print("图片索引值:$initIndex");
     // DemoSourceEntity sourceEntity = sourceList[initIndex];
-    // print("____sourceEntity:${sourceEntity.toString()}");
+    // //print("____sourceEntity:${sourceEntity.toString()}");
     // if (sourceEntity.type == 'video') {
     //   Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
     //     // return SliverListDemoPage();
@@ -2268,7 +2269,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         HeroDialogRoute<void>(builder: (BuildContext context) {
           // InteractiveviewerGallery<DemoSourceEntity>(
           // sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
-          print("chat_page:$initIndex");
+          //print("chat_page:$initIndex");
           return InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder);
         }),
       );
@@ -2278,7 +2279,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 // 大图预览内部的Item
   Widget itemBuilder(BuildContext context, int index, bool isFocus,Function(Function(bool isFocus),int) setFocus) {
     DemoSourceEntity sourceEntity = sourceList[index];
-    print("____sourceEntity:index,$index,isFocus:$isFocus:${sourceEntity.toString()}");
+    //print("____sourceEntity:index,$index,isFocus:$isFocus:${sourceEntity.toString()}");
     if (sourceEntity.type == 'video') {
       return DemoVideoItem2(
         sourceEntity,
@@ -2323,11 +2324,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   @override
   void endCanvasPage() {
-    print("停止改变屏幕高度");
+    //print("停止改变屏幕高度");
     if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
       if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
         Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
-        print("Application.keyboardHeightChatPage:${Application.keyboardHeightChatPage}");
+        //print("Application.keyboardHeightChatPage:${Application.keyboardHeightChatPage}");
         bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
       }
     }
@@ -2335,8 +2336,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   @override
   void startCanvasPage(bool isOpen) {
-    print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
-    print("_bottomSettingPanelState:$_bottomSettingPanelState,_emojiStateOld:$_emojiStateOld");
+    //print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
+    //print("_bottomSettingPanelState:$_bottomSettingPanelState,_emojiStateOld:$_emojiStateOld");
     if (isOpen) {
       if (!_emojiStateOld) {
         if (_bottomSettingPanelState != isOpen) {
@@ -2358,7 +2359,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (!_emojiStateOld) {
       if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
         _focusNode.unfocus();
-        print("11111111111111111111111111");
+        //print("11111111111111111111111111");
       }
     }
   }

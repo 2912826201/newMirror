@@ -113,8 +113,8 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   }
 
   Widget bottomSettingPanel(double keyboardHeight) {
-    print("bottomSettingPanelState:$bottomSettingPanelState");
-    print("widget.textController:${widget.textController.text},${widget.textController.selection.baseOffset}");
+    //print("bottomSettingPanelState:$bottomSettingPanelState");
+    //print("widget.textController:${widget.textController.text},${widget.textController.selection.baseOffset}");
     double height = bottomSettingPanelState ? keyboardHeight : 0.0;
     return AnimatedContainer(
       duration: height > 0 ? Duration.zero : Duration(milliseconds: 40),
@@ -273,15 +273,14 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
               cursorIndexPr=widget.textController.text.length;
             }
             int changeFrontPosition = cursorIndexPr ?? 0;
-            print("changeFrontPosition:1:$changeFrontPosition");
+            //print("changeFrontPosition:1:$changeFrontPosition");
             // 获取输入框内的规则
             var rules = context.read<ChatEnterNotifier>().rules;
 
             if (cursorIndexPr != null&&cursorIndexPr>=0) {
-              print("光标前文字：：：：${widget.textController.text.substring(0, cursorIndexPr)}");
-              print("当前选择emoji::::${emojiModel.code}");
-              print(
-                  "光标后文字：：：：${widget.textController.text.substring(cursorIndexPr, widget.textController.text.length)}");
+              //print("光标前文字：：：：${widget.textController.text.substring(0, cursorIndexPr)}");
+              //print("当前选择emoji::::${emojiModel.code}");
+              //print("光标后文字：：：：${widget.textController.text.substring(cursorIndexPr, widget.textController.text.length)}");
               widget.textController.text = widget.textController.text.substring(0, cursorIndexPr) +
                   emojiModel.code +
                   widget.textController.text.substring(cursorIndexPr, widget.textController.text.length);
@@ -298,25 +297,25 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             );
             widget.textController.selection = setCursor;
 
-            print(emojiModel.code.length);
-            print("cursorIndexPr:$cursorIndexPr");
+            //print(emojiModel.code.length);
+            //print("cursorIndexPr:$cursorIndexPr");
             // 这是替换输入的文本修改后面输入的@的规则
             if (rules.isNotEmpty) {
-              print("不为空");
-              print("changeFrontPosition:2:$changeFrontPosition");
+              //print("不为空");
+              //print("changeFrontPosition:2:$changeFrontPosition");
               int diffLength = cursorIndexPr - changeFrontPosition;
-              print("diffLength:$diffLength");
-              print(rules.toString());
+              //print("diffLength:$diffLength");
+              //print(rules.toString());
               for (int i = 0; i < rules.length; i++) {
                 if (rules[i].startIndex >= changeFrontPosition) {
-                  print("改光标了————————————————————————");
+                  //print("改光标了————————————————————————");
                   int newStartIndex = rules[i].startIndex + diffLength;
                   int newEndIndex = rules[i].endIndex + diffLength;
                   rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
                 }
               }
-              print(rules.toString());
-              print(widget.textController.text);
+              //print(rules.toString());
+              //print(widget.textController.text);
             }
             if (widget.callBackCursorIndexPr != null) {
               widget.callBackCursorIndexPr(cursorIndexPr);

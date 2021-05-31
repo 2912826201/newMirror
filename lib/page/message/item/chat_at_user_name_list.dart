@@ -65,7 +65,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             ),
           ),
           onTap: () {
-            print("取消艾特功能1");
+            //print("取消艾特功能1");
             context.read<ChatEnterNotifier>().openAtCallback("");
             isShow = false;
             setState(() {});
