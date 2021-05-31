@@ -33,7 +33,6 @@ class MainPageState extends XCState {
   void initState() {
     super.initState();
     currentIndex = 0;
-    if(AppConfig.needShowTraining)pages.insert(1, TrainingPage());
   }
 
   @override
@@ -44,6 +43,7 @@ class MainPageState extends XCState {
 
   List pages = [
     HomePage(key: homePageKey),
+   !AppConfig.needShowTraining?Container():TrainingPage(),
     MessagePage(),
     ProfilePage(),
   ];
