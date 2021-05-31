@@ -428,12 +428,31 @@ class _TabBarState extends State<TabBar> {
       widget.onTap(index);
     }
   }
-
-  void _handleDoubleTap(int index) {
+  int firstTapTimep;
+  int beforTapType;
+  bool _handleDoubleTap(int index) {
     assert(index >= 0 && index < widget.tabs.length);
-    if (widget.onDoubleTap != null) {
-      widget.onDoubleTap(index);
+    if(beforTapType!=index){
+      firstTapTimep = null;
+      beforTapType = index;
+      return true;
     }
+    if (firstTapTimep == null) {
+      firstTapTimep = DateTime.now().millisecondsSinceEpoch;
+    } else {
+    if (DateTime.now().millisecondsSinceEpoch - firstTapTimep <= 250) {
+        if (widget.onDoubleTap != null) {
+          widget.onDoubleTap(index);
+        }
+        firstTapTimep = null;
+        beforTapType = index;
+        return false;
+      } else {
+        firstTapTimep = DateTime.now().millisecondsSinceEpoch;
+      }
+    }
+    beforTapType = index;
+    return true;
   }
 
   Widget _buildStyledTab(Widget child, bool selected, Animation<double> animation) {
@@ -520,10 +539,9 @@ class _TabBarState extends State<TabBar> {
         behavior: HitTestBehavior.opaque,
         // mouseCursor: widget.mouseCursor ?? SystemMouseCursors.click,
         onTap: () {
-          _handleTap(index);
-        },
-        onDoubleTap: () {
-          _handleDoubleTap(index);
+          if(_handleDoubleTap(index)){
+            _handleTap(index);
+          }
         },
         child: Padding(
           padding: EdgeInsets.only(bottom: widget.indicatorWeight),

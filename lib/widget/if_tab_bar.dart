@@ -110,7 +110,8 @@ class _IFTabBarState extends State<IFTabBar> {
   List<double> onClickWidthList4 = [];
   double selectedButtonTextHeight = 0;
   StreamController<int> streamController = StreamController<int>();
-
+  int firstTapTime;
+  int beforTapTab;
   @override
   void dispose() {
     super.dispose();
@@ -278,13 +279,34 @@ class _IFTabBarState extends State<IFTabBar> {
             highlightColor: AppColor.transparent,
             radius: 0,
             onTap: () {
+              if(beforTapTab!=snapshot.data){
+                firstTapTime = null;
+                beforTapTab = snapshot.data;
+                _onClickListener(0);
+                return;
+              }
+              if (firstTapTime == null) {
+                firstTapTime = DateTime.now().millisecondsSinceEpoch;
+              } else {
+                if (DateTime.now().millisecondsSinceEpoch - firstTapTime <= 250) {
+                  if (widget.onDoubleTap != null) {
+                    widget.onDoubleTap(0);
+                  }
+                  firstTapTime = null;
+                  beforTapTab = snapshot.data;
+                  return;
+                } else {
+                  firstTapTime = DateTime.now().millisecondsSinceEpoch;
+                }
+              }
+              beforTapTab = snapshot.data;
               _onClickListener(0);
             },
-            onDoubleTap: () {
+            /*onDoubleTap: () {
               if (widget.onDoubleTap != null) {
                 widget.onDoubleTap(0);
               }
-            },
+            },*/
             child: Container(
               width: getItemClickWidth(snapshot.data)[0],
               height: tabBarHeight,
