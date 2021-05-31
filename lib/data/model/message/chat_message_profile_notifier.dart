@@ -6,6 +6,7 @@ import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'at_mes_group_model.dart';
 import 'chat_type_model.dart';
 
 class ChatMessageProfileNotifier extends ChangeNotifier {
@@ -29,6 +30,27 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   clear() {
     chatTypeId = -1;
     chatUserId = "";
+  }
+
+
+  judgeIsHaveAtUserMsg(Message msg){
+    if (msg != null &&
+        msg.content != null &&
+        msg.content.mentionedInfo != null &&
+        msg.content.mentionedInfo.userIdList != null &&
+        msg.content.mentionedInfo.userIdList.length > 0) {
+      bool isNowMsg=msg.targetId == this.chatUserId && msg.conversationType == chatTypeId;
+      if(!isNowMsg) {
+        for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
+          if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
+            AtMsg atMsg = new AtMsg(
+                groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
+            Application.atMesGroupModel.add(atMsg);
+            break;
+          }
+        }
+      }
+    }
   }
 
   //移除群聊

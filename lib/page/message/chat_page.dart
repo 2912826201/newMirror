@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/page/test/sliver_list_test_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -57,7 +56,6 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
-import 'item/chat_top_at_mark.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
@@ -190,7 +188,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   GlobalKey<ChatBottomSettingBoxState> bottomSettingChildKey = GlobalKey();
   GlobalKey<MessageInputBarState> messageInputBarChildKey = GlobalKey();
-  GlobalKey<ChatTopAtMarkState> chatTopAtMarkChildKey = GlobalKey();
   GlobalKey<ChatDetailsBodyState> chatDetailsBodyChildKey = GlobalKey();
 
   StreamController<int> streamEditWidget = StreamController<int>();
@@ -334,7 +331,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
-      chatTopAtMarkChildKey: chatTopAtMarkChildKey,
       scrollController: _scrollController,
       chatDataList: chatDataList,
       chatId: conversation.conversationId,
@@ -350,6 +346,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: firstEndCallbackListView,
       setCallRemoveLongPanel: _setCallRemoveLongPanel,
+      setHaveAtMeMsg: _setHaveAtMeMsg,
     );
   }
 
@@ -556,6 +553,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //判断有没有at我的消息
   void judgeIsHaveAtMeMsg() {
+    print("判断有没有at我的消息");
     if (Application.atMesGroupModel == null || Application.atMesGroupModel.atMsgMap == null) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
@@ -567,12 +565,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       } else {
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
+        setHaveAtMeMsg(isHaveAtMeMsg);
         judgeNowChatIsHaveAt();
-        if (chatTopAtMarkChildKey != null &&
-            chatTopAtMarkChildKey.currentState != null &&
-            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs != null) {
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-        }
       }
     }
   }
@@ -584,25 +578,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
       Application.atMesGroupModel.remove(atMeMsg);
-      chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+      setHaveAtMeMsg(isHaveAtMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
         if (chatDataList[i].msg.messageUId == atMeMsg.messageUId) {
-          //print("能找到id");
+          print("能找到id");
           isHaveAtMeMsgIndex = i;
           break;
         } else if (chatDataList[i].msg.sentTime < atMeMsg.sendTime) {
-          //print("找不到id--匹配时间");
+          print("找不到id--匹配时间");
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-          if (chatTopAtMarkChildKey != null &&
-              chatTopAtMarkChildKey.currentState != null &&
-              chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs != null) {
-            chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
-          }
+          setHaveAtMeMsg(isHaveAtMeMsg);
           break;
         }
       }
@@ -612,6 +602,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
     print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
@@ -622,7 +613,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
       } else if (isHaveAtMeMsgIndex <= lastIndex) {
         if (isHaveAtMeMsg) {
           isHaveAtMeMsg = false;
@@ -632,7 +623,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         isHaveAtMeMsgPr = false;
         isHaveAtMeMsgIndex = -1;
         Application.atMesGroupModel.remove(atMeMsg);
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       } else {
         if (!isHaveAtMeMsg) {
@@ -641,7 +632,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
         isHaveAtMeMsg = true;
         isHaveAtMeMsgPr = true;
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
       }
     }
   }
@@ -675,7 +666,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           return;
         }
@@ -686,6 +677,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     if (!isHaveAtMeMsg) {
+      setHaveAtMeMsg(isHaveAtMeMsg);
       return;
     }
 
@@ -696,17 +688,18 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     bool isShowName = conversation.getType() == RCConversationType.Group;
     double messageHeight = MessageItemHeightUtil.init().getMessageHeight(list, isShowName);
     print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
-
+    print("isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex");
+    int indexAtMsg=isHaveAtMeMsgIndex;
     EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     Future.delayed(Duration(milliseconds: 100), () {
       _animateToTopHeight(scrollExtent: messageHeight - 50);
-      Future.delayed(Duration(milliseconds: 200), () {
-        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(isHaveAtMeMsgIndex);
+      Future.delayed(Duration(milliseconds: 300), () {
+        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(indexAtMsg);
         isHaveAtMeMsgIndex = -1;
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
         Application.atMesGroupModel.remove(atMeMsg);
-        chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+        setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       });
     });
@@ -745,7 +738,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
-          chatTopAtMarkChildKey.currentState.setIsHaveAtMeMs(isHaveAtMeMsg);
+          setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
         }
@@ -940,15 +933,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
-      // modelList.forEach((element) {
-      //
-      //   List list=[];
-      //   list.add(0);
-      //   list.add(element.id);
-      //   EventBus.getDefault().post(msg:list,registerName: CHAT_EVERY_MESSAGE);
-      //   // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      // });
-
+      modelList.forEach((element) {
+        deleteCancelMessage(element.conversationId,element.id??"");
+      });
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
@@ -2065,6 +2052,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       removeLongPanelCall();
     } else {
       print("取消长按界面-無");
+    }
+  }
+  //取消at标识
+  void Function(bool isHaveAtMeMsg) setHaveAtMeMsgCall;
+
+  void _setHaveAtMeMsg(void Function(bool isHaveAtMeMsg) call) {
+    this.setHaveAtMeMsgCall = call;
+  }
+
+  //取消at标识
+  void setHaveAtMeMsg(bool isHaveAtMeMsg) {
+    if (setHaveAtMeMsgCall != null) {
+      Future.delayed(Duration(milliseconds: 100),(){
+        setHaveAtMeMsgCall(isHaveAtMeMsg);
+      });
     }
   }
 

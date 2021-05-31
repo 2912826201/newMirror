@@ -276,19 +276,7 @@ class MessageManager {
 
   //判断有没有at我的消息
   static void judgeIsHaveAtUserMes(Message msg) {
-    if (msg != null &&
-        msg.content != null &&
-        msg.content.mentionedInfo != null &&
-        msg.content.mentionedInfo.userIdList != null &&
-        msg.content.mentionedInfo.userIdList.length > 0) {
-      for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
-        if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
-          AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-          Application.atMesGroupModel.add(atMsg);
-          break;
-        }
-      }
-    }
+    Application.appContext.read<ChatMessageProfileNotifier>().judgeIsHaveAtUserMsg(msg);
   }
 
   //判断是不是群聊的消息-更新群成员的信息
