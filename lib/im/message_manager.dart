@@ -222,6 +222,10 @@ class MessageManager {
           dto.type = TRAINING_TYPE;
           dto.avatarUri = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
           dto.name = "运动数据";
+        }else{
+          dto.type = OFFICIAL_TYPE;
+          dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+          dto.name = "系统消息";
         }
         break;
       default:
