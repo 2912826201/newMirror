@@ -45,9 +45,11 @@ class LikeState extends State<Like> {
         feedLuadHasNext = model.hasNext;
         lastTime = model.lastTime;
         if (model.list.isNotEmpty) {
+          // for(int i = 0 ; i < 5; i++) {
           model.list.forEach((v) {
             laudListModel.add(FeedLaudListModel.fromJson(v));
           });
+          // }
           refreshController.loadComplete();
         } else {
           refreshController.loadNoData();
@@ -90,8 +92,8 @@ class LikeState extends State<Like> {
                                 footer: CustomFooter(
                                   onOffsetChange: (offset) {
                                     if (footerText != "" &&
-                                        scrollController.offset > 0 &&
-                                        offset >= scrollController.offset) {
+                                        PrimaryScrollController.of(context).offset > 0 &&
+                                        offset >= PrimaryScrollController.of(context).offset) {
                                       print('---------------------------页面数据不够多,不展示文字');
                                       setState(() {
                                         footerText = "";
@@ -120,7 +122,8 @@ class LikeState extends State<Like> {
                                   requestFeedLuadList();
                                 },
                                 child: ListView.builder(
-                                  controller: scrollController,
+                                  controller: PrimaryScrollController.of(context),
+                                  // scrollController,
                                   itemCount: laudListModel.length,
                                   padding: const EdgeInsets.only(top: 14),
                                   itemBuilder: (context, index) {

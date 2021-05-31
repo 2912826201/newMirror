@@ -105,10 +105,17 @@ Widget getMessageState(int status,
 }
 
 //获取长按操作的选项框
-List<String> getLongClickStringList({@required bool isMySelf, @required String contentType, @required int sendTime}) {
+List<String> getLongClickStringList({@required bool isMySelf,
+  @required int status,
+  @required String contentType,
+  @required int sendTime}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
-  if (isMySelf && DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime))) {
+  if (isMySelf &&
+      DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime)) &&
+      status==RCSentStatus.Sent&&
+      status==RCSentStatus.Read&&
+      status==RCSentStatus.Received) {
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {

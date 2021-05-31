@@ -5,22 +5,28 @@ import 'package:mirror/widget/icon.dart';
 class ChatTopAtMark extends StatefulWidget {
   final Function() onAtUiClickListener;
   final bool isHaveAtMeMsg;
+  final Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
 
-  ChatTopAtMark({Key key, this.onAtUiClickListener, this.isHaveAtMeMsg}) : super(key: key);
+  ChatTopAtMark({Key key, this.onAtUiClickListener, this.isHaveAtMeMsg,this.setHaveAtMeMsg}) : super(key: key);
 
   @override
-  ChatTopAtMarkState createState() => ChatTopAtMarkState(isHaveAtMeMsg);
+  ChatTopAtMarkState createState() => ChatTopAtMarkState(isHaveAtMeMsg,setHaveAtMeMsg);
 }
 
 class ChatTopAtMarkState extends State<ChatTopAtMark> {
   bool isHaveAtMeMsg;
+  Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
+
 
   setIsHaveAtMeMs(bool isHaveAtMeMsg) {
     this.isHaveAtMeMsg = isHaveAtMeMsg;
     setState(() {});
   }
 
-  ChatTopAtMarkState(this.isHaveAtMeMsg);
+
+  ChatTopAtMarkState(this.isHaveAtMeMsg,this.setHaveAtMeMsg){
+    setHaveAtMeMsg(setIsHaveAtMeMs);
+  }
 
   @override
   Widget build(BuildContext context) {

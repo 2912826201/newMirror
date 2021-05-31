@@ -31,7 +31,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   LiveVideoCourseMsg(
       {this.liveVideoModel,
@@ -146,6 +146,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
         sendTime: sendTime,
+        status: status,
         contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {

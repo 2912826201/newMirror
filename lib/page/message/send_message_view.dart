@@ -35,7 +35,7 @@ class SendMessageView extends StatefulWidget {
   final String chatId;
   final int conversationDtoType;
   final bool isShowChatUserName;
-  final Function(void Function()) setCallRemoveLongPanel;
+  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
 
   SendMessageView(
     this.model,
@@ -57,9 +57,7 @@ class SendMessageView extends StatefulWidget {
 
 ///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
-class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+class SendMessageViewState extends State<SendMessageView> {
 
   bool isMyself;
   String userUrl;
@@ -70,7 +68,6 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
 
     setSettingData();
 
@@ -89,7 +86,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
     name = getChatUserName(sendChatUserId, Application.profile.nickName);
 
     if (widget.model.isTemporary) {
-      print("临时的");
+      //print("临时的");
       isMyself = true;
       status = widget.model.status;
       sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
@@ -142,7 +139,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
       // -----------------------------------------------可选择的列表-临时----------------------------------------------
       return getSelectMsgData(widget.model.content);
     } else {
-      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      //print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       return getTextMsg(text: "版本过低请升级版本!");
     }
   }
@@ -151,7 +148,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
   Widget notTemporaryData() {
     Message msg = widget.model.msg;
     if (msg == null) {
-      print(msg.toString() + "为空");
+      //print(msg.toString() + "为空");
       return Container();
     }
     String msgType = msg.objectName;
@@ -291,7 +288,7 @@ class SendMessageViewState extends State<SendMessageView> with AutomaticKeepAliv
     if (voiceMessage.remoteUrl != null) {
       mapModel["pathUrl"] = voiceMessage.remoteUrl;
     }
-    print("mapModel[read]" + mapModel["read"].toString());
+    //print("mapModel[read]" + mapModel["read"].toString());
     return getVoiceMsgData(msg.messageUId, mapModel, false,
         StringUtil.generateMd5(voiceMessage.remoteUrl != null ? voiceMessage.remoteUrl : mapModel["filePath"]));
   }

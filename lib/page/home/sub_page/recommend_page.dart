@@ -246,8 +246,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
 
-  againLoginReplaceLayout() {
-    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  againLoginReplaceLayout([bool isBottomNavigationBar = false]) {
+    if(isBottomNavigationBar) {
+      _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    } else {
+      _controller.jumpTo(0);
+    }
   }
 
   @override

@@ -87,7 +87,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   Future<void> stopRecorder() async {
     await _mRecorder.stopRecorder();
-    print(_mPath);
+    //print(_mPath);
     if (context != null) {
       setState(() {
         isHide = true;
@@ -105,11 +105,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   showVoiceView() async {
-    print("55555555555555555");
+    //print("55555555555555555");
     if (this.automaticPost) {
       return;
     }
-    print("444444444444444");
+    //print("444444444444444");
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(
         showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime),
@@ -147,7 +147,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       return;
     }
     this.automaticPost = automaticPost;
-    // print("hideVoiceView");
+    // //print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
       voiceState = true;
@@ -181,21 +181,21 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         overlayEntry = null;
       }
       if (isUp) {
-        print("取消发送");
+        //print("取消发送");
         if (records.length > 0) {
           records.removeLast();
         }
       } else {
-        print("进行发送");
+        //print("进行发送");
         widget.voiceFile(_mPath, costTime);
-        // print("进行发送：_mPath：$_mPath");
+        // //print("进行发送：_mPath：$_mPath");
       }
     }
-    print(records.toString());
+    //print(records.toString());
   }
 
   moveVoiceView() {
-    print("moveVoiceView");
+    //print("moveVoiceView");
     String textShow;
     isUp = startY - offset > 80 ? true : false;
     if (this.automaticPost) {

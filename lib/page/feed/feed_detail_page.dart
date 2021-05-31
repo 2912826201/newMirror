@@ -7,6 +7,7 @@ import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 import 'package:interactiveviewer_gallery/interactiveviewer_gallery.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
@@ -63,6 +64,19 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   int totalCount = 0;
   double itemHeight = 0;
   int isBlack = 0;
+  bool isDispose = false;
+  int deleteId;
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    if (isDispose && deleteId != null) {
+      Future.delayed(Duration.zero, () {
+        Application.appContext.read<FeedMapNotifier>().deleteFeed(deleteId);
+      });
+    }
+    super.deactivate();
+  }
 
   @override
   void dispose() {
@@ -122,7 +136,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         appBar: CustomAppBar(
           titleString: "动态详情页",
           leadingOnTap: () {
-              Navigator.of(context).pop(true);
+            Navigator.of(context).pop(true);
           },
         ),
         body: widget.errorCode != CODE_NO_DATA
@@ -139,7 +153,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                               controller: _refreshController,
                               onLoading: () {
                                 childKey.currentState.onLoading();
-                              },/*
+                              },
+                              /*
                               onRefresh: (){
                                 childKey.currentState.onRefresh();
                               },*/
@@ -159,11 +174,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                             isShowConcern: true,
                                             model: feedModel,
                                             deleteFeedChanged: (id) {
-                                              // deleteFeedChanged(id);
+                                              isDispose = true;
+                                              deleteId = id;
                                             },
-                                            removeFollowChanged: (m) {
-                                              // removeFollowChanged(m);
-                                            }),
+                                            removeFollowChanged: (m) {}),
                                         // 图片区域
                                         feedModel.picUrls.isNotEmpty
                                             ? SlideBanner(

@@ -729,6 +729,11 @@ class _VideoControlState extends State<VideoControl> {
                   ],
                 ),
               )),
+          Container(
+            height: ScreenUtil.instance.bottomBarHeight,
+            width: ScreenUtil.instance.width,
+            color: AppColor.transparent,
+          ),
         ],
       ),
     );

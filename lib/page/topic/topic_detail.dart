@@ -541,7 +541,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         width: 127,
         height: 43,
         decoration: const BoxDecoration(
-          color: AppColor.bgBlack,
+          color: AppColor.textPrimary2,
           borderRadius: BorderRadius.all(Radius.circular(24)),
         ),
         padding: const EdgeInsets.only(left: 12, right: 12),
@@ -600,7 +600,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                       return AnimatedOpacity(
                         opacity: snapshot.data,
-                        duration: Duration(milliseconds: 1000),
+                        duration: Duration(milliseconds: 400),
                         child: Center(
                             child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -625,7 +625,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
                       return AnimatedOpacity(
                         opacity: snapshot.data,
-                        duration: Duration(milliseconds: 1000),
+                        duration: Duration(milliseconds: 400),
                         child: Center(
                           child: Text("已关注",
                               style:

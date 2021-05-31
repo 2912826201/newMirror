@@ -43,7 +43,7 @@ class MainPageState extends XCState {
 
   List pages = [
     HomePage(key: homePageKey),
-    TrainingPage(),
+   !AppConfig.needShowTraining?Container():TrainingPage(),
     MessagePage(),
     ProfilePage(),
   ];
@@ -78,6 +78,15 @@ class MainPageState extends XCState {
     return Scaffold(
         bottomNavigationBar: IFTabBar(
           tabBarClickListener: (index) {
+            int nowIndex = index;
+            if(!AppConfig.needShowTraining){
+              if(index==2&&currentIndex<2){
+                nowIndex = nowIndex-1;
+              }
+              if(index<2&&currentIndex==2){
+                nowIndex = nowIndex+1;
+              }
+            }
             if (currentIndex == index) {
               print("范慧慧");
               return;
@@ -85,10 +94,10 @@ class MainPageState extends XCState {
             print("跳转111111");
             if (pageController.hasClients) {
               print("跳转222222");
-              if (index - currentIndex == 1 || currentIndex - index == 1) {
+              if (nowIndex - currentIndex == 1 || currentIndex - nowIndex == 1) {
                 pageController.animateToPage(index,
                     duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-              } else {
+              } else{
                 pageController.jumpToPage(index);
               }
               currentIndex = index;
@@ -106,10 +115,9 @@ class MainPageState extends XCState {
               case 0:
                 break;
               case 1:
-                if(AppConfig.needShowTraining)EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
                 break;
               case 2:
-                if(!AppConfig.needShowTraining) _getFollowCount();
                 break;
               case 3:
                 _getFollowCount();
@@ -119,7 +127,7 @@ class MainPageState extends XCState {
           onDoubleTap: (index) {
             print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
-              homePageKey.currentState.subpageRefresh();
+              homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
             }
             if (index == 0 && currentIndex != 0) {
               if (pageController.hasClients) {

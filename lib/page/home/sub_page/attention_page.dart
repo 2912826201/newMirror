@@ -155,8 +155,12 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
   }
 
   // 双击刷新
-  onDoubleTap() {
-    _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  onDoubleTap([bool isBottomNavigationBar = false]) {
+    if(isBottomNavigationBar) {
+      _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    } else {
+      _controller.jumpTo(0);
+    }
   }
 
   //
@@ -412,6 +416,7 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
         : Container();
   }
 
+  // 发布不需要动画
   _buildItem(int index, Animation animation) {
     if (status == Status.noConcern) {
       return pageDisplay(0, HomeFeedModel());
@@ -423,6 +428,39 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     if (index < attentionIdList.length) {
       id = attentionIdList[index];
       feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
+    }
+    print("attentionIdList数据源长度：：：：${attentionIdList.length}");
+    return ExposureDetector(
+      key: Key('attention_page_$id'),
+      child: pageDisplay(index, feedModel),
+      onExposure: (visibilityInfo) {
+        // 如果没有显示
+        if (attentionIdList[index] != -1 &&
+            context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
+          context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
+          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+        }
+      },
+    );
+  }
+
+  // 删除添加动画
+  _buildRemovedItem(int index, Animation<double> animation) {
+    if (status == Status.noConcern) {
+      return pageDisplay(0, HomeFeedModel());
+    }
+    // 获取动态id
+    int id;
+    // 获取动态id指定model
+    HomeFeedModel feedModel;
+    if (index < attentionIdList.length) {
+      id = attentionIdList[index];
+      feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
+      context.read<FeedMapNotifier>().deleteFeed(id);
+      new Future.delayed(Duration(milliseconds: 300), () {
+        attentionIdList.remove(id);
+        attentionModelList.removeWhere((v) => v.id == id);
+      });
     }
     print("attentionIdList数据源长度：：：：${attentionIdList.length}");
     return SizeTransition(
@@ -495,25 +533,18 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
       // 可选参数 子Item的个数
       // key: GlobalObjectKey("attention$index"),
       deleteFeedChanged: (id) {
-        setState(() {
-          // 动画删除item
-          int _index = attentionIdList.indexOf(id);
-          _listKey.currentState.removeItem(_index, (context, animation) => _buildItem(_index, animation));
-
-          attentionIdList.remove(id);
-          context.read<FeedMapNotifier>().deleteFeed(id);
-          attentionModelList.removeWhere((v) => v.id == id);
-          // 更新全局监听
-          // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-          print(attentionIdList.toString());
-          if (attentionIdList.length == 0) {
-            print("进入了00000");
-            // 这是为了加载无动态缺省布局
-            attentionIdList.insert(0, -1);
-            attentionModelList.clear();
-            status = Status.noConcern;
-          }
-        });
+        // 动画删除item
+        int _index = attentionIdList.indexOf(id);
+        _listKey.currentState.removeItem(_index, (context, animation) => _buildRemovedItem(_index, animation));
+        print(attentionIdList.toString());
+        if (attentionIdList.length == 0) {
+          print("进入了00000");
+          // 这是为了加载无动态缺省布局
+          attentionIdList.insert(0, -1);
+          attentionModelList.clear();
+          status = Status.noConcern;
+        }
+        // });
       },
       removeFollowChanged: (model) {
         int pushId = model.pushId;

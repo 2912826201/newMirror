@@ -47,8 +47,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   StreamController<int> streamController;
-  AnimationController _controller;
-  Animation<double> _animation;
   Map<int,AnimationController> animationMap = {};
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -130,6 +128,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     _getDynamicData();
   }
 
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    animationMap.clear();
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -170,6 +175,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (followModel.length == 0) {
           listNoData = true;
         }
+        animationMap.remove(id);
         if (mounted) {
           setState(() {});
         }
@@ -224,7 +230,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               return SizeTransition(
                   sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
                     parent: animationMap[model.id],
-                    curve: Curves.fastOutSlowIn,
+                    curve: Cubic(1.0, 1.0, 0.5, 0.2),
                   )),
                   axis: Axis.vertical,
                   axisAlignment: 1.0,

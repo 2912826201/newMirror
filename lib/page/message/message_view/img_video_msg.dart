@@ -39,7 +39,7 @@ class ImgVideoMsg extends StatelessWidget {
   final Map<String, dynamic> sizeInfoMap;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   ImgVideoMsg(
       {this.isMyself,
@@ -166,6 +166,7 @@ class ImgVideoMsg extends StatelessWidget {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
         sendTime: sendTime,
+        status:status,
         contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO);
     return LongClickPopupMenu(
       onValueChanged: (int value) {

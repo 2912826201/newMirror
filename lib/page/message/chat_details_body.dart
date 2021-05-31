@@ -17,7 +17,6 @@ import 'message_view/currency_msg.dart';
 class ChatDetailsBody extends StatefulWidget {
   final ScrollController scrollController;
   final List<ChatDataModel> chatDataList;
-  final TickerProvider vsync;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final String chatName;
@@ -30,8 +29,8 @@ class ChatDetailsBody extends StatefulWidget {
   final bool isHaveAtMeMsg;
   final String chatId;
   final LoadingStatus loadStatus;
-  final Key chatTopAtMarkChildKey;
-  final Function(void Function()) setCallRemoveLongPanel;
+  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
+  final Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
 
   ChatDetailsBody(
       {Key key,
@@ -43,22 +42,22 @@ class ChatDetailsBody extends StatefulWidget {
       this.isShowChatUserName,
       this.isHaveAtMeMsg,
       this.firstEndCallback,
-      this.vsync,
       this.chatName,
       this.onTap,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
       this.onAtUiClickListener,
-      this.chatTopAtMarkChildKey,
       this.setCallRemoveLongPanel,
-      this.voidItemLongClickCallBack})
+      this.voidItemLongClickCallBack,
+      this.setHaveAtMeMsg,
+      })
       : super(key: key);
 
   @override
   ChatDetailsBodyState createState() => ChatDetailsBodyState(loadStatus);
 }
 
-class ChatDetailsBodyState extends State<ChatDetailsBody> {
+class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderStateMixin {
   LoadingStatus loadStatus;
   bool isShowTop;
   bool isShowHaveAnimation;
@@ -122,9 +121,9 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
         ),
         Positioned(
           child: ChatTopAtMark(
-            key: widget.chatTopAtMarkChildKey,
             onAtUiClickListener: widget.onAtUiClickListener,
             isHaveAtMeMsg: widget.isHaveAtMeMsg,
+            setHaveAtMeMsg: widget.setHaveAtMeMsg,
           ),
           top: 24,
           right: 0,
@@ -143,20 +142,20 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
           //   onTap();
           // }
           // 滚动开始
-          // print('滚动开始');
+          // //print('滚动开始');
           if (widget.onTap != null) {
             widget.onTap();
           }
           isScroll = true;
         } else if (notification is ScrollUpdateNotification) {
           // 滚动位置更新
-          // print('滚动位置更新');
+          // //print('滚动位置更新');
           // 当前位置
-          // print("当前位置${metrics.pixels}");
+          // //print("当前位置${metrics.pixels}");
           isScroll = true;
         } else if (notification is ScrollEndNotification) {
           // 滚动结束
-          // print('滚动结束');
+          // //print('滚动结束');
           isScroll = false;
         }
         return false;
@@ -170,7 +169,6 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     return ListView.custom(
       physics: isShowTop ? ClampingScrollPhysics() : BouncingScrollPhysics(),
       controller: widget.scrollController,
-      padding: EdgeInsets.symmetric(horizontal: 16),
       reverse: true,
       shrinkWrap: isShowTop,
       childrenDelegate: FirstEndItemChildrenDelegate(
@@ -195,7 +193,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
           }
         },
         firstEndCallback: (int firstIndex, int lastIndex) {
-          if (isScroll) {
+          if (isScroll&& widget.firstEndCallback!=null) {
             widget.firstEndCallback(firstIndex, lastIndex);
           }
         },
@@ -247,7 +245,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
     if (model.isHaveAnimation && isShowHaveAnimation) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 100),
-        vsync: widget.vsync,
+        vsync: this,
       );
       Future.delayed(Duration(milliseconds: 100), () {
         animationController.forward();
@@ -268,18 +266,21 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   //获取每一个item
   Widget getBodyAtItem(ChatDataModel model, int position) {
     if (atItemMessagePosition == position) {
-      _animationController = AnimationController(duration: Duration(seconds: 2), vsync: widget.vsync);
+      //print("atItemMessagePosition:$atItemMessagePosition");
+      _animationController = AnimationController(duration: Duration(seconds: 2), vsync:this);
       _animation = DecorationTween(
           begin: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                AppColor.transparent,
-                AppColor.textHint,
-                AppColor.transparent,
-              ],
-            ),
+            color: AppColor.textHint.withOpacity(0.2),
+            // gradient: const LinearGradient(
+            //   begin: Alignment.centerLeft,
+            //   end: Alignment.centerRight,
+            //   colors: [
+            //     AppColor.transparent,
+            //     AppColor.textHint,
+            //
+            //     AppColor.transparent,
+            //   ],
+            // ),
           ),
           end: BoxDecoration(
             color: AppColor.transparent,
@@ -295,24 +296,27 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> {
   }
 
   Widget getBodyItem(ChatDataModel model, int position) {
-    return SendMessageView(
-      model,
-      widget.chatId,
-      position,
-      widget.voidMessageClickCallBack,
-      widget.voidItemLongClickCallBack,
-      widget.chatName,
-      widget.isShowChatUserName,
-      widget.conversationDtoType,
-      widget.setCallRemoveLongPanel,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: SendMessageView(
+        model,
+        widget.chatId,
+        position,
+        widget.voidMessageClickCallBack,
+        widget.voidItemLongClickCallBack,
+        widget.chatName,
+        widget.isShowChatUserName,
+        widget.conversationDtoType,
+        widget.setCallRemoveLongPanel,
+      ),
     );
   }
 
   _initData() {
-    print("1111");
+    //print("1111");
     isShowHaveAnimation = MessageItemHeightUtil.init()
         .judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
-    print("isShowHaveAnimation:$isShowHaveAnimation");
+    //print("isShowHaveAnimation:$isShowHaveAnimation");
     isShowTop = !isShowHaveAnimation;
     if (isShowTop) {
       loadStatus = LoadingStatus.STATUS_COMPLETED;

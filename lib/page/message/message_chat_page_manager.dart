@@ -541,9 +541,17 @@ void postImgOrVideo(
   });
 }
 
+List<String> cancelPostMessage=[];
+
 Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultModelList, List<ChatDataModel> modelList,
     String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
   for (int i = start; i < end; i++) {
+    if(cancelPostMessage.contains(modelList[i].id??"")){
+      cancelPostMessage.remove(modelList[i].id??"");
+      deleteCancelMessage(modelList[i].conversationId,modelList[i].id??"");
+      print("取消发送图片：$i,${modelList[i].id??""}");
+      continue;
+    }
     print("发送图片：$i");
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
@@ -794,6 +802,37 @@ deletePostCompleteMessage(ConversationDto conversation) {
         Application.postChatDataModelList[conversation.id].removeAt(i);
       }
     }
+  }
+}
+
+//从全局的临时消息中删除取消的消息
+deleteCancelMessage(String conversationId,String messageId) {
+  if(conversationId!=null) {
+    if (Application.postChatDataModelList[conversationId] == null ||
+        Application.postChatDataModelList[conversationId].length < 1) {
+      return;
+    } else {
+      for (int i = 0; i < Application.postChatDataModelList[conversationId].length; i++) {
+        if (Application.postChatDataModelList[conversationId][i].id == messageId) {
+          Application.postChatDataModelList[conversationId].removeAt(i);
+          break;
+        }
+      }
+    }
+  }else{
+    bool isFind=false;
+    Application.postChatDataModelList.forEach((key, value) {
+      if(isFind){
+        return;
+      }
+      for (int i = 0; i < value.length; i++) {
+        if (value[i].id == messageId) {
+          value.removeAt(i);
+          isFind=true;
+          break;
+        }
+      }
+    });
   }
 }
 

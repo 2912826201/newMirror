@@ -166,7 +166,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 发布动态
   pulishFeed(PostprogressModel postprogress, {isPostPageJump = true}) async {
     print("进来了绿绿绿绿绿绿绿");
-    if(!publishFeedOver) {
+    if (!publishFeedOver) {
       print('-------------------上次发布未结束，退回');
       return;
     }
@@ -413,11 +413,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   }
 
   // 子页面下拉刷新
-  subpageRefresh() {
+  subpageRefresh({bool isBottomNavigationBar = false}) {
     if (controller.index == 0 && attentionKey.currentState != null) {
-      attentionKey.currentState.onDoubleTap();
+      attentionKey.currentState.onDoubleTap(isBottomNavigationBar);
     } else if (controller.index == 1 && recommendKey.currentState != null) {
-      recommendKey.currentState.againLoginReplaceLayout();
+      recommendKey.currentState.againLoginReplaceLayout(isBottomNavigationBar);
     }
   }
 

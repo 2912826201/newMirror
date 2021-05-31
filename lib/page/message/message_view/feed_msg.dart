@@ -29,7 +29,7 @@ class FeedMsg extends StatelessWidget {
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final Function(void Function()) setCallRemoveOverlay;
+  final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   FeedMsg({
     this.userUrl,
@@ -147,6 +147,7 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       sendTime: sendTime,
+      status: status,
     );
     return LongClickPopupMenu(
       onValueChanged: (int value) {

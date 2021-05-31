@@ -97,7 +97,6 @@ void main() {
               //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
               ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
               ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
-              ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
             ],
             child: MyApp(),
           ),
