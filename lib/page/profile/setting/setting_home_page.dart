@@ -219,6 +219,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
     try {
       //删除缓存目录
       Directory file = Directory(path);
+      File files = File("");
       await delDir(file);
       Toast.show('清除缓存成功', context);
     } catch (e) {
