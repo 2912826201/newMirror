@@ -175,10 +175,10 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   //调用接口
   Future<Null> searchHttp() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
-      searchPois.clear();
       PeripheralInformationEntity locationInformationEntity =
           await searchForHttp(searchController.text, currentAddressInfo.city, page: 1);
       searchText = searchController.text;
+      searchPois.clear();
       if (locationInformationEntity.status == "1") {
         _refreshController.refreshCompleted();
         _refreshController.loadComplete();
@@ -256,6 +256,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
         _refreshController.loadNoData();
       }
     } else {
+      print("搜索文案为空");
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity = await aroundForHttp(
             currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude,

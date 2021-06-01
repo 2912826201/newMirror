@@ -14,12 +14,13 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'bottom_sheet.dart';
 
-Future openTimePickerBottomSheet({
-  @required BuildContext context,
-  @required DateTime firstTime, lastTime, initTime,
-  @required String timeFormat,
-  @required Function(DateTime) onConfirm
-}) async {
+Future openTimePickerBottomSheet(
+    {@required BuildContext context,
+    @required DateTime firstTime,
+    lastTime,
+    initTime,
+    @required String timeFormat,
+    @required Function(DateTime) onConfirm}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -30,8 +31,14 @@ Future openTimePickerBottomSheet({
         ),
       ),
       builder: (BuildContext context) {
-        return SingleChildScrollView(child: TimePickerBottomSheet(firstTime: firstTime,initTime: initTime,lastTime:
-        lastTime,timeFormat:timeFormat ,onConfirm: onConfirm,));
+        return SingleChildScrollView(
+            child: TimePickerBottomSheet(
+          firstTime: firstTime,
+          initTime: initTime,
+          lastTime: lastTime,
+          timeFormat: timeFormat,
+          onConfirm: onConfirm,
+        ));
       });
 }
 
@@ -39,7 +46,9 @@ class TimePickerBottomSheet extends StatefulWidget {
   DateTime firstTime, lastTime, initTime;
   String timeFormat;
   Function(DateTime) onConfirm;
-TimePickerBottomSheet({this.initTime,this.lastTime,this.firstTime,this.timeFormat,this.onConfirm});
+
+  TimePickerBottomSheet({this.initTime, this.lastTime, this.firstTime, this.timeFormat, this.onConfirm});
+
   @override
   State<StatefulWidget> createState() {
     return _TimePickerBottomSheetState();
@@ -48,48 +57,24 @@ TimePickerBottomSheet({this.initTime,this.lastTime,this.firstTime,this.timeForma
 
 class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
   DateTime choseTime;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     choseTime = widget.initTime;
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 259.5 + ScreenUtil.instance.bottomBarHeight,
       decoration: BoxDecoration(
           color: AppColor.white,
-          borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10) )
-      ),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Column(
         children: [
-          Container(
-            height: 44,
-            width: ScreenUtil.instance.screenWidthDp,
-            padding: EdgeInsets.only(left: 16, right: 16),
-            decoration: BoxDecoration(
-                color: AppColor.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('取消', style: AppStyle.textHintRegular16),
-                ),
-                Spacer(),
-                InkWell(
-                    onTap: () {
-                      widget.onConfirm(choseTime);
-                      Navigator.pop(context);
-                    },
-                    child: Text('确定', style: AppStyle.redRegular16)),
-              ],
-            ),
-          ),
+          _topChoseTitle(),
           Expanded(
               child: DatePickerWidget(
             firstDate: widget.firstTime,
@@ -101,6 +86,35 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
               choseTime = date;
             }),
           ))
+        ],
+      ),
+    );
+  }
+
+  Widget _topChoseTitle() {
+    return Container(
+      height: 44,
+      width: ScreenUtil.instance.screenWidthDp,
+      padding: EdgeInsets.only(left: 16, right: 16),
+      decoration: BoxDecoration(
+          color: AppColor.white,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Text('取消', style: AppStyle.textHintRegular16),
+          ),
+          Spacer(),
+          InkWell(
+              onTap: () {
+                widget.onConfirm(choseTime);
+                Navigator.pop(context);
+              },
+              child: Text('确定', style: AppStyle.redRegular16)),
         ],
       ),
     );

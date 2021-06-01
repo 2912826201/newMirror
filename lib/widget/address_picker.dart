@@ -140,7 +140,7 @@ class _AddressPickerState extends State<AddressPicker> {
                       provinceCity = cityNameList[rightfixedExtentController.selectedItem];
                     } else {
                       provinceCity =provinceNameList[leftfixedExtentController.selectedItem]
-                          +cityNameList[rightfixedExtentController.selectedItem];
+                          +" "+cityNameList[rightfixedExtentController.selectedItem];
                     }
                     if (widget.cityMap[provinceIdList[leftfixedExtentController.selectedItem]] == null) {
                       cityCode = provinceDtoList[leftfixedExtentController.selectedItem].regionCode;

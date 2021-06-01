@@ -87,8 +87,8 @@ class AppConfig {
 
   //各环境融云appkey
   static const String _DEV_RCAPPKEY = "pwe86ga5psfi6";
-  static const String _MIRROR_RCAPPKEY = "pwe86ga5psfi6";
-  static const String _PROD_RCAPPKEY = "pwe86ga5psfi6";
+  static const String _MIRROR_RCAPPKEY = "4z3hlwrv42uot";
+  static const String _PROD_RCAPPKEY = "4z3hlwrv42uot";
 
   //根据环境获取融云appkey
   static String getRCAppKey() {
