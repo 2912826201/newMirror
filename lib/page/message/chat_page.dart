@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -194,6 +195,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   bool readOnly = false;
 
+  String urlMd5StringVideo="";
+  String filePathMd5Video="";
+
   @override
   void initState() {
     super.initState();
@@ -299,7 +303,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
-
+    context.read<VoiceSettingNotifier>().stop();
     deletePostCompleteMessage(conversation);
   }
 
@@ -1016,7 +1020,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     } else {
       chatDataList[position].msg.objectName = RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
-      MessageManager.updateConversationByMessageList(context, [chatDataList[position].msg]);
+      MessageManager.updateConversationByMessage(context, chatDataList[position].msg);
       if (mounted) {
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
@@ -1690,6 +1694,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //图片的点击事件
   onPicAndVideoBtnClick() {
     ////print("=====图片的点击事件");
+    context.read<VoiceSettingNotifier>().stop();
     _messageInputBodyClick();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
@@ -1796,6 +1801,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // Application.atMesGroupModel.add(atMsg);
+    context.read<VoiceSettingNotifier>().stop();
     _messageInputBodyClick();
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
         _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
@@ -2076,10 +2082,15 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (conversation.type == MANAGER_TYPE && position != null) {
       position--;
     }
+    String urlMd5StringVideo=map==null?"":map["urlMd5String"];
+    String filePathMd5Video=map==null?"":map["filePathMd5"];
 
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       ////print("暂无此配置");
     } else if (settingType == "删除") {
+      if(this.urlMd5StringVideo==urlMd5StringVideo||this.filePathMd5Video==filePathMd5Video){
+        context.read<VoiceSettingNotifier>().stop();
+      }
       if(chatDataList[position].isTemporary){
         if(chatDataList[position].id!=null){
           cancelPostMessage.add(chatDataList[position].id);
@@ -2088,7 +2099,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         }
-
       }else {
         RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
           //print("====" + code.toString());
@@ -2101,6 +2111,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         //print("删除-第$position个");
       }
     } else if (settingType == "撤回") {
+      if(this.urlMd5StringVideo==urlMd5StringVideo||this.filePathMd5Video==filePathMd5Video){
+        context.read<VoiceSettingNotifier>().stop();
+      }
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
       if (context != null && content != null) {
@@ -2125,16 +2138,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       ////print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
+      context.read<VoiceSettingNotifier>().stop();
       _launchUrl(content);
       // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
+      context.read<VoiceSettingNotifier>().stop();
       // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"], context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+      context.read<VoiceSettingNotifier>().stop();
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+      context.read<VoiceSettingNotifier>().stop();
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
+      context.read<VoiceSettingNotifier>().stop();
       // ToastShow.show(msg: "跳转用户界面", context: _context);
       _messageInputBodyClick();
       jumpToUserProfilePage(context, map["uid"], avatarUrl: map["avatarUri"], userName: map["nikeName"],
@@ -2143,16 +2161,20 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         getRelation();
       });
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
+      context.read<VoiceSettingNotifier>().stop();
       // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
       CourseModel liveModel = CourseModel.fromJson(map);
       AppRouter.navigateToLiveDetail(context, liveModel.id,
           heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
+      context.read<VoiceSettingNotifier>().stop();
       // ToastShow.show(msg: "跳转视频课详情界面", context: _context);
       CourseModel videoModel = CourseModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       // ToastShow.show(msg: "播放录音", context: _context);
+      urlMd5StringVideo=map["urlMd5String"];
+      filePathMd5Video=map["filePathMd5"];
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
