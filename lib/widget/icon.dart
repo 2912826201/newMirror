@@ -85,6 +85,7 @@ class AppIcon {
   static const String danmaku_on = "assets/svg/danmaku_on.svg";
   static const String danmaku_off = "assets/svg/danmaku_off.svg";
   static const String camera_24 = "assets/svg/camera_24.svg";
+  static const String camera_27 = "assets/svg/camera_27.svg";
   static const String score_16 = "assets/svg/score_16.svg";
   static const String calorie_16 = "assets/svg/calorie_16.svg";
   static const String time_16 = "assets/svg/time_16.svg";
@@ -138,6 +139,9 @@ class AppIcon {
   static const String pin_bubble_index_bar = "assets/svg/pin_bubble_index_bar.svg";
   static const String error_circle = "assets/svg/error_circle.svg";
   static const String identity_coach = "assets/svg/identity_coach.svg";
+  static const String chat_16 = "assets/svg/chat_16.svg";
+  static const String pin_map = "assets/svg/pin_map.svg";
+  static const String pin_map_self = "assets/svg/pin_map_self.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

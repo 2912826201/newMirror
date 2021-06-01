@@ -304,7 +304,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             isMselfId
                 ? Container(
                     color: AppColor.white,
-                    padding: EdgeInsets.only(left: width/4,right: width/4),
+                    padding: EdgeInsets.only(left: width / 4, right: width / 4),
                     child: TabBar(
                       unselectedLabelStyle: AppStyle.textHintRegular16,
                       unselectedLabelColor: AppColor.textSecondary,
@@ -367,7 +367,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                             SizedBox(
                               height: 16,
                             ),
-
                             Center(
                               child: Text(
                                 "该账号封禁中·",
@@ -695,10 +694,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     children: [
                       Spacer(),
                       !notifier.value.profileUiChangeModel[widget.userId].isFollow
-                          ? Icon(
-                              Icons.message,
-                              size: 16,
-                            )
+                          ? AppIcon.getAppIcon(AppIcon.chat_16, 16)
                           : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
                       SizedBox(
                         width: 2,
@@ -727,23 +723,23 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///头像
   Widget _mineAvatar() {
-    return  ClipOval(
-        child: CachedNetworkImage(
-          height: avatarSize,
-          width: avatarSize,
-          memCacheHeight: 250,
-          memCacheWidth: 250,
-          useOldImageOnUrlChange: true,
-          imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
-          ),
-          /*errorWidget:(context, url, e) {
+    return ClipOval(
+      child: CachedNetworkImage(
+        height: avatarSize,
+        width: avatarSize,
+        memCacheHeight: 250,
+        memCacheWidth: 250,
+        useOldImageOnUrlChange: true,
+        imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: AppColor.bgWhite,
+        ),
+        /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/
-        ),
-      );
+      ),
+    );
   }
 
   ///这是关注粉丝获赞

@@ -100,7 +100,7 @@ android {
             applicationId "${defaultConfig.applicationId}"
             manifestPlaceholders = [
                     CHANNEL_CODE: "10000",
-                    APP_ICON: "@mipmap/ic_launcher",
+                    APP_ICON: "@mipmap/ic_launcher_dev",
                     ENVIRONMENT: "DEV",
             ]
         }
