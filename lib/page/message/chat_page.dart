@@ -2033,7 +2033,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   void Function() removeLongPanelCall;
 
   void _setCallRemoveLongPanel(void Function() call,String longClickString) {
-    //print("111111");
+    // print("111111longClickString:$longClickString");
     if(removeLongPanelCall!=null&&
         longClickString!=null&&
         longClickString!=""&&
