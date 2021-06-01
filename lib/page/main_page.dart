@@ -5,6 +5,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -43,7 +44,7 @@ class MainPageState extends XCState {
 
   List pages = [
     HomePage(key: homePageKey),
-   !AppConfig.needShowTraining?Container():TrainingPage(),
+   !AppConfig.needShowTraining?Container(width: 0,color: AppColor.white,):TrainingPage(),
     MessagePage(),
     ProfilePage(),
   ];
