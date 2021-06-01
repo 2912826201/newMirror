@@ -99,10 +99,6 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       // 延迟器:
       timer = Timer(Duration(milliseconds: 700), () {
         if (lastString != widget.keyWord) {
-          liveVideoList.clear();
-          userList.clear();
-          topicList.clear();
-          feedList.clear();
           mergeRequest();
         }
       });
@@ -142,6 +138,10 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         searchCourse(key: widget.keyWord, size: 2, token: token),
       );
     var result = await Future.wait(requestList);
+    liveVideoList.clear();
+    userList.clear();
+    topicList.clear();
+    feedList.clear();
     SearchUserModel userModel;
     userModel = result[0];
     DataResponseModel topicModel = result[1];
@@ -452,14 +452,12 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         //     );
                         //   }, childCount: feedList.length),
                         // ),
-                        feedList.length > 0
-                            ? SliverAnimatedList(
-                                key: _listKey,
-                                itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                                  return _buildItem(index, animation);
-                                },
-                                initialItemCount: feedList.length)
-                            : Container()
+                        SliverAnimatedList(
+                            key: _listKey,
+                            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+                              return Offstage(offstage: feedList.length == 0, child: _buildItem(index, animation));
+                            },
+                            initialItemCount: feedList.length)
                       ],
                     )),
               );
