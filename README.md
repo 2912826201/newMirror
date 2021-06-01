@@ -88,8 +88,14 @@ widget/     可复用的界面组件。
 ## 备忘
 flutter build apk --release --target-platform android-arm64
 flutter build apk --release --target-platform android-arm
+渠道运行/打包参数
+--flavor common --dart-define=APP_CHANNEL=common
 
-## 打包流程（暂时只说明测试环境）
+## 打包流程
+多渠道打包配置参考文章：
+https://www.jianshu.com/p/ef86d6fafb25
+https://zhuanlan.zhihu.com/p/365347452
+程序原本的debug和release只区分运行及打包的模式，并不用来区分实际的服务运行环境，所以在配置渠道参数时同时配置环境参数。
 一、准备阶段
   1.确认代码已经更新到最新。
   2.修改pubspec.yaml文件中的版本号及build号：有版本更新时同时修改版本号和build号。版本号格式为a.b.c格式abc可以不止1位。
@@ -97,11 +103,16 @@ flutter build apk --release --target-platform android-arm
   3.commit代码，提交的message写build a.b.c+d,abcd为版本号和build号。push代码。
 二、build阶段
   1.iOS：
-  1.1.点击Android Studio上方的Build → Flutter → Build iOS，待Messages窗口中打印信息显示build完成。
+  1.1.在Terminal终端窗口，项目根目录下执行
+  flutter build ios --release --flavor Release-debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  flutter build ios --release --flavor Release-release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  命令。待打印信息显示build完成。
   1.2.点击Android Studio上方的Tools → Flutter → Open iOS module in Xcode。
-  1.3.在Xcode中点击上方的Product → Archive。（Xcode中的签名证书配置不在这里赘述）
+  1.3.在Xcode中点击上方的运行停止按钮右方选择对应环境的scheme（测试环境为Debug，正式环境为Release）
+  1.4.在Xcode中点击上方的Product → Archive。（Xcode中的签名证书配置不在这里赘述）
   待打包完成后，Xcode会弹出Organizer窗口（也可通过Window → Organizer打开），选中打好的包，点击Distribute App按钮。
-  测试版本选择Development，下一步，下一步，Automatically manage signing（自动签名），下一步，下一步，然后点击Export导出到文件夹中。
+  测试版本选择Development，下一步，下一步，
+  测试版本选择Automatically manage signing（自动签名），下一步，下一步，然后点击Export导出到文件夹中。
   2.Android：
   2.1.打开项目中android/app/build.gradle文件，将中间defaultConfig中的
      ndk {
@@ -109,8 +120,10 @@ flutter build apk --release --target-platform android-arm
          abiFilters 'armeabi-v7a'//, 'arm64-v8a', 'x86', 'x86_64'
      }
   取消注释。
-  2.2.在Terminal终端窗口，项目根目录下执行flutter build apk --release --target-platform android-arm命令。
-  待Messages窗口中打印信息显示build完成。打出的apk包路径为build/app/outputs/flutter-apk/app-release.apk。
+  2.2.在Terminal终端窗口，项目根目录下执行
+  flutter build apk --release --target-platform android-arm --flavor common_debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  flutter build apk --release --target-platform android-arm --flavor common_release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  命令。待打印信息显示build完成。打出的apk包路径为build/app/outputs/flutter-apk/app-release.apk。
   2.3.将上述取消注释部分还原成注释状态，切记不要将其忘记注释导致提交代码到git。
 三、发布阶段
   1.蒲公英发布
