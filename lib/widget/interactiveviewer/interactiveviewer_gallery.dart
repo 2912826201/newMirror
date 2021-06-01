@@ -220,7 +220,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
                 if(widget.sources[index] is TopicDtoModel) {
                   Navigator.of(context).pop();
                 }
-                if (widget.sources[index].type == "image") {
+                if ( widget.sources[index] is DemoSourceEntity && widget.sources[index].type == "image") {
                   Navigator.of(context).pop();
                 }
               },
