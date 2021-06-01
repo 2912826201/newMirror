@@ -328,6 +328,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
   VideoIsPlay isPlay = VideoIsPlay();
+  int firstTapTimep;
 
   @override
   void initState() {
@@ -460,11 +461,15 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                 top: offsetY,
                 child: GestureDetector(
                   onTap: () {
-                    streamHeight.sink.add(40.0);
-                    // 延迟器:
-                    new Future.delayed(Duration(seconds: 3), () {
-                      streamHeight.sink.add(0.0);
-                    });
+                    if (firstTapTimep == null) {
+                      firstTapTimep = DateTime.now().millisecondsSinceEpoch;
+                      streamHeight.sink.add(40.0);
+                      // 延迟器:
+                      new Future.delayed(Duration(seconds: 3), () {
+                        streamHeight.sink.add(0.0);
+                        firstTapTimep = null;
+                      });
+                    }
                   },
                   // 双击
                   onDoubleTap: () {
@@ -490,68 +495,68 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
               ),
               // controller.isVideoInitialized() ?
               Positioned(
-                      bottom: 0,
-                      child: StreamBuilder<double>(
-                          initialData: initHeight,
-                          stream: streamHeight.stream,
-                          builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                            return AnimatedContainer(
-                                height: snapshot.data,
-                                width: ScreenUtil.instance.width,
-                                duration: Duration(milliseconds: 100),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    // 渐变色
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomLeft,
-                                      colors: [
-                                        AppColor.transparent,
-                                        AppColor.black.withOpacity(0.5),
-                                      ],
-                                    ),
+                  bottom: 0,
+                  child: StreamBuilder<double>(
+                      initialData: initHeight,
+                      stream: streamHeight.stream,
+                      builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                        return AnimatedContainer(
+                            height: snapshot.data,
+                            width: ScreenUtil.instance.width,
+                            duration: Duration(milliseconds: 100),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                // 渐变色
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomLeft,
+                                  colors: [
+                                    AppColor.transparent,
+                                    AppColor.black.withOpacity(0.5),
+                                  ],
+                                ),
+                              ),
+                              width: ScreenUtil.instance.width,
+                              height: 40,
+                              padding: const EdgeInsets.only(left: 2, right: 16),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  StreamBuilder<bool>(
+                                      initialData: controller.videoPlayerController.value.volume > 0,
+                                      stream: streamController.stream,
+                                      builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                                        return GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () {
+                                            if (controller.videoPlayerController.value.volume > 0) {
+                                              controller.setVolume(0.0);
+                                            } else {
+                                              controller.setVolume(1.0);
+                                            }
+                                            streamController.sink
+                                                .add(controller.videoPlayerController.value.volume > 0);
+                                          },
+                                          child: AppIcon.getAppIcon(
+                                            snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
+                                            16,
+                                            color: AppColor.white,
+                                            containerHeight: 44,
+                                            containerWidth: 44,
+                                          ),
+                                        );
+                                      }),
+                                  Spacer(),
+                                  Text(
+                                    widget.durationString ?? "00 : 00",
+                                    style: const TextStyle(fontSize: 11, color: AppColor.white),
                                   ),
-                                  width: ScreenUtil.instance.width,
-                                  height: 40,
-                                  padding: const EdgeInsets.only( left: 2,right: 16),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      StreamBuilder<bool>(
-                                          initialData: controller.videoPlayerController.value.volume > 0,
-                                          stream: streamController.stream,
-                                          builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                                            return GestureDetector(
-                                              behavior: HitTestBehavior.opaque,
-                                              onTap: () {
-                                                if (controller.videoPlayerController.value.volume > 0) {
-                                                  controller.setVolume(0.0);
-                                                } else {
-                                                  controller.setVolume(1.0);
-                                                }
-                                                streamController.sink
-                                                    .add(controller.videoPlayerController.value.volume > 0);
-                                              },
-                                              child: AppIcon.getAppIcon(
-                                                snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
-                                                16,
-                                                color: AppColor.white,
-                                                containerHeight: 44,
-                                                containerWidth: 44,
-                                              ),
-                                            );
-                                          }),
-                                      Spacer(),
-                                      Text(
-                                        widget.durationString ?? "00 : 00",
-                                        style: const TextStyle(fontSize: 11, color: AppColor.white),
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                          }))
-                  // : Container()
+                                ],
+                              ),
+                            ));
+                      }))
+              // : Container()
             ],
           ),
         ));
