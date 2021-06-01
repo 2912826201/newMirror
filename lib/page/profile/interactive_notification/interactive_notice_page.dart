@@ -191,7 +191,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                 header: SmartRefresherHeadFooter.init().getHeader(),
                 onRefresh: _onRefresh,
                 onLoading: () {
-                  if (msgList.length != 0) {
+                  if (msgList.isNotEmpty) {
                     setState(() {
                       showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
                     });
