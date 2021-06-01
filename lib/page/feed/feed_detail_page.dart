@@ -16,12 +16,14 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/better_video_player.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -341,32 +343,38 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
     sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
     sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-    return Hero(
-      tag: videos.first.url,
-      child: GestureDetector(
-        onTap: () {
-          // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
-          //   return InteractiveviewDemoPage();
-          // }));
-          Navigator.of(context).push(
-            HeroDialogRoute<void>(
-              builder: (BuildContext context) => InteractiveviewerGallery<VideosModel>(
-                sources: videos,
-                initIndex: 0,
-                itemBuilder: itemBuilder,
-              ),
-            ),
-          );
-        },
-        child: FeedVideoPlayer(
-          videos.last.url,
-          sizeInfo,
-          ScreenUtil.instance.width,
-          isInListView: true,
-          index: 0,
-        ),
-      ),
+    return
+        // Hero(
+        // tag: videos.first.url,
+        // child: GestureDetector(
+        //   onTap: () {
+        //     // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
+        //     //   return InteractiveviewDemoPage();
+        //     // }));
+        //     Navigator.of(context).push(
+        //       HeroDialogRoute<void>(
+        //         builder: (BuildContext context) => InteractiveviewerGallery<VideosModel>(
+        //           sources: videos,
+        //           initIndex: 0,
+        //           itemBuilder: itemBuilder,
+        //         ),
+        //       ),
+        //     );
+        //   },
+        betterVideoPlayer(
+      feedModel: feedModel,
+      sizeInfo: sizeInfo,
+      durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
     );
+    // child: FeedVideoPlayer(
+    //   videos.last.url,
+    //   sizeInfo,
+    //   ScreenUtil.instance.width,
+    //   isInListView: true,
+    //   index: 0,
+    // ),
+    //   ),
+    // );
   }
 
   Widget itemBuilder(
