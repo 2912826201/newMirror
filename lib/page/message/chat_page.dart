@@ -1626,7 +1626,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //输入框的点击事件
   textSpanFieldClickListener() {
     _emojiStateOld = _emojiState;
-    //print("_emojiStateOld2:$_emojiStateOld");
+    print("_emojiStateOld2:$_emojiStateOld");
     if (_emojiState) {
       _emojiState = !_emojiState;
       bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
@@ -1642,6 +1642,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       pageHeightStopCanvas = true;
       oldKeyboardHeight = 0;
     }
+    print("readOnly:$readOnly");
     if (readOnly) {
       readOnly = false;
       streamEditWidget.sink.add(0);
@@ -2190,11 +2191,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       //print("position:$position");
       // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
+
+      if (_isVoiceState) {
+        _isVoiceState = false;
+        messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+      }
+
       _textController.text += json.decode(map["content"])["data"];
       bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
-      Future.delayed(Duration(milliseconds: 100), () {
-        textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
-      });
       if (Application.platform == 0) {
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,
@@ -2202,6 +2206,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         );
         _textController.selection = setCursor;
       }
+      print("00000000000000000000000000000000000");
+      FocusScope.of(context).requestFocus(_focusNode);
+      print("000000000000000000000000000000000001");
+      textSpanFieldClickListener();
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       // ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
       // _postSelectMessage(content);
@@ -2329,7 +2337,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       url = "https://" + url;
     }
     if (await canLaunch(url)) {
-      await launch(url);
+      AppRouter.navigateWebViewPage(context, url);
+      // await launch(url);
     } else {
       throw 'Could not launch $url';
     }
