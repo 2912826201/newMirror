@@ -367,6 +367,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                             SizedBox(
                               height: 16,
                             ),
+
                             Center(
                               child: Text(
                                 "该账号封禁中·",
