@@ -83,6 +83,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<double> notFollowStreamController;
   bool followOrNot = false;
   bool beforOnClickOver = true;
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -558,9 +559,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 borderRadius: BorderRadius.all(Radius.circular(24)),
               ),
               child: Center(
-                child: Icon(
-                  Icons.camera_alt,
-                  color: AppColor.black,
+                child: AppIcon.getAppIcon(
+                  AppIcon.camera_27,
+                  27,
                 ),
               ),
             ),
@@ -582,7 +583,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             AppRouter.navigateToLoginPage(context);
             return;
           }
-          if(!beforOnClickOver){
+          if (!beforOnClickOver) {
             return;
           }
           beforOnClickOver = false;
@@ -621,7 +622,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 1) {
                             followStreamController.sink.add(1);
-                          }else{
+                          } else {
                             beforOnClickOver = true;
                           }
                         },
@@ -642,7 +643,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 0) {
                             notFollowStreamController.sink.add(1);
-                          }else{
+                          } else {
                             beforOnClickOver = true;
                           }
                         },
