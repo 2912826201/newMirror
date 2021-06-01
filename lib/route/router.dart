@@ -123,6 +123,9 @@ class AppRouter {
   // 活动界面-添加老师和群聊界面
   static String pathLordQRCodePage = "/newUserPromotionPage/pathLordQRCodePage";
 
+  // 内部webview
+  static String pathWebViewPage = "/webViewPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -211,6 +214,7 @@ class AppRouter {
     router.define(pathNewUserPromotionPage, handler: handlerNewUserPromotionPage);
     // 新用户活动界面-添加老师和进入群聊界面
     router.define(pathLordQRCodePage, handler: handlerLordQRCodePage);
+    router.define(pathWebViewPage, handler: handlerWebViewPage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -963,6 +967,13 @@ class AppRouter {
   static void navigateLordQRCodePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLordQRCodePage, map);
+  }
+
+  //内部webview
+  static void navigateWebViewPage(BuildContext context,String url) {
+    Map<String, dynamic> map = Map();
+    map["url"]=url;
+    _navigateToPage(context, pathWebViewPage, map);
   }
 
   //判断用户是不是在活动界面
