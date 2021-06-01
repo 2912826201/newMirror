@@ -47,14 +47,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   StreamController<int> streamController;
-  Map<int,AnimationController> animationMap = {};
+  Map<int, AnimationController> animationMap = {};
+
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
       return;
     }
     DataResponseModel model =
-    await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
+        await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
@@ -66,19 +67,17 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (model.list != null && model.list.length != 0) {
           listNoData = false;
           model.list.forEach((result) {
-            print('---------------------${HomeFeedModel
-                .fromJson(result)
-                .id}');
+            print('---------------------${HomeFeedModel.fromJson(result).id}');
             followModel.add(HomeFeedModel.fromJson(result));
-            animationMap[HomeFeedModel.fromJson(result).id] = AnimationController(
-                duration: const Duration(milliseconds: 300), vsync: this);
+            animationMap[HomeFeedModel.fromJson(result).id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
         } else {
           widget.type == 3
               ? hintText = "这个人很懒，什么都没发"
               : widget.type == 2
-              ? hintText = "发布动态，增加人气哦"
-              : hintText = "你还没有喜欢的内容~去逛逛吧";
+                  ? hintText = "发布动态，增加人气哦"
+                  : hintText = "你还没有喜欢的内容~去逛逛吧";
           defaultImage = DefaultImage.nodata;
           listNoData = true;
         }
@@ -96,8 +95,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
-            animationMap[HomeFeedModel.fromJson(result).id] = AnimationController(
-                duration: const Duration(milliseconds: 300), vsync: this);
+            animationMap[HomeFeedModel.fromJson(result).id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
         }
         _refreshController.loadComplete();
@@ -128,13 +127,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     _getDynamicData();
   }
 
-
   @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
     animationMap.clear();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -146,16 +145,16 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   void initState() {
     super.initState();
     streamController = StreamController.broadcast();
-    EventBus.getDefault().registerSingleParameter(
-        _tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
+    EventBus.getDefault()
+        .registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
     print('-----------------------------profileDetailsListInit');
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
         registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"
         : widget.type == 2
-        ? hintText = "发布动态，增加人气哦"
-        : hintText = "你还没有喜欢的内容~去逛逛吧";
+            ? hintText = "发布动态，增加人气哦"
+            : hintText = "你还没有喜欢的内容~去逛逛吧";
   }
 
   _tabBarDoubleTap(result) {
@@ -167,25 +166,23 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   }
 
   _deleteFeedCallBack(int id) {
-    if(animationMap.containsKey(id)){
-      animationMap[id].forward().then((value){
+    if (animationMap.containsKey(id)) {
+      animationMap[id].forward().then((value) {
         followModel.removeWhere((element) {
           return element.id == id;
         });
         if (followModel.length == 0) {
           listNoData = true;
         }
-        animationMap.remove(id);
         if (mounted) {
-          setState(() {});
+          setState(() {
+            animationMap.remove(id);
+          });
         }
-        if (context
-            .read<FeedMapNotifier>()
-            .value
-            .feedMap
-            .containsKey(id)) {
+        if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
           context.read<FeedMapNotifier>().deleteFeed(id);
         }
+
       });
     }
   }
@@ -215,52 +212,51 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               onRefresh: _onRefresh,
               child: _showDataUi())),
     );
-    return NestedScrollViewInnerScrollPositionKeyWidget(
-        widget.pageKey, child);
+    return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
 
   Widget _showDataUi() {
     return !listNoData
         ? CustomScrollView(
-      slivers: [
-        SliverList(
-            delegate: SliverChildBuilderDelegate((content, index) {
-              HomeFeedModel model;
-              model = followModel[index];
-              return SizeTransition(
+            slivers: [
+              SliverList(
+                  delegate: SliverChildBuilderDelegate((content, index) {
+                HomeFeedModel model;
+                model = followModel[index];
+                return SizeTransition(
                   sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
                     parent: animationMap[model.id],
-                    curve: Cubic(1.0, 1.0, 0.5, 0.2),
+                    curve: Curves.fastOutSlowIn,
                   )),
                   axis: Axis.vertical,
                   axisAlignment: 1.0,
                   child: ExposureDetector(
-              key: widget.type == 2
-              ? Key('profile_feed_${followModel[index].id}'): Key('profile_like_${followModel[index].id}'),
-              child: DynamicListLayout(
-              index: index,
-              pageName: "profileDetails",
-              isShowRecommendUser: false,
-              isShowConcern: false,
-              model: model,
-              isMySelf: widget.isMySelf,
-              mineDetailId: widget.id,
-              removeFollowChanged: (model) {},
-              deleteFeedChanged: (feedId) {}),
-              onExposure: (visibilityInfo) {
-              // 如果没有显示
-              if (model.isShowInputBox) {
-              context.read<FeedMapNotifier>().showInputBox(model.id);
-              }
-              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-              },
-              )
-              ,
-              );
-            },
-                childCount: followModel.length))
-      ],
-    ) /*ListView.builder(
+                    key: widget.type == 2
+                        ? Key('profile_feed_${followModel[index].id}')
+                        : Key('profile_like_${followModel[index].id}'),
+                    child: DynamicListLayout(
+                        index: index,
+                        pageName: "profileDetails",
+                        isShowRecommendUser: false,
+                        isShowConcern: false,
+                        model: model,
+                        isMySelf: widget.isMySelf,
+                        mineDetailId: widget.id,
+                        removeFollowChanged: (model) {},
+                        deleteFeedChanged: (feedId) {}),
+                    onExposure: (visibilityInfo) {
+                      // 如果没有显示
+                      if (model.isShowInputBox) {
+                        context.read<FeedMapNotifier>().showInputBox(model.id);
+                      }
+                      print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                    },
+                  ),
+                );
+              }, childCount: followModel.length))
+            ],
+          )
+        /*ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
@@ -294,25 +290,25 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               );
             })*/
         : ListView(
-      children: [
-        Center(
-          child: Container(
-            width: 224,
-            height: 224,
-            child: Image.asset(defaultImage),
-          ),
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Center(
-          child: Text(
-            hintText,
-            style: AppStyle.textPrimary3Regular14,
-          ),
-        )
-      ],
-    );
+            children: [
+              Center(
+                child: Container(
+                  width: 224,
+                  height: 224,
+                  child: Image.asset(defaultImage),
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Center(
+                child: Text(
+                  hintText,
+                  style: AppStyle.textPrimary3Regular14,
+                ),
+              )
+            ],
+          );
   }
 
   @override
