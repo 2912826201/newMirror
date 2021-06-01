@@ -343,20 +343,20 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
       setState(() {});
     }
 
-    eventListener = (BetterPlayerEvent event) {
-      switch (event.betterPlayerEventType) {
-        case BetterPlayerEventType.initialized:
-          controller?.setVolume(0);
-          break;
-        default:
-          break;
-      }
-    };
+    // eventListener = (BetterPlayerEvent event) {
+    //   switch (event.betterPlayerEventType) {
+    //     case BetterPlayerEventType.initialized:
+    //       controller?.setVolume(0);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // };
     configuration = BetterPlayerConfiguration(
         // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: videoSize.width / videoSize.height,
         autoPlay: false,
-        eventListener: eventListener,
+        // eventListener: eventListener,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
         fullScreenByDefault: false,
@@ -389,14 +389,16 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
         ));
+
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
+    controller.setVolume(0);
   }
 
   @override
   void dispose() {
     print("视频页销毁————————————————————————————————————————————————");
     controller?.pause();
-    controller?.removeEventsListener(eventListener);
+    // controller?.removeEventsListener(eventListener);
     streamController.close();
     streamHeight.close();
     super.dispose();
@@ -486,8 +488,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                   ),
                 ),
               ),
-              controller.isVideoInitialized()
-                  ? Positioned(
+              // controller.isVideoInitialized() ?
+              Positioned(
                       bottom: 0,
                       child: StreamBuilder<double>(
                           initialData: initHeight,
@@ -549,7 +551,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                                   ),
                                 ));
                           }))
-                  : Container()
+                  // : Container()
             ],
           ),
         ));
