@@ -160,7 +160,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     if (msgList.length == 0 && hasNext == 0) {
       controller.requestRefresh();
     }
-    setState(() {});
+    if(mounted) {
+      setState(() {});
+    }
   }
 
   @override
