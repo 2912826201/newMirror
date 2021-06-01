@@ -10,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
+import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
@@ -18,11 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
-GlobalKey<TopicListState> topicLisKey = GlobalKey();
-GlobalKey<TopicListState> topicLisKey1 = GlobalKey();
-
 class TopicList extends StatefulWidget {
-  TopicList({Key key, this.topicId, this.type, this.tabKey}) : super(key: key);
+  TopicList({this.topicId, this.type, this.tabKey});
 
   int type;
 
@@ -53,8 +51,18 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
   // 双击刷新
-  onDoubleTap() {
-    refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+  onDoubleTap(TopicDoubleTapTabbar topicDoubleTapTabbar) {
+    bool isrefresh = false;
+    if(topicDoubleTapTabbar.topicId == widget.topicId) {
+      if (topicDoubleTapTabbar.tabControllerIndex == 0 && widget.type == 5) {
+        isrefresh = true;
+      } else if (topicDoubleTapTabbar.tabControllerIndex == 1 && widget.type == 4) {
+        isrefresh = true;
+      }
+      if (isrefresh) {
+        refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+      }
+    }
   }
 
   @override
@@ -64,6 +72,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     cancelRequests(token: token);
     EventBus.getDefault()
         .unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
+    EventBus.getDefault()
+        .unRegister(registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${widget.topicId}", pageName: EVENTBUS__TOPICDATAIL_PAGE);
     super.dispose();
   }
 
@@ -124,6 +134,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // requestRecommendTopic(refreshOrLoading:true);
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
+    EventBus.getDefault().registerSingleParameter(onDoubleTap, EVENTBUS__TOPICDATAIL_PAGE,
+        registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${widget.topicId}");
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     // Future.delayed(Duration(milliseconds: 250), () {
     //   requestRecommendTopic(refreshOrLoading: true);

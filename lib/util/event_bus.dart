@@ -245,3 +245,5 @@ const String GALLERY_LEAVE = "gallery_leave";
 const String VIDEO_COURSE_RESULT = "video_course_result";
 //话题详情删除动态
 const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
+//话题详情双击tabbar
+ String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
