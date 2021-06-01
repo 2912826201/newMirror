@@ -2105,6 +2105,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           updateMessagePageAlert(conversation, context);
           if (mounted) {
             chatDataList.removeAt(position);
+            if(chatDataList.length>position){
+              if(ChatPageUtil.init(context).isTimeAlertMsg(chatDataList[position])){
+                chatDataList.removeAt(position);
+              }
+            }
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         });

@@ -427,4 +427,18 @@ class ChatPageUtil {
     }
     return false;
   }
+
+
+
+
+  bool isTimeAlertMsg(ChatDataModel chatDataModel){
+    if(chatDataModel==null)return false;
+    if(chatDataModel.isTemporary)return false;
+    if(chatDataModel.msg==null)return false;
+    if(chatDataModel.msg.objectName!=TextMessage.objectName)return false;
+    TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
+    Map<String, dynamic> mapModel = json.decode(textMessage.content);
+    if(mapModel==null)return false;
+    return mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+  }
 }
