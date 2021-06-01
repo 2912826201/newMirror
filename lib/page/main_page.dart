@@ -5,6 +5,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -42,8 +43,8 @@ class MainPageState extends XCState {
 
 
   List pages = [
-    HomePage(key: homePageKey),
-   !AppConfig.needShowTraining?Container():TrainingPage(),
+   HomePage(key: homePageKey),
+   TrainingPage(),
     MessagePage(),
     ProfilePage(),
   ];
@@ -78,7 +79,8 @@ class MainPageState extends XCState {
     return Scaffold(
         bottomNavigationBar: IFTabBar(
           tabBarClickListener: (index) {
-            int nowIndex = index;
+            print('----------index-------$index');
+            /*  int nowIndex = index;
             if(!AppConfig.needShowTraining){
               if(index==2&&currentIndex<2){
                 nowIndex = nowIndex-1;
@@ -86,22 +88,14 @@ class MainPageState extends XCState {
               if(index<2&&currentIndex==2){
                 nowIndex = nowIndex+1;
               }
-            }
+            }*/
             if (currentIndex == index) {
               print("范慧慧");
               return;
             }
+            currentIndex = index;
+            pageController.jumpToPage(index);
             print("跳转111111");
-            if (pageController.hasClients) {
-              print("跳转222222");
-              if (nowIndex - currentIndex == 1 || currentIndex - nowIndex == 1) {
-                pageController.animateToPage(index,
-                    duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-              } else{
-                pageController.jumpToPage(index);
-              }
-              currentIndex = index;
-            }
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
@@ -125,7 +119,19 @@ class MainPageState extends XCState {
             }
           },
           onDoubleTap: (index) {
-            print("双击index：：${index} currentIndex:::$currentIndex");
+            if (homePageKey.currentState != null && currentIndex == 0) {
+              homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
+            }
+            pageController.jumpToPage(index);
+            currentIndex = index;
+            EventBus.getDefault().post(msg: index,registerName: MAIN_PAGE_JUMP_PAGE);
+            if (_unReadFeedCount == 0) {
+              _getUnReadFeedCount();
+            }
+            Future.delayed(Duration.zero, () {
+              getUnReads();
+            });
+           /* print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
               homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
             }
@@ -138,16 +144,10 @@ class MainPageState extends XCState {
                 } else {
                   pageController.jumpToPage(index);
                 }
-                currentIndex = index;
-                EventBus.getDefault().post(msg: index,registerName: MAIN_PAGE_JUMP_PAGE);
+
               }
-              if (_unReadFeedCount == 0) {
-                _getUnReadFeedCount();
-              }
-              Future.delayed(Duration.zero, () {
-                getUnReads();
-              });
-            }
+
+            }*/
           },
         ),
         body: PageView.builder(

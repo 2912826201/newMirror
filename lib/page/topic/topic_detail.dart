@@ -22,6 +22,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/colors_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -83,6 +84,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<double> notFollowStreamController;
   bool followOrNot = false;
   bool beforOnClickOver = true;
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -348,7 +350,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         return ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
                       },
                       innerScrollPositionKeyBuilder: () {
-                        String index = 'Tab';
+                        String index = 'Tab${model.id}';
 
                         index += _tabController.index.toString();
 
@@ -394,15 +396,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             TopicList(
                               topicId: model.id,
                               type: 5,
-                              key: topicLisKey,
-                              tabKey: Key('Tab0'),
+                              // key: topicLisKey,
+                              tabKey: Key('Tab${model.id}0'),
                             ),
                             // 最新话题
                             TopicList(
                               topicId: model.id,
                               type: 4,
-                              key: topicLisKey1,
-                              tabKey: Key('Tab1'),
+                              // key: topicLisKey1,
+                              tabKey: Key('Tab${model.id}1'),
                             ),
                           ],
                         ))
@@ -445,11 +447,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 子页面下拉刷新
   subpageRefresh() {
-    if (_tabController.index == 0 && topicLisKey.currentState != null) {
-      topicLisKey.currentState.onDoubleTap();
-    } else if (_tabController.index == 1 && topicLisKey.currentState != null) {
-      topicLisKey1.currentState.onDoubleTap();
-    }
+    TopicDoubleTapTabbar topicDoubleTapTabbar = TopicDoubleTapTabbar();
+    topicDoubleTapTabbar.topicId = model.id;
+    topicDoubleTapTabbar.tabControllerIndex =  _tabController.index;
+    EventBus.getDefault().post(msg: topicDoubleTapTabbar, registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${model.id}");
   }
 
   // 大图预览内部的Item
@@ -558,9 +559,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 borderRadius: BorderRadius.all(Radius.circular(24)),
               ),
               child: Center(
-                child: Icon(
-                  Icons.camera_alt,
-                  color: AppColor.black,
+                child: AppIcon.getAppIcon(
+                  AppIcon.camera_27,
+                  27,
                 ),
               ),
             ),
@@ -582,7 +583,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             AppRouter.navigateToLoginPage(context);
             return;
           }
-          if(!beforOnClickOver){
+          if (!beforOnClickOver) {
             return;
           }
           beforOnClickOver = false;
@@ -621,7 +622,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 1) {
                             followStreamController.sink.add(1);
-                          }else{
+                          } else {
                             beforOnClickOver = true;
                           }
                         },
@@ -642,7 +643,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 0) {
                             notFollowStreamController.sink.add(1);
-                          }else{
+                          } else {
                             beforOnClickOver = true;
                           }
                         },
@@ -670,4 +671,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 class TopicUiChangeModel {
   double opacity = 0;
   bool canOnclick = false;
+}
+class TopicDoubleTapTabbar {
+  int tabControllerIndex;
+  int topicId;
 }

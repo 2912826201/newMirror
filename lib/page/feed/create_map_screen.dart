@@ -13,6 +13,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class createMapScreen extends StatefulWidget {
   createMapScreen({this.latitude, this.longitude, this.keyWords});
@@ -112,10 +113,17 @@ class _createMapScreenState extends State<createMapScreen> {
                         markers: [
                           MarkerOption(
                             coordinate: LatLng(widget.latitude, widget.longitude),
-                            widget: Image.asset(
-                              'images/test/map.png',
-                              width: 36,
-                              height: 36,
+                            widget: AppIcon.getAppIcon(
+                              AppIcon.pin_map,
+                              36,
+                            ),
+                          ),
+                          MarkerOption(
+                            coordinate:
+                            LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
+                            widget: AppIcon.getAppIcon(
+                              AppIcon.pin_map_self,
+                              36,
                             ),
                           ),
                         ],
@@ -128,33 +136,33 @@ class _createMapScreenState extends State<createMapScreen> {
                           MarkerOptionList.add(
                             MarkerOption(
                               coordinate: LatLng(widget.latitude, widget.longitude),
-                              widget: Image.asset(
-                                'images/test/map.png',
-                                width: 36,
-                                height: 36,
+                              widget: AppIcon.getAppIcon(
+                                AppIcon.pin_map,
+                                36,
                               ),
                             ),
                           );
                           MarkerOptionList.add(
                             MarkerOption(
-                              coordinate: LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
-                              widget: Icon(
-                                Icons.wrong_location_outlined,size: 36,color: Colors.amberAccent,
+                              coordinate:
+                                  LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
+                              widget: AppIcon.getAppIcon(
+                                AppIcon.pin_map_self,
+                                36,
                               ),
                             ),
                           );
                           // 标记
-                          _controller.addMarkers(
-                              MarkerOptionList
-                            // MarkerOption(
-                            //   coordinate: LatLng(widget.latitude, widget.longitude),
-                            //   widget: Image.asset(
-                            //     'images/test/map.png',
-                            //     width: 36,
-                            //     height: 36,
-                            //   ),
-                            // ),
-                          );
+                          _controller.addMarkers(MarkerOptionList
+                              // MarkerOption(
+                              //   coordinate: LatLng(widget.latitude, widget.longitude),
+                              //   widget: Image.asset(
+                              //     'images/test/map.png',
+                              //     width: 36,
+                              //     height: 36,
+                              //   ),
+                              // ),
+                              );
                         },
                       )),
                   Container(

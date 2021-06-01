@@ -156,7 +156,7 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
 
   // 双击刷新
   onDoubleTap([bool isBottomNavigationBar = false]) {
-    if(isBottomNavigationBar) {
+    if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {
       _controller.jumpTo(0);
@@ -446,9 +446,6 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
 
   // 删除添加动画
   _buildRemovedItem(int index, Animation<double> animation) {
-    if (status == Status.noConcern) {
-      return pageDisplay(0, HomeFeedModel());
-    }
     // 获取动态id
     int id;
     // 获取动态id指定model
@@ -456,12 +453,22 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     if (index < attentionIdList.length) {
       id = attentionIdList[index];
       feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
-      context.read<FeedMapNotifier>().deleteFeed(id);
       new Future.delayed(Duration(milliseconds: 300), () {
         attentionIdList.remove(id);
         attentionModelList.removeWhere((v) => v.id == id);
+        if (attentionIdList.length == 0) {
+          print("进入了00000");
+          // 这是为了加载无动态缺省布局
+          attentionIdList.insert(0, -1);
+          attentionModelList.clear();
+          status = Status.noConcern;
+        }
+      });
+      new Future.delayed(Duration(milliseconds: 500), () {
+        context.read<FeedMapNotifier>().deleteFeed(id);
       });
     }
+
     print("attentionIdList数据源长度：：：：${attentionIdList.length}");
     return SizeTransition(
         sizeFactor: animation,
@@ -537,13 +544,9 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
         int _index = attentionIdList.indexOf(id);
         _listKey.currentState.removeItem(_index, (context, animation) => _buildRemovedItem(_index, animation));
         print(attentionIdList.toString());
-        if (attentionIdList.length == 0) {
-          print("进入了00000");
-          // 这是为了加载无动态缺省布局
-          attentionIdList.insert(0, -1);
-          attentionModelList.clear();
-          status = Status.noConcern;
-        }
+        // new Future.delayed(Duration(milliseconds: 300), () {
+        // });
+
         // });
       },
       removeFollowChanged: (model) {

@@ -31,14 +31,13 @@ Future openTimePickerBottomSheet(
         ),
       ),
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-            child: TimePickerBottomSheet(
+        return TimePickerBottomSheet(
           firstTime: firstTime,
           initTime: initTime,
           lastTime: lastTime,
           timeFormat: timeFormat,
           onConfirm: onConfirm,
-        ));
+        );
       });
 }
 
@@ -62,6 +61,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    widget.initTime = widget.initTime == null ? widget.firstTime : widget.initTime;
     choseTime = widget.initTime;
   }
 
@@ -75,8 +75,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
       child: Column(
         children: [
           _topChoseTitle(),
-          Expanded(
-              child: DatePickerWidget(
+          DatePickerWidget(
             firstDate: widget.firstTime,
             lastDate: widget.lastTime,
             initialDate: widget.initTime,
@@ -85,7 +84,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
             onChange: ((DateTime date, list) {
               choseTime = date;
             }),
-          ))
+          )
         ],
       ),
     );
@@ -138,11 +137,7 @@ class DatePickerWidget extends StatefulWidget {
     this.onChange,
     this.onConfirm,
     this.looping: false,
-  }) : super(key: key) {
-    DateTime minTime = firstDate ?? DateTime.parse(DATE_PICKER_MIN_DATETIME);
-    DateTime maxTime = lastDate ?? DateTime.parse(DATE_PICKER_MAX_DATETIME);
-    assert(minTime.compareTo(maxTime) < 0);
-  }
+  });
 
   final DateTime firstDate, lastDate, initialDate;
   final String dateFormat;
@@ -154,7 +149,7 @@ class DatePickerWidget extends StatefulWidget {
   final bool looping;
 
   @override
-  State<StatefulWidget> createState() => _DatePickerWidgetState(this.firstDate, this.lastDate, this.initialDate);
+  State<StatefulWidget> createState() => _DatePickerWidgetState();
 }
 
 class _DatePickerWidgetState extends State<DatePickerWidget> {
@@ -165,11 +160,14 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
 
   Map<String, FixedExtentScrollController> _scrollCtrlMap;
   Map<String, List<int>> _valueRangeMap;
-
+  DateTime minDateTime, maxDateTime, initialDateTime;
   bool _isChangeDateRange = false;
 
-  _DatePickerWidgetState(DateTime minDateTime, DateTime maxDateTime, DateTime initialDateTime) {
+  Future _initDateResources() async {
     // handle current selected year、month、day
+    minDateTime = widget.firstDate;
+    maxDateTime = widget.lastDate;
+    initialDateTime = widget.initialDate;
     DateTime initDateTime = initialDateTime ?? DateTime.now();
     this._currYear = initDateTime.year;
     this._currMonth = initDateTime.month;
@@ -201,10 +199,18 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initDateResources();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      //padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
-      child: _renderPickerView(context));
+    return Expanded(
+        flex: 1,
+        //padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+        child: _renderPickerView(context));
   }
 
   /// render date picker widgets
@@ -271,10 +277,10 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   }
 
   Widget _renderDatePickerColumnComponent(
-      {@required FixedExtentScrollController scrollCtrl,
-      @required List<int> valueRange,
-      @required String format,
-      @required ValueChanged<int> valueChanged,
+      {FixedExtentScrollController scrollCtrl,
+      List<int> valueRange,
+      String format,
+      ValueChanged<int> valueChanged,
       double fontSize}) {
     return Expanded(
       flex: 1,

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g id="ic_homepage_private_chat_" data-name="ic_homepage private chat " transform="translate(-587.554 -1184.554)">
+    <g id="组_183" data-name="组 183" transform="translate(587.554 1184.554)">
+      <g id="组_181" data-name="组 181" transform="translate(0 0)">
+        <g id="组_97" data-name="组 97" opacity="0.85">
+          <g id="组_40" data-name="组 40">
+            <g id="矩形_20" data-name="矩形 20" transform="translate(0 0)" fill="#111" stroke="#707070" stroke-width="1" opacity="0">
+              <rect width="32" height="32" stroke="none"/>
+              <rect x="0.5" y="0.5" width="31" height="31" fill="none"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <path id="路径_143" data-name="路径 143" d="M16.1,28.209A12.119,12.119,0,1,1,26.17,22.829q-.221.33.828,4.169-3.839-1.049-4.169-.828A12.048,12.048,0,0,1,16.1,28.209Z" transform="translate(587.587 1184.587)" fill="none" stroke="#111" stroke-linejoin="round" stroke-width="2"/>
+    <circle id="椭圆_77" data-name="椭圆 77" cx="2" cy="2" r="2" transform="translate(601.554 1198.554)" fill="#111"/>
+    <circle id="椭圆_78" data-name="椭圆 78" cx="2" cy="2" r="2" transform="translate(595.554 1198.554)" fill="#111"/>
+    <circle id="椭圆_79" data-name="椭圆 79" cx="2" cy="2" r="2" transform="translate(607.554 1198.554)" fill="#111"/>
+  </g>
+</svg>
