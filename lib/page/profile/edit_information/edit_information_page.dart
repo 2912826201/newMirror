@@ -259,7 +259,7 @@ class _EditInformationState extends State<EditInformation> {
                           context: context,
                           firstTime: DateTime(1960),
                           lastTime: DateTime.now(),
-                          initTime: DateTime.parse(userBirthday),
+                          initTime: userBirthday!=null?DateTime.parse(userBirthday):null,
                           timeFormat: "yyyy年,MM月,dd日",
                           onConfirm: (date) {
                             userBirthday = DateFormat("yyyy-MM-dd").format(date);

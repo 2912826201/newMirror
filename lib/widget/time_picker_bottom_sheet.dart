@@ -79,7 +79,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
               child: DatePickerWidget(
             firstDate: widget.firstTime,
             lastDate: widget.lastTime,
-            initialDate: widget.initTime,
+            initialDate: widget.initTime==null?DateTime(1960):widget.initTime,
             dateFormat: widget.timeFormat,
             locale: DateTimePickerLocale.zh_cn,
             onChange: ((DateTime date, list) {
