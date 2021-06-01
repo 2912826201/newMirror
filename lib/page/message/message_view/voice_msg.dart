@@ -176,11 +176,16 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
         status: widget.status,
         sendTime: widget.sendTime,
         contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+
     return LongClickPopupMenu(
       onValueChanged: (int value) {
+        Map<String, dynamic> map =Map();
+        map["urlMd5String"]=urlMd5String;
+        map["filePathMd5"]=_getUrlMd5String();
         widget.voidItemLongClickCallBack(
             position: widget.position,
             settingType: longClickStringList[value],
+            map:map,
             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
@@ -235,10 +240,16 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                         if(context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String:filePathMd5)){
                           context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, filePathMd5);
                         }else {
-                          widget.voidMessageClickCallBack(
-                              contentType: ChatTypeModel.MESSAGE_TYPE_VOICE, position: widget.position);
                           context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, urlMd5String);
                         }
+                        Map<String, dynamic> map =Map();
+                        map["urlMd5String"]=urlMd5String;
+                        map["filePathMd5"]=filePathMd5;
+                        widget.voidMessageClickCallBack(
+                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
+                            position: widget.position,
+                            map:map,
+                        );
                       },
                     )),
               )),

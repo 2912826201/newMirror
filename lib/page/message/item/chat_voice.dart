@@ -5,6 +5,7 @@ import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
@@ -242,6 +243,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         // showVoiceView();
       },
       onVerticalDragDown: (details) async {
+        context.read<VoiceSettingNotifier>().stop();
         var status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
           throw RecordingPermissionException('Microphone permission not granted');
