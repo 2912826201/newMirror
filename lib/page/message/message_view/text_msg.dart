@@ -147,6 +147,7 @@ class TextMsg extends StatelessWidget {
     List<String> longClickStringList =
         getLongClickStringList(isMySelf: isMyself,
             status: status,sendTime: sendTime, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+    // print("longClickStringList:$longClickStringList");
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

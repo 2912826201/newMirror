@@ -111,11 +111,13 @@ List<String> getLongClickStringList({@required bool isMySelf,
   @required int sendTime}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
+  // print("isMySelf:$isMySelf");
   if (isMySelf &&
-      DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime)) &&
-      status==RCSentStatus.Sent&&
-      status==RCSentStatus.Read&&
-      status==RCSentStatus.Received) {
+      DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime)) &&(
+      status==RCSentStatus.Sent||
+      status==RCSentStatus.Read||
+      status==RCSentStatus.Received
+  )) {
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
