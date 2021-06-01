@@ -140,6 +140,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 1;
       });
       notFollowStreamController.sink.add(0);
+      followOrNot = true;
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id, isAdd: false);
       }
@@ -156,6 +157,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 0;
       });
       followStreamController.sink.add(0);
+      followOrNot = false;
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id);
       }
