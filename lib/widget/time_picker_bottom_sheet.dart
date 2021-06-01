@@ -204,11 +204,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   Widget build(BuildContext context) {
     return Container(
       //padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
-
-      child: GestureDetector(
-        child: Material(color: Colors.transparent, child: _renderPickerView(context)),
-      ),
-    );
+      child: _renderPickerView(context));
   }
 
   /// render date picker widgets

@@ -189,7 +189,9 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       }
 
       // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      if(mounted){
+        context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      }
     } else {
       _refreshController.loadNoData();
       feedList.clear();

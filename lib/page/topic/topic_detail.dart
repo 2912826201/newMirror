@@ -82,7 +82,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<double> followStreamController;
   StreamController<double> notFollowStreamController;
   bool followOrNot = false;
-
+  bool beforOnClickOver = true;
   @override
   void dispose() {
     _tabController.dispose();
@@ -140,6 +140,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 1;
       });
       notFollowStreamController.sink.add(0);
+      followOrNot = true;
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id, isAdd: false);
       }
@@ -156,6 +157,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         model.isFollow = 0;
       });
       followStreamController.sink.add(0);
+      followOrNot = false;
       if (widget.isTopicList) {
         context.read<UserInteractiveNotifier>().removeListId(model.id);
       }
@@ -580,6 +582,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             AppRouter.navigateToLoginPage(context);
             return;
           }
+          if(!beforOnClickOver){
+            return;
+          }
+          beforOnClickOver = false;
           if (model.isFollow == 0) {
             requestFollowTopic();
           } else {
@@ -615,6 +621,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 1) {
                             followStreamController.sink.add(1);
+                          }else{
+                            beforOnClickOver = true;
                           }
                         },
                       );
@@ -634,6 +642,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         onEnd: () {
                           if (model.isFollow == 0) {
                             notFollowStreamController.sink.add(1);
+                          }else{
+                            beforOnClickOver = true;
                           }
                         },
                       );
