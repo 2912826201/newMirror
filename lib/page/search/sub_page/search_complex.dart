@@ -303,7 +303,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                           ),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: userList.length == 0, child: ItemTitle("相关用户", 16, 4, widget.controller))),
+                                offstage: userList.length == 0, child: ItemTitle("相关用户", 16, AppConfig.needShowTraining ? 4 : 3, widget.controller))),
                         SliverList(
                             delegate: SliverChildBuilderDelegate((content, index) {
                           return Offstage(
@@ -319,7 +319,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         }, childCount: userList.length)),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: topicList.length == 0, child: ItemTitle("相关话题", 16, 2, widget.controller))),
+                                offstage: topicList.length == 0, child: ItemTitle("相关话题", 16, AppConfig.needShowTraining ? 2 : 1, widget.controller))),
                         SliverList(
                             delegate: SliverChildBuilderDelegate((content, index) {
                           return Offstage(
@@ -330,7 +330,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         }, childCount: topicList.length)),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: feedList.length == 0, child: ItemTitle("相关动态", 16, 3, widget.controller))),
+                                offstage: feedList.length == 0, child: ItemTitle("相关动态", 16, AppConfig.needShowTraining ? 3 : 2, widget.controller))),
                         // SliverToBoxAdapter(
                         //     child: Offstage(
                         //         offstage: feedList.length == 0,
