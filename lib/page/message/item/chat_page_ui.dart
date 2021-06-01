@@ -430,7 +430,7 @@ class ChatPageUtil {
 
 
 
-
+  //判断这个消息是不是时间的提示
   bool isTimeAlertMsg(ChatDataModel chatDataModel){
     if(chatDataModel==null)return false;
     if(chatDataModel.isTemporary)return false;
