@@ -11,6 +11,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
@@ -43,6 +44,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   RefreshController _refreshController = new RefreshController();
   String defaultImage = DefaultImage.nodata;
   ScrollController scrollController = ScrollController();
+
+  GlobalKey globalKey = GlobalKey();
+  bool showNoMore = true;
 
 // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -163,17 +167,25 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                 child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
+                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
                   controller: _refreshController,
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   onRefresh: _onRefresh,
-                  onLoading: _onLoading,
+                  onLoading: () {
+                    if (modelList != null && modelList.isNotEmpty && dataPage == 1) {
+                      setState(() {
+                        showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                      });
+                    }
+                    _onLoading();
+                  },
                   child: ListView.builder(
                       controller: scrollController,
                       itemCount: modelList.length,
                       itemExtent: 58,
                       itemBuilder: (context, index) {
                         return SearchUserItem(
+                          globalKey: index == modelList.length - 1 ? globalKey : null,
                           model: modelList[index],
                           width: ScreenUtil.instance.screenWidthDp,
                           type: 1,
@@ -212,8 +224,9 @@ class SearchUserItem extends StatefulWidget {
   UserModel model;
   double width;
   int type;
+  GlobalKey globalKey;
 
-  SearchUserItem({this.model, this.width, this.type});
+  SearchUserItem({this.model, this.width, this.type, this.globalKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -239,6 +252,7 @@ class _SearchState extends State<SearchUserItem> {
   Widget build(BuildContext context) {
     print('=========================搜索itembuid${widget.model.uid}');
     return Container(
+      key: widget.globalKey != null ? widget.globalKey : null,
       height: 58,
       padding: const EdgeInsets.only(top: 5, bottom: 5),
       child: Row(
