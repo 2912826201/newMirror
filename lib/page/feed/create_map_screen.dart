@@ -14,6 +14,7 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class createMapScreen extends StatefulWidget {
   createMapScreen({this.latitude, this.longitude, this.keyWords});
@@ -30,6 +31,8 @@ class _createMapScreenState extends State<createMapScreen> {
   AmapController _controller;
   String formatted_address;
   Location currentAddressInfo; //当前位置的信息
+  List<MarkerOption> markers = [];
+
   @override
   void initState() {
     aroundHttp();
@@ -39,19 +42,38 @@ class _createMapScreenState extends State<createMapScreen> {
 
   // 查询定位信息
   aroundHttp() async {
-    currentAddressInfo = await AmapLocation.instance.fetchLocation();
-
     PeripheralInformationEntity locationInformationEntity =
         await reverseGeographyHttp(widget.longitude, widget.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       formatted_address = locationInformationEntity.regeocode.formatted_address;
+      markers.add(MarkerOption(
+        coordinate: LatLng(widget.latitude, widget.longitude),
+        widget: AppIcon.getAppIcon(
+          AppIcon.pin_map,
+          36,
+        ),
+      ));
       print(formatted_address);
-      if (mounted) {
-        setState(() {});
-      }
     } else {
       // 请求失败
+    }
+    // 获取权限状态
+    PermissionStatus permissions = await Permission.locationWhenInUse.status;
+    // 用户授予了对所请求功能的访问权限
+    if( permissions == PermissionStatus.granted) {
+      //flutter定位只能获取到经纬度信息
+      currentAddressInfo = await AmapLocation.instance.fetchLocation();
+      markers.add(MarkerOption(
+        coordinate: LatLng(currentAddressInfo?.latLng?.latitude, currentAddressInfo?.latLng?.longitude),
+        widget: AppIcon.getAppIcon(
+          AppIcon.pin_map_self,
+          36,
+        ),
+      ));
+    }
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -110,59 +132,13 @@ class _createMapScreenState extends State<createMapScreen> {
                         maskDelay: Duration(milliseconds: 500),
 
                         /// 标记
-                        markers: [
-                          MarkerOption(
-                            coordinate: LatLng(widget.latitude, widget.longitude),
-                            widget: AppIcon.getAppIcon(
-                              AppIcon.pin_map,
-                              36,
-                            ),
-                          ),
-                          MarkerOption(
-                            coordinate:
-                            LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
-                            widget: AppIcon.getAppIcon(
-                              AppIcon.pin_map_self,
-                              36,
-                            ),
-                          ),
-                        ],
+                        markers: markers,
 
                         /// 地图创建完成回调
                         onMapCreated: (controller) async {
                           _controller = controller;
-                          List<MarkerOption> MarkerOptionList = [];
-                          // currentAddressInfo.latLng.latitude
-                          MarkerOptionList.add(
-                            MarkerOption(
-                              coordinate: LatLng(widget.latitude, widget.longitude),
-                              widget: AppIcon.getAppIcon(
-                                AppIcon.pin_map,
-                                36,
-                              ),
-                            ),
-                          );
-                          MarkerOptionList.add(
-                            MarkerOption(
-                              coordinate:
-                                  LatLng(currentAddressInfo.latLng.latitude, currentAddressInfo.latLng.longitude),
-                              widget: AppIcon.getAppIcon(
-                                AppIcon.pin_map_self,
-                                36,
-                              ),
-                            ),
-                          );
                           // 标记
-                          _controller.addMarkers(MarkerOptionList
-                              // MarkerOption(
-                              //   coordinate: LatLng(widget.latitude, widget.longitude),
-                              //   widget: Image.asset(
-                              //     'images/test/map.png',
-                              //     width: 36,
-                              //     height: 36,
-                              //   ),
-                              // ),
-                              );
+                          _controller.addMarkers(markers);
                         },
                       )),
                   Container(
