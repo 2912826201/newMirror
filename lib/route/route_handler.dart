@@ -83,7 +83,9 @@ import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
+import 'package:mirror/page/webview/webview_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:provider/provider.dart';
@@ -605,4 +607,14 @@ var handlerNewUserPromotionPage = Handler(handlerFunc: (BuildContext context, Ma
 var handlerLordQRCodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ManagerQRCodePage();
+});
+
+// 内部webview
+var handlerWebViewPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  String url=data["url"];
+  if(!StringUtil.isURL(url)){
+    url="http://www.baidu.com";
+  }
+  return WebViewPage(data["url"]);
 });

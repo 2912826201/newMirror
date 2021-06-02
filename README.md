@@ -123,7 +123,7 @@ https://zhuanlan.zhihu.com/p/365347452
   2.2.在Terminal终端窗口，项目根目录下执行
   flutter build apk --release --target-platform android-arm --flavor common_debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
   flutter build apk --release --target-platform android-arm --flavor common_release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
-  命令。待打印信息显示build完成。打出的apk包路径为build/app/outputs/flutter-apk/app-release.apk。
+  命令。待打印信息显示build完成。打出的apk包路径为build/app/outputs/flutter-apk/app-common_debug-release.apk或build/app/outputs/flutter-apk/app-common_release-release.apk。
   2.3.将上述取消注释部分还原成注释状态，切记不要将其忘记注释导致提交代码到git。
 三、发布阶段
   1.蒲公英发布
