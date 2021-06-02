@@ -117,6 +117,10 @@ class AppIcon {
   static const String profile_weight = "assets/svg/profile_weight.svg";
   static const String profile_gallery = "assets/svg/profile_gallery.svg";
   static const String profile_edit = "assets/svg/profile_edit.svg";
+  static const String profile_about = "assets/svg/profile_about.svg";
+  static const String profile_scan = "assets/svg/profile_scan.svg";
+  static const String profile_feedback = "assets/svg/profile_feedback.svg";
+  static const String profile_setting = "assets/svg/profile_setting.svg";
   static const String layout_vertical = "assets/svg/layout_vertical.svg";
   static const String layout_horizontal = "assets/svg/layout_horizontal.svg";
   static const String qrcode = "assets/svg/qrcode.svg";
