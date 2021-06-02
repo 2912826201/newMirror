@@ -9,7 +9,7 @@ const double minMediaRatio = 0.8;
 const int minRecordVideoDuration = 1;
 const int maxRecordVideoDuration = 60;
 
-//聊天界面每次获取的记录是多少条
+//聊天界面每次获取的记录是多少条,最好每次最多20条，因为融云获取网络历史记录最多20条每次
 const int chatAddHistoryMessageCount=20;
 
 //录音最长时长 单位秒

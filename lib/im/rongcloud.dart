@@ -155,6 +155,31 @@ class RongCloud {
     return await RongIMClient.getHistoryMessages(conversationType, targetId, sentTime, beforeCount, afterCount);
   }
 
+
+  /// 返回一个[Map] {"code":...,"messages":...,"isRemaining":...}
+  /// code:是否获取成功
+  /// messages:获取到的历史消息数组,
+  /// isRemaining:是否还有剩余消息 YES 表示还有剩余，NO 表示无剩余
+  ///
+  /// [conversationType]  会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId]          聊天室的会话ID
+  ///
+  /// [recordTime]        起始的消息发送时间戳，毫秒
+  ///
+  /// [count]             需要获取的消息数量， 0 < count <= 200
+  ///
+  /// 此方法从服务器端获取之前的历史消息，但是必须先开通历史消息云存储功能。
+  /// 例如，本地会话中有10条消息，您想拉取更多保存在服务器的消息的话，recordTime应传入最早的消息的发送时间戳，count传入1~20之间的数值。
+  void getRemoteHistoryMessages(
+      int conversationType,
+      String targetId,
+      int recordTime,
+      int count,
+      Function(List/*<Message>*/ msgList, int code) finished) async {
+    RongIMClient.getRemoteHistoryMessages(conversationType, targetId, recordTime, count, finished);
+  }
+
   /// 批量删除消息
   ///
   /// [messages] 需要删除的 messages List
