@@ -2144,6 +2144,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       ////print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
+      // print("跳转网页地址:$content");
       context.read<VoiceSettingNotifier>().stop();
       _launchUrl(content);
       // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
@@ -2152,9 +2153,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"], context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+      //大图预览
       context.read<VoiceSettingNotifier>().stop();
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+      //大图预览
       context.read<VoiceSettingNotifier>().stop();
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
