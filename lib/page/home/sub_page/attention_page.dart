@@ -363,26 +363,6 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       this.attentionModelList.clear();
       this.lastTime = null;
     }
-    List<int> attentionIds = [];
-    // 搜索动态和话题动态详情页动态，同步删除
-    attentionIdList.forEach((v) {
-      if(!context.watch<FeedMapNotifier>().value.feedMap.keys.contains(v)){
-        attentionIds.add(v);
-      }
-    });
-    if(attentionIds.isNotEmpty) {
-      attentionIds.forEach((v) {
-        attentionIdList.removeWhere((element) => element == v);
-      });
-      // 这是为了加载无动态缺省布局
-      if(attentionIdList.length == 0) {
-        attentionIdList.insert(0, -1);
-        attentionModelList.clear();
-        status = Status.noConcern;
-      };
-    }
-
-
 
     // 未登录状态不需要刷新
     if (status == Status.notLoggedIn) {
@@ -431,6 +411,24 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
     }
     print("status:::::::::::$status");
     print(attentionIdList.length);
+    List<int> attentionIds = [];
+    // 搜索动态和话题动态详情页动态，同步删除
+    attentionIdList.forEach((v) {
+      if(!context.watch<FeedMapNotifier>().value.feedMap.keys.contains(v)){
+        attentionIds.add(v);
+      }
+    });
+    if(attentionIds.isNotEmpty) {
+      attentionIds.forEach((v) {
+        attentionIdList.removeWhere((element) => element == v);
+      });
+      // 这是为了加载无动态缺省布局
+      if(attentionIdList.length == 0) {
+        attentionIdList.insert(0, -1);
+        attentionModelList.clear();
+        status = Status.noConcern;
+      };
+    }
     return SmartRefresher(
         enablePullUp: status == Status.concern ? true : false,
         enablePullDown: true,
