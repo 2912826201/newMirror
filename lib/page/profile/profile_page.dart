@@ -152,8 +152,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "扫一扫"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
-        // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
+        // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
