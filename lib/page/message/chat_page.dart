@@ -500,6 +500,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     //判断有没有显示关注按钮
     getRelation();
+
+    //判断第一次是否加载历史记录
+    _isInitAddRemoteHistoryMessages();
   }
 
   //查询我是不是关注了对方
@@ -1395,7 +1398,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
           }
           if (conversation.getType() != RCConversationType.System) {
-            _onRefresh();
+            _onLoadMoreHistoryMessages();
           } else {
             _onRefreshSystemInformation();
           }
@@ -1986,37 +1989,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     streamEditWidget.sink.add(0);
   }
 
-  //刷新数据--加载更多以前的数据
-  _onRefresh() async {
-    List msgList = new List();
-    msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
-        chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
-    List<ChatDataModel> dataList = <ChatDataModel>[];
-    if (msgList != null && msgList.length > 1) {
-      dataList.clear();
-      for (int i = 1; i < msgList.length; i++) {
-        dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
-      }
-      if (dataList != null && dataList.length > 0) {
-        ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
-        //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
-        if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
-          chatDataList.removeAt(chatDataList.length - 1);
-        }
-        chatDataList.addAll(dataList);
-      }
-      //判断有没有艾特我的消息
-      if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
-        judgeNowChatIsHaveAt();
-      }
-      loadStatus = LoadingStatus.STATUS_IDEL;
-    } else {
-      // 加载完毕
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
-    }
-    chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-  }
 
   //加载更多的系统消息
   _onRefreshSystemInformation() async {
@@ -2033,6 +2005,33 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+  }
+
+
+  //进入聊天界面判断需不需加载网路历史数据
+  _isInitAddRemoteHistoryMessages(){
+    //目前不做
+    // ChatPageUtil.init(context).isInitAddRemoteHistoryMessages(chatDataList,conversation);
+  }
+
+  //加载更多的历史记录
+  _onLoadMoreHistoryMessages(){
+    ChatPageUtil.init(context).onLoadMoreHistoryMessages(
+      chatDataList, conversation,
+      (bool isHaveMore){
+        if(isHaveMore){
+          //判断有没有艾特我的消息
+          if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
+            judgeNowChatIsHaveAt();
+          }
+          loadStatus = LoadingStatus.STATUS_IDEL;
+        }else{
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
+        chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
+    );
   }
 
   //取消长按界面

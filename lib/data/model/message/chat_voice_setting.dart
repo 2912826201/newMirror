@@ -52,7 +52,12 @@ class VoiceSettingNotifier extends ChangeNotifier {
     // print("======getIsPlaying:$isPlaying");
     if (isPlaying) {
       if (idMd5String != null && idMd5String == this.idMd5String) {
-        return true;
+        if(Application.audioPlayer.state==AudioPlayerState.PLAYING){
+          return true;
+        }else{
+          stop();
+          return false;
+        }
       } else {
         return false;
       }
