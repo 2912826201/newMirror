@@ -169,15 +169,17 @@ class MessageManager {
     //只处理以下几个ObjectName的消息
     if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_GRPNTF &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
         msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
     }
 
-    if (!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)) {
-      return null;
-    }
+    //后台处理了 其他群成员不接收 有人加入退出群聊信息
+    // if (!ChatPageUtil.init(Application.appContext).isShowNewMessage(msg)) {
+    //   return null;
+    // }
 
     ConversationDto dto = ConversationDto();
     //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
@@ -210,23 +212,9 @@ class MessageManager {
         }
         break;
       case RCConversationType.System:
-        if (msg.senderUserId == "1") {
-          dto.type = OFFICIAL_TYPE;
-          dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-          dto.name = "系统消息";
-        } else if (msg.senderUserId == "2") {
-          dto.type = LIVE_TYPE;
-          dto.avatarUri = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
-          dto.name = "官方直播";
-        } else if (msg.senderUserId == "3") {
-          dto.type = TRAINING_TYPE;
-          dto.avatarUri = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
-          dto.name = "运动数据";
-        }else{
-          dto.type = OFFICIAL_TYPE;
-          dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-          dto.name = "系统消息";
-        }
+        dto.type = OFFICIAL_TYPE;
+        dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+        dto.name = "系统消息";
         break;
       default:
         //其他情况暂时不处理
@@ -545,6 +533,8 @@ class MessageManager {
               return _parseCmdNtf(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_ALERT:
               return contentMap["data"];
+            case ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON:
+              return "[系统信息]";
             default:
               return "[未知类型消息]";
           }
@@ -561,6 +551,9 @@ class MessageManager {
         return _parseGrpNtf(msg.originContentMap, isTextMessageGrpNtf: false);
       case ChatTypeModel.MESSAGE_TYPE_CMD:
         return "私聊通知";
+      case ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON:
+        print("msg.content：${msg.content.toString()}");
+        return "[系统信息]";
       default:
         return msg.content.encode();
     }
