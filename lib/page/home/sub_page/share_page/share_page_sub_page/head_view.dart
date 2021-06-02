@@ -67,11 +67,15 @@ class HeadViewState extends State<HeadView> {
     if (map["state"]) {
       print('---------------------------------------删除动态');
       EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
-      widget.deleteFeedChanged(widget.model.id);
+      print(widget.pageName);
+      if(widget.pageName == "searchComplex" ||widget.pageName == "searchFeed" ) {
+        EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_SEARCH_DELETED_FEED);
+      }
       if (widget.isShowConcern) {
         EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
+      widget.deleteFeedChanged(widget.model.id);
     } else {
       print("删除失败");
     }

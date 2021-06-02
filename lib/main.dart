@@ -119,7 +119,12 @@ Future _initApp() async {
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a");
+  //根据环境初始化bugly
+  if(AppConfig.env == Env.DEV) {
+    FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a");
+  }else{
+    FlutterBugly.init(androidAppId: "4172861916", iOSAppId: "9054e325b9");
+  }
 
   //获取版本号
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {

@@ -1355,6 +1355,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   void onRefresh() {
+    widget.commentDtoModel = null;
     onLoading(isRefresh: true);
   }
 

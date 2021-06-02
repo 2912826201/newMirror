@@ -24,27 +24,28 @@ import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
-  DynamicListLayout({
-    Key key,
-    this.index,
-    this.isShowRecommendUser,
-    this.model,
-    this.pageName,
-    this.deleteFeedChanged,
-    this.isHero = false,
-    this.removeFollowChanged,
-    this.mineDetailId,
-    this.topicId,
-    this.isMySelf,
-    this.isShowConcern = false,
-    this.itemHeightKey
-  }) : super(key: key);
+  DynamicListLayout(
+      {Key key,
+      this.index,
+      this.isShowRecommendUser,
+      this.model,
+      this.pageName,
+      this.deleteFeedChanged,
+      this.isHero = false,
+      this.removeFollowChanged,
+      this.mineDetailId,
+      this.topicId,
+      this.isMySelf,
+      this.isShowConcern = false,
+      this.itemHeightKey})
+      : super(key: key);
   final int index;
   bool isShowRecommendUser;
   HomeFeedModel model;
   int mineDetailId;
   String pageName;
   GlobalKey itemHeightKey;
+
   // 话题详情页id
   int topicId;
   bool isHero;
@@ -88,7 +89,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   pageName: widget.pageName,
                   mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
                   deleteFeedChanged: (id) {
-                    if(widget.topicId != null) {
+                    if (widget.topicId != null) {
                       // 话题详情页删除动态
                       EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
                     }

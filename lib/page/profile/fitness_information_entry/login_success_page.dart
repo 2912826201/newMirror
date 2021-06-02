@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -92,7 +93,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
                   child: CachedNetworkImage(
                     height: 60,
                     width: 60,
-                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
+                    imageUrl: FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri),
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: AppColor.bgWhite,

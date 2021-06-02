@@ -104,11 +104,11 @@ https://zhuanlan.zhihu.com/p/365347452
 二、build阶段
   1.iOS：
   1.1.在Terminal终端窗口，项目根目录下执行
-  flutter build ios --release --flavor Release-debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
-  flutter build ios --release --flavor Release-release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  测试服：flutter build ios --release --flavor Release-debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  正式服：flutter build ios --release --flavor Release-release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
   命令。待打印信息显示build完成。
   1.2.点击Android Studio上方的Tools → Flutter → Open iOS module in Xcode。
-  1.3.在Xcode中点击上方的运行停止按钮右方选择对应环境的scheme（测试环境为Debug，正式环境为Release）
+  1.3.在Xcode中点击上方的运行停止按钮右方选择对应环境的scheme（测试环境为Release-debug，正式环境为Release-release）
   1.4.在Xcode中点击上方的Product → Archive。（Xcode中的签名证书配置不在这里赘述）
   待打包完成后，Xcode会弹出Organizer窗口（也可通过Window → Organizer打开），选中打好的包，点击Distribute App按钮。
   测试版本选择Development，下一步，下一步，
@@ -121,8 +121,8 @@ https://zhuanlan.zhihu.com/p/365347452
      }
   取消注释。
   2.2.在Terminal终端窗口，项目根目录下执行
-  flutter build apk --release --target-platform android-arm --flavor common_debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
-  flutter build apk --release --target-platform android-arm --flavor common_release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  测试服：flutter build apk --release --target-platform android-arm --flavor common_debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  正式服：flutter build apk --release --target-platform android-arm --flavor common_release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
   命令。待打印信息显示build完成。打出的apk包路径为build/app/outputs/flutter-apk/app-common_debug-release.apk或build/app/outputs/flutter-apk/app-common_release-release.apk。
   2.3.将上述取消注释部分还原成注释状态，切记不要将其忘记注释导致提交代码到git。
 三、发布阶段
