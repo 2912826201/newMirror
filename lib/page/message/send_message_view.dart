@@ -11,6 +11,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/page/message/message_view/alert_msg.dart';
 import 'package:mirror/page/message/message_view/feed_msg.dart';
 import 'package:mirror/util/file_util.dart';
@@ -21,6 +22,7 @@ import 'message_view/currency_msg.dart';
 import 'message_view/img_video_msg.dart';
 import 'message_view/live_video_course_msg.dart';
 import 'message_view/select_msg.dart';
+import 'message_view/system_common_msg.dart';
 import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
@@ -139,7 +141,12 @@ class SendMessageViewState extends State<SendMessageView> {
       // -----------------------------------------------可选择的列表-临时----------------------------------------------
       return getSelectMsgData(widget.model.content);
     } else {
-      //print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chatId:${widget.chatId}");
+
+      if(ChatPageUtil.init(context).isSystemMsg(widget.chatId)){
+        return getSystemCommonMsg();
+      }
+
       return getTextMsg(text: "版本过低请升级版本!");
     }
   }
@@ -186,9 +193,7 @@ class SendMessageViewState extends State<SendMessageView> {
   }
 
   //自定义的消息类型解析
-  Widget getTextMessage(
-    Message msg,
-  ) {
+  Widget getTextMessage(Message msg) {
     TextMessage textMessage = ((msg.content) as TextMessage);
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
@@ -325,6 +330,7 @@ class SendMessageViewState extends State<SendMessageView> {
         widget.conversationDtoType != OFFICIAL_TYPE &&
         widget.conversationDtoType != TRAINING_TYPE;
   }
+
 
   //************************获取消息模块的方法 ----end
 
@@ -490,5 +496,74 @@ class SendMessageViewState extends State<SendMessageView> {
     );
   }
 
+  //系统消息的普通item
+  Widget getSystemCommonMsg() {
+    return SystemCommonMsg(
+        text: getSystemText(widget.position),
+        url: getSystemUrl(widget.position),
+        imageUrl: getSystemImageUrl(widget.position),
+        isMyself: false,
+        userUrl: userUrl,
+        name: name,
+        sendTime: sendTime,
+        sendChatUserId: sendChatUserId,
+        isCanLongClick: true,
+        isShowChatUserName: true,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
+        setCallRemoveOverlay: widget.setCallRemoveLongPanel,
+        status: status);
+  }
+
 //***************************************获取每一个消息的模块-----end
+
+
+  String getSystemText(int position){
+      switch (position){
+        case 0:return "实打实大是多是是";
+        case 1:return "你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦哦，看决赛发你的饭几年的大萨达所大无，多哇多撒大多。";
+        case 2:return "实打实大是多是是";
+        case 3:return "你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦哦，看决赛发你的饭几年的大萨达所大无，多哇多撒大多。";
+        case 4:return "你踩过那，个坑是的健身踩过的";
+        case 5:return "你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦";
+        case 6:return "你踩过那，个坑是的健身踩过的";
+        case 7:return "你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦你踩过那，个坑是的健身踩过的那些坑是都来看搜啊似乎发哦";
+        case 8:return "";
+        case 9:return "";
+        default:return "实打实大是多是是";
+      }
+  }
+  String getSystemUrl(int position){
+      switch (position){
+        case 0:return "";
+        case 1:return "";
+        case 2:return "www.baidu.com";
+        case 3:return "www.baidu.com";
+        case 4:return "";
+        case 5:return "";
+        case 6:return "www.baidu.com";
+        case 7:return "www.baidu.com";
+        case 8:return "";
+        case 9:return "www.baidu.com";
+        default:return "";
+      }
+  }
+
+  String getSystemImageUrl(int position){
+      switch (position){
+        case 0:return "";
+        case 1:return "";
+        case 2:return "";
+        case 3:return "";
+        case 4:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        case 5:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        case 6:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        case 7:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        case 8:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        case 9:return "http://devpic.aimymusic.com/ifapp/1006165/3qf4q8InJt1/VujkKWjPZA==.jpeg";
+        default:return "";
+      }
+  }
+
 }

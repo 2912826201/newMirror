@@ -105,10 +105,13 @@ Widget getMessageState(int status,
 }
 
 //获取长按操作的选项框
-List<String> getLongClickStringList({@required bool isMySelf,
+List<String> getLongClickStringList({
+  @required bool isMySelf,
   @required int status,
   @required String contentType,
-  @required int sendTime}) {
+  @required int sendTime,
+  String content="",
+}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
   // print("isMySelf:$isMySelf");
@@ -121,6 +124,9 @@ List<String> getLongClickStringList({@required bool isMySelf,
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+    longClickStringList.insert(0, "复制");
+  }
+  if (contentType == ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON&&content!=null&&content.length>0) {
     longClickStringList.insert(0, "复制");
   }
   return longClickStringList;

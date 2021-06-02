@@ -27,3 +27,11 @@ const double cropImageSize = 1080.0;
 
 //教练的账号
 const int coachIsAccountId=1002885;
+
+//系统账号范围
+const int minSystemId=1;
+const int maxSystemId=99;
+
+//官方账号范围
+const int minOfficialNumberId=100;
+const int maxOfficialNumberId=999;

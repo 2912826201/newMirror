@@ -14,6 +14,7 @@ import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -156,7 +157,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "扫一扫"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "关于"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "意见反馈"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+        // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "设置"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
@@ -546,6 +548,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
+        jumpChatPageSystem(context);
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);

@@ -66,13 +66,16 @@ class PrivateMorePageState extends State<PrivateMorePage> {
               child: item(1, disturbTheNews, "消息免打扰"),
             ),
             item(2, topChat, "置顶聊天"),
-            getContainer(),
+            Offstage(
+              offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
+              child: getContainer(),
+            ),
             Offstage(
               offstage: widget.chatType != PRIVATE_TYPE,
               child: item(3, topChat, isBlackList ? "解除拉黑" : "拉黑", isCupertinoSwitchShow: false),
             ),
             Offstage(
-              offstage: widget.chatType != PRIVATE_TYPE,
+              offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
               child: getContainer(),
             ),
           ],
