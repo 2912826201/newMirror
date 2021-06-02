@@ -21,10 +21,12 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/pull_to_refresh/src/smart_refresher.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +42,7 @@ class SearchComplex extends StatefulWidget {
   SearchComplexState createState() => SearchComplexState();
 }
 
-class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveClientMixin {
+class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
   // 相关动态data
@@ -73,7 +75,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
-  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
+  Map<int, AnimationController> animationMap = {};
   RefreshController _refreshController = RefreshController();
 
   @override
@@ -91,6 +93,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   void initState() {
     // 合并请求
     mergeRequest();
+    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
+        registerName: EVENTBUS_SEARCH_DELETED_FEED);
     widget.textController.addListener(() {
       // 取消延时
       if (timer != null) {
@@ -142,6 +146,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     userList.clear();
     topicList.clear();
     feedList.clear();
+    animationMap.clear();
     SearchUserModel userModel;
     userModel = result[0];
     DataResponseModel topicModel = result[1];
@@ -181,6 +186,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       hasNext = feedModel.hasNext;
       feedModel.list.forEach((v) {
         feedList.add(HomeFeedModel.fromJson(v));
+        animationMap[HomeFeedModel.fromJson(v).id] =
+            AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
       });
       if (hasNext == 0) {
         print("-------------------_______________________________");
@@ -189,12 +196,13 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       }
 
       // 更新全局监听
-      if(mounted){
+      if (mounted) {
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
     } else {
       _refreshController.loadNoData();
       feedList.clear();
+      animationMap.clear();
     }
     if (liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0) {
       isShowDefaultMap = false;
@@ -218,7 +226,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           if (model.list.isNotEmpty) {
             model.list.forEach((v) {
               feedList.add(HomeFeedModel.fromJson(v));
-              _listKey.currentState.insertItem(1);
+              animationMap[HomeFeedModel.fromJson(v).id] =
+                  AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
             });
             _refreshController.loadComplete();
             print("-------------------_______________________________");
@@ -303,7 +312,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                           ),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: userList.length == 0, child: ItemTitle("相关用户", 16, AppConfig.needShowTraining ? 4 : 3, widget.controller))),
+                                offstage: userList.length == 0,
+                                child: ItemTitle("相关用户", 16, AppConfig.needShowTraining ? 4 : 3, widget.controller))),
                         SliverList(
                             delegate: SliverChildBuilderDelegate((content, index) {
                           return Offstage(
@@ -319,7 +329,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         }, childCount: userList.length)),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: topicList.length == 0, child: ItemTitle("相关话题", 16, AppConfig.needShowTraining ? 2 : 1, widget.controller))),
+                                offstage: topicList.length == 0,
+                                child: ItemTitle("相关话题", 16, AppConfig.needShowTraining ? 2 : 1, widget.controller))),
                         SliverList(
                             delegate: SliverChildBuilderDelegate((content, index) {
                           return Offstage(
@@ -330,7 +341,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         }, childCount: topicList.length)),
                         SliverToBoxAdapter(
                             child: Offstage(
-                                offstage: feedList.length == 0, child: ItemTitle("相关动态", 16, AppConfig.needShowTraining ? 3 : 2, widget.controller))),
+                                offstage: feedList.length == 0,
+                                child: ItemTitle("相关动态", 16, AppConfig.needShowTraining ? 3 : 2, widget.controller))),
                         // SliverToBoxAdapter(
                         //     child: Offstage(
                         //         offstage: feedList.length == 0,
@@ -454,29 +466,39 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         //     );
                         //   }, childCount: feedList.length),
                         // ),
-                        SliverAnimatedList(
-                            key: _listKey,
-                            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                              return Offstage(offstage: feedList.length == 0, child: _buildItem(index, animation));
-                            },
-                            initialItemCount: feedList.length)
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate((content, index) {
+                          return Offstage(offstage: feedList.length == 0, child: _buildItem(index));
+                        }, childCount: feedList.length))
                       ],
                     )),
               );
   }
 
-  // 删除添加动画
-  _buildRemovedItem(int index, Animation<double> animation) {
-    // 获取动态id
-    int id;
-    if (index < feedList.length) {
-      id = feedList[index].id;
-      new Future.delayed(Duration(milliseconds: 300), () {
+  _deleteFeedCallBack(int id) {
+    print("searchComplex删除动态");
+    if (animationMap.containsKey(id)) {
+      animationMap[id].forward().then((value) {
         feedList.removeWhere((v) => v.id == id);
+        if (mounted) {
+          setState(() {
+            animationMap.removeWhere((key, value) => key == id);
+          });
+        }
+        if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+          context.read<FeedMapNotifier>().deleteFeed(id);
+        }
+        if (liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0) {
+          mergeRequest();
+        }
       });
     }
-    return SizeTransition(
-        sizeFactor: animation,
+  }
+
+  _buildItem(int index) {
+    return SizeTransitionView(
+        id: feedList[index].id,
+        animationMap: animationMap,
         child: ExposureDetector(
           key: Key('search_complex_${feedList[index].id}'),
           child: DynamicListLayout(
@@ -496,54 +518,6 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
             }
           },
         ));
-  }
-
-  _buildItem(int index, Animation animation) {
-    // 懒得发通知使用provider同步删除更新。
-    return Consumer<FeedMapNotifier>(
-      builder: (context, notifier, child) {
-        HomeFeedModel feedModel;
-        if (index < feedList.length) {
-          feedModel = context.watch<FeedMapNotifier>().value.feedMap[feedList[index].id];
-        }
-        return ExposureDetector(
-          key: Key('search_complex_${feedList[index].id}'),
-          child: DynamicListLayout(
-            index: index,
-            pageName: "searchComplex",
-            isShowRecommendUser: false,
-            isShowConcern: false,
-            model: feedModel,
-            // 可选参数 子Item的个数
-            key: GlobalObjectKey("searchComplex$index"),
-            deleteFeedChanged: (id) {
-              // 动画删除item
-              int _index;
-              feedList.forEach((v) {
-                if (v.id == id) {
-                  _index = feedList.indexOf(v);
-                }
-              });
-              if (_index != null) {
-                _listKey.currentState.removeItem(
-                  _index,
-                  (context, animation) => _buildRemovedItem(_index, animation),
-                );
-                context.read<FeedMapNotifier>().deleteFeed(id);
-              }
-            },
-          ),
-          onExposure: (visibilityInfo) {
-            // 如果没有显示
-            if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
-              context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
-              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-            }
-          },
-        );
-      },
-    );
-    // return ;
   }
 }
 

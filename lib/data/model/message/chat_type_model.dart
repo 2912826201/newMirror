@@ -37,6 +37,11 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_VIDEO_COURSE = "IF:VideoCourseMessage";
   static const String MESSAGE_TYPE_VIDEO_COURSE_NAME = "视频课程消息，该版本较低请升级版本再行查看";
 
+  //自定义消息类型：系统消息-普通类型
+  static const String MESSAGE_TYPE_SYSTEM_COMMON ="IF:SystemCommonMessage";
+  static const String MESSAGE_TYPE_SYSTEM_COMMON_NAME = "系统消息，该版本较低请升级版本再行查看";
+
+
   // 撤回的消息 不知为何会有两种ObjectName
   static const String MESSAGE_TYPE_RECALL_MSG1 = "RC:RcNtf";
   static const String MESSAGE_TYPE_RECALL_MSG2 = "RC:RcCmd";

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:connectivity/connectivity.dart';
@@ -58,6 +59,17 @@ void jumpChatPageUser(BuildContext context, UserModel userModel, {String textCon
   conversation.avatarUri = userModel.avatarUri;
   conversation.type = PRIVATE_TYPE;
   jumpChatPageConversationDto(context, conversation, textContent: textContent);
+}
+
+//去对应的聊天界面
+void jumpChatPageSystem(BuildContext context) {
+  ConversationDto conversation = new ConversationDto();
+  conversation.conversationId = "1";
+  conversation.uid = Application.profile.uid;
+  conversation.name = "系统消息";
+  conversation.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+  conversation.type = OFFICIAL_TYPE;
+  jumpChatPageConversationDto(context, conversation);
 }
 
 //分享跳转界面

@@ -54,9 +54,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   //   主控制器
   ScrollController _scrollController = new ScrollController();
 
-  // 透明度
-  int _titleAlpha = 0; //范围 0-255
-
   // 图标颜色
   Color iconColor = AppColor.bgWhite;
 

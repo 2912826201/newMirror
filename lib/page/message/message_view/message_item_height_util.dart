@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -428,6 +430,47 @@ class MessageItemHeightUtil {
     itemHeight += 2.0;
     itemHeight += 180.0;
     itemHeight += 68.5;
+
+    return itemHeight;
+  }
+
+  //获取系统普通消息的高度
+  double getSystemCommonMsgHeight(bool isShowName,
+    {bool isOnlyContentHeight = false,String content="",String url="",String imageUrl=""}) {
+    double itemHeight = 0.0;
+
+    if (!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
+
+    //判断有没有显示名字
+    if (isShowName && !isOnlyContentHeight) {
+      itemHeight += 4.0;
+      itemHeight += getTextSize("名字", TextStyle(fontSize: 12), 1).height;
+    }
+
+    if(url!=null&&url.length>0) {
+      itemHeight += 35.0;
+    }
+
+    double textMaxWidth;
+    int textMaxLine;
+    if(StringUtil.isURL(imageUrl)){
+      textMaxWidth=200.0-24.0;
+      textMaxLine = 100;
+      itemHeight += 100.0;
+    }else{
+      textMaxWidth = ScreenUtil.instance.width - (16 + 7 + 38 + 2) * 2;
+      textMaxLine=2;
+    }
+
+
+    if(content!=null&&content.length>0){
+      itemHeight += getTextSize(content, AppStyle.textPrimary2Medium12, textMaxLine, textMaxWidth).height;
+      itemHeight += 24.0;
+    }
+
 
     return itemHeight;
   }

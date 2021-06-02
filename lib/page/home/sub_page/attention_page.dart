@@ -15,6 +15,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -45,7 +46,7 @@ class AttentionPage extends StatefulWidget {
 
 GlobalKey<AttentionPageState> attentionKey = GlobalKey();
 
-class AttentionPageState extends State<AttentionPage> with SingleTickerProviderStateMixin {
+class AttentionPageState extends State<AttentionPage> with TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
 
@@ -84,8 +85,8 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
 
   // 声明定时器
   Timer timer;
-
-  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
+  final GlobalKey attentionlistKey = GlobalKey();
+  Map<int, AnimationController> animationMap = {};
 
   @override
   void dispose() {
@@ -123,7 +124,9 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
   @override
   void initState() {
     print("初始化一下啊");
-    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    isLoggedIn = context
+        .read<TokenNotifier>()
+        .isLoggedIn;
     print("是否登录$isLoggedIn");
     if (!isLoggedIn) {
       status = Status.notLoggedIn;
@@ -181,6 +184,7 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     if (refreshOrLoading) {
       attentionIdList.clear();
       attentionModelList.clear();
+      animationMap.clear();
     }
     print('---7666666666666666666666666666666666666model！=null');
 
@@ -190,8 +194,14 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
         print("第一页");
         if (model.list != null && model.list.isNotEmpty) {
           model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionIdList.add(HomeFeedModel
+                .fromJson(v)
+                .id);
             attentionModelList.add(HomeFeedModel.fromJson(v));
+            animationMap[HomeFeedModel
+                .fromJson(v)
+                .id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
           status = Status.concern;
         } else {
@@ -211,10 +221,14 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
         print(model.list.length);
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionIdList.add(HomeFeedModel
+                .fromJson(v)
+                .id);
             attentionModelList.add(HomeFeedModel.fromJson(v));
-            // NOte 源码里没有多条插入
-            _listKey.currentState.insertItem(1);
+            animationMap[HomeFeedModel
+                .fromJson(v)
+                .id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
           _refreshController.loadComplete();
         } else {
@@ -237,7 +251,11 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     attentionModelList.forEach((element) {
       var obj = element.id;
       var isExist = false;
-      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+      context
+          .read<FeedMapNotifier>()
+          .value
+          .feedMap
+          .forEach((key, value) {
         var aj = value.id;
         if (obj == aj) {
           isExist = true;
@@ -249,9 +267,15 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
         addFeedNum++;
       }
     });
-    if (addFeedNum != 0 && context.read<FeedMapNotifier>().value.unReadFeedCount != 0) {
+    if (addFeedNum != 0 && context
+        .read<FeedMapNotifier>()
+        .value
+        .unReadFeedCount != 0) {
       ToastShow.show(
-          msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态",
+          msg: "更新了${context
+              .read<FeedMapNotifier>()
+              .value
+              .unReadFeedCount}条动态",
           context: context,
           gravity: Toast.CENTER);
       /* _unReadFeedCount = 0;*/
@@ -262,7 +286,11 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     // 更新全局监听
     if (attentionModelList.length > 0) {
       context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-      print("本地存储的数据长度1:${context.read<FeedMapNotifier>().value.feedMap.length}");
+      print("本地存储的数据长度1:${context
+          .read<FeedMapNotifier>()
+          .value
+          .feedMap
+          .length}");
     }
   }
 
@@ -272,7 +300,8 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     // 清除无动态缺省图的id
     attentionIdList.removeWhere((v) => v == -1);
     attentionIdList.insert(0, model.id);
-    _listKey.currentState.insertItem(1);
+    animationMap[model.id] = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    // _listKey.currentState.insertItem(1);
     attentionModelList.insert(0, model);
     print(attentionIdList.toString());
     // // 更新全局监听
@@ -319,8 +348,13 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
   Widget build(BuildContext context) {
     // super.build(context);
     print("AttentionPage_______build");
-    print("当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
-    var isLogged = context.watch<TokenNotifier>().isLoggedIn;
+    print("当前时间${DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString()}");
+    var isLogged = context
+        .watch<TokenNotifier>()
+        .isLoggedIn;
     print(isLogged);
     if (!isLogged) {
       status = Status.notLoggedIn;
@@ -377,120 +411,97 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
     }
     print("status:::::::::::$status");
     print(attentionIdList.length);
-    return attentionIdList.length > 0
-        ? Container(
-            child: SmartRefresher(
-                enablePullUp: status == Status.concern ? true : false,
-                enablePullDown: true,
-                footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
-                header: SmartRefresherHeadFooter.init().getHeader(),
-                controller: _refreshController,
-                onLoading: () {
-                  setState(() {
-                    showNoMroe = IntegerUtil.showNoMore(_listKey, isRenderSliverList: true);
-                  });
-                  dataPage += 1;
-                  getRecommendFeed(refreshOrLoading: false);
-                },
-                onRefresh: () {
-                  dataPage = 1;
-                  _refreshController.loadComplete();
-                  lastTime = null;
-                  // 清空曝光过的listKey
-                  ExposureDetectorController.instance.signOutClearHistory();
-                  getRecommendFeed(refreshOrLoading: true);
-                },
-                child: CustomScrollView(
-                    controller: _controller,
-                    physics: context.watch<FeedMapNotifier>().value.isDropDown
-                        ? AlwaysScrollableScrollPhysics()
-                        : NeverScrollableScrollPhysics(),
-                    slivers: [
-                      SliverAnimatedList(
-                          key: _listKey,
-                          itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                            return _buildItem(index, animation);
-                          },
-                          initialItemCount: attentionIdList.length),
-                    ])))
-        : Container();
-  }
-
-  // 发布不需要动画
-  _buildItem(int index, Animation animation) {
-    if (status == Status.noConcern) {
-      return pageDisplay(0, HomeFeedModel());
-    }
-    // 获取动态id
-    int id;
-    // 获取动态id指定model
-    HomeFeedModel feedModel;
-    if (index < attentionIdList.length) {
-      id = attentionIdList[index];
-      feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
-    }
-    print("attentionIdList数据源长度：：：：${attentionIdList.length}");
-    return ExposureDetector(
-      key: Key('attention_page_$id'),
-      child: pageDisplay(index, feedModel),
-      onExposure: (visibilityInfo) {
-        // 如果没有显示
-        if (attentionIdList[index] != -1 &&
-            context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
-          context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
-          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-        }
-      },
-    );
-  }
-
-  // 删除添加动画
-  _buildRemovedItem(int index, Animation<double> animation) {
-    // 获取动态id
-    int id;
-    // 获取动态id指定model
-    HomeFeedModel feedModel;
-    if (index < attentionIdList.length) {
-      id = attentionIdList[index];
-      feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
-      new Future.delayed(Duration(milliseconds: 300), () {
-        attentionIdList.remove(id);
-        attentionModelList.removeWhere((v) => v.id == id);
-        if (attentionIdList.length == 0) {
-          print("进入了00000");
-          // 这是为了加载无动态缺省布局
-          attentionIdList.insert(0, -1);
-          attentionModelList.clear();
-          status = Status.noConcern;
-        }
+    List<int> attentionIds = [];
+    // 搜索动态和话题动态详情页动态，同步删除
+    attentionIdList.forEach((v) {
+      if(!context.watch<FeedMapNotifier>().value.feedMap.keys.contains(v)){
+        attentionIds.add(v);
+      }
+    });
+    if(attentionIds.isNotEmpty) {
+      attentionIds.forEach((v) {
+        attentionIdList.removeWhere((element) => element == v);
       });
-      new Future.delayed(Duration(milliseconds: 500), () {
-        context.read<FeedMapNotifier>().deleteFeed(id);
-      });
+      // 这是为了加载无动态缺省布局
+      if(attentionIdList.length == 0) {
+        attentionIdList.insert(0, -1);
+        attentionModelList.clear();
+        status = Status.noConcern;
+      };
     }
-
-    print("attentionIdList数据源长度：：：：${attentionIdList.length}");
-    return SizeTransition(
-        sizeFactor: animation,
-        child: ExposureDetector(
-          key: Key('attention_page_$id'),
-          child: pageDisplay(index, feedModel),
-          onExposure: (visibilityInfo) {
-            // 如果没有显示
-            if (attentionIdList[index] != -1 &&
-                context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
-              context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
-              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-            }
-          },
-        ));
+    return SmartRefresher(
+        enablePullUp: status == Status.concern ? true : false,
+        enablePullDown: true,
+        footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
+        header: SmartRefresherHeadFooter.init().getHeader(),
+        controller: _refreshController,
+        onLoading: () {
+          setState(() {
+            showNoMroe = IntegerUtil.showNoMore(attentionlistKey);
+          });
+          dataPage += 1;
+          getRecommendFeed(refreshOrLoading: false);
+        },
+        onRefresh: () {
+          dataPage = 1;
+          _refreshController.loadComplete();
+          lastTime = null;
+          // 清空曝光过的listKey
+          ExposureDetectorController.instance.signOutClearHistory();
+          getRecommendFeed(refreshOrLoading: true);
+        },
+        child: CustomScrollView(
+          controller: _controller,
+          key: attentionlistKey,
+          physics: context
+              .watch<FeedMapNotifier>()
+              .value
+              .isDropDown
+              ? AlwaysScrollableScrollPhysics()
+              : NeverScrollableScrollPhysics(),
+          slivers: [
+            attentionIdList.length > 0 ? SliverList(delegate: SliverChildBuilderDelegate((content, index) {
+              if (status == Status.noConcern) {
+                return pageDisplay(0, HomeFeedModel());
+              }
+              // 获取动态id
+              int id;
+              // 获取动态id指定model
+              HomeFeedModel feedModel;
+              if (index < attentionIdList.length) {
+                id = attentionIdList[index];
+                feedModel = context
+                    .read<FeedMapNotifier>()
+                    .value
+                    .feedMap[id];
+              }
+              print("attentionIdList数据源长度：：：：${attentionIdList.length}");
+              return SizeTransitionView(
+                id: id,
+                animationMap: animationMap,
+                child: ExposureDetector(
+                  key: Key('attention_page_$id'),
+                  child: pageDisplay(index, feedModel),
+                  onExposure: (visibilityInfo) {
+                    // 如果没有显示
+                    if (attentionIdList[index] != -1 &&
+                        context
+                            .read<FeedMapNotifier>()
+                            .value
+                            .feedMap[attentionIdList[index]].isShowInputBox) {
+                      context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
+                      print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                    }
+                  },
+                ),
+              );
+            }, childCount: attentionIdList.length)) : SliverToBoxAdapter()
+          ],));
   }
 
   // 缺省图关注视图切换
-  Widget pageDisplay(
-    int index,
-    HomeFeedModel feedModel,
-  ) {
+  Widget pageDisplay(int index,
+      HomeFeedModel feedModel,) {
     print("status:::$status");
     switch (status) {
       case Status.noConcern:
@@ -541,17 +552,40 @@ class AttentionPageState extends State<AttentionPage> with SingleTickerProviderS
       // key: GlobalObjectKey("attention$index"),
       deleteFeedChanged: (id) {
         // 动画删除item
-        int _index = attentionIdList.indexOf(id);
-        _listKey.currentState.removeItem(_index, (context, animation) => _buildRemovedItem(_index, animation));
+        if (animationMap.containsKey(id)) {
+          animationMap[id].forward().then((value) {
+            attentionModelList.removeWhere((element) {
+              return element.id == id;
+            });
+            attentionIdList.removeWhere((v) => v == id);
+            // 这是为了加载无动态缺省布局
+            if (attentionIdList.length == 0) {
+              attentionIdList.insert(0, -1);
+              attentionModelList.clear();
+              status = Status.noConcern;
+            }
+            if (mounted) {
+              setState(() {
+                animationMap.remove(id);
+              });
+            }
+            if (context
+                .read<FeedMapNotifier>()
+                .value
+                .feedMap
+                .containsKey(id)) {
+              context.read<FeedMapNotifier>().deleteFeed(id);
+            }
+          });
+        }
         print(attentionIdList.toString());
-        // new Future.delayed(Duration(milliseconds: 300), () {
-        // });
-
-        // });
       },
       removeFollowChanged: (model) {
         int pushId = model.pushId;
-        Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().value.feedMap;
+        Map<int, HomeFeedModel> feedMap = context
+            .read<FeedMapNotifier>()
+            .value
+            .feedMap;
 
         ///临时的空数组
         List<int> themList = [];

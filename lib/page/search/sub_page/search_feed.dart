@@ -23,6 +23,7 @@ import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -31,6 +32,7 @@ import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +48,7 @@ class SearchFeed extends StatefulWidget {
   SearchFeedState createState() => SearchFeedState();
 }
 
-class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMixin {
+class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
   int lastTime;
@@ -68,7 +70,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 //   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   String lastString;
   RefreshController _refreshController = RefreshController();
-  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
+  Map<int, AnimationController> animationMap = {};
 
 // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -92,6 +94,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     //     requestFeednIterface(refreshOrLoading: false);
     //   }
     // });
+    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
+        registerName: EVENTBUS_SEARCH_DELETED_FEED);
     widget.textController.addListener(() {
       // 取消延时
       if (timer != null) {
@@ -138,15 +142,15 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime, token: token);
       if (refreshOrLoading) {
         feedList.clear();
+        animationMap.clear();
       }
       if (model != null && model.list.isNotEmpty) {
         lastTime = model.lastTime;
         hasNext = model.hasNext;
         model.list.forEach((v) {
           feedList.add(HomeFeedModel.fromJson(v));
-          if (!refreshOrLoading) {
-            _listKey.currentState.insertItem(1);
-          }
+          animationMap[HomeFeedModel.fromJson(v).id] =
+              AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
         });
         // loadStatus = LoadingStatus.STATUS_IDEL;
         // loadText = "加载中...";
@@ -266,12 +270,10 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                         //       )
                         //      ),
                         // )),
-                        SliverAnimatedList(
-                            key: _listKey,
-                            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                              return _buildItem(index, animation);
-                            },
-                            initialItemCount: feedList.length),
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate((content, index) {
+                          return _buildItem(index);
+                        }, childCount: feedList.length))
                         // SliverList(
                         //     delegate: SliverChildBuilderDelegate((content, index) {
                         //   return ExposureDetector(
@@ -320,19 +322,34 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     }
   }
 
-  // 删除添加动画
-  _buildRemovedItem(int index, Animation<double> animation) {
-    // 获取动态id
-    int id;
-    if (index < feedList.length) {
-      id = feedList[index].id;
-      new Future.delayed(Duration(milliseconds: 300), () {
+  _deleteFeedCallBack(int id) {
+    print("searchFeed删除动态");
+    if (animationMap.containsKey(id)) {
+      animationMap[id].forward().then((value) {
         feedList.removeWhere((v) => v.id == id);
+        if (mounted) {
+          setState(() {
+            animationMap.removeWhere((key, value) => key == id);
+          });
+        }
+        if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+          context.read<FeedMapNotifier>().deleteFeed(id);
+        }
+        if (feedList.length == 0) {
+          lastTime = null;
+          hasNext = null;
+          _refreshController.loadComplete();
+          requestFeednIterface(refreshOrLoading: true);
+        }
       });
     }
+  }
+
+  _buildItem(int index) {
     // 懒得发通知使用provider同步删除更新。
-    return SizeTransition(
-        sizeFactor: animation,
+    return SizeTransitionView(
+        id: feedList[index].id,
+        animationMap: animationMap,
         child: ExposureDetector(
           key: Key('searchFeed${feedList[index].id}'),
           child: DynamicListLayout(
@@ -352,54 +369,6 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
             }
           },
         ));
-  }
-
-  _buildItem(int index, Animation animation) {
-    // 懒得发通知使用provider同步删除更新。
-    return Consumer<FeedMapNotifier>(
-      builder: (context, notifier, child) {
-        HomeFeedModel feedModel;
-        if (index < feedList.length) {
-          feedModel = context.watch<FeedMapNotifier>().value.feedMap[feedList[index].id];
-        }
-        return ExposureDetector(
-          key: Key('searchFeed${feedList[index].id}'),
-          child: DynamicListLayout(
-            index: index,
-            pageName: "searchFeed",
-            isShowRecommendUser: false,
-            isShowConcern: false,
-            model: feedModel,
-            // 可选参数 子Item的个数
-            key: GlobalObjectKey("searchFeed$index"),
-            deleteFeedChanged: (id) {
-              // 动画删除item
-              int _index;
-              feedList.forEach((v) {
-                if (v.id == id) {
-                  _index = feedList.indexOf(v);
-                }
-              });
-              if (_index != null) {
-                _listKey.currentState.removeItem(
-                  _index,
-                  (context, animation) => _buildRemovedItem(_index, animation),
-                );
-              }
-              context.read<FeedMapNotifier>().deleteFeed(id);
-            },
-          ),
-          onExposure: (visibilityInfo) {
-            // 如果没有显示
-            if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
-              context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
-              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-            }
-          },
-        );
-      },
-    );
-    // return ;
   }
 }
 
