@@ -13,6 +13,7 @@ import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,7 @@ class TopicList extends StatefulWidget {
   TopicListState createState() => TopicListState();
 }
 
-class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin {
+class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
 
@@ -48,12 +49,14 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
-  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
+  Map<int, AnimationController> animationMap = {};
+
+  // final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
   // 双击刷新
   onDoubleTap(TopicDoubleTapTabbar topicDoubleTapTabbar) {
     bool isrefresh = false;
-    if(topicDoubleTapTabbar.topicId == widget.topicId) {
+    if (topicDoubleTapTabbar.topicId == widget.topicId) {
       if (topicDoubleTapTabbar.tabControllerIndex == 0 && widget.type == 5) {
         isrefresh = true;
       } else if (topicDoubleTapTabbar.tabControllerIndex == 1 && widget.type == 4) {
@@ -72,8 +75,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     cancelRequests(token: token);
     EventBus.getDefault()
         .unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
-    EventBus.getDefault()
-        .unRegister(registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${widget.topicId}", pageName: EVENTBUS__TOPICDATAIL_PAGE);
+    EventBus.getDefault().unRegister(
+        registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${widget.topicId}",
+        pageName: EVENTBUS__TOPICDATAIL_PAGE);
     super.dispose();
   }
 
@@ -84,15 +88,15 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
           await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId, token: token);
       if (refreshOrLoading) {
         recommendTopicList.clear();
+        animationMap.clear();
       }
       if (model != null) {
         recommendHasNext = model.hasNext;
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             recommendTopicList.add(HomeFeedModel.fromJson(v));
-            if (!refreshOrLoading) {
-              _listKey.currentState.insertItem(1);
-            }
+            animationMap[HomeFeedModel.fromJson(v).id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
         }
         if (refreshOrLoading) {
@@ -135,7 +139,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
     EventBus.getDefault().registerSingleParameter(onDoubleTap, EVENTBUS__TOPICDATAIL_PAGE,
-        registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${widget.topicId}");
+        registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${widget.topicId}");
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     // Future.delayed(Duration(milliseconds: 250), () {
     //   requestRecommendTopic(refreshOrLoading: true);
@@ -144,95 +148,26 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   }
 
   _deleteFeedCallBack(int id) {
-    // 动画删除item
-    int _index;
-    recommendTopicList.forEach((element) {
-      if (element.id == id) {
-        _index = recommendTopicList.indexOf(element);
+      if (animationMap.containsKey(id)) {
+        animationMap[id].forward().then((value) {
+          recommendTopicList.removeWhere((v) => v.id == id);
+          if (mounted) {
+            setState(() {
+              animationMap.removeWhere((key, value) => key == id);
+            });
+          }
+          if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+            context.read<FeedMapNotifier>().deleteFeed(id);
+          }
+          if (recommendTopicList.length == 0) {
+            requestRecommendTopic(refreshOrLoading: true);
+          }
+        });
       }
-    });
-    print("删除的动态：：：：${recommendTopicList[_index].content}:::::_index:::::$_index");
-    if (_index != null) {
-      HomeFeedModel model = recommendTopicList[_index];
-      _listKey.currentState.removeItem(
-        _index,
-        (context, animation) => _buildRemovedItem(
-          model,
-          animation,
-        ),
-      );
-      context.read<FeedMapNotifier>().deleteFeed(id);
-      recommendTopicList.removeWhere((v) => v.id == id);
-      if (recommendTopicList.length == 0) {
-        requestRecommendTopic(refreshOrLoading: true);
-      }
-    }
   }
 
-  // 删除添加动画
-  _buildRemovedItem(
-    HomeFeedModel feedModel,
-    Animation<double> animation,
-  ) {
-    // 获取动态id
-    return SizeTransition(
-        sizeFactor: animation,
-        child: ExposureDetector(
-          key: Key('topic_list_${widget.type}_${feedModel.id}'),
-          child: DynamicListLayout(
-            topicId: widget.topicId,
-            pageName: "topicRecommend",
-            isShowRecommendUser: false,
-            isShowConcern: false,
-            model: feedModel,
-          ),
-        ));
-  }
 
-  _buildItem(HomeFeedModel feedModel, Animation animation) {
-    return ExposureDetector(
-      key: Key('topic_list_${widget.type}_${feedModel.id}'),
-      child: DynamicListLayout(
-        index: recommendTopicList.indexOf(feedModel),
-        pageName: "topicRecommend",
-        isShowRecommendUser: false,
-        isShowConcern: false,
-        model: feedModel,
-        topicId: widget.topicId,
-        // 可选参数 子Item的个数
-        key: GlobalObjectKey("topicRecommend${recommendTopicList.indexOf(feedModel)}"),
-      ),
-      onExposure: (visibilityInfo) {
-        // 如果没有显示
-        if (context.read<FeedMapNotifier>().value.feedMap[feedModel.id].isShowInputBox) {
-          context.read<FeedMapNotifier>().showInputBox(feedModel.id);
-          print('第${recommendTopicList.indexOf(feedModel)} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-        }
-      },
-    );
-  }
 
-  // return ExposureDetector(
-  //   key: Key('topic_list_${widget.type}_${recommendTopicList[index].id}'),
-  //   child: DynamicListLayout(
-  //     index: index,
-  //     topicId: widget.topicId,
-  //     pageName: "topicRecommend",
-  //     isShowRecommendUser: false,
-  //     isShowConcern: false,
-  //     model: recommendTopicList[index],
-  //     // 可选参数 子Item的个数
-  //     key: GlobalObjectKey("attention$index"),
-  //   ),
-  //   onExposure: (visibilityInfo) {
-  //     // 如果没有显示
-  //     if (context.read<FeedMapNotifier>().value.feedMap[recommendTopicList[index].id].isShowInputBox) {
-  //       context.read<FeedMapNotifier>().showInputBox(recommendTopicList[index].id);
-  //     }
-  //     print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-  //   },
-  // );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -264,13 +199,46 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                       : isShowDefaultMap
                           ? CustomScrollView(
                               slivers: [
-                                SliverAnimatedList(
-                                    key: _listKey,
-                                    itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                                      HomeFeedModel model = recommendTopicList[index];
-                                      return _buildItem(model, animation);
-                                    },
-                                    initialItemCount: recommendTopicList.length)
+                                SliverList(
+                                    delegate: SliverChildBuilderDelegate((content, index) {
+                                  HomeFeedModel feedModel = recommendTopicList[index];
+                                  return SizeTransitionView(
+                                      id: feedModel.id,
+                                      animationMap: animationMap,
+                                      child: ExposureDetector(
+                                        key: Key('topic_list_${widget.type}_${feedModel.id}'),
+                                        child: DynamicListLayout(
+                                          index: recommendTopicList.indexOf(feedModel),
+                                          pageName: "topicRecommend",
+                                          isShowRecommendUser: false,
+                                          isShowConcern: false,
+                                          model: feedModel,
+                                          topicId: widget.topicId,
+                                          // 可选参数 子Item的个数
+                                          key:
+                                              GlobalObjectKey("topicRecommend${recommendTopicList.indexOf(feedModel)}"),
+                                        ),
+                                        onExposure: (visibilityInfo) {
+                                          // 如果没有显示
+                                          if (context
+                                              .read<FeedMapNotifier>()
+                                              .value
+                                              .feedMap[feedModel.id]
+                                              .isShowInputBox) {
+                                            context.read<FeedMapNotifier>().showInputBox(feedModel.id);
+                                            print(
+                                                '第${recommendTopicList.indexOf(feedModel)} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                          }
+                                        },
+                                      ));
+                                }, childCount: recommendTopicList.length)),
+                                // SliverAnimatedList(
+                                // key: _listKey,
+                                // itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+                                //   HomeFeedModel model = recommendTopicList[index];
+                                //   return _buildItem(model, animation);
+                                // },
+                                // initialItemCount: recommendTopicList.length)
                               ],
                             )
                           // CustomScrollView(

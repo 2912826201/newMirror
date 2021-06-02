@@ -169,6 +169,8 @@ const String EVENTBUS_GALLERY_PAGE = "gallery_page";
 const String VIDEO_COURSE_RESULT_PAGE = "video_course_result_page";
 // 话题详情页
 const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
+// 搜索页
+const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 
 ///广播类型
 //发布动态
@@ -247,3 +249,5 @@ const String VIDEO_COURSE_RESULT = "video_course_result";
 const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
 //话题详情双击tabbar
  String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
+ // 搜索页删除动态
+String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
