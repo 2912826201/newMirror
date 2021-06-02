@@ -73,11 +73,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
     _getNewVersion();
-    controller.addListener(() {
-      if (controller.position.maxScrollExtent < controller.offset) {
-        controller.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
-      }
-    });
   }
 
   _getNewVersion() async {
