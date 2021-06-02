@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -18,15 +19,16 @@ typedef VoidItemLongClickCallBack = void Function(
 //获取用户的头像
 Widget getUserImage(String imageUrl, double height, double width) {
   if (imageUrl == null || imageUrl == "") {
-    imageUrl = "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
+    imageUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
   }
   return ClipRRect(
     borderRadius: BorderRadius.circular(height / 2),
     child: CachedNetworkImage(
       height: height,
       width: width,
-      imageUrl: imageUrl == null ? "" : imageUrl,
+      imageUrl: imageUrl == null ? "" : FileUtil.getSmallImage(imageUrl),
       fit: BoxFit.cover,
+      fadeInDuration: Duration(milliseconds: 0),
       placeholder: (context, url) => Container(
         color: AppColor.bgWhite,
       ),

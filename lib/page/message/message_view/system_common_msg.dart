@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/chat_page_ui.dart';
@@ -20,9 +21,7 @@ import 'message_item_height_util.dart';
 // ignore: must_be_immutable
 class SystemCommonMsg extends StatelessWidget {
 
-  final String text;
-  final String imageUrl;
-  final String url;
+  final ChatSystemMessageSubModel subModel;
   final bool isMyself;
   final String userUrl;
   final String name;
@@ -37,10 +36,8 @@ class SystemCommonMsg extends StatelessWidget {
   final Function(void Function(),String longClickString) setCallRemoveOverlay;
 
   SystemCommonMsg(
-      {this.text,
+      {this.subModel,
       this.isMyself,
-      this.imageUrl,
-      this.url,
       this.userUrl,
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
@@ -153,7 +150,7 @@ class SystemCommonMsg extends StatelessWidget {
           status: status,
           sendTime: sendTime,
           contentType: ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON,
-          content: text);
+          content: subModel.text);
     // print("longClickStringList:$longClickStringList");
     return LongClickPopupMenu(
       onValueChanged: (int value) {
@@ -161,7 +158,7 @@ class SystemCommonMsg extends StatelessWidget {
             position: position,
             settingType: longClickStringList[value],
             contentType: ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON,
-            content: text);
+            content: subModel.text);
       },
       setCallRemoveOverlay:setCallRemoveOverlay,
       position:position,
@@ -173,9 +170,9 @@ class SystemCommonMsg extends StatelessWidget {
       contentHeight: MessageItemHeightUtil.init().getSystemCommonMsgHeight(
         isShowChatUserName,
         isOnlyContentHeight: true,
-        content: text,
-        url: url,
-        imageUrl: imageUrl,
+        content: subModel.text,
+        url: subModel.linkUrl,
+        imageUrl: subModel.picUrl,
       ),
       child: _getSystemCommonBox(context),
     );
@@ -199,15 +196,15 @@ class SystemCommonMsg extends StatelessWidget {
 
   List<Widget> _getSystemCommonList(BuildContext context){
     List<Widget> arrayWidget=[];
-    if(StringUtil.isURL(imageUrl)){
+    if(StringUtil.isURL(subModel.picUrl)){
       arrayWidget.add(_getImageWidget());
     }
 
-    if(text!=null&&text.length>0){
+    if(subModel.text!=null&&subModel.text.length>0){
       arrayWidget.add(_getTextWidget());
     }
 
-    if(url!=null&&url.length>0){
+    if(subModel.linkUrl!=null&&subModel.linkUrl.length>0){
       arrayWidget.add(_getUrlJumpWidget());
     }
     return arrayWidget;
@@ -216,7 +213,7 @@ class SystemCommonMsg extends StatelessWidget {
   Widget _getImageWidget(){
     return GestureDetector(
       onTap: (){
-        if(!StringUtil.isURL(url)){
+        if(!StringUtil.isURL(subModel.linkUrl)){
           // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
         }
       },
@@ -225,7 +222,7 @@ class SystemCommonMsg extends StatelessWidget {
         child: CachedNetworkImage(
           width: 200.0,
           height: 100.0,
-          imageUrl: imageUrl == null ? "" : FileUtil.getLargeImage(imageUrl),
+          imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
           fit: BoxFit.cover,
           fadeInDuration: Duration(milliseconds: 0),
           placeholder: (context, url) => Container(
@@ -242,12 +239,12 @@ class SystemCommonMsg extends StatelessWidget {
   Widget _getTextWidget(){
     return Container(
       color: AppColor.transparent,
-      constraints: StringUtil.isURL(imageUrl)?
+      constraints: StringUtil.isURL(subModel.picUrl)?
         BoxConstraints(maxWidth: textMaxWidth+24.0,minWidth: textMaxWidth+24.0):
         BoxConstraints(maxWidth: textMaxWidth+24.0),
       padding: const EdgeInsets.all(12.0),
       child: Text(
-        text,
+        subModel.text,
         style: AppStyle.textPrimary2Medium12,
         maxLines: textMaxLine,
         overflow: TextOverflow.ellipsis,
@@ -284,22 +281,22 @@ class SystemCommonMsg extends StatelessWidget {
 
 
   initData(BuildContext context){
-    if(StringUtil.isURL(imageUrl)){
+    if(StringUtil.isURL(subModel.picUrl)){
       textMaxWidth=200.0-24.0;
       jumpUrlBoxMaxWidth=200.0;
       textMaxLine=2;
     }else{
       textMaxWidth=MediaQuery.of(context).size.width - (16 + 7 + 38 + 2) * 2;
       textMaxLine=100;
-      jumpUrlBoxMaxWidth=getTextSize(text, AppStyle.textPrimary2Medium12, textMaxLine, textMaxWidth).width+24.0;
+      jumpUrlBoxMaxWidth=getTextSize(subModel.text, AppStyle.textPrimary2Medium12, textMaxLine, textMaxWidth).width+24.0;
     }
   }
 
 
   _openUrl(){
-    print("点击了$position:url:$url");
-    if(StringUtil.isURL(url)) {
-      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: url, isUrl: true);
+    print("点击了$position:url:${subModel.linkUrl}");
+    if(StringUtil.isURL(subModel.linkUrl)) {
+      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: subModel.linkUrl, isUrl: true);
     }
   }
 }

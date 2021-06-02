@@ -11,6 +11,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -218,27 +219,28 @@ class ChatPageUtil {
     String systemLastTime;
     int systemPage = 0;
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    // Map<String, dynamic> dataListMap = await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
-    // try {
-    //   systemLastTime = dataListMap["lastTime"].toString();
-    // } catch (e) {}
-    // if (dataListMap != null && dataListMap["list"] != null) {
-    //   systemPage++;
-    //   dataListMap["list"].forEach((v) {
-    //     dataList.add(getMessage(getSystemMsg(v, conversation.type), isHaveAnimation: false));
-    //   });
-    // }
-    // getTimeAlert(dataList, conversation.conversationId);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    Map<String, dynamic> dataListMap = await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
+    try {
+      systemLastTime = dataListMap["lastTime"].toString();
+    } catch (e) {}
+    if (dataListMap != null && dataListMap["list"] != null) {
+      systemPage++;
+      dataListMap["list"].forEach((v) {
+        ChatSystemMessageModel model=ChatSystemMessageModel.fromJson(v);
+        dataList.add(getMessage(getSystemMsg(model, conversation.type), isHaveAnimation: false));
+      });
+    }
+    getTimeAlert(dataList, conversation.conversationId);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
     return [dataList, systemLastTime, systemPage];
   }
 
