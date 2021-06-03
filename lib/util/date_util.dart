@@ -43,10 +43,13 @@ class DateUtil {
     }
     var time = timeInterval;
     // 当前时间戳
-    var currentDate = DateTime.now().millisecondsSinceEpoch;
-    var currentDateString = DateTime.fromMillisecondsSinceEpoch(currentDate);
-    // 传入时间戳转日期String
+    var currentDate = DateTime.now();
+    // 传入时间戳转DateTime
     var date = new DateTime.fromMillisecondsSinceEpoch(time);
+    // 当传入时间大于当前时间时的容错处理
+    if (DateUtil.compareNowDate(date)) {
+      date = currentDate;
+    };
     String year = date.year.toString();
     String month = date.month.toString();
     // if (date.month <= 9) {
@@ -64,7 +67,7 @@ class DateUtil {
     // if (date.minute <= 9) {
     //   minute = "0" + minute;
     // }
-    if (currentDateString.year - date.year > 0) {
+    if (currentDate.year - date.year > 0) {
       result = year +
           "${showText ? "年" : "-"}" +
           month +
@@ -75,31 +78,31 @@ class DateUtil {
           hour +
           ":" +
           minute;
-    } else if (currentDateString.year - date.year == 0 && currentDateString.month - date.month > 0) {
+    } else if (currentDate.year - date.year == 0 && currentDate.month - date.month > 0) {
       result = month + "${showText ? "月" : "-"}" + day + "${showText ? "日" : ""}" + " " + hour + ":" + minute;
-    } else if (currentDateString.year - date.year == 0 &&
-        currentDateString.month - date.month == 0 &&
-        currentDateString.day - date.day > 0) {
-      print(currentDateString.day - date.day);
+    } else if (currentDate.year - date.year == 0 &&
+        currentDate.month - date.month == 0 &&
+        currentDate.day - date.day > 0) {
+      print(currentDate.day - date.day);
       // 昨天
-      if (currentDateString.day - date.day == 1) {
+      if (currentDate.day - date.day == 1) {
         result = "昨天" + " " + hour + ":" + minute;
       }
       //前天及之前
-      if (currentDateString.day - date.day >= 2) {
+      if (currentDate.day - date.day >= 2) {
         result = month + "${showText ? "月" : "-"}" + day + "${showText ? "月" : ""}" + " " + hour + ":" + minute;
       }
-    } else if (currentDateString.year - date.year == 0 &&
-        currentDateString.month - date.month == 0 &&
-        currentDateString.day - date.day == 0 &&
-        currentDateString.hour - date.hour > 0) {
-      result = "${currentDateString.hour - date.hour}小时前";
-    } else if (currentDateString.year - date.year == 0 &&
-        currentDateString.month - date.month == 0 &&
-        currentDateString.day - date.day == 0 &&
-        currentDateString.hour - date.hour == 0) {
-      if (currentDateString.minute - date.minute > 1) {
-        result = "${currentDateString.minute - date.minute}分钟前";
+    } else if (currentDate.year - date.year == 0 &&
+        currentDate.month - date.month == 0 &&
+        currentDate.day - date.day == 0 &&
+        currentDate.hour - date.hour > 0) {
+      result = "${currentDate.hour - date.hour}小时前";
+    } else if (currentDate.year - date.year == 0 &&
+        currentDate.month - date.month == 0 &&
+        currentDate.day - date.day == 0 &&
+        currentDate.hour - date.hour == 0) {
+      if (currentDate.minute - date.minute > 1) {
+        result = "${currentDate.minute - date.minute}分钟前";
       } else {
         result = "刚刚";
       }
@@ -130,7 +133,7 @@ class DateUtil {
       return "00:" + ms.toString();
     } else {
       int hour = ms ~/ 3600;
-      int minute = ms % 3600 ~/ 60+hour*60;
+      int minute = ms % 3600 ~/ 60 + hour * 60;
       int second = ms % 60;
       if (minute > 0) {
         return "${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
@@ -188,12 +191,11 @@ class DateUtil {
     }
   }
 
-
   /// 分钟-秒 01'12''
   /// 不显示时 01
   /// ms 毫秒级
   static String formatMinuteSecond(int ms) {
-    ms~/=1000;
+    ms ~/= 1000;
     if (ms < 60) {
       if (ms < 10) {
         return "00'0$ms''";
@@ -203,17 +205,15 @@ class DateUtil {
       int hour = ms ~/ 3600;
       int minute = ms % 3600 ~/ 60;
       int second = ms % 60;
-      if (hour > 0||minute > 0) {
-        int timeMinute=minute+hour*60;
+      if (hour > 0 || minute > 0) {
+        int timeMinute = minute + hour * 60;
         return "${timeMinute > 10 ? timeMinute : "0" + timeMinute.toString()}"
             "'${second > 10 ? second : "0" + second.toString()}''";
-      }else {
+      } else {
         return "00'${second > 10 ? second : "0" + second.toString()}''";
       }
     }
   }
-
-
 
   //获取聊天框内消息提示的格式
   //---小时数，十位数为0时，不显示十位
@@ -394,10 +394,10 @@ class DateUtil {
       smallDate = aDate;
     }
     int countDay = 0;
-    DateTime dateTime=smallDate;
+    DateTime dateTime = smallDate;
     while (!aDateEqualBDate(bigDate, dateTime)) {
       countDay++;
-      dateTime=smallDate.add(Duration(days: countDay));
+      dateTime = smallDate.add(Duration(days: countDay));
       if (countDay > 7) {
         print("时间有问题：$bigDate,$smallDate");
         break;

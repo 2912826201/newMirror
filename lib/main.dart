@@ -121,9 +121,9 @@ Future _initApp() async {
 
   //根据环境初始化bugly
   if(AppConfig.env == Env.DEV) {
-    FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a");
+    FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a", channel: AppConfig.channelCode);
   }else{
-    FlutterBugly.init(androidAppId: "4172861916", iOSAppId: "9054e325b9");
+    FlutterBugly.init(androidAppId: "4172861916", iOSAppId: "9054e325b9", channel: AppConfig.channelCode);
   }
 
   //获取版本号
