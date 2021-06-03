@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
@@ -332,6 +333,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (conversation.type == PRIVATE_TYPE && conversation.uid == coachIsAccountId) {
       isPersonalButler = true;
     }
+
+    print("getChatDetailsBody:${chatDataList.length}");
+
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
       scrollController: _scrollController,
@@ -535,7 +539,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (dataListMap != null && dataListMap["list"] != null) {
       systemPage++;
       dataListMap["list"].forEach((v) {
-        dataList.add(getMessage(getSystemMsg(v, conversation.type), isHaveAnimation: false));
+        ChatSystemMessageModel model=ChatSystemMessageModel.fromJson(v);
+        dataList.add(getMessage(getSystemMsg(model, conversation.type), isHaveAnimation: false));
       });
     }
     return dataList;

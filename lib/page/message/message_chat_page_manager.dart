@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:connectivity/connectivity.dart';
@@ -182,6 +183,7 @@ void _jumpChatPage(
     chatDataModelList = list[0];
     systemLastTime = list[1];
     systemPage = list[2];
+    print("chatDataModelList:${chatDataModelList.length}");
   }
   AppRouter.navigateToChatPage(
     context: context,
@@ -496,16 +498,16 @@ Message getAlertTimeMsg({int time, int sendTime, String targetId, int conversati
 }
 
 //封装系统消息
-Message getSystemMsg(Map<String, dynamic> dataMap, int targetId) {
+Message getSystemMsg(ChatSystemMessageModel model, int targetId) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
-  msg.content = dataMap["content"];
+  msg.content = model.content;
   Message message = new Message();
   message.content = msg;
   message.senderUserId = targetId.toString();
-  message.sentTime = dataMap["msgTimestamp"];
+  message.sentTime = model.msgTimestamp;
   message.messageId = -1;
-  message.messageUId = "-1";
+  message.messageUId = model.msgUID;
   message.conversationType = RCConversationType.System;
   message.targetId = msg.sendUserInfo.userId.toString();
   message.objectName = TextMessage.objectName;
