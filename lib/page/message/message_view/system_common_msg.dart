@@ -267,7 +267,7 @@ class SystemCommonMsg extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("查看更多",style: AppStyle.textSecondaryRegular10),
+            Text(subModel.linkText??"查看更多",style: AppStyle.textSecondaryRegular10),
             AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               12,
