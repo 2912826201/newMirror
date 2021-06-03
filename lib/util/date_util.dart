@@ -46,6 +46,10 @@ class DateUtil {
     var currentDate = DateTime.now();
     // 传入时间戳转DateTime
     var date = new DateTime.fromMillisecondsSinceEpoch(time);
+    // 当传入时间大于当前时间时的容错处理
+    if (DateUtil.compareNowDate(date)) {
+      date = currentDate;
+    };
     String year = date.year.toString();
     String month = date.month.toString();
     // if (date.month <= 9) {
