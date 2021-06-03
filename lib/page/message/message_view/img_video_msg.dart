@@ -10,7 +10,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'file:///E:/git/mirror/lib/page/message/item/message_item_height_util.dart';
 import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/icon.dart';
@@ -18,7 +18,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/util/string_util.dart';
 
-import 'currency_msg.dart';
+import '../item/currency_msg.dart';
 
 ///图片视频消息
 // ignore: must_be_immutable

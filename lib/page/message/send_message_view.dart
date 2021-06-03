@@ -19,7 +19,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'message_view/currency_msg.dart';
+import 'item/currency_msg.dart';
 import 'message_view/img_video_msg.dart';
 import 'message_view/live_video_course_msg.dart';
 import 'message_view/select_msg.dart';

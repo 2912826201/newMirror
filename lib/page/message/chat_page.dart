@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
-import 'package:mirror/page/message/message_view/message_item_gallery_util.dart';
+import 'file:///E:/git/mirror/lib/page/message/item/message_item_gallery_util.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -64,7 +64,7 @@ import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 
-import 'message_view/message_item_height_util.dart';
+import 'item/message_item_height_util.dart';
 
 ////////////////////////////////
 //
@@ -2057,6 +2057,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       //print("取消长按界面-無");
     }
   }
+
   //取消at标识
   void Function(bool isHaveAtMeMsg) setHaveAtMeMsgCall;
 
@@ -2143,7 +2144,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       // print("跳转网页地址:$content");
       context.read<VoiceSettingNotifier>().stop();
-      _launchUrl(content);
+      StringUtil.launchUrl(content,context);
       // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       context.read<VoiceSettingNotifier>().stop();
@@ -2244,6 +2245,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     int initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList,chatDataList[position]);
 
     if(initIndex<0){
+      ToastShow.show(msg: "无法查看详情", context: context);
       return;
     }
 
@@ -2275,17 +2277,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
   }
 
-  _launchUrl(String url) async {
-    if (!(url.contains("http://") || url.contains("https://"))) {
-      url = "https://" + url;
-    }
-    if (await canLaunch(url)) {
-      AppRouter.navigateWebViewPage(context, url);
-      // await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+
 
   //显示我已加入的群聊--邀请对话的人进入群聊
   _showGroupPopup() {

@@ -186,6 +186,7 @@ class MessageItemGalleryUtil {
           return msg.messageId.toString();
         }else {
           Map<String, dynamic> map = json.decode(mapModel["data"]);
+          map["isTemporary"]=mapModel["isTemporary"];
           return _getImgVideoMsg(isTemporary: false,
             mediaFileModel: model.mediaFileModel,
             sizeInfoMap: map,
@@ -199,6 +200,7 @@ class MessageItemGalleryUtil {
           return msg.messageId.toString();
         }else {
           Map<String, dynamic> map = json.decode(mapModel["data"]);
+          map["isTemporary"]=mapModel["isTemporary"];
           return _getImgVideoMsg(isTemporary: false,
             mediaFileModel: model.mediaFileModel,
             sizeInfoMap: map,
@@ -268,8 +270,7 @@ class MessageItemGalleryUtil {
       return false;
     }else{
       if (isImageOrVideo) {
-        if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]
-          ||!StringUtil.isURL(sizeInfoMap["showImageUrl"])) {
+        if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]) {
           File imageFile = File(sizeInfoMap["showImageUrl"]);
           if (imageFile.existsSync()) {
             demoSourceEntity.imageFilePath=sizeInfoMap["showImageUrl"];
@@ -280,8 +281,7 @@ class MessageItemGalleryUtil {
           demoSourceEntity.url=sizeInfoMap["showImageUrl"];
         }
       } else {
-        if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]
-            ||!StringUtil.isURL(sizeInfoMap["showImageUrl"])) {
+        if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]) {
           File videoImageFile = File(sizeInfoMap["videoFilePath"]);
           File videoFile = File(sizeInfoMap["showImageUrl"]);
           if (videoFile.existsSync()) {
