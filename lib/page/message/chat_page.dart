@@ -528,7 +528,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
   }
 
-  //获取系统消息
+  //获取系统通知
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
@@ -1995,7 +1995,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
 
-  //加载更多的系统消息
+  //加载更多的系统通知
   _onRefreshSystemInformation() async {
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {

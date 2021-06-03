@@ -89,7 +89,7 @@ class UserMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       GestureDetector(
-        child: getUserImage(userUrl, 38, 38),
+        child: getUserImageWidget(userUrl,sendChatUserId, 38, 38),
         onTap: () {
           if (isCanLongClick) {
             voidMessageClickCallBack(
@@ -239,7 +239,7 @@ class UserMsg extends StatelessWidget {
               borderRadius: BorderRadius.circular(47.0 / 2),
               border: Border.all(color: AppColor.white, width: 2),
             ),
-            child: getUserImage(FileUtil.getSmallImage(userModel.avatarUri), 47, 47),
+            child: getUserImageWidget(FileUtil.getSmallImage(userModel.avatarUri),sendChatUserId, 47, 47),
           ),
         ],
       ),

@@ -151,7 +151,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                getUserImage(groupUserModel.avatarUri, 36, 36),
+                getUserImageWidget(groupUserModel.avatarUri,groupUserModel.uid.toString(), 36, 36),
                 SizedBox(width: 12),
                 Text(
                   groupUserModel.groupNickName,

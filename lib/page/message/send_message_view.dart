@@ -102,21 +102,32 @@ class SendMessageViewState extends State<SendMessageView> {
       isMyself = false;
       status = widget.model.msg.sentStatus;
       sendChatUserId = widget.model.msg.senderUserId;
-      if (widget.conversationDtoType == OFFICIAL_TYPE) {
+
+      if(ChatPageUtil.init(context).isSystemMsg(widget.chatId)){
         userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-        name = "系统消息";
-      } else if (widget.conversationDtoType == LIVE_TYPE) {
-        userUrl = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
-        name = "官方直播";
-      } else if (widget.conversationDtoType == TRAINING_TYPE) {
-        userUrl = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
-        name = "运动数据";
-      } else {
+        name = "系统通知";
+      }else{
         try {
           userUrl = getChatUserUrl(sendChatUserId, widget.model.msg.content.sendUserInfo?.portraitUri);
           name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
         } catch (e) {}
       }
+
+      // if (widget.conversationDtoType == OFFICIAL_TYPE) {
+      //   userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+      //   userUrl = AppIcon.avatar_system;
+      // } else if (widget.conversationDtoType == LIVE_TYPE) {
+      //   userUrl = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
+      //   name = "官方直播";
+      // } else if (widget.conversationDtoType == TRAINING_TYPE) {
+      //   userUrl = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
+      //   name = "运动数据";
+      // } else {
+      //   try {
+      //     userUrl = getChatUserUrl(sendChatUserId, widget.model.msg.content.sendUserInfo?.portraitUri);
+      //     name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
+      //   } catch (e) {}
+      // }
     }
 
     userUrl = FileUtil.getSmallImage(userUrl);

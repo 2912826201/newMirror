@@ -123,7 +123,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       GestureDetector(
-        child: getUserImage(widget.userUrl, 38, 38),
+        child: getUserImageWidget(widget.userUrl,widget.sendChatUserId, 38, 38),
         onTap: () {
           if (widget.isCanLongClick) {
             widget.voidMessageClickCallBack(

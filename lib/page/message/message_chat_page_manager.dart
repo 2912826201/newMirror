@@ -67,7 +67,7 @@ void jumpChatPageSystem(BuildContext context) {
   ConversationDto conversation = new ConversationDto();
   conversation.conversationId = "1";
   conversation.uid = Application.profile.uid;
-  conversation.name = "系统消息";
+  conversation.name = "系统通知";
   conversation.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
   conversation.type = OFFICIAL_TYPE;
   jumpChatPageConversationDto(context, conversation);
@@ -411,8 +411,8 @@ UserInfo getChatUserInfo({String groupId}) {
 String getMessageType(ConversationDto conversation, BuildContext context) {
   String type;
   if (conversation.type == OFFICIAL_TYPE) {
-    type = "系统消息的type类型";
-    ToastShow.show(msg: type, context: context);
+    type = "系统通知的type类型";
+    // ToastShow.show(msg: type, context: context);
   } else if (conversation.type == LIVE_TYPE) {
     type = "直播消息的type类型";
   } else if (conversation.type == TRAINING_TYPE) {
@@ -434,7 +434,7 @@ String getMessageType(ConversationDto conversation, BuildContext context) {
 //获取一个临时的身份
 ConversationDto getConversationDto() {
   ConversationDto conversation = new ConversationDto();
-  conversation.name = "系统消息";
+  conversation.name = "系统通知";
   conversation.uid = 0;
   conversation.type = OFFICIAL_TYPE;
   conversation.avatarUri =
@@ -497,7 +497,7 @@ Message getAlertTimeMsg({int time, int sendTime, String targetId, int conversati
   return message;
 }
 
-//封装系统消息
+//封装系统通知
 Message getSystemMsg(ChatSystemMessageModel model, int targetId) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();

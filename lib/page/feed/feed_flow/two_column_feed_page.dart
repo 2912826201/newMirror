@@ -252,7 +252,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
         children: [
           Row(
             children: [
-              getUserImage(homeFeedModel.avatarUrl, 16, 16),
+              getUserImageWidget(homeFeedModel.avatarUrl,homeFeedModel.pushId.toString(), 16, 16),
               SizedBox(width: 4),
               Expanded(
                 child: SizedBox(

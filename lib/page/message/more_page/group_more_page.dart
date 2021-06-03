@@ -305,7 +305,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       child: Container(
         child: Column(
           children: [
-            getUserImage(FileUtil.getSmallImage(userModel.avatarUri), 47, 47),
+            getUserImageWidget(FileUtil.getSmallImage(userModel.avatarUri),userModel.uid.toString(), 47, 47),
             SizedBox(
               height: 6,
             ),
