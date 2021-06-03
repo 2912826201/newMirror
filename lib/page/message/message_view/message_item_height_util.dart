@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -178,6 +179,9 @@ class MessageItemHeightUtil {
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
         //-------------------------------------------------群通知消息-第二种-------------------------------------------
         return getAlertMsgHeight();
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON) {
+        //-------------------------------------------------系统通知-------------------------------------------
+        return _getSystemCommonMsgHeight(mapModel["data"], isShowName);
       } else if (mapModel["name"] != null) {
         //-------------------------------------------------未知消息-------------------------------------------
         return getTextMsgHeight(mapModel["name"], isShowName);
@@ -435,7 +439,20 @@ class MessageItemHeightUtil {
   }
 
   //获取系统普通消息的高度
-  double getSystemCommonMsgHeight(bool isShowName,
+  double _getSystemCommonMsgHeight(String data, bool isShowName,
+      {bool isOnlyContentHeight = false}){
+    ChatSystemMessageSubModel subModel=ChatSystemMessageSubModel.fromJson(json.decode(data));
+    return getSystemCommonMsgHeight(isShowName,
+        isOnlyContentHeight:isOnlyContentHeight,
+      content:subModel.text,
+      url:subModel.linkUrl,
+      imageUrl:subModel.picUrl,
+    );
+  }
+
+  //获取系统普通消息的高度
+  double getSystemCommonMsgHeight(
+      bool isShowName,
     {bool isOnlyContentHeight = false,String content="",String url="",String imageUrl=""}) {
     double itemHeight = 0.0;
 

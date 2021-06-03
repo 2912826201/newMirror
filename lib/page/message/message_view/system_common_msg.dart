@@ -28,6 +28,7 @@ class SystemCommonMsg extends StatelessWidget {
   final int status;
   final int position;
   final String sendChatUserId;
+  final String heroId;
   final bool isCanLongClick;
   final int sendTime;
   final bool isShowChatUserName;
@@ -46,6 +47,7 @@ class SystemCommonMsg extends StatelessWidget {
       this.name,
       this.status,
       this.position,
+      this.heroId,
       this.voidMessageClickCallBack,
       this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
@@ -211,25 +213,28 @@ class SystemCommonMsg extends StatelessWidget {
   }
 
   Widget _getImageWidget(){
-    return GestureDetector(
-      onTap: (){
-        if(!StringUtil.isURL(subModel.linkUrl)){
-          // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
-        }
-      },
-      child: Container(
-        color: AppColor.transparent,
-        child: CachedNetworkImage(
-          width: 200.0,
-          height: 100.0,
-          imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
-          fit: BoxFit.cover,
-          fadeInDuration: Duration(milliseconds: 0),
-          placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
-          ),
-          errorWidget: (context, url, error) => Container(
-            color: AppColor.bgWhite,
+    return Hero(
+      tag: heroId,
+      child: GestureDetector(
+        onTap: (){
+          if(!StringUtil.isURL(subModel.linkUrl)){
+            // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
+          }
+        },
+        child: Container(
+          color: AppColor.transparent,
+          child: CachedNetworkImage(
+            width: 200.0,
+            height: 100.0,
+            imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
+            fit: BoxFit.cover,
+            fadeInDuration: Duration(milliseconds: 0),
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
+            ),
+            errorWidget: (context, url, error) => Container(
+              color: AppColor.bgWhite,
+            ),
           ),
         ),
       ),

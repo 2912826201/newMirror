@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/page/message/message_view/message_item_gallery_util.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -943,11 +944,15 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(), () {
+    postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(),
+    (isSuccess) {
+      print("isSuccess:$isSuccess");
       modelList.forEach((element) {
         deleteCancelMessage(element.conversationId,element.id??"");
       });
-      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      if(!isSuccess) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
     });
   }
 
@@ -1131,8 +1136,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     deletePostCompleteMessage(conversation);
     chatDataList[0].isTemporary = true;
     addTemporaryMessage(chatDataList[0], conversation);
-    postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), () {
-      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), (isSuccess) {
+      if(!isSuccess) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
     });
   }
 
@@ -1170,8 +1177,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (mounted) {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), () {
-      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), (isSuccess) {
+      if(!isSuccess) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
     });
   }
 
@@ -1307,26 +1316,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   // 大图预览插入数据
   insertSourceList(ChatDataModel model) {
-    //print("插入数据前sourceList：：${sourceList.length} ———————— ${sourceList.toString()}");
-    if (model.msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-      TextMessage textMessage = ((model.msg.content) as TextMessage);
-      try {
-        Map<String, dynamic> mapModel = json.decode(textMessage.content);
-        Map<String, dynamic> map = json.decode(mapModel["data"]);
-        String imageUrl = map["showImageUrl"];
-        if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'image', imageUrl);
-          sourceList.add(demoSourceEntity);
-        }
-        if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-          DemoSourceEntity demoSourceEntity = DemoSourceEntity(model.msg.messageId, 'video', imageUrl);
-          sourceList.add(demoSourceEntity);
-        }
-      } catch (e) {
-        // return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
-      }
+    DemoSourceEntity demoSourceEntity=MessageItemGalleryUtil.init().getMessageGallery(model);
+    if(demoSourceEntity!=null){
+      sourceList.add(demoSourceEntity);
     }
-    //print("插入数据后sourceList：：${sourceList.length} ____ ${sourceList.toString()}");
   }
 
   //获取数据库内的messageUId
@@ -2245,77 +2238,20 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   // 打开大图预览
   _openGallery(int position) {
     sourceList.clear();
-    for (int i = chatDataList.length - 1; i >= 0; i--) {
-      ChatDataModel v = chatDataList[i];
-      if (v.msg != null) {
-        String msgType = v.msg.objectName;
-        //print("消息类型：$msgType");
-        if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-          TextMessage textMessage = ((v.msg.content) as TextMessage);
-          try {
-            Map<String, dynamic> mapModel = json.decode(textMessage.content);
-            Map<String, dynamic> map = json.decode(mapModel["data"]);
-            String imageUrl = map["showImageUrl"];
 
-            if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-              //print("map::::::$map");
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity(
-                v.msg.messageId,
-                'image',
-                imageUrl,
-                height: map["height"],
-                width: map["width"],
-              );
-              sourceList.add(demoSourceEntity);
-            }
-            if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-              //print("map::::::$map");
-              //print(map["height"] is double);
-              //print(map["height"] is int);
-              //print(map["duration"] is double);
-              //print(map["duration"] is int);
+    sourceList=MessageItemGalleryUtil.init().getMessageGalleryList(chatDataList);
 
-              DemoSourceEntity demoSourceEntity = DemoSourceEntity(v.msg.messageId, 'video', imageUrl,
-                  height: map["height"], width: map["width"], duration: map["duration"]);
-              sourceList.add(demoSourceEntity);
-            }
-          } catch (e) {
-            // ToastShow.show(msg: "版本过低请升级版本!", context: _context,gravity: Toast.CENTER);
-            // return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
-          }
-        }
-      }
+    int initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList,chatDataList[position]);
+
+    if(initIndex<0){
+      return;
     }
-    //print("查看sourceList长度：${sourceList.length} ------ ${sourceList.toString()}");
-    int initIndex = 0;
-    //print("position::$position");
-    //print("当前点击的messageID：${chatDataList[position].msg.messageId}");
-    for (int i = sourceList.length - 1; i >= 0; i--) {
-      DemoSourceEntity source = sourceList[i];
-      if (source.heroId == chatDataList[position].msg.messageId) {
-        initIndex = i;
-      }
-    }
-    //print("图片索引值:$initIndex");
-    // DemoSourceEntity sourceEntity = sourceList[initIndex];
-    // //print("____sourceEntity:${sourceEntity.toString()}");
-    // if (sourceEntity.type == 'video') {
-    //   Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-    //     // return SliverListDemoPage();
-    //     return DemoVideoItem2(
-    //       sourceEntity,
-    //     );
-    //   }));
-    // } else {
-      Navigator.of(context).push(
-        HeroDialogRoute<void>(builder: (BuildContext context) {
-          // InteractiveviewerGallery<DemoSourceEntity>(
-          // sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
-          //print("chat_page:$initIndex");
-          return InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder);
-        }),
-      );
-    // }
+
+    Navigator.of(context).push(
+      HeroDialogRoute<void>(builder: (BuildContext context) {
+        return InteractiveviewerGallery(sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder);
+      }),
+    );
   }
 
 // 大图预览内部的Item

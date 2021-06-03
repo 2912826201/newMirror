@@ -29,6 +29,7 @@ class ImgVideoMsg extends StatelessWidget {
   final MediaFileModel mediaFileModel;
   final String userUrl;
   final String sendChatUserId;
+  final String heroId;
   final bool isShowChatUserName;
   final String name;
   final int status;
@@ -58,10 +59,12 @@ class ImgVideoMsg extends StatelessWidget {
       this.sizeInfoMap,
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack,
+      this.heroId,
       this.setCallRemoveOverlay});
 
   double width = 200.0;
   double height = 200.0;
+  bool isOpenGallery=true;
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +198,7 @@ class ImgVideoMsg extends StatelessWidget {
         child: sizeInfoMap == null
             ? imgVideoContentBox(context)
             : Hero(
-                tag: sizeInfoMap["messageId"],
+                tag: heroId,
                 child: imgVideoContentBox(context),
               ),
         onTap: () {
@@ -230,6 +233,7 @@ class ImgVideoMsg extends StatelessWidget {
   Widget getImageOrVideoUi() {
     //判断是不是临时
     if (isTemporary) {
+      isOpenGallery=false;
       return !isImgOrVideo ? getVideoShowImage() : getImageShowImage();
     } else {
       if (isImgOrVideo) {
@@ -274,6 +278,7 @@ class ImgVideoMsg extends StatelessWidget {
   //获取图片的展示
   Widget getImageUi() {
     if (imageMessage != null) {
+      isOpenGallery=false;
       Uint8List bytes = Base64Decoder().convert(imageMessage.content);
       return bytes != null ? getImageMemory(bytes) : Container(child: Text("离线-图片资源有问题"));
     } else {
@@ -282,6 +287,7 @@ class ImgVideoMsg extends StatelessWidget {
         if (imageFile.existsSync()) {
           return getImageFile(imageFile);
         } else {
+          isOpenGallery=false;
           //print("文件失效");
           return getImagePlaceHolder();
         }
@@ -440,17 +446,23 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   void onImgVideoContentBoxClick(BuildContext context) {
-    String imageUrl = sizeInfoMap["showImageUrl"];
-    // print("imageUrl:$imageUrl");
-    if (isImgOrVideo) {
-      print("___________________________${sizeInfoMap["messageId"]}");
-      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
-      // ToastShow.show(msg: "点击了图片", context: context);
-    } else {
-      print("___________________________${sizeInfoMap["messageId"]}");
-      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl, position: position);
-      // ToastShow.show(msg: "点击了视频", context: context);
+    print("onImgVideoContentBoxClick");
+    if(!isOpenGallery){
+      return;
+    }
+    if(sizeInfoMap!=null) {
+      String imageUrl = sizeInfoMap["showImageUrl"];
+      print("imageUrl:$imageUrl");
+      if (isImgOrVideo) {
+        print("___________________________${sizeInfoMap["messageId"]}");
+        voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
+        // ToastShow.show(msg: "点击了图片", context: context);
+      } else {
+        print("___________________________${sizeInfoMap["messageId"]}");
+        voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl, position: position);
+        // ToastShow.show(msg: "点击了视频", context: context);
 
+      }
     }
   }
 

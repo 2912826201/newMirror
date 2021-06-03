@@ -464,7 +464,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
     TopicDtoModel topicDtoModel = topicDtoModelList[index];
     DemoSourceEntity sourceEntity = DemoSourceEntity(
-      topicDtoModel.id,
+      topicDtoModel.id.toString(),
       " image",
       topicDtoModel.avatarUrl?.coverUrl,
     );
