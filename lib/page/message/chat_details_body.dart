@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/item/chat_top_at_mark.dart';
@@ -101,7 +102,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    if (widget.chatDataList.length > 1) {
+    if (widget.chatDataList.length > 1&&widget.conversationDtoType!=OFFICIAL_TYPE) {
       if (!(widget.chatDataList[0].isTemporary || widget.chatDataList[1].isTemporary)) {
         if (widget.chatDataList[0].msg.messageId == widget.chatDataList[1].msg.messageId) {
           widget.chatDataList.removeAt(0);
@@ -212,6 +213,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
   }
 
   int getChildCount() {
+    // print("widget.chatDataList.length:${widget.chatDataList.length}");
     return widget.chatDataList.length + (widget.isPersonalButler ? 1 : 0) + (isHaveLoadAnimation ? 1 : 0);
   }
 

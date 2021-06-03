@@ -115,21 +115,18 @@ class _feedBackPage extends State<FeedBackPage> {
   }
 
   Widget _imageList(double width) {
-    if (imageDataList.length > 8) {
-      imageDataList.removeRange(8, imageDataList.length);
-    }
     return Container(
       height: 95,
       width: width,
       child: ListView.separated(
-          itemCount: imageDataList != null ? imageDataList.length + 1 : 1,
+          itemCount: fileList.length<8 ? fileList.length + 1 : fileList.length,
           scrollDirection: Axis.horizontal,
           separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                 width: 10.0,
                 color: Color(0xFFFFFFFF),
               ),
           itemBuilder: (context, index) {
-            if (imageDataList != null && index != imageDataList.length) {
+            if (index != fileList.length) {
               return _item(index);
             } else {
               return _addImageItem();
@@ -147,8 +144,8 @@ class _feedBackPage extends State<FeedBackPage> {
           Positioned(
               bottom: 0,
               left: 0,
-              child: Image.memory(
-                imageDataList[index],
+              child: Image.file(
+                fileList[index],
                 width: 86,
                 height: 86,
               )),
@@ -158,7 +155,6 @@ class _feedBackPage extends State<FeedBackPage> {
               svgName: AppIcon.delete,
               iconSize: 18,
               onTap: () {
-                imageDataList.removeAt(index);
                 fileList.removeAt(index);
                 setState(() {});
               },
@@ -170,8 +166,7 @@ class _feedBackPage extends State<FeedBackPage> {
   }
 
   Widget _addImageItem() {
-    return imageDataList.length < 8
-        ? InkWell(
+    return InkWell(
             onTap: () {
               _getImage();
             },
@@ -187,13 +182,15 @@ class _feedBackPage extends State<FeedBackPage> {
                 child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
               ),
             ),
-          )
-        : Container();
+          );
   }
 
   //从相册获取照片
   _getImage() {
-    AppRouter.navigateToMediaPickerPage(context, 8, typeImage, false, startPageGallery, false, (result) {
+    if(fileList.length==8){
+      ToastShow.show(msg: "最多只能选择8张图片哦~", context: context);
+    }
+    AppRouter.navigateToMediaPickerPage(context, 8-fileList.length, typeImage, false, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -202,28 +199,11 @@ class _feedBackPage extends State<FeedBackPage> {
       Application.selectedMediaFiles = null;
       List<MediaFileModel> model = files.list;
       model.forEach((element) async {
-        if (element.croppedImage != null) {
-          print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-          ByteData byteData = await element.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-          print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-          Uint8List picBytes = byteData.buffer.asUint8List();
-          print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-          element.croppedImageData = picBytes;
-        }
-        String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-        int i = 0;
-        i++;
-        if (element.croppedImageData != null) {
-          print('==================================model.croppedImageData!=null');
-          File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
-          print('imageFile==============================$imageFile');
-          fileList.add(imageFile);
-          print('===============================${fileList.length}');
+        if(element.file!=null){
+          fileList.add(element.file);
           setState(() {
-            imageDataList.add(element.croppedImageData);
           });
         }
-        print('=====================================${element.croppedImageData}');
       });
     });
   }
@@ -233,7 +213,7 @@ class _feedBackPage extends State<FeedBackPage> {
       ToastShow.show(msg: "图片和文字不可为空", context: context);
       return;
     }
-    Loading.showLoading(context);
+    Loading.showLoading(context,infoText: "正在反馈");
     List<String> list = [];
     var result = await FileUtil().uploadPics(fileList, (percent) {
       print('===========================正在上传%%$percent');

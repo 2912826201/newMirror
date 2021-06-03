@@ -71,6 +71,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     if (listPage == 1) {
       controller.loadComplete();
       if (model != null) {
+        Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
         hasNext = model.hasNext;
         lastTime = model.lastTime;
         msgList.clear();
@@ -130,14 +131,12 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    Application.unreadNoticeTimeStamp = null;
 
   }
 
   @override
   void initState() {
     hintText = "这里什么都没有呢";
-    Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
     EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();

@@ -117,6 +117,10 @@ class AppIcon {
   static const String profile_weight = "assets/svg/profile_weight.svg";
   static const String profile_gallery = "assets/svg/profile_gallery.svg";
   static const String profile_edit = "assets/svg/profile_edit.svg";
+  static const String profile_about = "assets/svg/profile_about.svg";
+  static const String profile_scan = "assets/svg/profile_scan.svg";
+  static const String profile_feedback = "assets/svg/profile_feedback.svg";
+  static const String profile_setting = "assets/svg/profile_setting.svg";
   static const String layout_vertical = "assets/svg/layout_vertical.svg";
   static const String layout_horizontal = "assets/svg/layout_horizontal.svg";
   static const String qrcode = "assets/svg/qrcode.svg";
@@ -138,7 +142,7 @@ class AppIcon {
   static const String volume_off_16 = "assets/svg/volume_off_16.svg";
   static const String pin_bubble_index_bar = "assets/svg/pin_bubble_index_bar.svg";
   static const String error_circle = "assets/svg/error_circle.svg";
-  static const String identity_coach = "assets/svg/identity_coach.svg";
+  static const String identity_coach_16 = "assets/svg/identity_coach_16.svg";
   static const String chat_16 = "assets/svg/chat_16.svg";
   static const String pin_map = "assets/svg/pin_map.svg";
   static const String pin_map_self = "assets/svg/pin_map_self.svg";

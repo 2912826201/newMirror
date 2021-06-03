@@ -314,11 +314,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) {
-                        if (_mController.index == index) {
                           EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
-                        } else {
-                          _mController.animateTo(index);
-                        }
                       },
                       indicatorSize: Custom.TabBarIndicatorSize.label,
                       indicator: RoundUnderlineTabIndicator(

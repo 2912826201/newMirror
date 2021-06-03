@@ -38,7 +38,11 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
         hasDivider: false,
         leading: Container(),
       ),
-      body: Container(
+      body: InkWell(
+        onTap: (){
+          FocusScope.of(context).requestFocus(blankNode);
+        },
+        child: Container(
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 41,right: 41),
@@ -117,7 +121,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
             ),
           ],
         ),
-      ),
+      ),),
     ));
   }
 

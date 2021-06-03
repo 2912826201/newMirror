@@ -82,6 +82,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         break;
     }
     refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value) {
+      if(value!=null&&value){
+        Application.unreadNoticeTimeStamp = null;
+      }
       //然后获取新的未读数
       _getUnreadMsgCount();
     });
@@ -280,7 +283,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           InkWell(
             onTap: () {
               AppRouter.navigateToInteractivePage(context, type: type, callBack: (result) async {
-                _removeUnreadNotice(Application.unreadNoticeTimeStamp, type);
+                if(Application.unreadNoticeTimeStamp!=null){
+                  _removeUnreadNotice(Application.unreadNoticeTimeStamp, type);
+                }
+
               });
             },
             child: Stack(

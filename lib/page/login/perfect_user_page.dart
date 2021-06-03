@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
@@ -68,12 +69,14 @@ class _PerfectUserState extends State<PerfectUserPage> {
   double height = ScreenUtil.instance.height;
   PinYinTextEditController controller = PinYinTextEditController();
   String lastInput = "";
+
   @override
   void initState() {
     super.initState();
     controller.addListener(() {
       if (lastInput != controller.completeText) {
         lastInput = controller.completeText;
+
         ///通知onChanged
         setState(() {
           username = lastInput;
@@ -85,44 +88,45 @@ class _PerfectUserState extends State<PerfectUserPage> {
 
   @override
   Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
+        child: Scaffold(
+          backgroundColor: AppColor.white,
+          appBar: null,
+          body: Container(
+            width: width,
+            height: height,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ///头像
+                SizedBox(
+                  height: 40 + CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
+                ),
+                Center(
+                  child: _avatarWidget(),
+                ),
+                SizedBox(height: 48),
+                Container(
+                  padding: EdgeInsets.only(left: 41, right: 41),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ///输入框
+                      _inputWidget(),
+                      SizedBox(
+                        height: 32,
+                      ),
 
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: null,
-      body: Container(
-        width: width,
-        height: height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ///头像
-            SizedBox(
-              height: 40+CustomAppBar.appBarHeight+ScreenUtil.instance.statusBarHeight,
-            ),
-            Center(
-              child: _avatarWidget(),
-            ),
-            SizedBox(height: 48),
-            Container(
-              padding: EdgeInsets.only(left: 41, right: 41),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ///输入框
-                  _inputWidget(),
-                  SizedBox(
-                    height: 32,
+                      ///完成按钮
+                      _perfectUserBtn()
+                    ],
                   ),
-
-                  ///完成按钮
-                  _perfectUserBtn()
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   Widget _avatarWidget() {
@@ -206,9 +210,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
           suffixText: "$textLength/$maxTextLength",
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
-          inputFormatters: [
-            ExpressionTeamDeleteFormatter(maxLength: maxTextLength,needFilter: true)
-            ],
+      inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: maxTextLength, needFilter: true)],
     );
   }
 
@@ -216,7 +218,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
   Widget _perfectUserBtn() {
     FocusNode blankNode = FocusNode();
     return InkWell(
-      onTap: (){
+      onTap: () {
         if (fileList.isNotEmpty && username != "") {
           setState(() {
             onClicking = true;
@@ -226,34 +228,39 @@ class _PerfectUserState extends State<PerfectUserPage> {
         }
       },
       child: Container(
-      width: width,
-      height: 44,
-      padding: EdgeInsets.only(left: 41,right: 41),
+          width: width,
+          height: 44,
+          padding: EdgeInsets.only(left: 41, right: 41),
           decoration: BoxDecoration(
-            color:fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
-            borderRadius: BorderRadius.all(Radius.circular(3)),),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Spacer(),
-          onClicking
-              ?Container(
-              height: 17,
-              width: 17,
-              child: CircularProgressIndicator(
-                  valueColor:AlwaysStoppedAnimation(AppColor.black),
-                  backgroundColor: AppColor.white,
-                  strokeWidth:1.5
-              )):Container(),
-          SizedBox(width: 2.5,),
-          Text(
-            "完成",
-            style: TextStyle(fontSize: 16, color: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary),
+            color: fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3)),
           ),
-          Spacer()
-        ],
-      )
-    ),);
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Spacer(),
+              onClicking
+                  ? Container(
+                      height: 17,
+                      width: 17,
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(AppColor.black),
+                          backgroundColor: AppColor.white,
+                          strokeWidth: 1.5))
+                  : Container(),
+              SizedBox(
+                width: 2.5,
+              ),
+              Text(
+                "完成",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary),
+              ),
+              Spacer()
+            ],
+          )),
+    );
   }
 
   _upDataUserInfo() async {

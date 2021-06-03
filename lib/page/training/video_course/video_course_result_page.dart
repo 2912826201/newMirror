@@ -372,7 +372,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             SizedBox(
               width: 4,
             ),
-            AppIcon.getAppIcon(AppIcon.identity_coach, 16),
+            AppIcon.getAppIcon(AppIcon.identity_coach_16, 16),
             Spacer(),
             FollowButton(
               id: widget.course.coachDto.uid,

@@ -11,10 +11,12 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -217,27 +219,28 @@ class ChatPageUtil {
     String systemLastTime;
     int systemPage = 0;
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    // Map<String, dynamic> dataListMap = await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
-    // try {
-    //   systemLastTime = dataListMap["lastTime"].toString();
-    // } catch (e) {}
-    // if (dataListMap != null && dataListMap["list"] != null) {
-    //   systemPage++;
-    //   dataListMap["list"].forEach((v) {
-    //     dataList.add(getMessage(getSystemMsg(v, conversation.type), isHaveAnimation: false));
-    //   });
-    // }
-    // getTimeAlert(dataList, conversation.conversationId);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    Map<String, dynamic> dataListMap = await querySysMsgList(type: conversation.type, size: chatAddHistoryMessageCount);
+    try {
+      systemLastTime = dataListMap["lastTime"].toString();
+    } catch (e) {}
+    if (dataListMap != null && dataListMap["list"] != null) {
+      systemPage++;
+      dataListMap["list"].forEach((v) {
+        ChatSystemMessageModel model=ChatSystemMessageModel.fromJson(v);
+        dataList.add(getMessage(getSystemMsg(model, conversation.type), isHaveAnimation: false));
+      });
+    }
+    getTimeAlert(dataList, conversation.conversationId);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
+    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
     return [dataList, systemLastTime, systemPage];
   }
 
@@ -469,4 +472,123 @@ class ChatPageUtil {
     return id>=minOfficialNumberId&&id<=maxOfficialNumberId;
   }
 
+
+
+  //进入聊天界面判断需不需加载网路历史数据
+  void isInitAddRemoteHistoryMessages(List<ChatDataModel> chatDataList,
+      ConversationDto conversation){
+    print("获取网络历史记录:${chatDataList.length}");
+    if(chatDataList.length<chatAddHistoryMessageCount){
+      print("111111111111");
+      int recordTime;
+      if(chatDataList.length>0&&
+          chatDataList[chatDataList.length-1].msg!=null&&
+          chatDataList[chatDataList.length-1].msg.sentTime!=null){
+        recordTime=chatDataList[chatDataList.length-1].msg.sentTime;
+      }else{
+        recordTime=DateTime.now().millisecondsSinceEpoch;
+      }
+      _getRemoteHistoryMessages(
+        conversation.getType(),
+        conversation.conversationId,
+        recordTime,
+        chatAddHistoryMessageCount-chatDataList.length,
+        (chatMessageList){
+          if(chatMessageList!=null&&chatMessageList.length>0){
+            print("chatAddHistoryMessageCount-chatDataList.length:${chatAddHistoryMessageCount-chatDataList.length}");
+            print("recordTime:$recordTime");
+            print("有历史消息:${chatMessageList.length}");
+            if(chatDataList.length<1){
+              MessageManager.updateConversationByMessage(context, chatMessageList[0].msg);
+            }
+            chatDataList.addAll(chatMessageList);
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
+        });
+    }
+  }
+
+
+
+  //刷新数据--加载更多以前的数据
+  onLoadMoreHistoryMessages(List<ChatDataModel> chatDataList,
+      ConversationDto conversation,
+      Function(bool isHaveMore) onFinishListener) async {
+    List msgList = new List();
+    msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
+        chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
+    List<ChatDataModel> dataList = <ChatDataModel>[];
+    if (msgList != null && msgList.length > 1) {
+      dataList.clear();
+      for (int i = 1; i < msgList.length; i++) {
+        dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+      }
+      if (dataList != null && dataList.length > 0) {
+        getTimeAlert(dataList, conversation.conversationId);
+        //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+        if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
+          chatDataList.removeAt(chatDataList.length - 1);
+        }
+        chatDataList.addAll(dataList);
+      }
+      onFinishListener(true);
+    } else {
+      onFinishListener(false);
+      // _addMoreRemoteHistoryMessages(chatDataList,conversation,onFinishListener);
+    }
+  }
+
+  //获取网络的历史记录
+  _addMoreRemoteHistoryMessages(List<ChatDataModel> chatDataList,
+      ConversationDto conversation,Function(bool isHaveMore) onFinishListener){
+    int recordTime;
+    if(chatDataList.length>0&&
+        chatDataList[chatDataList.length-1].msg!=null&&
+        chatDataList[chatDataList.length-1].msg.sentTime!=null){
+      recordTime=chatDataList[chatDataList.length-1].msg.sentTime;
+    }else{
+      recordTime=DateTime.now().millisecondsSinceEpoch;
+    }
+    _getRemoteHistoryMessages(
+        conversation.getType(),
+        conversation.conversationId,
+        recordTime,
+        chatAddHistoryMessageCount,
+        (chatMessageList){
+          if(chatMessageList!=null&&chatMessageList.length>0){
+            print("chatAddHistoryMessageCount-chatDataList.length:${chatAddHistoryMessageCount-chatDataList.length}");
+            print("recordTime:$recordTime");
+            print("有历史消息:${chatMessageList.length}");
+            chatDataList.addAll(chatMessageList);
+            onFinishListener(true);
+          }else{
+            onFinishListener(false);
+          }
+        });
+  }
+
+
+  _getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count,
+      Function(List<ChatDataModel> chatMessageList,) finished){
+    print("222222");
+    if(finished==null){
+      return;
+    }
+    print("开始获取历史");
+    Application.rongCloud.getRemoteHistoryMessages(conversationType, targetId, recordTime, count,
+    (List/*<Message>*/ msgList, int code){
+      if(msgList==null||msgList.length<1){
+        print("没有历史消息");
+        finished(null);
+      }else{
+        print("有历史消息:${msgList.length}");
+        List<ChatDataModel> chatDataModelList=[];
+        for (int i = 0; i < msgList.length; i++) {
+          chatDataModelList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+        }
+        ChatPageUtil.init(context).getTimeAlert(chatDataModelList, targetId);
+        finished(chatDataModelList);
+      }
+    });
+  }
 }
