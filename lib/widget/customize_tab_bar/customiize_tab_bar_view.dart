@@ -13,6 +13,7 @@ class TabBarView extends StatefulWidget {
     this.controller,
     this.physics,
     this.dragStartBehavior = DragStartBehavior.start,
+    this.allowImplicitScrolling = true,
   }) : assert(children != null),
         assert(dragStartBehavior != null),
         super(key: key);
@@ -42,7 +43,8 @@ class TabBarView extends StatefulWidget {
 
   /// {@macro flutter.widgets.scrollable.dragStartBehavior}
   final DragStartBehavior dragStartBehavior;
-
+  // 是否预加载
+  final bool allowImplicitScrolling;
   @override
   _TabBarViewState createState() => _TabBarViewState();
 }
@@ -223,7 +225,7 @@ class _TabBarViewState extends State<TabBarView> {
         // 自定义滚动行为
         physics: widget.physics == null ? pageScrollPhysics() : widget.physics,
         // 在当前元素预加载下一个元素
-        allowImplicitScrolling: true,
+        allowImplicitScrolling: widget.allowImplicitScrolling,
         // physics: widget.physics == null
         //     ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
         //     : const PageScrollPhysics().applyTo(widget.physics),

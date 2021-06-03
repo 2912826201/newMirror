@@ -7,6 +7,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -34,11 +35,10 @@ import 'search_topic.dart';
 
 class SearchComplex extends StatefulWidget {
   SearchComplex({Key key, this.keyWord, this.focusNode, this.textController, this.controller}) : super(key: key);
-  String keyWord;
-  FocusNode focusNode;
-  TabController controller;
-  TextEditingController textController;
-
+  final String keyWord;
+  final FocusNode focusNode;
+  final TabController controller;
+  final TextEditingController textController;
   SearchComplexState createState() => SearchComplexState();
 }
 
@@ -95,20 +95,35 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     mergeRequest();
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
+    Application.tabBarIndexList.add(0);
+    widget.controller.addListener(() {
+      print("widget.tabBarIndexList动态:::${Application.tabBarIndexList}");
+      // 切换tab监听在当前tarBarView下
+      if (widget.controller.index == 0) {
+        print(Application.tabBarIndexList.contains(0));
+        // 初始化过的文本变化
+        if (Application.tabBarIndexList.contains(0)) {
+          if (lastString != widget.keyWord) {
+            lastTime = null;
+            hasNext = null;
+            mergeRequest();
+          }
+        }
+      }
+    });
     widget.textController.addListener(() {
-      // if(widget.controller.index == 0) {
+      if(widget.controller.index == 0) {
         // 取消延时
         if (timer != null) {
           timer.cancel();
         }
         // 延迟器:
-        timer = Timer(Duration(milliseconds: 700), () {
+        timer = Timer(Duration(milliseconds: 500), () {
           if (lastString != widget.keyWord) {
             mergeRequest();
           }
         });
-        lastString = widget.keyWord;
-      // }
+      }
     });
     // 上拉加载
     // _scrollController.addListener(() {
@@ -206,10 +221,11 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       feedList.clear();
       animationMap.clear();
     }
+    lastString = widget.keyWord;
     if (liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0) {
-      isShowDefaultMap = false;
-    } else {
       isShowDefaultMap = true;
+    } else {
+      isShowDefaultMap = false;
     }
     if (mounted) {
       print("111111111111111111");
@@ -255,7 +271,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     super.build(context);
     return isShowDefaultMap == null
         ? Container()
-        : !isShowDefaultMap
+        : isShowDefaultMap
             ? Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
