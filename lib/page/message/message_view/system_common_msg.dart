@@ -9,14 +9,14 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'file:///E:/git/mirror/lib/page/message/item/currency_msg.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/icon.dart';
 
-import 'message_item_height_util.dart';
+import '../item/message_item_height_util.dart';
 
 // ignore: must_be_immutable
 class SystemCommonMsg extends StatelessWidget {
@@ -28,6 +28,7 @@ class SystemCommonMsg extends StatelessWidget {
   final int status;
   final int position;
   final String sendChatUserId;
+  final String heroId;
   final bool isCanLongClick;
   final int sendTime;
   final bool isShowChatUserName;
@@ -46,6 +47,7 @@ class SystemCommonMsg extends StatelessWidget {
       this.name,
       this.status,
       this.position,
+      this.heroId,
       this.voidMessageClickCallBack,
       this.setCallRemoveOverlay,
       this.voidItemLongClickCallBack});
@@ -211,25 +213,28 @@ class SystemCommonMsg extends StatelessWidget {
   }
 
   Widget _getImageWidget(){
-    return GestureDetector(
-      onTap: (){
-        if(!StringUtil.isURL(subModel.linkUrl)){
-          // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
-        }
-      },
-      child: Container(
-        color: AppColor.transparent,
-        child: CachedNetworkImage(
-          width: 200.0,
-          height: 100.0,
-          imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
-          fit: BoxFit.cover,
-          fadeInDuration: Duration(milliseconds: 0),
-          placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
-          ),
-          errorWidget: (context, url, error) => Container(
-            color: AppColor.bgWhite,
+    return Hero(
+      tag: heroId,
+      child: GestureDetector(
+        onTap: (){
+          if(!StringUtil.isURL(subModel.linkUrl)){
+            // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
+          }
+        },
+        child: Container(
+          color: AppColor.transparent,
+          child: CachedNetworkImage(
+            width: 200.0,
+            height: 100.0,
+            imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
+            fit: BoxFit.cover,
+            fadeInDuration: Duration(milliseconds: 0),
+            placeholder: (context, url) => Container(
+              color: AppColor.bgWhite,
+            ),
+            errorWidget: (context, url, error) => Container(
+              color: AppColor.bgWhite,
+            ),
           ),
         ),
       ),

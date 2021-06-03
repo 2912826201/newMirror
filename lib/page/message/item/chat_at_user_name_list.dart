@@ -6,7 +6,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
-import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'file:///E:/git/mirror/lib/page/message/item/currency_msg.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';

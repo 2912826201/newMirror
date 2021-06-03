@@ -537,7 +537,7 @@ void postSelectMessage(ChatDataModel chatDataModel, String targetId, int chatTyp
 
 //发送图片或者视频
 void postImgOrVideo(
-    List<ChatDataModel> modelList, String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
+    List<ChatDataModel> modelList, String targetId, String type, int chatTypeId, Function(bool isSuccess) voidCallback) async {
   modelList = modelList.reversed.toList();
   List<UploadResultModel> uploadResultModelList = await onPostImgOrVideo(modelList, type);
 
@@ -558,7 +558,8 @@ void postImgOrVideo(
 List<String> cancelPostMessage=[];
 
 Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultModelList, List<ChatDataModel> modelList,
-    String targetId, String type, int chatTypeId, VoidCallback voidCallback) async {
+    String targetId, String type, int chatTypeId, Function(bool isSuccess) voidCallback) async {
+  bool isSuccess=true;
   for (int i = start; i < end; i++) {
     if(cancelPostMessage.contains(modelList[i].id??"")){
       cancelPostMessage.remove(modelList[i].id??"");
@@ -583,6 +584,7 @@ Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultM
           chatTypeId == RCConversationType.Private);
       modelList[i].isTemporary = false;
       modelList[i].status = RCSentStatus.Sent;
+      if(isSuccess)isSuccess=true;
       print("----------成功：modelList[i].msg：${modelList[i].msg.toString()}");
     } else {
       //插入临时消息
@@ -597,11 +599,13 @@ Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultM
           print("--------------插入失败");
         }
         modelList[i].status = RCSentStatus.Failed;
+        isSuccess=false;
+        voidCallback(isSuccess);
       });
       print("--------------上传图片失败");
     }
   }
-  voidCallback();
+  voidCallback(isSuccess);
 }
 
 //发送语音

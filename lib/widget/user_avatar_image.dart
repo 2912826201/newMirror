@@ -118,7 +118,7 @@ class UserAvatarImageUtil{
         width: width,
         imageUrl: imageUrl == null ? "" : imageUrl,
         fit: BoxFit.cover,
-        fadeInDuration: Duration(milliseconds: 0),
+        fadeInDuration: Duration.zero,
         placeholder: (context, url) => Container(
           color: AppColor.bgWhite,
         ),

@@ -19,7 +19,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'message_view/currency_msg.dart';
+import 'item/currency_msg.dart';
 import 'message_view/img_video_msg.dart';
 import 'message_view/live_video_course_msg.dart';
 import 'message_view/select_msg.dart';
@@ -38,7 +38,7 @@ class SendMessageView extends StatefulWidget {
   final String chatId;
   final int conversationDtoType;
   final bool isShowChatUserName;
-  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
+  final Function(void Function(), String longClickString) setCallRemoveLongPanel;
 
   SendMessageView(
     this.model,
@@ -61,7 +61,6 @@ class SendMessageView extends StatefulWidget {
 ///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
 class SendMessageViewState extends State<SendMessageView> {
-
   bool isMyself;
   String userUrl;
   String name;
@@ -71,7 +70,6 @@ class SendMessageViewState extends State<SendMessageView> {
 
   @override
   Widget build(BuildContext context) {
-
     setSettingData();
 
     //判断是不是临时的消息
@@ -103,10 +101,10 @@ class SendMessageViewState extends State<SendMessageView> {
       status = widget.model.msg.sentStatus;
       sendChatUserId = widget.model.msg.senderUserId;
 
-      if(ChatPageUtil.init(context).isSystemMsg(widget.chatId)){
+      if (ChatPageUtil.init(context).isSystemMsg(widget.chatId)) {
         userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
         name = "系统通知";
-      }else{
+      } else {
         try {
           userUrl = getChatUserUrl(sendChatUserId, widget.model.msg.content.sendUserInfo?.portraitUri);
           name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
@@ -141,10 +139,12 @@ class SendMessageViewState extends State<SendMessageView> {
       return getTextMsg(text: widget.model.content, mentionedInfo: widget.model.mentionedInfo);
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       // -----------------------------------------------图片消息-临时----------------------------------------------
-      return getImgVideoMsg(isTemporary: true, isImg: true, mediaFileModel: widget.model.mediaFileModel);
+      return getImgVideoMsg(
+          isTemporary: true, isImg: true, mediaFileModel: widget.model.mediaFileModel, heroId: widget.model.id);
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
       // -----------------------------------------------视频消息-临时----------------------------------------------
-      return getImgVideoMsg(isTemporary: true, isImg: false, mediaFileModel: widget.model.mediaFileModel);
+      return getImgVideoMsg(
+          isTemporary: true, isImg: false, mediaFileModel: widget.model.mediaFileModel, heroId: widget.model.id);
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       // -----------------------------------------------语音消息-临时----------------------------------------------
       String playMd5String = StringUtil.generateMd5(widget.model.chatVoiceModel.filePath);
@@ -220,14 +220,22 @@ class SendMessageViewState extends State<SendMessageView> {
         map["isTemporary"] = mapModel["isTemporary"] ?? false;
         map["messageId"] = msg.messageId;
         return getImgVideoMsg(
-            isTemporary: false, isImg: true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
+            isTemporary: false,
+            isImg: true,
+            mediaFileModel: widget.model.mediaFileModel,
+            sizeInfoMap: map,
+            heroId: msg.messageId.toString());
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
         //-------------------------------------------------视频消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         map["isTemporary"] = mapModel["isTemporary"] ?? false;
         map["messageId"] = msg.messageId;
         return getImgVideoMsg(
-            isTemporary: false, isImg: false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
+            isTemporary: false,
+            isImg: false,
+            mediaFileModel: widget.model.mediaFileModel,
+            sizeInfoMap: map,
+            heroId: msg.messageId.toString());
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
         //-------------------------------------------------直播课程消息--------------------------------------------
         Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
@@ -250,8 +258,10 @@ class SendMessageViewState extends State<SendMessageView> {
         return getAlertMsg(map: map);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON) {
         //-------------------------------------------------系统消息-普通模板-------------------------------------------
-        ChatSystemMessageSubModel subModel=ChatSystemMessageSubModel.fromJson(json.decode(mapModel["data"]));
-        return getSystemCommonMsg(subModel);
+        try{
+          ChatSystemMessageSubModel subModel = ChatSystemMessageSubModel.fromJson(json.decode(mapModel["data"]));
+          return getSystemCommonMsg(subModel,msg.messageUId);
+        }catch (e){}
       } else if (mapModel["name"] != null) {
         //-------------------------------------------------未知消息-------------------------------------------
         return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
@@ -342,7 +352,6 @@ class SendMessageViewState extends State<SendMessageView> {
         widget.conversationDtoType != OFFICIAL_TYPE &&
         widget.conversationDtoType != TRAINING_TYPE;
   }
-
 
   //************************获取消息模块的方法 ----end
 
@@ -473,11 +482,13 @@ class SendMessageViewState extends State<SendMessageView> {
       bool isImg,
       MediaFileModel mediaFileModel,
       ImageMessage imageMessage,
+      String heroId,
       Map<String, dynamic> sizeInfoMap}) {
     return ImgVideoMsg(
       isMyself: isMyself,
       userUrl: userUrl,
       name: name,
+      heroId: heroId,
       status: status,
       sendTime: sendTime,
       sendChatUserId: sendChatUserId,
@@ -509,13 +520,14 @@ class SendMessageViewState extends State<SendMessageView> {
   }
 
   //系统消息的普通item
-  Widget getSystemCommonMsg(ChatSystemMessageSubModel subModel) {
+  Widget getSystemCommonMsg(ChatSystemMessageSubModel subModel,String heroId) {
     return SystemCommonMsg(
         subModel: subModel,
         isMyself: false,
         userUrl: userUrl,
         name: name,
         sendTime: sendTime,
+        heroId: heroId,
         sendChatUserId: sendChatUserId,
         isCanLongClick: true,
         isShowChatUserName: true,
