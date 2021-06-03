@@ -30,7 +30,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
-import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
@@ -358,11 +358,21 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                           padding: EdgeInsets.only(
                               left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
                           color: AppColor.white,
-                          child: TabBar(
-                            labelColor: Colors.black,
+                          child:  Custom.TabBar(
+                            //
+                            // labelColor: Colors.black,
                             controller: _tabController,
-                            labelStyle: const TextStyle(fontSize: 16),
+                            // labelStyle: const TextStyle(fontSize: 16),
+                            // unselectedLabelColor: AppColor.textHint,
+
+
+                            indicatorSize: Custom.TabBarIndicatorSize.label,
+                            labelStyle: const TextStyle(
+                              fontSize: 16,
+                            ),
+                            labelColor: Colors.black,
                             unselectedLabelColor: AppColor.textHint,
+                            unselectedLabelStyle: const TextStyle(fontSize: 16),
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // 刷新产品暂时没提空在这

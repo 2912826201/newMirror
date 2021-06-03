@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TabBar, TabBarView;
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/api.dart';
@@ -27,6 +27,8 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/a.dart' as Custom;
+import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -621,12 +623,12 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
         Container(
           height: 48,
           width: ScreenUtil.instance.width,
-          child: TabBar(
+          child: Custom.TabBar(
             controller: controller,
             tabs: tabList,
-            labelStyle: TextStyle(fontSize: 18),
+            labelStyle: TextStyle(fontSize: 17.5),
             labelColor: Colors.black,
-            unselectedLabelStyle: TextStyle(fontSize: 16),
+            unselectedLabelStyle: TextStyle(fontSize: 15.5),
             indicator: const RoundUnderlineTabIndicator(
               borderSide: BorderSide(
                 width: 3,
@@ -651,19 +653,23 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                 SearchCourse(
                     keyWord: context.watch<SearchEnterNotifier>().enterText,
                     focusNode: widget.focusNode,
+                    controller: controller,
                     textController: context.watch<SearchEnterNotifier>().textController),
               SearchTopic(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
                   focusNode: widget.focusNode,
+                  controller: controller,
                   textController: context.watch<SearchEnterNotifier>().textController),
               SearchFeed(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
                   focusNode: widget.focusNode,
+                  controller: controller,
                   textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
                 text: context.watch<SearchEnterNotifier>().enterText,
                 width: ScreenUtil.instance.screenWidthDp,
+                controller: controller,
                 textController: context.watch<SearchEnterNotifier>().textController,
                 focusNode: widget.focusNode,
               ),

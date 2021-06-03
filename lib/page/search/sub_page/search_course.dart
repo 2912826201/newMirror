@@ -16,9 +16,10 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 
 class SearchCourse extends StatefulWidget {
-  SearchCourse({Key key, this.keyWord, this.textController, this.focusNode}) : super(key: key);
+  SearchCourse({Key key, this.keyWord, this.textController, this.focusNode,this.controller}) : super(key: key);
   FocusNode focusNode;
   TextEditingController textController;
+  TabController controller;
   String keyWord;
 
   @override
@@ -66,21 +67,23 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
       }
     });
     widget.textController.addListener(() {
-      // 取消延时器
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          if (liveVideoList.isNotEmpty) {
-            lastTime = null;
-            hasNext = null;
-          }
-          requestSearchCourse(refreshOrLoading: true);
+      // if(widget.controller.index == 1) {
+        // 取消延时器
+        if (timer != null) {
+          timer.cancel();
         }
-      });
-      lastString = widget.keyWord;
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 700), () {
+          if (lastString != widget.keyWord) {
+            if (liveVideoList.isNotEmpty) {
+              lastTime = null;
+              hasNext = null;
+            }
+            requestSearchCourse(refreshOrLoading: true);
+          }
+        });
+        lastString = widget.keyWord;
+      // }
     });
     super.initState();
   }

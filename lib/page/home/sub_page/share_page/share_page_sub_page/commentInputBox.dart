@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/test/animated_list_demo.dart';
 import 'package:mirror/page/test/sliver_list_test_page.dart';
+import 'package:mirror/page/test/tab_bar_test.dart';
 import 'package:mirror/page/test/verification_codeInput_demo_page.dart';
 import 'package:mirror/page/test/verification_codeInput_demo_page2.dart';
 import 'package:mirror/route/router.dart';
@@ -75,7 +76,6 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 //第二种
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //     return SliverListDemoPage();
-                //
                 // }));
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //   return VerificationCodeInputDemoPage2();
