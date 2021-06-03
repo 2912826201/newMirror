@@ -27,7 +27,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/customize_tab_bar/a.dart' as Custom;
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
