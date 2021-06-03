@@ -96,7 +96,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       GestureDetector(
-        child: getUserImage(userUrl, 38, 38),
+        child: getUserImageWidget(userUrl,sendChatUserId, 38, 38),
         onTap: () {
           if (isCanLongClick) {
             voidMessageClickCallBack(

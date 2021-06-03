@@ -11,6 +11,7 @@ import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
+import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
@@ -214,7 +215,7 @@ class MessageManager {
       case RCConversationType.System:
         dto.type = OFFICIAL_TYPE;
         dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-        dto.name = "系统消息";
+        dto.name = "系统通知";
         break;
       default:
         //其他情况暂时不处理
@@ -534,7 +535,8 @@ class MessageManager {
             case ChatTypeModel.MESSAGE_TYPE_ALERT:
               return contentMap["data"];
             case ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON:
-              return "[系统信息]";
+              // print("msg.content：${contentMap.toString()}");
+              return _getUSystemCommonMessage(contentMap);
             default:
               return "[未知类型消息]";
           }
@@ -565,6 +567,15 @@ class MessageManager {
       return "[用户名片] ${userModel.nickName}";
     }catch (e){
       return "[用户名片]";
+    }
+  }
+
+  static String _getUSystemCommonMessage(Map<String, dynamic> contentMap){
+    try{
+      ChatSystemMessageSubModel subModel = ChatSystemMessageSubModel.fromJson(json.decode(contentMap["data"]));
+      return subModel.text??"[系统通知]";
+    }catch (e){
+      return "[系统通知]";
     }
   }
 

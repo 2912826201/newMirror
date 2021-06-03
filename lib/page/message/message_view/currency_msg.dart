@@ -1,11 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 ///每一种消息 共用的方法 或者ui
@@ -17,26 +16,10 @@ typedef VoidItemLongClickCallBack = void Function(
     {int position, String settingType, Map<String, dynamic> map, String contentType, String content});
 
 //获取用户的头像
-Widget getUserImage(String imageUrl, double height, double width) {
-  if (imageUrl == null || imageUrl == "") {
-    imageUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-  }
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(height / 2),
-    child: CachedNetworkImage(
-      height: height,
-      width: width,
-      imageUrl: imageUrl == null ? "" : FileUtil.getSmallImage(imageUrl),
-      fit: BoxFit.cover,
-      fadeInDuration: Duration(milliseconds: 0),
-      placeholder: (context, url) => Container(
-        color: AppColor.bgWhite,
-      ),
-      errorWidget: (context, url, error) => Container(
-        color: AppColor.bgWhite,
-      ),
-    ),
-  );
+Widget getUserImageWidget(String imageUrl,String userId, double width,[double height] ) {
+
+  return UserAvatarImageUtil.init().getUserImageWidget(imageUrl, userId, width);
+
 }
 
 //获取消息的状态

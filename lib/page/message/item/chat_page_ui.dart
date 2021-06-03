@@ -214,7 +214,7 @@ class ChatPageUtil {
     return chatDataList;
   }
 
-  //获取系统消息
+  //获取系统通知
   Future<List> getSystemInformationNet(ConversationDto conversation) async {
     String systemLastTime;
     int systemPage = 0;

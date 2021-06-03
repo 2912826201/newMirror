@@ -154,7 +154,7 @@ class SelectMsg extends StatelessWidget {
   //里面的结构-头像和消息
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
-      getUserImage(userUrl, 38, 38),
+      getUserImageWidget(userUrl,sendChatUserId, 38, 38),
       getNameAndContentUi(context),
     ];
     if (isMyself) {
