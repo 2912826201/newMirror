@@ -186,6 +186,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   // 大图预览组装数据
   List<DemoSourceEntity> sourceList = [];
+  bool isNewSourceList=true;
 
   Widget topAttentionUiWidget;
 
@@ -238,6 +239,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     //print("conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
+    isNewSourceList=true;
+    sourceList.clear();
     context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
   }
 
@@ -946,6 +949,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(),
     (isSuccess) {
+      isNewSourceList=true;
       print("isSuccess:$isSuccess");
       modelList.forEach((element) {
         deleteCancelMessage(element.conversationId,element.id??"");
@@ -1288,6 +1292,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
       return;
     }
+
+    isNewSourceList=true;
+
     ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
     //print("scrollPositionPixels：$scrollPositionPixels");
     judgeAddAlertTime();
@@ -2238,9 +2245,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   // 打开大图预览
   _openGallery(int position) {
-    sourceList.clear();
+    if(isNewSourceList) {
+      sourceList.clear();
 
-    sourceList=MessageItemGalleryUtil.init().getMessageGalleryList(chatDataList);
+      sourceList = MessageItemGalleryUtil.init().getMessageGalleryList(chatDataList);
+
+      isNewSourceList = false;
+    }
 
     int initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList,chatDataList[position]);
 
