@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/constant/style.dart';
@@ -39,9 +40,10 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class SearchFeed extends StatefulWidget {
-  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
+  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController,this.controller}) : super(key: key);
   FocusNode focusNode;
   String keyWord;
+  TabController controller;
   TextEditingController textController;
 
   @override
@@ -96,22 +98,28 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     // });
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
+    int controllerIndex = 2;
+    if(AppConfig.needShowTraining) {
+      controllerIndex = 3;
+    }
     widget.textController.addListener(() {
-      // 取消延时
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          if (feedList.isNotEmpty) {
-            lastTime = null;
-            hasNext = null;
-          }
-          requestFeednIterface(refreshOrLoading: true);
+      // if( widget.controller.index ==  controllerIndex) {
+        // 取消延时
+        if (timer != null) {
+          timer.cancel();
         }
-      });
-      lastString = widget.keyWord;
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 700), () {
+          if (lastString != widget.keyWord) {
+            if (feedList.isNotEmpty) {
+              lastTime = null;
+              hasNext = null;
+            }
+            requestFeednIterface(refreshOrLoading: true);
+          }
+        });
+        lastString = widget.keyWord;
+      // }
     });
     super.initState();
   }

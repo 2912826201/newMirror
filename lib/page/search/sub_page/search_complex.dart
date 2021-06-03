@@ -96,17 +96,19 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
     widget.textController.addListener(() {
-      // 取消延时
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          mergeRequest();
+      // if(widget.controller.index == 0) {
+        // 取消延时
+        if (timer != null) {
+          timer.cancel();
         }
-      });
-      lastString = widget.keyWord;
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 700), () {
+          if (lastString != widget.keyWord) {
+            mergeRequest();
+          }
+        });
+        lastString = widget.keyWord;
+      // }
     });
     // 上拉加载
     // _scrollController.addListener(() {

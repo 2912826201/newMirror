@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -18,9 +19,10 @@ import 'package:mirror/widget/pull_to_refresh/src/smart_refresher.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 
 class SearchTopic extends StatefulWidget {
-  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
+  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController,this.controller}) : super(key: key);
   FocusNode focusNode;
   TextEditingController textController;
+  TabController controller;
   String keyWord;
 
   @override
@@ -72,23 +74,29 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
     //     requestFeednIterface(refreshOrLoading: false);
     //   }
     // });
+    int controllerIndex = 1;
+    if(AppConfig.needShowTraining) {
+      controllerIndex = 2;
+    }
     widget.textController.addListener(() {
-      // 取消延时器
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          if (topicList.isNotEmpty) {
-            print("333333333333333333333");
-            lastScore = null;
-            hasNext = null;
-          }
-          requestFeednIterface(refreshOrLoading: true);
+      // if( widget.controller.index ==  controllerIndex) {
+        // 取消延时器
+        if (timer != null) {
+          timer.cancel();
         }
-      });
-      lastString = widget.keyWord;
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 700), () {
+          if (lastString != widget.keyWord) {
+            if (topicList.isNotEmpty) {
+              print("333333333333333333333");
+              lastScore = null;
+              hasNext = null;
+            }
+            requestFeednIterface(refreshOrLoading: true);
+          }
+        });
+        lastString = widget.keyWord;
+      // }
     });
     super.initState();
   }

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
@@ -23,8 +24,9 @@ class SearchUser extends StatefulWidget {
   double width;
   FocusNode focusNode;
   TextEditingController textController;
+  TabController controller;
 
-  SearchUser({this.text, this.width, this.textController, this.focusNode});
+  SearchUser({this.text, this.width, this.textController, this.focusNode, this.controller});
 
   @override
   State<StatefulWidget> createState() {
@@ -64,16 +66,23 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     super.initState();
     lastString = widget.text;
     _getSearchUser(lastString);
+    int controllerIndex = 3;
+    if (AppConfig.needShowTraining) {
+      controllerIndex = 4;
+    }
     widget.textController.addListener(() {
-      if (lastString != widget.textController.text) {
-        if (refreshOver) {
-          dataPage = 1;
-          _lastTime = null;
-          lastString = widget.textController.text;
-          _getSearchUser(lastString);
+      // if (widget.controller.index == controllerIndex) {
+        if (lastString != widget.textController.text) {
+          if (refreshOver) {
+            dataPage = 1;
+            _lastTime = null;
+            lastString = widget.textController.text;
+            _getSearchUser(lastString);
+          }
         }
-      }
+      // }
     });
+
     scrollController.addListener(() {
       if (widget.focusNode.hasFocus) {
         print('-------------------focusNode---focusNode----focusNode--focusNode');
