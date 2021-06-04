@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/constant/style.dart';
@@ -39,10 +41,12 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class SearchFeed extends StatefulWidget {
-  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
-  FocusNode focusNode;
-  String keyWord;
-  TextEditingController textController;
+  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController, this.controller})
+      : super(key: key);
+  final FocusNode focusNode;
+  final String keyWord;
+  final TabController controller;
+  final TextEditingController textController;
 
   @override
   SearchFeedState createState() => SearchFeedState();
@@ -72,6 +76,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   RefreshController _refreshController = RefreshController();
   Map<int, AnimationController> animationMap = {};
 
+  // 是否显示缺省图
+  bool isShowDefaultMap;
+
 // Token can be shared with different requests.
   CancelToken token = CancelToken();
 
@@ -96,22 +103,42 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     // });
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
-    widget.textController.addListener(() {
-      // 取消延时
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          if (feedList.isNotEmpty) {
+    int controllerIndex = 2;
+    if (AppConfig.needShowTraining) {
+      controllerIndex = 3;
+    }
+    widget.controller.addListener(() {
+      print("widget.tabBarIndexList动态:::${Application.tabBarIndexList}");
+      // 切换tab监听在当前tarBarView下
+      if (widget.controller.index == controllerIndex) {
+        print(Application.tabBarIndexList.contains(controllerIndex));
+        // 初始化过的文本变化
+        if (Application.tabBarIndexList.contains(controllerIndex)) {
+          if (lastString != widget.keyWord) {
             lastTime = null;
             hasNext = null;
+            requestFeednIterface(refreshOrLoading: true);
           }
-          requestFeednIterface(refreshOrLoading: true);
+        } else {
+          Application.tabBarIndexList.add(controllerIndex);
         }
-      });
-      lastString = widget.keyWord;
+      }
+    });
+    widget.textController.addListener(() {
+      if (widget.controller.index == controllerIndex) {
+        // 取消延时
+        if (timer != null) {
+          timer.cancel();
+        }
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 500), () {
+          if (lastString != widget.keyWord) {
+            lastTime = null;
+            hasNext = null;
+            requestFeednIterface(refreshOrLoading: true);
+          }
+        });
+      }
     });
     super.initState();
   }
@@ -133,12 +160,6 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   // 请求动态接口
   requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
-      // if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      //   // 先设置状态，防止下拉就直接加载
-      //   setState(() {
-      //     loadStatus = LoadingStatus.STATUS_LOADING;
-      //   });
-      // }
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime, token: token);
       if (refreshOrLoading) {
         feedList.clear();
@@ -152,15 +173,12 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           animationMap[HomeFeedModel.fromJson(v).id] =
               AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
         });
-        // loadStatus = LoadingStatus.STATUS_IDEL;
-        // loadText = "加载中...";
         if (refreshOrLoading) {
           _refreshController.refreshCompleted();
         } else {
           _refreshController.loadComplete();
         }
       }
-      List<HomeFeedModel> feedModel = [];
       try {
         // 更新数据
         context.read<FeedMapNotifier>().updateFeedMap(feedList, needNotify: mounted);
@@ -185,6 +203,14 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       // loadText = "已加载全部动态";
       // loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
+    if (refreshOrLoading) {
+      lastString = widget.keyWord;
+    }
+    if (feedList.length > 0) {
+      isShowDefaultMap = false;
+    } else {
+      isShowDefaultMap = true;
+    }
     if (mounted) {
       setState(() {});
     }
@@ -194,132 +220,109 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   Widget build(BuildContext context) {
     super.build(context);
     print("biubiu!@@###%%^^^&&&&****(((()))))_+++==--009");
-    print(feedList.isNotEmpty);
-    if (feedList.isNotEmpty) {
-      return Container(
-          margin: const EdgeInsets.only(top: 12),
-          child: ScrollConfiguration(
-              behavior: OverScrollBehavior(),
-              child: SmartRefresher(
-                  enablePullDown: true,
-                  enablePullUp: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(),
-                  header: SmartRefresherHeadFooter.init().getHeader(),
-                  controller: _refreshController,
-                  onRefresh: () {
-                    lastTime = null;
-                    hasNext = null;
-                    _refreshController.loadComplete();
-                    requestFeednIterface(refreshOrLoading: true);
-                  },
-                  onLoading: () {
-                    requestFeednIterface(refreshOrLoading: false);
-                  },
-                  child: CustomScrollView(
-                      controller: _scrollController,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        // SliverToBoxAdapter(
-                        //     child: Container(
-                        //   margin: EdgeInsets.only(left: 16, right: 16),
-                        //   child: MediaQuery.removePadding(
-                        //       removeTop: true,
-                        //       context: context,
-                        //       // 瀑布流
-                        //       child: WaterfallFlow.builder(
-                        //         primary: false,
-                        //         shrinkWrap: true,
-                        //         // controller: _scrollController,
-                        //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                        //           crossAxisCount: 2,
-                        //           // 上下间隔
-                        //           mainAxisSpacing: 4.0,
-                        //           //   // 左右间隔
-                        //           crossAxisSpacing: 8.0,
-                        //         ),
-                        //         itemBuilder: (context, index) {
-                        //           // 获取动态id
-                        //           int id;
-                        //           // 获取动态id指定model
-                        //           HomeFeedModel model;
-                        //           if (index < feedList.length) {
-                        //             id = feedList[index].id;
-                        //             model = context.read<FeedMapNotifier>().feedMap[id];
-                        //           }
-                        //           if (index == feedList.length) {
-                        //             return LoadingView(
-                        //               loadText: loadText,
-                        //               loadStatus: loadStatus,
-                        //             );
-                        //           } else if (index == feedList.length + 1) {
-                        //             return Container();
-                        //           } else {
-                        //             return SearchFeeditem(
-                        //               model: model,
-                        //               list: feedList,
-                        //               index: index,
-                        //               focusNode: widget.focusNode,
-                        //               pageName: "searchFeed",
-                        //               feedLastTime: lastTime,
-                        //               searchKeyWords: widget.textController.text,
-                        //               feedHasNext: hasNext,
-                        //             );
-                        //           }
-                        //         },
-                        //         itemCount: feedList.length + 1,
-                        //       )
-                        //      ),
-                        // )),
-                        SliverList(
-                            delegate: SliverChildBuilderDelegate((content, index) {
-                          return _buildItem(index);
-                        }, childCount: feedList.length))
-                        // SliverList(
-                        //     delegate: SliverChildBuilderDelegate((content, index) {
-                        //   return ExposureDetector(
-                        //     key: Key('search_feed_${feedList[index].id}'),
-                        //     child: DynamicListLayout(
-                        //       index: index,
-                        //       isShowConcern: false,
-                        //       pageName: "searchFeed",
-                        //       isShowRecommendUser: false,
-                        //       model: feedList[index],
-                        //       // 可选参数 子Item的个数
-                        //       key: GlobalObjectKey("attention$index"),
-                        //     ),
-                        //     onExposure: (visibilityInfo) {
-                        //       // 如果没有显示
-                        //       if (context.read<FeedMapNotifier>().value.feedMap[feedList[index].id].isShowInputBox) {
-                        //         context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
-                        //       }
-                        //       print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                        //     },
-                        //   );
-                        // }, childCount: feedList.length))
-                      ]))));
-    } else {
-      return Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 224,
-              height: 224,
-              decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
-              ),
-              margin: const EdgeInsets.only(bottom: 16),
-            ),
-            const Text(
-              "你的放大镜陨落星辰了",
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-            ),
-            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
-          ],
-        ),
-      );
-    }
+    return isShowDefaultMap == null
+        ? Container()
+        : !isShowDefaultMap
+            ? Container(
+                margin: const EdgeInsets.only(top: 12),
+                child: ScrollConfiguration(
+                    behavior: OverScrollBehavior(),
+                    child: SmartRefresher(
+                        enablePullDown: true,
+                        enablePullUp: true,
+                        footer: SmartRefresherHeadFooter.init().getFooter(),
+                        header: SmartRefresherHeadFooter.init().getHeader(),
+                        controller: _refreshController,
+                        onRefresh: () {
+                          lastTime = null;
+                          hasNext = null;
+                          _refreshController.loadComplete();
+                          requestFeednIterface(refreshOrLoading: true);
+                        },
+                        onLoading: () {
+                          requestFeednIterface(refreshOrLoading: false);
+                        },
+                        child: CustomScrollView(
+                            controller: _scrollController,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              // SliverToBoxAdapter(
+                              //     child: Container(
+                              //   margin: EdgeInsets.only(left: 16, right: 16),
+                              //   child: MediaQuery.removePadding(
+                              //       removeTop: true,
+                              //       context: context,
+                              //       // 瀑布流
+                              //       child: WaterfallFlow.builder(
+                              //         primary: false,
+                              //         shrinkWrap: true,
+                              //         // controller: _scrollController,
+                              //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                              //           crossAxisCount: 2,
+                              //           // 上下间隔
+                              //           mainAxisSpacing: 4.0,
+                              //           //   // 左右间隔
+                              //           crossAxisSpacing: 8.0,
+                              //         ),
+                              //         itemBuilder: (context, index) {
+                              //           // 获取动态id
+                              //           int id;
+                              //           // 获取动态id指定model
+                              //           HomeFeedModel model;
+                              //           if (index < feedList.length) {
+                              //             id = feedList[index].id;
+                              //             model = context.read<FeedMapNotifier>().feedMap[id];
+                              //           }
+                              //           if (index == feedList.length) {
+                              //             return LoadingView(
+                              //               loadText: loadText,
+                              //               loadStatus: loadStatus,
+                              //             );
+                              //           } else if (index == feedList.length + 1) {
+                              //             return Container();
+                              //           } else {
+                              //             return SearchFeeditem(
+                              //               model: model,
+                              //               list: feedList,
+                              //               index: index,
+                              //               focusNode: widget.focusNode,
+                              //               pageName: "searchFeed",
+                              //               feedLastTime: lastTime,
+                              //               searchKeyWords: widget.textController.text,
+                              //               feedHasNext: hasNext,
+                              //             );
+                              //           }
+                              //         },
+                              //         itemCount: feedList.length + 1,
+                              //       )
+                              //      ),
+                              // )),
+                              SliverList(
+                                  delegate: SliverChildBuilderDelegate((content, index) {
+                                return _buildItem(index);
+                              }, childCount: feedList.length))
+                            ]))))
+            : Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 224,
+                      height: 224,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 16),
+                    ),
+                    const Text(
+                      "你的放大镜陨落星辰了",
+                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                    ),
+                    const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                  ],
+                ),
+              );
   }
 
   _deleteFeedCallBack(int id) {
@@ -346,7 +349,6 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   }
 
   _buildItem(int index) {
-    // 懒得发通知使用provider同步删除更新。
     return SizeTransitionView(
         id: feedList[index].id,
         animationMap: animationMap,

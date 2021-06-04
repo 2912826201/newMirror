@@ -8,7 +8,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/page/message/item/currency_msg.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -252,7 +252,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
         children: [
           Row(
             children: [
-              getUserImage(homeFeedModel.avatarUrl, 16, 16),
+              getUserImageWidget(homeFeedModel.avatarUrl,homeFeedModel.pushId.toString(), 16, 16),
               SizedBox(width: 4),
               Expanded(
                 child: SizedBox(

@@ -9,20 +9,32 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/seekbar.dart';
 import 'package:video_player/video_player.dart';
 
+
 class DemoSourceEntity {
-  int heroId;
+  String heroId;
   String url;
   String previewUrl;
   String type;
-  int height;
-  int width;
+  double height;
+  double width;
   int duration;
+  String imageFilePath;
+  String videoImageFilePath;
+  String videoFilePath;
+  bool isTemporary;
 
-  DemoSourceEntity(this.heroId, this.type, this.url, {this.previewUrl, this.width, this.height, this.duration});
+  DemoSourceEntity(this.heroId, this.type, this.url,
+      {this.previewUrl,
+        this.width,
+        this.height,
+        this.duration,
+        this.isTemporary=false,
+      });
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -117,6 +129,14 @@ class _DemoImageItemState extends State<DemoImageItem> {
 
   //获取图片的展示
   Widget getImageUi() {
+
+    if(widget.source.imageFilePath!=null&&widget.source.imageFilePath.length>0){
+      File imageFile = File(widget.source.imageFilePath);
+      if (imageFile.existsSync()) {
+        return getImageFile(imageFile);
+      }
+    }
+
     if(widget.source.url==null){
       return getErrorWidgetImage();
     }
@@ -294,6 +314,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   bool isShowController = false;
   bool isPlaying = true;
   bool isFocus = true;
+  String sourceUrl;
 
 
   _DemoVideoItem2State(this.isFocus);
@@ -329,7 +350,8 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   @override
   void initState() {
     super.initState();
-    print('initStatevideo: ${widget.source.heroId}');
+    getSourceUrl();
+    print('initStatevideo: ${sourceUrl}');
     widget.setFocus(setFocus,widget.index);
     if(isFocus) {
       init();
@@ -351,8 +373,8 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   }
 
   init() async {
-    print("widget.source.url:${widget.source.url}");
-    dataSource = BetterPlayerDataSource.network(widget.source.url);
+    print("widget.source.url:$sourceUrl");
+    dataSource = BetterPlayerDataSource.network(sourceUrl);
     eventListener = (BetterPlayerEvent event) {
       if (!mounted) {
         return;
@@ -388,19 +410,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
         fullScreenByDefault: false,
-        placeholder: CachedNetworkImage(
-          imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
-          width: ScreenUtil.instance.width,
-          height: setAspectRatio(),
-          placeholder: (context, url) {
-            return Container(
-              color: AppColor.bgWhite,
-            );
-          },
-          errorWidget: (context, url, error) => Container(
-            color: AppColor.bgWhite,
-          ),
-        ),
+        placeholder: getPlaceholder(),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
           // enableSkips:false,
@@ -439,19 +449,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                   ? BetterPlayer(
                       controller: controller,
                     )
-                  : CachedNetworkImage(
-                      imageUrl: FileUtil.getVideoFirstPhoto(widget.source.url),
-                      width: ScreenUtil.instance.width,
-                      height: setAspectRatio(),
-                      placeholder: (context, url) {
-                        return Container(
-                          color: AppColor.bgWhite,
-                        );
-                      },
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                    ),
+                  : getPlaceholder(),
               // )
             ),
           ),
@@ -576,6 +574,54 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
       ),
     );
   }
+
+  Widget getPlaceholder(){
+    if(StringUtil.isURL(widget.source.url)){
+      return CachedNetworkImage(
+        imageUrl: FileUtil.getVideoFirstPhoto(sourceUrl),
+        width: ScreenUtil.instance.width,
+        height: setAspectRatio(),
+        placeholder: (context, url) {
+          return Container(
+            color: AppColor.bgWhite,
+          );
+        },
+        errorWidget: (context, url, error) =>
+            Container(
+              color: AppColor.bgWhite,
+            ),
+      );
+    }else if(widget.source.videoImageFilePath!=null){
+      File videoImageFile = File(widget.source.videoImageFilePath);
+      if (videoImageFile.existsSync()) {
+        return Image.file(
+          videoImageFile,
+          fit: BoxFit.cover,
+        );
+      }else{
+        return Container(color: AppColor.bgWhite);
+      }
+    }else{
+      return Container(color: AppColor.bgWhite);
+    }
+  }
+
+  void getSourceUrl(){
+    if(StringUtil.isURL(widget.source.url)){
+      sourceUrl=widget.source.url;
+    }else if(widget.source.videoFilePath!=null){
+      File videoFile = File(widget.source.videoFilePath);
+      if (videoFile.existsSync()) {
+        sourceUrl=widget.source.videoFilePath;
+      }else{
+        sourceUrl="";
+      }
+    }else{
+      sourceUrl="";
+    }
+  }
+
+
 }
 
 class VideoControl extends StatefulWidget {

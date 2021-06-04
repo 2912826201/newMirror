@@ -19,6 +19,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
@@ -46,6 +47,20 @@ class StringUtil {
     var digest = md5.convert(content);
     // 这里其实就是 digest.toString()
     return hex.encode(digest.bytes);
+  }
+
+  static launchUrl(String url,BuildContext context) async {
+    if (!(url.contains("http://") || url.contains("https://"))) {
+      url = "https://" + url;
+    }
+    if (await canLaunch(url)) {
+      if(context!=null) {
+        AppRouter.navigateWebViewPage(context, url);
+      }
+      // await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
 

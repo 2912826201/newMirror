@@ -6,12 +6,12 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
-import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
 import '../message_chat_page_manager.dart';
+import 'currency_msg.dart';
 
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
@@ -151,7 +151,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                getUserImage(groupUserModel.avatarUri, 36, 36),
+                getUserImageWidget(groupUserModel.avatarUri,groupUserModel.uid.toString(), 36, 36),
                 SizedBox(width: 12),
                 Text(
                   groupUserModel.groupNickName,

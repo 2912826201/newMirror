@@ -345,7 +345,6 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     }
 
     eventListener = (BetterPlayerEvent event) {
-      print('-----betterPlayerEventType----betterPlayerEventType---betterPlayerEventType--${event.betterPlayerEventType}');
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
           controller?.setVolume(0);

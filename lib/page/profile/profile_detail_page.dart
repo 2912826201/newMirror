@@ -31,7 +31,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
-import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
@@ -305,17 +305,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ? Container(
                     color: AppColor.white,
                     padding: EdgeInsets.only(left: width / 4, right: width / 4),
-                    child: TabBar(
-                      unselectedLabelStyle: AppStyle.textHintRegular16,
+                    child: Custom.TabBar(
+                      unselectedLabelStyle:
+                          TextStyle(fontSize: 15.5, fontWeight: FontWeight.w400, color: AppColor.textHint),
                       unselectedLabelColor: AppColor.textSecondary,
-                      labelStyle: AppStyle.textMedium18,
+                      labelStyle: TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                       labelColor: AppColor.black,
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) {
                           EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                       },
-                      indicatorSize: TabBarIndicatorSize.label,
+                      indicatorSize: Custom.TabBarIndicatorSize.label,
                       indicator: RoundUnderlineTabIndicator(
                           insets: EdgeInsets.only(bottom: 0),
                           wantWidth: 20,

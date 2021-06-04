@@ -28,8 +28,8 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/banner_view/page_scroll_physics.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
-import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +59,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   // 进度监听
   StreamController<PostprogressModel> streamProgress = StreamController<PostprogressModel>();
 
+  //  tabBar的监听
+  // StreamController<int> streamTabBar = StreamController<int>();
+
   @override
   void dispose() {
     controller.dispose();
@@ -80,6 +83,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     EventBus.getDefault()
         .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
     _initConnectivity();
+    // controller.addListener(() {
+    //   print("tabBar监听::::${controller.animation.value}");
+    //   streamTabBar.add(controller.index);
+    // });
   }
 
   // 发布失败后发布model赋值
@@ -452,39 +459,41 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               }
             }),
         titleWidget: Container(
-          width: 140,
-          color: AppColor.white,
-          child: TabBar(
-            controller: controller,
-            tabs: [
-              const Text("关注"),
-              const Text(
-                "推荐",
-              )
-            ],
-            labelStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            labelColor: Colors.black,
-            unselectedLabelStyle: const TextStyle(fontSize: 16),
-            indicator: const RoundUnderlineTabIndicator(
-              borderSide: const BorderSide(
-                width: 3,
-                color: Color.fromRGBO(253, 137, 140, 1),
+            width: 140,
+            color: AppColor.white,
+            child: Custom.TabBar(
+              controller: controller,
+              tabs: [
+                Text(
+                  "关注",
+                ),
+                Text(
+                  "推荐",
+                )
+              ],
+              indicatorSize: Custom.TabBarIndicatorSize.label,
+              labelStyle: const TextStyle(
+                fontSize: 17.5,
+                fontWeight: FontWeight.w600,
               ),
-              insets: EdgeInsets.only(bottom: -6),
-              wantWidth: 16,
-            ),
-            onDoubleTap: (index) {
-              if (controller.index == index) {
-                subpageRefresh();
-              } else {
-                controller.animateTo(index);
-              }
-            },
-          ),
-        ),
+              labelColor: Colors.black,
+              unselectedLabelStyle: const TextStyle(fontSize: 15.5),
+              indicator: const RoundUnderlineTabIndicator(
+                borderSide: const BorderSide(
+                  width: 3,
+                  color: Color.fromRGBO(253, 137, 140, 1),
+                ),
+                insets: EdgeInsets.only(bottom: -6),
+                wantWidth: 16,
+              ),
+              onDoubleTap: (index) {
+                if (controller.index == index) {
+                  subpageRefresh();
+                } else {
+                  controller.animateTo(index);
+                }
+              },
+            )),
         actions: [
           CustomAppBarIconButton(
               svgName: AppIcon.nav_search,

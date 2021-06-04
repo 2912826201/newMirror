@@ -8,12 +8,12 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'package:mirror/page/message/item/message_item_height_util.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
 
-import 'currency_msg.dart';
+import '../item/currency_msg.dart';
 
 ///语音消息
 // ignore: must_be_immutable
@@ -123,7 +123,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       GestureDetector(
-        child: getUserImage(widget.userUrl, 38, 38),
+        child: getUserImageWidget(widget.userUrl,widget.sendChatUserId, 38, 38),
         onTap: () {
           if (widget.isCanLongClick) {
             widget.voidMessageClickCallBack(

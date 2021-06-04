@@ -7,10 +7,10 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'package:mirror/page/message/item/message_item_height_util.dart';
 import 'package:mirror/util/file_util.dart';
 
-import 'currency_msg.dart';
+import '../item/currency_msg.dart';
 
 ///用户名片消息
 // ignore: must_be_immutable
@@ -89,7 +89,7 @@ class UserMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       GestureDetector(
-        child: getUserImage(userUrl, 38, 38),
+        child: getUserImageWidget(userUrl,sendChatUserId, 38, 38),
         onTap: () {
           if (isCanLongClick) {
             voidMessageClickCallBack(
@@ -239,7 +239,7 @@ class UserMsg extends StatelessWidget {
               borderRadius: BorderRadius.circular(47.0 / 2),
               border: Border.all(color: AppColor.white, width: 2),
             ),
-            child: getUserImage(FileUtil.getSmallImage(userModel.avatarUri), 47, 47),
+            child: getUserImageWidget(FileUtil.getSmallImage(userModel.avatarUri),sendChatUserId, 47, 47),
           ),
         ],
       ),

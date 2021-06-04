@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
@@ -19,12 +21,13 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 
 class SearchUser extends StatefulWidget {
-  String text;
-  double width;
-  FocusNode focusNode;
-  TextEditingController textController;
+  final String text;
+  final double width;
+  final FocusNode focusNode;
+  final TextEditingController textController;
+  final TabController controller;
 
-  SearchUser({this.text, this.width, this.textController, this.focusNode});
+  SearchUser({this.text, this.width, this.textController, this.focusNode, this.controller});
 
   @override
   State<StatefulWidget> createState() {
@@ -47,6 +50,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
 
   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
+  List<int> tabBarIndexList;
 
 // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -64,16 +68,43 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     super.initState();
     lastString = widget.text;
     _getSearchUser(lastString);
-    widget.textController.addListener(() {
-      if (lastString != widget.textController.text) {
-        if (refreshOver) {
-          dataPage = 1;
-          _lastTime = null;
-          lastString = widget.textController.text;
-          _getSearchUser(lastString);
+    int controllerIndex = 3;
+    if (AppConfig.needShowTraining) {
+      controllerIndex = 4;
+    }
+    widget.controller.addListener(() {
+      print("widget.tabBarIndexList话题:::${Application.tabBarIndexList}");
+      // 切换tab监听在当前tarBarView下
+      if (widget.controller.index == controllerIndex) {
+        print(Application.tabBarIndexList.contains(controllerIndex));
+        // 初始化过的文本变化
+        if (Application.tabBarIndexList.contains(controllerIndex)) {
+          print("lastString::::$lastString");
+          print("widget.keyWord::::${widget.textController.text}");
+          if (lastString != widget.textController.text) {
+            dataPage = 1;
+            _lastTime = null;
+            lastString = widget.textController.text;
+            _getSearchUser(lastString);
+          }
+        } else {
+          Application.tabBarIndexList.add(controllerIndex);
         }
       }
     });
+    widget.textController.addListener(() {
+      if (widget.controller.index == controllerIndex) {
+        if (lastString != widget.textController.text) {
+          if (refreshOver) {
+            dataPage = 1;
+            _lastTime = null;
+            lastString = widget.textController.text;
+            _getSearchUser(lastString);
+          }
+        }
+      }
+    });
+
     scrollController.addListener(() {
       if (widget.focusNode.hasFocus) {
         print('-------------------focusNode---focusNode----focusNode--focusNode');
