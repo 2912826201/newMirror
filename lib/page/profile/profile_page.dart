@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
@@ -73,7 +74,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.initState();
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
-    _getNewVersion();
+    if(!AppConfig.needShowTraining)_getNewVersion();
   }
 
   _getNewVersion() async {
@@ -152,7 +153,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_scan, 24), "扫一扫"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24), "关于"),
         if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24), "意见反馈"),
-        // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_setting, 24), "设置"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
@@ -543,11 +544,21 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
-        jumpChatPageSystem(context);
+        /*jumpChatPageSystem(context);*/
+          showToast("这个flutter告诉android要展示的内容");
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
         break;
+    }
+  }
+  static const platform = const MethodChannel("com.flyou.test/android");
+
+  showToast(String msg) async {
+    try {
+      await platform.invokeMethod("showToast",{"msg":msg});
+    } on PlatformException catch (e) {
+      print(e.toString());
     }
   }
 }

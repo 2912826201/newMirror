@@ -1,16 +1,20 @@
 package com.aimymusic.mirror
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
+import android.widget.Toast
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import io.flutter.embedding.android.FlutterActivity
 
 
-class MainActivity : FlutterActivity() {
 
+class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var isDebug: Boolean
@@ -41,6 +45,7 @@ class MainActivity : FlutterActivity() {
         Log.i("UMLog", "onCreate@MainActivity")
     }
 
+
     override fun onPause() {
         super.onPause()
         MobclickAgent.onPause(this)
@@ -52,4 +57,5 @@ class MainActivity : FlutterActivity() {
         MobclickAgent.onResume(this)
         Log.i("UMLog", "onResume@MainActivity")
     }
+
 }
