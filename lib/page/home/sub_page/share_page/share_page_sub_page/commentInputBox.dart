@@ -24,7 +24,7 @@ import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+
 
 class CommentInputBox extends StatefulWidget {
   CommentInputBox({Key key, this.type, this.isUnderline = false, this.feedModel, this.isFeedDetail = false})

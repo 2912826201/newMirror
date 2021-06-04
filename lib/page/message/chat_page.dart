@@ -52,7 +52,7 @@ import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:toast/toast.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
@@ -1491,6 +1491,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
+      context: context,
       controller: _textController,
       maxNumberOfBytes: 6000,
       correctRulesListener: () {

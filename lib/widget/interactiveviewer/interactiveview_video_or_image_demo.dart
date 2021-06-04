@@ -363,7 +363,6 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     super.dispose();
     try{
       if(controller!=null) {
-        controller.pause();
         controller.dispose();
         controller = null;
       }
@@ -577,10 +576,12 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
 
   Widget getPlaceholder(){
     if(StringUtil.isURL(widget.source.url)){
+      print("getPlaceholder:${FileUtil.getVideoFirstPhoto(sourceUrl)}");
       return CachedNetworkImage(
         imageUrl: FileUtil.getVideoFirstPhoto(sourceUrl),
         width: ScreenUtil.instance.width,
         height: setAspectRatio(),
+        fadeInDuration: Duration.zero,
         placeholder: (context, url) {
           return Container(
             color: AppColor.bgWhite,
@@ -592,6 +593,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
             ),
       );
     }else if(widget.source.videoImageFilePath!=null){
+      print("getPlaceholder:${widget.source.videoImageFilePath}");
       File videoImageFile = File(widget.source.videoImageFilePath);
       if (videoImageFile.existsSync()) {
         return Image.file(
@@ -602,6 +604,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
         return Container(color: AppColor.bgWhite);
       }
     }else{
+      print("getPlaceholder:null}");
       return Container(color: AppColor.bgWhite);
     }
   }
