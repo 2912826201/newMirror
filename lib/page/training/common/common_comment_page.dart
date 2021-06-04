@@ -444,7 +444,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
             duration: Duration(seconds: 1),
             child: Container(
-              padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 16, top: 8, bottom: 8),
+              padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 0, top: 8, bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -503,20 +503,23 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
                   Container(
                     child: GestureDetector(
-                      child: Column(
-                        children: [
-                          AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
-                          SizedBox(
-                            height: 7,
-                          ),
-                          Text(
-                            IntegerUtil.formatIntegerEn(value.laudCount),
-                            style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                          ),
-                        ],
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        color: Colors.transparent,
+                        child: Column(
+                          children: [
+                            AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            Text(
+                              IntegerUtil.formatIntegerEn(value.laudCount),
+                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                            ),
+                          ],
+                        ),
                       ),
                       onTap: () {
                         if (ClickUtil.isFastClick()) {
@@ -1521,20 +1524,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (code != null && code == 200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
-      // if (laud) {
-      //   // ToastShow.show(msg: "点赞成功", context: context);
-      // } else {
-      //   // ToastShow.show(msg: "取消点赞成功", context: context);
-      // }
+      if (laud) {
+        print("点赞成功:laud:$laud,commentId:$commentId");
+      } else {
+        print("取消点赞成功:laud:$laud,commentId:$commentId");
+      }
       if (mounted) {
         setState(() {});
       }
     } else {
-      // if (laud) {
-      //   ToastShow.show(msg: "点赞失败", context: context);
-      // } else {
-      //   ToastShow.show(msg: "取消点赞失败", context: context);
-      // }
+      if (laud) {
+        print("点赞失败:laud:$laud,commentId:$commentId");
+      } else {
+        print("取消点赞失败:laud:$laud,commentId:$commentId");
+      }
     }
   }
 
