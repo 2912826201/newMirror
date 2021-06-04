@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'file:///E:/git/mirror/lib/page/message/item/message_item_height_util.dart';
+import 'package:mirror/page/message/item/message_item_height_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/dotted_line.dart';
 

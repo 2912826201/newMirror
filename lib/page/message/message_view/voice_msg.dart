@@ -8,7 +8,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'file:///E:/git/mirror/lib/page/message/item/message_item_height_util.dart';
+import 'package:mirror/page/message/item/message_item_height_util.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';

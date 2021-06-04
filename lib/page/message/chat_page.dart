@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
-import 'file:///E:/git/mirror/lib/page/message/item/message_item_gallery_util.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -64,6 +63,7 @@ import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 
+import 'item/message_item_gallery_util.dart';
 import 'item/message_item_height_util.dart';
 
 ////////////////////////////////

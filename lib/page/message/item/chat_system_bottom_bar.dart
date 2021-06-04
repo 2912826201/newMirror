@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'file:///E:/git/mirror/lib/page/message/item/currency_msg.dart';
+
+import 'currency_msg.dart';
 
 ///管家界面-底部可操作列表
 class ChatSystemBottomBar extends StatelessWidget {

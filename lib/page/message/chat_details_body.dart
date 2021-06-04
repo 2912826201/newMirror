@@ -6,13 +6,13 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/item/chat_top_at_mark.dart';
-import 'file:///E:/git/mirror/lib/page/message/item/message_item_height_util.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 
 import 'item/chat_system_bottom_bar.dart';
 import 'item/currency_msg.dart';
+import 'item/message_item_height_util.dart';
 
 ///消息展示body主体 简单进行包装一下
 class ChatDetailsBody extends StatefulWidget {
