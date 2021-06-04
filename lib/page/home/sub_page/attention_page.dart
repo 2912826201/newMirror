@@ -285,6 +285,20 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
     }
     // 更新全局监听
     if (attentionModelList.length > 0) {
+      //筛选首页关注页话题动态
+      List<HomeFeedModel> homeFollowModel = [];
+      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+        if (value.recommendSourceDto != null) {
+          homeFollowModel.add(value);
+        }
+      });
+      homeFollowModel.forEach((element) {
+        attentionModelList.forEach((v) {
+          if (element.id == v.id) {
+            v.recommendSourceDto = element.recommendSourceDto;
+          }
+        });
+      });
       context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
       print("本地存储的数据长度1:${context
           .read<FeedMapNotifier>()

@@ -214,6 +214,20 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
       // 更新全局监听
       if (mounted) {
+        //筛选首页关注页话题动态
+        List<HomeFeedModel> homeFollowModel = [];
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          if (value.recommendSourceDto != null) {
+            homeFollowModel.add(value);
+          }
+        });
+        homeFollowModel.forEach((element) {
+          feedList.forEach((v) {
+            if (element.id == v.id) {
+              v.recommendSourceDto = element.recommendSourceDto;
+            }
+          });
+        });
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
     } else {
@@ -250,6 +264,20 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
             _refreshController.loadComplete();
             print("-------------------_______________________________");
           }
+          //筛选首页关注页话题动态
+          List<HomeFeedModel> homeFollowModel = [];
+          context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+            if (value.recommendSourceDto != null) {
+              homeFollowModel.add(value);
+            }
+          });
+          homeFollowModel.forEach((element) {
+            feedList.forEach((v) {
+              if (element.id == v.id) {
+                v.recommendSourceDto = element.recommendSourceDto;
+              }
+            });
+          });
           // 同步数据
           context.read<FeedMapNotifier>().updateFeedMap(feedList);
         }

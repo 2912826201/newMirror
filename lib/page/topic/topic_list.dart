@@ -104,6 +104,20 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
         } else {
           refreshController.loadComplete();
         }
+        //筛选首页关注页话题动态
+        List<HomeFeedModel> homeFollowModel = [];
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          if (value.recommendSourceDto != null) {
+            homeFollowModel.add(value);
+          }
+        });
+        homeFollowModel.forEach((element) {
+          recommendTopicList.forEach((v) {
+            if (element.id == v.id) {
+              v.recommendSourceDto = element.recommendSourceDto;
+            }
+          });
+        });
         context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
       } else {
         if (refreshOrLoading) {

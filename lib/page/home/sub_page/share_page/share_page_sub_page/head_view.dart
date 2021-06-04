@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -68,7 +69,7 @@ class HeadViewState extends State<HeadView> {
       print('---------------------------------------删除动态');
       EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       print(widget.pageName);
-      if(widget.pageName == "searchComplex" ||widget.pageName == "searchFeed" ) {
+      if (widget.pageName == "searchComplex" || widget.pageName == "searchFeed") {
         EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_SEARCH_DELETED_FEED);
       }
       if (widget.isShowConcern) {
@@ -138,7 +139,27 @@ class HeadViewState extends State<HeadView> {
       }
     }
   }
-
+  // 请求关注话题
+  requestFollowTopic() async {
+    Map<String, dynamic> map = await followTopic(topicId: widget.model.topics.first.id);
+    if (map != null && map["state"] == true && mounted) {
+      setState(() {
+        widget.model.topics.first.isFollow = 1;
+      });
+      ToastShow.show(msg: "关注成功!", context: context);
+      Future.delayed(Duration(milliseconds: 200), () {
+        streamController.sink.add(1);
+      });
+      opacity = 1;
+      Future.delayed(Duration(milliseconds: 1000), () {
+        opacity = 0;
+        setState(() {});
+      });
+        context.read<UserInteractiveNotifier>().removeListId(widget.model.topics.first.id, isAdd: false);
+    } else {
+      ToastShow.show(msg: "关注失败", context: context);
+    }
+  }
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
@@ -263,48 +284,95 @@ class HeadViewState extends State<HeadView> {
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      jumpToUserProfilePage(context, widget.model.pushId,
-                          avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
+                      if (widget.pageName == "recommendPage" &&
+                          widget.model.recommendSourceDto != null &&
+                          widget.model.recommendSourceDto.type == 1) {
+                        AppRouter.navigateToTopicDetailPage(context, widget.model.topics.first.id);
+                      } else {
+                        jumpToUserProfilePage(context, widget.model.pushId,
+                            avatarUrl: widget.model.avatarUrl, userName: widget.model.name);
+                      }
                     },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
                           margin: const EdgeInsets.only(left: 16, right: 11),
-                          child: ClipOval(
-                            // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                            child: widget.model.avatarUrl != null
-                                ? CachedNetworkImage(
-                                    width: 38,
-                                    height: 38,
+                          child: widget.pageName == "recommendPage" &&
+                                  widget.model.recommendSourceDto != null &&
+                                  widget.model.recommendSourceDto.type == 1
+                              ? Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    ClipOval(
+                                        child: CachedNetworkImage(
+                                      width: 38,
+                                      height: 38,
 
-                                    /// imageUrl的淡入动画的持续时间。
-                                    // fadeInDuration: Duration(milliseconds: 0),
-                                    imageUrl: FileUtil.getSmallImage(isMySelf
-                                        ? context.watch<ProfileNotifier>().profile.avatarUri
-                                        : widget.model.avatarUrl),
-                                    fit: BoxFit.cover,
-                                    // 调整磁盘缓存中图像大小
-                                    // maxHeightDiskCache: 150,
-                                    // maxWidthDiskCache: 150,
-                                    // 指定缓存宽高
-                                    memCacheWidth: 150,
-                                    memCacheHeight: 150,
-                                    placeholder: (context, url) => Container(
-                                      color: AppColor.bgWhite,
-                                    ),
-                                    errorWidget: (context, url, e) {
-                                      return Container(
+                                      /// imageUrl的淡入动画的持续时间。
+                                      // fadeInDuration: Duration(milliseconds: 0),
+                                      imageUrl: FileUtil.getSmallImage(widget.model.topics.first.img),
+                                      fit: BoxFit.cover,
+                                      // 调整磁盘缓存中图像大小
+                                      // maxHeightDiskCache: 150,
+                                      // maxWidthDiskCache: 150,
+                                      // 指定缓存宽高
+                                      memCacheWidth: 150,
+                                      memCacheHeight: 150,
+                                      placeholder: (context, url) => Container(
                                         color: AppColor.bgWhite,
-                                      );
-                                    },
-                                  )
-                                // NetworkImage(
-                                //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
-                                : Container(
-                                    color: AppColor.bgWhite,
-                                  ),
-                          ),
+                                      ),
+                                      errorWidget: (context, url, e) {
+                                        return Container(
+                                          color: AppColor.bgWhite,
+                                        );
+                                      },
+                                    )),
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: AppIcon.getAppIcon(
+                                        AppIcon.topic,
+                                        15,
+                                        color: AppColor.mainRed,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : ClipOval(
+                                  // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                                  child: widget.model.avatarUrl != null
+                                      ? CachedNetworkImage(
+                                          width: 38,
+                                          height: 38,
+
+                                          /// imageUrl的淡入动画的持续时间。
+                                          // fadeInDuration: Duration(milliseconds: 0),
+                                          imageUrl: FileUtil.getSmallImage(isMySelf
+                                              ? context.watch<ProfileNotifier>().profile.avatarUri
+                                              : widget.model.avatarUrl),
+                                          fit: BoxFit.cover,
+                                          // 调整磁盘缓存中图像大小
+                                          // maxHeightDiskCache: 150,
+                                          // maxWidthDiskCache: 150,
+                                          // 指定缓存宽高
+                                          memCacheWidth: 150,
+                                          memCacheHeight: 150,
+                                          placeholder: (context, url) => Container(
+                                            color: AppColor.bgWhite,
+                                          ),
+                                          errorWidget: (context, url, e) {
+                                            return Container(
+                                              color: AppColor.bgWhite,
+                                            );
+                                          },
+                                        )
+                                      // NetworkImage(
+                                      //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
+                                      : Container(
+                                          color: AppColor.bgWhite,
+                                        ),
+                                ),
                         ),
                         Expanded(
                             child: Column(
@@ -314,7 +382,14 @@ class HeadViewState extends State<HeadView> {
                             // GestureDetector(
                             //   child:
                             Text(
-                              isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
+                              widget.pageName == "recommendPage" &&
+                                      widget.model.recommendSourceDto != null &&
+                                      widget.model.recommendSourceDto.type == 1 &&
+                                      widget.model.topics != null
+                                  ? "#${widget.model.topics.first.name}"
+                                  : isMySelf
+                                      ? context.watch<ProfileNotifier>().profile.nickName
+                                      : widget.model.name ?? "空名字",
                               style: TextStyle(fontSize: 15),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -369,7 +444,7 @@ class HeadViewState extends State<HeadView> {
                           _checkBlackStatus(widget.model.pushId, context, true);
                           break;
                         case "举报":
-                          if(!context.read<TokenNotifier>().isLoggedIn){
+                          if (!context.read<TokenNotifier>().isLoggedIn) {
                             ToastShow.show(msg: "请先登录·", context: context);
                             return;
                           }

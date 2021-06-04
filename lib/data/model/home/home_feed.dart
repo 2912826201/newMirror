@@ -43,7 +43,7 @@ class HomeFeedModel {
   List<CommentDtoModel> comments = [];
   List<CommentDtoModel> hotComment = [];
   String address;
-
+  RecommendSourceDto recommendSourceDto; //区分动态样式普通还是话题
   // 添加字段
   int totalCount = -1;
   bool isShowInputBox = true;
@@ -76,6 +76,7 @@ class HomeFeedModel {
     this.address,
     this.isShowInputBox,
     this.selectedMediaFiles,
+    this.recommendSourceDto,
   });
 
   /*// 转换model
@@ -194,6 +195,9 @@ class HomeFeedModel {
     if (json["courseDto"] != null) {
       courseDto = CourseModel.fromJson(json["courseDto"]);
     }
+    if(json["recommendSourceDto"] != null){
+      recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
+    }
     if (json["laudUserInfo"] != null) {
       json["laudUserInfo"].forEach((v) {
         laudUserInfo.add(v);
@@ -232,6 +236,7 @@ class HomeFeedModel {
     map["address"] = address;
     map['isShowInputBox'] = isShowInputBox;
     map['selectedMediaFiles'] = selectedMediaFiles;
+    map['recommendSourceDto'] = recommendSourceDto;
     return map;
   }
 
@@ -384,7 +389,7 @@ class TopicDtoModel {
   List<TopicPicModel> pics = [];
   String description;
   TopicPicModel avatarUrl;
-
+  String img;
   TopicDtoModel(
       {this.id,
       this.uid,
@@ -404,7 +409,8 @@ class TopicDtoModel {
       this.isFollow,
       this.pics,
       this.description,
-      this.avatarUrl});
+      this.avatarUrl,
+      this.img});
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -431,6 +437,7 @@ class TopicDtoModel {
         avatarUrl = TopicPicModel.fromJson(json["avatarUrl"]);
       }
     }
+    img = json["img"];
     if (json["pics"] != null) {
       json["pics"].forEach((v) {
         if (v is TopicPicModel) {
@@ -463,6 +470,7 @@ class TopicDtoModel {
     map["pics"] = pics;
     map["description"] = description;
     map["avatarUrl"] = avatarUrl;
+    map["img"] = img;
     return map;
   }
 
@@ -778,6 +786,30 @@ class CommentDtoModel {
     map["picUrls"] = picUrls;
     map["atUsers"] = atUsers;
     map["replys"] = replys;
+    return map;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class RecommendSourceDto {
+  //展示类型   0-普通动态样式展示 1-话题样式展示
+  int type;
+
+  RecommendSourceDto({
+    this.type,
+  });
+
+  RecommendSourceDto.fromJson(Map<String, dynamic> json) {
+    type = json["type"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["type"] = type;
     return map;
   }
 
