@@ -7,6 +7,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -49,30 +50,30 @@ class SearchPage extends StatelessWidget {
         resizeToAvoidBottomPadding: false,
         body: Container(
             color: AppColor.white,
-            child: ChangeNotifierProvider(
-                create: (_) => SearchEnterNotifier(enterText: ""),
-                builder: (context, _) {
-                  return Column(
-                    children: [
-                      // 头部
-                      SearchHeader(
-                        focusNode: focusNode,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          //点击空白处移除焦点
-                          focusNode.unfocus();
-                        },
-                        child: context.watch<SearchEnterNotifier>().enterText.length > 0
-                            ? SearchTabBarView(
-                                focusNode: focusNode,
-                                defaultIndex: defaultIndex,
-                              )
-                            : SearchMiddleView(),
-                      )
-                    ],
-                  );
-                })));
+            child: InkWell(
+                onTap: () {
+                  //点击空白处移除焦点
+                  focusNode.unfocus();
+                },
+                child: ChangeNotifierProvider(
+                    create: (_) => SearchEnterNotifier(enterText: ""),
+                    builder: (context, _) {
+                      return Column(
+                        children: [
+                          // 头部
+                          SearchHeader(
+                            focusNode: focusNode,
+                          ),
+                          context.watch<SearchEnterNotifier>().enterText.length > 0
+                              ? SearchTabBarView(
+                                  focusNode: focusNode,
+                                  defaultIndex: defaultIndex,
+                                )
+                              : SearchMiddleView(),
+                          // )
+                        ],
+                      );
+                    }))));
   }
 }
 
@@ -151,10 +152,10 @@ class _SearchHeaderState extends State<SearchHeader> {
                     // onChanged: (text) {
                     //
                     // },
-                    decoration:  InputDecoration(
+                    decoration: InputDecoration(
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                        hintText: '搜索用户、话题、${AppConfig.needShowTraining?"课程、":""}动态',
+                        hintText: '搜索用户、话题、${AppConfig.needShowTraining ? "课程、" : ""}动态',
                         border: InputBorder.none),
                     inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                     // inputFormatters: [
@@ -601,6 +602,9 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
   @override
   void dispose() {
     controller.dispose();
+    print("销毁栏搜索");
+    // 这个数组本来是在SearchTabBarView声明，但是在内部子页面调用setstate时，会清除数组的元素。所有声明了全局变量。在退出页面时情况。此数组的作用是切换tarBar到当前页面时搜索文本改变调用接口
+    Application.tabBarIndexList.clear();
     super.dispose();
   }
 
@@ -643,6 +647,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - 48 - ScreenUtil.instance.statusBarHeight,
           child: TabBarView(
             controller: controller,
+            allowImplicitScrolling: false,
             children: [
               SearchComplex(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
@@ -694,6 +699,8 @@ class SearchEnterNotifier extends ChangeNotifier {
 
   //控制器
   TextEditingController textController;
+
+  // tabBar数组
 
   changeCallback(String str) {
     this.enterText = str;

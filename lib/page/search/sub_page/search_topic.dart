@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -11,19 +12,23 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/pull_to_refresh/src/smart_refresher.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
+import 'package:provider/provider.dart';
 
 class SearchTopic extends StatefulWidget {
-  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController,this.controller}) : super(key: key);
-  FocusNode focusNode;
-  TextEditingController textController;
-  TabController controller;
-  String keyWord;
+  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController, this.controller})
+      : super(key: key);
+  final FocusNode focusNode;
+  final TextEditingController textController;
+  final TabController controller;
+  final String keyWord;
+
 
   @override
   SearchTopicState createState() => SearchTopicState();
@@ -64,39 +69,48 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   @override
   void initState() {
     requestFeednIterface(refreshOrLoading: true);
-    // // 上拉加载
-    // _scrollController.addListener(() {
-    //   if (widget.focusNode.hasFocus) {
-    //     print('-------------------focusNode---focusNode----focusNode--focusNode');
-    //     widget.focusNode.unfocus();
-    //   }
-    //   if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-    //     requestFeednIterface(refreshOrLoading: false);
-    //   }
-    // });
     int controllerIndex = 1;
-    if(AppConfig.needShowTraining) {
+    if (AppConfig.needShowTraining) {
       controllerIndex = 2;
     }
-    widget.textController.addListener(() {
-      // if( widget.controller.index ==  controllerIndex) {
-        // 取消延时器
-        if (timer != null) {
-          timer.cancel();
-        }
-        // 延迟器:
-        timer = Timer(Duration(milliseconds: 700), () {
+    print("widget.tabBarIndexList:::${Application.tabBarIndexList}");
+    widget.controller.addListener(() {
+      print("widget.tabBarIndexList话题:::${Application.tabBarIndexList}");
+      // 切换tab监听在当前tarBarView下
+      if (widget.controller.index == controllerIndex) {
+        print(Application.tabBarIndexList.contains(controllerIndex));
+        // 初始化过的文本变化
+        if (Application.tabBarIndexList.contains(controllerIndex)) {
+          print("lastString::::$lastString");
+          print("widget.keyWord::::${widget.keyWord}");
           if (lastString != widget.keyWord) {
             if (topicList.isNotEmpty) {
-              print("333333333333333333333");
               lastScore = null;
               hasNext = null;
             }
             requestFeednIterface(refreshOrLoading: true);
           }
+        } else {
+          Application.tabBarIndexList.add(controllerIndex);
+        }
+      }
+    });
+    widget.textController.addListener(() {
+      // 输入文本时的监听要在当前tab下
+      if (widget.controller.index == controllerIndex) {
+        // 取消延时器
+        if (timer != null) {
+          timer.cancel();
+        }
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 500), () {
+          if (lastString != widget.keyWord) {
+            lastScore = null;
+            hasNext = null;
+            requestFeednIterface(refreshOrLoading: true);
+          }
         });
-        lastString = widget.keyWord;
-      // }
+      }
     });
     super.initState();
   }
@@ -118,12 +132,6 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   // 请求动态接口
   requestFeednIterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
-      // if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      //   // 先设置状态，防止下拉就直接加载
-      //   setState(() {
-      //     loadStatus = LoadingStatus.STATUS_LOADING;
-      //   });
-      // }
       DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore, token: token);
       if (refreshOrLoading) {
         topicList.clear();
@@ -135,8 +143,6 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
           model.list.forEach((v) {
             topicList.add(TopicDtoModel.fromJson(v));
           });
-          // loadStatus = LoadingStatus.STATUS_IDEL;
-          // loadText = "加载中...";
         }
         if (refreshOrLoading) {
           _refreshController.refreshCompleted();
@@ -151,6 +157,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         }
       }
     }
+    if (refreshOrLoading) {
+      lastString = widget.keyWord;
+    }
     if (hasNext == 0) {
       if (refreshOrLoading) {
         _refreshController.refreshCompleted();
@@ -158,10 +167,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
       } else {
         _refreshController.loadNoData();
       }
-      // 加载完毕
-      // loadText = "已加载全部动态";
-      // loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
+    print("topicList的长度：：：：${topicList.length}");
     if (mounted) {
       setState(() {});
     }
@@ -174,14 +181,6 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
       return Container(
           child: ScrollConfiguration(
               behavior: OverScrollBehavior(),
-              // child: RefreshIndicator(
-              //     onRefresh: () async {
-              //       lastScore = null;
-              //       hasNext = null;
-              //       loadStatus = LoadingStatus.STATUS_LOADING;
-              //       loadText = "加载中...";
-              //       requestFeednIterface(refreshOrLoading: true);
-              //     },
               child: SmartRefresher(
                   enablePullDown: true,
                   enablePullUp: true,
@@ -211,7 +210,6 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                                 shrinkWrap: true,
                                 primary: false,
                                 itemCount: topicList.length,
-                                itemExtent: 56,
                                 itemBuilder: (context, index) {
                                   return SearchTopiciItem(
                                     model: topicList[index],

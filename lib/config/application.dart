@@ -189,6 +189,8 @@ class Application {
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
   // 话题详情页背景图配置表
   static List<TopicBackgroundConfigModel> topicBackgroundConfig = [];
+  // 搜索页tabBarIndex数组
+  static  List<int> tabBarIndexList = [];
   //公共登出方法
   static appLogout({BuildContext context,bool isKicked = false}) async {
     if(context!=null){
