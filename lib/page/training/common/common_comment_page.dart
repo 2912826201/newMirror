@@ -93,6 +93,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   CommentModel courseCommentHot;
   List<int> screenOutHotIds = <int>[];
 
+  bool isLaudCommentLoading=false;
+
   //用户的评论时间-时间排序
   CommentModel courseCommentTime;
 
@@ -522,9 +524,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                         ),
                       ),
                       onTap: () {
-                        if (ClickUtil.isFastClick()) {
+                        if (isLaudCommentLoading) {
                           return;
                         }
+                        isLaudCommentLoading=true;
                         _laudComment(value.id, value.isLaud == 0, value.uid);
                       },
                     ),
@@ -1500,11 +1503,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _laudComment(int commentId, bool laud, int chatUserId) async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
+      isLaudCommentLoading=false;
       return;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
+      isLaudCommentLoading=false;
       return;
     }
 
@@ -1513,10 +1518,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (blackModel.inYouBlack == 1) {
       text = "发布失败，你已将对方加入黑名单";
       ToastShow.show(msg: text, context: context);
+      isLaudCommentLoading=false;
       return;
     } else if (blackModel.inThisBlack == 1) {
       text = "发布失败，你已被对方加入黑名单";
       ToastShow.show(msg: text, context: context);
+      isLaudCommentLoading=false;
       return;
     }
 
@@ -1530,7 +1537,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         print("取消点赞成功:laud:$laud,commentId:$commentId");
       }
       if (mounted) {
-        setState(() {});
+        setState(() {
+          isLaudCommentLoading=false;
+        });
       }
     } else {
       if (laud) {
@@ -1538,6 +1547,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       } else {
         print("取消点赞失败:laud:$laud,commentId:$commentId");
       }
+      isLaudCommentLoading=false;
     }
   }
 
