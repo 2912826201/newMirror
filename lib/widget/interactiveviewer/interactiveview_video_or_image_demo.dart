@@ -181,7 +181,7 @@ class _DemoImageItemState extends State<DemoImageItem> {
 
   Widget getErrorWidgetImage() {
     return Container(
-      color: AppColor.bgWhite,
+      color: AppColor.black,
     );
   }
 
@@ -439,12 +439,17 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
       body: Stack(
         alignment: Alignment.center,
         children: [
+          Container(
+            width: ScreenUtil.instance.width,
+            height: ScreenUtil.instance.height,
+            color: AppColor.black,
+          ),
           Hero(
-            tag: isFocus?widget.source.heroId:"",
+            tag: isFocus ? widget.source.heroId : "",
             child: Container(
               width: ScreenUtil.instance.width,
               height: setAspectRatio(),
-              child: controller!=null&&controller.isVideoInitialized()
+              child: controller != null && controller.isVideoInitialized()
                   ? BetterPlayer(
                       controller: controller,
                     )
@@ -578,19 +583,24 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     if(StringUtil.isURL(widget.source.url)){
       print("getPlaceholder:${FileUtil.getVideoFirstPhoto(sourceUrl)}");
       return CachedNetworkImage(
-        imageUrl: FileUtil.getVideoFirstPhoto(sourceUrl),
-        width: ScreenUtil.instance.width,
-        height: setAspectRatio(),
-        fadeInDuration: Duration.zero,
-        placeholder: (context, url) {
-          return Container(
-            color: AppColor.bgWhite,
-          );
-        },
-        errorWidget: (context, url, error) =>
-            Container(
-              color: AppColor.bgWhite,
-            ),
+          imageUrl: FileUtil.getVideoFirstPhoto(sourceUrl),
+          width: ScreenUtil.instance.width,
+          height: setAspectRatio(),
+          fadeInDuration: Duration.zero,
+          placeholder: (context, url) {
+            return Container(
+              color: AppColor.black,
+            );
+          },
+          errorWidget: (context, url, error) {
+            return Container(
+              width: ScreenUtil.instance.width,
+              height: ScreenUtil.instance.height,
+              color: AppColor.black,
+              alignment: Alignment.center,
+              child: Text("文件损坏", style: TextStyle(fontSize: 24, color: AppColor.white),),
+            );
+          }
       );
     }else if(widget.source.videoImageFilePath!=null){
       print("getPlaceholder:${widget.source.videoImageFilePath}");
@@ -601,11 +611,11 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
           fit: BoxFit.cover,
         );
       }else{
-        return Container(color: AppColor.bgWhite);
+        return Container(color: AppColor.black);
       }
     }else{
       print("getPlaceholder:null}");
-      return Container(color: AppColor.bgWhite);
+      return Container(color: AppColor.black);
     }
   }
 
@@ -818,6 +828,7 @@ class _VideoControlState extends State<VideoControl> {
     this.progressString = DateUtil.formatSecondToStringNumShowMinute1(progress.toInt());
     this.durationString = DateUtil.formatSecondToStringNumShowMinute1(maxValue.toInt());
     value = progress / maxValue * 100;
+    if (value >= 100) value = 100;
     this.maxValue = maxValue;
     try {
       if (mounted) {
