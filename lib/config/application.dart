@@ -9,6 +9,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/topic/topic_background_config.dart';
+import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -184,6 +185,10 @@ class Application {
   //是否显示新用户的dialog
   static bool isShowNewUserDialog = false;
 
+  //新版本的信息
+  static VersionModel versionModel;
+  //是否存在新版本
+  static bool  haveOrNotNewVersion = false;
   //发布失败动态key
   static String postFailurekey = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();

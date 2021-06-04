@@ -30,7 +30,7 @@ class SettingHomePage extends StatefulWidget {
 
 class _SettingHomePageState extends State<SettingHomePage> {
   bool haveNewVersion = false;
-  String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+  String url;
   String content;
 
   @override

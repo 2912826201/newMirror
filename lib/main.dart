@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/api/version_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -251,6 +252,14 @@ Future _initApp() async {
   } else {
     //匿名用户时 保持上面已赋值的默认初始值
   }
+  //提前获取新版本信息
+  getNewVersion().then((value){
+    if(value!=null&&AppConfig.version!=value.version){
+      print('-----------------------------进了更新');
+      Application.versionModel = value;
+      Application.haveOrNotNewVersion = true;
+    }
+  });
   // todo 获取背景图配置表
   try {
     Application.topicBackgroundConfig.clear();
