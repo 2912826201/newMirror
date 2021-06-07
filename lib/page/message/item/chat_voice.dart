@@ -100,6 +100,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     await _mRecorder.startRecorder(
       toFile: _mPath,
       codec: Codec.aacADTS,
+      bitRate: 8000,
+      numChannels: 1,
+      sampleRate: 8000,
     );
     initTimer();
     setState(() {});
