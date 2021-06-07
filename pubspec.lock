@@ -321,6 +321,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_audio_recorder:
+    dependency: "direct main"
+    description:
+      name: flutter_audio_recorder
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.5"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -368,34 +375,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.11"
-  flutter_sound_lite:
-    dependency: "direct main"
-    description:
-      name: flutter_sound_lite
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "7.4.9+3"
-  flutter_sound_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_sound_platform_interface
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "7.4.9+3"
-  flutter_sound_web:
-    dependency: transitive
-    description:
-      name: flutter_sound_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "7.4.9+3"
-  flutter_spinkit:
-    dependency: transitive
-    description:
-      name: flutter_spinkit
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.1.2+1"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -553,13 +532,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
-  logger:
-    dependency: transitive
-    description:
-      name: logger
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.9.4"
   lpinyin:
     dependency: "direct main"
     description:
@@ -770,13 +742,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.0"
-  recase:
-    dependency: transitive
-    description:
-      name: recase
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.1"
   reorderables:
     dependency: "direct main"
     description:

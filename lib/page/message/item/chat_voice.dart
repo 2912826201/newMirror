@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound_lite/flutter_sound.dart';
+import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+// import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -12,6 +13,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:file/src/backends/local/local_file_system.dart';
 
 import 'voice_dialog.dart';
 
@@ -53,7 +55,14 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
-  FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+  // FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+
+  LocalFileSystem localFileSystem=LocalFileSystem();
+
+  FlutterAudioRecorder _recorder;
+  Recording _current;
+  RecordingStatus _currentStatus = RecordingStatus.Unset;
+
   String _mPath;
 
   Timer _timer;
@@ -63,15 +72,22 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   @override
   void initState() {
     super.initState();
+    init();
+    // openTheRecorder().then((value) {});
+  }
 
-    openTheRecorder().then((value) {});
+  init()async{
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw "沒有权限";
+    }
   }
 
   @override
   void dispose() {
     stopRecorder();
-    _mRecorder.closeAudioSession();
-    _mRecorder = null;
+    // _mRecorder.closeAudioSession();
+    // _mRecorder = null;
     if (_mPath != null) {
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
@@ -87,7 +103,16 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   Future<void> stopRecorder() async {
-    await _mRecorder.stopRecorder();
+
+    var result = await _recorder.stop();
+    print("Stop recording: ${result.path}");
+    print("Stop recording: ${result.duration}");
+    File file = localFileSystem.file(result.path);
+    print("File length: ${await file.length()}");
+
+
+
+    // await _mRecorder.stopRecorder();
     //print(_mPath);
     if (context != null) {
       setState(() {
@@ -97,13 +122,19 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   void startRecorder() async {
-    await _mRecorder.startRecorder(
-      toFile: _mPath,
-      codec: Codec.aacADTS,
-      bitRate: 8000,
-      numChannels: 1,
-      sampleRate: 8000,
-    );
+    _recorder = FlutterAudioRecorder(_mPath); // .wav .aac .m4a
+    await _recorder.initialized;
+    await _recorder.start();
+    var recording = await _recorder.current(channel: 0);
+
+    //
+    // await _mRecorder.startRecorder(
+    //   toFile: _mPath,
+    //   codec: Codec.aacADTS,
+    //   bitRate: 8000,
+    //   numChannels: 1,
+    //   sampleRate: 8000,
+    // );
     initTimer();
     setState(() {});
   }
@@ -249,7 +280,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         context.read<VoiceSettingNotifier>().stop();
         var status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
-          throw RecordingPermissionException('Microphone permission not granted');
+          throw "没有权限录音权限";
         } else {
           if (ClickUtil.isFastClick()) {
             return;
@@ -277,22 +308,22 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     );
   }
 
-  Future<void> openTheRecorder() async {
-    var status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException('Microphone permission not granted');
-    }
-
-    // var tempDir = await getTemporaryDirectory();
-    // _mPath = '${tempDir.path}/flutter_sound_example.aac';
-
-    _mPath = AppConfig.getAppVoiceFilePath();
-    var outputFile = File(_mPath);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
-    }
-    await _mRecorder.openAudioSession();
-  }
+  // Future<void> openTheRecorder() async {
+  //   var status = await Permission.microphone.request();
+  //   if (status != PermissionStatus.granted) {
+  //     throw RecordingPermissionException('Microphone permission not granted');
+  //   }
+  //
+  //   // var tempDir = await getTemporaryDirectory();
+  //   // _mPath = '${tempDir.path}/flutter_sound_example.aac';
+  //
+  //   _mPath = AppConfig.getAppVoiceFilePath();
+  //   var outputFile = File(_mPath);
+  //   if (outputFile.existsSync()) {
+  //     await outputFile.delete();
+  //   }
+  //   await _mRecorder.openAudioSession();
+  // }
 
   void initTimer() {
     if (_timer != null) {
