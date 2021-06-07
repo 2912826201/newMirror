@@ -5,10 +5,10 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
 //语音的dialog
-showVoiceDialog(BuildContext context, {int index}) {
+showVoiceDialog(BuildContext context) {
   OverlayEntry overlayEntry = new OverlayEntry(builder: (content) {
     return Positioned(
-      child: new VoiceDialog(index),
+      child: new VoiceDialog(),
     );
   });
   Overlay.of(context).insert(overlayEntry);
@@ -17,9 +17,6 @@ showVoiceDialog(BuildContext context, {int index}) {
 }
 
 class VoiceDialog extends StatefulWidget {
-  final int index;
-
-  VoiceDialog(this.index);
 
   @override
   _VoiceDialogState createState() => _VoiceDialogState();

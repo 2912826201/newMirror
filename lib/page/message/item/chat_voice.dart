@@ -105,15 +105,16 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   Future<void> stopRecorder() async {
-
+    await Future.delayed(Duration(milliseconds: 300), () {
+      print("延时停止300毫秒");
+    });
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
     File file = localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
 
-    isRecordering=false;
-
+    isRecordering = false;
 
     // await _mRecorder.stopRecorder();
     //print(_mPath);
@@ -125,19 +126,15 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   void startRecorder() async {
+    var outputFile = File(_mPath);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
+    }
     _recorder = FlutterAudioRecorder(_mPath); // .wav .aac .m4a
     await _recorder.initialized;
     await _recorder.start();
     var recording = await _recorder.current(channel: 0);
 
-    //
-    // await _mRecorder.startRecorder(
-    //   toFile: _mPath,
-    //   codec: Codec.aacADTS,
-    //   bitRate: 8000,
-    //   numChannels: 1,
-    //   sampleRate: 8000,
-    // );
     initTimer();
     setState(() {});
   }
@@ -155,28 +152,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         alertText: "手指上滑,取消发送");
 
     _mPath = AppConfig.getAppVoiceFilePath();
-    var outputFile = File(_mPath);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
+
+
+    if (overlayEntry == null) {
+      overlayEntry = showVoiceDialog(context);
     }
 
     isUp = false;
-    int index;
     setState(() {
       textShow = "松开发送";
       voiceState = false;
-      DateTime now = new DateTime.now();
-      int date = now.millisecondsSinceEpoch;
-      DateTime current = DateTime.fromMillisecondsSinceEpoch(date);
-      String recordingTime = DateUtil.formatDateV(current, format: "ss:SS");
-      index = int.parse(recordingTime.toString().substring(3, 5));
     });
 
     startRecorder();
 
-    if (overlayEntry == null) {
-      overlayEntry = showVoiceDialog(context, index: index);
-    }
   }
 
   hideVoiceView(bool automaticPost) async {
