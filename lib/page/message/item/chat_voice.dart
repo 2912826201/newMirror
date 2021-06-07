@@ -69,6 +69,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   bool automaticPost = false;
 
+  bool isRecordering=false;
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +112,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     File file = localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
 
+    isRecordering=false;
 
 
     // await _mRecorder.stopRecorder();
@@ -195,34 +198,46 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    if (costTime < minRecordVoiceDuration + 1) {
-      context.read<VoiceAlertData>().changeCallback(
-            alertText: "说话时间太短",
-            imageIconString: speckTimeTooShortImageString,
-          );
-      var outputFile = File(_mPath);
-      if (outputFile.existsSync()) {
-        await outputFile.delete();
-      }
-      Future.delayed(Duration(milliseconds: 600), () {
-        if (overlayEntry != null) {
-          overlayEntry.remove();
-          overlayEntry = null;
-        }
-      });
-    } else {
+
+    if (isUp) {
       if (overlayEntry != null) {
         overlayEntry.remove();
         overlayEntry = null;
       }
-      if (isUp) {
-        //print("取消发送");
-        if (records.length > 0) {
-          records.removeLast();
+
+      isRecordering=false;
+      costTime=0;
+      //print("取消发送");
+      if (records.length > 0) {
+        records.removeLast();
+      }
+    } else {
+      if (costTime < minRecordVoiceDuration + 1) {
+        isRecordering=false;
+        costTime=0;
+        context.read<VoiceAlertData>().changeCallback(
+          alertText: "说话时间太短",
+          imageIconString: speckTimeTooShortImageString,
+        );
+        var outputFile = File(_mPath);
+        if (outputFile.existsSync()) {
+          await outputFile.delete();
         }
-      } else {
+        Future.delayed(Duration(milliseconds: 600), () {
+          if (overlayEntry != null) {
+            overlayEntry.remove();
+            overlayEntry = null;
+          }
+        });
+      }else{
+        if (overlayEntry != null) {
+          overlayEntry.remove();
+          overlayEntry = null;
+        }
         //print("进行发送");
         widget.voiceFile(_mPath, costTime);
+        isRecordering=false;
+        costTime=0;
         // //print("进行发送：_mPath：$_mPath");
       }
     }
@@ -272,11 +287,28 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
-      onVerticalDragStart: (details) {
-        // startY = details.globalPosition.dy;
-        // showVoiceView();
+      onVerticalDragStart: (details)async {
+        if(isRecordering){
+          return;
+        }
+        context.read<VoiceSettingNotifier>().stop();
+        var status = await Permission.microphone.request();
+        if (status != PermissionStatus.granted) {
+          throw "没有权限录音权限";
+        } else {
+          if (ClickUtil.isFastClick()) {
+            return;
+          }
+          startY = details.globalPosition.dy;
+          isRecordering=true;
+          showVoiceView();
+        }
       },
       onVerticalDragDown: (details) async {
+        if(isRecordering){
+          return;
+        }
+        isRecordering=true;
         context.read<VoiceSettingNotifier>().stop();
         var status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
@@ -308,22 +340,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     );
   }
 
-  // Future<void> openTheRecorder() async {
-  //   var status = await Permission.microphone.request();
-  //   if (status != PermissionStatus.granted) {
-  //     throw RecordingPermissionException('Microphone permission not granted');
-  //   }
-  //
-  //   // var tempDir = await getTemporaryDirectory();
-  //   // _mPath = '${tempDir.path}/flutter_sound_example.aac';
-  //
-  //   _mPath = AppConfig.getAppVoiceFilePath();
-  //   var outputFile = File(_mPath);
-  //   if (outputFile.existsSync()) {
-  //     await outputFile.delete();
-  //   }
-  //   await _mRecorder.openAudioSession();
-  // }
 
   void initTimer() {
     if (_timer != null) {
@@ -331,6 +347,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer = null;
     }
     if (context == null) {
+      stopRecorder();
+      isRecordering=false;
       return;
     }
     costTime = 0;
@@ -338,6 +356,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
           showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime),
         );
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if(!isRecordering){
+        if (_timer != null) {
+          _timer.cancel();
+          _timer = null;
+        }
+      }
       if (mounted) {
         setState(() {
           if (costTime + 1 > maxRecordVoiceDuration) {
@@ -359,21 +383,4 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     });
   }
 
-  String getVoiceImage(int index) {
-    if (index % 7 == 0) {
-      return 'images/chat/voice_volume_1.webp';
-    } else if (index % 7 == 1) {
-      return 'images/chat/voice_volume_2.webp';
-    } else if (index % 7 == 2) {
-      return 'images/chat/voice_volume_3.webp';
-    } else if (index % 7 == 3) {
-      return 'images/chat/voice_volume_4.webp';
-    } else if (index % 7 == 4) {
-      return 'images/chat/voice_volume_5.webp';
-    } else if (index % 7 == 5) {
-      return 'images/chat/voice_volume_6.webp';
-    } else {
-      return 'images/chat/voice_volume_7.webp';
-    }
-  }
 }

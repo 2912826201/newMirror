@@ -136,8 +136,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //输入框的焦点
   FocusNode _focusNode = new FocusNode();
 
-  //输入框内是不是有字符--作用是来判断是否刷新界面
-  bool isHaveTextLen = false;
 
   //列表的滑动监听
   ScrollController _scrollController = ScrollController();
@@ -471,26 +469,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // 存入最新的值
     _removeLongPanelCall();
     context.read<ChatEnterNotifier>().changeCallback(text);
-    bool isReset = false;
-    if (text != null && text.length > 0) {
-      if (!isHaveTextLen) {
-        isReset = true;
-        isHaveTextLen = true;
-      }
-    } else {
-      Application.appContext.read<ChatEnterNotifier>().clearRules();
-      if (isHaveTextLen) {
-        isReset = true;
-        isHaveTextLen = false;
-      }
-    }
-    if (isReset) {
-      Future.delayed(Duration(milliseconds: 100), () {
-        if (mounted) {
-          EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
-        }
-      });
-    }
+    EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   String getChatName() {
@@ -881,7 +860,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         bottomSettingChildKey.currentState.setCursorIndexPr(0);
         _changTextLen("");
         context.read<ChatEnterNotifier>().clearRules();
-        isHaveTextLen = false;
         if (chatDataList.length > 100) {
           List<ChatDataModel> list = [];
           list = chatDataList.sublist(0, 100);
@@ -1009,7 +987,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     animateToBottom();
     if (mounted) {
       _textController.text = "";
-      isHaveTextLen = false;
       if (chatDataList.length > 100) {
         List<ChatDataModel> list = [];
         list = chatDataList.sublist(0, 100);
@@ -1063,7 +1040,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         if (mounted) {
           _textController.text = "";
           bottomSettingChildKey.currentState.setCursorIndexPr(0);
-          isHaveTextLen = false;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
         }
@@ -1089,7 +1065,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           _resetShowTopAttentionUi();
           _textController.text = "";
           bottomSettingChildKey.currentState.setCursorIndexPr(0);
-          isHaveTextLen = false;
           recallNotificationMessagePosition = -1;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
@@ -1204,7 +1179,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (mounted) {
       _textController.text = "";
       bottomSettingChildKey.currentState.setCursorIndexPr(0);
-      isHaveTextLen = false;
       EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
