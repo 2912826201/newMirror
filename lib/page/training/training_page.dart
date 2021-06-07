@@ -187,24 +187,6 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     );
   }
 
-  Widget _buildTestBanner() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Container(
-        height: _screenWidth * 140 / 375,
-        color: AppColor.bgBlack,
-        child: Center(
-          child: RaisedButton(
-            onPressed: () {
-              AppRouter.navigateToTestPage(context);
-            },
-            child: Text("去测试页"),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildBanner() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
