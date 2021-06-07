@@ -46,7 +46,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   UserModel userModel;
-
+  static const EventChannel eventChannel = EventChannel('com.aimymusic.mirror_phoneListener');
   //头像的高度
   double userAvatarHeight = 71;
 
@@ -58,6 +58,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
+ /* static const basicMessageChannel = BasicMessageChannel('messageChannel', StandardMessageCodec());
+  static const methodChannel = const MethodChannel('PhoneStatusListener');*/
+
+/*  //设置消息监听
+  Future<dynamic> nativeMessageListener() async {
+    methodChannel.setMethodCallHandler((resultCall) {
+      //处理原生 Android iOS 发送过来的消息
+      MethodCall call = resultCall;
+      String method = call.method;
+      Map arguments = call.arguments;
+      int code = arguments["phoneStatus"];
+      // String message = arguments["message"];
+      // String recive = " code $code message $message and method $method ";
+      print("---code---phoneStatus---code-method$method---code----$code");
+    });
+  }*/
 
   @override
   // TODO: implement wantKeepAlive
@@ -75,8 +91,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
     if(!AppConfig.needShowTraining)_getNewVersion();
+    // nativeMessageListener();
+  /*  basicMessageChannel.setMessageHandler(( message){
+      print('-------------------------------------flutter-接收到的');
+      print('------------------flutter 接收到的--------${message.toString()}');
+    });*/
+/*    eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);*/
+  }
+  void _onEvent(Object event) {
+    setState(() {
+      print('---------------------$event');
+    });
   }
 
+  void _onError(Object error) {
+    setState(() {
+      print('---------------------$error');
+    });
+  }
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if (model != null) {
@@ -544,21 +576,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
+
         /*jumpChatPageSystem(context);*/
-          showToast("这个flutter告诉android要展示的内容");
+      /*    showToast("这个flutter告诉android要展示的内容");*/
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
         break;
-    }
-  }
-  static const platform = const MethodChannel("com.flyou.test/android");
-
-  showToast(String msg) async {
-    try {
-      await platform.invokeMethod("showToast",{"msg":msg});
-    } on PlatformException catch (e) {
-      print(e.toString());
     }
   }
 }

@@ -641,14 +641,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
-          commentModel.totalCount--;
+       /*   commentModel.totalCount--;*/
           break;
         }
         int judge = 0;
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
             commentModel.list[i].replys.removeAt(j);
+/*
             commentModel.totalCount--;
+*/
             (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
               (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
