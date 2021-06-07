@@ -102,6 +102,9 @@ android {
                     CHANNEL_CODE: "10000",
                     APP_ICON: "@mipmap/ic_launcher_dev",
                     ENVIRONMENT: "DEV",
+                    JPUSH_PKGNAME : 'com.aimymusic.mirror',
+                    JPUSH_APPKEY : "94357c150b038fa1183def8f",
+                    JPUSH_CHANNEL : "10000",
             ]
         }
         common_release {
@@ -112,6 +115,9 @@ android {
                     CHANNEL_CODE: "10000",
                     APP_ICON: "@mipmap/ic_launcher",
                     ENVIRONMENT: "PROD",
+                    JPUSH_PKGNAME : 'com.aimymusic.mirror',
+                    JPUSH_APPKEY : "94357c150b038fa1183def8f",
+                    JPUSH_CHANNEL : "10000",
             ]
         }
     }
