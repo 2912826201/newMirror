@@ -9,8 +9,9 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:toast/toast.dart';
+
 
 // at回调
 typedef TriggerAtCallback = Future<String> Function(String at);
@@ -102,18 +103,27 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       // 旧值文本长度
       int oldUtf8Length = utf8.encode(oldValue.text).length;
       print("oldUtf8Length:::1:::$oldUtf8Length");
+      bool isMaxNumberOfBytes=false;
       // 拼接没有超出限制的文本
       newInputText.characters.forEach((element) {
+        if(isMaxNumberOfBytes){
+          return;
+        }
         oldUtf8Length += utf8.encode(element).length;
         print("oldUtf8Length:::2:::$oldUtf8Length");
         if (oldUtf8Length <= maxNumberOfBytes) {
           oldText += element;
         } else {
+          isMaxNumberOfBytes=true;
           print("跳出");
-          ToastShow.show(msg: "字数超出限制", context: context, gravity: Toast.CENTER);
           return;
         }
       });
+
+      if(isMaxNumberOfBytes){
+        ToastShow.show(msg: "字数超出限制", context: context, gravity: Toast.CENTER);
+      }
+
       return TextEditingValue(
           text: oldText,
           selection: TextSelection(

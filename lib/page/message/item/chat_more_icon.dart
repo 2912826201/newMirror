@@ -40,7 +40,11 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
   }
 
   _resetMoreBtn(bool isVoiceState) {
-    isComMomButton = StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0&&!isVoiceState;
+    bool isShowSubmitBtn=StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0&&!isVoiceState;
+    if(isShowSubmitBtn==isComMomButton){
+      return;
+    }
+    isComMomButton = isShowSubmitBtn;
     if (mounted) {
       setState(() {});
     }

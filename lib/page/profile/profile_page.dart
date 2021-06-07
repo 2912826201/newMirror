@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,7 +14,6 @@ import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -23,7 +21,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -90,25 +87,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.initState();
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
-    if(!AppConfig.needShowTraining)_getNewVersion();
-    // nativeMessageListener();
-  /*  basicMessageChannel.setMessageHandler(( message){
-      print('-------------------------------------flutter-接收到的');
-      print('------------------flutter 接收到的--------${message.toString()}');
-    });*/
-/*    eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);*/
-  }
-  void _onEvent(Object event) {
-    setState(() {
-      print('---------------------$event');
-    });
+    if (!AppConfig.needShowTraining) _getNewVersion();
   }
 
-  void _onError(Object error) {
-    setState(() {
-      print('---------------------$error');
-    });
-  }
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if (model != null) {
@@ -183,14 +164,14 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         ),
         if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_scan, 24), "扫一扫"),
-        if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24), "关于"),
-        if(!AppConfig.needShowTraining)_bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24), "意见反馈"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24), "关于"),
+        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24), "意见反馈"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_setting, 24), "设置"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
+        if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
       ],
     );
   }
@@ -321,6 +302,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
+
   //底部功能列表
   Widget _bottomSetting(Widget icon, String text) {
     return GestureDetector(
@@ -377,34 +359,38 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   //头像昵称
   Widget _getUserImage() {
     return InkWell(
-      onTap: (){
+      onTap: () {
         jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
             avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
             userName: context.read<ProfileNotifier>().profile.nickName);
       },
       child: Container(
-        height: userAvatarHeight,
-        width: width,
-        padding: EdgeInsets.only(left: 16, right: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _imgAvatar(),
-            SizedBox(
-              width: 12,
-            ),
-            Expanded(
-              child: Text(
-                context.watch<ProfileNotifier>().profile.nickName,
-                style: AppStyle.textMedium18,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+          height: userAvatarHeight,
+          width: width,
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _imgAvatar(),
+              SizedBox(
+                width: 12,
               ),
-            ),
-            SizedBox(width: 72.5,)
-          ],
-        )),);
+              Expanded(
+                child: Text(
+                  context.watch<ProfileNotifier>().profile.nickName,
+                  style: AppStyle.textMedium18,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              SizedBox(
+                width: 72.5,
+              )
+            ],
+          )),
+    );
   }
+
   //关注，粉丝，动态数
   Widget _userFollowRow() {
     return Container(
@@ -443,32 +429,31 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       width: userAvatarHeight,
       height: userAvatarHeight,
       child: Stack(
-          children: [
-            Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-              print("头像地址:$avatar");
-              return ClipOval(
-                child: CachedNetworkImage(
-                  useOldImageOnUrlChange: true,
-                  height: userAvatarHeight,
-                  width: userAvatarHeight,
-                  memCacheWidth: 250,
-                  memCacheHeight: 250,
-                  imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: AppColor.bgWhite,
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: AppColor.bgWhite,
-                  ),
+        children: [
+          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+            print("头像地址:$avatar");
+            return ClipOval(
+              child: CachedNetworkImage(
+                useOldImageOnUrlChange: true,
+                height: userAvatarHeight,
+                width: userAvatarHeight,
+                memCacheWidth: 250,
+                memCacheHeight: 250,
+                imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
                 ),
-              );
-            }, selector: (context, notifier) {
-              return notifier.profile.avatarUri;
-            }),
-          ],
-        ),
-
+                errorWidget: (context, url, error) => Container(
+                  color: AppColor.bgWhite,
+                ),
+              ),
+            );
+          }, selector: (context, notifier) {
+            return notifier.profile.avatarUri;
+          }),
+        ],
+      ),
     );
   }
 
@@ -528,8 +513,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-
-
   //点击事件
   void onClickListener(String title) async {
     switch (title) {
@@ -576,9 +559,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
-
         /*jumpChatPageSystem(context);*/
-      /*    showToast("这个flutter告诉android要展示的内容");*/
+        // showToast("这个flutter告诉android要展示的内容");
+        AppRouter.navigateToTestPage(context);
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);

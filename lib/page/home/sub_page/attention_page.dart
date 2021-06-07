@@ -21,7 +21,7 @@ import 'package:mirror/widget/sliding_element_exposure/exposure_detector_control
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
+
 import 'package:visibility_detector/src/visibility_detector_controller.dart';
 
 enum Status {

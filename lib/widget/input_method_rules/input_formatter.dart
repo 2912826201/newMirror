@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:toast/toast.dart';
+
 // 输入框回调
 typedef InputChangedCallback = void Function(String value);
 

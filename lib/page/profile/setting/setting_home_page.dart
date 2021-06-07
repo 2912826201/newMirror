@@ -4,6 +4,7 @@ import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:toast/toast.dart';
+
 
 ///设置主页
 class SettingHomePage extends StatefulWidget {

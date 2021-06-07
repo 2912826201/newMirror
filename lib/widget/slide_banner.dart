@@ -22,7 +22,7 @@ import 'package:mirror/widget/banner_view/banner_view.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+
 
 // 轮播图
 class SlideBanner extends StatefulWidget {

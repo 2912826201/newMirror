@@ -349,6 +349,12 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       height: height,
       color: AppColor.bgWhite,
+      alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.only(bottom: 10),
+      child: Text(
+        "文件损坏",
+        style: TextStyle(fontSize: 12, color: AppColor.black),
+      ),
     );
   }
 
@@ -360,7 +366,10 @@ class ImgVideoMsg extends StatelessWidget {
       imageUrl: imageUrl ?? "",
       fit: BoxFit.cover,
       placeholder: (context, url) => getImageShowImage(),
-      errorWidget: (context, url, error) => getImageShowImage(),
+      errorWidget: (context, url, error) {
+        isOpenGallery = false;
+        return getImageShowImage();
+      },
     );
   }
 

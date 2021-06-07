@@ -5,9 +5,10 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:toast/toast.dart';
+
 
 class FitnessPartPage extends StatefulWidget {
   @override

@@ -37,7 +37,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:toast/toast.dart';
+
 
 import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';

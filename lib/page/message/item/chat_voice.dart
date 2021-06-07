@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound_lite/flutter_sound.dart';
+import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+// import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -12,6 +13,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:file/src/backends/local/local_file_system.dart';
 
 import 'voice_dialog.dart';
 
@@ -53,25 +55,41 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
-  FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+  // FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+
+  LocalFileSystem localFileSystem=LocalFileSystem();
+
+  FlutterAudioRecorder _recorder;
+  Recording _current;
+  RecordingStatus _currentStatus = RecordingStatus.Unset;
+
   String _mPath;
 
   Timer _timer;
 
   bool automaticPost = false;
 
+  bool isRecordering=false;
+
   @override
   void initState() {
     super.initState();
+    init();
+    // openTheRecorder().then((value) {});
+  }
 
-    openTheRecorder().then((value) {});
+  init()async{
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw "沒有权限";
+    }
   }
 
   @override
   void dispose() {
     stopRecorder();
-    _mRecorder.closeAudioSession();
-    _mRecorder = null;
+    // _mRecorder.closeAudioSession();
+    // _mRecorder = null;
     if (_mPath != null) {
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
@@ -87,7 +105,18 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   Future<void> stopRecorder() async {
-    await _mRecorder.stopRecorder();
+    await Future.delayed(Duration(milliseconds: 300), () {
+      print("延时停止300毫秒");
+    });
+    var result = await _recorder.stop();
+    print("Stop recording: ${result.path}");
+    print("Stop recording: ${result.duration}");
+    File file = localFileSystem.file(result.path);
+    print("File length: ${await file.length()}");
+
+    isRecordering = false;
+
+    // await _mRecorder.stopRecorder();
     //print(_mPath);
     if (context != null) {
       setState(() {
@@ -97,10 +126,15 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   void startRecorder() async {
-    await _mRecorder.startRecorder(
-      toFile: _mPath,
-      codec: Codec.aacADTS,
-    );
+    var outputFile = File(_mPath);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
+    }
+    _recorder = FlutterAudioRecorder(_mPath); // .wav .aac .m4a
+    await _recorder.initialized;
+    await _recorder.start();
+    var recording = await _recorder.current(channel: 0);
+
     initTimer();
     setState(() {});
   }
@@ -118,28 +152,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         alertText: "手指上滑,取消发送");
 
     _mPath = AppConfig.getAppVoiceFilePath();
-    var outputFile = File(_mPath);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
+
+
+    if (overlayEntry == null) {
+      overlayEntry = showVoiceDialog(context);
     }
 
     isUp = false;
-    int index;
     setState(() {
       textShow = "松开发送";
       voiceState = false;
-      DateTime now = new DateTime.now();
-      int date = now.millisecondsSinceEpoch;
-      DateTime current = DateTime.fromMillisecondsSinceEpoch(date);
-      String recordingTime = DateUtil.formatDateV(current, format: "ss:SS");
-      index = int.parse(recordingTime.toString().substring(3, 5));
     });
 
     startRecorder();
 
-    if (overlayEntry == null) {
-      overlayEntry = showVoiceDialog(context, index: index);
-    }
   }
 
   hideVoiceView(bool automaticPost) async {
@@ -161,34 +187,46 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    if (costTime < minRecordVoiceDuration + 1) {
-      context.read<VoiceAlertData>().changeCallback(
-            alertText: "说话时间太短",
-            imageIconString: speckTimeTooShortImageString,
-          );
-      var outputFile = File(_mPath);
-      if (outputFile.existsSync()) {
-        await outputFile.delete();
-      }
-      Future.delayed(Duration(milliseconds: 600), () {
-        if (overlayEntry != null) {
-          overlayEntry.remove();
-          overlayEntry = null;
-        }
-      });
-    } else {
+
+    if (isUp) {
       if (overlayEntry != null) {
         overlayEntry.remove();
         overlayEntry = null;
       }
-      if (isUp) {
-        //print("取消发送");
-        if (records.length > 0) {
-          records.removeLast();
+
+      isRecordering=false;
+      costTime=0;
+      //print("取消发送");
+      if (records.length > 0) {
+        records.removeLast();
+      }
+    } else {
+      if (costTime < minRecordVoiceDuration + 1) {
+        isRecordering=false;
+        costTime=0;
+        context.read<VoiceAlertData>().changeCallback(
+          alertText: "说话时间太短",
+          imageIconString: speckTimeTooShortImageString,
+        );
+        var outputFile = File(_mPath);
+        if (outputFile.existsSync()) {
+          await outputFile.delete();
         }
-      } else {
+        Future.delayed(Duration(milliseconds: 600), () {
+          if (overlayEntry != null) {
+            overlayEntry.remove();
+            overlayEntry = null;
+          }
+        });
+      }else{
+        if (overlayEntry != null) {
+          overlayEntry.remove();
+          overlayEntry = null;
+        }
         //print("进行发送");
         widget.voiceFile(_mPath, costTime);
+        isRecordering=false;
+        costTime=0;
         // //print("进行发送：_mPath：$_mPath");
       }
     }
@@ -238,15 +276,32 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
-      onVerticalDragStart: (details) {
-        // startY = details.globalPosition.dy;
-        // showVoiceView();
-      },
-      onVerticalDragDown: (details) async {
+      onVerticalDragStart: (details)async {
+        if(isRecordering){
+          return;
+        }
         context.read<VoiceSettingNotifier>().stop();
         var status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
-          throw RecordingPermissionException('Microphone permission not granted');
+          throw "没有权限录音权限";
+        } else {
+          if (ClickUtil.isFastClick()) {
+            return;
+          }
+          startY = details.globalPosition.dy;
+          isRecordering=true;
+          showVoiceView();
+        }
+      },
+      onVerticalDragDown: (details) async {
+        if(isRecordering){
+          return;
+        }
+        isRecordering=true;
+        context.read<VoiceSettingNotifier>().stop();
+        var status = await Permission.microphone.request();
+        if (status != PermissionStatus.granted) {
+          throw "没有权限录音权限";
         } else {
           if (ClickUtil.isFastClick()) {
             return;
@@ -274,22 +329,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     );
   }
 
-  Future<void> openTheRecorder() async {
-    var status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException('Microphone permission not granted');
-    }
-
-    // var tempDir = await getTemporaryDirectory();
-    // _mPath = '${tempDir.path}/flutter_sound_example.aac';
-
-    _mPath = AppConfig.getAppVoiceFilePath();
-    var outputFile = File(_mPath);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
-    }
-    await _mRecorder.openAudioSession();
-  }
 
   void initTimer() {
     if (_timer != null) {
@@ -297,6 +336,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer = null;
     }
     if (context == null) {
+      stopRecorder();
+      isRecordering=false;
       return;
     }
     costTime = 0;
@@ -304,6 +345,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
           showDataTime: DateUtil.formatSecondToStringNumShowMinute(costTime),
         );
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if(!isRecordering){
+        if (_timer != null) {
+          _timer.cancel();
+          _timer = null;
+        }
+      }
       if (mounted) {
         setState(() {
           if (costTime + 1 > maxRecordVoiceDuration) {
@@ -325,21 +372,4 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     });
   }
 
-  String getVoiceImage(int index) {
-    if (index % 7 == 0) {
-      return 'images/chat/voice_volume_1.webp';
-    } else if (index % 7 == 1) {
-      return 'images/chat/voice_volume_2.webp';
-    } else if (index % 7 == 2) {
-      return 'images/chat/voice_volume_3.webp';
-    } else if (index % 7 == 3) {
-      return 'images/chat/voice_volume_4.webp';
-    } else if (index % 7 == 4) {
-      return 'images/chat/voice_volume_5.webp';
-    } else if (index % 7 == 5) {
-      return 'images/chat/voice_volume_6.webp';
-    } else {
-      return 'images/chat/voice_volume_7.webp';
-    }
-  }
 }

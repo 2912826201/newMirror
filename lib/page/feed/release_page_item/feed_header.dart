@@ -19,7 +19,6 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
 
-import 'package:toast/toast.dart';
 
 import '../release_page.dart';
 

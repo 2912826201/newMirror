@@ -44,6 +44,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   bool bottomSettingPanelState;
   bool emojiState;
   int cursorIndexPr = 0;
+  bool isShowCanIcon=false;
 
   List<EmojiModel> emojiModelList = [];
 
@@ -63,6 +64,18 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   }
 
   _resetPostBtn(bool isVoiceState) {
+
+    bool isShowCanIcon=!(widget.textController.text == null || widget.textController.text.isEmpty)&&!isVoiceState;
+
+    if(this.isShowCanIcon==isShowCanIcon){
+      return;
+    }
+    this.isShowCanIcon=isShowCanIcon;
+
+    if(!emojiState){
+      return;
+    }
+
     if (mounted) {
       setState(() {});
     }
@@ -70,6 +83,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   _initData() async {
     //获取表情的数据
+    isShowCanIcon=!(widget.textController.text == null || widget.textController.text.isEmpty);
     emojiModelList = await EmojiManager.getEmojiModelList();
     if (mounted) {
       setState(() {});
@@ -209,7 +223,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
           //表情面板发送按钮
           AppIconButton(
               iconSize: 24,
-              svgName: widget.textController.text == null || widget.textController.text.isEmpty
+              svgName: !isShowCanIcon
                   ? AppIcon.message_cant_send
                   : AppIcon.message_send,
               buttonWidth: 44,
