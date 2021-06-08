@@ -20,7 +20,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/better_player_list_video/batter_player.dart';
+import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/video_exposure/video_exposure.dart';
 
