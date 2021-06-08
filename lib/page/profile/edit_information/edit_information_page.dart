@@ -93,7 +93,7 @@ class _EditInformationState extends State<EditInformation> {
           if (context.read<ProfileNotifier>().profile.cityCode == element.regionCode) {
             print('初始化城市=======================================cityCode=====${element.regionCode}');
             print('初始化城市=======================================cityName=====${element.regionName}');
-            provinceCity = element.regionName+provinceMap[element.parentId].regionName;
+            provinceCity = element.regionName+" "+provinceMap[element.parentId].regionName;
             cityCode = element.regionCode;
           }
         });
