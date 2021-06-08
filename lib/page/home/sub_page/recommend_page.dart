@@ -208,6 +208,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });
             }
+            // 默认关闭话题动态
+            recommendModelList.forEach(( v) {
+              if(v.recommendSourceDto != null) {
+                v.recommendSourceDto.type = 0;
+              }
+            });
             _refreshController.refreshCompleted();
             hasNext = dataModel.hasNext;
             print("第一次的hasNext：：$hasNext");
@@ -242,6 +248,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           dataModel.list.forEach((v) {
             recommendIdList.add(HomeFeedModel.fromJson(v).id);
             recommendModelList.add(HomeFeedModel.fromJson(v));
+          });
+          // 默认关闭话题动态
+          recommendModelList.forEach(( v) {
+            if(v.recommendSourceDto != null) {
+              v.recommendSourceDto.type = 0;
+            }
           });
           _refreshController.loadComplete();
         }

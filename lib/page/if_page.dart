@@ -90,7 +90,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
           bottomHeight: screen_bottom);
       isInit = true;
     }
-    ;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       // child: Scaffold(

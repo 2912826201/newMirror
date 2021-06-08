@@ -62,7 +62,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   String lastString;
 
   // 滑动控制器
-  ScrollController _scrollController = new ScrollController();
+  // ScrollController _scrollController = new ScrollController();
 
   // 是否存在下一页
   int hasNext;
@@ -80,7 +80,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    // _scrollController.dispose();
     // 取消网络请求
     cancelRequests(token: token);
     if (timer != null) {
@@ -214,6 +214,20 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
       // 更新全局监听
       if (mounted) {
+        //筛选首页关注页话题动态
+        List<HomeFeedModel> homeFollowModel = [];
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          if (value.recommendSourceDto != null) {
+            homeFollowModel.add(value);
+          }
+        });
+        homeFollowModel.forEach((element) {
+          feedList.forEach((v) {
+            if (element.id == v.id) {
+              v.recommendSourceDto = element.recommendSourceDto;
+            }
+          });
+        });
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
     } else {
@@ -250,6 +264,20 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
             _refreshController.loadComplete();
             print("-------------------_______________________________");
           }
+          //筛选首页关注页话题动态
+          List<HomeFeedModel> homeFollowModel = [];
+          context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+            if (value.recommendSourceDto != null) {
+              homeFollowModel.add(value);
+            }
+          });
+          homeFollowModel.forEach((element) {
+            feedList.forEach((v) {
+              if (element.id == v.id) {
+                v.recommendSourceDto = element.recommendSourceDto;
+              }
+            });
+          });
           // 同步数据
           context.read<FeedMapNotifier>().updateFeedMap(feedList);
         }
@@ -308,7 +336,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                       requestFeednIterface();
                     },
                     child: CustomScrollView(
-                      controller: _scrollController,
+                      controller: PrimaryScrollController.of(context),
                       slivers: [
                         if (AppConfig.needShowTraining)
                           SliverToBoxAdapter(

@@ -146,7 +146,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   @override
   void dispose() {
     print("销毁了页面");
-    _scrollController.dispose();
+    // _scrollController.dispose();
     // 取消网络请求
     cancelRequests(token: token);
 
@@ -180,6 +180,20 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         }
       }
       try {
+        //筛选首页关注页话题动态
+        List<HomeFeedModel> homeFollowModel = [];
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          if (value.recommendSourceDto != null) {
+            homeFollowModel.add(value);
+          }
+        });
+        homeFollowModel.forEach((element) {
+          feedList.forEach((v) {
+            if (element.id == v.id) {
+              v.recommendSourceDto = element.recommendSourceDto;
+            }
+          });
+        });
         // 更新数据
         context.read<FeedMapNotifier>().updateFeedMap(feedList, needNotify: mounted);
       } catch (e) {
@@ -243,7 +257,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                           requestFeednIterface(refreshOrLoading: false);
                         },
                         child: CustomScrollView(
-                            controller: _scrollController,
+                            controller: PrimaryScrollController.of(context),
+                            // _scrollController,
                             physics: AlwaysScrollableScrollPhysics(),
                             slivers: [
                               // SliverToBoxAdapter(
