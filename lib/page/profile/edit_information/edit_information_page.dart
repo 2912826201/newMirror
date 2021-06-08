@@ -345,6 +345,7 @@ class _EditInformationState extends State<EditInformation> {
       child: Row(
         children: [
           Container(
+            padding: EdgeInsets.symmetric(),
             alignment: title == "简介" ? Alignment.topLeft : Alignment.centerLeft,
             child: Text(
               title,
@@ -366,9 +367,10 @@ class _EditInformationState extends State<EditInformation> {
           Spacer(),
           Container(
             alignment: title == "简介" ? Alignment.topRight : Alignment.centerRight,
-            child: Text(
-              ">",
-              style: TextStyle(fontSize: 20, color: AppColor.textSecondary),
+            child: AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              18,
+              color: AppColor.textHint,
             ),
           )
         ],
