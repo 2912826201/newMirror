@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
@@ -28,7 +29,6 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
 import 'package:package_info/package_info.dart';
@@ -36,6 +36,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
+import 'api/push_api.dart';
 import 'api/training/course_api.dart';
 import 'api/message_api.dart';
 import 'api/user_api.dart';
@@ -121,9 +122,9 @@ Future _initApp() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //根据环境初始化bugly
-  if(AppConfig.env == Env.DEV) {
+  if (AppConfig.env == Env.DEV) {
     FlutterBugly.init(androidAppId: "251c0d4588", iOSAppId: "2c1f83137a", channel: AppConfig.channelCode);
-  }else{
+  } else {
     FlutterBugly.init(androidAppId: "4172861916", iOSAppId: "9054e325b9", channel: AppConfig.channelCode);
   }
 
@@ -152,7 +153,7 @@ Future _initApp() async {
           ? 1
           : -1;
 
-  Application.openAppTime=DateTime.now().millisecondsSinceEpoch;
+  Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
   // 申请通知权限
   // 检查是否已有读写内存的权限
@@ -195,6 +196,29 @@ Future _initApp() async {
   await AmapService.instance.init(
     iosKey: AppConfig.amapIOSKey,
     androidKey: AppConfig.amapAndroidKey,
+  );
+
+  //初始化极光推送
+  JPush jpush = JPush();
+  jpush.addEventHandler(
+    // 接收通知回调方法。
+    onReceiveNotification: (Map<String, dynamic> message) async {
+      print("flutter onReceiveNotification: $message");
+    },
+    // 点击通知回调方法。
+    onOpenNotification: (Map<String, dynamic> message) async {
+      print("flutter onOpenNotification: $message");
+    },
+    // 接收自定义消息回调方法。
+    onReceiveMessage: (Map<String, dynamic> message) async {
+      print("flutter onReceiveMessage: $message");
+    },
+  );
+  jpush.setup(
+    appKey: "94357c150b038fa1183def8f",
+    channel: AppConfig.channelCode,
+    production: AppConfig.env != Env.DEV,
+    debug: AppConfig.env == Env.DEV, // 设置是否打印 debug 日志
   );
 
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
@@ -253,8 +277,8 @@ Future _initApp() async {
     //匿名用户时 保持上面已赋值的默认初始值
   }
   //提前获取新版本信息
-  getNewVersion().then((value){
-    if(value!=null&&AppConfig.version!=value.version){
+  getNewVersion().then((value) {
+    if (value != null && AppConfig.version != value.version) {
       print('-----------------------------进了更新');
       Application.versionModel = value;
       Application.haveOrNotNewVersion = true;
@@ -278,6 +302,10 @@ Future _initApp() async {
 
   //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
   if (Application.token.anonymous == 0) {
+    //上报极光推送RegistrationID
+    jpush.getRegistrationID().then((rid) {
+      uploadDeviceId(rid);
+    });
     //todo 获取登录的机器信息
     try {
       List<MachineModel> machineList = await getMachineStatusInfo();

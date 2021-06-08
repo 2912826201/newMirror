@@ -30,8 +30,6 @@ class LikeState extends State<Like> {
   // 是否存在下一页
   int feedLuadHasNext;
   RefreshController refreshController = RefreshController();
-  ScrollController scrollController = ScrollController();
-
   @override
   void initState() {
     requestFeedLuadList(isFrist: true);
@@ -90,16 +88,16 @@ class LikeState extends State<Like> {
                                 enablePullDown: false,
                                 controller: refreshController,
                                 footer: CustomFooter(
-                                  onOffsetChange: (offset) {
-                                    if (footerText != "" &&
-                                        PrimaryScrollController.of(context).offset > 0 &&
-                                        offset >= PrimaryScrollController.of(context).offset) {
-                                      print('---------------------------页面数据不够多,不展示文字');
-                                      setState(() {
-                                        footerText = "";
-                                      });
-                                    }
-                                  },
+                                  // onOffsetChange: (offset) {
+                                  //   if (footerText != "" &&
+                                  //       PrimaryScrollController.of(context).offset > 0 &&
+                                  //       offset >= PrimaryScrollController.of(context).offset) {
+                                  //     print('---------------------------页面数据不够多,不展示文字');
+                                  //     setState(() {
+                                  //       footerText = "";
+                                  //     });
+                                  //   }
+                                  // },
                                   builder: (BuildContext context, LoadStatus mode) {
                                     Widget body;
                                     if (mode == LoadStatus.loading) {

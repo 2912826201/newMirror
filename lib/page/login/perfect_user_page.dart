@@ -4,9 +4,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/push_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
@@ -334,6 +336,10 @@ class _PerfectUserState extends State<PerfectUserPage> {
     }
     // 友盟上报登录账号
     UmengCommonSdk.onProfileSignIn("${Application.profile.uid}");
+    //上报极光推送RegistrationID
+    JPush().getRegistrationID().then((rid) {
+      uploadDeviceId(rid);
+    });
     AppRouter.navigateToLoginSucess(context);
   }
 

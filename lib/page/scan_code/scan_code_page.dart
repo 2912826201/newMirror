@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -277,8 +278,8 @@ class scanCodePageState extends State<ScanCodePage> {
 
   //解析这个短链接
   void resolveScanResult(String result) async {
-    //TODO 判断二维码短链接的语句之后要换
-    if (result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")) {
+    //FIXME 判断二维码短链接的语句之后要换
+    if (result.startsWith("${AppConfig.getApiHost()}/third/web/url/fitness")) {
       //是我们自己的短链接 要用get请求获取其中的uri
       requestOver = false;
       String uri = await resolveShortUrl(result);

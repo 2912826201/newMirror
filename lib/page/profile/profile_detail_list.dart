@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
@@ -110,6 +111,21 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     Future.delayed(Duration.zero, () {
       // 同步数据
       if (mounted) {
+        //筛选首页关注页话题动态
+        List<HomeFeedModel> homeFollowModel = [];
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+          if (value.recommendSourceDto != null) {
+            homeFollowModel.add(value);
+          }
+        });
+        homeFollowModel.forEach((element) {
+          followModel.forEach((v) {
+            if (element.id == v.id) {
+              v.recommendSourceDto = element.recommendSourceDto;
+            }
+          });
+        });
+        // 可以同步是因为加了页面去判断只在推荐页做展示
         context.read<FeedMapNotifier>().updateFeedMap(followModel);
       }
     });
@@ -182,7 +198,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
           context.read<FeedMapNotifier>().deleteFeed(id);
         }
-
       });
     }
   }
