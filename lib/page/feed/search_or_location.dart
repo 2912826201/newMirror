@@ -1,3 +1,4 @@
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -63,7 +64,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
 
   init() async {
     //flutter定位只能获取到经纬度信息
-    currentAddressInfo = await AmapLocation.instance.fetchLocation();
+    currentAddressInfo = await AmapLocation.fetch();
     // 调用周边
     aroundHttp();
   }
@@ -258,7 +259,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       print("搜索文案为空");
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity = await aroundForHttp(
-            currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude,
+            currentAddressInfo.longitude, currentAddressInfo.latitude,
             page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
@@ -283,12 +284,12 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   //高德接口获取周边数据
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
-        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude, page: 1);
+        await aroundForHttp(currentAddressInfo.longitude, currentAddressInfo.latitude, page: 1);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       pois = locationInformationEntity.pois;
       // 城市赋值搜索时要用。
-      currentAddressInfo.city = pois.first.cityname;
+      // currentAddressInfo.city = pois.first.cityname;
       // 城市信息导入
       PeripheralInformationPoi poi1 = PeripheralInformationPoi();
       poi1.name = locationInformationEntity.pois.first.cityname;

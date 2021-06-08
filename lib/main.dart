@@ -190,12 +190,12 @@ Future _initApp() async {
 
   //初始化省市信息
   _initRegionMap();
-  await enableFluttifyLog(false);
-  //设置ios的key
-  await AmapService.instance.init(
-    iosKey: AppConfig.amapIOSKey,
-    androidKey: AppConfig.amapAndroidKey,
-  );
+  // await enableFluttifyLog(false);
+  // //设置ios的key
+  // await AmapService.instance.init(
+  //   iosKey: AppConfig.amapIOSKey,
+  //   androidKey: AppConfig.amapAndroidKey,
+  // );
 
   //初始化极光推送
   JPush jpush = JPush();

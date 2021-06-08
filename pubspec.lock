@@ -8,6 +8,34 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.1"
+  amap_core:
+    dependency: transitive
+    description:
+      name: amap_core
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
+  amap_flutter_base:
+    dependency: transitive
+    description:
+      name: amap_flutter_base
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
+  amap_flutter_map:
+    dependency: "direct main"
+    description:
+      name: amap_flutter_map
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
+  amap_location_muka:
+    dependency: "direct main"
+    description:
+      name: amap_location_muka
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.1"
   animations:
     dependency: "direct main"
     description:

@@ -1,3 +1,4 @@
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -117,7 +118,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     var status = await Permission.locationWhenInUse.status;
     if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
       //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.instance.fetchLocation();
+      currentAddressInfo = await AmapLocation.fetch();
       // 调用周边
       aroundHttp();
     }
@@ -134,7 +135,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
       // 用户授予了对所请求功能的访问权限
       case PermissionStatus.granted:
         //flutter定位只能获取到经纬度信息
-        currentAddressInfo = await AmapLocation.instance.fetchLocation();
+        currentAddressInfo = await AmapLocation.fetch();
         // 调用周边
         aroundHttp();
         return 1;
@@ -168,7 +169,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   //高德接口获取周边数据
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
-        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude);
+        await aroundForHttp(currentAddressInfo.longitude, currentAddressInfo.latitude);
     if (locationInformationEntity!=null&&locationInformationEntity.status == "1") {
       print('请求成功');
       if (locationInformationEntity.pois.isNotEmpty) {
