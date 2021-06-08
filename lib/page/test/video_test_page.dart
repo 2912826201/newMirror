@@ -30,7 +30,7 @@ class VideoTestState extends State<VideoTestPage> {
     return Scaffold(
         appBar: CustomAppBar(),
         body: Center(
-          child: _controller.value.initialized
+          child: _controller.value.isInitialized
               ? AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
             child: VideoPlayer(_controller),

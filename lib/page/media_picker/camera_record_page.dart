@@ -419,7 +419,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                 AppSettings.openAppSettings();
                               } else {
                                 //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                                if (Application.platform == 0 || status.isUndetermined) {
+                                //fixme 权限枚举变化
+                                // if (Application.platform == 0 || status.isUndetermined) {
+                                if (Application.platform == 0) {
                                   status = await Permission.camera.request();
                                   if (status.isGranted) {
                                     setState(() {
@@ -475,7 +477,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                       AppSettings.openAppSettings();
                                     } else {
                                       //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                                      if (Application.platform == 0 || status.isUndetermined) {
+                                      //fixme 权限枚举变化
+                                      // if (Application.platform == 0 || status.isUndetermined) {
+                                      if (Application.platform == 0) {
                                         status = await Permission.microphone.request();
                                         if (status.isGranted) {
                                           setState(() {

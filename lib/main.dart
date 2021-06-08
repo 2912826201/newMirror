@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';

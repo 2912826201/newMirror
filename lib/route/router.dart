@@ -318,14 +318,16 @@ class AppRouter {
       } else {
         status = await Permission.photos.status;
       }
-      if (status.isUndetermined) {
-        //未确定的情况下 都请求一下
-        if (Application.platform == 0) {
-          await Permission.storage.request();
-        } else {
-          await Permission.photos.request();
-        }
-      } else if (status.isGranted) {
+      //fixme 权限枚举更改了
+      // if (status.isUndetermined) {
+      //   //未确定的情况下 都请求一下
+      //   if (Application.platform == 0) {
+      //     await Permission.storage.request();
+      //   } else {
+      //     await Permission.photos.request();
+      //   }
+      // } else
+      if (status.isGranted) {
         //已授权直接进
       } else if (status.isPermanentlyDenied) {
         //安卓的拒绝不再提示也直接进 在里面点去授权

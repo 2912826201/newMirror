@@ -169,7 +169,7 @@ class _VideoWidgetState extends State<VideoWidget> {
               child: SizedBox(
                 width: videoSize.width,
                 height: videoSize.height,
-                child: controller.value.initialized
+                child: controller.value.isInitialized
                     ? VideoPlayer(controller)
                     : CachedNetworkImage(
                         imageUrl: widget.feedModel.videos.first.coverUrl,
@@ -187,7 +187,7 @@ class _VideoWidgetState extends State<VideoWidget> {
               ),
             ),
           ),
-          controller.value.initialized
+          controller.value.isInitialized
               ? Positioned(
                   bottom: 0,
                   child: StreamBuilder<double>(

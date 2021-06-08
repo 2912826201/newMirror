@@ -1,4 +1,3 @@
-import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -147,8 +146,12 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
       case PermissionStatus.restricted:
         return 2;
 
-      ///尚未请求许可。
-      case PermissionStatus.undetermined:
+
+    ///尚未请求许可。
+    //fixme 权限枚举变化
+    // case PermissionStatus.undetermined:
+    ///部分许可 ios14
+      case PermissionStatus.limited:
         return 3;
 
       ///用户拒绝访问请求的功能，并选择从不

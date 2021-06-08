@@ -482,15 +482,16 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   _fetchGalleryData(true);
                                 }
                               } else {
-                                if (status.isUndetermined) {
-                                  status = await Permission.photos.status;
-                                  if (status.isGranted) {
-                                    _permissionGranted = true;
-                                    _fetchGalleryData(true);
-                                  }
-                                } else {
+                                //fixme 权限枚举变化
+                                // if (status.isUndetermined) {
+                                //   status = await Permission.photos.status;
+                                //   if (status.isGranted) {
+                                //     _permissionGranted = true;
+                                //     _fetchGalleryData(true);
+                                //   }
+                                // } else {
                                   AppSettings.openAppSettings();
-                                }
+                                // }
                               }
                             }
                           },

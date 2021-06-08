@@ -47,7 +47,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     print("搜索页");
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         body: Container(
             color: AppColor.white,
             child: InkWell(

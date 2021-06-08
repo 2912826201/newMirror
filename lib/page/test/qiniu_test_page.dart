@@ -34,7 +34,8 @@ class _QiniuTestState extends State<QiniuTest> {
   }
 
   _onUpload() async {
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    PickedFile file1 = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+    File file=File(file1.path);
     if (file == null) {
       return;
     }
@@ -54,7 +55,8 @@ class _QiniuTestState extends State<QiniuTest> {
   }
 
   _onUploadNew() async {
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    PickedFile file1 = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+    File file=File(file1.path);
     if (file == null) {
       return;
     }

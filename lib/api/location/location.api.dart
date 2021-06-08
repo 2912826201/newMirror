@@ -47,7 +47,7 @@ class Http {
         return true;
       };
     };
-    _dio.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options) {
+    _dio.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
       // 在请求被发送之前做一些事情
       // Map<String,dynamic> _headers = options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";]??{};
       print("\n================== 请求数据 ==========================");
@@ -59,15 +59,15 @@ class Http {
       //
       // 如果你想终止请求并触发一个错误,你可以返回一个`DioError`对象，或返回`dio.reject(errMsg)`，
       // 这样请求将被中止并触发异常，上层catchError会被调用。
-    }, onResponse: (Response response) {
+    }, onResponse: (Response response, ResponseInterceptorHandler handler) {
       // 在返回响应数据之前做一些预处理
       print("================== 响应数据 ==========================");
       print("statusCode：${response.statusCode}");
       print("response.data：${response.data}");
       return response;
-    }, onError: (DioError e) {
+    }, onError: (DioError err, ErrorInterceptorHandler handler) {
       // 当请求失败时做一些预处理
-      return e; //continue
+      return err; //continue
     }));
   }
 

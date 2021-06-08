@@ -32,11 +32,11 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/post_comments.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'common_course_page.dart';
 

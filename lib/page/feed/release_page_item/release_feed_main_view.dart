@@ -67,11 +67,14 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         var status = await Permission.locationWhenInUse.status;
 
         ///尚未请求许可。请求权限
-        if (status == PermissionStatus.undetermined) {
-          await Permission.locationWhenInUse.request();
-        }
+        //fixme 权限枚举变化
+        // if (status == PermissionStatus.undetermined) {
+        //   await Permission.locationWhenInUse.request();
+        // }
         // 请求了许可但是未授权，弹窗提醒
-        if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
+        //fixme 权限枚举变化
+        // if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
+        if (status != PermissionStatus.granted ) {
           _showDialog(context);
         }
         //  请求了许可授了权，跳转页面
