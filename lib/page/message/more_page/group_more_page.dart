@@ -163,9 +163,9 @@ class GroupMorePageState extends State<GroupMorePage> {
             crossAxisSpacing: 1,
             children: List.generate(groupUserList.length, (index) {
               if (groupUserList[index].avatarUri == "addModel") {
-                return getTopItemAddOrSubUserUi(true, true);
+                return getTopItemAddOrSubUserUi(true);
               } else if (groupUserList[index].avatarUri == "subModel") {
-                return getTopItemAddOrSubUserUi(false, true);
+                return getTopItemAddOrSubUserUi(false);
               } else {
                 return getItemUserImage(index, groupUserList[index]);
               }
@@ -313,6 +313,7 @@ class GroupMorePageState extends State<GroupMorePage> {
               width: 47,
               child: Text(
                 userName,
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -325,36 +326,27 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //显示加减群成员
-  Widget getTopItemAddOrSubUserUi(bool isAdd, bool isVisibility) {
-    return Visibility(
-      visible: isVisibility,
+  Widget getTopItemAddOrSubUserUi(bool isAdd) {
+    return UnconstrainedBox(
+      alignment: Alignment.topCenter,
       child: Container(
-        child: Column(
-          children: [
-            GestureDetector(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(47 / 2.0),
-                child: Container(
-                  color: AppColor.bgWhite,
-                  width: 47,
-                  height: 47,
-                  child: Center(
-                    child: Text(
-                      isAdd ? "+" : "-",
-                      style: TextStyle(fontSize: 20, color: AppColor.textPrimary1),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () {
-                if (isAdd) {
-                  addGroupUser();
-                } else {
-                  deleteGroupUser();
-                }
-              },
-            ),
-          ],
+        height: 47,
+        width: 47,
+        child:AppIconButton(
+          svgName: isAdd?AppIcon.add_follow:AppIcon.add_follow,
+          iconSize: 24,
+          bgColor: AppColor.bgWhite,
+          isCircle:true,
+          buttonHeight:47,
+          buttonWidth:47,
+          iconColor:AppColor.textPrimary1,
+          onTap: () {
+            if (isAdd) {
+              addGroupUser();
+            } else {
+              deleteGroupUser();
+            }
+          },
         ),
       ),
     );
