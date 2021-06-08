@@ -40,7 +40,7 @@ class AppConfig {
   static String buildNumber = "1";
 
   ///切换训练相关布局
-  static bool needShowTraining = false;
+  static bool needShowTraining = true;
 
   //各环境api请求基础路径
   // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
