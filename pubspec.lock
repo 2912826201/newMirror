@@ -532,13 +532,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.12.10"
-  md5_plugin:
-    dependency: "direct main"
-    description:
-      name: md5_plugin
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.2"
   meta:
     dependency: transitive
     description:
@@ -650,7 +643,7 @@ packages:
       name: permission_handler
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.0.1"
+    version: "6.1.3"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -671,7 +664,7 @@ packages:
       name: photo_manager
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.2"
+    version: "0.5.8"
   photo_view:
     dependency: "direct main"
     description:

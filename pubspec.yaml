@@ -37,9 +37,9 @@ dependencies:
   # sqlite数据库
   sqflite: ^2.0.0+3
   # 处理权限
-  permission_handler: ^8.0.1
+  permission_handler: ^6.0.0
   # 本地媒体库
-  photo_manager: ^1.2.2
+  photo_manager: ^0.5.8
   # 融云IM
   rongcloud_im_plugin: ^5.1.2
   # 七牛上传库
@@ -148,7 +148,7 @@ dependencies:
   flutter_holo_date_picker: ^0.3.4+1
   another_flushbar: ^1.10.23
   #获取文件的MD5
-  md5_plugin: ^1.0.2
+#  md5_plugin: ^1.0.2
   #友盟
   umeng_common_sdk: 1.1.0
   #webview
