@@ -169,9 +169,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
-        Future.delayed(Duration(milliseconds: 300), () {
-          getDataAction();
-        });
+        getDataAction();
       } else {
         getDataAction();
       }
