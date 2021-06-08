@@ -104,12 +104,16 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         }
       }
     });
-
-    scrollController.addListener(() {
-      if (widget.focusNode.hasFocus) {
-        print('-------------------focusNode---focusNode----focusNode--focusNode');
-        widget.focusNode.unfocus();
-      }
+    // Build完成第一帧绘制完成回调
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print("关注页Build完成第一帧绘制完成回调");
+      PrimaryScrollController.of(context).addListener(() {
+        print('-------------------11111111111111111111111111111111111');
+        if (widget.focusNode.hasFocus) {
+          print('-------------------focusNode---focusNode----focusNode--focusNode');
+          widget.focusNode.unfocus();
+        }
+      });
     });
   }
 
@@ -211,7 +215,8 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                     _onLoading();
                   },
                   child: ListView.builder(
-                      controller: scrollController,
+                      controller: PrimaryScrollController.of(context),
+                      // scrollController,
                       itemCount: modelList.length,
                       itemExtent: 58,
                       itemBuilder: (context, index) {

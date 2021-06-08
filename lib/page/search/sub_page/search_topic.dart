@@ -44,7 +44,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   List<TopicDtoModel> topicList = [];
 
   // 滑动控制器
-  ScrollController _scrollController = new ScrollController();
+  // ScrollController _scrollController = new ScrollController();
 
   // 是否存在下一页
   int hasNext;
@@ -118,7 +118,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   @override
   void dispose() {
     print("话题页销毁了页面");
-    _scrollController.dispose();
+    // _scrollController.dispose();
     // 取消网络请求
     cancelRequests(token: token);
 
@@ -140,9 +140,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         lastScore = model.lastScore;
         hasNext = model.hasNext;
         if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            topicList.add(TopicDtoModel.fromJson(v));
-          });
+          for (int i = 0; i < 5; i++) {
+            model.list.forEach((v) {
+              topicList.add(TopicDtoModel.fromJson(v));
+            });
+          }
         }
         if (refreshOrLoading) {
           _refreshController.refreshCompleted();
@@ -197,7 +199,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                     requestFeednIterface(refreshOrLoading: false);
                   },
                   child: CustomScrollView(
-                      controller: _scrollController,
+                      // controller: _scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(

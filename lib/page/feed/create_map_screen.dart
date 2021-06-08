@@ -133,7 +133,17 @@ class _createMapScreenState extends State<createMapScreen> {
 
                         /// 标记
                         markers: markers,
-
+                        // onMapClicked: (latLng) async{
+                        //   print("点击");
+                        //   MarkerOption option = MarkerOption(
+                        //     coordinate: LatLng(latLng.latitude, latLng.longitude),
+                        //     widget: AppIcon.getAppIcon(
+                        //       AppIcon.pin_map,
+                        //       36,
+                        //     ),
+                        //   );
+                        //   _controller.addMarker(option);
+                        // },
                         /// 地图创建完成回调
                         onMapCreated: (controller) async {
                           _controller = controller;

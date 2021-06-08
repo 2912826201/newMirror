@@ -62,7 +62,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   String lastString;
 
   // 滑动控制器
-  ScrollController _scrollController = new ScrollController();
+  // ScrollController _scrollController = new ScrollController();
 
   // 是否存在下一页
   int hasNext;
@@ -80,7 +80,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    // _scrollController.dispose();
     // 取消网络请求
     cancelRequests(token: token);
     if (timer != null) {
@@ -336,7 +336,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                       requestFeednIterface();
                     },
                     child: CustomScrollView(
-                      controller: _scrollController,
+                      controller: PrimaryScrollController.of(context),
                       slivers: [
                         if (AppConfig.needShowTraining)
                           SliverToBoxAdapter(

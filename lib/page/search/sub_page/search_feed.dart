@@ -146,7 +146,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   @override
   void dispose() {
     print("销毁了页面");
-    _scrollController.dispose();
+    // _scrollController.dispose();
     // 取消网络请求
     cancelRequests(token: token);
 
@@ -257,7 +257,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                           requestFeednIterface(refreshOrLoading: false);
                         },
                         child: CustomScrollView(
-                            controller: _scrollController,
+                            controller: PrimaryScrollController.of(context),
+                            // _scrollController,
                             physics: AlwaysScrollableScrollPhysics(),
                             slivers: [
                               // SliverToBoxAdapter(
