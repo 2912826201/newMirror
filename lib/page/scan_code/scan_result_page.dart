@@ -24,6 +24,7 @@ class ScanCodeResultType {
 class ScanCodeResultPage extends StatefulWidget {
   final ScanCodeResultModel resultModel;
 
+
   ScanCodeResultPage(this.resultModel);
 
   @override
