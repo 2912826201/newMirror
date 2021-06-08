@@ -77,6 +77,7 @@ class MainPageState extends XCState {
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
     return Scaffold(
+      backgroundColor: AppColor.white,
         bottomNavigationBar: IFTabBar(
           tabBarClickListener: (index) {
             print('----------index-------$index');
