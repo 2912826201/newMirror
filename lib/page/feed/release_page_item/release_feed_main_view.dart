@@ -17,7 +17,6 @@ import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
-import 'package:toast/toast.dart';
 
 import '../release_page.dart';
 

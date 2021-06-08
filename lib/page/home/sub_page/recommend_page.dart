@@ -32,6 +32,7 @@ import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/widget/version_update_dialog.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
@@ -149,8 +150,23 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     EventBus.getDefault()
         .registerNoParameter(_isHaveLoginSuccess, EVENTBUS_RECOMMEND_PAGE, registerName: SHOW_IMAGE_DIALOG);
     super.initState();
-
     _isMachineModelInGame();
+    _versionDialog();
+  }
+
+  void _versionDialog() {
+    if (Application.versionModel!=null&&Application.haveOrNotNewVersion) {
+      if(Application.versionModel.isForceUpdate!=1){
+        Application.haveOrNotNewVersion = false;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        showVersionDialog(
+            context: context,
+            strong: Application.versionModel.isForceUpdate == 1,
+            url: Application.versionModel.url,
+            content: Application.versionModel.description);
+      });
+    }
   }
 
   // 合并请求
@@ -159,7 +175,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐接口
       getHotList(size: 20),
     ];
-    if(AppConfig.needShowTraining)requestList.add(newRecommendCoach());
+    if (AppConfig.needShowTraining) requestList.add(newRecommendCoach());
     // 合并请求
     Future.wait(requestList).then((results) {
       if (mounted) {
@@ -171,7 +187,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           liveVideoModel.clear();
         }
         setState(() {
-          if (AppConfig.needShowTraining&&results[1] != null) {
+          if (AppConfig.needShowTraining && results[1] != null) {
             // initHeight += 93;
             liveVideoModel = results[1];
             print("推荐教练书剑返回");
@@ -259,7 +275,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   againLoginReplaceLayout([bool isBottomNavigationBar = false]) {
-    if(isBottomNavigationBar) {
+    if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {
       _controller.jumpTo(0);
@@ -578,7 +594,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       if (AppRouter.isHaveNewUserPromotionPage()) {
         isShowNewUserDialog = false;
       }
-      if (isShowNewUserDialog) {
+      if (isShowNewUserDialog && Application.haveOrNotNewVersion) {
         Application.isShowNewUserDialog = false;
         this.isShowNewUserDialog = true;
         showImageDialog(context, onClickListener: () {

@@ -22,7 +22,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+
 
 class HeadView extends StatefulWidget {
   HomeFeedModel model;

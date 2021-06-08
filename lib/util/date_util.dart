@@ -380,7 +380,6 @@ class DateUtil {
 
   //获取两个时间的天数相差数7天之内的
   static int twoDateTimeDay(DateTime aDate, DateTime bDate) {
-    print("时间有问题1111：$aDate,$bDate");
     if (aDateEqualBDate(aDate, bDate)) {
       return 0;
     }

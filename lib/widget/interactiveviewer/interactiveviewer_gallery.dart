@@ -219,6 +219,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
               onTap: () {
                 if(widget.sources[index] is TopicDtoModel) {
                   Navigator.of(context).pop();
+                  return;
                 }
                 if ( widget.sources[index] is DemoSourceEntity && widget.sources[index].type == "image") {
                   Navigator.of(context).pop();

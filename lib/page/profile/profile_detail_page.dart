@@ -38,7 +38,7 @@ import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_d
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+
 
 Future<void> jumpToUserProfilePage(BuildContext context, int uId,
     {String avatarUrl, String userName, Function(dynamic result) callback}) async {

@@ -34,7 +34,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
@@ -92,6 +92,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //用户的评论热度-热度排序
   CommentModel courseCommentHot;
   List<int> screenOutHotIds = <int>[];
+
+  bool isLaudCommentLoading=false;
 
   //用户的评论时间-时间排序
   CommentModel courseCommentTime;
@@ -444,7 +446,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
             duration: Duration(seconds: 1),
             child: Container(
-              padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 16, top: 8, bottom: 8),
+              padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 0, top: 8, bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -503,25 +505,29 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
                   Container(
                     child: GestureDetector(
-                      child: Column(
-                        children: [
-                          AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
-                          SizedBox(
-                            height: 7,
-                          ),
-                          Text(
-                            IntegerUtil.formatIntegerEn(value.laudCount),
-                            style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                          ),
-                        ],
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        color: Colors.transparent,
+                        child: Column(
+                          children: [
+                            AppIcon.getAppIcon(value.isLaud == 1 ? AppIcon.like_red_18 : AppIcon.like_18, 18),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            Text(
+                              IntegerUtil.formatIntegerEn(value.laudCount),
+                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                            ),
+                          ],
+                        ),
                       ),
                       onTap: () {
-                        if (ClickUtil.isFastClick()) {
+                        if (isLaudCommentLoading) {
                           return;
                         }
+                        isLaudCommentLoading=true;
                         _laudComment(value.id, value.isLaud == 0, value.uid);
                       },
                     ),
@@ -641,14 +647,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
-          commentModel.totalCount--;
+       /*   commentModel.totalCount--;*/
           break;
         }
         int judge = 0;
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
             commentModel.list[i].replys.removeAt(j);
+/*
             commentModel.totalCount--;
+*/
             (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
               (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
@@ -1497,11 +1505,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _laudComment(int commentId, bool laud, int chatUserId) async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
+      isLaudCommentLoading=false;
       return;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登录app!", context: context);
       AppRouter.navigateToLoginPage(context);
+      isLaudCommentLoading=false;
       return;
     }
 
@@ -1510,10 +1520,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (blackModel.inYouBlack == 1) {
       text = "发布失败，你已将对方加入黑名单";
       ToastShow.show(msg: text, context: context);
+      isLaudCommentLoading=false;
       return;
     } else if (blackModel.inThisBlack == 1) {
       text = "发布失败，你已被对方加入黑名单";
       ToastShow.show(msg: text, context: context);
+      isLaudCommentLoading=false;
       return;
     }
 
@@ -1521,20 +1533,23 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (code != null && code == 200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
-      // if (laud) {
-      //   // ToastShow.show(msg: "点赞成功", context: context);
-      // } else {
-      //   // ToastShow.show(msg: "取消点赞成功", context: context);
-      // }
+      if (laud) {
+        print("点赞成功:laud:$laud,commentId:$commentId");
+      } else {
+        print("取消点赞成功:laud:$laud,commentId:$commentId");
+      }
       if (mounted) {
-        setState(() {});
+        setState(() {
+          isLaudCommentLoading=false;
+        });
       }
     } else {
-      // if (laud) {
-      //   ToastShow.show(msg: "点赞失败", context: context);
-      // } else {
-      //   ToastShow.show(msg: "取消点赞失败", context: context);
-      // }
+      if (laud) {
+        print("点赞失败:laud:$laud,commentId:$commentId");
+      } else {
+        print("取消点赞失败:laud:$laud,commentId:$commentId");
+      }
+      isLaudCommentLoading=false;
     }
   }
 

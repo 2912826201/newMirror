@@ -23,7 +23,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/better_player_list_video/batter_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/video_exposure/video_exposure.dart';
-import 'package:toast/toast.dart';
+
 import 'package:video_player/video_player.dart';
 import 'package:provider/provider.dart';
 import '../dynamic_list.dart';

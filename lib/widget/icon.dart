@@ -144,6 +144,7 @@ class AppIcon {
   static const String error_circle = "assets/svg/error_circle.svg";
   static const String identity_coach_16 = "assets/svg/identity_coach_16.svg";
   static const String chat_16 = "assets/svg/chat_16.svg";
+  static const String chat_red_16 = "assets/svg/chat_red_16.svg";
   static const String pin_map = "assets/svg/pin_map.svg";
   static const String pin_map_self = "assets/svg/pin_map_self.svg";
 

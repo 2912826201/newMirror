@@ -78,7 +78,7 @@ dependencies:
   #系统日历工具
   device_calendar: ^3.1.0
   #toast 吐司 提示
-  toast: ^0.1.5
+#  toast: ^0.1.5
   # 直播播放器 https://fijkplayer.befovy.com/
   fijkplayer: ^0.8.7
   # 下拉刷新上拉加载
@@ -92,7 +92,8 @@ dependencies:
   #  flutter_staggered_grid_view: ^0.3.2
   waterfall_flow: ^2.0.5
   #音频处理
-  flutter_sound_lite: '7.4.9+3'
+#  flutter_sound_lite: '7.4.9+3'
+  flutter_audio_recorder: ^0.5.5
   #音频处理
   audioplayers: ^0.17.0
   #md5
@@ -153,6 +154,8 @@ dependencies:
   umeng_common_sdk: 1.1.0
   #webview
   webview_flutter: ^1.0.7
+  #bugly错误收集
+  flutter_bugly: '0.3.1'
 
 
 
@@ -175,7 +178,7 @@ dependencies:
   #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。
   #  wechat_assets_picker
 
-  flutter_bugly: '0.3.1'
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

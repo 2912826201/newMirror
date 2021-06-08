@@ -14,7 +14,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../release_page.dart';
 
