@@ -27,6 +27,7 @@ import 'package:provider/provider.dart';
 
 
 class CommentInputBox extends StatefulWidget {
+
   CommentInputBox({Key key, this.type, this.isUnderline = false, this.feedModel, this.isFeedDetail = false})
       : super(key: key);
   bool isUnderline;

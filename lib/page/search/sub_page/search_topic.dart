@@ -140,11 +140,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         lastScore = model.lastScore;
         hasNext = model.hasNext;
         if (model.list.isNotEmpty) {
-          for (int i = 0; i < 5; i++) {
+          // for (int i = 0; i < 5; i++) {
             model.list.forEach((v) {
               topicList.add(TopicDtoModel.fromJson(v));
             });
-          }
+          // }
         }
         if (refreshOrLoading) {
           _refreshController.refreshCompleted();

@@ -26,12 +26,18 @@ class AppConfig {
   static const String channel = String.fromEnvironment("APP_CHANNEL", defaultValue: "");
 
   static String get channelCode {
+    int code = 0;
     switch (channel) {
       case "common":
-        return "10000";
+        code = 10000;
+        break;
       default:
-        return "0";
+        break;
     }
+    if (env != Env.DEV) {
+      code++;
+    }
+    return code.toString();
   }
 
   //版本号
