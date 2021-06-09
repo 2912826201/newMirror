@@ -532,6 +532,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.12.10"
+  md5_plugin:
+    dependency: "direct main"
+    description:
+      name: md5_plugin
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   meta:
     dependency: transitive
     description:
