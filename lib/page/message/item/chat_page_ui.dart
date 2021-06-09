@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -14,6 +17,7 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/message/item/add_time_message_util.dart';
@@ -499,4 +503,64 @@ class ChatPageUtil {
       }
     });
   }
+
+
+
+  //检查消息为什么发送失败
+  checkPostMessageFailed(int conversationType,String conversationId)async{
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络", context: context, gravity: 1);
+      return;
+    }else if(conversationType == PRIVATE_TYPE){
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(conversationId));
+      if (blackModel != null) {
+        if (blackModel.inYouBlack == 1) {
+          //print("发送失败，你已将对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: context, gravity: 1);
+          return;
+        } else if (blackModel.inThisBlack == 1) {
+          //print("发送失败，你已被对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: context, gravity: 1);
+          return;
+        }
+      }
+    }
+    _resetConnectRC();
+  }
+
+  //重新连接融云
+  _resetConnectRC()async{
+    Application.rongCloud.disconnect();
+    String token = await requestRongCloudToken();
+    if (token != null) {
+      Application.rongCloud.doConnect(token, (int code, String userId) {
+        print('connect result $code');
+        if (code == 0) {
+          print("connect success userId" + userId);
+          // 连接成功后打开数据库
+          // _initUserInfoCache();
+          print("连接成功，userId为" + userId);
+        } else if (code == 34001) {
+          // 已经连接上了
+        } else if (code == 31004) {
+          // token 非法，需要重新从 APP 服务获取新 token 并连接
+          print("连接失败");
+        }
+      });
+    }
+  }
+
+
+
+  Future<bool> isOffline() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 }
