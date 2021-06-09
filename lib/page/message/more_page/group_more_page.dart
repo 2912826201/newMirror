@@ -333,7 +333,7 @@ class GroupMorePageState extends State<GroupMorePage> {
         height: 47,
         width: 47,
         child:AppIconButton(
-          svgName: isAdd?AppIcon.add_follow:AppIcon.add_follow,
+          svgName: isAdd?AppIcon.group_add:AppIcon.group_remove,
           iconSize: 24,
           bgColor: AppColor.bgWhite,
           isCircle:true,
