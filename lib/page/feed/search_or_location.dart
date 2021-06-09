@@ -38,7 +38,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   List<PeripheralInformationPoi> searchPois = []; //返回搜索页面的数据集合
   bool cityLimit = true; //仅返回指定城市数据
   String searchText = ""; // 记录上一次的搜索文本
-
+  String searchCity = ""; // 城市赋值搜索时要用。
   @override
   void initState() {
     // TODO: implement initState
@@ -176,7 +176,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> searchHttp() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       PeripheralInformationEntity locationInformationEntity =
-          await searchForHttp(searchController.text, currentAddressInfo.city, page: 1);
+          await searchForHttp(searchController.text, searchCity, page: 1);
       searchText = searchController.text;
       searchPois.clear();
       if (locationInformationEntity.status == "1") {
@@ -237,7 +237,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity =
-            await searchForHttp(searchController.text, currentAddressInfo.city, page: pageIndex + 1);
+            await searchForHttp(searchController.text, searchCity, page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -289,7 +289,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       print('请求成功');
       pois = locationInformationEntity.pois;
       // 城市赋值搜索时要用。
-      // currentAddressInfo.city = pois.first.cityname;
+      searchCity = pois.first.cityname;
       // 城市信息导入
       PeripheralInformationPoi poi1 = PeripheralInformationPoi();
       poi1.name = locationInformationEntity.pois.first.cityname;
