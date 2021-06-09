@@ -572,13 +572,27 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
       Application.atMesGroupModel.remove(atMeMsg);
-      setHaveAtMeMsg(isHaveAtMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
         if (chatDataList[i].msg.messageUId == atMeMsg.messageUId) {
           //print("能找到id");
           isHaveAtMeMsgIndex = i;
+
+          List<ChatDataModel> dataList=[];
+          for (int j = 0; j <= i; j++) {
+            dataList.add(chatDataList[j]);
+          }
+          bool isShowName = conversation.getType() == RCConversationType.Group;
+          bool isThanChatScreenHeight = MessageItemHeightUtil.init()
+              .judgeMessageItemHeightIsThenScreenHeight(dataList, isShowName);
+          if(!isThanChatScreenHeight){
+            //print("当前消息在屏幕中间-消除at");
+            isHaveAtMeMsg = false;
+            isHaveAtMeMsgPr = false;
+            Application.atMesGroupModel.remove(atMeMsg);
+            ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+          }
           break;
         } else if (chatDataList[i].msg.sentTime < atMeMsg.sendTime) {
           //print("找不到id--匹配时间");
@@ -586,11 +600,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-          setHaveAtMeMsg(isHaveAtMeMsg);
           break;
         }
       }
     }
+
+    setHaveAtMeMsg(isHaveAtMeMsg);
   }
 
   //listview 当前显示的是第几个 回调

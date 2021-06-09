@@ -20,6 +20,7 @@ class AtMesGroupModel {
   }
 
   void remove(AtMsg atMsg) {
+    print("清除at消息");
     if (atMsg != null) {
       if (this.atMsgMap != null) {
         atMsgMap.remove(atMsg.groupId.toString());
