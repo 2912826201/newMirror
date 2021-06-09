@@ -42,33 +42,40 @@ class Http {
     // _dio.options.headers["Authorization"] = Application.token.accessToken;
     // _dio.options.headers["user-agent"] = "IFITNESS";
     //https证书校验
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+    print("忽略证书");
+    print(dio.httpClientAdapter is DefaultHttpClientAdapter);
+    print("忽略证书333333333333");
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
+      print("忽略证书22222222222222");
       client.badCertificateCallback = (X509Certificate cert, String host, int port) {
+        print("忽略证书111111111");
         return true;
       };
     };
-    _dio.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-      // 在请求被发送之前做一些事情
-      // Map<String,dynamic> _headers = options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";]??{};
-      print("\n================== 请求数据 ==========================");
-      print("url = ${options.uri.toString()}");
-      print("headers = ${options.headers}");
-      return options; //continue
-      // 如果你想完成请求并返回一些自定义数据，可以返回一个`Response`对象或返回`dio.resolve(data)`。
-      // 这样请求将会被终止，上层then会被调用，then中返回的数据将是你的自定义数据data.
-      //
-      // 如果你想终止请求并触发一个错误,你可以返回一个`DioError`对象，或返回`dio.reject(errMsg)`，
-      // 这样请求将被中止并触发异常，上层catchError会被调用。
-    }, onResponse: (Response response, ResponseInterceptorHandler handler) {
-      // 在返回响应数据之前做一些预处理
-      print("================== 响应数据 ==========================");
-      print("statusCode：${response.statusCode}");
-      print("response.data：${response.data}");
-      return response;
-    }, onError: (DioError err, ErrorInterceptorHandler handler) {
-      // 当请求失败时做一些预处理
-      return err; //continue
-    }));
+    // _dio.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+    //   // 在请求被发送之前做一些事情
+    //   // Map<String,dynamic> _headers = options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";]??{};
+    //   print("\n================== 请求数据 ==========================");
+    //   print("url = ${options.uri.toString()}");
+    //   print("headers = ${options.headers}");
+    //   print("options::::::::${options.data}");
+    //   // return options; //continue
+    //   // 如果你想完成请求并返回一些自定义数据，可以返回一个`Response`对象或返回`dio.resolve(data)`。
+    //   // 这样请求将会被终止，上层then会被调用，then中返回的数据将是你的自定义数据data.
+    //   //
+    //   // 如果你想终止请求并触发一个错误,你可以返回一个`DioError`对象，或返回`dio.reject(errMsg)`，
+    //   // 这样请求将被中止并触发异常，上层catchError会被调用。
+    // }, onResponse: (Response response, ResponseInterceptorHandler handler) {
+    //   // 在返回响应数据之前做一些预处理
+    //   print("================== 响应数据 ==========================");
+    //   print("statusCode：${response.statusCode}");
+    //   print("response.data：${response.data}");
+    //   // return response;
+    // }, onError: (DioError err, ErrorInterceptorHandler handler) {
+    //   // 当请求失败时做一些预处理
+    //   print("\n================== 请求失败 ==========================");
+    //   // return err; //continue
+    // }));
   }
 
   Dio get dio {
