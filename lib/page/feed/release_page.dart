@@ -135,7 +135,9 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
       // 用户授予了对所请求功能的访问权限
       case PermissionStatus.granted:
         //flutter定位只能获取到经纬度信息
+        print("flutter定位只能获取到经纬度信息");
         currentAddressInfo = await AmapLocation.fetch();
+        print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
         // 调用周边
         aroundHttp();
         return 1;

@@ -78,7 +78,7 @@ dependencies:
   #系统日历工具
   device_calendar: ^3.1.0
   # 直播播放器 https://fijkplayer.befovy.com/
-  fijkplayer: ^0.9.0
+  fijkplayer: ^0.8.8
   # 下拉刷新上拉加载
   pull_to_refresh: ^2.0.0
   # shared preferences
@@ -156,7 +156,7 @@ dependencies:
   #bugly错误收集
   flutter_bugly: '0.3.1'
   #极光推送 更新flutter版本后要升级到最新
-  jpush_flutter: 2.1.2
+  jpush_flutter: ^2.1.2
 
 
 
