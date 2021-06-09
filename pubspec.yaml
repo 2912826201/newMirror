@@ -148,7 +148,7 @@ dependencies:
   flutter_holo_date_picker: ^0.3.4+1
   another_flushbar: ^1.10.23
   #获取文件的MD5
-#  md5_plugin: ^1.0.2
+  md5_plugin: ^1.0.2
   #友盟
   umeng_common_sdk: 1.1.0
   #webview
