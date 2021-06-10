@@ -39,7 +39,7 @@ dependencies:
   # 处理权限
   permission_handler: ^6.0.0
   # 本地媒体库
-  photo_manager: ^0.5.8
+  photo_manager: ^1.2.2
   # 融云IM
   rongcloud_im_plugin: ^5.1.2
   # 七牛上传库
