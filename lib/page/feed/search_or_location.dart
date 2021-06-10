@@ -13,7 +13,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
-  SearchOrLocationWidget({this.checkIndex, this.selectAddress});
+  SearchOrLocationWidget({this.checkIndex, this.selectAddress,this.currentAddressInfo});
 
   @override
   _SearchOrLocationWidgetState createState() => _SearchOrLocationWidgetState();
@@ -23,11 +23,11 @@ class SearchOrLocationWidget extends StatefulWidget {
 
   // 传入之前选择地址
   PeripheralInformationPoi selectAddress;
+  //当前位置的信息
+  Location currentAddressInfo;
 }
 
 class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
-  Location currentAddressInfo; //当前位置的信息
-
   TextEditingController searchController = TextEditingController(); //搜索关键字控制器
   int pageSize = 20; //一页大小
   int pageIndex = 1; //当前页
@@ -64,7 +64,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
 
   init() async {
     //flutter定位只能获取到经纬度信息
-    currentAddressInfo = await AmapLocation.fetch();
+    // currentAddressInfo = await AmapLocation.fetch();
     // 调用周边
     aroundHttp();
   }
@@ -259,7 +259,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       print("搜索文案为空");
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity = await aroundForHttp(
-            currentAddressInfo.longitude, currentAddressInfo.latitude,
+            widget.currentAddressInfo.longitude, widget.currentAddressInfo.latitude,
             page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
@@ -284,7 +284,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   //高德接口获取周边数据
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
-        await aroundForHttp(currentAddressInfo.longitude, currentAddressInfo.latitude, page: 1);
+        await aroundForHttp(widget.currentAddressInfo.longitude, widget.currentAddressInfo.latitude, page: 1);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       pois = locationInformationEntity.pois;

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,12 @@ import '../release_page.dart';
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatefulWidget {
-  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois});
+  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois,this.currentAddressInfo});
 
   PermissionStatus permissions;
   SelectedMediaFiles selectedMediaFiles;
   List<PeripheralInformationPoi> pois;
-
+  Location currentAddressInfo;
   @override
   ReleaseFeedMainViewState createState() => ReleaseFeedMainViewState();
 }
@@ -79,7 +80,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         }
         //  请求了许可授了权，跳转页面
         if (status == PermissionStatus.granted) {
-          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress,widget.currentAddressInfo, (result) {
             PeripheralInformationPoi poi = result as PeripheralInformationPoi;
             return childrenACallBack(poi);
           });
@@ -171,7 +172,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               setState(() {});
             }
           } else {
-            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress,widget.currentAddressInfo, (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
               return childrenACallBack(poi);
             });

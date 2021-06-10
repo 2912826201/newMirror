@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -588,13 +589,18 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
 var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   PeripheralInformationPoi selectAddress;
+  Location currentAddressInfo;
   if (data['selectAddress'] != null) {
     selectAddress = PeripheralInformationPoi.fromJson(data['selectAddress']);
+  }
+  if (data['currentAddressInfo'] != null) {
+    currentAddressInfo = Location.fromJson(data['currentAddressInfo']);
   }
   return SearchOrLocationWidget(
     checkIndex: data['checkIndex'],
     // 传入之前选择地址
     selectAddress: selectAddress,
+    currentAddressInfo:currentAddressInfo,
   );
 });
 
