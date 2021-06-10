@@ -5,6 +5,7 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:md5_plugin/md5_plugin.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -64,22 +65,22 @@ class StringUtil {
 
 
   static Future<String> calculateMD5SumAsyncWithPlugin(String filePath) async {
-    return generateMd5(filePath);
-    // var ret = '';
+    // return generateMd5(filePath);
+    var ret = '';
 
-    // var file = File(filePath);
-    // if (await file.exists()) {
-    //   try {
-    //     ret = await Md5Plugin.getMD5WithPath(filePath);
-    //   } catch (exception) {
-    //     print('Unable to evaluate the MD5 sum :$exception');
-    //     return null;
-    //   }
-    // } else {
-    //   print('`$filePath` does not exits so unable to evaluate its MD5 sum.');
-    //   return null;
-    // }
-    // return ret;
+    var file = File(filePath);
+    if (await file.exists()) {
+      try {
+        ret = await Md5Plugin.getMD5WithPath(filePath);
+      } catch (exception) {
+        print('Unable to evaluate the MD5 sum :$exception');
+        return null;
+      }
+    } else {
+      print('`$filePath` does not exits so unable to evaluate its MD5 sum.');
+      return null;
+    }
+    return ret;
   }
 
   static RegExp _ipv4Maybe = new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');

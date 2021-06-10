@@ -28,7 +28,9 @@ class Loading {
           transitionDuration: const Duration(milliseconds: 300), // 动画时长
           useRootNavigator: false,
           pageBuilder: (BuildContext context, Animation animation, Animation secondaryAnimation) {
-            return StreamBuilder<bool>(
+            return  WillPopScope(
+                onWillPop: () async => false, //用来屏蔽安卓返回键关弹窗
+              child: StreamBuilder<bool>(
                 initialData: true,
                 stream: streamController.stream,
                 builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
@@ -110,7 +112,7 @@ class Loading {
                           ),
                         ],
                       ));
-                });
+                }));
           }).then((value) {
         isShow = false;
       });

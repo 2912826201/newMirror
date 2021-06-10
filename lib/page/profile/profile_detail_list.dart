@@ -49,7 +49,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool listNoData = false;
   StreamController<int> streamController;
   Map<int, AnimationController> animationMap = {};
-
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
@@ -258,7 +257,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                         isMySelf: widget.isMySelf,
                         mineDetailId: widget.id,
                         removeFollowChanged: (model) {},
-                        deleteFeedChanged: (feedId) {}),
+                        deleteFeedChanged: (feedId) {},),
                     onExposure: (visibilityInfo) {
                       // 如果没有显示
                       if (model.isShowInputBox) {
