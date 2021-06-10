@@ -16,6 +16,7 @@ import 'package:mirror/page/test/agora_input_page.dart';
 import 'package:mirror/page/test/download_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
+import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -389,6 +390,15 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               //     child: Text("视频课结果页"),
               //   ),
               // ]),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                    //     return SliverListDemoPage();
+                    return TiktokHome();
+                  }));
+                },
+                child: Text("左滑测试"),
+              ),
               Container(
                 color: AppColor.mainRed,
                 child: Text(
@@ -430,7 +440,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                         AppRouter.navigateToLoginSucess(context);
                       },
                     ),
-                  ]),Row(
+                  ]),
+              Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -439,7 +450,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                       height: 30,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.lightBlue,width: 1),
+                        border: Border.all(color: Colors.lightBlue, width: 1),
                         color: Colors.black,
                       ),
                     ),
