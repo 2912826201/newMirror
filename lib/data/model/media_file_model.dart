@@ -33,7 +33,16 @@ class MediaFileModel {
     type = json["type"];
     filePath = json["filePath"];
     thumbPath = json["thumbPath"];
-    sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
+
+    if(json["sizeInfo"]!=null){
+      if(json["sizeInfo"] is SizeInfo){
+        sizeInfo=json["sizeInfo"];
+      }else{
+        sizeInfo=SizeInfo.fromJson(json["sizeInfo"]);
+      }
+    }else{
+      sizeInfo=null;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -97,7 +106,15 @@ class MediaBase64Model {
   MediaBase64Model.fromJson(Map<String, dynamic> json) {
     type = json["type"];
     mediaBytes = json["mediaBytes"];
-    sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
+    if(json["sizeInfo"]!=null){
+      if(json["sizeInfo"] is SizeInfo){
+        sizeInfo=json["sizeInfo"];
+      }else{
+        sizeInfo=SizeInfo.fromJson(json["sizeInfo"]);
+      }
+    }else{
+      sizeInfo=null;
+    }
   }
 
   Map<String, dynamic> toJson() {

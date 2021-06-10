@@ -32,12 +32,15 @@ class AtMesGroupModel {
     if (atMsgMap == null) {
       return null;
     }
-    String content = atMsgMap[groupId];
-    if (content == null) {
+    if (atMsgMap[groupId] == null) {
       return null;
     } else {
       try {
-        return AtMsg.fromJson(json.decode(content));
+        if(atMsgMap[groupId] is AtMsg){
+          return atMsgMap[groupId];
+        }else{
+          return AtMsg.fromJson(json.decode(atMsgMap[groupId]));
+        }
       } catch (e) {
         return null;
       }

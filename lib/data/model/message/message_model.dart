@@ -129,19 +129,31 @@ class UnreadMessageModel {
       this.exerciseMsgList = List<MessageModel>();
       json["exerciseMsgList"].forEach((element) {
         print(element.runtimeType);
-        this.exerciseMsgList.add(MessageModel.fromJson(element));
+        if(element is MessageModel){
+          this.exerciseMsgList.add(element);
+        }else{
+          this.exerciseMsgList.add(MessageModel.fromJson(element));
+        }
       });
     }
     if (json["liveMsgList"] != null) {
       this.liveMsgList = List<MessageModel>();
       json["liveMsgList"].forEach((element) {
-        this.liveMsgList.add(MessageModel.fromJson(element));
+        if(element is MessageModel){
+          this.liveMsgList.add(element);
+        }else{
+          this.liveMsgList.add(MessageModel.fromJson(element));
+        }
       });
     }
     if (json["sysMsgList"] != null) {
       this.sysMsgList = List<MessageModel>();
       json["sysMsgList"].forEach((element) {
-        this.sysMsgList.add(MessageModel.fromJson(element));
+        if(element is MessageModel){
+          this.sysMsgList.add(element);
+        }else{
+          this.sysMsgList.add(MessageModel.fromJson(element));
+        }
       });
     }
   }
