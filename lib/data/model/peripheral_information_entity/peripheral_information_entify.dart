@@ -10,7 +10,16 @@ class PeripheralInformationEntity {
   PeripheralInformationEntity({this.suggestion, this.count, this.infocode, this.pois, this.status, this.info});
 
   PeripheralInformationEntity.fromJson(Map<String, dynamic> json) {
-    suggestion = json['suggestion'] != null ? new PeripheralInformationSuggestion.fromJson(json['suggestion']) : null;
+
+    if(json['suggestion'] != null){
+      if(json['suggestion'] is PeripheralInformationSuggestion){
+        suggestion=json['suggestion'];
+      }else{
+        suggestion=PeripheralInformationSuggestion.fromJson(json['suggestion']);
+      }
+    }else{
+      suggestion =null;
+    }
     count = json['count'];
     infocode = json['infocode'];
     if (json['pois'] != null) {
@@ -25,7 +34,11 @@ class PeripheralInformationEntity {
       });
     }
     if (json['regeocode'] != null) {
-      regeocode =  PeripheralInformationRegeocode.fromJson(json['regeocode']);
+      if(json['regeocode'] is PeripheralInformationRegeocode){
+        regeocode=json['regeocode'];
+      }else{
+        regeocode =  PeripheralInformationRegeocode.fromJson(json['regeocode']);
+      }
     }
     status = json['status'];
     info = json['info'];
@@ -128,7 +141,18 @@ class PeripheralInformationPoi {
     if (json['distance'] != null) {
       distance = new List<Null>();
     }
-    bizExt = json['biz_ext'] != null ? new PeripheralInformationPoisBizExt.fromJson(json['biz_ext']) : null;
+
+
+    if(json['biz_ext'] != null){
+      if(json['biz_ext'] is PeripheralInformationPoisBizExt){
+        bizExt=json['biz_ext'];
+      }else{
+        bizExt=PeripheralInformationPoisBizExt.fromJson(json['biz_ext']);
+      }
+    }else{
+      bizExt =null;
+    }
+
     pname = json['pname'];
     cityname = json['cityname'];
     citycode = json['citycode'];

@@ -18,7 +18,11 @@ class WeightRecordsModel {
     if (json["recordList"] != null) {
       this.recordList = [];
       json["recordList"].forEach((v) {
-        this.recordList.add(RecordData.fromJson(v));
+        if(v is RecordData){
+          this.recordList.add(v);
+        }else{
+          this.recordList.add(RecordData.fromJson(v));
+        }
       });
     }
   }
