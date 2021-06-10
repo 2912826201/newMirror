@@ -139,6 +139,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         _getUserInfo(id: widget.userId);
         _getFollowCount(id: widget.userId);
       });
+        WidgetsBinding.instance.addPersistentFrameCallback((callback){
+          print("addPersistentFrameCallback be invoke");
+          //触发一帧的绘制
+          WidgetsBinding.instance.scheduleFrame();
+        });
     });
     scrollController.addListener(() {
       if (scrollController.offset >= userDetailBoardHeight) {

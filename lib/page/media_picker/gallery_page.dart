@@ -471,27 +471,20 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                               _permissionGranted = true;
                               _fetchGalleryData(true);
                             } else if (status.isPermanentlyDenied) {
-                              //安卓的禁止且之后不提示
+                              //安卓的禁止且之后不提示 iOS的拒绝授权 需要跳转到系统设置页
                               AppSettings.openAppSettings();
                             } else {
-                              //安卓或者从未请求过权限则重新请求 iOS跳设置页
+                              //重新请求权限
                               if (Application.platform == 0) {
                                 status = await Permission.storage.request();
-                                if (status.isGranted) {
-                                  _permissionGranted = true;
-                                  _fetchGalleryData(true);
-                                }
                               } else {
-                                //fixme 权限枚举变化
-                                // if (status.isUndetermined) {
-                                //   status = await Permission.photos.status;
-                                //   if (status.isGranted) {
-                                //     _permissionGranted = true;
-                                //     _fetchGalleryData(true);
-                                //   }
-                                // } else {
-                                  AppSettings.openAppSettings();
-                                // }
+                                // undetermined在新版中被移除了 不需要做区分 直接重新请求
+                                status = await Permission.photos.request();
+                              }
+
+                              if (status.isGranted) {
+                                _permissionGranted = true;
+                                _fetchGalleryData(true);
                               }
                             }
                           },

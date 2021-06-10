@@ -12,7 +12,9 @@ class UserNotifierModel {
 
   bool get watchScroll => _watchScroll;
   List<int> _removeId;
+  Map<int, bool> _itemDrawOverMap = {};
 
+  Map<int, bool> get itemDrawOverMap => _itemDrawOverMap;
   List<int> get removeId => _removeId;
   set removeId(List<int> result){
     _removeId = result;
@@ -98,6 +100,14 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
     if(needNotify){
       notifyListeners();
     }
+  }
+
+  void initItenDrawMap(int id){
+    value.itemDrawOverMap[id] = false;
+  }
+  void changeItemDrawStatus(int id){
+    value.itemDrawOverMap[id] = !value.itemDrawOverMap[id];
+    notifyListeners();
   }
   //初始化model
   void setFirstModel(int id, {bool isFollow}) {
