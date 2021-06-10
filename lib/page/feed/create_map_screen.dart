@@ -40,7 +40,7 @@ class _createMapScreenState extends State<createMapScreen> {
 
   // 查询定位信息
   aroundHttp() async {
-    Marker marker = Marker(position: LatLng(widget.latitude, widget.longitude));
+    Marker marker = Marker(position: LatLng(widget.latitude, widget.longitude),infoWindowEnable: false);
     markerSet.add(marker);
     // 获取权限状态
     PermissionStatus permissions = await Permission.locationWhenInUse.status;
@@ -48,9 +48,16 @@ class _createMapScreenState extends State<createMapScreen> {
     if (permissions == PermissionStatus.granted) {
       //flutter定位只能获取到经纬度信息
       currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      BitmapDescriptor bitmapDescriptor = BitmapDescriptor.fromIconPath("assets/png/course_favorite.png");
+      // ImageConfiguration configuration = ImageConfiguration(size: Size(16.0,16.0));
+      // BitmapDescriptor bitmapDescriptor = await BitmapDescriptor.fromAssetImage(configuration,"assets/png/course_favorite.png",);
       Marker marker = Marker(
           position: LatLng(currentAddressInfo.latitude, currentAddressInfo.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
+          // icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
+        icon: bitmapDescriptor,
+          infoWindow: InfoWindow(title: "我的位置")
+          // "assets/png/2.0x/course_favorite.png"
+      );
       markerSet.add(marker);
       print("currentAddressInfo ::::${currentAddressInfo.toJson()}");
       // markers.add(MarkerOption(
