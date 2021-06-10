@@ -807,7 +807,12 @@ class _VideoControlState extends State<VideoControl> {
     }
     double progress;
     double maxValue;
+    bool isNullValue=false;
     event.parameters.forEach((key, value) {
+      if(value==null){
+        isNullValue=true;
+        return;
+      }
       switch (key) {
         case "progress":
           progress = (value as Duration).inSeconds.toDouble()+1;
@@ -818,6 +823,9 @@ class _VideoControlState extends State<VideoControl> {
       }
     });
 
+    if(isNullValue){
+      return;
+    }
     setProgress(progress, maxValue);
   }
 
