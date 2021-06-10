@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -931,10 +932,11 @@ class AppRouter {
 
   // 所在位置页面
   static void navigateSearchOrLocationPage(
-      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Function(dynamic result) callback) {
+      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Location currentAddressInfo, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map['checkIndex'] = checkIndex;
     map['selectAddress'] = selectAddress.toJson();
+    map['currentAddressInfo'] = currentAddressInfo.toJson();
     _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
   }
 

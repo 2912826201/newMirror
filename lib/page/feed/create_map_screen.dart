@@ -4,6 +4,7 @@ import 'package:amap_location_muka/amap_location_muka.dart' hide LatLng;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/amap/amap.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -46,7 +47,7 @@ class _createMapScreenState extends State<createMapScreen> {
     // 用户授予了对所请求功能的访问权限
     if (permissions == PermissionStatus.granted) {
       //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.fetch();
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
       Marker marker = Marker(
           position: LatLng(currentAddressInfo.latitude, currentAddressInfo.longitude),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
@@ -96,7 +97,12 @@ class _createMapScreenState extends State<createMapScreen> {
                 formatted_address == null ||
                 formatted_address.isEmpty ||
                 widget.keyWords == null
-            ? Container()
+            ? Container(
+                width: ScreenUtil.instance.width,
+                height: ScreenUtil.instance.height,
+                child: Center(
+                  child: CupertinoActivityIndicator(),
+                ))
             : ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
