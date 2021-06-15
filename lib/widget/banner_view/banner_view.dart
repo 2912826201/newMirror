@@ -251,9 +251,10 @@ class _BannerViewState extends State<BannerView> {
       // 必需设置为false下面直定义的滑动才会生效 此时是否自定义滚动行为
       pageSnapping: false,
       // 自定义滚动行为
-      physics: pageScrollPhysics(),
+      physics:
+      pageScrollPhysics(),
       // 在当前元素预加载下一个元素
-      allowImplicitScrolling: true,
+      allowImplicitScrolling: false,
       controller: this._pageController,
       onPageChanged: (index) {
         _Logger.d(TAG, '**********   changed  index: $index  cu: $_currentIndex');

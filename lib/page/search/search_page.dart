@@ -647,6 +647,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - 48 - ScreenUtil.instance.statusBarHeight,
           child: TabBarView(
             controller: controller,
+            physics: ClampingScrollPhysics(),
             allowImplicitScrolling: false,
             children: [
               SearchComplex(
