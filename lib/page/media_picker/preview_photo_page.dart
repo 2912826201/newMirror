@@ -10,7 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/image_cropper.dart';
+import 'package:mirror/widget/image_cropper/head_image_cropper.dart';
 
 /// preview_photo_page
 /// Created by yangjiayi on 2020/12/4.
@@ -27,7 +27,7 @@ class PreviewPhotoPage extends StatefulWidget {
 }
 
 class _PreviewPhotoState extends State<PreviewPhotoPage> {
-  var _cropperKey = GlobalKey<_PreviewPhotoState>();
+  var _cropperController = CropperController();
   File _file;
 
   double _previewSize = 0;
@@ -95,7 +95,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 maskPadding: 0,
                 outWidth: widget.fixedWidth == null ? cropImageSize : widget.fixedWidth.toDouble(),
                 outHeight: widget.fixedHeight == null ? cropImageSize : widget.fixedHeight.toDouble(),
-                key: _cropperKey,
+                controller: _cropperController,
                 backBoxColor0: AppColor.transparent,
                 backBoxColor1: AppColor.transparent,
               ),
@@ -112,7 +112,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
   Future<ui.Image> _getImage() async {
     print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
 
-    ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
+    ui.Image image = await _cropperController.outImage();
 
     print("2已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
     print(image);
