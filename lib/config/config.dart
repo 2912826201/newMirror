@@ -48,6 +48,9 @@ class AppConfig {
   ///切换训练相关布局
   static bool needShowTraining = false;
 
+  //是否启用刷新检测
+  static bool checkLayoutRefresh = false;
+
   //各环境api请求基础路径
   // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
   // static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";
