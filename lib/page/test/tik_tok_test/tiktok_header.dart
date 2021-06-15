@@ -87,7 +87,7 @@ class _TikTokHeaderState extends State<TikTokHeader> {
                 ),
               ),
               onTap: () {
-
+                Navigator.pop(context);
               },
             ),
           ),
