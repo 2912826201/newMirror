@@ -37,7 +37,8 @@ class DynamicListLayout extends StatefulWidget {
       this.topicId,
       this.isMySelf,
       this.isShowConcern = false,
-      this.itemHeightKey})
+      this.itemHeightKey,
+      this.isLoadingImage})
       : super(key: key);
   final int index;
   bool isShowRecommendUser;
@@ -60,6 +61,9 @@ class DynamicListLayout extends StatefulWidget {
   // 是否显示关注按钮
   bool isShowConcern;
 
+  ///加载图片的标识
+  bool isLoadingImage;
+
   @override
   DynamicListLayoutState createState() => DynamicListLayoutState();
 }
@@ -74,10 +78,19 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
         "小红花&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     super.dispose();
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+  // 宽高比
+  double setAspectRatio(double height) {
+    if (height == 0) {
+      return ScreenUtil.instance.width;
+    } else {
+      return (ScreenUtil.instance.width / widget.model.picUrls[0].width.toDouble()) * height;
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -104,13 +117,19 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   }),
               // 图片区域
               widget.model.picUrls.length > 0
-                  ? SlideBanner(
-                      height: widget.model.picUrls[0].height.toDouble(),
-                      model: widget.model,
-                      index: widget.index,
-                      pageName: widget.pageName,
-                      isHero: widget.isHero,
-                    )
+                  ? widget.isLoadingImage
+                      ? SlideBanner(
+                          height: widget.model.picUrls[0].height.toDouble(),
+                          model: widget.model,
+                          index: widget.index,
+                          pageName: widget.pageName,
+                          isHero: widget.isHero,
+                        )
+                      : Container(
+                          height: setAspectRatio(widget.model.picUrls[0].height.toDouble()),
+                          width: ScreenUtil.instance.width,
+                          color: AppColor.bgWhite,
+                        )
                   : Container(),
               // 视频区域
               widget.model.videos.isNotEmpty ? getVideo(feedModel: widget.model, index: widget.index) : Container(),
