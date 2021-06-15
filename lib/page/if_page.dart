@@ -95,7 +95,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
       value: SystemUiOverlayStyle.dark,
       // child: Scaffold(
       //     resizeToAvoidBottomInset: false,
-      child:
+      child: MainPage()
           // NotificationListener<ScrollNotification>(
           //     onNotification: (ScrollNotification notification) {
           //       ScrollMetrics metrics = notification.metrics;
@@ -133,14 +133,14 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
           //     onHorizontalDragStart:  _onHorizontalDragStart ,/*横向拖动的开始状态*/
           //     onHorizontalDragUpdate: _onHorizontalDragUpdate,/*横向拖动的状态*/
           // onHorizontalDragEnd:  _onHorizontalDragEnd,/*横向拖动的结束状态*/
-       Container(
-        child:  Stack(
-          children: [
+       // Container(
+       //  child:  Stack(
+       //    children: [
             // ChangeNotifierProvider(
             //   create: (_) => SelectedbottomNavigationBarNotifier(0),
             //   builder: (context, _) {
                 // 暂时屏蔽负一屏
-             MainPage()
+             // MainPage()
                 // return ScrollConfiguration(
                 //   behavior: NoBlueEffectBehavior(),
                 //   child: UnionOuterTabBarView(
@@ -154,9 +154,9 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                 // );
               // },
             // ),
-          ],
-        ),
-      ),
+          // ],
+        // ),
+      // ),
       // )
     );
   }
