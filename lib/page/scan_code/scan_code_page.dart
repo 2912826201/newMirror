@@ -40,6 +40,7 @@ class scanCodePageState extends State<ScanCodePage> {
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   bool requestOver = true;
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -51,6 +52,7 @@ class scanCodePageState extends State<ScanCodePage> {
     super.initState();
     streamController.sink.add(250);
   }
+
   void _onQRViewCreated(QRViewController controller) {
     setState(() {
       this.controller = controller;
@@ -58,20 +60,21 @@ class scanCodePageState extends State<ScanCodePage> {
     controller.scannedDataStream.listen((scanData) {
       print('scanData---------------------------${scanData.code}');
       //note 接口很慢的情况，防止重复请求和响应
-      if(!requestOver){
+      if (!requestOver) {
         return;
       }
       //note 防止回调太快，每两秒响应一次结果
-      if(timeStamp==null){
+      if (timeStamp == null) {
         timeStamp = DateTime.now().millisecondsSinceEpoch;
         resolveScanResult(scanData.code);
       }
-      if(DateTime.now().millisecondsSinceEpoch-timeStamp>2000){
-        timeStamp =DateTime.now().millisecondsSinceEpoch;
+      if (DateTime.now().millisecondsSinceEpoch - timeStamp > 2000) {
+        timeStamp = DateTime.now().millisecondsSinceEpoch;
         resolveScanResult(scanData.code);
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,13 +92,12 @@ class scanCodePageState extends State<ScanCodePage> {
       body: Stack(
         children: [
           Container(
-            width: ScreenUtil.instance.screenWidthDp,
-            height: ScreenUtil.instance.height,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            )
-          ),
+              width: ScreenUtil.instance.screenWidthDp,
+              height: ScreenUtil.instance.height,
+              child: QRView(
+                key: qrKey,
+                onQRViewCreated: _onQRViewCreated,
+              )),
           _scanCoverView()
         ],
       ),
@@ -175,7 +177,7 @@ class scanCodePageState extends State<ScanCodePage> {
                   onTap: () {
                     controller.pauseCamera();
                     AppRouter.navigateToMyQrCodePage(context, (result) {
-                    controller.resumeCamera();
+                      controller.resumeCamera();
                     });
                   },
                 )
@@ -292,7 +294,7 @@ class scanCodePageState extends State<ScanCodePage> {
 
   _resolveUri(String uri) async {
     if (uri == null) {
-      if(mounted&&context!=null) {
+      if (mounted && context != null) {
         ToastShow.show(msg: "不支持的二维码", context: context);
       }
       return;
@@ -343,13 +345,25 @@ class scanCodePageState extends State<ScanCodePage> {
           int uid = int.parse(params["uid"]);
           print('--------------------------uid----$uid-');
           requestOver = false;
-          getUserInfo(uid: uid).then((value){
+          getUserInfo(uid: uid).then((value) {
             requestOver = true;
-            if(value!=null){
+            if (value != null) {
               Navigator.pop(context);
-              jumpToUserProfilePage(context, value.uid,avatarUrl: value.avatarUri,userName: value.nickName);
+              jumpToUserProfilePage(context, value.uid, avatarUrl: value.avatarUri, userName: value.nickName);
             }
           });
+          break;
+        //登录教练端指令
+        case "if://loginCoach":
+          String coach = params["coach"];
+          loginCoach(coach);
+          Navigator.pop(context);
+          break;
+        //登录编辑器指令
+        case "if://LoginEditor":
+          String editor = params["editor"];
+          loginCoach(editor);
+          Navigator.pop(context);
           break;
         default:
           ScanCodeResultModel model = ScanCodeResultModel();
