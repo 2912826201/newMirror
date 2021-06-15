@@ -231,7 +231,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   Widget _showDataUi() {
     return !listNoData
-        ? CustomScrollView(
+        ? /*CustomScrollView(
             slivers: [
               SliverList(
                   delegate: SliverChildBuilderDelegate((content, index) {
@@ -269,8 +269,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 );
               }, childCount: followModel.length))
             ],
-          )
-        /*ListView.builder(
+          )*/
+        ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
@@ -302,7 +302,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
               );
-            })*/
+            })
         : ListView(
             children: [
               Center(
