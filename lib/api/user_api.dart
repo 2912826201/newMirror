@@ -19,10 +19,11 @@ const String GETREMARKBYUID = "/appuser/web/user/getRemarkByUid";
 const String JOINGROUPCHATUNRESTRICTED = "/appuser/web/groupChat/joinGroupChatUnrestricted";
 //获取用户基本信息
 const String GETUSERBASEINFO = "/ucenter/web/user/getUserBaseInfo";
-//登录教练端指令
+//登录教练指令
 const String LOGINCOACH = "/appuser/web/login/loginCoach";
-//登录编辑器指令
+//获取编辑器指令
 const String LOGINEDITOR = "/appuser/web/login/loginEditor";
+
 //校验token
 Future<bool> checkToken() async {
   Map<String, dynamic> params = {};
@@ -114,7 +115,7 @@ Future loginCoach(String coach)async{
   if (coach != null) {
     params["coach"] = coach;
   }
- await requestApi(LOGINCOACH,params);
+  await requestApi(LOGINCOACH,params);
 }
 
 Future loginEditor(String editor)async{

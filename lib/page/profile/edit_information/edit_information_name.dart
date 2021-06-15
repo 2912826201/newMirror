@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -163,13 +165,14 @@ class _EditInformationNameState extends State<EditInformationName> {
       controller: controller,
       cursorColor: AppColor.black,
       style: AppStyle.textRegular16,
+      cursorHeight: 40,
+      mouseCursor: SystemMouseCursors.resizeRow,
       decoration: InputDecoration(
         counterText: '',
         hintText: "戳这里输入${widget.title==null?"昵称":widget.title.contains("群聊")?"名称":"昵称"}",
         hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
         border: InputBorder.none,
       ),
-
       inputFormatters: [
         ExpressionTeamDeleteFormatter(maxLength: 15,needFilter: true)
          ],

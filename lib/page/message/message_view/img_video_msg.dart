@@ -44,23 +44,23 @@ class ImgVideoMsg extends StatelessWidget {
 
   ImgVideoMsg(
       {this.isMyself,
-      this.sendTime,
-      this.isTemporary,
-      this.isImgOrVideo,
-      this.isShowChatUserName = false,
-      this.isCanLongClick = true,
-      this.sendChatUserId,
-      this.mediaFileModel,
-      this.userUrl,
-      this.name,
-      this.status,
-      this.position,
-      this.imageMessage,
-      this.sizeInfoMap,
-      this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack,
-      this.heroId,
-      this.setCallRemoveOverlay});
+        this.sendTime,
+        this.isTemporary,
+        this.isImgOrVideo,
+        this.isShowChatUserName = false,
+        this.isCanLongClick = true,
+        this.sendChatUserId,
+        this.mediaFileModel,
+        this.userUrl,
+        this.name,
+        this.status,
+        this.position,
+        this.imageMessage,
+        this.sizeInfoMap,
+        this.voidMessageClickCallBack,
+        this.voidItemLongClickCallBack,
+        this.heroId,
+        this.setCallRemoveOverlay});
 
   double width = 200.0;
   double height = 200.0;
@@ -71,9 +71,9 @@ class ImgVideoMsg extends StatelessWidget {
     intData();
 
     return
-        // sizeInfoMap == null
-        //   ?
-        getContentBoxItem(context);
+      // sizeInfoMap == null
+      //   ?
+      getContentBoxItem(context);
     // : Hero(
     //     tag: sizeInfoMap["messageId"],
     //     child: getContentBoxItem(context),
@@ -151,7 +151,7 @@ class ImgVideoMsg extends StatelessWidget {
             visible: isShowChatUserName,
             child: Container(
               margin:
-                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+              isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
               child: Text(
                 name,
                 style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
@@ -198,9 +198,9 @@ class ImgVideoMsg extends StatelessWidget {
         child: sizeInfoMap == null
             ? imgVideoContentBox(context)
             : Hero(
-                tag: heroId,
-                child: imgVideoContentBox(context),
-              ),
+          tag: heroId,
+          child: imgVideoContentBox(context),
+        ),
         onTap: () {
           onImgVideoContentBoxClick(context);
         },
@@ -234,7 +234,7 @@ class ImgVideoMsg extends StatelessWidget {
     //判断是不是临时
     if (isTemporary) {
       isOpenGallery=false;
-      return !isImgOrVideo ? getVideoShowImage() : getImageShowImage();
+      return !isImgOrVideo ? getVideoShowImage() : getImageShowImage(isPlaceholder:false);
     } else {
       if (isImgOrVideo) {
         return getImageUi();
@@ -255,11 +255,11 @@ class ImgVideoMsg extends StatelessWidget {
           return getImageFile(videoImageFile);
         } else {
           //print("文件缩略图失效");
-          return getImagePlaceHolder();
+          return getErrorHolder();
         }
       } else {
         //print("文件失效");
-        return getImagePlaceHolder();
+        return getErrorHolder();
       }
     } else {
       return getCachedNetworkImage(FileUtil.getLargeVideoFirstImage(sizeInfoMap["showImageUrl"]));
@@ -271,7 +271,7 @@ class ImgVideoMsg extends StatelessWidget {
     if (mediaFileModel != null && mediaFileModel.thumb != null) {
       return getImageMemory(mediaFileModel.thumb);
     } else {
-      return getImagePlaceHolder();
+      return getErrorHolder();
     }
   }
 
@@ -289,7 +289,7 @@ class ImgVideoMsg extends StatelessWidget {
         } else {
           isOpenGallery=false;
           //print("文件失效");
-          return getImagePlaceHolder();
+          return getErrorHolder();
         }
       } else {
         String imageLargePath=FileUtil.getLargeImage(sizeInfoMap["showImageUrl"]);
@@ -349,6 +349,14 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       height: height,
       color: AppColor.bgWhite,
+    );
+  }
+
+  Widget getErrorHolder() {
+    return Container(
+      width: width,
+      height: height,
+      color: AppColor.bgWhite,
       alignment: Alignment.bottomCenter,
       padding: EdgeInsets.only(bottom: 10),
       child: Text(
@@ -365,29 +373,29 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       imageUrl: imageUrl ?? "",
       fit: BoxFit.cover,
-      placeholder: (context, url) => getImageShowImage(),
+      placeholder: (context, url) => getImageShowImage(isPlaceholder: true),
       errorWidget: (context, url, error) {
         isOpenGallery = false;
-        return getImageShowImage();
+        return getImageShowImage(isPlaceholder: false);
       },
     );
   }
 
   //获取过渡与错误图
-  Widget getImageShowImage() {
+  Widget getImageShowImage({bool isPlaceholder=true}) {
     if (isImgOrVideo) {
       if (mediaFileModel != null && (mediaFileModel.file != null || mediaFileModel.croppedImageData != null)) {
         return mediaFileModel.croppedImageData == null
             ? getImageFile(mediaFileModel.file)
             : getImageMemory(mediaFileModel.croppedImageData);
       } else {
-        return getImagePlaceHolder();
+        return isPlaceholder?getImagePlaceHolder():getErrorHolder();
       }
     } else if (sizeInfoMap["videoFilePath"] != null) {
       File videoImageFile = File(sizeInfoMap["videoFilePath"]);
       return getImageFile(videoImageFile);
     } else {
-      return getImagePlaceHolder();
+      return isPlaceholder?getImagePlaceHolder():getErrorHolder();
     }
   }
 

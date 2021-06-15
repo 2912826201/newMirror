@@ -223,7 +223,7 @@ class MessageManager {
     }
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
-    dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
+    dto.updateTime = msg.sentTime;
 
     //需要额外获取的信息
     dto.isTop = 0;

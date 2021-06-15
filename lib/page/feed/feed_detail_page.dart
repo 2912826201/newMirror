@@ -162,7 +162,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                               },*/
                               child: CustomScrollView(
                                   physics: ClampingScrollPhysics(),
-                                  controller: _controller,
+                                  controller: PrimaryScrollController.of(context),
                                   slivers: <Widget>[
                                     SliverToBoxAdapter(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
