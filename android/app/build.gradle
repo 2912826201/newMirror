@@ -112,12 +112,12 @@ android {
             resValue "string", "app_name", "iF${defaultConfig.versionCode}"
             applicationId "${defaultConfig.applicationId}"
             manifestPlaceholders = [
-                    CHANNEL_CODE: "10000",
+                    CHANNEL_CODE: "10001",
                     APP_ICON: "@mipmap/ic_launcher",
                     ENVIRONMENT: "PROD",
                     JPUSH_PKGNAME : 'com.aimymusic.mirror',
                     JPUSH_APPKEY : "94357c150b038fa1183def8f",
-                    JPUSH_CHANNEL : "10000",
+                    JPUSH_CHANNEL : "10001",
             ]
         }
     }

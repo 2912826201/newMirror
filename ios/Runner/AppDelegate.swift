@@ -14,7 +14,7 @@ import Flutter
     if ("\(environmentName!)" == "dev") {
         UMCommonSwift.initWithAppkey(appKey: "60adbecc53b6726499109624", channel: "10000")
     } else {
-        UMCommonSwift.initWithAppkey(appKey: "60af5308dd01c71b57c7b05c", channel: "10000")
+        UMCommonSwift.initWithAppkey(appKey: "60af5308dd01c71b57c7b05c", channel: "10001")
     }
 
 //    #if DEBUG

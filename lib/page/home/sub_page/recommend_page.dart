@@ -109,7 +109,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   RefreshController _refreshController = RefreshController();
 
   // 列表监听
-  ScrollController _controller = new ScrollController();
+  // ScrollController _controller = new ScrollController();
 
   // 请求下一页
   int lastTime;
@@ -133,7 +133,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   @override
   void dispose() {
-    _controller.dispose();
+    // _controller.dispose();
     // EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_RECOMMEND_PAGE);
     super.dispose();
   }
@@ -278,7 +278,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {
-      _controller.jumpTo(0);
+      PrimaryScrollController.of(context).jumpTo(0);
     }
   }
 
@@ -308,7 +308,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               },
               child: CustomScrollView(
                 key: globalKey,
-                controller: _controller,
+                controller: PrimaryScrollController.of(context),
                 // BouncingScrollPhysics
                 physics:
                     // ClampingScrollPhysics(),

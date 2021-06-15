@@ -180,7 +180,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       voiceState = true;
     });
 
-    stopRecorder();
+
+    await stopRecorder();
 
     if (_timer != null) {
       // costTime = _timer.tick + 1;

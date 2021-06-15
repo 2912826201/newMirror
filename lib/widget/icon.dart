@@ -147,6 +147,8 @@ class AppIcon {
   static const String chat_red_16 = "assets/svg/chat_red_16.svg";
   static const String pin_map = "assets/svg/pin_map.svg";
   static const String pin_map_self = "assets/svg/pin_map_self.svg";
+  static const String group_add = "assets/svg/group_add.svg";
+  static const String group_remove = "assets/svg/group_remove.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

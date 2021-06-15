@@ -53,7 +53,6 @@ import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
@@ -572,13 +571,27 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
       Application.atMesGroupModel.remove(atMeMsg);
-      setHaveAtMeMsg(isHaveAtMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
         if (chatDataList[i].msg.messageUId == atMeMsg.messageUId) {
           //print("能找到id");
           isHaveAtMeMsgIndex = i;
+
+          List<ChatDataModel> dataList=[];
+          for (int j = 0; j <= i; j++) {
+            dataList.add(chatDataList[j]);
+          }
+          bool isShowName = conversation.getType() == RCConversationType.Group;
+          bool isThanChatScreenHeight = MessageItemHeightUtil.init()
+              .judgeMessageItemHeightIsThenScreenHeight(dataList, isShowName);
+          if(!isThanChatScreenHeight){
+            //print("当前消息在屏幕中间-消除at");
+            isHaveAtMeMsg = false;
+            isHaveAtMeMsgPr = false;
+            Application.atMesGroupModel.remove(atMeMsg);
+            ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
+          }
           break;
         } else if (chatDataList[i].msg.sentTime < atMeMsg.sendTime) {
           //print("找不到id--匹配时间");
@@ -586,11 +599,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgPr = false;
           Application.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-          setHaveAtMeMsg(isHaveAtMeMsg);
           break;
         }
       }
     }
+
+    setHaveAtMeMsg(isHaveAtMeMsg);
   }
 
   //listview 当前显示的是第几个 回调
@@ -1208,7 +1222,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           } else {
             dataModel.msg?.sentStatus = status;
             if (status == RCSentStatus.Failed) {
-              profileCheckBlack();
+              ChatPageUtil.init(context).checkPostMessageFailed(conversation.type, conversation.conversationId);
             } else if (status == RCSentStatus.Sent) {
               await getHistoryMessage(dataModel);
             }
@@ -1542,24 +1556,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     _scrollController.animateTo(scrollExtent, duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
   }
 
-  //检查黑名单状态
-  void profileCheckBlack() async {
-    //print("-------------------------");
-    if (conversation.type == PRIVATE_TYPE) {
-      //print("22222222222222222");
-      BlackModel blackModel = await ProfileCheckBlack(int.parse(conversation.conversationId));
-      //print("blackModel:${blackModel?.toJson().toString()}");
-      if (blackModel != null) {
-        if (blackModel.inYouBlack == 1) {
-          //print("发送失败，你已将对方加入黑名单");
-          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: _context, gravity: 1);
-        } else if (blackModel.inThisBlack == 1) {
-          //print("发送失败，你已被对方加入黑名单");
-          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: _context, gravity: 1);
-        }
-      }
-    }
-  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///

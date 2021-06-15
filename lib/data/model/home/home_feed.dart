@@ -193,10 +193,18 @@ class HomeFeedModel {
       });
     }
     if (json["courseDto"] != null) {
-      courseDto = CourseModel.fromJson(json["courseDto"]);
+      if(json["courseDto"] is CourseModel){
+        courseDto = json["courseDto"];
+      }else{
+        courseDto = CourseModel.fromJson(json["courseDto"]);
+      }
     }
     if(json["recommendSourceDto"] != null){
-      recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
+      if(json["recommendSourceDto"] is RecommendSourceDto){
+        recommendSourceDto = json["recommendSourceDto"];
+      }else{
+        recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
+      }
     }
     if (json["laudUserInfo"] != null) {
       json["laudUserInfo"].forEach((v) {
