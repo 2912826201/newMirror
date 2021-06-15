@@ -360,6 +360,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
+    ScrollAwareImageProvider;
     // super.build(context);
     print("AttentionPage_______build");
     print("当前时间${DateTime
