@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -14,8 +17,10 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/message/item/add_time_message_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -176,12 +181,13 @@ class ChatPageUtil {
     if (chatDataList != null && chatDataList.length > 0) {
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
-          if(isShowNewChatDataModel(chatDataList[i])) {
+          if(AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i])) {
             chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
           }
         } else if (chatDataList[i].msg != null &&
+            chatDataList[i + 1].msg!=null&&
             (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-          if(isShowNewChatDataModel(chatDataList[i])) {
+          if(AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i])) {
             chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
           }
         }
@@ -231,16 +237,6 @@ class ChatPageUtil {
       });
     }
     getTimeAlert(dataList, conversation.conversationId);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
-    // dataList.add(ChatDataModel()..isTemporary=true..status=RCSentStatus.Sent..type=ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON);
     return [dataList, systemLastTime, systemPage];
   }
 
@@ -270,90 +266,6 @@ class ChatPageUtil {
     }
   }
 
-  bool isShowNewMessage(Message message){
-    return isShowNewChatDataModel(getMessage(message, isHaveAnimation: false));
-  }
-
-
-  bool isShowNewChatDataModel(ChatDataModel chatDataModel){
-    return true;
-    // if(chatDataModel.isTemporary){
-    //   return true;
-    // }else{
-    //   switch(chatDataModel.msg.objectName){
-    //     case ChatTypeModel.MESSAGE_TYPE_TEXT:
-    //       TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
-    //       try {
-    //         Map<String, dynamic> mapModel = json.decode(textMessage.content);
-    //         if (_getIsAlertMessage(mapModel["subObjectName"])) {
-    //           //-------------------------------------------------提示消息--------------------------------------------
-    //           return _isNoShowMsg(map: mapModel);
-    //         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-    //           //-------------------------------------------------群通知消息-第二种-------------------------------------------
-    //           Map<String, dynamic> map = Map();
-    //           map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-    //           map["data"] = json.decode(mapModel["data"]);
-    //           return _isNoShowMsg(map: map);
-    //         }
-    //       } catch (e) {}
-    //       return false;
-    //     case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-    //       // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
-    //       Map<String, dynamic> map = Map();
-    //       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-    //       map["data"] = chatDataModel.msg.originContentMap;
-    //       return _isNoShowMsg(map: map);
-    //     case ChatTypeModel.MESSAGE_TYPE_CMD:
-    //       // -----------------------------------------------通知-私聊-----------------------------------------------
-    //       Map<String, dynamic> map = Map();
-    //       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-    //       map["data"] = chatDataModel.msg.originContentMap;
-    //       return _isNoShowMsg(map: map);
-    //     default:
-    //       return false;
-    //   }
-    // }
-  }
-
-  //todo 获取群主的方式是有问题的 目前还好 如果以后有管理员 这样是不行的
-  bool _isNoShowMsg({@required Map<String, dynamic> map}){
-    //0--加入群聊
-    //1--退出群聊
-    //2--移除群聊
-    //3--群主转移
-    //4--群名改变
-    //5--扫码加入群聊
-    if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
-      Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
-      if (mapGroupModel["subType"] == 0||mapGroupModel["subType"] ==1||mapGroupModel["subType"] ==2) {
-        if (context.read<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-          ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-
-
-          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
-            return false;
-          } else {
-            if (mapGroupModel["subType"] == 0 && map["data"]["name"] == "Entry") {
-              return false;
-            }else{
-              return _isHaveUserMessageAlert(mapGroupModel);
-            }
-          }
-        } else {
-          if (mapGroupModel["subType"] == 1) {
-            return false;
-          } else {
-            if (mapGroupModel["subType"] == 0 && map["data"]["name"] == "Entry") {
-              return false;
-            }else{
-              return _isHaveUserMessageAlert(mapGroupModel);
-            }
-          }
-        }
-      }
-    }
-    return true;
-  }
 
   //判断这个提示里面有没有我或者 我是不是群主
   bool _isHaveUserMessageAlert(Map<String, dynamic> mapGroupModel){
@@ -591,4 +503,64 @@ class ChatPageUtil {
       }
     });
   }
+
+
+
+  //检查消息为什么发送失败
+  checkPostMessageFailed(int conversationType,String conversationId)async{
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络", context: context, gravity: 1);
+      return;
+    }else if(conversationType == PRIVATE_TYPE){
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(conversationId));
+      if (blackModel != null) {
+        if (blackModel.inYouBlack == 1) {
+          //print("发送失败，你已将对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: context, gravity: 1);
+          return;
+        } else if (blackModel.inThisBlack == 1) {
+          //print("发送失败，你已被对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: context, gravity: 1);
+          return;
+        }
+      }
+    }
+    _resetConnectRC();
+  }
+
+  //重新连接融云
+  _resetConnectRC()async{
+    Application.rongCloud.disconnect();
+    String token = await requestRongCloudToken();
+    if (token != null) {
+      Application.rongCloud.doConnect(token, (int code, String userId) {
+        print('connect result $code');
+        if (code == 0) {
+          print("connect success userId" + userId);
+          // 连接成功后打开数据库
+          // _initUserInfoCache();
+          print("连接成功，userId为" + userId);
+        } else if (code == 34001) {
+          // 已经连接上了
+        } else if (code == 31004) {
+          // token 非法，需要重新从 APP 服务获取新 token 并连接
+          print("连接失败");
+        }
+      });
+    }
+  }
+
+
+
+  Future<bool> isOffline() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 }

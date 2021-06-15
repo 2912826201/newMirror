@@ -100,7 +100,7 @@ class _feedBackPage extends State<FeedBackPage> {
           isDense: true,
           counterText: '',
           hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
-          hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
           border: InputBorder.none,
         ),
         inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],

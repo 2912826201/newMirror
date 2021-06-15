@@ -73,7 +73,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
   int lastTime;
 
   // 列表监听
-  ScrollController _controller = new ScrollController();
+  // ScrollController _controller = new ScrollController();
 
   // 是否登录
   bool isLoggedIn = false;
@@ -91,7 +91,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
   @override
   void dispose() {
     print("关注页面销毁了");
-    _controller.dispose();
+    // _controller.dispose();
     // EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_ATTENTION_PAGE);
     // EventBus.getDefault().unRegister(registerName: EVENTBUS__FEED_UNREAD, pageName: EVENTBUS_ATTENTION_PAGE);
     super.dispose();
@@ -162,7 +162,8 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
     if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {
-      _controller.jumpTo(0);
+      // _controller.jumpTo(0);
+      PrimaryScrollController.of(context).jumpTo(0);
     }
   }
 
@@ -329,8 +330,8 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
   // 回到顶部
   backToTheTop() {
     // 判定滑动控制器是否绑定
-    if (_controller.hasClients) {
-      _controller.animateTo(0, duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+    if (PrimaryScrollController.of(context).hasClients) {
+      PrimaryScrollController.of(context).animateTo(0, duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
     }
   }
 
@@ -466,7 +467,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
           getRecommendFeed(refreshOrLoading: true);
         },
         child: CustomScrollView(
-          controller: _controller,
+          controller: PrimaryScrollController.of(context),
           key: attentionlistKey,
           physics: context
               .watch<FeedMapNotifier>()

@@ -159,7 +159,8 @@ dependencies:
   jpush_flutter: ^2.1.2
 
 
-
+  #测试跳转指定item
+  scrollable_positioned_list: ^0.1.10
   # 测试用的生成英文单词的库
   english_words: ^4.0.0
   # 测试用从相册或相机获取图片的库

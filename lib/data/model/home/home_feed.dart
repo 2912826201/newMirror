@@ -194,16 +194,15 @@ class HomeFeedModel {
     }
     if (json["courseDto"] != null) {
       if(json["courseDto"] is CourseModel){
-        courseDto=json["courseDto"];
-      }else {
+        courseDto = json["courseDto"];
+      }else{
         courseDto = CourseModel.fromJson(json["courseDto"]);
       }
     }
     if(json["recommendSourceDto"] != null){
-
       if(json["recommendSourceDto"] is RecommendSourceDto){
-        recommendSourceDto=json["recommendSourceDto"];
-      }else {
+        recommendSourceDto = json["recommendSourceDto"];
+      }else{
         recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
       }
     }

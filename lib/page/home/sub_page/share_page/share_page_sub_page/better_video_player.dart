@@ -365,6 +365,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
           imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
           width: videoSize.width,
           height: videoSize.height,
+          fit: BoxFit.cover,
           placeholder: (context, url) {
             // return CachedNetworkImage(
             //   imageUrl: FileUtil.getThumbnailVideoFirstImage(widget.feedModel.videos.first.url),

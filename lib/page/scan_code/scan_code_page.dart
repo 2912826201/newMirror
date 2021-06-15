@@ -353,13 +353,13 @@ class scanCodePageState extends State<ScanCodePage> {
             }
           });
           break;
-          //登录教练端指令
+        //登录教练端指令
         case "if://loginCoach":
           String coach = params["coach"];
           loginCoach(coach);
           Navigator.pop(context);
           break;
-          //登录编辑器指令
+        //登录编辑器指令
         case "if://LoginEditor":
           String editor = params["editor"];
           loginCoach(editor);
