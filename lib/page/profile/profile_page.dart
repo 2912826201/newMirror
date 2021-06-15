@@ -1,4 +1,5 @@
-import 'dart:ui';
+// import 'dart:html';
+import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int feedCount;
   UserModel userModel;
   static const EventChannel eventChannel = EventChannel('com.aimymusic.mirror_phoneListener');
+
   //头像的高度
   double userAvatarHeight = 71;
 
@@ -55,7 +57,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
- /* static const basicMessageChannel = BasicMessageChannel('messageChannel', StandardMessageCodec());
+
+  /* static const basicMessageChannel = BasicMessageChannel('messageChannel', StandardMessageCodec());
   static const methodChannel = const MethodChannel('PhoneStatusListener');*/
 
 /*  //设置消息监听
@@ -122,6 +125,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
     return Scaffold(
       appBar: null,
+      backgroundColor: AppColor.white,
       body: SingleChildScrollView(
         controller: controller,
         physics: BouncingScrollPhysics(),
@@ -244,60 +248,64 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       width: width,
       child: Stack(
         children: [
-          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-            print("头像地址:$avatar");
-            return CachedNetworkImage(
-              height: gaussianBlurHeight,
+          Container(
               width: width,
-              imageUrl: avatar != null ? avatar : "",
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
-              ),
-            );
-          }, selector: (context, notifier) {
-            return notifier.profile.avatarUri;
-          }),
+              height: gaussianBlurHeight + 72,
+              clipBehavior: Clip.hardEdge,
+              // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+              decoration: const BoxDecoration(),
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(
+                  sigmaX: 28.0,
+                  sigmaY: 28.0,
+                ),
+                child: CachedNetworkImage(
+                  height: gaussianBlurHeight + 72,
+                  width: width,
+                  imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
+                      ? context.watch<ProfileNotifier>().profile.avatarUri
+                      : "",
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.bgWhite,
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColor.bgWhite,
+                  ),
+                ),
+              )),
           Positioned(
               child: Container(
             width: width,
-            height: gaussianBlurHeight,
-            color: AppColor.white.withOpacity(0.6),
+            height: gaussianBlurHeight + 72,
+            /*   color: AppColor.white.withOpacity(0.6),*/
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [AppColor.white.withOpacity(0.6), AppColor.white],
+                    begin: FractionalOffset(0, 0.5),
+                    end: FractionalOffset(0, 1))),
           )),
           Container(
-            width: width,
             height: gaussianBlurHeight + 72,
-            clipBehavior: Clip.hardEdge,
-            // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
-            decoration: BoxDecoration(),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: Container(
-                height: gaussianBlurHeight,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: ScreenUtil.instance.statusBarHeight,
-                    ),
-                    SizedBox(
-                      height: CustomAppBar.appBarHeight,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _getUserImage(),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _userFollowRow(),
-                  ],
+            child: Column(
+              children: [
+                SizedBox(
+                  height: ScreenUtil.instance.statusBarHeight,
                 ),
-              ),
+                SizedBox(
+                  height: CustomAppBar.appBarHeight,
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                _getUserImage(),
+                const SizedBox(
+                  height: 12,
+                ),
+                _userFollowRow(),
+              ],
             ),
-          )
+          ),
         ],
       ),
     );
