@@ -359,11 +359,47 @@ class CourseModel {
     _picUrl = json["picUrl"];
     _description = json["description"];
     _coachId = json["coachId"];
-    _coachDto = json["coachDto"] != null ? UserModel.fromJson(json["coachDto"]) : null;
+
+
+    if (json["coachDto"] != null) {
+      if(json["coachDto"] is UserModel){
+        _coachDto =json["coachDto"];
+      }else{
+        _coachDto =UserModel.fromJson(json["coachDto"]);
+      }
+    }else{
+      _coachDto =null;
+    }
+
+
     _levelId = json["levelId"];
-    _levelDto = json["levelDto"] != null ? SubTagModel.fromJson(json["levelDto"]) : null;
+
+
+    if (json["levelDto"] != null) {
+      if(json["levelDto"] is SubTagModel){
+        _levelDto =json["levelDto"];
+      }else{
+        _levelDto =SubTagModel.fromJson(json["levelDto"]);
+      }
+    }else{
+      _levelDto =null;
+    }
+
+
     _targetId = json["targetId"];
-    _targetDto = json["targetDto"] != null ? SubTagModel.fromJson(json["targetDto"]) : null;
+
+    if (json["targetDto"] != null) {
+      if(json["targetDto"] is SubTagModel){
+        _targetDto =json["targetDto"];
+      }else{
+        _targetDto =SubTagModel.fromJson(json["targetDto"]);
+      }
+    }else{
+      _targetDto =null;
+    }
+
+
+
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
@@ -389,7 +425,19 @@ class CourseModel {
     _creatorId = json["creatorId"];
     _creatorNickname = json["creatorNickname"];
     _coursewareId = json["coursewareId"];
-    _coursewareDto = json["coursewareDto"] != null ? CoursewareDto.fromJson(json["coursewareDto"]) : null;
+
+
+    if (json["coursewareDto"] != null) {
+      if(json["coursewareDto"] is CoursewareDto){
+        _coursewareDto =json["coursewareDto"];
+      }else{
+        _coursewareDto =CoursewareDto.fromJson(json["coursewareDto"]);
+      }
+    }else{
+      _coursewareDto =null;
+    }
+
+
     _bgmType = json["bgmType"];
     _priceType = json["priceType"];
     _price = json["price"];
@@ -635,9 +683,32 @@ class CoursewareDto {
     _times = json["times"];
     _calories = json["calories"];
     _levelId = json["levelId"];
-    _levelDto = json["levelDto"] != null ? SubTagModel.fromJson(json["levelDto"]) : null;
+
+
+    if (json["levelDto"] != null) {
+      if(json["levelDto"] is SubTagModel){
+        _levelDto =json["levelDto"];
+      }else{
+        _levelDto =SubTagModel.fromJson(json["levelDto"]);
+      }
+    }else{
+      _levelDto =null;
+    }
+
+
     _targetId = json["targetId"];
-    _targetDto = json["targetDto"] != null ? SubTagModel.fromJson(json["targetDto"]) : null;
+
+
+    if (json["targetDto"] != null) {
+      if(json["targetDto"] is SubTagModel){
+        _targetDto =json["targetDto"];
+      }else{
+        _targetDto =SubTagModel.fromJson(json["targetDto"]);
+      }
+    }else{
+      _targetDto =null;
+    }
+
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {
@@ -944,7 +1015,18 @@ class ComponentDtos {
         }
       });
     }
-    _levelDto = json["levelDto"] != null ? SubTagModel.fromJson(json["levelDto"]) : null;
+
+    if (json["levelDto"] != null) {
+      if(json["levelDto"] is SubTagModel){
+        _levelDto =json["levelDto"];
+      }else{
+        _levelDto =SubTagModel.fromJson(json["levelDto"]);
+      }
+    }else{
+      _levelDto =null;
+    }
+
+
     if (json["equipmentDtos"] != null) {
       _equipmentDtos = [];
       json["equipmentDtos"].forEach((v) {
@@ -1295,7 +1377,19 @@ class Scripts {
     _isIdentify = json["isIdentify"];
     _picUrl = json["picUrl"];
     _levelId = json["levelId"];
-    _levelDto = json["levelDto"] != null ? SubTagModel.fromJson(json["levelDto"]) : null;
+
+
+    if (json["levelDto"] != null) {
+      if(json["levelDto"] is SubTagModel){
+        _levelDto =json["levelDto"];
+      }else{
+        _levelDto =SubTagModel.fromJson(json["levelDto"]);
+      }
+    }else{
+      _levelDto =null;
+    }
+
+
     if (json["partDtos"] != null) {
       _partDtos = [];
       json["partDtos"].forEach((v) {

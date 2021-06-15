@@ -29,7 +29,11 @@ class PostprogressModel {
   PostprogressModel.fromJson(Map<String, dynamic> json) {
     plannedSpeed = json["plannedSpeed"];
     if (json["postFeedModel"] != null) {
-      postFeedModel = PostFeedModel.fromJson(json["postFeedModel"]);
+      if(json["postFeedModel"] is PostFeedModel) {
+        postFeedModel = json["postFeedModel"];
+      }else{
+        postFeedModel = PostFeedModel.fromJson(json["postFeedModel"]);
+      }
     }
     // isPublish = json["isPublish"];
     showPulishView = json["showPulishView"];
@@ -93,7 +97,11 @@ class PostFeedModel {
 
   PostFeedModel.fromJson(Map<String, dynamic> json) {
     if (json["selectedMediaFiles"] != null) {
-      selectedMediaFiles = SelectedMediaFiles.fromJson(json["selectedMediaFiles"]);
+      if(json["selectedMediaFiles"] is SelectedMediaFiles) {
+        selectedMediaFiles = json["selectedMediaFiles"];
+      }else{
+        selectedMediaFiles = SelectedMediaFiles.fromJson(json["selectedMediaFiles"]);
+      }
     }
     print(json["atUsersModel"]);
     if (json["atUsersModel"] != null) {

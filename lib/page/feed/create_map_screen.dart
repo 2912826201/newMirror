@@ -4,6 +4,7 @@ import 'package:amap_location_muka/amap_location_muka.dart' hide LatLng;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/amap/amap.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -39,17 +40,29 @@ class _createMapScreenState extends State<createMapScreen> {
 
   // 查询定位信息
   aroundHttp() async {
-    Marker marker = Marker(position: LatLng(widget.latitude, widget.longitude));
+    BitmapDescriptor bitmapDescriptorSelf = BitmapDescriptor.fromIconPath("assets/png/pin_map.png");
+    Marker marker = Marker(position: LatLng(widget.latitude, widget.longitude),infoWindowEnable: false,icon: bitmapDescriptorSelf,);
     markerSet.add(marker);
     // 获取权限状态
+    // pin_map_self.png
     PermissionStatus permissions = await Permission.locationWhenInUse.status;
     // 用户授予了对所请求功能的访问权限
     if (permissions == PermissionStatus.granted) {
+      print("定位权限");
       //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.fetch();
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+
+      BitmapDescriptor bitmapDescriptor = BitmapDescriptor.fromIconPath("assets/png/pin_map_self.png");
+      // ImageConfiguration configuration = ImageConfiguration(size: Size(32.0,32.0));
+      // BitmapDescriptor bitmapDescriptor = await BitmapDescriptor.fromAssetImage(configuration,"assets/png/pin_map_self.png",);
+      print("currentAddressInfo.latitude:::::${currentAddressInfo.latitude} currentAddressInfo.longitude:::::${currentAddressInfo.longitude}");
       Marker marker = Marker(
           position: LatLng(currentAddressInfo.latitude, currentAddressInfo.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
+          // icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
+        icon: bitmapDescriptor,
+          infoWindow: InfoWindow(title: "我的位置")
+          // "assets/png/2.0x/course_favorite.png"
+      );
       markerSet.add(marker);
       print("currentAddressInfo ::::${currentAddressInfo.toJson()}");
       // markers.add(MarkerOption(
@@ -96,7 +109,12 @@ class _createMapScreenState extends State<createMapScreen> {
                 formatted_address == null ||
                 formatted_address.isEmpty ||
                 widget.keyWords == null
-            ? Container()
+            ? Container(
+                width: ScreenUtil.instance.width,
+                height: ScreenUtil.instance.height,
+                child: Center(
+                  child: CupertinoActivityIndicator(),
+                ))
             : ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [

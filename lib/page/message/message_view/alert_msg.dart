@@ -113,6 +113,8 @@ class _AlertMsgState extends State<AlertMsg> {
         textArray.add("“${widget.chatUserName}”撤回了一条消息");
         isChangColorArray.add(false);
       }
+    } else if (widget.map==null) {
+      textArray.clear();
     } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
       //时间提示
       colorArray.add(AppColor.textSecondary);
@@ -136,31 +138,39 @@ class _AlertMsgState extends State<AlertMsg> {
       //4--群名改变
       //5--扫码加入群聊
       //群通知
-      Map<String, dynamic> mapGroupModel = json.decode(widget.map["data"]["data"]);
-      if (mapGroupModel["subType"] == 5) {
-        getGroupEntryByQRCode(mapGroupModel, context);
-      } else if (mapGroupModel["subType"] == 4) {
-        updateGroupName(mapGroupModel, context);
-      } else {
-        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-          ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
-            textArray.clear();
-          } else {
-            if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
-              textArray.clear();
-            } else {
-              getGroupText(mapGroupModel, context);
-            }
-          }
+      if(widget.map["data"]==null||widget.map["data"]["data"]==null){
+        textArray.clear();
+      }else {
+        Map<String, dynamic> mapGroupModel = json.decode(widget.map["data"]["data"]);
+        if (mapGroupModel["subType"] == 5) {
+          getGroupEntryByQRCode(mapGroupModel, context);
+        } else if (mapGroupModel["subType"] == 4) {
+          updateGroupName(mapGroupModel, context);
         } else {
-          if (mapGroupModel["subType"] == 1) {
-            textArray.clear();
-          } else {
-            if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
+          if (context
+              .watch<GroupUserProfileNotifier>()
+              .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+            ChatGroupUserModel chatGroupUserModel = context
+                .watch<GroupUserProfileNotifier>()
+                .chatGroupUserModelList[0];
+            if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
               textArray.clear();
             } else {
-              getGroupText(mapGroupModel, context);
+              if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
+                textArray.clear();
+              } else {
+                getGroupText(mapGroupModel, context);
+              }
+            }
+          } else {
+            if (mapGroupModel["subType"] == 1) {
+              textArray.clear();
+            } else {
+              if (mapGroupModel["subType"] == 0 && widget.map["data"]["name"] == "Entry") {
+                textArray.clear();
+              } else {
+                getGroupText(mapGroupModel, context);
+              }
             }
           }
         }

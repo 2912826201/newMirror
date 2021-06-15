@@ -37,9 +37,9 @@ dependencies:
   # sqlite数据库
   sqflite: ^2.0.0+3
   # 处理权限
-  permission_handler: ^6.0.0
+  permission_handler: ^8.0.1
   # 本地媒体库
-  photo_manager: ^0.5.8
+  photo_manager: ^1.2.2
   # 融云IM
   rongcloud_im_plugin: ^5.1.2
   # 七牛上传库
@@ -82,7 +82,7 @@ dependencies:
   # 下拉刷新上拉加载
   pull_to_refresh: ^2.0.0
   # shared preferences
-  shared_preferences: ^2.0.1
+  shared_preferences: ^2.0.6
   # 汉字转拼音
   lpinyin: ^2.0.3
   # 瀑布流插件
@@ -154,7 +154,7 @@ dependencies:
   #webview
   webview_flutter: ^2.0.8
   #bugly错误收集
-  flutter_bugly: '0.3.1'
+  flutter_bugly: ^0.3.2+1
   #极光推送 更新flutter版本后要升级到最新
   jpush_flutter: ^2.1.2
 
