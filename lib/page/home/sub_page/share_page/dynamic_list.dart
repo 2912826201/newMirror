@@ -6,6 +6,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/better_video_player.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
@@ -206,11 +207,11 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
 
-      // return betterVideoPlayer(
-      //   feedModel: feedModel,
-      //   sizeInfo: sizeInfo,
-      //   durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-      // );
+      return betterVideoPlayer(
+        feedModel: feedModel,
+        sizeInfo: sizeInfo,
+        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+      );
       // VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),);
       return widget.isHero
           ? Hero(
