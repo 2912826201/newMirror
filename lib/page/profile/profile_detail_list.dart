@@ -258,45 +258,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   Widget _showDataUi() {
     return !listNoData
-        ? /*CustomScrollView(
-            slivers: [
-              SliverList(
-                  delegate: SliverChildBuilderDelegate((content, index) {
-                HomeFeedModel model;
-                model = followModel[index];
-                return SizeTransition(
-                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
-                    parent: animationMap[model.id],
-                    curve: Curves.fastOutSlowIn,
-                  )),
-                  axis: Axis.vertical,
-                  axisAlignment: 1.0,
-                  child: ExposureDetector(
-                    key: widget.type == 2
-                        ? Key('profile_feed_${followModel[index].id}')
-                        : Key('profile_like_${followModel[index].id}'),
-                    child: DynamicListLayout(
-                        index: index,
-                        pageName: "profileDetails",
-                        isShowRecommendUser: false,
-                        isShowConcern: false,
-                        model: model,
-                        isMySelf: widget.isMySelf,
-                        mineDetailId: widget.id,
-                        removeFollowChanged: (model) {},
-                        deleteFeedChanged: (feedId) {},),
-                    onExposure: (visibilityInfo) {
-                      // 如果没有显示
-                      if (model.isShowInputBox) {
-                        context.read<FeedMapNotifier>().showInputBox(model.id);
-                      }
-                      print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                    },
-                  ),
-                );
-              }, childCount: followModel.length))
-            ],
-          )*/
+        ?
         ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
@@ -306,7 +268,14 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             itemBuilder: (context, index) {
               HomeFeedModel model;
               model = followModel[index];
-              return ExposureDetector(
+              return SizeTransition(
+                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                parent: animationMap[model.id],
+                curve: Curves.fastOutSlowIn,
+              )),
+              axis: Axis.vertical,
+              axisAlignment: 1.0,
+              child: ExposureDetector(
                 key: widget.type == 2
                     ? Key('profile_feed_${followModel[index].id}')
                     : Key('profile_like_${followModel[index].id}'),
@@ -329,7 +298,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   }
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
-              );
+              ));
             })
         : ListView(
             children: [
