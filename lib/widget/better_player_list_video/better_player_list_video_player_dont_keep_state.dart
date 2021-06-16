@@ -27,7 +27,12 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
   final bool autoPause;
 
   final BetterPlayerListVideoPlayerController betterPlayerListVideoPlayerController;
+
   final int index;
+
+  final int modelId;
+
+  final Function(int id,Function(bool isScroll) call) setIsScrollListener;
 
   const BetterPlayerListVideoPlayerDontKeep(
     this.dataSource, {
@@ -37,6 +42,8 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
     this.autoPause = true,
     this.betterPlayerListVideoPlayerController,
     this.index,
+    this.modelId,
+    this.setIsScrollListener,
     Key key,
   })  : assert(dataSource != null, "Data source can't be null"),
         assert(configuration != null, "Configuration can't be null"),
@@ -53,6 +60,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
 class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVideoPlayerDontKeep> {
   BetterPlayerController _betterPlayerController;
   bool _isDisposing = false;
+  bool isScroll = false;
   double visibleDouble = 0.0;
 
   @override
@@ -71,6 +79,24 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
       widget.betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
     }
     print("初始化的播放器控制器::::${_betterPlayerController.hashCode}");
+
+    if(widget.setIsScrollListener!=null) {
+      widget.setIsScrollListener(widget.modelId, setScroll);
+    }
+  }
+
+
+  setScroll(bool isScroll){
+    this.isScroll=isScroll;
+    print("setScroll---${isScroll}");
+    if(!isScroll){
+      if (visibleDouble >= widget.playFraction) {
+        if (widget.autoPlay && _betterPlayerController.isVideoInitialized() &&
+            !_betterPlayerController.isPlaying() && !_isDisposing) {
+          _betterPlayerController.play();
+        }
+      }
+    }
   }
 
   @override
@@ -119,6 +145,7 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     print("!isPlaying ::::::${!isPlaying}");
     print("!_isDisposing::::${!_isDisposing}");
     print("widget.index:::${widget.index}");
+    print("isScroll:::${isScroll}");
     if (visibleFraction >= widget.playFraction) {
       visibleDouble = visibleFraction;
       if (widget.index != null && widget.index == 0) {
@@ -126,6 +153,9 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
       }
       // } else {
       if (widget.autoPlay && initialized && !isPlaying && !_isDisposing) {
+        if(isScroll){
+          return;
+        }
         _betterPlayerController.play();
       }
       // }

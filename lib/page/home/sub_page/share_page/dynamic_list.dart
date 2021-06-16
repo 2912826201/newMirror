@@ -11,8 +11,6 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
-import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/better_video_player.dart';
-import 'package:mirror/page/test/viewer_video_test.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -20,7 +18,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
-import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
@@ -38,7 +35,8 @@ class DynamicListLayout extends StatefulWidget {
       this.isMySelf,
       this.isShowConcern = false,
       this.itemHeightKey,
-      this.isLoadingImage})
+      this.setIsScrollListener,
+      })
       : super(key: key);
   final int index;
   bool isShowRecommendUser;
@@ -51,6 +49,9 @@ class DynamicListLayout extends StatefulWidget {
   int topicId;
   bool isHero;
   bool isMySelf;
+  Function(int id,Function(bool isScroll) call) setIsScrollListener;
+
+
 
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -61,8 +62,7 @@ class DynamicListLayout extends StatefulWidget {
   // 是否显示关注按钮
   bool isShowConcern;
 
-  ///加载图片的标识
-  bool isLoadingImage;
+
 
   @override
   DynamicListLayoutState createState() => DynamicListLayoutState();
@@ -71,6 +71,10 @@ class DynamicListLayout extends StatefulWidget {
 class DynamicListLayoutState extends State<DynamicListLayout> {
   // @override
   // bool get wantKeepAlive => true; //必须重写   这么添加时保留轮播图滑动的图片
+
+  bool isScroll=false;
+
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -83,7 +87,17 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    if(widget.setIsScrollListener!=null) {
+      widget.setIsScrollListener(-1, setScroll);
+    }
+
   }
+
+  setScroll(bool isScroll){
+    this.isScroll=isScroll;
+  }
+
 
   // 宽高比
   double setAspectRatio(double height) {
@@ -119,19 +133,13 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   }),
               // 图片区域
               widget.model.picUrls.length > 0
-                  ? widget.isLoadingImage
-                      ? SlideBanner(
-                          height: widget.model.picUrls[0].height.toDouble(),
-                          model: widget.model,
-                          index: widget.index,
-                          pageName: widget.pageName,
-                          isHero: widget.isHero,
-                        )
-                      : Container(
-                          height: setAspectRatio(widget.model.picUrls[0].height.toDouble()),
-                          width: ScreenUtil.instance.width,
-                          color: AppColor.bgWhite,
-                        )
+                  ? SlideBanner(
+                      height: widget.model.picUrls[0].height.toDouble(),
+                      model: widget.model,
+                      index: widget.index,
+                      pageName: widget.pageName,
+                      isHero: widget.isHero,
+                    )
                   : Container(),
               // 视频区域
               widget.model.videos.isNotEmpty ? getVideo(feedModel: widget.model, index: widget.index) : Container(),
@@ -215,6 +223,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                 durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
                 isInListView: true,
                 index: widget.index,
+                setIsScrollListener: widget.setIsScrollListener,
               ),
             )
           : FeedVideoPlayer(
@@ -225,6 +234,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
               isInListView: true,
               index: widget.index,
+              setIsScrollListener: widget.setIsScrollListener,
             );
     }
   }
