@@ -398,6 +398,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         Expanded(
                             child: TabBarView(
                           controller: _tabController,
+                          physics: ClampingScrollPhysics(),
                           children: <Widget>[
                             // 推荐话题
                             TopicList(

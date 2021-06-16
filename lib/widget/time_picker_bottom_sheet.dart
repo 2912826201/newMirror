@@ -295,6 +295,16 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
           itemExtent: 42,
           onSelectedItemChanged: valueChanged,
           looping: widget.looping,
+          selectionOverlay: Container(
+            padding: EdgeInsets.only(left: 15,right: 15),
+            child: Column(
+              children: [
+                Container(height: 0.5,color: AppColor.bgWhite,),
+                Spacer(),
+                Container(height: 0.5,color: AppColor.bgWhite,),
+              ],
+            ),
+          ),
           children: List<Widget>.generate(
             valueRange.last - valueRange.first + 1,
             (index) {

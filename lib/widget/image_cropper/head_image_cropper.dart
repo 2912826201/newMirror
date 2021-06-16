@@ -1,7 +1,10 @@
+library head_image_cropper;
+
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'dart:ui' as ui show Image;
+import 'cropper_image_out.dart' if (dart.library.html) 'cropper_image_web_out.dart' as imgOut;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,25 +15,35 @@ const Color _defualtMaskColor = Color.fromARGB(160, 0, 0, 0);
 // 图片加载完成回调
 typedef ImageLoadCompleteCallBack = Future Function();
 
+class CropperController {
+  CropperImageElement _element;
+
+  Future<ui.Image> outImage() {
+    return _element?._outImage();
+  }
+}
+
 ///来源：https://gitee.com/wskfjt/flutterhead_clipping_control
 ///图像裁剪，适用于头像裁剪和输出固定尺寸的图片裁剪
 class CropperImage extends RenderObjectWidget {
-  CropperImage(this.image,
-      {Key key,
-      this.limitations = true,
-      this.isArc = false,
-      this.backBoxSize = 10.0,
-      this.backBoxColor0 = Colors.grey,
-      this.backBoxColor1 = Colors.white,
-      this.maskColor = _defualtMaskColor,
-      this.lineColor = Colors.white,
-      this.lineWidth = 3,
-      this.outWidth = cropImageSize,
-      this.outHeight = cropImageSize,
-      this.maskPadding = 20.0,
-      this.round = 8.0,
-      this.imageLoadCompleteCallBack})
-      : super(key: key);
+  CropperImage(
+    this.image, {
+    Key key,
+    this.controller,
+    this.limitations = true,
+    this.isArc = false,
+    this.backBoxSize = 10.0,
+    this.backBoxColor0 = Colors.grey,
+    this.backBoxColor1 = Colors.white,
+    this.maskColor = _defualtMaskColor,
+    this.lineColor = Colors.white,
+    this.lineWidth = 3,
+    this.outWidth = cropImageSize,
+    this.outHeight = cropImageSize,
+    this.maskPadding = 20.0,
+    this.round = 8.0,
+    this.imageLoadCompleteCallBack,
+  }) : super(key: key);
 
   ///  image 输入图片源
   final ImageProvider image;
@@ -72,6 +85,8 @@ class CropperImage extends RenderObjectWidget {
   final double round;
 
   final ImageLoadCompleteCallBack imageLoadCompleteCallBack;
+
+  final CropperController controller;
 
   @override
   CropperImageElement createElement() {
@@ -137,15 +152,18 @@ class CropperImage extends RenderObjectWidget {
 class CropperImageElement extends RenderObjectElement {
   ImageProvider _image;
 
-  CropperImageElement(
-    CropperImage widget,
-  ) : super(widget);
+  CropperImageElement(CropperImage widget) : super(widget);
 
   @override
   CropperImageRender get renderObject => super.renderObject as CropperImageRender;
 
   @override
   CropperImage get widget => super.widget as CropperImage;
+
+  @override
+  void forgetChild(Element child) {
+    assert(null == child);
+  }
 
   @override
   void insertChildRenderObject(RenderObject child, slot) {}
@@ -167,6 +185,8 @@ class CropperImageElement extends RenderObjectElement {
       //NOTE 在替换图片后 将缩放尺寸重置复位
       renderObject.scale = 0;
       stream.removeListener(listener);
+    }, onError: (exception, stackTrace) {
+      stream.removeListener(listener);
     });
     stream.addListener(listener);
   }
@@ -178,31 +198,29 @@ class CropperImageElement extends RenderObjectElement {
       _image = widget.image;
       _resolveImage();
     }
+    newWidget.controller?._element = this;
   }
 
   @override
   void mount(Element parent, dynamic newSlot) {
     super.mount(parent, newSlot);
     _image = widget.image;
+    widget.controller?._element = this;
     _resolveImage();
   }
 
-  Future<ui.Image> outImage() {
-    var recorder = PictureRecorder();
-    var canvas = Canvas(recorder, Rect.fromLTRB(0, 0, widget.outWidth, widget.outHeight));
-
-    if (null != _image) {
-      var scale = widget.outHeight / (renderObject.bottom - renderObject.top);
-      canvas.translate(renderObject.outWidth / 2 + renderObject.drawX * scale,
-          renderObject.outHeight / 2 + renderObject.drawY * scale);
-
-      canvas.rotate(renderObject.rotate1);
-      canvas.scale(renderObject.scale * scale);
-      canvas.drawImage(
-          renderObject.image, Offset(-renderObject.image.width / 2, -renderObject.image.height / 2), Paint());
-    }
-
-    return recorder.endRecording().toImage(widget.outWidth.toInt(), widget.outHeight.toInt());
+  Future<ui.Image> _outImage() {
+    return imgOut.outImage(
+      image: renderObject.image,
+      outWidth: widget.outWidth,
+      outHeight: widget.outHeight,
+      bottom: renderObject.bottom,
+      top: renderObject.top,
+      drawX: renderObject.drawX,
+      drawY: renderObject.drawY,
+      rotate1: renderObject.rotate1,
+      scale: renderObject.scale,
+    );
   }
 
   @override
@@ -370,9 +388,17 @@ class CropperImageRender extends RenderProxyBox {
   }
 
   @override
+  void layout(Constraints constraints, {bool parentUsesSize = false}) {
+    super.layout(constraints, parentUsesSize: parentUsesSize);
+  }
+
+  @override
   void performResize() {
     size = constraints.biggest;
   }
+
+  @override
+  bool get sizedByParent => true;
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -386,7 +412,7 @@ class CropperImageRender extends RenderProxyBox {
     canvas.translate(offset.dx, offset.dy);
     canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
     //NOTE 为了透明背景 所以没有绘制底色
-    // canvas.drawColor(Colors.blue, BlendMode.clear);
+    // canvas.drawColor(Colors.blue, BlendMode.color);
     _onPadding(size);
     //NOTE 为了透明背景 所以没有绘制底色
     // _createBack(canvas, size);
@@ -397,11 +423,11 @@ class CropperImageRender extends RenderProxyBox {
       canvas.rotate(rotate1);
       canvas.scale(scale);
       canvas.drawImage(_image, Offset(-_image.width / 2, -_image.height / 2), Paint());
-      try{
+      try {
         if (_imageLoadCompleteCallBack != null) {
           _imageLoadCompleteCallBack();
         }
-      }catch (e){}
+      } catch (e) {}
       canvas.restore();
     }
 

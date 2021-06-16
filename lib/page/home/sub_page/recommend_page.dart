@@ -109,7 +109,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   RefreshController _refreshController = RefreshController();
 
   // 列表监听
-  ScrollController _controller = new ScrollController();
+  // ScrollController _controller = new ScrollController();
 
   // 请求下一页
   int lastTime;
@@ -131,9 +131,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 是否请求过数据
   bool isRequestData;
 
+  ///加载图片的标识
+  bool isLoadingImage = true;
+
   @override
   void dispose() {
-    _controller.dispose();
+    // _controller.dispose();
     // EventBus.getDefault().unRegister(registerName: AGAIN_LOGIN_REPLACE_LAYOUT, pageName: EVENTBUS_RECOMMEND_PAGE);
     super.dispose();
   }
@@ -155,8 +158,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   void _versionDialog() {
-    if (Application.versionModel!=null&&Application.haveOrNotNewVersion) {
-      if(Application.versionModel.isForceUpdate!=1){
+    if (Application.versionModel != null && Application.haveOrNotNewVersion) {
+      if (Application.versionModel.isForceUpdate != 1) {
         Application.haveOrNotNewVersion = false;
       }
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -209,8 +212,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               });
             }
             // 默认关闭话题动态
-            recommendModelList.forEach(( v) {
-              if(v.recommendSourceDto != null) {
+            recommendModelList.forEach((v) {
+              if (v.recommendSourceDto != null) {
                 v.recommendSourceDto.type = 0;
               }
             });
@@ -250,8 +253,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             recommendModelList.add(HomeFeedModel.fromJson(v));
           });
           // 默认关闭话题动态
-          recommendModelList.forEach(( v) {
-            if(v.recommendSourceDto != null) {
+          recommendModelList.forEach((v) {
+            if (v.recommendSourceDto != null) {
               v.recommendSourceDto.type = 0;
             }
           });
@@ -278,7 +281,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {
-      _controller.jumpTo(0);
+      PrimaryScrollController.of(context).jumpTo(0);
     }
   }
 
@@ -289,6 +292,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     return Stack(
       children: [
         Container(
+            child: NotificationListener(
+          ///子Widget中的滚动组件滑动时就会分发滚动通知
           child: SmartRefresher(
               enablePullUp: recommendModelList.isNotEmpty ? true : false,
               enablePullDown: true,
@@ -308,7 +313,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               },
               child: CustomScrollView(
                 key: globalKey,
-                controller: _controller,
+                controller: PrimaryScrollController.of(context),
                 // BouncingScrollPhysics
                 physics:
                     // ClampingScrollPhysics(),
@@ -348,6 +353,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       model: model,
                                       pageName: "recommendPage",
                                       isShowConcern: true,
+                                      isLoadingImage: isLoadingImage,
                                       // 可选参数 子Item的个数
                                       // key: GlobalObjectKey("recommend$index"),
                                       isShowRecommendUser: false),
@@ -395,9 +401,39 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             )),
                 ],
               )),
-        )
+
+          ///每当有滑动通知时就会回调此方法
+          onNotification: notificationFunction,
+        ))
       ],
     );
+  }
+
+  bool notificationFunction(Notification notification) {
+    ///通知类型
+    switch (notification.runtimeType) {
+      case ScrollStartNotification:
+        print("开始滚动");
+
+        ///在这里更新标识 刷新页面 不加载图片
+        isLoadingImage = false;
+        break;
+      case ScrollUpdateNotification:
+        print("正在滚动");
+        break;
+      case ScrollEndNotification:
+        print("滚动停止");
+
+        ///在这里更新标识 刷新页面 加载图片
+        setState(() {
+          isLoadingImage = true;
+        });
+        break;
+      case OverscrollNotification:
+        print("滚动到边界");
+        break;
+    }
+    return true;
   }
 
   // 课程横向布局

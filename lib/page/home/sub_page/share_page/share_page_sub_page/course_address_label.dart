@@ -108,7 +108,8 @@ class CourseAddressLabel extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(left: 8),
             child: tags[index].type == feed_tag_type_location
-                ? AppIcon.getAppIcon(AppIcon.tag_location, 16)
+                ?
+            AppIcon.getAppIcon(AppIcon.tag_location, 16)
                 : tags[index].type == feed_tag_type_course
                     ? AppIcon.getAppIcon(AppIcon.tag_course_black, 16)
                     : Container(

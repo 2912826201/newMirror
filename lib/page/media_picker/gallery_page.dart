@@ -18,7 +18,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/image_cropper.dart';
+import 'package:mirror/widget/image_cropper/head_image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -373,8 +373,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                                                         notifier.useOriginalRatio))
                                                                 : selectedSize)
                                                             .width,
-                                                        key: context.select(
-                                                            (SelectedMapNotifier notifier) => notifier.cropperKey),
+                                                        controller: context.select(
+                                                            (SelectedMapNotifier notifier) => notifier.cropperController),
                                                         backBoxColor0: AppColor.transparent,
                                                         backBoxColor1: AppColor.transparent,
                                                       )
@@ -1151,9 +1151,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     _isGettingImage = true;
     bool result = false;
     try {
-      GlobalKey cropperKey = context.read<SelectedMapNotifier>().cropperKey;
-      print("cropperKey: " + cropperKey.toString());
-      ui.Image image = await (cropperKey.currentContext as CropperImageElement).outImage();
+      CropperController cropperController = context.read<SelectedMapNotifier>().cropperController;
+      ui.Image image = await cropperController.outImage();
 
       print("🔰🔰🔰1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
       print(image);
@@ -1305,9 +1304,9 @@ class SelectedMapNotifier with ChangeNotifier {
   Size get selectedImageSize => _fixedImageSize == null ? _selectedImageSize : _fixedImageSize;
 
   // 裁剪组件用的GlobalKey
-  GlobalKey _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: "-1");
+  CropperController _cropperController = CropperController();
 
-  GlobalKey get cropperKey => _cropperKey;
+  CropperController get cropperController => _cropperController;
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -1394,11 +1393,8 @@ class SelectedMapNotifier with ChangeNotifier {
     // 判断是否真的变化 如果一方为null时 统一视为变化
     if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
       _currentEntity = entity;
-      if (entity == null) {
-        _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: "-1");
-      } else {
-        _cropperKey = GlobalKey<_GalleryPageState>(debugLabel: entity.id);
-      }
+      //创建新的CropperController
+      _cropperController = CropperController();
       //切换时 将之前的视频播放停止
       _controllerList.forEach((controller) {
         try {

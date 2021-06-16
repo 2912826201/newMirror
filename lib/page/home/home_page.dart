@@ -25,6 +25,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/banner_view/page_scroll_physics.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -33,7 +34,6 @@ import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -431,153 +431,246 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
   @override
   Widget build(BuildContext context) {
     print("HomePage_____________________________________________build");
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: CustomAppBar(
-        leading: CustomAppBarIconButton(
-            svgName: AppIcon.nav_camera,
-            iconColor: AppColor.black,
-            onTap: () {
-              print("${FluroRouter.appRouter.hashCode}");
-              if (postprogressModel != null && postprogressModel.postFeedModel != null) {
-                if (postprogressModel.plannedSpeed != -1) {
-                  ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
-                } else {
-                  ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
-                }
-              } else {
-                // 从打开新页面改成滑到负一屏
-                if (context.read<TokenNotifier>().isLoggedIn) {
-                  // 暂时屏蔽负一屏
-                  AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                      publishMode: 1);
-                  // Application.ifPageController.animateTo(0);
-                } else {
-                  AppRouter.navigateToLoginPage(context);
-                }
-              }
-            }),
-        titleWidget: Container(
-            width: 140,
-            color: AppColor.white,
-            child: Custom.TabBar(
-              controller: controller,
-              tabs: [
-                Text(
-                  "关注",
-                ),
-                Text(
-                  "推荐",
-                )
-              ],
-              indicatorSize: Custom.TabBarIndicatorSize.label,
-              labelStyle: const TextStyle(
-                fontSize: 17.5,
-                fontWeight: FontWeight.w600,
-              ),
-              labelColor: Colors.black,
-              unselectedLabelStyle: const TextStyle(fontSize: 15.5),
-              indicator: const RoundUnderlineTabIndicator(
-                borderSide: const BorderSide(
-                  width: 3,
-                  color: Color.fromRGBO(253, 137, 140, 1),
-                ),
-                insets: EdgeInsets.only(bottom: -6),
-                wantWidth: 16,
-              ),
-              onDoubleTap: (index) {
-                if (controller.index == index) {
-                  subpageRefresh();
-                } else {
-                  controller.animateTo(index);
-                }
-              },
-            )),
-        actions: [
-          CustomAppBarIconButton(
-              svgName: AppIcon.nav_search,
-              iconColor: AppColor.black,
-              onTap: () {
-                AppRouter.navigateSearchPage(context);
-              }),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Column(
+    return
+        // Scaffold(
+        // backgroundColor: AppColor.white,
+        // appBar: CustomAppBar(
+        //   leading: CustomAppBarIconButton(
+        //       svgName: AppIcon.nav_camera,
+        //       iconColor: AppColor.black,
+        //       onTap: () {
+        //         print("${FluroRouter.appRouter.hashCode}");
+        //         if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+        //           if (postprogressModel.plannedSpeed != -1) {
+        //             ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+        //           } else {
+        //             ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+        //           }
+        //         } else {
+        //           // 从打开新页面改成滑到负一屏
+        //           if (context.read<TokenNotifier>().isLoggedIn) {
+        //             // 暂时屏蔽负一屏
+        //             AppRouter.navigateToMediaPickerPage(
+        //                 context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+        //                 publishMode: 1);
+        //             // Application.ifPageController.animateTo(0);
+        //           } else {
+        //             AppRouter.navigateToLoginPage(context);
+        //           }
+        //         }
+        //       }),
+        //   titleWidget: Container(
+        //       width: 140,
+        //       color: AppColor.white,
+        //       child: Custom.TabBar(
+        //         controller: controller,
+        //         tabs: [
+        //           Text(
+        //             "关注",
+        //           ),
+        //           Text(
+        //             "推荐",
+        //           )
+        //         ],
+        //         indicatorSize: Custom.TabBarIndicatorSize.label,
+        //         labelStyle: const TextStyle(
+        //           fontSize: 17.5,
+        //           fontWeight: FontWeight.w600,
+        //         ),
+        //         labelColor: Colors.black,
+        //         unselectedLabelStyle: const TextStyle(fontSize: 15.5),
+        //         indicator: const RoundUnderlineTabIndicator(
+        //           borderSide: const BorderSide(
+        //             width: 3,
+        //             color: Color.fromRGBO(253, 137, 140, 1),
+        //           ),
+        //           insets: EdgeInsets.only(bottom: -6),
+        //           wantWidth: 16,
+        //         ),
+        //         onDoubleTap: (index) {
+        //           if (controller.index == index) {
+        //             subpageRefresh();
+        //           } else {
+        //             controller.animateTo(index);
+        //           }
+        //         },
+        //       )),
+        //   actions: [
+        //     CustomAppBarIconButton(
+        //         svgName: AppIcon.nav_search,
+        //         iconColor: AppColor.black,
+        //         onTap: () {
+        //           AppRouter.navigateSearchPage(context);
+        //         }),
+        //   ],
+        // ),
+        // body:
+        Column(
+      children: [
+        Container(
+          width: ScreenUtil.instance.width,
+          height: CustomAppBar.appBarHeight,
+          margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
+          // color: AppColor.mainRed,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              StreamBuilder<double>(
-                  initialData: animalHeight,
-                  stream: streamController.stream,
-                  builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.linear,
-                      height: snapshot.data,
-                      child: Container(
-                        height: snapshot.data,
-                      ),
-                    );
+              SizedBox(
+                width: 16,
+              ),
+              CustomAppBarIconButton(
+                  svgName: AppIcon.nav_camera,
+                  iconColor: AppColor.black,
+                  onTap: () {
+                    print("${FluroRouter.appRouter.hashCode}");
+                    if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+                      if (postprogressModel.plannedSpeed != -1) {
+                        ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+                      } else {
+                        ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+                      }
+                    } else {
+                      // 从打开新页面改成滑到负一屏
+                      if (context.read<TokenNotifier>().isLoggedIn) {
+                        // 暂时屏蔽负一屏
+                        AppRouter.navigateToMediaPickerPage(
+                            context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                            publishMode: 1);
+                        // Application.ifPageController.animateTo(0);
+                      } else {
+                        AppRouter.navigateToLoginPage(context);
+                      }
+                    }
                   }),
-              Expanded(
-                child: TabBarView(
-                  controller: controller,
-                  physics: context.watch<FeedMapNotifier>().value.isDropDown
-                      ? pageScrollPhysics()
-                      : NeverScrollableScrollPhysics(),
-                  children: [
-                    AttentionPage(
-                      key: attentionKey,
+              Spacer(),
+              Container(
+                  width: 140,
+                  color: AppColor.white,
+                  child: Custom.TabBar(
+                    controller: controller,
+                    tabs: [
+                      Text(
+                        "关注",
+                      ),
+                      Text(
+                        "推荐",
+                      )
+                    ],
+                    indicatorSize: Custom.TabBarIndicatorSize.label,
+                    labelStyle: const TextStyle(
+                      fontSize: 17.5,
+                      fontWeight: FontWeight.w600,
                     ),
-                    RecommendPage(
-                      key: recommendKey,
+                    labelColor: Colors.black,
+                    unselectedLabelStyle: const TextStyle(fontSize: 15.5),
+                    indicator: const RoundUnderlineTabIndicator(
+                      borderSide: const BorderSide(
+                        width: 3,
+                        color: Color.fromRGBO(253, 137, 140, 1),
+                      ),
+                      insets: EdgeInsets.only(bottom: -6),
+                      wantWidth: 16,
                     ),
-                    // RecommendPage()
-                  ],
-                ),
+                    onDoubleTap: (index) {
+                      if (controller.index == index) {
+                        subpageRefresh();
+                      } else {
+                        controller.animateTo(index);
+                      }
+                    },
+                  )),
+              Spacer(),
+              CustomAppBarIconButton(
+                  svgName: AppIcon.nav_search,
+                  iconColor: AppColor.black,
+                  onTap: () {
+                    AppRouter.navigateSearchPage(context);
+                  }),
+              SizedBox(
+                width: 16,
               ),
             ],
           ),
-          Positioned(
-              top: 0,
-              child: StreamBuilder<PostprogressModel>(
-                  initialData: postprogressModel,
-                  stream: streamProgress.stream,
-                  builder: (BuildContext stramContext, AsyncSnapshot<PostprogressModel> snapshot) {
-                    return ReleaseProgressView(
-                      postprogressModel: snapshot.data,
-                      deleteReleaseFeedChanged: () {
-                        // 删除本地存储
-                        AppPrefs.removePublishFeed(
-                            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
-                        //  清除图片路径
-                        if (postprogressModel != null &&
-                            postprogressModel.postFeedModel != null &&
-                            postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
-                                .contains(AppConfig.getAppPublishDir())) {
-                          _clearCache(AppConfig.getAppPublishDir());
-                        }
-                        // 清空发布model
-                        postprogressModel.postFeedModel = null;
-                        streamController.sink.add(0.0);
-                        streamProgress.sink.add(postprogressModel);
-                        new Future.delayed(Duration(milliseconds: 1500), () {
-                          //还原进度条
-                          postprogressModel.plannedSpeed = 0.0;
-                        });
-                      },
-                      // 重新发送
-                      resendFeedChanged: () {
-                        pulishFeed(getPublishFeedData(), isPostPageJump: false);
-                      },
-                    );
-                  })),
-          //     )
-          // : Container(),
-        ],
-      ),
+        ),
+        Expanded(
+            child: Stack(
+          children: [
+            Column(
+              children: [
+                StreamBuilder<double>(
+                    initialData: animalHeight,
+                    stream: streamController.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.linear,
+                        height: snapshot.data,
+                        child: Container(
+                          height: snapshot.data,
+                        ),
+                      );
+                    }),
+                Expanded(
+                  child: TabBarView(
+                    controller: controller,
+                    physics: context.watch<FeedMapNotifier>().value.isDropDown
+                        ? ClampingScrollPhysics()
+                        : NeverScrollableScrollPhysics(),
+                    children: [
+                      AttentionPage(
+                        key: attentionKey,
+                      ),
+                      RecommendPage(
+                        key: recommendKey,
+                      ),
+                      // RecommendPage()
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+                top: 0,
+                child: StreamBuilder<PostprogressModel>(
+                    initialData: postprogressModel,
+                    stream: streamProgress.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<PostprogressModel> snapshot) {
+                      return ReleaseProgressView(
+                        postprogressModel: snapshot.data,
+                        deleteReleaseFeedChanged: () {
+                          // 删除本地存储
+                          AppPrefs.removePublishFeed(
+                              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}");
+                          //  清除图片路径
+                          if (postprogressModel != null &&
+                              postprogressModel.postFeedModel != null &&
+                              postprogressModel.postFeedModel.selectedMediaFiles.list.first.file.path
+                                  .contains(AppConfig.getAppPublishDir())) {
+                            _clearCache(AppConfig.getAppPublishDir());
+                          }
+                          // 清空发布model
+                          postprogressModel.postFeedModel = null;
+                          streamController.sink.add(0.0);
+                          streamProgress.sink.add(postprogressModel);
+                          new Future.delayed(Duration(milliseconds: 1500), () {
+                            //还原进度条
+                            postprogressModel.plannedSpeed = 0.0;
+                          });
+                        },
+                        // 重新发送
+                        resendFeedChanged: () {
+                          pulishFeed(getPublishFeedData(), isPostPageJump: false);
+                        },
+                      );
+                    })),
+            //     )
+            // : Container(),
+          ],
+        ))
+      ],
     );
+
+    // );
     // });
   }
 }

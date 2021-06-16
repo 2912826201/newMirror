@@ -26,8 +26,8 @@ class ProfileDetailsList extends StatefulWidget {
   int id;
   bool isMySelf;
   Key pageKey;
-
-  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf});
+  bool imageLoading;
+  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf,this.imageLoading});
 
   @override
   ProfileDetailsListState createState() {
@@ -48,6 +48,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   StreamController<int> streamController;
+  bool imageLoading = true;
   Map<int, AnimationController> animationMap = {};
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -212,7 +213,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: SmartRefresher(
+          child: NotificationListener(
+            ///子Widget中的滚动组件滑动时就会分发滚动通知
+              child:SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
@@ -224,14 +227,38 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 }
               },
               onRefresh: _onRefresh,
-              child: _showDataUi())),
+              child: _showDataUi()),onNotification: (n){
+            switch (n.runtimeType) {
+              case ScrollStartNotification:
+                print("开始滚动");
+
+                ///在这里更新标识 刷新页面 不加载图片
+                imageLoading = false;
+                break;
+              case ScrollUpdateNotification:
+                print("正在滚动");
+                break;
+              case ScrollEndNotification:
+                print("滚动停止");
+
+                ///在这里更新标识 刷新页面 加载图片
+                setState(() {
+                  imageLoading = true;
+                });
+                break;
+              case OverscrollNotification:
+                print("滚动到边界");
+                break;
+            }
+            return true;
+          },)),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
 
   Widget _showDataUi() {
     return !listNoData
-        ? CustomScrollView(
+        ? /*CustomScrollView(
             slivers: [
               SliverList(
                   delegate: SliverChildBuilderDelegate((content, index) {
@@ -269,8 +296,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 );
               }, childCount: followModel.length))
             ],
-          )
-        /*ListView.builder(
+          )*/
+        ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
@@ -284,6 +311,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                     ? Key('profile_feed_${followModel[index].id}')
                     : Key('profile_like_${followModel[index].id}'),
                 child: DynamicListLayout(
+                  isLoadingImage: imageLoading,
                     index: index,
                     pageName: "profileDetails",
                     isShowRecommendUser: false,
@@ -302,7 +330,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
               );
-            })*/
+            })
         : ListView(
             children: [
               Center(

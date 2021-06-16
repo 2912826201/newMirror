@@ -34,8 +34,6 @@ import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
-import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -139,11 +137,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         _getUserInfo(id: widget.userId);
         _getFollowCount(id: widget.userId);
       });
-        WidgetsBinding.instance.addPersistentFrameCallback((callback){
-          print("addPersistentFrameCallback be invoke");
-          //触发一帧的绘制
-          WidgetsBinding.instance.scheduleFrame();
-        });
+        // WidgetsBinding.instance.addPersistentFrameCallback((callback){
+        //   print("addPersistentFrameCallback be invoke");
+        //   //触发一帧的绘制
+        //   WidgetsBinding.instance.scheduleFrame();
+        // });
     });
     scrollController.addListener(() {
       if (scrollController.offset >= userDetailBoardHeight) {

@@ -141,6 +141,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                         child: ListView.builder(
                             controller: scrollController,
                             itemExtent:69,
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                             itemCount: searchController.text != null && searchController.text.isNotEmpty
                                 ? searchPois.length
                                 : pois.length,

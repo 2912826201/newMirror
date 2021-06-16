@@ -101,7 +101,7 @@ class SendMessageViewState extends State<SendMessageView> {
       status = widget.model.msg.sentStatus;
       sendChatUserId = widget.model.msg.senderUserId;
 
-      if (ChatPageUtil.init(context).isSystemMsg(widget.chatId)) {
+      if (widget.conversationDtoType == OFFICIAL_TYPE) {
         userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
         name = "系统通知";
       } else {
