@@ -199,7 +199,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
         ));
 
     if (widget.isInListView) {
-      listController = BetterPlayerListVideoPlayerController();
+      // listController = BetterPlayerListVideoPlayerController();
     } else {
       controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     }
@@ -299,7 +299,7 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                       ?
                   BetterPlayerListVideoPlayerDontKeep(
                           dataSource,
-                          betterPlayerListVideoPlayerController: listController,
+                          // betterPlayerListVideoPlayerController: listController,
                           configuration: configuration,
                           playFraction:
                               0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),

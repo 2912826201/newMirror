@@ -26,7 +26,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
   ///Flag to determine if video should be auto paused
   final bool autoPause;
 
-  final BetterPlayerListVideoPlayerController betterPlayerListVideoPlayerController;
+
 
   final int index;
 
@@ -40,7 +40,7 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
     this.playFraction = 0.6,
     this.autoPlay = true,
     this.autoPause = true,
-    this.betterPlayerListVideoPlayerController,
+    // this.betterPlayerListVideoPlayerController,
     this.index,
     this.modelId,
     this.setIsScrollListener,
@@ -62,7 +62,7 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
   bool _isDisposing = false;
   bool isScroll = false;
   double visibleDouble = 0.0;
-
+  BetterPlayerListVideoPlayerController betterPlayerListVideoPlayerController;
   @override
   void initState() {
     super.initState();
@@ -75,8 +75,8 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
       betterPlayerPlaylistConfiguration: const BetterPlayerPlaylistConfiguration(),
     );
 
-    if (widget.betterPlayerListVideoPlayerController != null) {
-      widget.betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
+    if (betterPlayerListVideoPlayerController != null) {
+      betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
     }
     print("初始化的播放器控制器::::${_betterPlayerController.hashCode}");
 
@@ -147,6 +147,8 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
     print("widget.index:::${widget.index}");
     print("isScroll:::${isScroll}");
     if (visibleFraction >= widget.playFraction) {
+      betterPlayerListVideoPlayerController = BetterPlayerListVideoPlayerController();
+      betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
       visibleDouble = visibleFraction;
       if (widget.index != null && widget.index == 0) {
         visibleDouble = visibleFraction;
