@@ -88,6 +88,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   child: CachedNetworkImage(
                     height: 28,
                     width: 28,
+                    useOldImageOnUrlChange: true,
                     // 调整磁盘缓存中图像大小
                     // maxHeightDiskCache: 150,
                     // maxWidthDiskCache: 150,

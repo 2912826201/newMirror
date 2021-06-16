@@ -135,17 +135,18 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
         )
             : CachedNetworkImage(
           imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
-          width: videoSize.width,
-          height: videoSize.height,
-          placeholder: (context, url) {
-            return Container(
-              color: AppColor.bgWhite,
-            );
-          },
-          errorWidget: (context, url, error) => Container(
-            color: AppColor.bgWhite,
-          ),
-        ),
+                width: videoSize.width,
+                useOldImageOnUrlChange: true,
+                height: videoSize.height,
+                placeholder: (context, url) {
+                  return Container(
+                    color: AppColor.bgWhite,
+                  );
+                },
+                errorWidget: (context, url, error) => Container(
+                  color: AppColor.bgWhite,
+                ),
+              ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
           // // 取消全屏按钮
