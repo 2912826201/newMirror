@@ -286,14 +286,14 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                   height: videoSize.height,
                   // videoSize.height,
                   child: widget.isInListView
-                      ? BetterPlayerListVideoPlayer(
-                  // BetterPlayerListVideoPlayerDontKeep(
+                      ?
+                  BetterPlayerListVideoPlayerDontKeep(
                           dataSource,
                           betterPlayerListVideoPlayerController: listController,
                           configuration: configuration,
                           playFraction:
                               0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
-                          // index: widget.index,
+                          index: widget.index,
                         )
                       : BetterPlayer(
                           controller: controller,
