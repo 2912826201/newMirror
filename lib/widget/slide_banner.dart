@@ -184,21 +184,23 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 fadeInDuration: Duration(milliseconds: 0),
                 // useOldImageOnUrlChange: true,
                 fit: BoxFit.cover,
+                useOldImageOnUrlChange: true,
                 imageUrl: item.url != null
                     ?
                     // FileUtil.getThumbnail(item.url)
                     FileUtil.getImageSlim(item.url)
                     : "",
                 placeholder: (context, url) {
-                  return  CachedNetworkImage(
+                  return CachedNetworkImage(
                     /// imageUrl的淡入动画的持续时间。
                     fadeInDuration: Duration(milliseconds: 0),
                     // useOldImageOnUrlChange: true,
                     fit: BoxFit.cover,
+                    useOldImageOnUrlChange: true,
                     imageUrl: item.url != null
                         ?
-                    // FileUtil.getThumbnail(item.url)
-                    FileUtil.getThumbnail(item.url)
+                        // FileUtil.getThumbnail(item.url)
+                        FileUtil.getThumbnail(item.url)
                         : "",
                     placeholder: (context, url) {
                       return Container(
