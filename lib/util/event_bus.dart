@@ -171,7 +171,8 @@ const String VIDEO_COURSE_RESULT_PAGE = "video_course_result_page";
 const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 // 搜索页
 const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
-
+//关注粉丝页
+const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
 ///广播类型
 //发布动态
 const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
@@ -251,3 +252,5 @@ const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
  String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
  // 搜索页删除动态
 String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
+// 重新登录刷新个人主页及关注按钮
+const String AGAIN_LOGIN_REFREASH_USERPAGE = "again_login_refreash_userpage";

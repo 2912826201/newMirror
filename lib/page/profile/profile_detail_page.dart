@@ -117,6 +117,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE,registerName:AGAIN_LOGIN_REFREASH_USERPAGE);
     loadingStreamController = StreamController.broadcast();
     _textName = widget.userName ?? "";
     _avatar = widget.imageUrl ?? "";
@@ -164,6 +165,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
+
+  void loginRefreashPage(){
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
+      if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+        isMselfId = true;
+      } else {
+        isMselfId = false;
+        _initBlackStatus();
+      }
+      _getUserInfo(id: widget.userId);
+      _getFollowCount(id: widget.userId);
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -632,19 +645,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           onTap: () {
             if (canOnClick) {
               if (!context.read<TokenNotifier>().isLoggedIn) {
-                AppRouter.navigateToLoginPage(context,callback: (result){
-                  if(context.read<TokenNotifier>().isLoggedIn){
-                    context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
-                    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
-                      isMselfId = true;
-                    } else {
-                      isMselfId = false;
-                      _initBlackStatus();
-                    }
-                    _getUserInfo(id: widget.userId);
-                    _getFollowCount(id: widget.userId);
-                  }
-                });
+                AppRouter.navigateToLoginPage(context);
                 return;
               }
               if (isMselfId) {
