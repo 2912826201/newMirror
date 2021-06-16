@@ -406,6 +406,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.4.0"
+  fps_monitor:
+    dependency: "direct main"
+    description:
+      name: fps_monitor
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   html:
     dependency: transitive
     description:
