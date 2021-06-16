@@ -118,8 +118,8 @@ class ExposureDetectorLayer extends ContainerLayer {
       }
     });
 
-    /// 确保在两次绘制中计算完
-    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.touch);
+    /// 确保在两次绘制中计算完并且在没有用户与设备交互时才运行的任务。
+    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.animation);
   }
 
   /// 计算组件的矩形

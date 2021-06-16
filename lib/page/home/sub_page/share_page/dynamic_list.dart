@@ -84,6 +84,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
     // TODO: implement initState
     super.initState();
   }
+
   // 宽高比
   double setAspectRatio(double height) {
     if (height == 0) {
@@ -92,6 +93,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       return (ScreenUtil.instance.width / widget.model.picUrls[0].width.toDouble()) * height;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     print('==============================动态itembuild');
