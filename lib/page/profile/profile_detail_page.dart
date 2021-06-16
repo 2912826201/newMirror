@@ -34,8 +34,6 @@ import 'package:mirror/widget/customize_tab_bar/customiize_tab_bar_view.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
-import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -111,7 +109,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   int relation;
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
-  StreamController<bool> loadingStreamController = StreamController<bool>();
+  StreamController<bool> loadingStreamController;
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   bool isBlack = false;
   final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
@@ -119,6 +117,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    loadingStreamController = StreamController.broadcast();
     _textName = widget.userName ?? "";
     _avatar = widget.imageUrl ?? "";
     print('==============================个人主页initState');
@@ -633,7 +632,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           onTap: () {
             if (canOnClick) {
               if (!context.read<TokenNotifier>().isLoggedIn) {
-                AppRouter.navigateToLoginPage(context);
+                AppRouter.navigateToLoginPage(context,callback: (result){
+                  if(context.read<TokenNotifier>().isLoggedIn){
+                    context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
+                    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+                      isMselfId = true;
+                    } else {
+                      isMselfId = false;
+                      _initBlackStatus();
+                    }
+                    _getUserInfo(id: widget.userId);
+                    _getFollowCount(id: widget.userId);
+                  }
+                });
                 return;
               }
               if (isMselfId) {

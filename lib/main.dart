@@ -4,9 +4,12 @@ import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fps_monitor/util/collection_util.dart';
+import 'package:fps_monitor/widget/custom_widget_inspector.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
@@ -394,6 +397,10 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("Main_________________________________build");
+    kFpsInfoMaxSize = 3600;
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      overlayState = Application.navigatorKey.currentState.overlay;
+    });
     return MaterialApp(
       // title: 'Flutter Demo',
       // showPerformanceOverlay: true,
@@ -431,6 +438,10 @@ class MyAppState extends State<MyApp> {
         // 系统语言是中文： deviceLocale: [zh_CN, zh_Hans_CN, en_CN]
         print('supportedLocales: $supportedLocales');
       },
+
+      builder: (ctx, child) => CustomWidgetInspector(
+        child: child,
+      ),
     );
   }
 
