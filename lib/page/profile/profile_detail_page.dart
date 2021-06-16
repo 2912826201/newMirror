@@ -633,15 +633,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             if (canOnClick) {
               if (!context.read<TokenNotifier>().isLoggedIn) {
                 AppRouter.navigateToLoginPage(context,callback: (result){
-                  context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
-                  if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
-                    isMselfId = true;
-                  } else {
-                    isMselfId = false;
-                    _initBlackStatus();
+                  if(context.read<TokenNotifier>().isLoggedIn){
+                    context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
+                    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+                      isMselfId = true;
+                    } else {
+                      isMselfId = false;
+                      _initBlackStatus();
+                    }
+                    _getUserInfo(id: widget.userId);
+                    _getFollowCount(id: widget.userId);
                   }
-                  _getUserInfo(id: widget.userId);
-                  _getFollowCount(id: widget.userId);
                 });
                 return;
               }

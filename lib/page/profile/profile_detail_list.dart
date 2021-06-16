@@ -44,10 +44,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   int followlastTime;
   String defaultImage = DefaultImage.nodata;
   RefreshController _refreshController = RefreshController(initialRefresh: true);
-  ScrollController scrollController = ScrollController();
   bool refreshOver = false;
   bool listNoData = false;
-  StreamController<int> streamController;
   bool imageLoading = true;
   Map<int, AnimationController> animationMap = {};
   _getDynamicData() async {
@@ -160,7 +158,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
-    streamController = StreamController.broadcast();
     EventBus.getDefault()
         .registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
     print('-----------------------------profileDetailsListInit');
