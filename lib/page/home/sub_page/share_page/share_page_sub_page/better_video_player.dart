@@ -22,7 +22,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/video_exposure/video_exposure.dart';
+// import 'package:mirror/widget/video_exposure/video_exposure.dart';
+import 'package:mirror/widget/video_visibility_detector/video_visibility_detector.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:provider/provider.dart';
@@ -435,9 +436,10 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return VisibilityDetector(
+    return VideoVisibilityDetector(
         key: Key("${controller.hashCode}_key"),
-        onVisibilityChanged: (VisibilityInfo info) {
+        isPlay: controller.videoPlayerController.value.isPlaying,
+        onVisibilityChanged: (VideoVisibilityInfo info) {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
           if (info.visibleFraction == 1.0) {
             if (!controller.isPlaying()) {
