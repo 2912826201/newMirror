@@ -198,11 +198,11 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
       sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
       sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
 
-      return betterVideoPlayer(
-        feedModel: feedModel,
-        sizeInfo: sizeInfo,
-        durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
-      );
+      // return betterVideoPlayer(
+      //   feedModel: feedModel,
+      //   sizeInfo: sizeInfo,
+      //   durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
+      // );
       // VideoWidget(feedModel:feedModel,sizeInfo: sizeInfo,play:videoIsPlay,durationString:  DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),);
       return widget.isHero
           ? Hero(

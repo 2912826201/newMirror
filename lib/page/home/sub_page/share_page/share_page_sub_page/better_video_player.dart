@@ -22,6 +22,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
+
 // import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:mirror/widget/video_visibility_detector/video_visibility_detector.dart';
 
@@ -368,19 +369,6 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
           height: videoSize.height,
           fit: BoxFit.cover,
           placeholder: (context, url) {
-            // return CachedNetworkImage(
-            //   imageUrl: FileUtil.getThumbnailVideoFirstImage(widget.feedModel.videos.first.url),
-            //   width: videoSize.width,
-            //   height: videoSize.height,
-            //   placeholder: (context, url) {
-            //     return Container(
-            //       color: AppColor.bgWhite,
-            //     );
-            //   },
-            //   errorWidget: (context, url, error) => Container(
-            //     color: AppColor.bgWhite,
-            //   ),
-            // );
             return Container(
               color: AppColor.bgWhite,
             );
@@ -436,10 +424,9 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return VideoVisibilityDetector(
+    return VisibilityDetector(
         key: Key("${controller.hashCode}_key"),
-        isPlay: controller.videoPlayerController.value.isPlaying,
-        onVisibilityChanged: (VideoVisibilityInfo info) {
+        onVisibilityChanged: (VisibilityInfo info) {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
           if (info.visibleFraction == 1.0) {
             if (!controller.isPlaying()) {
@@ -483,17 +470,38 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                       setUpLuad();
                     }
                   },
-                  child: SizedBox(
-                    width:
-                        // containerSize.width,
-                        videoSize.width,
-                    height:
-                        // containerSize.height,
-                        videoSize.height,
-                    child: BetterPlayer(
-                      controller: controller,
-                    ),
-                  ),
+                  child:
+                  // controller?.videoPlayerController != null && controller?.videoPlayerController.value.isPlaying
+                  //     ?
+                  SizedBox(
+                          width:
+                              // containerSize.width,
+                              videoSize.width,
+                          height:
+                              // containerSize.height,
+                              videoSize.height,
+                          child: BetterPlayer(
+                            controller: controller,
+                          ),
+                        )
+                      // : Container(
+                      //     width: videoSize.width,
+                      //     height: videoSize.height,
+                      //     child: CachedNetworkImage(
+                      //       imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
+                      //       width: videoSize.width,
+                      //       height: videoSize.height,
+                      //       fit: BoxFit.cover,
+                      //       placeholder: (context, url) {
+                      //         return Container(
+                      //           color: AppColor.bgWhite,
+                      //         );
+                      //       },
+                      //       errorWidget: (context, url, error) => Container(
+                      //         color: AppColor.bgWhite,
+                      //       ),
+                      //     ),
+                      //   ),
                 ),
               ),
               // controller.isVideoInitialized() ?
