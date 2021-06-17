@@ -29,7 +29,11 @@ class AppConfig {
     int code = 0;
     switch (channel) {
       case "common":
-        code = 10000;
+        if (Platform.isIOS) {
+          code = 20000;
+        } else {
+          code = 10000;
+        }
         break;
       default:
         break;
