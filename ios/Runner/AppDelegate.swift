@@ -12,9 +12,9 @@ import Flutter
     //    UMCommonLogSwift.setUpUMCommonLogManager()
     UMCommonSwift.setLogEnabled(bFlag: true)
     if ("\(environmentName!)" == "dev") {
-        UMCommonSwift.initWithAppkey(appKey: "60adbecc53b6726499109624", channel: "10000")
+        UMCommonSwift.initWithAppkey(appKey: "60adbecc53b6726499109624", channel: "20000")
     } else {
-        UMCommonSwift.initWithAppkey(appKey: "60af5308dd01c71b57c7b05c", channel: "10001")
+        UMCommonSwift.initWithAppkey(appKey: "60af5308dd01c71b57c7b05c", channel: "20001")
     }
 
 //    #if DEBUG
