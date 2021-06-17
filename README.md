@@ -104,8 +104,8 @@ https://zhuanlan.zhihu.com/p/365347452
 二、build阶段
   1.iOS：
   1.1.在Terminal终端窗口，项目根目录下执行
-  测试服：flutter build ios --release --flavor Release-debug --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
-  正式服：flutter build ios --release --flavor Release-release --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
+  测试服：flutter build ios --release --flavor Release-dev --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=debug
+  正式服：flutter build ios --release --flavor Release-prod --dart-define=APP_CHANNEL=common --dart-define=ENVIRONMENT=release
   命令。待打印信息显示build完成。
   1.2.点击Android Studio上方的Tools → Flutter → Open iOS module in Xcode。
   1.3.在Xcode中点击上方的运行停止按钮右方选择对应环境的scheme（测试环境为Release-debug，正式环境为Release-release）

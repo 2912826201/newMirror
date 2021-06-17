@@ -22,6 +22,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/video_exposure/video_exposure.dart';
 
 // import 'package:mirror/widget/video_exposure/video_exposure.dart';
 
@@ -316,7 +318,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   double offsetY;
 
   // 控件显示
-  double initHeight = 0;
+  double initHeight = 0.0;
 
   // 是否可点赞
   bool isSetUpLuad = true;
@@ -423,9 +425,10 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return VisibilityDetector(
-        key: Key("${controller.hashCode}_key"),
-        onVisibilityChanged: (VisibilityInfo info) {
+    return VideoExposure(
+      // VisibilityDetector(
+        key: Key("${widget.feedModel.createTime}_key"),
+        onVisibilityChanged: ( info) {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
           if (info.visibleFraction == 1.0) {
             if (controller == null) {
