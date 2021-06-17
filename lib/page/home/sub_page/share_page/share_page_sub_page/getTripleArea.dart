@@ -10,6 +10,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -39,7 +40,7 @@ class GetTripleArea extends StatefulWidget {
 }
 
 class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMixin {
-  String myAvatar = "";
+  int myId;
 
   // 是否可点赞
   bool isSetUpLuad = true;
@@ -51,9 +52,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (context.read<ProfileNotifier>().profile != null && context.read<ProfileNotifier>().profile.avatarUri != null) {
-      myAvatar = context.read<ProfileNotifier>().profile.avatarUri;
-    }
+      myId = context.read<ProfileNotifier>().profile.uid;
   }
 
   @override
@@ -68,7 +67,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // 头像布局
-            Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
+            Selector<FeedMapNotifier, List<BuddyModel>>(builder: (context, laudUserInfo, child) {
               return GestureDetector(
                 onTap: () {
                   jumpLike(context);
@@ -91,12 +90,12 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
               );
             }, selector: (context, notifier) {
               return (notifier.value.feedMap == null || notifier.value.feedMap[widget.model.id] == null)
-                  ? <String>[]
+                  ? []
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             const SizedBox(width: 5),
             // 几次点赞
-            Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
+            Selector<FeedMapNotifier, List<BuddyModel>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
             }, selector: (context, notifier) {
               return (notifier.value.feedMap == null ||
@@ -118,9 +117,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 横排重叠头像
-  avatarOverlap(BuildContext context, List<String> laudUserInfo) {
+  avatarOverlap(BuildContext context, List<BuddyModel> laudUserInfo) {
     List<Widget> avatarList = [];
-    List<String> userInfo = [];
+    List<BuddyModel> userInfo = [];
     // 只展示前三个点赞头像
     for (int i = 0; i < laudUserInfo.length; i++) {
       if (i < 4) {
@@ -130,9 +129,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
     bool isShow = false;
     // 默认用户的头像点赞了显示用户本人头像
     if (context.select((TokenNotifier tokenNotifier) => tokenNotifier.isLoggedIn)) {
-      for (String item in userInfo) {
+      for (BuddyModel item in userInfo) {
         int index = userInfo.indexOf(item);
-        if (index != 0 && item == myAvatar) {
+        if (index != 0 && item.uid == myId) {
           isShow = true;
           break;
         }
@@ -155,53 +154,59 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
               alignment: Alignment.center,
               child: roundedAvatar(
                 context,
-                myAvatar,
+                context.read<ProfileNotifier>().profile.avatarUri,
               ),
               duration: const Duration(milliseconds: 200)),
         );
       }
     }
+    bool haveMyAvatar = false;
+    userInfo.forEach((element) {
+      if(element.uid==myId){
+        haveMyAvatar = true;
+      }
+    });
     // 其他用户点赞的头像
-    for (String item in userInfo) {
+    for (BuddyModel item in userInfo) {
       int index = userInfo.indexOf(item);
       // 这里判断去掉了用户本人的显示
       if (isShow) {
         avatarList.add(AnimatedPositioned(
-            left: avatarOffset(userInfo, index, item: item),
+            left: avatarOffset(index),
             duration: const Duration(milliseconds: 200),
-            child: animatedZoom(userInfo, index, item: item)));
-      } else if (item != myAvatar) {
+            child: animatedZoom(haveMyAvatar,userInfo, index, item: item.avatarUri)));
+      } else if (item.uid != myId) {
         avatarList.add(AnimatedPositioned(
-            left: avatarOffset(userInfo, index, item: item),
+            left: avatarOffset(index),
             duration: const Duration(milliseconds: 200),
-            child: animatedZoom(userInfo, index, item: item)));
+            child: animatedZoom(haveMyAvatar,userInfo, index, item: item.avatarUri)));
       }
     }
     return avatarList;
   }
 
   // 内部缩放动画
-  animatedZoom(List<String> userInfo, int index, {String item}) {
+  animatedZoom(bool haveMyAvatar,List<BuddyModel> userInfo, int index, {String item}) {
     // 当存在用户本人点赞时，第4个头像缩放
-    if (userInfo.contains(myAvatar) && index == 3) {
+    if (haveMyAvatar && index == 3) {
       return AnimatedContainer(
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(
             context,
-            userInfo[index],
+            userInfo[index].avatarUri,
           ),
           duration: const Duration(milliseconds: 200));
       // 不存在用户本人点赞时，第3个头像缩放
-    } else if (!userInfo.contains(myAvatar) && index == 2) {
+    } else if (!haveMyAvatar && index == 2) {
       return AnimatedContainer(
           height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
           alignment: Alignment.center,
           child: roundedAvatar(
             context,
-            userInfo[index],
+            userInfo[index].avatarUri,
           ),
           duration: const Duration(milliseconds: 200));
     } // 只展示前三个头像
@@ -216,7 +221,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 头像动画偏移位置
-  avatarOffset(List<String> userInfo, int index, {String item}) {
+  avatarOffset( int index) {
     if (index == 3) {
       return 20.5 + (index - 1) * 10.0;
     } else {
@@ -244,7 +249,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           } else {
             context.read<FeedMapNotifier>().setLaud(
                 context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
-                myAvatar,
+                context.read<ProfileNotifier>().profile.avatarUri,
                 widget.model.id);
             // model
             context.read<UserInteractiveNotifier>().laudedChange(

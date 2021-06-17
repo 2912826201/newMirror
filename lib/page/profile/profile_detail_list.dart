@@ -46,7 +46,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   RefreshController _refreshController = RefreshController(initialRefresh: true);
   bool refreshOver = false;
   bool listNoData = false;
-  bool imageLoading = true;
   Map<int, AnimationController> animationMap = {};
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -210,9 +209,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: NotificationListener(
-            ///子Widget中的滚动组件滑动时就会分发滚动通知
-              child:SmartRefresher(
+          child:SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
@@ -224,31 +221,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 }
               },
               onRefresh: _onRefresh,
-              child: _showDataUi()),onNotification: (n){
-            switch (n.runtimeType) {
-              case ScrollStartNotification:
-                print("开始滚动");
-
-                ///在这里更新标识 刷新页面 不加载图片
-                imageLoading = false;
-                break;
-              case ScrollUpdateNotification:
-                print("正在滚动");
-                break;
-              case ScrollEndNotification:
-                print("滚动停止");
-
-                ///在这里更新标识 刷新页面 加载图片
-                setState(() {
-                  imageLoading = true;
-                });
-                break;
-              case OverscrollNotification:
-                print("滚动到边界");
-                break;
-            }
-            return true;
-          },)),
+              child: _showDataUi())),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
@@ -277,7 +250,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                     ? Key('profile_feed_${followModel[index].id}')
                     : Key('profile_like_${followModel[index].id}'),
                 child: DynamicListLayout(
-                  isLoadingImage: imageLoading,
                     index: index,
                     pageName: "profileDetails",
                     isShowRecommendUser: false,
