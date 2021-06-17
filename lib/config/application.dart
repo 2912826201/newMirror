@@ -196,6 +196,8 @@ class Application {
   static List<TopicBackgroundConfigModel> topicBackgroundConfig = [];
   // 搜索页tabBarIndex数组
   static  List<int> tabBarIndexList = [];
+  // 动态视频控制器
+  static List<int> feedVideoControllerList = [];
   //公共登出方法
   static appLogout({BuildContext context,bool isKicked = false}) async {
     if(context!=null){
