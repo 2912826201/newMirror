@@ -47,6 +47,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   Map<int, AnimationController> animationMap = {};
+  ScrollController scrollController = ScrollController();
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
