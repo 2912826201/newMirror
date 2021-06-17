@@ -24,7 +24,6 @@ import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
 
 // import 'package:mirror/widget/video_exposure/video_exposure.dart';
-import 'package:mirror/widget/video_visibility_detector/video_visibility_detector.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:provider/provider.dart';
@@ -319,11 +318,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   // 控件显示
   double initHeight = 0;
 
-// 是否可点赞
+  // 是否可点赞
   bool isSetUpLuad = true;
-
-  // 是否曝光
-  bool isVisibilityDetector = false;
 
   // 开启关闭音量的监听
   StreamController<bool> streamController;
@@ -435,21 +431,11 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             if (controller == null) {
               init();
             }
-            // if( !isVisibilityDetector) {
-            //   setState(() {
-            //     isVisibilityDetector = true;
-            //   });
-            // }
             if (!controller.isPlaying()) {
               controller.play();
               isPlay.isPlay = false;
             }
           } else if (info.visibleFraction < 1.0 && info.visibleFraction >= 0.0) {
-            // if( isVisibilityDetector) {
-            //   setState(() {
-            //     isVisibilityDetector = false;
-            //   });
-            // }
             print("!!!!!!!!!!!!!!!!!!!!!!!");
             if (controller != null && controller.isPlaying()) {
               controller.pause();
