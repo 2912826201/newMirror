@@ -1,11 +1,11 @@
- import 'dart:async' show Timer;
- import 'dart:ui' as ui;
- import 'package:flutter/foundation.dart';
- import 'package:flutter/rendering.dart';
- import 'package:flutter/scheduler.dart';
+import 'dart:async' show Timer;
+import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:mirror/widget/video_exposure/video_exposure.dart';
 import 'package:mirror/widget/video_exposure/video_exposure_detector_controller.dart';
-import 'package:mirror/widget/video_exposure/video_exposure_time_layer.dart';
+
 /// Created by sl on 2021/3/13.
 Iterable<Layer> _getLayerChain(Layer start) {
   final List<Layer> layerChain = <Layer>[];
@@ -38,13 +38,9 @@ Rect _localRectToGlobal(Layer layer, Rect localRect) {
   return MatrixUtils.transformRect(transform, localRect);
 }
 
-
 class VideoExposureLayer extends ContainerLayer {
   VideoExposureLayer(
-      {@required this.key,
-        @required this.widgetSize,
-        @required this.paintOffset,
-        this.onExposureChanged})
+      {@required this.key, @required this.widgetSize, @required this.paintOffset, this.onExposureChanged})
       : assert(key != null),
         assert(paintOffset != null),
         assert(widgetSize != null),
@@ -54,6 +50,12 @@ class VideoExposureLayer extends ContainerLayer {
 
   static final _updated = <Key, VideoExposureLayer>{};
 
+  static final _lastVisibility = <Key, VideoVisibilityInfo>{};
+
+  static Map<Key, Rect> get widgetBounds => _lastBounds;
+  static final _lastBounds = <Key, Rect>{};
+
+  Offset widgetOffset;
   final Key key;
   final Size widgetSize;
 
@@ -63,56 +65,7 @@ class VideoExposureLayer extends ContainerLayer {
 
   final VideoExposureCallback onExposureChanged;
 
-  static final _exposureTime = <Key, VideoExposureTimeLayer>{};
-
   bool filter = false;
-
-  static void setScheduleUpdate() {
-    final bool isFirstUpdate = _updated.isEmpty;
-
-    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
-    if (updateInterval == Duration.zero) {
-      if (isFirstUpdate) {
-        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          _processCallbacks();
-        });
-      }
-    } else if (_timer == null) {
-      _timer = Timer(updateInterval, _handleTimer);
-    } else {
-      assert(_timer.isActive);
-    }
-  }
-
-  void _scheduleUpdate() {
-    final bool isFirstUpdate = _updated.isEmpty;
-    _updated[key] = this;
-
-    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
-    if (updateInterval == Duration.zero) {
-      if (isFirstUpdate) {
-        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          _processCallbacks();
-        });
-      }
-    } else if (_timer == null) {
-      _timer = Timer(updateInterval, _handleTimer);
-    } else {
-      assert(_timer.isActive);
-    }
-  }
-
-  static void _handleTimer() {
-    _timer = null;
-    _exposureTime.forEach((key, exposureLayer) {
-      if (_updated[key] == null) {
-        _updated[key] = exposureLayer.layer;
-      }
-    });
-
-    /// 确保在两次绘制中计算完
-    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.touch);
-  }
 
   /// 计算组件的矩形
   Rect _computeWidgetBounds() {
@@ -147,51 +100,60 @@ class VideoExposureLayer extends ContainerLayer {
     return clipRect;
   }
 
-  /// instances.
-  static void _processCallbacks() {
-    int nowTime = new DateTime.now().millisecondsSinceEpoch;
-    List<Key> toReserveList = [];
+  /// Schedules a timer to invoke the visibility callbacks.  The timer is used
+  /// to throttle and coalesce updates.
+  void _scheduleUpdate() {
+    final isFirstUpdate = _updated.isEmpty;
+    _updated[key] = this;
 
-    for (final VideoExposureLayer layer in _updated.values) {
-      if (!layer.attached) {
-        continue;
+    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
+    if (updateInterval == Duration.zero) {
+      // Even with [Duration.zero], we still want to defer callbacks to the end
+      // of the frame so that they're processed from a consistent state.  This
+      // also ensures that they don't mutate the widget tree while we're in the
+      // middle of a frame.
+      if (isFirstUpdate) {
+        // We're about to render a frame, so a post-frame callback is guaranteed
+        // to fire and will give us the better immediacy than `scheduleTask<T>`.
+        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+          _processCallbacks();
+        });
       }
-
-      final widgetBounds = layer._computeWidgetBounds();
-      final info =
-      VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
-
-      if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
-        if (nowTime - _exposureTime[layer.key].time > 1) {
-          print("最内层计算：：：：：info${info.visibleFraction}");
-          layer.onExposureChanged(info);
-        } else {
-          setScheduleUpdate();
-          toReserveList.add(layer.key);
-          _exposureTime[layer.key].layer = layer;
-        }
-      } else {
-        _exposureTime[layer.key] = VideoExposureTimeLayer(nowTime, layer);
-        toReserveList.add(layer.key);
-        setScheduleUpdate();
-      }
-      _exposureTime.removeWhere((key, _) => !toReserveList.contains(key));
+    } else if (_timer == null) {
+      // We use a normal [Timer] instead of a [RestartableTimer] so that changes
+      // to the update duration will be picked up automatically.
+      _timer = Timer(updateInterval, _handleTimer);
+    } else {
+      assert(_timer.isActive);
     }
-
-    _updated.clear();
   }
 
+  /// [Timer] callback.  Defers visibility callbacks to execute after the next
+  /// frame.
+  static void _handleTimer() {
+    _timer = null;
+
+    // Ensure that work is done between frames so that calculations are
+    // performed from a consistent state.  We use `scheduleTask<T>` here instead
+    // of `addPostFrameCallback` or `scheduleFrameCallback` so that work will
+    // be done even if a new frame isn't scheduled and without unnecessarily
+    // scheduling a new frame.
+    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.touch);
+  }
+
+  /// See [VisibilityDetectorController.notifyNow].
   static void notifyNow() {
     _timer?.cancel();
     _timer = null;
     _processCallbacks();
   }
 
+  /// Removes entries corresponding to the specified [Key] from our internal
+  /// caches.
   static void forget(Key key) {
-    if (_updated[key] != null) {
-      _updated[key].filter = true;
-      _updated.remove(key);
-    }
+    _updated.remove(key);
+    _lastVisibility.remove(key);
+    _lastBounds.remove(key);
 
     if (_updated.isEmpty) {
       _timer?.cancel();
@@ -199,13 +161,57 @@ class VideoExposureLayer extends ContainerLayer {
     }
   }
 
+  /// Executes visibility callbacks for all updated [VisibilityDetectorLayer]
+  /// instances.
+  static void _processCallbacks() {
+    for (final layer in _updated.values) {
+      if (!layer.attached) {
+        layer._fireCallback(VideoVisibilityInfo(key: layer.key, size: _lastVisibility[layer.key]?.size));
+        continue;
+      }
+
+      final widgetBounds = layer._computeWidgetBounds();
+      _lastBounds[layer.key] = widgetBounds;
+
+      final info =
+          VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
+      layer._fireCallback(info);
+    }
+    _updated.clear();
+  }
+
+  /// Invokes the visibility callback if [VisibilityInfo] hasn't meaningfully
+  /// changed since the last time we invoked it.
+  void _fireCallback(VideoVisibilityInfo info) {
+    assert(info != null);
+
+    final oldInfo = _lastVisibility[key];
+    final visible = !info.visibleBounds.isEmpty;
+
+    if (oldInfo == null) {
+      if (!visible) {
+        return;
+      }
+    } else if (info.matchesVisibility(oldInfo)) {
+      return;
+    }
+
+    if (visible) {
+      _lastVisibility[key] = info;
+    } else {
+      // Track only visible items so that the maps don't grow unbounded.
+      _lastVisibility.remove(key);
+      _lastBounds.remove(key);
+    }
+
+    onExposureChanged(info);
+  }
+
   /// See [Layer.addToScene].
   @override
   void addToScene(ui.SceneBuilder builder, [Offset layerOffset = Offset.zero]) {
-    if (!filter) {
-      _layerOffset = layerOffset;
-      _scheduleUpdate();
-    }
+    _layerOffset = layerOffset;
+    _scheduleUpdate();
     super.addToScene(builder, layerOffset);
   }
 
@@ -213,9 +219,7 @@ class VideoExposureLayer extends ContainerLayer {
   @override
   void attach(Object owner) {
     super.attach(owner);
-    if (!filter) {
-      _scheduleUpdate();
-    }
+    _scheduleUpdate();
   }
 
   /// See [AbstractNode.detach].
@@ -225,8 +229,17 @@ class VideoExposureLayer extends ContainerLayer {
 
     // The Layer might no longer be visible.  We'll figure out whether it gets
     // re-attached later.
-    if (!filter) {
-      _scheduleUpdate();
-    }
+    _scheduleUpdate();
+  }
+
+  /// See [Diagnosticable.debugFillProperties].
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+
+    properties
+      ..add(DiagnosticsProperty<Key>('key', key))
+      ..add(DiagnosticsProperty<Rect>('widgetRect', _computeWidgetBounds()))
+      ..add(DiagnosticsProperty<Rect>('clipRect', _computeClipRect()));
   }
 }

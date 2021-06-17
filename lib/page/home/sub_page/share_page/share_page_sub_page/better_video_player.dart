@@ -16,289 +16,14 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/better_player_list_video/better_player.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/video_exposure/video_exposure.dart';
-
-// import 'package:mirror/widget/video_exposure/video_exposure.dart';
-
-import 'package:video_player/video_player.dart';
 import 'package:provider/provider.dart';
 import '../dynamic_list.dart';
-import 'package:visibility_detector/visibility_detector.dart';
-
-class VideoWidget extends StatefulWidget {
-  HomeFeedModel feedModel;
-  VideoIsPlay play;
-  final SizeInfo sizeInfo;
-  final bool isFile;
-  final String thumbPath;
-  final String durationString;
-
-  VideoWidget(
-      {Key key, @required this.play, this.sizeInfo, this.feedModel, this.durationString, this.thumbPath, this.isFile})
-      : super(key: key);
-
-  @override
-  _VideoWidgetState createState() => _VideoWidgetState();
-}
-
-class _VideoWidgetState extends State<VideoWidget> {
-  Size containerSize;
-  Size videoSize;
-  double offsetX;
-  double offsetY;
-
-  // 控件显示
-  double initHeight = 0;
-
-  // 开启关闭音量的监听
-  StreamController<bool> streamController = StreamController<bool>();
-  StreamController<double> streamHeight = StreamController<double>();
-
-  // 播放器控制器
-  VideoPlayerController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _calculateSize();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      EventBus.getDefault().registerSingleParameter(_videoPlayOrpause, EVENTBUS_VIDEOWIGET_PAGE,
-          registerName: EVENTBUS__VIDEO_PLAYORPAUSE);
-    });
-    init();
-  }
-
-  _videoPlayOrpause(VideoIsPlay videoIsPlay) {
-    print("视频产生变化：：：${videoIsPlay.isPlay}");
-    print(videoIsPlay.id);
-    print(widget.feedModel.id);
-    widget.play = videoIsPlay;
-    if (videoIsPlay.id == widget.feedModel.id) {
-      if (controller != null) {
-        if (videoIsPlay.isPlay) {
-          if (controller.value.isPlaying) {
-            return;
-          }
-          controller.play();
-          streamController.sink.add(controller.value.volume > 0);
-          controller.setLooping(true);
-        } else {
-          if (!controller.value.isPlaying) {
-            return;
-          }
-          controller.pause();
-        }
-      } else {
-        print("初始化了啊啊啊啊");
-        init();
-      }
-    }
-  }
-
-  init() async {
-    controller = VideoPlayerController.network(widget.feedModel.videos.first.url);
-    controller.setVolume(0);
-    await controller.initialize().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    print("didChangeDependencies：：：：：：关注页");
-    super.didChangeDependencies();
-  }
-
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-    print('============================关注页deactivate');
-    Future.delayed(Duration.zero, () {
-      context.read<FeedMapNotifier>().setBuildCallBack(false);
-    });
-  }
-
-  @override
-  void didUpdateWidget(VideoWidget oldWidget) {
-    print("此回调什么时候又");
-    if (oldWidget.play.id != widget.play.id) {
-      if (widget.play.isPlay) {
-        controller.play();
-        streamController.sink.add(controller.value.volume > 0);
-        controller.setLooping(true);
-      } else {
-        controller.pause();
-      }
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    print("视频页销毁————————————————————————————————————————————————");
-    controller?.pause();
-    controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: containerSize.height,
-      width: containerSize.width,
-      child: Stack(
-        children: [
-          Positioned(
-            left: offsetX,
-            top: offsetY,
-            child: GestureDetector(
-              onTap: () {
-                streamHeight.sink.add(40.0);
-                // 延迟器:
-                new Future.delayed(Duration(seconds: 3), () {
-                  streamHeight.sink.add(0.0);
-                });
-              },
-              child: SizedBox(
-                width: videoSize.width,
-                height: videoSize.height,
-                child: controller.value.isInitialized
-                    ? VideoPlayer(controller)
-                    : CachedNetworkImage(
-                        imageUrl: widget.feedModel.videos.first.coverUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppColor.bgWhite,
-                        ),
-                      ),
-                // Center(
-                //         child: CupertinoActivityIndicator(radius: 30),
-                //       ),
-              ),
-            ),
-          ),
-          controller.value.isInitialized
-              ? Positioned(
-                  bottom: 0,
-                  child: StreamBuilder<double>(
-                      initialData: initHeight,
-                      stream: streamHeight.stream,
-                      builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                        return AnimatedContainer(
-                            height: snapshot.data,
-                            width: ScreenUtil.instance.width,
-                            duration: Duration(milliseconds: 100),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                // 渐变色
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomLeft,
-                                  colors: [
-                                    AppColor.transparent,
-                                    AppColor.black.withOpacity(0.5),
-                                  ],
-                                ),
-                              ),
-                              width: ScreenUtil.instance.width,
-                              height: 40,
-                              padding: const EdgeInsets.only(left: 16, right: 16),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  StreamBuilder<bool>(
-                                      initialData: controller.value.volume > 0,
-                                      stream: streamController.stream,
-                                      builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                                        return GestureDetector(
-                                          behavior: HitTestBehavior.opaque,
-                                          onTap: () {
-                                            if (controller.value.volume > 0) {
-                                              controller.setVolume(0.0);
-                                            } else {
-                                              controller.setVolume(1.0);
-                                            }
-                                            streamController.sink.add(controller.value.volume > 0);
-                                          },
-                                          child: AppIcon.getAppIcon(
-                                            snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
-                                            16,
-                                            color: AppColor.white,
-                                            containerHeight: 44,
-                                            containerWidth: 44,
-                                          ),
-                                        );
-                                      }),
-                                  Spacer(),
-                                  Text(
-                                    widget.durationString ?? "00 : 00",
-                                    style: const TextStyle(fontSize: 11, color: AppColor.white),
-                                  ),
-                                ],
-                              ),
-                            ));
-                      }))
-              : Container()
-        ],
-      ),
-    );
-  }
-
-  _calculateSize() {
-    double containerWidth = ScreenUtil.instance.width;
-    double containerHeight;
-    double videoWidth;
-    double videoHeight;
-
-    double videoRatio = widget.sizeInfo.width / widget.sizeInfo.height;
-    double containerRatio;
-
-    //如果有裁剪的比例 则直接用该比例
-    if (widget.sizeInfo.videoCroppedRatio != null) {
-      containerRatio = widget.sizeInfo.videoCroppedRatio;
-    } else {
-      if (videoRatio < minMediaRatio) {
-        containerRatio = minMediaRatio;
-      } else if (videoRatio > maxMediaRatio) {
-        containerRatio = maxMediaRatio;
-      } else {
-        containerRatio = videoRatio;
-      }
-    }
-
-    containerHeight = containerWidth / containerRatio;
-    if (videoRatio < containerRatio) {
-      videoWidth = containerWidth;
-      videoHeight = videoWidth / videoRatio;
-    } else if (videoRatio > containerRatio) {
-      videoHeight = containerHeight;
-      videoWidth = videoHeight * videoRatio;
-    } else {
-      videoWidth = containerWidth;
-      videoHeight = containerHeight;
-    }
-
-    offsetX = videoWidth * widget.sizeInfo.offsetRatioX;
-    offsetY = videoHeight * widget.sizeInfo.offsetRatioY;
-
-    containerSize = Size(containerWidth, containerHeight);
-    videoSize = Size(videoWidth, videoHeight);
-  }
-}
 
 class betterVideoPlayer extends StatefulWidget {
   HomeFeedModel feedModel;
@@ -318,7 +43,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   double offsetY;
 
   // 控件显示
-  double initHeight = 0.0;
+  double initHeight = 40.0;
 
   // 是否可点赞
   bool isSetUpLuad = true;
@@ -330,7 +55,6 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerDataSource dataSource;
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
-  VideoIsPlay isPlay = VideoIsPlay();
   int firstTapTimep;
 
   @override
@@ -384,6 +108,12 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     controller.setVolume(0);
+    new Future.delayed(Duration(seconds: 3), () {
+      if (mounted) {
+        streamHeight.sink.add(0.0);
+        firstTapTimep = null;
+      }
+    });
   }
 
   @override
@@ -426,9 +156,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return VideoExposure(
-      // VisibilityDetector(
         key: Key("${widget.feedModel.createTime}_key"),
-        onVisibilityChanged: ( info) {
+        onVisibilityChanged: (info) {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
           if (info.visibleFraction == 1.0) {
             if (controller == null) {
@@ -436,13 +165,11 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             }
             if (!controller.isPlaying()) {
               controller.play();
-              isPlay.isPlay = false;
             }
           } else if (info.visibleFraction < 1.0 && info.visibleFraction >= 0.0) {
             print("!!!!!!!!!!!!!!!!!!!!!!!");
             if (controller != null && controller.isPlaying()) {
               controller.pause();
-              isPlay.isPlay = true;
             }
           }
         },
@@ -466,6 +193,29 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                         },
                         errorWidget: (context, url, error) => Container(
                           color: AppColor.bgWhite,
+                        ),
+                      )),
+                  Positioned(
+                      bottom: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          // 渐变色
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomLeft,
+                            colors: [
+                              AppColor.transparent,
+                              AppColor.black.withOpacity(0.5),
+                            ],
+                          ),
+                        ),
+                        width: ScreenUtil.instance.width,
+                        height: 40,
+                        padding: const EdgeInsets.only(left: 2, right: 16),
+                        alignment: Alignment(1, 0),
+                        child: Text(
+                          widget.durationString ?? "00 : 00",
+                          style: const TextStyle(fontSize: 11, color: AppColor.white),
                         ),
                       ))
                 ]))
@@ -499,35 +249,12 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                             }
                           },
                           child: SizedBox(
-                            width:
-                                // containerSize.width,
-                                videoSize.width,
-                            height:
-                                // containerSize.height,
-                                videoSize.height,
+                            width: videoSize.width,
+                            height: videoSize.height,
                             child: BetterPlayer(
                               controller: controller,
                             ),
-                          )
-                          // : Container(
-                          //     width: videoSize.width,
-                          //     height: videoSize.height,
-                          //     child: CachedNetworkImage(
-                          //       imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
-                          //       width: videoSize.width,
-                          //       height: videoSize.height,
-                          //       fit: BoxFit.cover,
-                          //       placeholder: (context, url) {
-                          //         return Container(
-                          //           color: AppColor.bgWhite,
-                          //         );
-                          //       },
-                          //       errorWidget: (context, url, error) => Container(
-                          //         color: AppColor.bgWhite,
-                          //       ),
-                          //     ),
-                          //   ),
-                          ),
+                          )),
                     ),
                     // controller.isVideoInitialized() ?
                     Positioned(
