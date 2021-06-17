@@ -13,9 +13,9 @@ class AppConfig {
 
   static Env get env {
     switch (envName) {
-      case "debug":
+      case "dev":
         return Env.DEV;
-      case "release":
+      case "prod":
         return Env.PROD;
       default:
         return Env.PROD;
