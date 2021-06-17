@@ -8,7 +8,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 
 import 'media_picker/media_picker_page.dart';
-
+import 'package:visibility_detector/src/visibility_detector_controller.dart';
 class IfPage extends StatefulWidget {
   IfPage({Key key}) : super(key: key);
 
@@ -25,6 +25,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
     Application.ifPageController = _controller;
+    VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
     super.initState();
     //初始化
     WidgetsBinding.instance.addObserver(this);

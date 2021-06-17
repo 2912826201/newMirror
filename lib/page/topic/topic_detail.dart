@@ -234,7 +234,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                             13)
                                         : 13,
                                     child: Hero(
-                                        tag: model.id,
+                                        tag: model.id.toString(),
                                         child: GestureDetector(
                                             onTap: () {
                                               Navigator.of(context).push(
@@ -358,13 +358,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                           padding: EdgeInsets.only(
                               left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
                           color: AppColor.white,
-                          child:  Custom.TabBar(
+                          child: Custom.TabBar(
                             //
                             // labelColor: Colors.black,
                             controller: _tabController,
                             // labelStyle: const TextStyle(fontSize: 16),
                             // unselectedLabelColor: AppColor.textHint,
-
 
                             indicatorSize: Custom.TabBarIndicatorSize.label,
                             labelStyle: const TextStyle(
@@ -375,8 +374,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             unselectedLabelStyle: const TextStyle(fontSize: 16),
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
-                                // 刷新产品暂时没提空在这
-                                subpageRefresh();
+                                // 回到顶部
+                                  subpageRefresh();
                               } else {
                                 _tabController.animateTo(index);
                               }
@@ -457,8 +456,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   subpageRefresh() {
     TopicDoubleTapTabbar topicDoubleTapTabbar = TopicDoubleTapTabbar();
     topicDoubleTapTabbar.topicId = model.id;
-    topicDoubleTapTabbar.tabControllerIndex =  _tabController.index;
-    EventBus.getDefault().post(msg: topicDoubleTapTabbar, registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR+"${model.id}");
+    topicDoubleTapTabbar.tabControllerIndex = _tabController.index;
+    _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+    // _key.currentState.innerController.animateTo(-100, duration: Duration(milliseconds: 250), curve:  Curves.linear);
+    // _key.currentState.outerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve:  Curves.linear);
+    // _scrollController.jumpTo(0);
+    // EventBus.getDefault()
+    //     .post(msg: topicDoubleTapTabbar, registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${model.id}");
   }
 
   // 大图预览内部的Item
@@ -680,6 +684,7 @@ class TopicUiChangeModel {
   double opacity = 0;
   bool canOnclick = false;
 }
+
 class TopicDoubleTapTabbar {
   int tabControllerIndex;
   int topicId;

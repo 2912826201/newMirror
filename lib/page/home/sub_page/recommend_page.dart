@@ -17,7 +17,6 @@ import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -131,8 +130,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 是否请求过数据
   bool isRequestData;
 
-  ///加载图片的标识
-  bool isLoadingImage = true;
 
   @override
   void dispose() {
@@ -353,7 +350,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       model: model,
                                       pageName: "recommendPage",
                                       isShowConcern: true,
-                                      isLoadingImage: isLoadingImage,
+                                      setIsScrollListener: _setIsScrollListener,
                                       // 可选参数 子Item的个数
                                       // key: GlobalObjectKey("recommend$index"),
                                       isShowRecommendUser: false),
@@ -416,18 +413,17 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         print("开始滚动");
 
         ///在这里更新标识 刷新页面 不加载图片
-        isLoadingImage = false;
+        setScrollListener(true);
         break;
       case ScrollUpdateNotification:
         print("正在滚动");
+        setScrollListener(true);
         break;
       case ScrollEndNotification:
         print("滚动停止");
+        setScrollListener(false);
 
         ///在这里更新标识 刷新页面 加载图片
-        setState(() {
-          isLoadingImage = true;
-        });
         break;
       case OverscrollNotification:
         print("滚动到边界");
@@ -655,4 +651,17 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       }
     }
   }
+
+  Map<int,Function(bool isScroll)> isScrollMap=Map();
+
+  void _setIsScrollListener(int id,Function(bool isScroll) call) {
+    isScrollMap[id]=call;
+  }
+
+  void setScrollListener(bool isScroll) {
+    isScrollMap.forEach((key, value) {
+      value(isScroll);
+    });
+  }
+
 }

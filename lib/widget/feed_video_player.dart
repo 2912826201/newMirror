@@ -38,6 +38,7 @@ class FeedVideoPlayer extends StatefulWidget {
   final String durationString;
   final HomeFeedModel model;
   final int index;
+  final Function(int id,Function(bool isScroll) call) setIsScrollListener;
 
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
       {Key key,
@@ -46,7 +47,9 @@ class FeedVideoPlayer extends StatefulWidget {
       this.thumbPath,
       this.durationString,
       this.model,
-      this.index})
+      this.index,
+      this.setIsScrollListener,
+      })
       : super(key: key);
 
   @override
@@ -80,8 +83,14 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   void initState() {
     print("初始化更好的播放器");
     _calculateSize();
-
     super.initState();
+    init();
+  }
+
+
+
+
+  init(){
 
     if (widget.isFile) {
       dataSource = BetterPlayerDataSource.file(widget.url);
@@ -109,24 +118,25 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
     //   print("打印可见度 $visibility");
     // };
     configuration = BetterPlayerConfiguration(
-        // 如果不加上这个比例，在播放本地视频时宽高比不正确
+      // 如果不加上这个比例，在播放本地视频时宽高比不正确
         aspectRatio: videoSize.width / videoSize.height,
-        // eventListener: eventListener,
+        eventListener: eventListener,
         autoPlay: !widget.isInListView,
         looping: true,
         //定义按下播放器时播放器是否以全屏启动
         fullScreenByDefault: false,
         placeholder: widget.isFile
             ? widget.thumbPath == null
-                ? Container()
-                : Image.file(
-                    File(widget.thumbPath),
-                    width: videoSize.width,
-                    height: videoSize.height,
-                  )
+            ? Container()
+            : Image.file(
+          File(widget.thumbPath),
+          width: videoSize.width,
+          height: videoSize.height,
+        )
             : CachedNetworkImage(
-                imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+          imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
                 width: videoSize.width,
+                useOldImageOnUrlChange: true,
                 height: videoSize.height,
                 placeholder: (context, url) {
                   return Container(
@@ -190,11 +200,12 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
         ));
 
     if (widget.isInListView) {
-      listController = BetterPlayerListVideoPlayerController();
+      // listController = BetterPlayerListVideoPlayerController();
     } else {
       controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     }
   }
+
 
   @override
   void deactivate() {
@@ -286,13 +297,16 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                   height: videoSize.height,
                   // videoSize.height,
                   child: widget.isInListView
-                      ? BetterPlayerListVideoPlayerDontKeep(
+                      ?
+                  BetterPlayerListVideoPlayerDontKeep(
                           dataSource,
-                          betterPlayerListVideoPlayerController: listController,
+                          // betterPlayerListVideoPlayerController: listController,
                           configuration: configuration,
                           playFraction:
                               0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
                           index: widget.index,
+                          modelId: widget.model.id,
+                          setIsScrollListener: widget.setIsScrollListener,
                         )
                       : BetterPlayer(
                           controller: controller,

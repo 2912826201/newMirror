@@ -1,14 +1,11 @@
-import 'dart:async' show Timer;
-import 'dart:ui' as ui;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
-
-import './exposure_detector.dart';
-import './exposure_detector_controller.dart';
-
-/// exposure_detector_layer
+ import 'dart:async' show Timer;
+ import 'dart:ui' as ui;
+ import 'package:flutter/foundation.dart';
+ import 'package:flutter/rendering.dart';
+ import 'package:flutter/scheduler.dart';
+import 'package:mirror/widget/video_exposure/video_exposure.dart';
+import 'package:mirror/widget/video_exposure/video_exposure_detector_controller.dart';
+import 'package:mirror/widget/video_exposure/video_exposure_time_layer.dart';
 /// Created by sl on 2021/3/13.
 Iterable<Layer> _getLayerChain(Layer start) {
   final List<Layer> layerChain = <Layer>[];
@@ -41,16 +38,13 @@ Rect _localRectToGlobal(Layer layer, Rect localRect) {
   return MatrixUtils.transformRect(transform, localRect);
 }
 
-class ExposureTimeLayer {
-  final int time;
-  ExposureDetectorLayer layer;
 
-  ExposureTimeLayer(this.time, this.layer);
-}
-
-class ExposureDetectorLayer extends ContainerLayer {
-  ExposureDetectorLayer(
-      {@required this.key, @required this.widgetSize, @required this.paintOffset, this.onExposureChanged})
+class VideoExposureLayer extends ContainerLayer {
+  VideoExposureLayer(
+      {@required this.key,
+        @required this.widgetSize,
+        @required this.paintOffset,
+        this.onExposureChanged})
       : assert(key != null),
         assert(paintOffset != null),
         assert(widgetSize != null),
@@ -58,7 +52,7 @@ class ExposureDetectorLayer extends ContainerLayer {
         _layerOffset = Offset.zero;
   static Timer _timer;
 
-  static final _updated = <Key, ExposureDetectorLayer>{};
+  static final _updated = <Key, VideoExposureLayer>{};
 
   final Key key;
   final Size widgetSize;
@@ -67,18 +61,16 @@ class ExposureDetectorLayer extends ContainerLayer {
 
   final Offset paintOffset;
 
-  final ExposureCallback onExposureChanged;
+  final VideoExposureCallback onExposureChanged;
 
-  static List<Key> toRemove = [];
-
-  static final _exposureTime = <Key, ExposureTimeLayer>{};
+  static final _exposureTime = <Key, VideoExposureTimeLayer>{};
 
   bool filter = false;
 
   static void setScheduleUpdate() {
     final bool isFirstUpdate = _updated.isEmpty;
 
-    final updateInterval = ExposureDetectorController.instance.updateInterval;
+    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
     if (updateInterval == Duration.zero) {
       if (isFirstUpdate) {
         SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
@@ -96,7 +88,7 @@ class ExposureDetectorLayer extends ContainerLayer {
     final bool isFirstUpdate = _updated.isEmpty;
     _updated[key] = this;
 
-    final updateInterval = ExposureDetectorController.instance.updateInterval;
+    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
     if (updateInterval == Duration.zero) {
       if (isFirstUpdate) {
         SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
@@ -118,8 +110,8 @@ class ExposureDetectorLayer extends ContainerLayer {
       }
     });
 
-    /// 确保在两次绘制中计算完并且在没有用户与设备交互时才运行的任务。
-    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.animation);
+    /// 确保在两次绘制中计算完
+    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.touch);
   }
 
   /// 计算组件的矩形
@@ -160,41 +152,39 @@ class ExposureDetectorLayer extends ContainerLayer {
     int nowTime = new DateTime.now().millisecondsSinceEpoch;
     List<Key> toReserveList = [];
 
-    for (final ExposureDetectorLayer layer in _updated.values) {
+    for (final VideoExposureLayer layer in _updated.values) {
       if (!layer.attached) {
         continue;
       }
 
       final widgetBounds = layer._computeWidgetBounds();
       final info =
-          VisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
+      VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
 
-      if (info.visibleFraction >= 0.5) {
-        if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
-          if (nowTime - _exposureTime[layer.key].time > ExposureDetectorController.instance.exposureTime) {
-            print("info:::::::$info");
-            layer.onExposureChanged(info);
-          } else {
-            setScheduleUpdate();
-            toReserveList.add(layer.key);
-            _exposureTime[layer.key].layer = layer;
-          }
+      if (_exposureTime[layer.key] != null && _exposureTime[layer.key].time > 0) {
+        if (nowTime - _exposureTime[layer.key].time > 1) {
+          print("最内层计算：：：：：info${info.visibleFraction}");
+          layer.onExposureChanged(info);
         } else {
-          _exposureTime[layer.key] = ExposureTimeLayer(nowTime, layer);
-
-          toReserveList.add(layer.key);
           setScheduleUpdate();
+          toReserveList.add(layer.key);
+          _exposureTime[layer.key].layer = layer;
         }
+      } else {
+        _exposureTime[layer.key] = VideoExposureTimeLayer(nowTime, layer);
+        toReserveList.add(layer.key);
+        setScheduleUpdate();
       }
-
       _exposureTime.removeWhere((key, _) => !toReserveList.contains(key));
     }
 
-    toRemove.forEach((key) {
-      ExposureDetectorController.instance.forget(key);
-    });
-    toRemove.clear();
     _updated.clear();
+  }
+
+  static void notifyNow() {
+    _timer?.cancel();
+    _timer = null;
+    _processCallbacks();
   }
 
   static void forget(Key key) {

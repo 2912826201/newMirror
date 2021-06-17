@@ -88,9 +88,6 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
   final GlobalKey attentionlistKey = GlobalKey();
   Map<int, AnimationController> animationMap = {};
 
-  ///加载图片的标识
-  bool isLoadingImage = true;
-
   @override
   void dispose() {
     print("关注页面销毁了");
@@ -235,7 +232,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       // 上拉加载可以滑动
       context.read<FeedMapNotifier>().setDropDown(true);
     }
-    VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
+    // VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
     if (mounted) {
       setState(() {});
     }
@@ -497,18 +494,16 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
         print("开始滚动");
 
         ///在这里更新标识 刷新页面 不加载图片
-        isLoadingImage = false;
+        setScrollListener(true);
         break;
       case ScrollUpdateNotification:
         print("正在滚动");
+        setScrollListener(true);
         break;
       case ScrollEndNotification:
         print("滚动停止");
+        setScrollListener(false);
 
-        ///在这里更新标识 刷新页面 加载图片
-        setState(() {
-          isLoadingImage = true;
-        });
         break;
       case OverscrollNotification:
         print("滚动到边界");
@@ -568,7 +563,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       model: feedmodel,
       isShowConcern: false,
       pageName: "attentionPage",
-      isLoadingImage: isLoadingImage,
+      setIsScrollListener: _setIsScrollListener,
       // 可选参数 子Item的个数
       // key: GlobalObjectKey("attention$index"),
       deleteFeedChanged: (id) {
@@ -632,4 +627,17 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       },
     );
   }
+
+  Map<int,Function(bool isScroll)> isScrollMap=Map();
+
+  void _setIsScrollListener(int id,Function(bool isScroll) call) {
+    isScrollMap[id]=call;
+  }
+
+  void setScrollListener(bool isScroll) {
+    isScrollMap.forEach((key, value) {
+      value(isScroll);
+    });
+  }
+
 }

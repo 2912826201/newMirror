@@ -274,6 +274,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             // maxHeightDiskCache: 150,
             // maxWidthDiskCache: 150,
             // 指定缓存宽高
+            useOldImageOnUrlChange: true,
             memCacheWidth: 150,
             memCacheHeight: 150,
             imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
