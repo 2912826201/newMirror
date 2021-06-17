@@ -676,6 +676,7 @@ class _SelectButtonState extends State<SelectButton> {
                           if (callBack != null && callBack) {
                             beforSelect = widget.selectOrNot;
                           } else {
+                            ToastShow.show(msg: "网络异常，请重试", context: context);
                             widget.selectOrNot = !widget.selectOrNot;
                             setState(() {});
                           }
