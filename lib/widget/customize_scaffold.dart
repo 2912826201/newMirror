@@ -918,6 +918,7 @@ class Scaffold extends StatefulWidget {
     this.drawerEdgeDragWidth,
     this.drawerEnableOpenDragGesture = true,
     this.endDrawerEnableOpenDragGesture = true,
+    this.scrollController
   }) : assert(primary != null),
         assert(extendBody != null),
         assert(extendBodyBehindAppBar != null),
@@ -1007,7 +1008,7 @@ class Scaffold extends StatefulWidget {
   /// The [persistentFooterButtons] are rendered above the
   /// [bottomNavigationBar] but below the [body].
   final List<Widget> persistentFooterButtons;
-
+  final ScrollController scrollController;
   /// A panel displayed to the side of the [body], often hidden on mobile
   /// devices. Swipes in from either left-to-right ([TextDirection.ltr]) or
   /// right-to-left ([TextDirection.rtl])
@@ -2006,12 +2007,23 @@ class ScaffoldState extends State<Scaffold> with TickerProviderStateMixin {
   final ScrollController _primaryScrollController = ScrollController();
 
   void _handleStatusBarTap() {
-    if (_primaryScrollController.hasClients) {
-      _primaryScrollController.animateTo(
+    print("点击状态栏");
+    if(widget.scrollController != null) {
+      print("111111111111");
+      widget.scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.linear, // TODO(ianh): Use a more appropriate curve.
       );
+    } else {
+      print("22222222222222");
+      if (_primaryScrollController.hasClients) {
+        _primaryScrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.linear, // TODO(ianh): Use a more appropriate curve.
+        );
+      }
     }
   }
 

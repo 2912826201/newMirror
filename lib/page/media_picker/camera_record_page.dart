@@ -146,7 +146,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
             body: (_controller == null || !_controller.value.isInitialized)
                 ? Container(
                     // color: Colors.grey,
-                  )
+                    )
                 : Column(
                     children: [
                       Container(
@@ -415,26 +415,22 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                   }
                                 }
                               } else if (status.isPermanentlyDenied) {
-                                //安卓的禁止且之后不提示
+                                //安卓的禁止且之后不提示 iOS的拒绝授权 需要跳转到系统设置页
                                 AppSettings.openAppSettings();
                               } else {
-                                //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                                if (Application.platform == 0 || status.isUndetermined) {
-                                  status = await Permission.camera.request();
-                                  if (status.isGranted) {
-                                    setState(() {
-                                      _permissionCameraGranted = true;
-                                    });
+                                // undetermined在新版中被移除了 不需要做区分 直接重新请求
+                                status = await Permission.camera.request();
+                                if (status.isGranted) {
+                                  setState(() {
+                                    _permissionCameraGranted = true;
+                                  });
 
-                                    if (checkFullPermissions()) {
-                                      print("Camera: ${Application.cameras}");
-                                      if (Application.cameras.isNotEmpty) {
-                                        onCameraSelected(Application.cameras[_cameraIndex]);
-                                      }
+                                  if (checkFullPermissions()) {
+                                    print("Camera: ${Application.cameras}");
+                                    if (Application.cameras.isNotEmpty) {
+                                      onCameraSelected(Application.cameras[_cameraIndex]);
                                     }
                                   }
-                                } else {
-                                  AppSettings.openAppSettings();
                                 }
                               }
                             }
@@ -471,26 +467,22 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                         }
                                       }
                                     } else if (status.isPermanentlyDenied) {
-                                      //安卓的禁止且之后不提示
+                                      //安卓的禁止且之后不提示 iOS的拒绝授权 需要跳转到系统设置页
                                       AppSettings.openAppSettings();
                                     } else {
-                                      //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                                      if (Application.platform == 0 || status.isUndetermined) {
-                                        status = await Permission.microphone.request();
-                                        if (status.isGranted) {
-                                          setState(() {
-                                            _permissionMicrophoneGranted = true;
-                                          });
+                                      // undetermined在新版中被移除了 不需要做区分 直接重新请求
+                                      status = await Permission.microphone.request();
+                                      if (status.isGranted) {
+                                        setState(() {
+                                          _permissionMicrophoneGranted = true;
+                                        });
 
-                                          if (checkFullPermissions()) {
-                                            print("Camera: ${Application.cameras}");
-                                            if (Application.cameras.isNotEmpty) {
-                                              onCameraSelected(Application.cameras[_cameraIndex]);
-                                            }
+                                        if (checkFullPermissions()) {
+                                          print("Camera: ${Application.cameras}");
+                                          if (Application.cameras.isNotEmpty) {
+                                            onCameraSelected(Application.cameras[_cameraIndex]);
                                           }
                                         }
-                                      } else {
-                                        AppSettings.openAppSettings();
                                       }
                                     }
                                   }

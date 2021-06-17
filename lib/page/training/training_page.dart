@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -20,7 +21,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'video_course/video_course_list_page.dart';
 
@@ -56,12 +57,12 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     super.initState();
     _requestCourse();
     _resetData();
-    EventBus.getDefault().registerNoParameter(_resetData, EVENTBUS_TRAINING_PAGE,registerName: TRAINING_PAGE_GET_DATA);
-    EventBus.getDefault().registerNoParameter(_requestCourse, EVENTBUS_TRAINING_PAGE,
-        registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+    EventBus.getDefault().registerNoParameter(_resetData, EVENTBUS_TRAINING_PAGE, registerName: TRAINING_PAGE_GET_DATA);
+    EventBus.getDefault()
+        .registerNoParameter(_requestCourse, EVENTBUS_TRAINING_PAGE, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
   }
 
-  _resetData(){
+  _resetData() {
     getLatestLive().then((result) {
       if (result != null) {
         _liveList.clear();
@@ -72,7 +73,6 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       }
     }).catchError((error) {});
   }
-
 
   _requestCourse() {
     if (_isVideoCourseRequesting) {
@@ -195,9 +195,12 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           height: _screenWidth * 140 / 375,
           width: ScreenUtil.instance.width,
           color: AppColor.bgBlack,
-          child: Image.asset("assets/png/new_user_event_banner.png",fit: BoxFit.cover,),
+          child: Image.asset(
+            "assets/png/new_user_event_banner.png",
+            fit: BoxFit.cover,
+          ),
         ),
-        onTap: (){
+        onTap: () {
           AppRouter.navigateNewUserPromotionPage(context);
         },
       ),
@@ -421,7 +424,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    LiveLabelWidget(isWhiteBorder: false),
+                                    //训练页是不可见状态 会不停build 隐藏训练页时去掉动画
+                                    AppConfig.needShowTraining ? LiveLabelWidget(isWhiteBorder: false) : Container(),
                                     SizedBox(
                                       width: 8,
                                     ),

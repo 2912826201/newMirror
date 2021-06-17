@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,12 @@ import '../release_page.dart';
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatefulWidget {
-  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois});
+  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois,this.currentAddressInfo});
 
   PermissionStatus permissions;
   SelectedMediaFiles selectedMediaFiles;
   List<PeripheralInformationPoi> pois;
-
+  Location currentAddressInfo;
   @override
   ReleaseFeedMainViewState createState() => ReleaseFeedMainViewState();
 }
@@ -67,16 +68,19 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         var status = await Permission.locationWhenInUse.status;
 
         ///尚未请求许可。请求权限
-        if (status == PermissionStatus.undetermined) {
-          await Permission.locationWhenInUse.request();
-        }
+        //fixme 权限枚举变化
+        // if (status == PermissionStatus.undetermined) {
+        //   await Permission.locationWhenInUse.request();
+        // }
         // 请求了许可但是未授权，弹窗提醒
-        if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
+        //fixme 权限枚举变化
+        // if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
+        if (status != PermissionStatus.granted ) {
           _showDialog(context);
         }
         //  请求了许可授了权，跳转页面
         if (status == PermissionStatus.granted) {
-          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress,widget.currentAddressInfo, (result) {
             PeripheralInformationPoi poi = result as PeripheralInformationPoi;
             return childrenACallBack(poi);
           });
@@ -168,7 +172,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               setState(() {});
             }
           } else {
-            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress,widget.currentAddressInfo, (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
               return childrenACallBack(poi);
             });

@@ -201,6 +201,16 @@ class _AddressPickerState extends State<AddressPicker> {
       backgroundColor: AppColor.white,
       scrollController: controller,
       squeeze: 0.95,
+      selectionOverlay:Container(
+        padding: EdgeInsets.only(left: 15,right: 15),
+        child: Column(
+          children: [
+            Container(height: 0.5,color: AppColor.bgWhite,),
+            Spacer(),
+            Container(height: 0.5,color: AppColor.bgWhite,),
+          ],
+        ),
+      ),
       diameterRatio: 1.5,
       itemExtent: 42,
       //循环
@@ -209,6 +219,7 @@ class _AddressPickerState extends State<AddressPicker> {
         textContext.length,
         (index) {
           return Container(
+            color: AppColor.white,
             child: Center(
               child: Text("${textContext[index]}", style: AppStyle.textAddressText),
             ),

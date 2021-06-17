@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+import 'package:flutter_audio_recorder2/flutter_audio_recorder2.dart';
 // import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
@@ -11,9 +11,11 @@ import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:file/src/backends/local/local_file_system.dart';
+import 'dart:io' as io;
 
 import 'voice_dialog.dart';
 
@@ -59,7 +61,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   LocalFileSystem localFileSystem=LocalFileSystem();
 
-  FlutterAudioRecorder _recorder;
+
+  FlutterAudioRecorder2 _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
 
@@ -79,9 +82,35 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   init()async{
-    var status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw "沒有权限";
+    try {
+      bool hasPermission = await FlutterAudioRecorder2.hasPermissions ?? false;
+
+      if (hasPermission) {
+
+        _mPath = AppConfig.getAppVoiceFilePath();
+
+        // .wav <---> AudioFormat.WAV
+        // .mp4 .m4a .aac <---> AudioFormat.AAC
+        // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
+        _recorder =
+            FlutterAudioRecorder2(_mPath, audioFormat: AudioFormat.AAC);
+
+        await _recorder.initialized;
+        // after initialization
+        var current = await _recorder.current(channel: 0);
+        print(current);
+        // should be "Initialized", if all working fine
+        setState(() {
+          _current = current;
+          _currentStatus = current.status;
+          print(_currentStatus);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: new Text("You must accept permissions")));
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -108,11 +137,14 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     await Future.delayed(Duration(milliseconds: 300), () {
       print("延时停止300毫秒");
     });
+
+
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
     File file = localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
+
 
     isRecordering = false;
 
@@ -121,6 +153,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     if (context != null) {
       setState(() {
         isHide = true;
+        init();
       });
     }
   }
@@ -130,8 +163,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     if (outputFile.existsSync()) {
       await outputFile.delete();
     }
-    _recorder = FlutterAudioRecorder(_mPath); // .wav .aac .m4a
-    await _recorder.initialized;
+
     await _recorder.start();
     var recording = await _recorder.current(channel: 0);
 
@@ -151,7 +183,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         imageIconString: moveUpCancelPostImageString,
         alertText: "手指上滑,取消发送");
 
-    _mPath = AppConfig.getAppVoiceFilePath();
+    // _mPath = AppConfig.getAppVoiceFilePath();
 
 
     if (overlayEntry == null) {

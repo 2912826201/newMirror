@@ -64,7 +64,7 @@ class _InteractiveVideoItemState extends State<InteractiveVideoItem> {
 
   @override
   Widget build(BuildContext context) {
-    return _controller.value.initialized
+    return _controller.value.isInitialized
         ? Stack(
       alignment: Alignment.center,
       children: [

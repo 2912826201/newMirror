@@ -65,7 +65,16 @@ class QueryModel{
     isRead = json["isRead"];
     createTime = json["createTime"];
     atType = json["atType"];
-    commentData = json["commentData"] != null ? CommentDtoModel.fromJson(json["commentData"]) : null;
+
+    if(json["commentData"]!=null){
+      if(json["commentData"] is CommentDtoModel){
+        commentData=json["commentData"];
+      }else{
+        commentData=CommentDtoModel.fromJson(json["commentData"]);
+      }
+    }else{
+      commentData=null;
+    }
     refData = json["refData"];
     senderName = json["senderName"];
     senderAvatarUrl = json["senderAvatarUrl"];

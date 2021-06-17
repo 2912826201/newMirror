@@ -12,6 +12,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -20,8 +21,8 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widget/overscroll_behavior.dart';
 import '../profile_detail_page.dart';
@@ -99,6 +100,18 @@ class _QueryFollowState extends State<QueryFollowList> {
         if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
+            try {
+              if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(element.uid)) {
+                context
+                    .read<UserInteractiveNotifier>()
+                    .changeIsFollow(mounted, element.relation == 0 || element.relation == 2, element.uid);
+              } else {
+                context.read<UserInteractiveNotifier>().setFirstModel(element.uid,
+                    isFollow: element.relation == 0 || element.relation == 2, needNotify: mounted);
+              }
+            } catch (e) {
+              print('----UserInteractiveNotifier------------error:$e');
+            }
           });
         } else {
           buddyList.add(BuddyModel(uid: -1));
@@ -230,6 +243,18 @@ class _QueryFollowState extends State<QueryFollowList> {
         if (model.list.isNotEmpty) {
           model.list.forEach((element) {
             buddyList.add(element);
+            try {
+              if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(element.uid)) {
+                context
+                    .read<UserInteractiveNotifier>()
+                    .changeIsFollow(mounted, element.relation == 0 || element.relation == 2, element.uid);
+              } else {
+                context.read<UserInteractiveNotifier>().setFirstModel(element.uid,
+                    isFollow: element.relation == 0 || element.relation == 2, needNotify: mounted);
+              }
+            } catch (e) {
+              print('----UserInteractiveNotifier------------error:$e');
+            }
           });
         }
         _refreshController.refreshCompleted();
@@ -399,6 +424,16 @@ class _QueryFollowState extends State<QueryFollowList> {
     }
   }
 
+  void loginBeforRefreash() {
+    print('--------loginBeforRefreash------------loginBeforRefreash----------loginBeforRefreash--');
+    if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
+      isMySelf = true;
+    } else {
+      isMySelf = false;
+    }
+    __onRefresh();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -411,7 +446,8 @@ class _QueryFollowState extends State<QueryFollowList> {
       idNeedClear = true;
       context.read<UserInteractiveNotifier>().value.removeId = [];
     }
-
+    EventBus.getDefault().registerNoParameter(loginBeforRefreash, EVENTBUS_FOLLOW_FANS_PAGE,
+        registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
     if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
     } else {
@@ -559,6 +595,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                           ? ListView.builder(
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
+                              addRepaintBoundaries: false,
+                              addAutomaticKeepAlives: false,
                               //这里是将插入的假数据展示成跳转话题页的item
                               itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
                               itemBuilder: (context, index) {
@@ -566,6 +604,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                 if (widget.type == 1) {
                                   //index=0的时候展示跳转话题页的item,否则展示关注item
                                   if (index == 0) {
+                                    print('-000000000000000000000000000000003');
                                     return InkWell(
                                       onTap: () {
                                         AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
@@ -575,6 +614,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                   } else {
                                     //这是缺省图，插入了一条id为-1的数据
                                     if (buddyList[index].uid == -1) {
+                                      print('-11111111111111111111111111111111');
                                       return Container(
                                         height: ScreenUtil.instance.height,
                                         width: ScreenUtil.instance.screenWidthDp,
@@ -602,55 +642,46 @@ class _QueryFollowState extends State<QueryFollowList> {
                                         ),
                                       );
                                     }
-                                    context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
-                                        isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
-                                            ? true
-                                            : false);
-                                    if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
-                                        !context
-                                            .watch<UserInteractiveNotifier>()
-                                            .value.profileUiChangeModel[buddyList[index].uid]
-                                            .isFollow) {
-                                      return QueryFollowItem(
-                                        type: widget.type,
-                                        buddyModel: buddyList[index],
-                                        width: width,
-                                        userId: widget.userId,
-                                        isMySelf: isMySelf,
-                                        globalKey: index ==
-                                                (widget.type == 1 || widget.type == 2
-                                                    ? buddyList.length - 1
-                                                    : topicList.length - 1)
-                                            ? globalKey
-                                            : null,
-                                        userFollowChangeCallBack: () {
-                                          if (context
-                                              .read<UserInteractiveNotifier>()
-                                              .value.userFollowChangeIdList
-                                              .isNotEmpty) {
-                                            buddyList.removeWhere((element){
-                                              return element.uid!=null&&context
-                                                  .read<UserInteractiveNotifier>()
-                                                  .value.userFollowChangeIdList
-                                                  .contains(element.uid);
-                                            });
-                                            context
+                                    print('22222222222222222222222222222222222222');
+                                    return QueryFollowItem(
+                                      type: widget.type,
+                                      buddyModel: buddyList[index],
+                                      width: width,
+                                      userId: widget.userId,
+                                      isMySelf: isMySelf,
+                                      globalKey: index ==
+                                              (widget.type == 1 || widget.type == 2
+                                                  ? buddyList.length - 1
+                                                  : topicList.length - 1)
+                                          ? globalKey
+                                          : null,
+                                      userFollowChangeCallBack: () {
+                                        if (context
                                                 .read<UserInteractiveNotifier>()
-                                                .value.userFollowChangeIdList = [];
-                                            if (buddyList.length == 1) {
-                                              if (hasNext == 0) {
-                                                buddyList.add(BuddyModel(uid: -1));
-                                              } else {
-                                                _refreshController.requestLoading();
-                                              }
+                                                .value
+                                                .userFollowChangeIdList
+                                                .isNotEmpty &&
+                                            widget.userId == context.read<ProfileNotifier>().profile.uid) {
+                                          buddyList.removeWhere((element) {
+                                            return element.uid != null &&
+                                                context
+                                                    .read<UserInteractiveNotifier>()
+                                                    .value
+                                                    .userFollowChangeIdList
+                                                    .contains(element.uid);
+                                          });
+                                          context.read<UserInteractiveNotifier>().value.userFollowChangeIdList = [];
+                                          if (buddyList.length == 1) {
+                                            if (hasNext == 0) {
+                                              buddyList.add(BuddyModel(uid: -1));
+                                            } else {
+                                              _refreshController.requestLoading();
                                             }
-                                            setState(() {});
                                           }
-                                        },
-                                      );
-                                    } else {
-                                      return Container();
-                                    }
+                                          setState(() {});
+                                        }
+                                      },
+                                    );
                                   }
                                   //type为2的时候展示粉丝
                                 } else if (widget.type == 2) {
@@ -682,10 +713,14 @@ class _QueryFollowState extends State<QueryFollowList> {
                                     topicDeleteCallBack: () {
                                       print('=========================话题详情返回');
                                       if (context.read<UserInteractiveNotifier>().value.removeId != null &&
-                                          context.read<UserInteractiveNotifier>().value.removeId.isNotEmpty) {
-                                        topicList.removeWhere((element){
-                                          return context.read<UserInteractiveNotifier>().value.removeId.contains
-                                            (element.id);
+                                          context.read<UserInteractiveNotifier>().value.removeId.isNotEmpty &&
+                                          widget.userId == context.read<ProfileNotifier>().profile.uid) {
+                                        topicList.removeWhere((element) {
+                                          return context
+                                              .read<UserInteractiveNotifier>()
+                                              .value
+                                              .removeId
+                                              .contains(element.id);
                                         });
                                         setState(() {});
                                         context.read<UserInteractiveNotifier>().value.removeId = [];
@@ -841,16 +876,15 @@ class _FollowItemState extends State<QueryFollowItem> {
           InkWell(
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
-                  jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName,
-                      callback: (result) {
-                    if(widget.userFollowChangeCallBack!=null){
+                  jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName, callback: (result) {
+                    if (widget.userFollowChangeCallBack != null) {
                       widget.userFollowChangeCallBack();
                     }
                   });
                 } else {
                   AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id, isTopicList: true,
                       callback: (result) {
-                    if(widget.topicDeleteCallBack!=null){
+                    if (widget.topicDeleteCallBack != null) {
                       widget.topicDeleteCallBack();
                     }
                   });
@@ -920,14 +954,14 @@ class _FollowItemState extends State<QueryFollowItem> {
           SizedBox(
             width: 16,
           ),
-          widget.type != 3?FollowButton(
-            id: uid,
-            relation: widget.type == 3?0:widget.buddyModel.relation,
-            isMyList: widget.isMySelf,
-            buttonType: widget.type == 1
-                ? FollowButtonType.FOLLOW
-                :FollowButtonType.FANS,
-          ):Container()
+          widget.type != 3
+              ? FollowButton(
+                  id: uid,
+                  relation: widget.type == 3 ? 0 : widget.buddyModel.relation,
+                  isMyList: widget.isMySelf,
+                  buttonType: widget.type == 1 ? FollowButtonType.FOLLOW : FollowButtonType.FANS,
+                )
+              : Container()
         ],
       ),
     );

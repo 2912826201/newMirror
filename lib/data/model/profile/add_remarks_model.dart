@@ -4,7 +4,15 @@ class AddRemarksModel{
   String remark;
   AddRemarksModel({this.userRemarkKey,this.remark});
   AddRemarksModel.fromJson(Map<String, dynamic> json) {
-    userRemarkKey = json["userRemarkKey"]!=null?UserRemarkKey.fromJson(json["userRemarkKey"]):null;
+    if(json['userRemarkKey'] != null){
+      if(json['userRemarkKey'] is UserRemarkKey){
+        userRemarkKey=json['userRemarkKey'];
+      }else{
+        userRemarkKey=UserRemarkKey.fromJson(json['userRemarkKey']);
+      }
+    }else{
+      userRemarkKey =null;
+    }
     remark = json["remark"];
   }
   Map<String, dynamic> toJson() {

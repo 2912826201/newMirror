@@ -109,6 +109,7 @@ Future<UserModel> getUserBaseInfo({int uid}) async {
     return null;
   }
 }
+
 Future loginCoach(String coach)async{
   Map<String, dynamic> params = {};
   if (coach != null) {

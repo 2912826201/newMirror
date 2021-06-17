@@ -47,7 +47,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     print("搜索页");
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         body: Container(
             color: AppColor.white,
             child: InkWell(
@@ -647,6 +647,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - 48 - ScreenUtil.instance.statusBarHeight,
           child: TabBarView(
             controller: controller,
+            physics: ClampingScrollPhysics(),
             allowImplicitScrolling: false,
             children: [
               SearchComplex(

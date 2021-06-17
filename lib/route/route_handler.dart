@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -33,7 +34,6 @@ import 'package:mirror/page/message/link_failure/network_link_failure_page.dart'
 import 'package:mirror/page/message/more_page/group_more_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/message/more_page/private_more_page.dart';
-import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
@@ -44,6 +44,7 @@ import 'package:mirror/page/profile/edit_information/edit_information_introducti
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/page/profile/interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -588,13 +589,18 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
 var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   PeripheralInformationPoi selectAddress;
+  Location currentAddressInfo;
   if (data['selectAddress'] != null) {
     selectAddress = PeripheralInformationPoi.fromJson(data['selectAddress']);
+  }
+  if (data['currentAddressInfo'] != null) {
+    currentAddressInfo = Location.fromJson(data['currentAddressInfo']);
   }
   return SearchOrLocationWidget(
     checkIndex: data['checkIndex'],
     // 传入之前选择地址
     selectAddress: selectAddress,
+    currentAddressInfo:currentAddressInfo,
   );
 });
 

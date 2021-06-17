@@ -76,6 +76,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 //第二种
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //     return SliverListDemoPage();
+
                 // }));
                 // Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                 //   return VerificationCodeInputDemoPage2();
@@ -87,6 +88,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   child: CachedNetworkImage(
                     height: 28,
                     width: 28,
+                    useOldImageOnUrlChange: true,
                     // 调整磁盘缓存中图像大小
                     // maxHeightDiskCache: 150,
                     // maxWidthDiskCache: 150,

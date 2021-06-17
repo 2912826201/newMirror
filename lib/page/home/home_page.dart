@@ -614,7 +614,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                   child: TabBarView(
                     controller: controller,
                     physics: context.watch<FeedMapNotifier>().value.isDropDown
-                        ? pageScrollPhysics()
+                        ? ClampingScrollPhysics()
                         : NeverScrollableScrollPhysics(),
                     children: [
                       AttentionPage(

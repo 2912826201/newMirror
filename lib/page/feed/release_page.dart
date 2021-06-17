@@ -1,4 +1,4 @@
-import 'package:amap_map_fluttify/amap_map_fluttify.dart';
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -118,7 +118,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     var status = await Permission.locationWhenInUse.status;
     if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
       //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.instance.fetchLocation();
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
       // 调用周边
       aroundHttp();
     }
@@ -135,7 +135,9 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
       // 用户授予了对所请求功能的访问权限
       case PermissionStatus.granted:
         //flutter定位只能获取到经纬度信息
-        currentAddressInfo = await AmapLocation.instance.fetchLocation();
+        print("flutter定位只能获取到经纬度信息");
+        currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+        print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
         // 调用周边
         aroundHttp();
         return 1;
@@ -148,7 +150,10 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         return 2;
 
       ///尚未请求许可。
-      case PermissionStatus.undetermined:
+      //fixme 权限枚举变化
+      // case PermissionStatus.undetermined:
+      ///部分许可 ios14
+      case PermissionStatus.limited:
         return 3;
 
       ///用户拒绝访问请求的功能，并选择从不
@@ -165,8 +170,8 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   //高德接口获取周边数据
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
-        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude);
-    if (locationInformationEntity!=null&&locationInformationEntity.status == "1") {
+        await aroundForHttp(currentAddressInfo.longitude, currentAddressInfo.latitude);
+    if (locationInformationEntity != null && locationInformationEntity.status == "1") {
       print('请求成功');
       if (locationInformationEntity.pois.isNotEmpty) {
         pois = locationInformationEntity.pois;
@@ -220,7 +225,11 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   // 头部布局
-                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller,videoCourseId: widget.videoCourseId,),
+                  FeedHeader(
+                    selectedMediaFiles: _selectedMediaFiles,
+                    controller: _controller,
+                    videoCourseId: widget.videoCourseId,
+                  ),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图
@@ -238,6 +247,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
                               selectedMediaFiles: _selectedMediaFiles,
                               permissions: permissions,
                               pois: pois,
+                              currentAddressInfo: currentAddressInfo,
                             )
                 ],
               ),

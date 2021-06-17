@@ -9,6 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
@@ -18,8 +19,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
-
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:provider/provider.dart';
 class SearchUser extends StatefulWidget {
   final String text;
   final double width;
@@ -153,16 +154,23 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
           noData = false;
           modelList.clear();
           _lastTime = model.lastTime;
-          if (modelList == model.list) {
-            _refreshController.refreshToIdle();
-            return;
-          } else {
             print('===================== =============model有值');
             model.list.forEach((element) {
               print('model================ ${element.relation}');
               modelList.add(element);
+              try {
+                if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(element.uid)) {
+                  context
+                      .read<UserInteractiveNotifier>()
+                      .changeIsFollow(mounted, element.relation == 0 || element.relation == 2, element.uid);
+                } else {
+                  context.read<UserInteractiveNotifier>().setFirstModel(element.uid,
+                      isFollow: element.relation == 0 || element.relation == 2, needNotify: mounted);
+                }
+              } catch (e) {
+                print('----UserInteractiveNotifier------------error:$e');
+              }
             });
-          }
         } else {
           noData = true;
           defaultImage = DefaultImage.nodata;

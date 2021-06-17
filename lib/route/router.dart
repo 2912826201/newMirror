@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -27,6 +28,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
+
 /// router
 /// Created by yangjiayi on 2020/11/14.
 
@@ -318,8 +320,9 @@ class AppRouter {
       } else {
         status = await Permission.photos.status;
       }
-      if (status.isUndetermined) {
-        //未确定的情况下 都请求一下
+
+      if (status.isDenied) {
+        //undetermined在新版中被移除了 合并进了denied 这种情况下可以通过请求弹窗获取权限
         if (Application.platform == 0) {
           await Permission.storage.request();
         } else {
@@ -330,9 +333,11 @@ class AppRouter {
       } else if (status.isPermanentlyDenied) {
         //安卓的拒绝不再提示也直接进 在里面点去授权
       } else {
-        //安卓重新请求 iOS没法重新请求 在里面点去授权
+        //其他情况 尝试请求
         if (Application.platform == 0) {
           await Permission.storage.request();
+        } else {
+          await Permission.photos.request();
         }
       }
     }
@@ -397,17 +402,17 @@ class AppRouter {
 
   static void navigateToVideoCourseResult(
       BuildContext context, TrainingCompleteResultModel trainingResult, CourseModel course) {
-    if(!isHaveVideoCourseResult()) {
+    if (!isHaveVideoCourseResult()) {
       Map<String, dynamic> map = Map();
       map["result"] = trainingResult.toJson();
       map["course"] = course.toJson();
       _navigateToPage(context, pathVideoCourseResult, map, isFromBottom: true);
-    }else{
-      Future.delayed(Duration(milliseconds: 100),(){
-        List list=[];
+    } else {
+      Future.delayed(Duration(milliseconds: 100), () {
+        List list = [];
         list.add(trainingResult);
         list.add(course);
-        EventBus.getDefault().post(msg: list,registerName:VIDEO_COURSE_RESULT);
+        EventBus.getDefault().post(msg: list, registerName: VIDEO_COURSE_RESULT);
       });
     }
   }
@@ -423,7 +428,6 @@ class AppRouter {
     } catch (e) {}
     return false;
   }
-
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId,
       {String heroTag,
@@ -573,9 +577,10 @@ class AppRouter {
     }
     _navigateToPage(context, pathLike, map);
   }
+
   ///跳转个人主页使用处理过未登录情况的方法，
   static void navigateToMineDetail(BuildContext context, int uId,
-      {String avatarUrl, String userName,UserModel userModel, Function(dynamic result) callback}) {
+      {String avatarUrl, String userName, UserModel userModel, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
     if (userName != null) {
@@ -584,7 +589,7 @@ class AppRouter {
     if (avatarUrl != null) {
       map["imageUrl"] = avatarUrl;
     }
-    if(userModel!=null){
+    if (userModel != null) {
       map["userModel"] = userModel.toJson();
     }
     _navigateToPage(context, pathProfileDetails, map, callback: callback);
@@ -728,7 +733,8 @@ class AppRouter {
   //
   ///courseId：课程id,直播课程id或者视频课程的id
   ///modeTye:类型,[CourseMode]
-  static void navigateToMachineRemoteController(BuildContext context, {int courseId,int liveRoomId, String modeType = mode_null}) {
+  static void navigateToMachineRemoteController(BuildContext context,
+      {int courseId, int liveRoomId, String modeType = mode_null}) {
     Map<String, dynamic> map = Map();
     map["courseId"] = courseId;
     map["modeType"] = modeType;
@@ -795,11 +801,12 @@ class AppRouter {
   }
 
   static void navigateToTrainingGalleryComparisonPage(
-      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2, {Function(dynamic) callBack}) {
+      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2,
+      {Function(dynamic) callBack}) {
     Map<String, dynamic> map = Map();
     map["image1"] = image1.toJson();
     map["image2"] = image2.toJson();
-    _navigateToPage(context, pathTrainingGalleryComparison, map,callback: callBack);
+    _navigateToPage(context, pathTrainingGalleryComparison, map, callback: callBack);
   }
 
   static void navigateToMeCoursePage(BuildContext context) {
@@ -929,10 +936,11 @@ class AppRouter {
 
   // 所在位置页面
   static void navigateSearchOrLocationPage(
-      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Function(dynamic result) callback) {
+      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Location currentAddressInfo, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map['checkIndex'] = checkIndex;
     map['selectAddress'] = selectAddress.toJson();
+    map['currentAddressInfo'] = currentAddressInfo.toJson();
     _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
   }
 
@@ -970,9 +978,9 @@ class AppRouter {
   }
 
   //内部webview
-  static void navigateWebViewPage(BuildContext context,String url) {
+  static void navigateWebViewPage(BuildContext context, String url) {
     Map<String, dynamic> map = Map();
-    map["url"]=url;
+    map["url"] = url;
     _navigateToPage(context, pathWebViewPage, map);
   }
 

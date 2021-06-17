@@ -13,9 +13,9 @@ class AppConfig {
 
   static Env get env {
     switch (envName) {
-      case "debug":
+      case "dev":
         return Env.DEV;
-      case "release":
+      case "prod":
         return Env.PROD;
       default:
         return Env.PROD;
@@ -29,7 +29,11 @@ class AppConfig {
     int code = 0;
     switch (channel) {
       case "common":
-        code = 10000;
+        if (Platform.isIOS) {
+          code = 20000;
+        } else {
+          code = 10000;
+        }
         break;
       default:
         break;
@@ -47,6 +51,9 @@ class AppConfig {
 
   ///切换训练相关布局
   static bool needShowTraining = false;
+
+  //是否启用刷新检测
+  static bool checkLayoutRefresh = false;
 
   //各环境api请求基础路径
   // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";

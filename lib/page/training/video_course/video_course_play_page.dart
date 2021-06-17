@@ -196,7 +196,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                         Container(
                           height: ScreenUtil.instance.screenWidthDp / 0.75,
                           alignment: Alignment.center,
-                          child: _controller != null && _controller.value.initialized
+                          child: _controller != null && _controller.value.isInitialized
                               ? AspectRatio(
                                   aspectRatio: _controller.value.aspectRatio,
                                   child: VideoPlayer(_controller),

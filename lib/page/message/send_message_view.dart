@@ -181,13 +181,28 @@ class SendMessageViewState extends State<SendMessageView> {
       // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-      map["data"] = msg.originContentMap;
+      if(msg.originContentMap!=null){
+        map["data"] = msg.originContentMap;
+      }else{
+        GroupNotificationMessage groupMessage = ((msg.content) as GroupNotificationMessage);
+        Map<String, dynamic> map1 = Map();
+        if(groupMessage.data!=null){
+          map1["data"]=groupMessage.data;
+        }else{
+          map1["data"]="";
+        }
+        map["data"]=map1;
+      }
       return getAlertMsg(map: map);
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_CMD) {
       // -----------------------------------------------通知-私聊-----------------------------------------------
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-      map["data"] = msg.originContentMap;
+      if(msg.originContentMap!=null){
+        map["data"] = msg.originContentMap;
+      }else{
+        map["data"] =Map();
+      }
       return getAlertMsg(map: map);
     }
 

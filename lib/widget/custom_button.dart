@@ -571,6 +571,7 @@ class _FollowButtonState extends State<FollowButton> {
     if (isMySelf || (widget.buttonType == FollowButtonType.FOLLOW && widget.isMyList)) {
       return Container();
     }
+
     context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: isFollow);
     return AnimatedOpacity(
         opacity: context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.id].isFollow ? 1 : 0,

@@ -33,11 +33,11 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 
 class SearchFeed extends StatefulWidget {

@@ -218,7 +218,7 @@ class SystemCommonMsg extends StatelessWidget {
       child: GestureDetector(
         onTap: (){
           if(!StringUtil.isURL(subModel.linkUrl)){
-            // voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
+            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: subModel.picUrl, position: position);
           }
         },
         child: Container(

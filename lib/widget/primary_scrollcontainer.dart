@@ -23,7 +23,7 @@ class PrimaryScrollContainerState extends State<PrimaryScrollContainer> {
 
   get scrollController {
     final PrimaryScrollController primaryScrollController =
-    context.inheritFromWidgetOfExactType(PrimaryScrollController);
+    context.dependOnInheritedWidgetOfExactType(aspect: PrimaryScrollController);
     if (primaryScrollController != null)
       _scrollController.inner = primaryScrollController.controller;
     return _scrollController;

@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android-extensions'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,7 +41,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.aimymusic.mirror"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -94,7 +94,7 @@ android {
     //多渠道打包配置
     flavorDimensions("app")
     productFlavors {
-        common_debug {
+        common_dev {
             dimension "app"
             resValue "string", "app_name", "iF${defaultConfig.versionCode}"
             applicationId "${defaultConfig.applicationId}"
@@ -107,7 +107,7 @@ android {
                     JPUSH_CHANNEL : "10000",
             ]
         }
-        common_release {
+        common_prod {
             dimension "app"
             resValue "string", "app_name", "iF${defaultConfig.versionCode}"
             applicationId "${defaultConfig.applicationId}"

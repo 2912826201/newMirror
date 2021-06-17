@@ -1,4 +1,4 @@
-import 'package:amap_map_fluttify/amap_map_fluttify.dart';
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -10,10 +10,10 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
-  SearchOrLocationWidget({this.checkIndex, this.selectAddress});
+  SearchOrLocationWidget({this.checkIndex, this.selectAddress,this.currentAddressInfo});
 
   @override
   _SearchOrLocationWidgetState createState() => _SearchOrLocationWidgetState();
@@ -23,11 +23,11 @@ class SearchOrLocationWidget extends StatefulWidget {
 
   // 传入之前选择地址
   PeripheralInformationPoi selectAddress;
+  //当前位置的信息
+  Location currentAddressInfo;
 }
 
 class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
-  Location currentAddressInfo; //当前位置的信息
-
   TextEditingController searchController = TextEditingController(); //搜索关键字控制器
   int pageSize = 20; //一页大小
   int pageIndex = 1; //当前页
@@ -38,7 +38,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   List<PeripheralInformationPoi> searchPois = []; //返回搜索页面的数据集合
   bool cityLimit = true; //仅返回指定城市数据
   String searchText = ""; // 记录上一次的搜索文本
-
+  String searchCity = ""; // 城市赋值搜索时要用。
   @override
   void initState() {
     // TODO: implement initState
@@ -64,7 +64,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
 
   init() async {
     //flutter定位只能获取到经纬度信息
-    currentAddressInfo = await AmapLocation.instance.fetchLocation();
+    // currentAddressInfo = await AmapLocation.fetch();
     // 调用周边
     aroundHttp();
   }
@@ -141,6 +141,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                         child: ListView.builder(
                             controller: scrollController,
                             itemExtent:69,
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                             itemCount: searchController.text != null && searchController.text.isNotEmpty
                                 ? searchPois.length
                                 : pois.length,
@@ -176,7 +177,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> searchHttp() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       PeripheralInformationEntity locationInformationEntity =
-          await searchForHttp(searchController.text, currentAddressInfo.city, page: 1);
+          await searchForHttp(searchController.text, searchCity, page: 1);
       searchText = searchController.text;
       searchPois.clear();
       if (locationInformationEntity.status == "1") {
@@ -237,7 +238,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity =
-            await searchForHttp(searchController.text, currentAddressInfo.city, page: pageIndex + 1);
+            await searchForHttp(searchController.text, searchCity, page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -259,7 +260,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       print("搜索文案为空");
       if (pageIndex < pages) {
         PeripheralInformationEntity locationInformationEntity = await aroundForHttp(
-            currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude,
+            widget.currentAddressInfo.longitude, widget.currentAddressInfo.latitude,
             page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
@@ -284,12 +285,12 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   //高德接口获取周边数据
   aroundHttp() async {
     PeripheralInformationEntity locationInformationEntity =
-        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude, page: 1);
+        await aroundForHttp(widget.currentAddressInfo.longitude, widget.currentAddressInfo.latitude, page: 1);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       pois = locationInformationEntity.pois;
       // 城市赋值搜索时要用。
-      currentAddressInfo.city = pois.first.cityname;
+      searchCity = pois.first.cityname;
       // 城市信息导入
       PeripheralInformationPoi poi1 = PeripheralInformationPoi();
       poi1.name = locationInformationEntity.pois.first.cityname;

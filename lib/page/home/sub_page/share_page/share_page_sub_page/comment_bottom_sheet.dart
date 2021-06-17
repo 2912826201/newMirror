@@ -10,8 +10,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CommentBottomSheet extends StatefulWidget {
   CommentBottomSheet({Key key, this.feedId, this.commentDtoModel}) : super(key: key);

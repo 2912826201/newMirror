@@ -1,14 +1,15 @@
 import 'dart:io';
-
-import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fps_monitor/util/collection_util.dart';
+import 'package:fps_monitor/widget/custom_widget_inspector.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
@@ -191,12 +192,12 @@ Future _initApp() async {
 
   //初始化省市信息
   _initRegionMap();
-  await enableFluttifyLog(false);
-  //设置ios的key
-  await AmapService.instance.init(
-    iosKey: AppConfig.amapIOSKey,
-    androidKey: AppConfig.amapAndroidKey,
-  );
+  // await enableFluttifyLog(false);
+  // //设置ios的key
+  // await AmapService.instance.init(
+  //   iosKey: AppConfig.amapIOSKey,
+  //   androidKey: AppConfig.amapAndroidKey,
+  // );
 
   //初始化极光推送
   JPush jpush = JPush();
@@ -396,13 +397,17 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("Main_________________________________build");
+    kFpsInfoMaxSize = 3600;
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      overlayState = Application.navigatorKey.currentState.overlay;
+    });
     return MaterialApp(
-      /*// title: 'Flutter Demo',
-      showPerformanceOverlay: true,
+      // title: 'Flutter Demo',
+      // showPerformanceOverlay: true,
       // 使用了saveLayer的图形会显示为棋盘格式并随着页面刷新而闪烁
-      checkerboardOffscreenLayers: true,
+      // checkerboardOffscreenLayers: true,
       // 做了缓存的静态图片在刷新页面时不会改变棋盘格的颜色；如果棋盘格颜色变了说明被重新缓存了，这是我们要避免的
-      checkerboardRasterCacheImages: true,*/
+      // checkerboardRasterCacheImages: true,
       theme: ThemeData(
         // primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -433,6 +438,10 @@ class MyAppState extends State<MyApp> {
         // 系统语言是中文： deviceLocale: [zh_CN, zh_Hans_CN, en_CN]
         print('supportedLocales: $supportedLocales');
       },
+
+      builder: (ctx, child) => CustomWidgetInspector(
+        child: child,
+      ),
     );
   }
 

@@ -34,7 +34,7 @@ import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {

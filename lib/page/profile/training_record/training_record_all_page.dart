@@ -13,7 +13,7 @@ import 'package:mirror/widget/dotted_line.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'training_record_page.dart';
 

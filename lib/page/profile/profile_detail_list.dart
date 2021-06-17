@@ -15,8 +15,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../widget/overscroll_behavior.dart';
 
@@ -26,8 +26,8 @@ class ProfileDetailsList extends StatefulWidget {
   int id;
   bool isMySelf;
   Key pageKey;
-
-  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf});
+  bool imageLoading;
+  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf,this.imageLoading});
 
   @override
   ProfileDetailsListState createState() {
@@ -44,10 +44,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   int followlastTime;
   String defaultImage = DefaultImage.nodata;
   RefreshController _refreshController = RefreshController(initialRefresh: true);
-  ScrollController scrollController = ScrollController();
   bool refreshOver = false;
   bool listNoData = false;
-  StreamController<int> streamController;
   Map<int, AnimationController> animationMap = {};
 
   _getDynamicData() async {
@@ -160,7 +158,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
-    streamController = StreamController.broadcast();
     EventBus.getDefault()
         .registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
     print('-----------------------------profileDetailsListInit');
@@ -232,45 +229,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   Widget _showDataUi() {
     return !listNoData
-        ? /*CustomScrollView(
-            slivers: [
-              SliverList(
-                  delegate: SliverChildBuilderDelegate((content, index) {
-                HomeFeedModel model;
-                model = followModel[index];
-                return SizeTransition(
-                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
-                    parent: animationMap[model.id],
-                    curve: Curves.fastOutSlowIn,
-                  )),
-                  axis: Axis.vertical,
-                  axisAlignment: 1.0,
-                  child: ExposureDetector(
-                    key: widget.type == 2
-                        ? Key('profile_feed_${followModel[index].id}')
-                        : Key('profile_like_${followModel[index].id}'),
-                    child: DynamicListLayout(
-                        index: index,
-                        pageName: "profileDetails",
-                        isShowRecommendUser: false,
-                        isShowConcern: false,
-                        model: model,
-                        isMySelf: widget.isMySelf,
-                        mineDetailId: widget.id,
-                        removeFollowChanged: (model) {},
-                        deleteFeedChanged: (feedId) {}),
-                    onExposure: (visibilityInfo) {
-                      // 如果没有显示
-                      if (model.isShowInputBox) {
-                        context.read<FeedMapNotifier>().showInputBox(model.id);
-                      }
-                      print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                    },
-                  ),
-                );
-              }, childCount: followModel.length))
-            ],
-          )*/
+        ?
         ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
@@ -280,7 +239,14 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             itemBuilder: (context, index) {
               HomeFeedModel model;
               model = followModel[index];
-              return ExposureDetector(
+              return SizeTransition(
+                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                parent: animationMap[model.id],
+                curve: Curves.fastOutSlowIn,
+              )),
+              axis: Axis.vertical,
+              axisAlignment: 1.0,
+              child: ExposureDetector(
                 key: widget.type == 2
                     ? Key('profile_feed_${followModel[index].id}')
                     : Key('profile_like_${followModel[index].id}'),
@@ -302,7 +268,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   }
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
-              );
+              ));
             })
         : ListView(
             children: [

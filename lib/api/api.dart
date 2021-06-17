@@ -209,21 +209,21 @@ void _setHeaders(int authType, Dio dio) {
 //用于print log的拦截器
 class _LogInterceptors extends InterceptorsWrapper {
   @override
-  Future onRequest(RequestOptions options) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler,) {
     print("REQUEST[${options?.headers}][${options?.queryParameters}] ==> URL: ${options?.baseUrl}${options?.path}");
-    return super.onRequest(options);
+    super.onRequest(options,handler);
   }
 
   @override
-  Future onResponse(Response response) {
+  void onResponse(Response response, ResponseInterceptorHandler handler,) {
     print(
-        "RESPONSE[${response?.statusCode}][${response?.data}] ==> URL: ${response?.request?.baseUrl}${response?.request?.path}");
-    return super.onResponse(response);
+        "RESPONSE[${response?.statusCode}][${response?.data}] ==> URL: ${response?.requestOptions?.baseUrl}${response?.requestOptions?.path}");
+    super.onResponse(response,handler);
   }
 
   @override
-  Future onError(DioError err) {
-    print("ERROR[${err?.message}] ==> URL: ${err?.request?.baseUrl}${err?.request?.path}");
-    return super.onError(err);
+  void onError(DioError err, ErrorInterceptorHandler handler,) {
+    print("ERROR[${err?.message}] ==> URL: ${err?.requestOptions?.baseUrl}${err?.requestOptions?.path}");
+    super.onError(err,handler);
   }
 }

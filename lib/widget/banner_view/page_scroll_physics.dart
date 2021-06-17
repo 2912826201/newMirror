@@ -2,15 +2,15 @@ import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/physics.dart';
+class pageScrollPhysics extends PageScrollPhysics  {
+   pageScrollPhysics({ScrollPhysics parent}) : super(parent: parent);
 
-class pageScrollPhysics extends PageScrollPhysics {
-  const pageScrollPhysics({ScrollPhysics parent}) : super(parent: parent);
+  bool isGoingLeft = false;
 
   @override
   pageScrollPhysics applyTo(ScrollPhysics ancestor) {
     return pageScrollPhysics(parent: buildParent(ancestor));
   }
-
   double _getPage(ScrollMetrics position) {
     if (position is _PagePosition) return position.page;
     return position.pixels / position.viewportDimension;

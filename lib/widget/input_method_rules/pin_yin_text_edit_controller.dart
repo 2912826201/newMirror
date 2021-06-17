@@ -5,7 +5,7 @@ class PinYinTextEditController extends TextEditingController{
   var completeText = '';
 
   @override
-  TextSpan buildTextSpan({TextStyle style, bool withComposing}) {
+  TextSpan buildTextSpan({@required BuildContext context, TextStyle style , @required bool withComposing}) {
     ///拼音输入完成
     if (!value.composing.isValid || !withComposing) {
       if(completeText!=value.text){

@@ -48,7 +48,11 @@ class DownloadCourseVideoDto {
     if (map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL] != null) {
       dynamic mapDynamic=json.decode(map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL]);
       if(mapDynamic!=null) {
-        videoCourseModel = CourseModel.fromJson(mapDynamic);
+        if(mapDynamic is CourseModel) {
+          videoCourseModel = mapDynamic;
+        }else{
+          videoCourseModel = CourseModel.fromJson(mapDynamic);
+        }
       }
     }
   }
