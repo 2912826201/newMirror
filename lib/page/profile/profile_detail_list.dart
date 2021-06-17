@@ -47,7 +47,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   bool refreshOver = false;
   bool listNoData = false;
   Map<int, AnimationController> animationMap = {};
-  ScrollController scrollController = ScrollController();
+
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
@@ -210,7 +210,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child:SmartRefresher(
+          child: SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
