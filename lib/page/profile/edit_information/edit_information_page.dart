@@ -345,7 +345,6 @@ class _EditInformationState extends State<EditInformation> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(),
             alignment: title == "简介" ? Alignment.topLeft : Alignment.centerLeft,
             child: Text(
               title,

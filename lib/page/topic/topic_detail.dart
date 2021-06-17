@@ -234,7 +234,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                             13)
                                         : 13,
                                     child: Hero(
-                                        tag: model.id,
+                                        tag: model.id.toString(),
                                         child: GestureDetector(
                                             onTap: () {
                                               Navigator.of(context).push(

@@ -110,7 +110,7 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
     notifyListeners();
   }
   //初始化model
-  void setFirstModel(int id, {bool isFollow}) {
+  void setFirstModel(int id, {bool isFollow,bool needNotify = false}) {
     if (!value._profileUiChangeModel.containsKey(id)) {
       ProfileUiChangeModel model = ProfileUiChangeModel();
       if (isFollow != null) {
@@ -126,6 +126,9 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
       if (isFollow != null && value._profileUiChangeModel[id].isFollow == null) {
         value._profileUiChangeModel[id].isFollow = isFollow;
       }
+    }
+    if(needNotify){
+      notifyListeners();
     }
   }
 

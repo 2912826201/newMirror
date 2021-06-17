@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -39,7 +40,7 @@ class HomeFeedModel {
   CourseModel courseDto; //课程信息
   int isFollow = 0; // 是否关注
   int isLaud = 0; // 是否点赞
-  List<String> laudUserInfo = []; // 点赞头像
+  List<BuddyModel> laudUserInfo = []; // 点赞头像
   List<CommentDtoModel> comments = [];
   List<CommentDtoModel> hotComment = [];
   String address;
@@ -206,9 +207,9 @@ class HomeFeedModel {
         recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
       }
     }
-    if (json["laudUserInfo"] != null) {
-      json["laudUserInfo"].forEach((v) {
-        laudUserInfo.add(v);
+    if (json["laudUserInfos"] != null) {
+      json["laudUserInfos"].forEach((v) {
+        laudUserInfo.add(BuddyModel.fromJson(v));
       });
     }
     isLaud = json["isLaud"];

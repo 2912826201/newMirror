@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ui';
+import 'dart:ui'as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
@@ -117,6 +117,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE,registerName:AGAIN_LOGIN_REFREASH_USERPAGE);
     loadingStreamController = StreamController.broadcast();
     _textName = widget.userName ?? "";
     _avatar = widget.imageUrl ?? "";
@@ -164,6 +165,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
+
+  void loginRefreashPage(){
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
+      if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+        isMselfId = true;
+      } else {
+        isMselfId = false;
+        _initBlackStatus();
+      }
+      _getUserInfo(id: widget.userId);
+      _getFollowCount(id: widget.userId);
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -483,11 +496,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       child: Stack(
         children: [
           Container(
-              height: backGroundHeight - followFansHeight - 28.5,
+              height: backGroundHeight - followFansHeight,
               width: width,
-              child: CachedNetworkImage(
-                height: backGroundHeight - followFansHeight - 28.5,
-                width: backGroundHeight - followFansHeight - 28.5,
+              clipBehavior: Clip.hardEdge,
+              // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+              decoration: const BoxDecoration(),
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(
+                  sigmaX: 28.0,
+                  sigmaY: 28.0,
+                ),
+                child: CachedNetworkImage(
+                height: backGroundHeight - followFansHeight,
+                width: backGroundHeight - followFansHeight,
                 imageUrl: _avatar != null ? _avatar : "",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
@@ -499,20 +520,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   fit: BoxFit.cover,
                 );
               },*/
-              )),
+              ))),
           Positioned(
-              top: 0,
               child: Container(
                 width: width,
-                height: backGroundHeight - followFansHeight - 28.5,
-                color: AppColor.white.withOpacity(0.6),
+                height: backGroundHeight - followFansHeight,
+                /*   color: AppColor.white.withOpacity(0.6),*/
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [AppColor.white.withOpacity(0.6), AppColor.white],
+                        begin: FractionalOffset(0, 0.5),
+                        end: FractionalOffset(0, 1))),
               )),
-          ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: _mineDetailsData(backGroundHeight),
-            ),
-          ),
+          _mineDetailsData(backGroundHeight),
         ],
       ),
     );
@@ -632,19 +652,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           onTap: () {
             if (canOnClick) {
               if (!context.read<TokenNotifier>().isLoggedIn) {
-                AppRouter.navigateToLoginPage(context,callback: (result){
-                  if(context.read<TokenNotifier>().isLoggedIn){
-                    context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
-                    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
-                      isMselfId = true;
-                    } else {
-                      isMselfId = false;
-                      _initBlackStatus();
-                    }
-                    _getUserInfo(id: widget.userId);
-                    _getFollowCount(id: widget.userId);
-                  }
-                });
+                AppRouter.navigateToLoginPage(context);
                 return;
               }
               if (isMselfId) {

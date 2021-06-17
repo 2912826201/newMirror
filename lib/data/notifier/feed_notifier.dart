@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:provider/provider.dart';
 class FeedMap {
   Map<int, HomeFeedModel> _feedMap = {};
 
@@ -182,10 +185,15 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     print("点赞了前：：：：：：：：$laud");
     if (laud == 0) {
       value._feedMap[id].laudCount -= 1;
-      value._feedMap[id].laudUserInfo.removeWhere((v) => v == avatarUrl);
+      value._feedMap[id].laudUserInfo.removeWhere((v) => v.uid == Application.appContext.read<ProfileNotifier>()
+          .profile.uid);
     } else {
       value._feedMap[id].laudCount += 1;
-      value._feedMap[id].laudUserInfo.insert(0, avatarUrl);
+      BuddyModel buddyModel =  BuddyModel();
+      buddyModel.uid = Application.appContext.read<ProfileNotifier>()
+          .profile.uid;
+      buddyModel.avatarUri = avatarUrl;
+      value._feedMap[id].laudUserInfo.insert(0, buddyModel);
     }
     value._feedMap[id].isLaud = laud;
     print("点赞了后：：：：：：：：$laud");
