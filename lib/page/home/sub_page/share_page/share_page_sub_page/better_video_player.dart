@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -67,9 +68,9 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
   init() async {
     dataSource = BetterPlayerDataSource.network(widget.feedModel.videos.first.url);
-    if (mounted) {
-      setState(() {});
-    }
+    // if (mounted) {
+    //   setState(() {});
+    // }
 
     eventListener = (BetterPlayerEvent event) {
       switch (event.betterPlayerEventType) {
@@ -108,6 +109,10 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
     controller.setVolume(0);
+    Application.feedVideoControllerList.add(controller.hashCode);
+    if (mounted) {
+      setState(() {});
+    }
     new Future.delayed(Duration(seconds: 3), () {
       if (mounted) {
         streamHeight.sink.add(0.0);
@@ -120,12 +125,16 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   void dispose() {
     print("视频页销毁————————————————————————————————————————————————");
     controller?.pause();
+    deletedControllerContrastValue();
     // controller?.removeEventsListener(eventListener);
     streamController.close();
     streamHeight.close();
     super.dispose();
   }
-
+  // 移除控制器
+  deletedControllerContrastValue(){
+   Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
+  }
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -159,19 +168,26 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         key: Key("${widget.feedModel.createTime}_key"),
         onVisibilityChanged: (info) {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
-          if (info.visibleFraction == 1.0) {
+          if (info.visibleFraction >= 0.6) {
             if (controller == null) {
               init();
             }
-            if (!controller.isPlaying()) {
-              controller.play();
+            if(controller != null && !Application.feedVideoControllerList.contains(controller.hashCode)) {
+              Application.feedVideoControllerList.add(controller.hashCode);
             }
-          } else if (info.visibleFraction < 1.0 && info.visibleFraction >= 0.0) {
+            if (!controller.isPlaying()) {
+              if(Application.feedVideoControllerList.first == controller.hashCode) {
+                controller.play();
+              }
+            }
+          } else if (info.visibleFraction < 0.6 && info.visibleFraction >= 0.0) {
+            deletedControllerContrastValue();
             print("!!!!!!!!!!!!!!!!!!!!!!!");
             if (controller != null && controller.isPlaying()) {
               controller.pause();
             }
           }
+          print("控制器长度：：：：${Application.feedVideoControllerList.length}");
         },
         child: controller == null
             ? Container(
