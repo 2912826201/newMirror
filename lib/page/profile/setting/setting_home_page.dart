@@ -101,12 +101,17 @@ class _SettingHomePageState extends State<SettingHomePage> {
                     context,
                     confirm: AppDialogButton("清除", () {
                       //清掉拍照截图、录制视频、录制语言的文件夹内容
-                      _clearCache(AppConfig.getAppPicDir());
-                      _clearCache(AppConfig.getAppChatImageDir());
-                      _clearCache(AppConfig.getAppVideoDir());
-                      _clearCache(AppConfig.getAppVoiceDir());
-                      _clearCache(AppConfig.getAppDownloadDir());
-                      AppPrefs.clearDownLadTask();
+                      try{
+                        //不影响弹窗关闭
+                        _clearCache(AppConfig.getAppPicDir());
+                        _clearCache(AppConfig.getAppChatImageDir());
+                        _clearCache(AppConfig.getAppVideoDir());
+                        _clearCache(AppConfig.getAppVoiceDir());
+                        _clearCache(AppConfig.getAppDownloadDir());
+                        AppPrefs.clearDownLadTask();
+                      }catch(e){
+                        print("clearCacheError=====:$e");
+                      }
                       //下载的视频课内容不在这里清，在专门管理课程的地方清
                       return true;
                     }),

@@ -85,7 +85,7 @@ class AppPrefs {
           _instance.setString(element, null);
       });
     }
-    _instance.setStringList(downLoadKeyList, null);
+    _instance.setStringList(downLoadKeyList, []);
     return;
   }
   ///获取下载任务队列(url)

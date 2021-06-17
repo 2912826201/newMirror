@@ -7,10 +7,7 @@ class VideoExposureDetectorController {
 
   static VideoExposureDetectorController get instance => _instance;
 
-  Duration updateInterval = const Duration(milliseconds: 200);
-
-  // 产品需求要等三秒后显示在这里设置;
-  int exposureTime = 3000;
+  Duration updateInterval = const Duration(milliseconds: 100);
 
   // list 元素曝光的比例
   double exposureFraction = 0.5;

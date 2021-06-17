@@ -28,6 +28,14 @@ class RenderVideoExposure extends RenderProxyBox {
   /// See [RenderObject.paint].
   @override
   void paint(PaintingContext context, Offset offset) {
+    if (_onExposure == null) {
+      // No need to create a [VisibilityDetectorLayer].  However, in case one
+      // already exists, remove all cached data for it so that we won't fire
+      // visibility callbacks when the layer is removed.
+      VideoExposureLayer.forget(key);
+      super.paint(context, offset);
+      return;
+    }
     var visibilityDetectorLayer = VideoExposureLayer(
       key: key,
       widgetSize: semanticBounds.size,
