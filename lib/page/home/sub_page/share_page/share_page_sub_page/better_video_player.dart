@@ -427,181 +427,186 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return  VisibilityDetector(
-            key: Key("${controller.hashCode}_key"),
-            onVisibilityChanged: (VisibilityInfo info) {
-              print("visibilityInfo:::::::::::${info.visibleFraction}");
-              if (info.visibleFraction == 1.0) {
-                if(controller == null) {
-                  init();
-                }
-                // if( !isVisibilityDetector) {
-                //   setState(() {
-                //     isVisibilityDetector = true;
-                //   });
-                // }
-                if (!controller.isPlaying()) {
-                  controller.play();
-                  isPlay.isPlay = false;
-                }
-              } else if (info.visibleFraction < 1.0 && info.visibleFraction >= 0.0) {
-                // if( isVisibilityDetector) {
-                //   setState(() {
-                //     isVisibilityDetector = false;
-                //   });
-                // }
-                print("!!!!!!!!!!!!!!!!!!!!!!!");
-                if (controller != null && controller.isPlaying()) {
-                  controller.pause();
-                  isPlay.isPlay = true;
-                }
-              }
-            },
-            child: controller == null
-                ? Container(
-                width: containerSize.width,
+    return VisibilityDetector(
+        key: Key("${controller.hashCode}_key"),
+        onVisibilityChanged: (VisibilityInfo info) {
+          print("visibilityInfo:::::::::::${info.visibleFraction}");
+          if (info.visibleFraction == 1.0) {
+            if (controller == null) {
+              init();
+            }
+            // if( !isVisibilityDetector) {
+            //   setState(() {
+            //     isVisibilityDetector = true;
+            //   });
+            // }
+            if (!controller.isPlaying()) {
+              controller.play();
+              isPlay.isPlay = false;
+            }
+          } else if (info.visibleFraction < 1.0 && info.visibleFraction >= 0.0) {
+            // if( isVisibilityDetector) {
+            //   setState(() {
+            //     isVisibilityDetector = false;
+            //   });
+            // }
+            print("!!!!!!!!!!!!!!!!!!!!!!!");
+            if (controller != null && controller.isPlaying()) {
+              controller.pause();
+              isPlay.isPlay = true;
+            }
+          }
+        },
+        child: controller == null
+            ? Container(
                 height: containerSize.height,
-                child: CachedNetworkImage(
-                  imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
-                  width: containerSize.width,
-                  height: containerSize.height,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) {
-                    return Container(
-                      color: AppColor.bgWhite,
-                    );
-                  },
-                  errorWidget: (context, url, error) => Container(
-                    color: AppColor.bgWhite,
-                  ),
-                ))
-                : Container(
-              height: containerSize.height,
-              width: containerSize.width,
-              child: Stack(
-                children: [
+                width: containerSize.width,
+                child: Stack(children: [
                   Positioned(
-                    left: offsetX,
-                    top: offsetY,
-                    child: GestureDetector(
-                        onTap: () {
-                          if (firstTapTimep == null) {
-                            firstTapTimep = DateTime.now().millisecondsSinceEpoch;
-                            streamHeight.sink.add(40.0);
-                            // 延迟器:
-                            new Future.delayed(Duration(seconds: 3), () {
-                              streamHeight.sink.add(0.0);
-                              firstTapTimep = null;
-                            });
-                          }
+                      left: offsetX,
+                      top: offsetY,
+                      child: CachedNetworkImage(
+                        imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
+                        width: videoSize.width,
+                        height: videoSize.height,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) {
+                          return Container(
+                            color: AppColor.bgWhite,
+                          );
                         },
-                        // 双击
-                        onDoubleTap: () {
-                          // 获取是否点赞
-                          int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].isLaud;
-                          print("isLaud:::$isLaud");
-                          if (isLaud != 1) {
-                            setUpLuad();
-                          }
-                        },
-                        child: SizedBox(
-                          width:
-                              // containerSize.width,
-                              videoSize.width,
-                          height:
-                              // containerSize.height,
-                              videoSize.height,
-                          child: BetterPlayer(
-                            controller: controller,
-                          ),
-                        )
-                        // : Container(
-                        //     width: videoSize.width,
-                        //     height: videoSize.height,
-                        //     child: CachedNetworkImage(
-                        //       imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
-                        //       width: videoSize.width,
-                        //       height: videoSize.height,
-                        //       fit: BoxFit.cover,
-                        //       placeholder: (context, url) {
-                        //         return Container(
-                        //           color: AppColor.bgWhite,
-                        //         );
-                        //       },
-                        //       errorWidget: (context, url, error) => Container(
-                        //         color: AppColor.bgWhite,
-                        //       ),
-                        //     ),
-                        //   ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColor.bgWhite,
                         ),
-                  ),
-                  // controller.isVideoInitialized() ?
-                  Positioned(
-                      bottom: 0,
-                      child: StreamBuilder<double>(
-                          initialData: initHeight,
-                          stream: streamHeight.stream,
-                          builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-                            return AnimatedContainer(
-                                height: snapshot.data,
-                                width: ScreenUtil.instance.width,
-                                duration: Duration(milliseconds: 100),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    // 渐变色
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomLeft,
-                                      colors: [
-                                        AppColor.transparent,
-                                        AppColor.black.withOpacity(0.5),
+                      ))
+                ]))
+            : Container(
+                height: containerSize.height,
+                width: containerSize.width,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: offsetX,
+                      top: offsetY,
+                      child: GestureDetector(
+                          onTap: () {
+                            if (firstTapTimep == null) {
+                              firstTapTimep = DateTime.now().millisecondsSinceEpoch;
+                              streamHeight.sink.add(40.0);
+                              // 延迟器:
+                              new Future.delayed(Duration(seconds: 3), () {
+                                streamHeight.sink.add(0.0);
+                                firstTapTimep = null;
+                              });
+                            }
+                          },
+                          // 双击
+                          onDoubleTap: () {
+                            // 获取是否点赞
+                            int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].isLaud;
+                            print("isLaud:::$isLaud");
+                            if (isLaud != 1) {
+                              setUpLuad();
+                            }
+                          },
+                          child: SizedBox(
+                            width:
+                                // containerSize.width,
+                                videoSize.width,
+                            height:
+                                // containerSize.height,
+                                videoSize.height,
+                            child: BetterPlayer(
+                              controller: controller,
+                            ),
+                          )
+                          // : Container(
+                          //     width: videoSize.width,
+                          //     height: videoSize.height,
+                          //     child: CachedNetworkImage(
+                          //       imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
+                          //       width: videoSize.width,
+                          //       height: videoSize.height,
+                          //       fit: BoxFit.cover,
+                          //       placeholder: (context, url) {
+                          //         return Container(
+                          //           color: AppColor.bgWhite,
+                          //         );
+                          //       },
+                          //       errorWidget: (context, url, error) => Container(
+                          //         color: AppColor.bgWhite,
+                          //       ),
+                          //     ),
+                          //   ),
+                          ),
+                    ),
+                    // controller.isVideoInitialized() ?
+                    Positioned(
+                        bottom: 0,
+                        child: StreamBuilder<double>(
+                            initialData: initHeight,
+                            stream: streamHeight.stream,
+                            builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                              return AnimatedContainer(
+                                  height: snapshot.data,
+                                  width: ScreenUtil.instance.width,
+                                  duration: Duration(milliseconds: 100),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      // 渐变色
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomLeft,
+                                        colors: [
+                                          AppColor.transparent,
+                                          AppColor.black.withOpacity(0.5),
+                                        ],
+                                      ),
+                                    ),
+                                    width: ScreenUtil.instance.width,
+                                    height: 40,
+                                    padding: const EdgeInsets.only(left: 2, right: 16),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        StreamBuilder<bool>(
+                                            initialData: controller.videoPlayerController.value.volume > 0,
+                                            stream: streamController.stream,
+                                            builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                                              return GestureDetector(
+                                                behavior: HitTestBehavior.opaque,
+                                                onTap: () {
+                                                  if (controller.videoPlayerController.value.volume > 0) {
+                                                    controller.setVolume(0.0);
+                                                  } else {
+                                                    controller.setVolume(1.0);
+                                                  }
+                                                  streamController.sink
+                                                      .add(controller.videoPlayerController.value.volume > 0);
+                                                },
+                                                child: AppIcon.getAppIcon(
+                                                  snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
+                                                  16,
+                                                  color: AppColor.white,
+                                                  containerHeight: 44,
+                                                  containerWidth: 44,
+                                                ),
+                                              );
+                                            }),
+                                        Spacer(),
+                                        Text(
+                                          widget.durationString ?? "00 : 00",
+                                          style: const TextStyle(fontSize: 11, color: AppColor.white),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  width: ScreenUtil.instance.width,
-                                  height: 40,
-                                  padding: const EdgeInsets.only(left: 2, right: 16),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      StreamBuilder<bool>(
-                                          initialData: controller.videoPlayerController.value.volume > 0,
-                                          stream: streamController.stream,
-                                          builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                                            return GestureDetector(
-                                              behavior: HitTestBehavior.opaque,
-                                              onTap: () {
-                                                if (controller.videoPlayerController.value.volume > 0) {
-                                                  controller.setVolume(0.0);
-                                                } else {
-                                                  controller.setVolume(1.0);
-                                                }
-                                                streamController.sink
-                                                    .add(controller.videoPlayerController.value.volume > 0);
-                                              },
-                                              child: AppIcon.getAppIcon(
-                                                snapshot.data == false ? AppIcon.volume_off_16 : AppIcon.volume_on_16,
-                                                16,
-                                                color: AppColor.white,
-                                                containerHeight: 44,
-                                                containerWidth: 44,
-                                              ),
-                                            );
-                                          }),
-                                      Spacer(),
-                                      Text(
-                                        widget.durationString ?? "00 : 00",
-                                        style: const TextStyle(fontSize: 11, color: AppColor.white),
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                          }))
-                  // : Container()
-                ],
-              ),
-            ));
+                                  ));
+                            }))
+                    // : Container()
+                  ],
+                ),
+              ));
   }
 
   _calculateSize() {

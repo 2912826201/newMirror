@@ -232,7 +232,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       // 上拉加载可以滑动
       context.read<FeedMapNotifier>().setDropDown(true);
     }
-    VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
+    // VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
     if (mounted) {
       setState(() {});
     }
