@@ -515,7 +515,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 16,
+                width: CustomAppBar.appBarHorizontalPadding,
               ),
               CustomAppBarIconButton(
                   svgName: AppIcon.nav_camera,
@@ -586,7 +586,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     AppRouter.navigateSearchPage(context);
                   }),
               SizedBox(
-                width: 16,
+                width: CustomAppBar.appBarHorizontalPadding,
               ),
             ],
           ),
