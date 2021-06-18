@@ -10,7 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/image_cropper/head_image_cropper.dart';
+import 'package:mirror/widget/image_cropper/image_cropper.dart';
 
 /// preview_photo_page
 /// Created by yangjiayi on 2020/12/4.

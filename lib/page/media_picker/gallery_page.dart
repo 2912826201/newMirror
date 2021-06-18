@@ -18,7 +18,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/image_cropper/head_image_cropper.dart';
+import 'package:mirror/widget/image_cropper/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';

@@ -16,7 +16,7 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:intl/intl.dart';
-import 'package:mirror/widget/image_cropper/head_image_cropper.dart';
+import 'package:mirror/widget/image_cropper/image_cropper.dart';
 import 'package:mirror/widget/loading.dart';
 
 /// training_gallery_comparison_page
