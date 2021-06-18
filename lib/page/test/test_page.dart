@@ -36,6 +36,7 @@ import 'package:provider/provider.dart';
 import '../message/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
+import 'jpush_test_page.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -470,6 +471,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     ),
                     SizedBox(height: 50),
                   ]),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return JpushTestPage();
+                  }));
+                },
+                child: Text("极光测试页"),
+              ),
             ],
           ),
         ),

@@ -204,15 +204,15 @@ Future _initApp() async {
   jpush.addEventHandler(
     // 接收通知回调方法。
     onReceiveNotification: (Map<String, dynamic> message) async {
-      print("flutter onReceiveNotification: $message");
+      print("main flutter onReceiveNotification: $message");
     },
     // 点击通知回调方法。
     onOpenNotification: (Map<String, dynamic> message) async {
-      print("flutter onOpenNotification: $message");
+      print("main flutter onOpenNotification: $message");
     },
     // 接收自定义消息回调方法。
     onReceiveMessage: (Map<String, dynamic> message) async {
-      print("flutter onReceiveMessage: $message");
+      print("main flutter onReceiveMessage: $message");
     },
   );
   jpush.setup(
