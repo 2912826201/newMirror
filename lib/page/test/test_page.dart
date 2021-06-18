@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -439,6 +440,19 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                       onTap: () {
                         AppRouter.navigateToLoginSucess(context);
                       },
+                    ),
+                    Lottie.asset('assets/lottie/loading_refresh.json',
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.fill,
+                      delegates: LottieDelegates(
+                        values: [
+                          ValueDelegate.color(
+                            const ['Shape Layer 1', 'Rectangle', 'Fill 1'],
+                            value: Colors.red,
+                          ),
+                        ],
+                      ),
                     ),
                   ]),
               Row(

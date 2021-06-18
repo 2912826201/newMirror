@@ -159,6 +159,8 @@ dependencies:
   jpush_flutter: ^2.1.2
   #fps监测工具
   fps_monitor: ^2.0.0
+  #lottie动画
+  lottie: ^1.0.1
 
 
   #测试跳转指定item
@@ -204,6 +206,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/emoji.json
+    - assets/lottie/
     - assets/svg/
     - assets/png/
     - assets/png/2.0x/
