@@ -298,10 +298,16 @@ class SystemCommonMsg extends StatelessWidget {
   }
 
 
-  _openUrl(){
-    print("点击了$position:url:${subModel.linkUrl}");
-    if(StringUtil.isURL(subModel.linkUrl)) {
-      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: subModel.linkUrl, isUrl: true);
+  _openUrl() {
+    String url = subModel.linkUrl;
+    // url="http://ifdev.aimymusic.com/h5/app/#/topic/?topicId=57&sign=e8b23518a87945689f9dc10e69e19f5f89693965";
+    // url="http://ifdev.aimymusic.com/h5/app/#/user/?userId=1004346&sign=a95138dea190e17997ef250c13c550ea6e0049cb";
+    // url="http://ifdev.aimymusic.com/h5/app/#/video/?courseId=63&sign=98cbd9690c8f49ba11a114d65d3f3a9d4ce1e62d";
+    // url="http://ifdev.aimymusic.com/h5/app/#/live/?courseId=370&sign=b3064e3a9228d089d1563f627add8dd922b6e1ec";
+    // url="http://ifdev.aimymusic.com/h5/app/#/feed/?feedId=517287538461900800&sign=861a2048ab51da3fd4776094bbd15c2d69aca2a5";
+    print("点击了$position:url:$url");
+    if (StringUtil.isURL(url)) {
+      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: url, isUrl: true);
     }
   }
 }
