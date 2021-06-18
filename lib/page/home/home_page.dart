@@ -84,8 +84,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
         .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
     _initConnectivity();
     // controller.addListener(() {
-    //   print("tabBar监听::::${controller.animation.value}");
-    //   streamTabBar.add(controller.index);
+    //   Application.feedBetterPlayerControllerList.clear();
     // });
   }
 
