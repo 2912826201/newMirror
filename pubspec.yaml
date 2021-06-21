@@ -44,6 +44,7 @@ dependencies:
   rongcloud_im_plugin: ^5.1.2
   # 七牛上传库
   sy_flutter_qiniu_storage: ^0.2.1
+  qiniu_flutter_sdk: ^0.3.0
   # 路由管理
   fluro: ^2.0.3
   # 富文本

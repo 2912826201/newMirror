@@ -99,8 +99,67 @@ class FileUtil {
     return uploadResults;
   }
 
+  // 当上传失败时返回的是null
+  Future<UploadResults> _uploadNew(List<File> fileList, int type, Function(double percent) progressCallback) async {
+    UploadResults uploadResults = UploadResults();
+    QiniuTokenModel token = await _getQiniuToken(type);
+    if (token == null) {
+      print("未取到上传token");
+      uploadResults.isSuccess = false;
+      return uploadResults;
+    }
+    //预先设为成功 当有失败文件时则改为失败
+    uploadResults.isSuccess = true;
+
+    final syStorage = SyFlutterQiniuStorage();
+    int _finishedCount = 0;
+    // 设置监听
+    syStorage.onChanged().listen((dynamic percent) {
+      double p = percent;
+      print("单文件进度））））））））））））））$percent");
+      double totalPercent = (1.0 * _finishedCount + p) / (1.0 * fileList.length);
+      print("总进度））））））））））））））$totalPercent");
+      if (p == 1.0) {
+        _finishedCount++;
+      }
+      progressCallback(totalPercent);
+    });
+    for (int i = 0; i < fileList.length; i++) {
+      // 生成文件名
+      String key = await _genKey(fileList[i]);
+      // 上传文件
+      UploadResultModel resultModel = UploadResultModel();
+      resultModel.isSuccess = false;
+      resultModel.error = "";
+      try {
+        UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
+        resultModel.isSuccess = result.success;
+        resultModel.error = result.error;
+      } catch (error) {
+        print("上传错误了");
+        print(error);
+        resultModel.isSuccess = false;
+        resultModel.error = error.toString();
+      }
+
+      // print("&@@@@@@@@@@@@@@${file.path}");
+      // print(result);
+      resultModel.filePath = fileList[i].path;
+      resultModel.url = token.domain + "/" + key;
+      uploadResults.resultMap[fileList[i].path] = resultModel;
+      if (resultModel.isSuccess == false) {
+        // 只要有一个文件上传失败就将总结果设为失败 成功不需要更改状态
+        uploadResults.isSuccess = false;
+      }
+    }
+    // 保险起见 检查一下数量
+    if (uploadResults.resultMap.length < fileList.length) {
+      uploadResults.isSuccess = false;
+    }
+    return uploadResults;
+  }
+
   Future<UploadResults> uploadFiles(List<File> fileList, Function(double percent) progressCallback) {
-    print("111111111111111111:uploadFiles");
     return _upload(fileList, 0, progressCallback);
   }
 

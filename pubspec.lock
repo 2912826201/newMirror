@@ -735,6 +735,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  qiniu_flutter_sdk:
+    dependency: "direct main"
+    description:
+      name: qiniu_flutter_sdk
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.0"
+  qiniu_sdk_base:
+    dependency: transitive
+    description:
+      name: qiniu_sdk_base
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.1"
   qr:
     dependency: transitive
     description:
