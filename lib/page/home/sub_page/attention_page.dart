@@ -439,6 +439,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
           },
           child: CustomScrollView(
             controller: PrimaryScrollController.of(context),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             key: attentionlistKey,
             physics: context.watch<FeedMapNotifier>().value.isDropDown
                 ? AlwaysScrollableScrollPhysics()

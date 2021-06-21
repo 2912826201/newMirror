@@ -308,6 +308,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               child: CustomScrollView(
                 key: globalKey,
                 controller: PrimaryScrollController.of(context),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 // BouncingScrollPhysics
                 physics:
                     // ClampingScrollPhysics(),
