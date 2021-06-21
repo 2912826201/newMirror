@@ -32,7 +32,6 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
 
   final int modelId;
 
-  final Function(int id,Function(bool isScroll) call) setIsScrollListener;
 
   const BetterPlayerListVideoPlayerDontKeep(
     this.dataSource, {
@@ -43,7 +42,6 @@ class BetterPlayerListVideoPlayerDontKeep extends StatefulWidget {
     // this.betterPlayerListVideoPlayerController,
     this.index,
     this.modelId,
-    this.setIsScrollListener,
     Key key,
   })  : assert(dataSource != null, "Data source can't be null"),
         assert(configuration != null, "Configuration can't be null"),
@@ -79,10 +77,6 @@ class _BetterPlayerListVideoPlayerDontKeepState extends State<BetterPlayerListVi
       betterPlayerListVideoPlayerController.setBetterPlayerController(_betterPlayerController);
     }
     print("初始化的播放器控制器::::${_betterPlayerController.hashCode}");
-
-    if(widget.setIsScrollListener!=null) {
-      widget.setIsScrollListener(widget.modelId, setScroll);
-    }
   }
 
 
