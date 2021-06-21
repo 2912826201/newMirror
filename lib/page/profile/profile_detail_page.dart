@@ -492,11 +492,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget profileDetailData(double backGroundHeight) {
     return Container(
       height: backGroundHeight,
+      width: width,
       color: AppColor.white,
       child: Stack(
         children: [
           Container(
               height: backGroundHeight - followFansHeight,
+              width: width,
               clipBehavior: Clip.hardEdge,
               // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
               decoration: const BoxDecoration(),
@@ -507,7 +509,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ),
                 child: CachedNetworkImage(
                 height: backGroundHeight - followFansHeight,
-                width: backGroundHeight - followFansHeight,
+                width: width,
                 imageUrl: _avatar != null ? _avatar : "",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
