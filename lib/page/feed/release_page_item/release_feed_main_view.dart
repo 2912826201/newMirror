@@ -80,10 +80,14 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         }
         //  请求了许可授了权，跳转页面
         if (status == PermissionStatus.granted) {
-          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress,widget.currentAddressInfo, (result) {
-            PeripheralInformationPoi poi = result as PeripheralInformationPoi;
-            return childrenACallBack(poi);
-          });
+          // 外层的请求定位需要2秒的时间返回位置，在这期间点击widget.currentAddressInfo是空值
+          if(widget.currentAddressInfo != null) {
+            AppRouter.navigateSearchOrLocationPage(
+                context, checkIndex, selectAddress, widget.currentAddressInfo, (result) {
+              PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+              return childrenACallBack(poi);
+            });
+          }
         }
         print("跳转选择地址页面");
       },
@@ -139,7 +143,11 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   childrenACallBack(PeripheralInformationPoi poi) {
     if (poi.name != "不显示所在位置") {
       isShowList = false;
-      context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;
+      if(poi != null) {
+        context
+            .read<ReleaseFeedInputNotifier>()
+            .seletedAddressText = poi.name;
+      }
       selectAddress = poi;
       checkIndex = 1;
       // 选择后就不展示附近推荐
