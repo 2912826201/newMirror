@@ -101,7 +101,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
               return (notifier.value.feedMap == null ||
                       notifier.value.feedMap[widget.model.id] == null ||
                       notifier.value.feedMap[widget.model.id].laudUserInfo == null)
-                  ? <String>[]
+                  ? <BuddyModel>[]
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
