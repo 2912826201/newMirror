@@ -492,6 +492,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget profileDetailData(double backGroundHeight) {
     return Container(
       height: backGroundHeight,
+      width: width,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -508,7 +509,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ),
                 child: CachedNetworkImage(
                 height: backGroundHeight - followFansHeight,
-                width: backGroundHeight - followFansHeight,
+                width: width,
                 imageUrl: _avatar != null ? _avatar : "",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(

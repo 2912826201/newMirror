@@ -73,7 +73,7 @@ class BottomopupState extends State<BottomPopup> {
     // 获取底部间距
     final double bottomPadding = ScreenUtil.instance.bottomBarHeight;
     // 获取顶部间距
-    final double topPadding = ScreenUtil.instance.statusBarHeight;
+    final double topPanding = ScreenUtil.instance.statusBarHeight;
     int listLength = widget.list.length;
 
     /// 最后还有一个cancel，所以加1
