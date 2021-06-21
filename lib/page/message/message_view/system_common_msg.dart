@@ -11,6 +11,7 @@ import 'package:mirror/page/message/item/chat_page_ui.dart';
 import 'package:mirror/page/message/item/currency_msg.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -308,6 +309,8 @@ class SystemCommonMsg extends StatelessWidget {
     print("点击了$position:url:$url");
     if (StringUtil.isURL(url)) {
       voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_TEXT, content: url, isUrl: true);
+    } else {
+      JpushAnalyzeCodeUtil.init().analyzeCode(url);
     }
   }
 }

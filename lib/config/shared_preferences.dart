@@ -15,10 +15,14 @@ String prefsKeyIsFirstLaunchToDay = "isFirstLaunchToDay";
 // 发布动态本地插入数据
 String publishFeedLocalInsertData = "publishFeedLocalInsertDataPrefs";
 
-String  downLoadKeyList = "downLoadKeyList";
+String downLoadKeyList = "downLoadKeyList";
 
 //直播间禁言状态
-String prefsKeyIsLiveRoomMute ="liveRoomMute";
+String prefsKeyIsLiveRoomMute = "liveRoomMute";
+
+//app图标上的小红点个数
+String prefsKeyFlutterAppBadgerCount = "flutterAppBadgerCount";
+
 class AppPrefs {
   static SharedPreferences _instance;
 
@@ -134,23 +138,24 @@ class AppPrefs {
 
   // 设置在直播间禁言状态
   static setLiveRoomMute(String liveRoomId,int seconds,bool isMute) {
-    _instance.setBool("${prefsKeyIsLiveRoomMute}_isMute_$liveRoomId", isMute);
-    _instance.setInt("${prefsKeyIsLiveRoomMute}_startTime_$liveRoomId", DateTime.now().millisecondsSinceEpoch);
-    _instance.setInt("${prefsKeyIsLiveRoomMute}_second_$liveRoomId", seconds);
+    _instance.setBool("${prefsKeyIsLiveRoomMute}_isMute_${Application.profile?.uid}_$liveRoomId", isMute);
+    _instance.setInt("${prefsKeyIsLiveRoomMute}_startTime_${Application.profile?.uid}_$liveRoomId",
+        DateTime.now().millisecondsSinceEpoch);
+    _instance.setInt("${prefsKeyIsLiveRoomMute}_second_${Application.profile?.uid}_$liveRoomId", seconds);
   }
 
   // 获取在直播间禁言状态
   static List getLiveRoomMute(String liveRoomId) {
-    List list=[];
-    bool isMute = _instance.getBool("${prefsKeyIsLiveRoomMute}_isMute_$liveRoomId");
+    List list = [];
+    bool isMute = _instance.getBool("${prefsKeyIsLiveRoomMute}_isMute_${Application.profile?.uid}_$liveRoomId");
     if (null == isMute) {
       isMute = false;
     }
-    int startTime = _instance.getInt("${prefsKeyIsLiveRoomMute}_startTime_$liveRoomId");
+    int startTime = _instance.getInt("${prefsKeyIsLiveRoomMute}_startTime_${Application.profile?.uid}_$liveRoomId");
     if (null == startTime) {
       startTime = DateTime.now().millisecondsSinceEpoch;
     }
-    int second = _instance.getInt("${prefsKeyIsLiveRoomMute}_second_$liveRoomId");
+    int second = _instance.getInt("${prefsKeyIsLiveRoomMute}_second_${Application.profile?.uid}_$liveRoomId");
     if (null == second) {
       second = -1;
     }
@@ -158,5 +163,19 @@ class AppPrefs {
     list.add(startTime);
     list.add(second);
     return list;
+  }
+
+  //设置app图标上的小红点个数
+  static setFlutterAppBadgerCount(int count) {
+    _instance.setInt("${prefsKeyFlutterAppBadgerCount}_${Application.profile?.uid}", count);
+  }
+
+  //设置app图标上的小红点个数
+  static getFlutterAppBadgerCount() {
+    int count = _instance.getInt("${prefsKeyFlutterAppBadgerCount}_${Application.profile?.uid}");
+    if (null == count) {
+      count = 0;
+    }
+    return count;
   }
 }
