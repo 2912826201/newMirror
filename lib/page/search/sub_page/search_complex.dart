@@ -337,6 +337,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                     },
                     child: CustomScrollView(
                       controller: PrimaryScrollController.of(context),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       slivers: [
                         if (AppConfig.needShowTraining)
                           SliverToBoxAdapter(

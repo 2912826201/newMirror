@@ -940,7 +940,9 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     map['checkIndex'] = checkIndex;
     map['selectAddress'] = selectAddress.toJson();
-    map['currentAddressInfo'] = currentAddressInfo.toJson();
+    if(currentAddressInfo != null) {
+      map['currentAddressInfo'] = currentAddressInfo.toJson();
+    }
     _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
   }
 

@@ -154,6 +154,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
                   },
                   child: CustomScrollView(
                       controller: _scrollController,
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(

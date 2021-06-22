@@ -38,7 +38,6 @@ class FeedVideoPlayer extends StatefulWidget {
   final String durationString;
   final HomeFeedModel model;
   final int index;
-  final Function(int id,Function(bool isScroll) call) setIsScrollListener;
 
   FeedVideoPlayer(this.url, this.sizeInfo, this.width,
       {Key key,
@@ -48,7 +47,6 @@ class FeedVideoPlayer extends StatefulWidget {
       this.durationString,
       this.model,
       this.index,
-      this.setIsScrollListener,
       })
       : super(key: key);
 
@@ -306,7 +304,6 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                               0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
                           index: widget.index,
                           modelId: widget.model.id,
-                          setIsScrollListener: widget.setIsScrollListener,
                         )
                       : BetterPlayer(
                           controller: controller,
