@@ -170,7 +170,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
         getDataAction();
-      } else {
+      } else if(widget.isBottomSheetAndHomePage){
+        Future.delayed(Duration(milliseconds: 300),(){
+          getDataAction();
+        });
+      }else{
         getDataAction();
       }
     });
