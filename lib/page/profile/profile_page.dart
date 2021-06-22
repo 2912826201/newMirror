@@ -16,6 +16,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -557,11 +558,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
         break;
       case "扫一扫":
-        Permission.camera.request().then((value) {
-          if (value.isGranted) {
-            AppRouter.navigateToScanCodePage(context, showMyCode: true);
-          }
-        });
+       gotoScanCodePage(context);
         break;
       case "设置":
         AppRouter.navigateToSettingHomePage(context);
