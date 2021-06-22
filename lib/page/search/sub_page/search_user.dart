@@ -12,7 +12,6 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
-import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -223,6 +222,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                     _onLoading();
                   },
                   child: ListView.builder(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       controller: PrimaryScrollController.of(context),
                       // scrollController,
                       itemCount: modelList.length,

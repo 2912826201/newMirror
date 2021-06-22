@@ -258,6 +258,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                         },
                         child: CustomScrollView(
                             controller: PrimaryScrollController.of(context),
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                             // _scrollController,
                             physics: AlwaysScrollableScrollPhysics(),
                             slivers: [
