@@ -199,6 +199,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColor.white,
+        resizeToAvoidBottomInset: false,
         body: model != null
             ? Stack(
                 children: [

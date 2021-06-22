@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:ui'as ui;
+import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
@@ -23,7 +22,6 @@ import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -36,7 +34,6 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-
 
 Future<void> jumpToUserProfilePage(BuildContext context, int uId,
     {String avatarUrl, String userName, Function(dynamic result) callback}) async {
@@ -117,7 +114,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE,registerName:AGAIN_LOGIN_REFREASH_USERPAGE);
+    EventBus.getDefault()
+        .registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE, registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
     loadingStreamController = StreamController.broadcast();
     _textName = widget.userName ?? "";
     _avatar = widget.imageUrl ?? "";
@@ -139,11 +137,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         _getUserInfo(id: widget.userId);
         _getFollowCount(id: widget.userId);
       });
-        // WidgetsBinding.instance.addPersistentFrameCallback((callback){
-        //   print("addPersistentFrameCallback be invoke");
-        //   //触发一帧的绘制
-        //   WidgetsBinding.instance.scheduleFrame();
-        // });
+      // WidgetsBinding.instance.addPersistentFrameCallback((callback){
+      //   print("addPersistentFrameCallback be invoke");
+      //   //触发一帧的绘制
+      //   WidgetsBinding.instance.scheduleFrame();
+      // });
     });
     scrollController.addListener(() {
       if (scrollController.offset >= userDetailBoardHeight) {
@@ -165,18 +163,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
-
-  void loginRefreashPage(){
-      context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
-      if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
-        isMselfId = true;
-      } else {
-        isMselfId = false;
-        _initBlackStatus();
-      }
-      _getUserInfo(id: widget.userId);
-      _getFollowCount(id: widget.userId);
+  void loginRefreashPage() {
+    context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
+    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+      isMselfId = true;
+    } else {
+      isMselfId = false;
+      _initBlackStatus();
+    }
+    _getUserInfo(id: widget.userId);
+    _getFollowCount(id: widget.userId);
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -224,8 +222,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       userModel = await getUserInfo(uid: id);
     } else {
       userModel = widget.userModel;
+      widget.userModel = null;
     }
-    widget.userModel = null;
     if (userModel != null) {
       _avatar = userModel.avatarUri;
       _signature = userModel.description;
@@ -331,7 +329,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) {
-                          EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                        EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                       },
                       indicatorSize: Custom.TabBarIndicatorSize.label,
                       indicator: RoundUnderlineTabIndicator(
@@ -429,7 +427,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     width: userNameWidth,
                     child: Center(
                       child: Text(
-                        _textName != null ? "$_textName" : "",
+                        _textName ?? "",
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -496,43 +494,43 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       color: AppColor.white,
       child: Stack(
         children: [
-         Container(
+          Container(
               height: backGroundHeight - followFansHeight,
               width: width,
               clipBehavior: Clip.hardEdge,
               // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
               decoration: const BoxDecoration(),
               child: ImageFiltered(
-                imageFilter: ui.ImageFilter.blur(
-                  sigmaX: 28.0,
-                  sigmaY: 28.0,
-                ),
-                child: CachedNetworkImage(
-                height: backGroundHeight - followFansHeight,
-                width: width,
-                imageUrl: _avatar != null ? _avatar : "",
-                fit: BoxFit.fitWidth,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
-                ),
-                /* errorWidget: (context, url, e) {
+                  imageFilter: ui.ImageFilter.blur(
+                    sigmaX: 28.0,
+                    sigmaY: 28.0,
+                  ),
+                  child: CachedNetworkImage(
+                    height: backGroundHeight - followFansHeight,
+                    width: width,
+                    imageUrl: _avatar ?? "",
+                    fit: BoxFit.fitWidth,
+                    placeholder: (context, url) => Container(
+                      color: AppColor.bgWhite,
+                    ),
+                    /* errorWidget: (context, url, e) {
                 return Image.asset(
                   "images/test.png",
                   fit: BoxFit.cover,
                 );
               },*/
-              ))),
+                  ))),
           Positioned(
               child: Container(
-                width: width,
-                height: backGroundHeight - followFansHeight,
-                /*   color: AppColor.white.withOpacity(0.6),*/
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [AppColor.white.withOpacity(0.6), AppColor.white],
-                        begin: FractionalOffset(0, 0.5),
-                        end: FractionalOffset(0, 1))),
-              )),
+            width: width,
+            height: backGroundHeight - followFansHeight,
+            /*   color: AppColor.white.withOpacity(0.6),*/
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [AppColor.white.withOpacity(0.6), AppColor.white],
+                    begin: FractionalOffset(0, 0.5),
+                    end: FractionalOffset(0, 1))),
+          )),
           _mineDetailsData(backGroundHeight),
         ],
       ),
@@ -550,6 +548,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             SizedBox(
               height: ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight,
             ),
+
             ///头像和按钮
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -571,7 +570,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 children: [
                   ///昵称
                   Text(
-                    _textName != null ? _textName : "  ",
+                    _textName ?? "  ",
                     style: AppStyle.textMedium18,
                   ),
                   Spacer(),
@@ -590,7 +589,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               height: _signatureHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
-              child: Text(_signature != null ? _signature : " ", softWrap: true, style: AppStyle.textRegular14),
+              child: Text(_signature ?? " ", softWrap: true, style: AppStyle.textRegular14),
             ),
             SizedBox(
               height: 16,
@@ -751,7 +750,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         memCacheHeight: 250,
         memCacheWidth: 250,
         useOldImageOnUrlChange: true,
-        imageUrl: _avatar != null ? FileUtil.getMediumImage(_avatar) : " ",
+        imageUrl: _avatar ?? " ",
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
           color: AppColor.bgWhite,
