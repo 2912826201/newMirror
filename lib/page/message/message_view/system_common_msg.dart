@@ -218,8 +218,11 @@ class SystemCommonMsg extends StatelessWidget {
       tag: heroId,
       child: GestureDetector(
         onTap: (){
-          if(!StringUtil.isURL(subModel.linkUrl)){
-            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: subModel.picUrl, position: position);
+          if (subModel.linkUrl == null || subModel.linkUrl.length < 1) {
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: subModel.picUrl, position: position);
+          } else {
+            _openUrl();
           }
         },
         child: Container(
@@ -301,6 +304,9 @@ class SystemCommonMsg extends StatelessWidget {
 
   _openUrl() {
     String url = subModel.linkUrl;
+    if (url == null || url.length < 1) {
+      return;
+    }
     // url="http://ifdev.aimymusic.com/h5/app/#/topic/?topicId=57&sign=e8b23518a87945689f9dc10e69e19f5f89693965";
     // url="http://ifdev.aimymusic.com/h5/app/#/user/?userId=1004346&sign=a95138dea190e17997ef250c13c550ea6e0049cb";
     // url="http://ifdev.aimymusic.com/h5/app/#/video/?courseId=63&sign=98cbd9690c8f49ba11a114d65d3f3a9d4ce1e62d";
