@@ -496,8 +496,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       color: AppColor.white,
       child: Stack(
         children: [
-          Container(
-              height: backGroundHeight,
+         Container(
+              height: backGroundHeight - followFansHeight,
               width: width,
               clipBehavior: Clip.hardEdge,
               // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
@@ -508,10 +508,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   sigmaY: 28.0,
                 ),
                 child: CachedNetworkImage(
-                height: backGroundHeight,
+                height: backGroundHeight - followFansHeight,
                 width: width,
                 imageUrl: _avatar != null ? _avatar : "",
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
                 placeholder: (context, url) => Container(
                   color: AppColor.bgWhite,
                 ),
@@ -525,7 +525,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           Positioned(
               child: Container(
                 width: width,
-                height: backGroundHeight,
+                height: backGroundHeight - followFansHeight,
                 /*   color: AppColor.white.withOpacity(0.6),*/
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
