@@ -50,29 +50,6 @@ import 'more_page/private_more_page.dart';
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
-//去对应的聊天界面
-//目前是从用户详情页的私聊过来的
-void jumpChatPageUser(BuildContext context, UserModel userModel, {String textContent}) {
-  ConversationDto conversation = new ConversationDto();
-  conversation.conversationId = userModel.uid.toString();
-  conversation.uid = Application.profile.uid;
-  conversation.name = userModel.nickName;
-  conversation.avatarUri = userModel.avatarUri;
-  conversation.type = PRIVATE_TYPE;
-  jumpChatPageConversationDto(context, conversation, textContent: textContent);
-}
-
-//去对应的聊天界面
-void jumpChatPageSystem(BuildContext context) {
-  ConversationDto conversation = new ConversationDto();
-  conversation.conversationId = "1";
-  conversation.uid = Application.profile.uid;
-  conversation.name = "系统通知";
-  conversation.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
-  conversation.type = OFFICIAL_TYPE;
-  jumpChatPageConversationDto(context, conversation);
-}
-
 //分享跳转界面
 Future<bool> jumpShareMessage(
     Map<String, dynamic> map, String chatType, String name, int userId, int type, BuildContext context) async {
@@ -132,9 +109,16 @@ Future<bool> jumpShareMessage(
   // _jumpChatPage(context: context, conversation: conversation, shareMessage: message);
 }
 
-//去聊天界面
-void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation, {String textContent}) {
-  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null, textContent: textContent);
+//去对应的聊天界面
+//目前是从用户详情页的私聊过来的
+void jumpChatPageUser(BuildContext context, UserModel userModel, {String textContent}) {
+  ConversationDto conversation = new ConversationDto();
+  conversation.conversationId = userModel.uid.toString();
+  conversation.uid = Application.profile.uid;
+  conversation.name = userModel.nickName;
+  conversation.avatarUri = userModel.avatarUri;
+  conversation.type = PRIVATE_TYPE;
+  jumpChatPageConversationDto(context, conversation, textContent: textContent);
 }
 
 //去群聊界面
@@ -145,6 +129,22 @@ void jumpGroupPage(BuildContext context, String name, int groupId) {
   conversation.uid = Application.profile.uid;
   conversation.type = GROUP_TYPE;
   jumpChatPageConversationDto(context, conversation);
+}
+
+//去对应的聊天界面
+void jumpChatPageSystem(BuildContext context, String targetId) {
+  ConversationDto conversation = new ConversationDto();
+  conversation.conversationId = targetId;
+  conversation.uid = Application.profile.uid;
+  conversation.name = "系统通知";
+  conversation.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+  conversation.type = OFFICIAL_TYPE;
+  jumpChatPageConversationDto(context, conversation);
+}
+
+//去聊天界面
+void jumpChatPageConversationDto(BuildContext context, ConversationDto conversation, {String textContent}) {
+  _jumpJudgeChatPage(context: context, conversation: conversation, shareMessage: null, textContent: textContent);
 }
 
 //去测试界面

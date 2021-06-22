@@ -209,12 +209,42 @@ class _IFTabBarState extends State<IFTabBar> {
     streamController.sink.add(0);
   }
 
+  // // app界面id
+  // class PageType {
+  // static const int AttentionPage = 1;//关注页
+  // static const int RecommendPage = 2;//推荐页
+  // static const int TrainingPage= 3;//训练页
+  // static const int MessagePage = 4;//消息页
+  // static const int ProfilePage = 5;//我的页面
+  // }
+
   _jumpPage(int pageIndex) {
-    if (widget.tabBarClickListener != null) {
-      widget.tabBarClickListener(pageIndex);
+    int pagePosition = -1;
+    switch (pageIndex) {
+      case 1: //关注页
+      case 2: //推荐页
+        pagePosition = 0;
+        break;
+      case 3: //训练页
+        pagePosition = 1;
+        break;
+      case 4: //消息页
+        pagePosition = 2;
+        break;
+      case 5: //我的页面
+        pagePosition = 3;
+        break;
+      default:
+        pagePosition = -1;
+        break;
     }
-    if (streamController != null) {
-      streamController.sink.add(pageIndex);
+    if (pagePosition >= 0) {
+      if (widget.tabBarClickListener != null) {
+        widget.tabBarClickListener(pagePosition);
+      }
+      if (streamController != null) {
+        streamController.sink.add(pagePosition);
+      }
     }
   }
 

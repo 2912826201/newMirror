@@ -74,7 +74,7 @@ class MessageManager {
     bool result = false;
     if (exist != null) {
       //存在已有数据的情况
-      if (dto.updateTime <= exist.updateTime) {
+      if (dto.updateTime < exist.updateTime) {
         //已有数据比新数据更新 则新数据不更新会话信息
         return;
       } else {

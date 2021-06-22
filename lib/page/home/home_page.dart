@@ -82,6 +82,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     // 发布动态页发送发布model通知
     EventBus.getDefault()
         .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    EventBus.getDefault().registerSingleParameter(_jumpPage, EVENTBUS_HOME_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     _initConnectivity();
     // controller.addListener(() {
     //   Application.feedBetterPlayerControllerList.clear();
@@ -671,5 +672,25 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
     // );
     // });
+  }
+
+  _jumpPage(int pageIndex) {
+    int pagePosition = -1;
+    switch (pageIndex) {
+      case 1: //关注页
+        pagePosition = 0;
+        break;
+      case 2: //推荐页
+        pagePosition = 1;
+        break;
+      default:
+        pagePosition = -1;
+        break;
+    }
+    if (pagePosition >= 0) {
+      if (controller != null) {
+        controller.animateTo(pagePosition);
+      }
+    }
   }
 }
