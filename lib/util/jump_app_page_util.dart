@@ -54,26 +54,26 @@ class JumpAppPageUtil {
     switch (type) {
       case 1:
         //关注页
-        print("极光代码解析-app界面-关注页");
+        print("跳转界面-app界面-关注页");
         break;
       case 2:
         //推荐页
-        print("极光代码解析-app界面-推荐页");
+        print("跳转界面-app界面-推荐页");
         break;
       case 3:
         //训练页
-        print("极光代码解析-app界面-训练页");
+        print("跳转界面-app界面-训练页");
         break;
       case 4:
         //消息页
-        print("极光代码解析-app界面-消息页");
+        print("跳转界面-app界面-消息页");
         break;
       case 5:
         //我的页面
-        print("极光代码解析-app界面-我的页面");
+        print("跳转界面-app界面-我的页面");
         break;
       default:
-        print("极光代码解析-app界面-未知界面");
+        print("跳转界面-app界面-未知界面");
         break;
     }
     if (type > 0 && type < 6) {
