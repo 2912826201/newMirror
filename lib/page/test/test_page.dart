@@ -440,7 +440,20 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                         AppRouter.navigateToLoginSucess(context);
                       },
                     ),
-                    Lottie.asset('assets/lottie/loading_refresh.json',
+                    Lottie.asset('assets/lottie/loading_refresh_black.json',
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.fill,
+                      delegates: LottieDelegates(
+                        values: [
+                          ValueDelegate.color(
+                            const ['Shape Layer 1', 'Rectangle', 'Fill 1'],
+                            value: Colors.red,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Lottie.asset('assets/lottie/loading_refresh_red.json',
                       width: 48,
                       height: 48,
                       fit: BoxFit.fill,
