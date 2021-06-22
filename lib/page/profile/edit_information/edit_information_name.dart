@@ -165,8 +165,6 @@ class _EditInformationNameState extends State<EditInformationName> {
       controller: controller,
       cursorColor: AppColor.black,
       style: AppStyle.textRegular16,
-      cursorHeight: 40,
-      mouseCursor: SystemMouseCursors.resizeRow,
       decoration: InputDecoration(
         counterText: '',
         hintText: "戳这里输入${widget.title==null?"昵称":widget.title.contains("群聊")?"名称":"昵称"}",
