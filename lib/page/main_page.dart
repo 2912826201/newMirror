@@ -125,7 +125,6 @@ class MainPageState extends XCState {
             }
             pageController.jumpToPage(index);
             currentIndex = index;
-            EventBus.getDefault().post(msg: index,registerName: MAIN_PAGE_JUMP_PAGE);
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }

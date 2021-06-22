@@ -97,8 +97,9 @@ class JpushAnalyzeCodeUtil {
         break;
       case "if://redirect/html5":
         print("极光代码解析----跳转H5界面:code:${params["url"]}");
-        if (StringUtil.isURL(params["url"])) {
-          StringUtil.launchUrl(params["url"], context);
+        var uri = Uri.decodeFull(params["url"]); //反编码
+        if (StringUtil.isURL(uri)) {
+          StringUtil.launchUrl(uri, context);
         }
         break;
       case "if://redirect/app/page":

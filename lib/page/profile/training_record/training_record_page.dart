@@ -5,6 +5,7 @@ import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/jump_app_page_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/data/model/training/training_record_all_model.dart';
@@ -906,7 +907,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                 ),
               ),
               onTap: (){
-                EventBus.getDefault().post(msg: 1,registerName: MAIN_PAGE_JUMP_PAGE);
+                EventBus.getDefault().post(msg: JumpAppPageModel.TrainingPage, registerName: MAIN_PAGE_JUMP_PAGE);
                 Navigator.of(context).pop();
               },
             ),

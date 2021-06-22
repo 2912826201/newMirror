@@ -7,7 +7,6 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fps_monitor/util/collection_util.dart';
@@ -212,7 +211,7 @@ Future _initApp() async {
       print("main flutter onReceiveNotification2: ${mapModel["redirectUri"]}");
       int notificationId = message["extras"]["cn.jpush.android.NOTIFICATION_ID"];
       //fixme 等待接通厂商通道后测试杀掉app会不会走这里
-      jpush.clearNotification(notificationId: notificationId);
+      // jpush.clearNotification(notificationId: notificationId);
       if (message["alert"] != null && message["alert"].toString().contains("撤回了一条消息")) {
         return;
       }
