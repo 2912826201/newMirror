@@ -178,7 +178,7 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
   //改变用户关注粉丝model
   void changeAttentionModel(ProfileModel model, int id) {
     print('=id==========id======id=======id======$id');
-    value._profileUiChangeModel[id].attentionModel = model;
+    value._profileUiChangeModel[id]?.attentionModel = model;
     notifyListeners();
   }
 }
