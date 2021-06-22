@@ -9,6 +9,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/jump_app_page_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -164,8 +165,7 @@ class JpushAnalyzeCodeUtil {
         break;
     }
     if (type > 0 && type < 6) {
-      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
-      EventBus.getDefault().post(msg: type, registerName: MAIN_PAGE_JUMP_PAGE);
+      JumpAppPageUtil.init(context).jumpPageType(type);
     }
   }
 

@@ -13,6 +13,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/jump_app_page_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -907,8 +908,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                 ),
               ),
               onTap: (){
-                EventBus.getDefault().post(msg: JumpAppPageModel.TrainingPage, registerName: MAIN_PAGE_JUMP_PAGE);
-                Navigator.of(context).pop();
+                JumpAppPageUtil.init(context).jumpTrainingPage();
               },
             ),
             bottom: 0,
