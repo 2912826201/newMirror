@@ -223,6 +223,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                     _onLoading();
                   },
                   child: ListView.builder(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       controller: PrimaryScrollController.of(context),
                       // scrollController,
                       itemCount: modelList.length,

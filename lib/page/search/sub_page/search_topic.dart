@@ -199,6 +199,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                     requestFeednIterface(refreshOrLoading: false);
                   },
                   child: CustomScrollView(
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       // controller: _scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
