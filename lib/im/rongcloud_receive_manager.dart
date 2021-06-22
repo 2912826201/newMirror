@@ -108,7 +108,8 @@ class RongCloudReceiveManager {
   //消息撤回监听
   onRecallMessageReceived(Message message) {
     print("撤回消息====${message.objectName}");
-    EventBus.getDefault().post(msg: message,registerName: CHAT_WITHDRAW_MSG);
+    EventBus.getDefault().post(msg: message, registerName: CHAT_WITHDRAW_MSG);
+    Application.appContext.read<ChatMessageProfileNotifier>().judgeWithdrawIsAtMsg(message);
     MessageManager.updateConversationByMessageList(_context, [message]);
   }
 }

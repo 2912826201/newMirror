@@ -43,8 +43,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
       if(!isNowMsg) {
         for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
           if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
-            AtMsg atMsg = new AtMsg(
-                groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
+            AtMsg atMsg =
+                new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
             Application.atMesGroupModel.add(atMsg);
             break;
           }
@@ -53,14 +53,24 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     }
   }
 
+  //撤回
+  judgeWithdrawIsAtMsg(Message msg) {
+    // print("Application.atMesGroupModel:${Application.atMesGroupModel.atMsgMap.length}");
+    // print("111111111111111111111111111");
+    AtMsg atMsg = Application.atMesGroupModel.getAtMsg(msg.targetId);
+    if (atMsg != null && atMsg.messageUId == msg.messageUId) {
+      Application.atMesGroupModel.remove(atMsg);
+    }
+  }
+
   //移除群聊
-  removeGroup(Message message){
+  removeGroup(Message message) {
     Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-    print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
-        && RCConversationType.Group == chatTypeId}");
+    print(
+        "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
     if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
       print("111111移除群聊");
-      EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
+      EventBus.getDefault().post(msg: message, registerName: CHAT_JOIN_EXIT);
     }else{
       insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
     }
