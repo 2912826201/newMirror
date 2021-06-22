@@ -10,7 +10,6 @@ import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:qiniu_flutter_sdk/qiniu_flutter_sdk.dart';
 
 class QiniuTest extends StatefulWidget {
@@ -34,27 +33,6 @@ class _QiniuTestState extends State<QiniuTest> {
     domain = tokenModel.domain;
   }
 
-  _onUpload() async {
-    PickedFile file1 = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
-    File file = File(file1.path);
-    if (file == null) {
-      return;
-    }
-    final syStorage = new SyFlutterQiniuStorage();
-    //监听上传进度
-    syStorage.onChanged().listen((dynamic percent) {
-      double p = percent;
-      setState(() {
-        _process = p;
-      });
-      print(percent);
-    });
-
-    //上传文件
-    var result = await syStorage.upload(file.path, token, _key(file));
-    print(result);
-  }
-
   _onUploadNew() async {
     PickedFile file1 = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
     File file = File(file1.path);
@@ -74,7 +52,7 @@ class _QiniuTestState extends State<QiniuTest> {
     print(results.resultMap);
   }
 
-  _onUploadNewNew() async {
+  _onUpload() async {
     PickedFile file1 = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
     File file = File(file1.path);
     if (file == null) {
@@ -146,11 +124,6 @@ class _QiniuTestState extends State<QiniuTest> {
     return "ifapp/" + DateTime.now().millisecondsSinceEpoch.toString() + '.' + file.path.split('.').last;
   }
 
-  //取消上传
-  _onCancel() {
-    SyFlutterQiniuStorage.cancelUpload();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,16 +147,8 @@ class _QiniuTestState extends State<QiniuTest> {
               onPressed: _onUpload,
             ),
             RaisedButton(
-              child: Text('取消上传'),
-              onPressed: _onCancel,
-            ),
-            RaisedButton(
               child: Text('新版上传'),
               onPressed: _onUploadNew,
-            ),
-            RaisedButton(
-              child: Text('新新版上传'),
-              onPressed: _onUploadNewNew,
             ),
           ],
         ),

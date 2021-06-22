@@ -14,7 +14,7 @@ import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/util/chunk_download.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
+import 'package:qiniu_flutter_sdk/qiniu_flutter_sdk.dart';
 import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -51,20 +51,26 @@ class FileUtil {
     //预先设为成功 当有失败文件时则改为失败
     uploadResults.isSuccess = true;
 
-    final syStorage = SyFlutterQiniuStorage();
+    final storage = Storage();
     int _finishedCount = 0;
-    // 设置监听
-    syStorage.onChanged().listen((dynamic percent) {
-      double p = percent;
-      print("单文件进度））））））））））））））$percent");
-      double totalPercent = (1.0 * _finishedCount + p) / (1.0 * fileList.length);
-      print("总进度））））））））））））））$totalPercent");
-      if (p == 1.0) {
-        _finishedCount++;
-      }
-      progressCallback(totalPercent);
-    });
+
     for (int i = 0; i < fileList.length; i++) {
+      PutController putController = PutController();
+      // 设置进度监听
+      putController.addProgressListener((double percent) {
+        print("单文件进度））））））））））））））$percent");
+        double totalPercent = (1.0 * _finishedCount + percent) / (1.0 * fileList.length);
+        print("总进度））））））））））））））$totalPercent");
+        if (percent == 1.0) {
+          _finishedCount++;
+        }
+        progressCallback(totalPercent);
+      });
+      // 设置状态监听
+      StorageStatus fileStatus;
+      putController.addStatusListener((StorageStatus status) {
+        fileStatus = status;
+      });
       // 生成文件名
       String key = await _genKey(fileList[i]);
       // 上传文件
@@ -72,72 +78,48 @@ class FileUtil {
       resultModel.isSuccess = false;
       resultModel.error = "";
       try {
-        UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
-        resultModel.isSuccess = result.success;
-        resultModel.error = result.error;
+        await storage.putFile(
+          fileList[i],
+          token.upToken,
+          options: PutOptions(
+            key: key,
+            controller: putController,
+          ),
+        );
+        if (fileStatus != null && fileStatus == StorageStatus.Success) {
+          resultModel.isSuccess = true;
+        }
       } catch (error) {
-        print("上传错误了");
-        print(error);
-        resultModel.isSuccess = false;
-        resultModel.error = error.toString();
-      }
-
-      // print("&@@@@@@@@@@@@@@${file.path}");
-      // print(result);
-      resultModel.filePath = fileList[i].path;
-      resultModel.url = token.domain + "/" + key;
-      uploadResults.resultMap[fileList[i].path] = resultModel;
-      if (resultModel.isSuccess == false) {
-        // 只要有一个文件上传失败就将总结果设为失败 成功不需要更改状态
-        uploadResults.isSuccess = false;
-      }
-    }
-    // 保险起见 检查一下数量
-    if (uploadResults.resultMap.length < fileList.length) {
-      uploadResults.isSuccess = false;
-    }
-    return uploadResults;
-  }
-
-  // 当上传失败时返回的是null
-  Future<UploadResults> _uploadNew(List<File> fileList, int type, Function(double percent) progressCallback) async {
-    UploadResults uploadResults = UploadResults();
-    QiniuTokenModel token = await _getQiniuToken(type);
-    if (token == null) {
-      print("未取到上传token");
-      uploadResults.isSuccess = false;
-      return uploadResults;
-    }
-    //预先设为成功 当有失败文件时则改为失败
-    uploadResults.isSuccess = true;
-
-    final syStorage = SyFlutterQiniuStorage();
-    int _finishedCount = 0;
-    // 设置监听
-    syStorage.onChanged().listen((dynamic percent) {
-      double p = percent;
-      print("单文件进度））））））））））））））$percent");
-      double totalPercent = (1.0 * _finishedCount + p) / (1.0 * fileList.length);
-      print("总进度））））））））））））））$totalPercent");
-      if (p == 1.0) {
-        _finishedCount++;
-      }
-      progressCallback(totalPercent);
-    });
-    for (int i = 0; i < fileList.length; i++) {
-      // 生成文件名
-      String key = await _genKey(fileList[i]);
-      // 上传文件
-      UploadResultModel resultModel = UploadResultModel();
-      resultModel.isSuccess = false;
-      resultModel.error = "";
-      try {
-        UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
-        resultModel.isSuccess = result.success;
-        resultModel.error = result.error;
-      } catch (error) {
-        print("上传错误了");
-        print(error);
+        if (error is StorageError) {
+          switch (error.type) {
+            case StorageErrorType.CONNECT_TIMEOUT:
+              print('发生错误: 连接超时');
+              break;
+            case StorageErrorType.SEND_TIMEOUT:
+              print('发生错误: 发送数据超时');
+              break;
+            case StorageErrorType.RECEIVE_TIMEOUT:
+              print('发生错误: 响应数据超时');
+              break;
+            case StorageErrorType.RESPONSE:
+              print('发生错误: ${error.message}');
+              break;
+            case StorageErrorType.CANCEL:
+              print('发生错误: 请求取消');
+              break;
+            case StorageErrorType.UNKNOWN:
+              print('发生错误: 未知错误');
+              break;
+            case StorageErrorType.NO_AVAILABLE_HOST:
+              print('发生错误: 无可用 Host');
+              break;
+            case StorageErrorType.IN_PROGRESS:
+              print('发生错误: 已在队列中');
+              break;
+          }
+        } else {
+          print('发生错误: ${error.toString()}');
+        }
         resultModel.isSuccess = false;
         resultModel.error = error.toString();
       }
@@ -171,7 +153,7 @@ class FileUtil {
     return _upload(fileList, 2, progressCallback);
   }
 
-  Future<String> _genKey(File file) async{
+  Future<String> _genKey(File file) async {
     String ext = "";
     if (file.path.contains('.')) {
       ext = '.' + file.path.split('.').last;
@@ -183,14 +165,10 @@ class FileUtil {
     } else {
       uid = Application.token.uid;
     }
-    String fileMd5=await StringUtil.calculateMD5SumAsyncWithPlugin(file.path);
+    String fileMd5 = await StringUtil.calculateMD5SumAsyncWithPlugin(file.path);
 
     // return "ifapp/$uid/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
     return "ifapp/$uid/" + fileMd5 + ext;
-  }
-
-  cancelUpload() {
-    SyFlutterQiniuStorage.cancelUpload();
   }
 
   Future<File> writeImageDataToFile(Uint8List imageData, String fileName, {bool isPublish = false}) async {
@@ -200,7 +178,6 @@ class FileUtil {
     file.writeAsBytesSync(imageData);
     return file;
   }
-
 
   //===========================上传部分end===========================
 
@@ -217,9 +194,9 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    if(imageUrl.contains("?")){
+    if (imageUrl.contains("?")) {
       return "$imageUrl|imageslim";
-    }else{
+    } else {
       return "$imageUrl?imageslim";
     }
   }
@@ -229,32 +206,34 @@ class FileUtil {
     if (imageUrl == null || imageUrl.length < 1) {
       return imageUrl;
     }
-    if(imageUrl.contains("?")){
+    if (imageUrl.contains("?")) {
       return "$imageUrl|imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
-    }else{
+    } else {
       return "$imageUrl?imageView2/0/w/$maxWidth/h/$maxHeight|imageslim";
     }
   }
 
-  static String getSmallImage(String imageUrl){
+  static String getSmallImage(String imageUrl) {
     return _getMaxSizeImage(imageUrl, maxImageSizeSmall, maxImageSizeSmall);
   }
-  static String getThumbnail(String imageUrl){
+
+  static String getThumbnail(String imageUrl) {
     return _getMaxSizeImage(imageUrl, maxImageThumbnail, maxImageThumbnail);
   }
 
-  static String getMediumImage(String imageUrl){
+  static String getMediumImage(String imageUrl) {
     return _getMaxSizeImage(imageUrl, maxImageSizeMedium, maxImageSizeMedium);
   }
 
-  static String getLargeImage(String imageUrl){
+  static String getLargeImage(String imageUrl) {
     return _getMaxSizeImage(imageUrl, maxImageSizeLarge, maxImageSizeLarge);
   }
-  static String getLargeVideoFirstImage(String videoUrl){
+
+  static String getLargeVideoFirstImage(String videoUrl) {
     return _getMaxSizeImage(getVideoFirstPhoto(videoUrl), maxImageSizeLarge, maxImageSizeLarge);
   }
 
-  static String getSlimVideoFirstImage(String videoUrl){
+  static String getSlimVideoFirstImage(String videoUrl) {
     return getImageSlim(getVideoFirstPhoto(videoUrl));
   }
 
@@ -405,17 +384,15 @@ class FileUtil {
     return path;
   }
 
-
-  static saveNetworkImageCache(String imageUrl)async{
-    try{
+  static saveNetworkImageCache(String imageUrl) async {
+    try {
       if (imageUrl == null) throw '保存失败，图片不存在！';
 
-      if(!StringUtil.isURL(imageUrl)) throw '不是网址';
-
+      if (!StringUtil.isURL(imageUrl)) throw '不是网址';
 
       /// 权限检测
       bool isGranted = (await Permission.storage.status)?.isGranted;
-      if(!isGranted){
+      if (!isGranted) {
         throw '无法存储图片，请先授权！';
       }
 
@@ -431,14 +408,14 @@ class FileUtil {
         headers: headers,
       );
       imageBytes = await file.readAsBytes();
-      writeImageDataToFileChatPage(imageBytes,StringUtil.generateMd5(imageUrl));
-    }catch (e){
+      writeImageDataToFileChatPage(imageBytes, StringUtil.generateMd5(imageUrl));
+    } catch (e) {
       print(e.toString());
     }
   }
 
   static Future<File> writeImageDataToFileChatPage(Uint8List imageData, String fileName) async {
-    if(imageData!=null) {
+    if (imageData != null) {
       // 由入参来控制文件名 避免同一时间生成的文件名相同
       String filePath = AppConfig.getAppChatImageDir() + "/" + fileName + ".png";
       File file = File(filePath);
@@ -448,16 +425,16 @@ class FileUtil {
     return null;
   }
 
-  static bool isHaveChatImageFile(String imageUrl){
-    String path=getChatImagePath(imageUrl);
-    if(path==null||path.length<1){
+  static bool isHaveChatImageFile(String imageUrl) {
+    String path = getChatImagePath(imageUrl);
+    if (path == null || path.length < 1) {
       return false;
     }
-    File file=File(path);
+    File file = File(path);
     return file.existsSync();
   }
 
-  static getChatImagePath(String imageUrl){
+  static getChatImagePath(String imageUrl) {
     return AppConfig.getAppChatImageDir() + "/" + StringUtil.generateMd5(imageUrl) + ".png";
   }
 //===========================下载部分end===========================

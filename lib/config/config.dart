@@ -50,7 +50,7 @@ class AppConfig {
   static String buildNumber = "1";
 
   ///切换训练相关布局
-  static bool needShowTraining = false;
+  static bool needShowTraining = true;
 
   //是否启用刷新检测
   static bool checkLayoutRefresh = false;
