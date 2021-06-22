@@ -3,6 +3,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/jump_app_page_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
@@ -13,6 +14,8 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'event_bus.dart';
 
+//解析推送代码
+//代码说明网址:https://shimo.im/docs/RgXjVRj6TxjVPyjR
 class JpushAnalyzeCodeUtil {
   static JpushAnalyzeCodeUtil _util;
 
@@ -133,6 +136,7 @@ class JpushAnalyzeCodeUtil {
 //   static const int ProfilePage = 5;//我的页面
 //   }
 
+  ///[JumpAppPageModel]
   void _jumpAppPage(int type, BuildContext context) {
     switch (type) {
       case 1:

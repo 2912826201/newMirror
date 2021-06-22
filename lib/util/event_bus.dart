@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:mirror/data/model/jump_app_page_model.dart';
+
 ///2021-3-5---shipk
 /// 模拟android的EventBus
 ///
@@ -224,8 +226,11 @@ const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";
 const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";
 // 直播预约
 const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";
+
 // 主页跳转界面功能
+///跳转界面代码[JumpAppPageModel]
 const String MAIN_PAGE_JUMP_PAGE = "main_page_jump_page";
+
 // 训练界面获取最近直播课程数据
 const String TRAINING_PAGE_GET_DATA = "training_page_get_data";
 // 机器训练结束
