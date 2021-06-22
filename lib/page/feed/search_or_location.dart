@@ -51,11 +51,13 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       //调用搜索接口
       if (val == null || val == "" || val.length == 0) {
         setState(() {
-          scrollController.jumpTo(0);
+          // scrollController.jumpTo(0);
+          PrimaryScrollController.of(context).jumpTo(0);
         });
       } else if (searchText != val){
         print('调用搜索接口');
-        scrollController.jumpTo(0);
+        // scrollController.jumpTo(0);
+        PrimaryScrollController.of(context).jumpTo(0);
         searchHttp();
       }
     });
@@ -139,7 +141,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                         //   removeTop: true,
                         //   context: context,
                         child: ListView.builder(
-                            controller: scrollController,
+                            controller:
+                            PrimaryScrollController.of(context),
+                            // scrollController,
                             itemExtent:69,
                             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                             itemCount: searchController.text != null && searchController.text.isNotEmpty
