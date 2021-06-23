@@ -89,6 +89,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值后光标${oldValue.selection.end}");
     print("at光标$atIndex");
     print("rules￥￥${rules.toString()}");
+    // Note 升级2.0后删除@,新值返回的是去掉空格的，不是2.0版本前@文本一起删除的值所有这里处理一下返回的@下标
     rules.forEach((v) {
       if(newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
         if (!isMonitorTop) {
@@ -97,10 +98,6 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
             atCursorIndexs.first.index = 0;
           }
         }
-        // print("111111111111");
-        // var a = newValue.text.substring(0,v.startIndex);
-        // var b = newValue.text.substring(v.endIndex,newValue.text.length);
-        // newValue = TextEditingValue(text: a + b,selection: TextSelection(baseOffset: oldValue.selection.start - v.params.length, extentOffset: oldValue.selection.end - v.params.length,affinity: TextAffinity.downstream, isDirectional: false), composing: TextRange(start: -1, end: -1));
       }
     });
     print("新值11111$newValue");
@@ -187,13 +184,17 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
 
       // 跟随@后面输入的实时搜索值
-      if (atIndex > 0 && newValue.selection.start >= atIndex) {
-        atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
-        print(atSearchStr);
-      }
-      if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
-        topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
-      }
+      rules.forEach((v) {
+        if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+          if (atIndex > 0 && newValue.selection.start >= atIndex) {
+            atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+            print(atSearchStr);
+          }
+          if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
+            topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+          }
+        }
+      });
     } else {
       /// 删除或替换内容 （含直接delete、选中后输入别的字符替换）
       print("删除");
@@ -208,13 +209,24 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
       if (Platform.isIOS && oldValue.isComposingRangeValid) {
         // 跟随@后面输入的实时搜索值
-        if (atIndex > 0 && newValue.selection.start >= atIndex) {
-          atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
-          print(atSearchStr);
-        }
-        if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
-          topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
-        }
+        rules.forEach((v) {
+          if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+            if (atIndex > 0 && newValue.selection.start >= atIndex) {
+              atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+              print(atSearchStr);
+            }
+            if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
+              topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+            }
+          }
+        });
+        // if (atIndex > 0 && newValue.selection.start >= atIndex) {
+        //   atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+        //   print(atSearchStr);
+        // }
+        // if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+        //   topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+        // }
       }
     }
 
@@ -315,16 +327,19 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       topicIndex = 0;
       _shutDownCallback();
     }
-    if (atIndex > 0 && startIndex + 1 > atIndex) {
-      print("111");
-      print(oldValue.text);
-      print(oldValue.text.substring(atIndex, startIndex));
-      atSearchStr = oldValue.text.substring(atIndex, startIndex);
-    }
-    print("2");
-    if (topicIndex > 0 && startIndex + 1 > topicIndex) {
-      topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
-    }
+    rules.forEach((v) {
+      if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+        if (atIndex > 0 && startIndex + 1 > atIndex) {
+          print("111");
+          print(oldValue.text);
+          print(oldValue.text.substring(atIndex, startIndex));
+          atSearchStr = oldValue.text.substring(atIndex, startIndex);
+        }
+        print("2");
+        if (topicIndex > 0 && startIndex + 1 > topicIndex) {
+          topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
+        }
+      }});
     print("3");
 
     bool isRule = false;
