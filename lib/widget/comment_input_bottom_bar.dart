@@ -1008,6 +1008,10 @@ class CommentEnterNotifier extends ChangeNotifier {
   }
 
   setAtSearchStr(String str) {
+    if(str.length == 0) {
+      print("大啊大大大");
+      print(str.toString());
+    }
     this.atSearchStr = str;
     notifyListeners();
   }

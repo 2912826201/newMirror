@@ -80,15 +80,30 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // 判断是删除还是新增
 
     bool isAdd = oldValue.text.length < newValue.text.length;
-    // print("新值$newValue");
-    // print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
-    // print("新值前光标${newValue.selection.start}");
-    // print("新值后光标${newValue.selection.end}");
-    // print("旧值$oldValue");
-    // print("旧值前光标${oldValue.selection.start}");
-    // print("旧值后光标${oldValue.selection.end}");
-    // print("at光标$atIndex");
-    // print("rules￥￥${rules.toString()}");
+    print("新值$newValue");
+    print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
+    print("新值前光标${newValue.selection.start}");
+    print("新值后光标${newValue.selection.end}");
+    print("旧值$oldValue");
+    print("旧值前光标${oldValue.selection.start}");
+    print("旧值后光标${oldValue.selection.end}");
+    print("at光标$atIndex");
+    print("rules￥￥${rules.toString()}");
+    rules.forEach((v) {
+      if(newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
+        if (!isMonitorTop) {
+          print("atCursorIndex::::${atCursorIndexs.toString()}");
+          if (atCursorIndexs.length > 0) {
+            atCursorIndexs.first.index = 0;
+          }
+        }
+        // print("111111111111");
+        // var a = newValue.text.substring(0,v.startIndex);
+        // var b = newValue.text.substring(v.endIndex,newValue.text.length);
+        // newValue = TextEditingValue(text: a + b,selection: TextSelection(baseOffset: oldValue.selection.start - v.params.length, extentOffset: oldValue.selection.end - v.params.length,affinity: TextAffinity.downstream, isDirectional: false), composing: TextRange(start: -1, end: -1));
+      }
+    });
+    print("新值11111$newValue");
     print(newValue.text == "\n");
     // 需求要求按照字节数算超过好后不输入
     if (maxNumberOfBytes != null && utf8.encode(newValue.text).length > maxNumberOfBytes) {
@@ -517,7 +532,7 @@ class Rule {
 }
 
 class AtIndex {
-  final int index;
+   int index;
 
   AtIndex(this.index);
 
