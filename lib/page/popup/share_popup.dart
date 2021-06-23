@@ -210,9 +210,11 @@ class _SharePopupState extends State<_SharePopup> {
 
   Widget _buildHeader(BuildContext context, int index) {
     return Container(
+      color: AppColor.white,
       padding: const EdgeInsets.fromLTRB(22, 0, 16, 0),
       alignment: Alignment.centerLeft,
       height: 28,
+      width: ScreenUtil.instance.width,
       child: Text(
         _friendList[index].getSuspensionTag(),
         style: AppStyle.textSecondaryRegular14,
@@ -320,20 +322,35 @@ class _SharePopupState extends State<_SharePopup> {
         ),
         Expanded(
           child: Container(
-            child: AzListView(
-              data: _friendList,
-              itemCount: _friendList.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: _buildFriendItem,
-              susItemBuilder: _buildHeader,
-              indexBarData: [],
-            ),
+            child: getNotificationListener(),
           ),
         ),
         SizedBox(
           height: ScreenUtil.instance.bottomBarHeight,
         ),
       ],
+    );
+  }
+
+  Widget getNotificationListener() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        // 注册通知回调
+        if (notification is ScrollStartNotification) {
+          if (_focusNode.hasFocus) {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          }
+        }
+        return false;
+      },
+      child: AzListView(
+        data: _friendList,
+        itemCount: _friendList.length,
+        padding: EdgeInsets.zero,
+        itemBuilder: _buildFriendItem,
+        susItemBuilder: _buildHeader,
+        indexBarData: [],
+      ),
     );
   }
 
