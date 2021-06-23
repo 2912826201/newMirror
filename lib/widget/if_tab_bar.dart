@@ -250,7 +250,6 @@ class _IFTabBarState extends State<IFTabBar> {
 
   _resetUnreadMessage() {
     Future.delayed(Duration(milliseconds: 200), () {
-      print("接收到");
       if (mounted) {
         setState(() {});
       }
