@@ -106,7 +106,7 @@ class JpushAnalyzeCodeUtil {
           StringUtil.launchUrl(uri, context);
         }
         break;
-      case "if://redirect/app/page":
+      case "if://redirect/page/if":
         print("极光代码解析----跳转app界面:code:$code");
         try {
           int type = int.parse(params["type"]);

@@ -247,7 +247,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
           String topicSearchStr, bool add) {
-        print("输入框值回调：$value");
+        print("输入框值回调：$value  $atIndex");
         print(value.length);
         print(rules);
         print("搜索字段");

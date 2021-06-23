@@ -22,23 +22,21 @@ import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
 class DynamicListLayout extends StatefulWidget {
-  DynamicListLayout(
-      {Key key,
-      this.index,
-      this.isShowRecommendUser,
-      this.model,
-      this.pageName,
-      this.deleteFeedChanged,
-      this.isHero = false,
-      this.removeFollowChanged,
-      this.mineDetailId,
-      this.topicId,
-      this.isMySelf,
-      this.isShowConcern = false,
-      this.itemHeightKey,
-      this.setIsScrollListener,
-      })
-      : super(key: key);
+  DynamicListLayout({
+    Key key,
+    this.index,
+    this.isShowRecommendUser,
+    this.model,
+    this.pageName,
+    this.deleteFeedChanged,
+    this.isHero = false,
+    this.removeFollowChanged,
+    this.mineDetailId,
+    this.topicId,
+    this.isMySelf,
+    this.isShowConcern = false,
+    this.itemHeightKey,
+  }) : super(key: key);
   final int index;
   bool isShowRecommendUser;
   HomeFeedModel model;
@@ -50,9 +48,6 @@ class DynamicListLayout extends StatefulWidget {
   int topicId;
   bool isHero;
   bool isMySelf;
-  Function(int id,Function(bool isScroll) call) setIsScrollListener;
-
-
 
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -63,8 +58,6 @@ class DynamicListLayout extends StatefulWidget {
   // 是否显示关注按钮
   bool isShowConcern;
 
-
-
   @override
   DynamicListLayoutState createState() => DynamicListLayoutState();
 }
@@ -73,8 +66,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   // @override
   // bool get wantKeepAlive => true; //必须重写   这么添加时保留轮播图滑动的图片
 
-  bool isScroll=false;
-
+  bool isScroll = false;
 
   @override
   void dispose() {
@@ -88,17 +80,11 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    if(widget.setIsScrollListener!=null) {
-      widget.setIsScrollListener(-1, setScroll);
-    }
-
   }
 
-  setScroll(bool isScroll){
-    this.isScroll=isScroll;
+  setScroll(bool isScroll) {
+    this.isScroll = isScroll;
   }
-
 
   // 宽高比
   double setAspectRatio(double height) {
@@ -224,7 +210,6 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                 durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
                 isInListView: true,
                 index: widget.index,
-                setIsScrollListener: widget.setIsScrollListener,
               ),
             )
           : FeedVideoPlayer(
@@ -235,7 +220,6 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               durationString: DateUtil.formatSecondToStringNumShowMinute(videos.first.duration),
               isInListView: true,
               index: widget.index,
-              setIsScrollListener: widget.setIsScrollListener,
             );
     }
   }

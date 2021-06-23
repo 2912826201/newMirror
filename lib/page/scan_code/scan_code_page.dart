@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
@@ -16,12 +17,37 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:scan/scan.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
 
+
+void gotoScanCodePage(BuildContext context){
+  Permission.camera.request().then((value) {
+    if (value.isGranted) {
+      AppRouter.navigateToScanCodePage(context, showMyCode: true);
+    }else if(value.isPermanentlyDenied){
+      showAppDialog(context,
+          title: "获取相机权限",
+          info: "使用该功能需要打开相机权限",
+          cancel: AppDialogButton("取消", () {
+            return true;
+          }),
+          confirm: AppDialogButton(
+            "去打开",
+                () {
+              AppSettings.openAppSettings();
+              return true;
+            },
+          ),
+          barrierDismissible: false);
+    }
+  });
+}
 class ScanCodePage extends StatefulWidget {
   bool showMyCode;
 

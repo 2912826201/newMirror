@@ -20,6 +20,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
@@ -1014,11 +1015,7 @@ class LiveDetailPageState extends XCState {
     }
     print("登陆终端进行训练");
     if (Application.token.anonymous == 0) {
-      Permission.camera.request().then((value) {
-        if (value.isGranted) {
-          AppRouter.navigateToScanCodePage(context);
-        }
-      });
+      gotoScanCodePage(context);
     } else {
       AppRouter.navigateToLoginPage(context);
     }

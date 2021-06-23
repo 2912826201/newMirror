@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -224,11 +225,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           GestureDetector(
               onTap: () {
                 if (Application.token.anonymous == 0) {
-                  Permission.camera.request().then((value) {
-                    if (value.isGranted) {
-                      AppRouter.navigateToScanCodePage(context);
-                    }
-                  });
+                  gotoScanCodePage(context);
                 } else {
                   AppRouter.navigateToLoginPage(context);
                 }

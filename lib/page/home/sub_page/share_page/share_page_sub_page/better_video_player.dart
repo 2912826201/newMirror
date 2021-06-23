@@ -131,7 +131,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     streamHeight.close();
     super.dispose();
   }
-  // 移除控制器
+  // 移除控制器标识
   deletedControllerContrastValue(){
    Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
   }

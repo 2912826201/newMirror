@@ -4,6 +4,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -92,7 +93,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           child: widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
               ? _button("重新扫描", () {
                   Navigator.pop(context);
-                  AppRouter.navigateToScanCodePage(context);
+                  gotoScanCodePage(context);
                 })
               : widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
                   ? _button("完成", () {
