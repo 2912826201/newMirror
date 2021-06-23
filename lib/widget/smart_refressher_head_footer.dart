@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -22,7 +23,12 @@ class SmartRefresherHeadFooter{
           child: Column(
             children: [
               SizedBox(height: 20),
-              CupertinoActivityIndicator(),
+              // CupertinoActivityIndicator(),
+              Lottie.asset('assets/lottie/loading_refresh_black.json',
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill,
+              ),
             ],
           ),
         ),
@@ -31,7 +37,12 @@ class SmartRefresherHeadFooter{
         idleIcon: Container(
           child: Column(
             children: [
-              CupertinoActivityIndicator(),
+              // CupertinoActivityIndicator(),
+              Lottie.asset('assets/lottie/loading_refresh_black.json',
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill,
+              ),
               SizedBox(height: 6),
               Text("释放刷新"),
             ],
@@ -49,11 +60,16 @@ class SmartRefresherHeadFooter{
         if (mode == LoadStatus.idle) {
           body = isShowAddMore?Text("上拉加载更多"):Text("");
         } else if (mode == LoadStatus.loading) {
-          body = Container(
+          body = Lottie.asset('assets/lottie/loading_refresh_black.json',
             width: 20,
             height: 20,
-            child: CircularProgressIndicator(),
+            fit: BoxFit.fill,
           );
+          // Container(
+          //   width: 20,
+          //   height: 20,
+          //   child: CircularProgressIndicator(),
+          // );
         } else if (mode == LoadStatus.failed) {
           body = isShowAddMore?Text("上拉加载更多"):Text("");
         } else if (mode == LoadStatus.canLoading) {
