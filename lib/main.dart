@@ -202,7 +202,7 @@ Future _initApp() async {
   // );
 
   //初始化极光推送
-  _initJPush();
+  JPush jpush = _initJPush();
 
   Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
@@ -380,6 +380,7 @@ _initJPush() {
     production: AppConfig.env != Env.DEV,
     debug: AppConfig.env == Env.DEV, // 设置是否打印 debug 日志
   );
+  return jpush;
 }
 
 class MyApp extends StatefulWidget {
