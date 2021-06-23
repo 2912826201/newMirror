@@ -61,14 +61,15 @@ class GroupUserProfileNotifier extends ChangeNotifier {
   }
 
   addAll(List<ChatGroupUserModel> chatGroupUserModelList, int len) {
+    print("addAll(List<ChatGroupUserModel> chatGroupUserModelList, int len)");
     if (chatGroupUserModelList == null || chatGroupUserModelList.length < 1) {
       return;
     }
     this.chatGroupUserModelList.clear();
-    for(ChatGroupUserModel chatGroupUserModel in chatGroupUserModelList){
-      if(chatGroupUserModel.isGroupLeader()){
-        this.chatGroupUserModelList.insert(0,chatGroupUserModel);
-      }else{
+    for (ChatGroupUserModel chatGroupUserModel in chatGroupUserModelList) {
+      if (chatGroupUserModel.isGroupLeader()) {
+        this.chatGroupUserModelList.insert(0, chatGroupUserModel);
+      } else {
         this.chatGroupUserModelList.add(chatGroupUserModel);
       }
     }
