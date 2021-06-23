@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:app_settings/app_settings.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -1742,38 +1744,54 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //录音按钮的点击事件
   _voiceOnTapClick() async {
-    await [Permission.microphone].request();
-    bool isGranted = (await Permission.microphone.status)?.isGranted;
-    if (isGranted) {
-      _focusNode.unfocus();
-      //print("4444444444444");
-      // if(_textController.text.length>0){
-      //   context.read<ChatEnterNotifier>().clearRules();
-      //   _textController.text = "";
-      //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
-      //   _changTextLen("");
-      // }
-      _isVoiceState = !_isVoiceState;
-      messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+ Permission.microphone.request().then((value){
+   if (value.isGranted) {
+     _focusNode.unfocus();
+     //print("4444444444444");
+     // if(_textController.text.length>0){
+     //   context.read<ChatEnterNotifier>().clearRules();
+     //   _textController.text = "";
+     //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+     //   _changTextLen("");
+     // }
+     _isVoiceState = !_isVoiceState;
+     messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
 
-      EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+     EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
 
-      if (_emojiState) {
-        _emojiState = false;
-        bottomSettingChildKey.currentState.setEmojiState(_emojiState);
-      }
-      if (readOnly) {
-        readOnly = false;
-        streamEditWidget.sink.add(0);
-      }
-      Future.delayed(Duration(milliseconds: 100), () {
-        if (!_isVoiceState) {
-          _emojiStateOld = true;
-          FocusScope.of(context).requestFocus(_focusNode);
-          textSpanFieldClickListener();
-        }
-      });
-    }
+     if (_emojiState) {
+       _emojiState = false;
+       bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+     }
+     if (readOnly) {
+       readOnly = false;
+       streamEditWidget.sink.add(0);
+     }
+     Future.delayed(Duration(milliseconds: 100), () {
+       if (!_isVoiceState) {
+         _emojiStateOld = true;
+         FocusScope.of(context).requestFocus(_focusNode);
+         textSpanFieldClickListener();
+       }
+     });
+   }else if(value.isPermanentlyDenied){
+     showAppDialog(context,
+         title: "获取录音权限",
+         info: "使用该功能需要打开录音权限",
+         cancel: AppDialogButton("取消", () {
+           return true;
+         }),
+         confirm: AppDialogButton(
+           "去打开",
+               () {
+             AppSettings.openAppSettings();
+             return true;
+           },
+         ),
+         barrierDismissible: false);
+   }
+ });
+
   }
 
   //头部-更多按钮的点击事件
