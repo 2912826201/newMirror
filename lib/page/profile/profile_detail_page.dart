@@ -521,10 +521,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               },*/
                   ))),
           Positioned(
-              child: Container(
+               child: Container(
             width: width,
             height: backGroundHeight - followFansHeight,
-            /*   color: AppColor.white.withOpacity(0.6),*/
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [AppColor.white.withOpacity(0.6), AppColor.white],
