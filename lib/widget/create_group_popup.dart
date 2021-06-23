@@ -459,6 +459,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         ),
         Expanded(
           child: ListView.builder(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             itemCount: _groupList.length,
             itemBuilder: _buildGroupItem,
           ),
