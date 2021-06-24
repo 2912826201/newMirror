@@ -34,6 +34,7 @@ import 'package:provider/provider.dart';
 import '../message/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
+import 'badger_test_page.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -492,13 +493,20 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                 child: Text("极光测试页"),
               ),
               RaisedButton(
-                onPressed: () {
-                  JPush().getLaunchAppNotification().then((value){
-                    print("getLaunchAppNotification:$value");
-                    ToastShow.show(msg: "getLaunchAppNotification:$value", context: context);});
-                },
-                child: Text("iOS获取打开APP的推送内容")
-              ),
+                  onPressed: () {
+                    JPush().getLaunchAppNotification().then((value) {
+                      print("getLaunchAppNotification:$value");
+                      ToastShow.show(msg: "getLaunchAppNotification:$value", context: context);
+                    });
+                  },
+                  child: Text("iOS获取打开APP的推送内容")),
+              RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return BadgerTestPage();
+                    }));
+                  },
+                  child: Text("BadgerTestPage")),
             ],
           ),
         ),

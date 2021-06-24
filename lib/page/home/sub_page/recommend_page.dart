@@ -142,7 +142,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     // 重新登录替换推荐页数据
-    EventBus.getDefault().registerNoParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
+    EventBus.getDefault().registerSingleParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     EventBus.getDefault()
         .registerSingleParameter(_getMachineStatusInfo, EVENTBUS_RECOMMEND_PAGE, registerName: GET_MACHINE_STATUS_INFO);
@@ -274,6 +274,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   againLoginReplaceLayout([bool isBottomNavigationBar = false]) {
+    print('----------againLoginReplaceLayout-----$isBottomNavigationBar');
     if (isBottomNavigationBar) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     } else {

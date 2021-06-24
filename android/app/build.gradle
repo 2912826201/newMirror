@@ -131,4 +131,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.amap.api:3dmap:7.6.0'
+    implementation "me.leolin:ShortcutBadger:1.1.22@aar"
 }

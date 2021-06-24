@@ -619,6 +619,7 @@ class _FriendsPageState extends State<FriendsPage> {
         ToastShow.show(msg: name, context: context);
       } else {
         ToastShow.show(msg: "邀请成功", context: context);
+        getChatGroupUserModelList1(widget.groupChatId.toString(), context);
       }
     } else {
       ToastShow.show(msg: "邀请失败", context: context);
@@ -637,6 +638,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
+      getChatGroupUserModelList1(widget.groupChatId.toString(), context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);
     }
