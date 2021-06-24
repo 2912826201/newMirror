@@ -134,7 +134,7 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
 
   //清理provider
   void clearProfileUiChangeModel() {
-    value._profileUiChangeModel = {};
+    value._profileUiChangeModel.clear();
     notifyListeners();
   }
 

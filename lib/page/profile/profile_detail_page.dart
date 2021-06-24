@@ -192,8 +192,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///请求黑名单关系
   _initBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.userId);
-    if (model != null && model.inYouBlack == 1) {
-      context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true, needNotify: false);
+    if (model != null) {
+      if(model.inYouBlack == 1){
+        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true, needNotify: true);
+      }else{
+        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, false, needNotify: true);
+      }
     }
   }
 

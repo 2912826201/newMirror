@@ -32,6 +32,8 @@ Future openInputBottomSheet({
   String hintText,
   bool isShowAt = true,
   bool isShowPostBtn = true,
+  // 是否点击纱布
+  bool isClickGauze = false,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
@@ -50,21 +52,33 @@ Future openInputBottomSheet({
                   isShowPostBtn: isShowPostBtn,
                   voidCallback: voidCallback,
                   commentFocus: _commentFocus,
+                  isClickGauze: isClickGauze,
                 ),
               );
             });
-      });
+      }).then((value) {
+    isClickGauze = true;
+  });
 }
 
 class CommentInputBottomBar extends StatefulWidget {
   CommentInputBottomBar(
-      {Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowPostBtn, this.isShowAt})
+      {Key key,
+      this.voidCallback,
+      this.hintText,
+      this.commentFocus,
+      this.isShowPostBtn,
+      this.isShowAt,
+      this.isClickGauze})
       : super(key: key);
   final VoidCallback voidCallback;
   String hintText;
   final bool isShowAt;
   final bool isShowPostBtn;
   final FocusNode commentFocus;
+
+  // 是否点击纱布退出
+  bool isClickGauze;
 
   @override
   createState() {
@@ -130,6 +144,22 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 记录唤起表情前的光标位置
   int emojiCursorPosition;
 
+  // 键盘弹起次数
+  int bounceCount = 0;
+
+  // 键盘底部偏移
+  double keyboardMaxBottom = 0.0;
+  double keyboardMinBottom = 0.0;
+
+  // 是否渲染了第一帧
+  bool isPostFrameCallback = false;
+
+  /// 控件的key
+  GlobalKey _inputBoxKey = GlobalKey();
+
+  // 是否退出
+  bool isPop = false;
+
   @override
   void initState() {
     super.initState();
@@ -147,9 +177,12 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       }
     });
     widgetsBinding = WidgetsBinding.instance;
+    // 在控件渲染完成后执行的回调
     widgetsBinding.addPostFrameCallback((callback) {
       print("进入");
       FocusScope.of(context).requestFocus(commentFocus);
+      _findRenderObject();
+      isPostFrameCallback = true;
     });
     _textEditingController.addListener(() {
       // print("值改变了");
@@ -274,6 +307,27 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         // 实时搜索
       },
     );
+  }
+
+// 获取到最大偏移和最小偏移
+  _findRenderObject() {
+    RenderBox renderBox = _inputBoxKey.currentContext.findRenderObject();
+    var vector3 = renderBox.getTransformTo(null)?.getTranslation();
+    print("vector3:::$vector3");
+    print(vector3.y);
+    if (keyboardMaxBottom < vector3.y) {
+      keyboardMaxBottom = vector3.y;
+    }
+    if (keyboardMinBottom == 0.0) {
+      keyboardMinBottom = vector3.y;
+    }
+    if (keyboardMinBottom == keyboardMaxBottom) {
+      if (keyboardMaxBottom > vector3.y) {
+        keyboardMinBottom = vector3.y;
+      }
+    }
+    print("0000000000");
+    print("keyboardMaxBottom :::$keyboardMaxBottom,,,,keyboardMinBottom :: $keyboardMinBottom");
   }
 
   /// 获得文本输入框样式
@@ -428,391 +482,424 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     print("222222222222222222222");
     String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
     print("键盘高度${MediaQuery.of(context).viewInsets.bottom}");
-    return Container(
-        padding: EdgeInsets.only(
-            bottom: context.watch<CommentEnterNotifier>().emojiState ? 0.0 : MediaQuery.of(context).viewInsets.bottom),
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(
-            topLeft: context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
-            topRight: context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
-          ),
-        ),
-        child: Stack(
-          children: [
-            Offstage(
-              offstage: context.watch<CommentEnterNotifier>().keyWord != "@",
-              child: Container(
-                height: 232,
-                decoration:
-                    const BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
-                child: ListView.builder(
-                    itemCount: followList.length + 1,
-                    controller: _scrollController,
-                    itemBuilder: (context, index) {
-                      if (index == followList.length) {
-                        return LoadingView(
-                          loadText: atStr != null && atStr.isNotEmpty ? searchLoadText : loadText,
-                          loadStatus: atStr != null && atStr.isNotEmpty ? searchLoadStatus : loadStatus,
-                        );
-                      } else if (index == followList.length + 1) {
-                        return Container();
-                      } else {
-                        return GestureDetector(
-                          // 点击空白区域响应事件
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            isClickAtUser = true;
-                            // At的文字长度
-                            int AtLength = followList[index].nickName.length;
-                            // 获取输入框内的规则
-                            var rules = context.read<CommentEnterNotifier>().rules;
-                            // 检测是否添加过
-                            if (rules.isNotEmpty) {
-                              for (Rule rule in rules) {
-                                if (rule.id == followList[index].uid && rule.isAt == true) {
-                                  ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
-                                  return;
-                                }
-                              }
-                            }
-                            // 获取@的光标
-                            int atIndex = 0;
-                            if (context.read<CommentEnterNotifier>().atCursorIndexs.length > 0) {
-                              atIndex = context.read<CommentEnterNotifier>().atCursorIndexs.first.index;
-                            }
-                            // 获取实时搜索文本
-                            String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
-                            // @前的文字
-                            String atBeforeStr = _textEditingController.text.substring(0, atIndex);
-                            // @后的文字
-                            String atRearStr = "";
-                            print(searchStr);
-                            print("controller.text:${_textEditingController.text}");
-                            print("atBeforeStr$atBeforeStr");
-                            // isSwitchCursor = false;
-                            if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
-                              print("atIndex:$atIndex");
-                              print("searchStr:$searchStr");
-                              // isSwitchCursor = false;
-                              print("controller.text:${_textEditingController.text}");
-                              atRearStr = _textEditingController.text
-                                  .substring(atIndex + searchStr.length, _textEditingController.text.length);
-                              print("atRearStr:$atRearStr");
-                            } else {
-                              atRearStr =
-                                  _textEditingController.text.substring(atIndex, _textEditingController.text.length);
-                            }
+    // 当键盘高度为0时就是收起键盘，并且在绘制第一帧之后这是为了处理GlobalKey的绑定，在绘制第一帧内获取了键盘的最大y轴keyboardMaxBottom，使用在收起时走build在获取会比keyboardMaxBottom小，当点击的是外层纱布不能进入防止重复Pop,
+    // 设置isPop是同理。
+    if (MediaQuery.of(context).viewInsets.bottom == 0.0 &&
+        !isPop &&
+        isPostFrameCallback &&
+        _inputBoxKey.currentContext.findRenderObject().getTransformTo(null)?.getTranslation().y < keyboardMaxBottom &&
+        !widget.isClickGauze) {
+      isPop = true;
+      print("就退出一次啊${widget.isClickGauze}");
+      Navigator.of(context).pop();
+    }
 
-                            // 拼接修改输入框的值
-                            _textEditingController.text = atBeforeStr + followList[index].nickName + atRearStr;
-                            // ios赋值设置了光标后会走addListener监听，但是在监听内打印光标位置 获取为0，安卓不会出现此问题 所有iOS没必要在此设置光标位置。
-                            if (!Platform.isIOS) {
-                              // 设置光标
-                              var setCursor = TextSelection(
-                                baseOffset: _textEditingController.text.length,
-                                extentOffset: _textEditingController.text.length,
-                              );
-                              _textEditingController.selection = setCursor;
-                            }
-                            context
-                                .read<CommentEnterNotifier>()
-                                .changeCallback(atBeforeStr + followList[index].nickName + atRearStr);
-                            // isSwitchCursor = false;
-                            print("controller.text:${_textEditingController.text}");
-                            // 这是替换输入的文本修改后面输入的@的规则
-                            if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
-                              print("搜索文本searchStr：：：$searchStr");
-                              int oldLength = searchStr.length;
-                              int newLength = followList[index].nickName.length;
-                              int oldStartIndex = atIndex;
-                              int diffLength = newLength - oldLength;
-                              for (int i = 0; i < rules.length; i++) {
-                                if (rules[i].startIndex >= oldStartIndex) {
-                                  int newStartIndex = rules[i].startIndex + diffLength;
-                                  int newEndIndex = rules[i].endIndex + diffLength;
-                                  rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
-                                }
-                              }
-                            }
-                            // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
-                            for (int i = 0; i < rules.length; i++) {
-                              // 当最新输入框内的文本对应不上之前的值时。
-                              if (rules[i].params !=
-                                  _textEditingController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-                                print("进入更新后输入的");
-                                print(rules[i]);
-                                rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
-                                    rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
-                                print(rules[i]);
-                              }
-                            }
-                            // 存储规则
-                            context.read<CommentEnterNotifier>().addRules(Rule(atIndex - 1, atIndex + AtLength,
-                                "@" + followList[index].nickName, index, true, followList[index].uid));
-
-                            print("设置光标${_textEditingController.selection}");
-
-                            // isSwitchCursor = false;
-                            context.read<CommentEnterNotifier>().setAtSearchStr("");
-                            // 关闭视图
-                            context.read<CommentEnterNotifier>().openAtCallback("");
-                          },
-                          child: Container(
-                            height: 48,
-                            width: ScreenUtil.instance.screenWidthDp,
-                            margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(followList[index].avatarUri),
-                                  maxRadius: 19,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  followList[index].nickName,
-                                  style: AppStyle.textRegular16,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    }),
+    return mounted
+        ? Container(
+            padding: EdgeInsets.only(
+                bottom:
+                    context.watch<CommentEnterNotifier>().emojiState ? 0.0 : MediaQuery.of(context).viewInsets.bottom),
+            decoration: BoxDecoration(
+              color: AppColor.white,
+              borderRadius: BorderRadius.only(
+                topLeft:
+                    context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
+                topRight:
+                    context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
               ),
             ),
-            Container(
-                width: ScreenUtil.instance.width,
-                padding: EdgeInsets.only(
-                  top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
-                  bottom: returnInputOffset(context.watch<CommentEnterNotifier>().emojiState),
-                  // MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS
-                  //     ? ScreenUtil.instance.bottomBarHeight + 12
-                  //     : 12
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      width: Platform.isIOS
-                          ? ScreenUtil.instance.width - 32
-                          : ScreenUtil.instance.width - 32 - (widget.isShowPostBtn ? 52 + 12 : 0),
-                      margin: const EdgeInsets.only(left: 16, right: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(Radius.circular(16)),
-                        color: AppColor.bgWhite.withOpacity(0.65),
-                      ),
-                      child: Stack(
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                                maxHeight: 80.0,
-                                minHeight: 16.0,
-                                maxWidth: Platform.isIOS
-                                    ? ScreenUtil.instance.screenWidthDp - 32 - 76
-                                    : ScreenUtil.instance.screenWidthDp -
-                                        32 -
-                                        76 -
-                                        (widget.isShowPostBtn ? 52 + 12 : 0)),
-                            child: TextSpanField(
-                              controller: _textEditingController,
-                              focusNode: commentFocus,
-                              // 多行展示
-                              keyboardType: TextInputType.multiline,
-                              //不限制行数
-                              maxLines: null,
-                              enableInteractiveSelection: true,
-                              // 光标颜色
-                              cursorColor: Color.fromRGBO(253, 137, 140, 1),
-                              readOnly: context.watch<CommentEnterNotifier>().emojiState,
-                              showCursor: true,
-                              scrollPadding: EdgeInsets.all(0),
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColor.textPrimary1,
-                                // fontFamily: "STHeitiSCMedium",
-                              ),
-                              //内容改变的回调
-                              onChanged: (text) {
-                                // 存入最新的值
-                                context.read<CommentEnterNotifier>().changeCallback(text);
-                              },
-                              onSubmitted: (text) {
-                                if(text.trim().length == 0) {
-                                  showAppDialog(context,
-                                      title: "提示",
-                                      info: "字数不能为空",
-                                      confirm: AppDialogButton("我知道了", () {
-                                        return true;
-                                      }));
-                                } else {
-                                  print("text______________________$text");
-                                  voidCallback(
-                                    text,
-                                    rules,
-                                  );
-                                  Navigator.of(context).pop();
-                                }
-                                // if (text != null) {
-                                //
-                                // } else {
-                                //   ToastShow.show(msg: "不能发送空文本", context: context, gravity: Toast.CENTER);
-                                // }
-                              },
+            child: Stack(
+              children: [
+                Offstage(
+                  offstage: context.watch<CommentEnterNotifier>().keyWord != "@",
+                  child: Container(
+                    height: 232,
+                    decoration:
+                        const BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
+                    child: ListView.builder(
+                        itemCount: followList.length + 1,
+                        controller: _scrollController,
+                        itemBuilder: (context, index) {
+                          if (index == followList.length) {
+                            return LoadingView(
+                              loadText: atStr != null && atStr.isNotEmpty ? searchLoadText : loadText,
+                              loadStatus: atStr != null && atStr.isNotEmpty ? searchLoadStatus : loadStatus,
+                            );
+                          } else if (index == followList.length + 1) {
+                            return Container();
+                          } else {
+                            return GestureDetector(
+                              // 点击空白区域响应事件
+                              behavior: HitTestBehavior.opaque,
                               onTap: () {
-                                // 开启键盘关闭表情
-                                // if (!commentFocus.hasFocus) {
-                                context.read<CommentEnterNotifier>().openEmojiCallback(false);
-                                // }
-                              },
-                              // 装饰器修改外观
-                              decoration: InputDecoration(
-                                // 去除下滑线
-                                border: InputBorder.none,
-                                // 提示文本
-                                hintText: hintText,
-                                // 提示文本样式
-                                hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
-                                // 设置为true,contentPadding才会生效，TextField会有默认高度。
-                                isCollapsed: true,
-                                contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
-                              ),
+                                isClickAtUser = true;
+                                // At的文字长度
+                                int AtLength = followList[index].nickName.length;
+                                // 获取输入框内的规则
+                                var rules = context.read<CommentEnterNotifier>().rules;
+                                // 检测是否添加过
+                                if (rules.isNotEmpty) {
+                                  for (Rule rule in rules) {
+                                    if (rule.id == followList[index].uid && rule.isAt == true) {
+                                      ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                                      return;
+                                    }
+                                  }
+                                }
+                                // 获取@的光标
+                                int atIndex = 0;
+                                if (context.read<CommentEnterNotifier>().atCursorIndexs.length > 0) {
+                                  atIndex = context.read<CommentEnterNotifier>().atCursorIndexs.first.index;
+                                }
+                                // 获取实时搜索文本
+                                String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
+                                // @前的文字
+                                String atBeforeStr = _textEditingController.text.substring(0, atIndex);
+                                // @后的文字
+                                String atRearStr = "";
+                                print(searchStr);
+                                print("controller.text:${_textEditingController.text}");
+                                print("atBeforeStr$atBeforeStr");
+                                // isSwitchCursor = false;
+                                if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
+                                  print("atIndex:$atIndex");
+                                  print("searchStr:$searchStr");
+                                  // isSwitchCursor = false;
+                                  print("controller.text:${_textEditingController.text}");
+                                  atRearStr = _textEditingController.text
+                                      .substring(atIndex + searchStr.length, _textEditingController.text.length);
+                                  print("atRearStr:$atRearStr");
+                                } else {
+                                  atRearStr = _textEditingController.text
+                                      .substring(atIndex, _textEditingController.text.length);
+                                }
 
-                              rangeStyles: getTextFieldStyle(rules),
-                              textInputAction: TextInputAction.send,
-                              inputFormatters: [_formatter],
-                            ),
+                                // 拼接修改输入框的值
+                                _textEditingController.text = atBeforeStr + followList[index].nickName + atRearStr;
+                                // ios赋值设置了光标后会走addListener监听，但是在监听内打印光标位置 获取为0，安卓不会出现此问题 所有iOS没必要在此设置光标位置。
+                                if (!Platform.isIOS) {
+                                  // 设置光标
+                                  var setCursor = TextSelection(
+                                    baseOffset: _textEditingController.text.length,
+                                    extentOffset: _textEditingController.text.length,
+                                  );
+                                  _textEditingController.selection = setCursor;
+                                }
+                                context
+                                    .read<CommentEnterNotifier>()
+                                    .changeCallback(atBeforeStr + followList[index].nickName + atRearStr);
+                                // isSwitchCursor = false;
+                                print("controller.text:${_textEditingController.text}");
+                                // 这是替换输入的文本修改后面输入的@的规则
+                                if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
+                                  print("搜索文本searchStr：：：$searchStr");
+                                  int oldLength = searchStr.length;
+                                  int newLength = followList[index].nickName.length;
+                                  int oldStartIndex = atIndex;
+                                  int diffLength = newLength - oldLength;
+                                  for (int i = 0; i < rules.length; i++) {
+                                    if (rules[i].startIndex >= oldStartIndex) {
+                                      int newStartIndex = rules[i].startIndex + diffLength;
+                                      int newEndIndex = rules[i].endIndex + diffLength;
+                                      rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                                    }
+                                  }
+                                }
+                                // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
+                                for (int i = 0; i < rules.length; i++) {
+                                  // 当最新输入框内的文本对应不上之前的值时。
+                                  if (rules[i].params !=
+                                      _textEditingController.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+                                    print("进入更新后输入的");
+                                    print(rules[i]);
+                                    rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
+                                        rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
+                                    print(rules[i]);
+                                  }
+                                }
+                                // 存储规则
+                                context.read<CommentEnterNotifier>().addRules(Rule(atIndex - 1, atIndex + AtLength,
+                                    "@" + followList[index].nickName, index, true, followList[index].uid));
+
+                                print("设置光标${_textEditingController.selection}");
+
+                                // isSwitchCursor = false;
+                                context.read<CommentEnterNotifier>().setAtSearchStr("");
+                                // 关闭视图
+                                context.read<CommentEnterNotifier>().openAtCallback("");
+                              },
+                              child: Container(
+                                height: 48,
+                                width: ScreenUtil.instance.screenWidthDp,
+                                margin: EdgeInsets.only(top: index == 0 ? 10 : 0, bottom: 10, left: 16),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(followList[index].avatarUri),
+                                      maxRadius: 19,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      followList[index].nickName,
+                                      style: AppStyle.textRegular16,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                  ),
+                ),
+                Container(
+                    width: ScreenUtil.instance.width,
+                    key: _inputBoxKey,
+                    padding: EdgeInsets.only(
+                      top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
+                      bottom: returnInputOffset(context.watch<CommentEnterNotifier>().emojiState),
+                      // MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS
+                      //     ? ScreenUtil.instance.bottomBarHeight + 12
+                      //     : 12
+                    ),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: Platform.isIOS
+                              ? ScreenUtil.instance.width - 32
+                              : ScreenUtil.instance.width - 32 - (widget.isShowPostBtn ? 52 + 12 : 0),
+                          margin: const EdgeInsets.only(left: 16, right: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(Radius.circular(16)),
+                            color: AppColor.bgWhite.withOpacity(0.65),
                           ),
-                          Positioned(
-                              right: 44,
-                              bottom: 6,
-                              child: Visibility(
-                                visible: widget.isShowAt,
+                          child: Stack(
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                    maxHeight: 80.0,
+                                    minHeight: 16.0,
+                                    maxWidth: Platform.isIOS
+                                        ? ScreenUtil.instance.screenWidthDp - 32 - 76
+                                        : ScreenUtil.instance.screenWidthDp -
+                                            32 -
+                                            76 -
+                                            (widget.isShowPostBtn ? 52 + 12 : 0)),
+                                child: TextSpanField(
+                                  controller: _textEditingController,
+                                  focusNode: commentFocus,
+                                  // 多行展示
+                                  keyboardType: TextInputType.multiline,
+                                  //不限制行数
+                                  maxLines: null,
+                                  enableInteractiveSelection: true,
+                                  // 光标颜色
+                                  cursorColor: Color.fromRGBO(253, 137, 140, 1),
+                                  readOnly: context.watch<CommentEnterNotifier>().emojiState,
+                                  showCursor: true,
+                                  scrollPadding: EdgeInsets.all(0),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColor.textPrimary1,
+                                    // fontFamily: "STHeitiSCMedium",
+                                  ),
+                                  //内容改变的回调
+                                  onChanged: (text) {
+                                    // 存入最新的值
+                                    context.read<CommentEnterNotifier>().changeCallback(text);
+                                  },
+                                  onSubmitted: (text) {
+                                    if (text.trim().length == 0) {
+                                      showAppDialog(context,
+                                          title: "提示",
+                                          info: "字数不能为空",
+                                          confirm: AppDialogButton("我知道了", () {
+                                            return true;
+                                          }));
+                                    } else {
+                                      print("text______________________$text");
+                                      voidCallback(
+                                        text,
+                                        rules,
+                                      );
+                                      Navigator.of(context).pop();
+                                    }
+                                    // if (text != null) {
+                                    //
+                                    // } else {
+                                    //   ToastShow.show(msg: "不能发送空文本", context: context, gravity: Toast.CENTER);
+                                    // }
+                                  },
+                                  onTap: () {
+                                    // 开启键盘关闭表情
+                                    // if (!commentFocus.hasFocus) {
+                                    context.read<CommentEnterNotifier>().openEmojiCallback(false);
+                                    // }
+                                  },
+                                  // 装饰器修改外观
+                                  decoration: InputDecoration(
+                                    // 去除下滑线
+                                    border: InputBorder.none,
+                                    // 提示文本
+                                    hintText: hintText,
+                                    // 提示文本样式
+                                    hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+                                    // 设置为true,contentPadding才会生效，TextField会有默认高度。
+                                    isCollapsed: true,
+                                    contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                                  ),
+
+                                  rangeStyles: getTextFieldStyle(rules),
+                                  textInputAction: TextInputAction.send,
+                                  inputFormatters: [_formatter],
+                                ),
+                              ),
+                              Positioned(
+                                  right: 44,
+                                  bottom: 6,
+                                  child: Visibility(
+                                    visible: widget.isShowAt,
+                                    child: AppIconButton(
+                                      onTap: () {
+                                        isClickAtIcon = true;
+                                        followList = backupFollowList;
+                                        // 输入的文字
+                                        String text = _textEditingController.text;
+                                        // 获取光标位置
+                                        int cursorIndex = 0;
+                                        // 在点击表情时关闭了
+                                        cursorIndex = _textEditingController.selection.baseOffset;
+                                        if (cursorIndex >= 0) {
+                                          print("cursorIndex关闭：${cursorIndex}");
+                                          context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
+                                          _textEditingController.text = text.substring(0, cursorIndex) +
+                                              "@" +
+                                              text.substring(cursorIndex, text.length);
+                                        }
+                                        // 这里文本会添加一个@,如果存在高亮和之前对不上需要加上一个@的长度
+                                        if (rules.isNotEmpty) {
+                                          // @符合的长度
+                                          int AtLength = 1;
+                                          print(rules.toString());
+                                          for (int i = 0; i < rules.length; i++) {
+                                            // 当最新输入框内的文本对应不上之前的值时。
+                                            if (rules[i].params !=
+                                                _textEditingController.text
+                                                    .substring(rules[i].startIndex, rules[i].endIndex)) {
+                                              print("进入更新后输入的");
+                                              print(rules[i]);
+                                              rules[i] = Rule(
+                                                  rules[i].startIndex + AtLength,
+                                                  rules[i].endIndex + AtLength,
+                                                  rules[i].params,
+                                                  rules[i].clickIndex,
+                                                  rules[i].isAt,
+                                                  rules[i].id);
+                                              print(rules[i]);
+                                            }
+                                          }
+                                          print(rules.toString());
+                                        }
+                                        context.read<CommentEnterNotifier>().openAtCallback("@");
+                                        context
+                                            .read<CommentEnterNotifier>()
+                                            .changeCallback(_textEditingController.text);
+                                      },
+                                      iconSize: 24,
+                                      svgName: AppIcon.input_at,
+                                    ),
+                                  )),
+                              Positioned(
+                                right: 16,
+                                bottom: 6,
                                 child: AppIconButton(
                                   onTap: () {
-                                    isClickAtIcon = true;
-                                    followList = backupFollowList;
-                                    // 输入的文字
-                                    String text = _textEditingController.text;
+                                    // 隐藏@视图
+                                    context.read<CommentEnterNotifier>().openAtCallback("");
                                     // 获取光标位置
-                                    int cursorIndex = 0;
-                                    // 在点击表情时关闭了
-                                    cursorIndex = _textEditingController.selection.baseOffset;
-                                    if (cursorIndex >= 0) {
-                                      print("cursorIndex关闭：${cursorIndex}");
-                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                      _textEditingController.text = text.substring(0, cursorIndex) +
-                                          "@" +
-                                          text.substring(cursorIndex, text.length);
-                                    }
-                                    // 这里文本会添加一个@,如果存在高亮和之前对不上需要加上一个@的长度
-                                    if (rules.isNotEmpty) {
-                                      // @符合的长度
-                                      int AtLength = 1;
-                                      print(rules.toString());
-                                      for (int i = 0; i < rules.length; i++) {
-                                        // 当最新输入框内的文本对应不上之前的值时。
-                                        if (rules[i].params !=
-                                            _textEditingController.text
-                                                .substring(rules[i].startIndex, rules[i].endIndex)) {
-                                          print("进入更新后输入的");
-                                          print(rules[i]);
-                                          rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
-                                              rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
-                                          print(rules[i]);
-                                        }
-                                      }
-                                      print(rules.toString());
-                                    }
-                                    context.read<CommentEnterNotifier>().openAtCallback("@");
-                                    context.read<CommentEnterNotifier>().changeCallback(_textEditingController.text);
+                                    emojiCursorPosition = _textEditingController.selection.baseOffset;
+                                    print("点击emojiIcon时的光标位置：：：$emojiCursorPosition");
+                                    // 显示表情刷新Ui
+                                    context.read<CommentEnterNotifier>().openEmojiCallback(true);
                                   },
                                   iconSize: 24,
-                                  svgName: AppIcon.input_at,
+                                  svgName: AppIcon.input_emotion,
                                 ),
-                              )),
-                          Positioned(
-                            right: 16,
-                            bottom: 6,
-                            child: AppIconButton(
-                              onTap: () {
-                                // 隐藏@视图
-                                context.read<CommentEnterNotifier>().openAtCallback("");
-                                // 获取光标位置
-                                emojiCursorPosition = _textEditingController.selection.baseOffset;
-                                print("点击emojiIcon时的光标位置：：：$emojiCursorPosition");
-                                // 显示表情刷新Ui
-                                context.read<CommentEnterNotifier>().openEmojiCallback(true);
-                              },
-                              iconSize: 24,
-                              svgName: AppIcon.input_emotion,
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.isShowPostBtn,
-                      child: Positioned(
-                          right: 16,
-                          bottom: 2,
-                          child: Offstage(
-                            offstage: Platform.isIOS,
-                            child: GestureDetector(
-                                onTap: () {
-                                  if(_textEditingController.text.trim().length == 0) {
-                                    showAppDialog(context,
-                                        title: "提示",
-                                        info: "字数不能为空",
-                                        confirm: AppDialogButton("我知道了", () {
-                                          return true;
-                                        }));
-                                  } else {
-                                    voidCallback(
-                                      _textEditingController.text,
-                                      rules,
-                                    );
-                                    Navigator.of(context).pop();
-                                  }
-                                  // voidCallback(
-                                  //   _textEditingController.text,
-                                  //   rules,
-                                  // );
-                                  // Navigator.of(context).pop(1);
-                                },
-                                child: IgnorePointer(
-                                  // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                                  ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
-                                  child: Container(
-                                      // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
-                                      height: 32,
-                                      width: 52,
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(Radius.circular(16)),
-                                        // 监听输入框的值动态改变样式
-                                        color: context.watch<CommentEnterNotifier>().textFieldStr != ""
-                                            ? AppColor.textPrimary1
-                                            : AppColor.textSecondary,
-                                      ),
-                                      child: Center(
-                                        child: const Text(
-                                          "发送",
-                                          style: TextStyle(color: AppColor.white, fontSize: 14),
-                                        ),
-                                      )),
-                                )),
-                          )),
-                    )
-                  ],
-                )),
-            Visibility(
-                visible: context.watch<CommentEnterNotifier>().emojiState,
-                child: Positioned(
-                  bottom: 0,
-                  child: bottomSettingBox(),
-                ))
-          ],
-        ));
+                        ),
+                        Visibility(
+                          visible: widget.isShowPostBtn,
+                          child: Positioned(
+                              right: 16,
+                              bottom: 2,
+                              child: Offstage(
+                                offstage: Platform.isIOS,
+                                child: GestureDetector(
+                                    onTap: () {
+                                      if (_textEditingController.text.trim().length == 0) {
+                                        showAppDialog(context,
+                                            title: "提示",
+                                            info: "字数不能为空",
+                                            confirm: AppDialogButton("我知道了", () {
+                                              return true;
+                                            }));
+                                      } else {
+                                        voidCallback(
+                                          _textEditingController.text,
+                                          rules,
+                                        );
+                                        Navigator.of(context).pop();
+                                      }
+                                      // voidCallback(
+                                      //   _textEditingController.text,
+                                      //   rules,
+                                      // );
+                                      // Navigator.of(context).pop(1);
+                                    },
+                                    child: IgnorePointer(
+                                      // 监听输入框的值==""使外层点击不生效。非""手势生效。
+                                      ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                                      child: Container(
+                                          // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                                          height: 32,
+                                          width: 52,
+                                          decoration: BoxDecoration(
+                                            borderRadius: const BorderRadius.all(Radius.circular(16)),
+                                            // 监听输入框的值动态改变样式
+                                            color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                                ? AppColor.textPrimary1
+                                                : AppColor.textSecondary,
+                                          ),
+                                          child: Center(
+                                            child: const Text(
+                                              "发送",
+                                              style: TextStyle(color: AppColor.white, fontSize: 14),
+                                            ),
+                                          )),
+                                    )),
+                              )),
+                        )
+                      ],
+                    )),
+                Visibility(
+                    visible: context.watch<CommentEnterNotifier>().emojiState,
+                    child: Positioned(
+                      bottom: 0,
+                      child: bottomSettingBox(),
+                    )),
+              ],
+            ))
+        : Container();
+    //   Container(
+    //     color: AppColor.mainRed,
+    //     width: ScreenUtil.instance.width,
+    //     height: 20,
+    //     key: _inputBoxKey,
+    //   )
+    // ],
+    // );
   }
 
 //键盘与表情的框
@@ -1008,7 +1095,7 @@ class CommentEnterNotifier extends ChangeNotifier {
   }
 
   setAtSearchStr(String str) {
-    if(str.length == 0) {
+    if (str.length == 0) {
       print("大啊大大大");
       print(str.toString());
     }

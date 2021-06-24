@@ -1,29 +1,31 @@
 package com.aimymusic.mirror
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.aimymusic.mirror.method.AppBadgerMethodCallHandlerImpl
+import com.aimymusic.mirror.method.OnMethodCallListener
+import com.aimymusic.mirror.service.BadgeIntentService
+import com.aimymusic.mirror.util.RomUtil
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.BinaryMessenger.BinaryMessageHandler
-import io.flutter.plugin.common.BinaryMessenger.BinaryReply
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.StandardMessageCodec
-import java.nio.ByteBuffer
-import java.util.*
+import io.flutter.plugins.GeneratedPluginRegistrant
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 class MainActivity : FlutterActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 //        requestPermission()
         var isDebug: Boolean
         var channel: String
@@ -81,4 +83,15 @@ class MainActivity : FlutterActivity(){
         }
     }
 
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AppBadgerMethodCallHandlerImpl.badgerChannel)
+                .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context, object : OnMethodCallListener {
+                    override fun onMethodCall(callMethod: String, badgeCount: Int) {
+                        if (RomUtil.isMiui()) {
+                            startService(Intent(context, BadgeIntentService::class.java).putExtra("badgeCount", badgeCount))
+                        }
+                    }
+                }))
+    }
 }

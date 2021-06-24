@@ -373,6 +373,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             onEmojioClick();
           },
           isVoice: _isVoiceState,
+          isEmojio: _emojiState,
           voiceFile: _voiceFile,
           edit: _editWidget(),
           value: _textController.text,
@@ -1218,8 +1219,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
       return;
     } else {
+      bool isHaveMessage = false;
       for (ChatDataModel dataModel in chatDataList) {
         if (dataModel.msg?.messageId == messageId) {
+          isHaveMessage = true;
           if (dataModel.msg?.sentStatus == status) {
             return;
           } else {
@@ -1238,6 +1241,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             return;
           }
         }
+      }
+      if (!isHaveMessage) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        Future.delayed(Duration(milliseconds: 500), () {
+          if (mounted) {
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
+        });
       }
     }
   }
@@ -1583,6 +1594,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         bottomSettingChildKey.currentState.bottomSettingPanelState = false;
         if (_emojiState) {
           _emojiState = false;
+          messageInputBarChildKey.currentState.setIsEmojio(_emojiState);
           bottomSettingChildKey.currentState.setData(
             bottomSettingPanelState: false,
             emojiState: _emojiState,
@@ -1611,6 +1623,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     print("_emojiStateOld2:$_emojiStateOld");
     if (_emojiState) {
       _emojiState = !_emojiState;
+      messageInputBarChildKey.currentState.setIsEmojio(_emojiState);
       bottomSettingChildKey.currentState.setData(emojiState: _emojiState);
       _bottomSettingPanelState = true;
       bottomSettingChildKey.currentState.setBottomSettingPanelState(true);
@@ -1649,11 +1662,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     if (_emojiState) {
       _emojiState = false;
-      if (_focusNode.hasFocus) {
-        _focusNode.unfocus();
-        //print("3333333333333333");
-      }
       readOnly = false;
+      _emojiStateOld = true;
+      textSpanFieldClickListener();
       streamEditWidget.sink.add(0);
     } else {
       _emojiState = true;
@@ -1670,6 +1681,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
       });
     }
+    messageInputBarChildKey.currentState.setIsEmojio(_emojiState);
 
     bottomSettingChildKey.currentState.setEmojiState(_emojiState);
   }
@@ -1762,8 +1774,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
      if (_emojiState) {
        _emojiState = false;
-       bottomSettingChildKey.currentState.setEmojiState(_emojiState);
-     }
+          messageInputBarChildKey.currentState.setIsEmojio(_emojiState);
+          bottomSettingChildKey.currentState.setEmojiState(_emojiState);
+        }
      if (readOnly) {
        readOnly = false;
        streamEditWidget.sink.add(0);

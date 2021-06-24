@@ -369,7 +369,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
         EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
       // 重新登录替换关注页布局
-      EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      EventBus.getDefault().post(msg:true,registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
       EventBus.getDefault().post(registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
       // 获取话题详情页背景色

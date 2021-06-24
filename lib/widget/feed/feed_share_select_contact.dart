@@ -289,7 +289,7 @@ class _FriendsPageState extends State<FriendsPage> {
               alignment: Alignment.center,
               child: TextField(
                 textInputAction: TextInputAction.search,
-                focusNode: FocusNode(),
+                // focusNode: FocusNode(),
                 controller: textController,
                 onChanged: (text) {
                   if (StringUtil.strNoEmpty(text)) {
@@ -328,11 +328,12 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     }
     return Container(
-        color: AppColor.white,
+        color: AppColor.bgWhite,
         margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
         child: ListView.builder(
             controller: _scrollController,
             itemCount: _listUserDataList.length,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             itemBuilder: (context, index) {
               int noBottomIndex = 0;
               if (index < _listUserDataList.length - 1 &&
@@ -379,7 +380,8 @@ class _FriendsPageState extends State<FriendsPage> {
     if (widget.type == 1 || widget.type == 2) {
       List<ChatGroupUserModel> chatGroupUserModelList = context.read<GroupUserProfileNotifier>().chatGroupUserModelList;
       for (int i = 0; i < chatGroupUserModelList.length; i++) {
-        String name=getGroupMeName(widget.groupChatId.toString(),chatGroupUserModelList[i].uid.toString(),chatGroupUserModelList[i].groupNickName);
+        String name = getGroupMeName(widget.groupChatId.toString(), chatGroupUserModelList[i].uid.toString(),
+            chatGroupUserModelList[i].groupNickName);
         addUserNameData(name, i, userModel: chatGroupUserModelList[i]);
       }
     } else if (widget.type == 4) {
@@ -402,7 +404,8 @@ class _FriendsPageState extends State<FriendsPage> {
     //   }
     // }
   }
-  String getGroupMeName(String chatGroupId,String uid,String name) {
+
+  String getGroupMeName(String chatGroupId, String uid, String name) {
     String userName = ((Application.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
     if (userName == null || userName.length < 1) {
@@ -415,6 +418,7 @@ class _FriendsPageState extends State<FriendsPage> {
       return userName;
     }
   }
+
   //排序用户列表
   void sortListDatas() {
     //排序!
@@ -543,7 +547,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void getNetData() async {
     print("获取网络数据好友");
     BuddyListModel listModel = await getFollowBothList(100, lastTime: followListModel.lastTime);
-    if(listModel==null||listModel.list==null){
+    if (listModel == null || listModel.list == null) {
       return;
     }
     followListModel.list.addAll(listModel.list);
@@ -563,7 +567,7 @@ class _FriendsPageState extends State<FriendsPage> {
     init();
   }
 
-  void _friendsCallback(String name, int userId, String avatar,int type, BuildContext context) async {
+  void _friendsCallback(String name, int userId, String avatar, int type, BuildContext context) async {
     if (widget.type == 2 || widget.type == 3) {
       //----------------------------------------添加人进入群聊或者将人移除群聊------------------
       if (widget.type == 2 && userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
@@ -578,7 +582,7 @@ class _FriendsPageState extends State<FriendsPage> {
     } else if (widget.type == 1) {
       //-----------------------------------------------查看群成员的个人信息------------
       Navigator.of(context).pop();
-      jumpToUserProfilePage(context, userId,avatarUrl: avatar,userName: name);
+      jumpToUserProfilePage(context, userId, avatarUrl: avatar, userName: name);
     } else if (widget.type == 4) {
       //--------------------------------------------分享消息到群聊---------------
       if (await jumpShareMessage(
@@ -615,6 +619,7 @@ class _FriendsPageState extends State<FriendsPage> {
         ToastShow.show(msg: name, context: context);
       } else {
         ToastShow.show(msg: "邀请成功", context: context);
+        getChatGroupUserModelList1(widget.groupChatId.toString(), context);
       }
     } else {
       ToastShow.show(msg: "邀请失败", context: context);
@@ -633,6 +638,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
+      getChatGroupUserModelList1(widget.groupChatId.toString(), context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);
     }

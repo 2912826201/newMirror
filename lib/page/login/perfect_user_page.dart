@@ -323,7 +323,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
     MessageManager.loadConversationListFromDatabase(context);
     //一些非关键数据获取
     _getMoreInfo();
-    EventBus.getDefault().post(registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+    EventBus.getDefault().post(msg:true,registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
     // 获取话题详情页背景色
     Application.topicBackgroundConfig.clear();

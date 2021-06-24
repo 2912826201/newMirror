@@ -138,24 +138,27 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       print("延时停止300毫秒");
     });
 
-
-    var result = await _recorder.stop();
-    print("Stop recording: ${result.path}");
-    print("Stop recording: ${result.duration}");
-    File file = localFileSystem.file(result.path);
-    print("File length: ${await file.length()}");
-
-
-    isRecordering = false;
-
-    // await _mRecorder.stopRecorder();
-    //print(_mPath);
-    if (context != null) {
-      setState(() {
-        isHide = true;
-        init();
-      });
+    if (_recorder == null) {
+      return;
     }
+    try {
+      var result = await _recorder.stop();
+      print("Stop recording: ${result.path}");
+      print("Stop recording: ${result.duration}");
+      File file = localFileSystem.file(result.path);
+      print("File length: ${await file.length()}");
+
+      isRecordering = false;
+
+      // await _mRecorder.stopRecorder();
+      //print(_mPath);
+      if (context != null) {
+        setState(() {
+          isHide = true;
+          init();
+        });
+      }
+    } catch (e) {}
   }
 
   void startRecorder() async {
