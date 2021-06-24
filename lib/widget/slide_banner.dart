@@ -60,7 +60,8 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   final double spacingWidth = 4;
 
   // scroll_to_index定位
-  AutoScrollController controller;
+  // AutoScrollController controller;
+  ScrollController scrollController = ScrollController();
 
   // SwiperController swiperController = SwiperController();
 
@@ -108,9 +109,9 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     //   print(swiperController.index);
     // });
 
-    controller = AutoScrollController(
-        viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
-        axis: scrollDirection);
+    // controller = AutoScrollController(
+    //     viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+    //     axis: scrollDirection);
   }
 
   // 滑动回调
@@ -409,10 +410,10 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                       autoPlay(index);
                       if (index > 1) {
                         if (index < imageCount - 3) {
-                          controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                          scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
                               duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                         } else if (index == imageCount - 3) {
-                          controller.animateTo(controller.position.maxScrollExtent,
+                          scrollController.animateTo(scrollController.position.maxScrollExtent,
                               duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                         }
                       }
@@ -482,7 +483,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                           behavior: OverScrollBehavior(),
                           child: ListView.separated(
                             physics: NeverScrollableScrollPhysics(),
-                            controller: controller,
+                            controller: scrollController,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
                               return AnimatedContainer(
