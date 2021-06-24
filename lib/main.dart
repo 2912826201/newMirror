@@ -204,7 +204,7 @@ Future _initApp() async {
   //初始化极光推送
   JPush jpush = _initJPush();
 
-  Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
+  MessageManager.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
   //FIXME 需要检测网络连接 确认有网后再进行以下操作 不然会报错卡住流程 没有网则需要跳转至初始无网络的引导页面
   // 用户信息先赋值个uid为-1的初始值
@@ -298,21 +298,21 @@ Future _initApp() async {
     } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
-      Application.topChatModelList.clear();
+      MessageManager.topChatModelList.clear();
       Map<String, dynamic> topChatModelMap = await getTopChatList();
       if (topChatModelMap != null && topChatModelMap["list"] != null) {
         topChatModelMap["list"].forEach((v) {
-          Application.topChatModelList.add(TopChatModel.fromJson(v));
+          MessageManager.topChatModelList.add(TopChatModel.fromJson(v));
         });
       }
     } catch (e) {}
     //todo 获取有哪些消息是免打扰的消息
     try {
-      Application.queryNoPromptUidList.clear();
+      MessageManager.queryNoPromptUidList.clear();
       Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
       if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
         queryNoPromptUidListMap["list"].forEach((v) {
-          Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+          MessageManager.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
         });
       }
     } catch (e) {}

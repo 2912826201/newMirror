@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -33,7 +33,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
     super.initState();
 
     //todo 第一次注册,以后改了重新录入个人信息后，摇修改第一次注册的鉴别方式
-    Application.isShowNewUserDialog = true;
+    RuntimeProperties.isShowNewUserDialog = true;
 
     //note 这里需求为固定宽度内展示文字，超过固定宽度则省略
     String name = context.read<ProfileNotifier>().profile.nickName;

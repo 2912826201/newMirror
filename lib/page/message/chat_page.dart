@@ -551,11 +551,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //判断有没有at我的消息
   void judgeIsHaveAtMeMsg() {
     //print("判断有没有at我的消息");
-    if (Application.atMesGroupModel == null || Application.atMesGroupModel.atMsgMap == null) {
+    if (MessageManager.atMesGroupModel == null || MessageManager.atMesGroupModel.atMsgMap == null) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
     } else {
-      atMeMsg = Application.atMesGroupModel.getAtMsg(conversation.conversationId);
+      atMeMsg = MessageManager.atMesGroupModel.getAtMsg(conversation.conversationId);
       if (atMeMsg == null) {
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
@@ -574,7 +574,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (chatDataList == null || chatDataList.length < 1) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
-      Application.atMesGroupModel.remove(atMeMsg);
+      MessageManager.atMesGroupModel.remove(atMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
@@ -593,7 +593,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             //print("当前消息在屏幕中间-消除at");
             isHaveAtMeMsg = false;
             isHaveAtMeMsgPr = false;
-            Application.atMesGroupModel.remove(atMeMsg);
+            MessageManager.atMesGroupModel.remove(atMeMsg);
             ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           }
           break;
@@ -601,7 +601,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           //print("找不到id--匹配时间");
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
         }
@@ -634,7 +634,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         ////print('2--------------------------已经是关闭--关闭标识at');
         isHaveAtMeMsgPr = false;
         isHaveAtMeMsgIndex = -1;
-        Application.atMesGroupModel.remove(atMeMsg);
+        MessageManager.atMesGroupModel.remove(atMeMsg);
         setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       } else {
@@ -677,7 +677,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgIndex = -1;
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           return;
@@ -710,7 +710,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         isHaveAtMeMsgIndex = -1;
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
-        Application.atMesGroupModel.remove(atMeMsg);
+        MessageManager.atMesGroupModel.remove(atMeMsg);
         setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       });
@@ -749,7 +749,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgIndex = -1;
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
@@ -1509,7 +1509,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             isHaveUser = false;
           }
         } else {
-          if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+          if (MessageManager.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
               null) {
             isHaveUser = false;
           }
@@ -1812,7 +1812,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   _topMoreBtnClick() {
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-    // Application.atMesGroupModel.add(atMsg);
+    // MessageManager.atMesGroupModel.add(atMsg);
     context.read<VoiceSettingNotifier>().stop();
     _messageInputBodyClick();
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),

@@ -765,11 +765,11 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
 }
 
 String getChatUserName(String groupId, String userId, String name) {
-  String userName = ((Application.chatGroupUserInformationMap["${groupId}_$userId"] ??
+  String userName = ((MessageManager.chatGroupUserInformationMap["${groupId}_$userId"] ??
       Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
   if (userName == null || userName.length < 1) {
     userName =
-        (Application.chatGroupUserInformationMap["${groupId}_$userId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
+        (MessageManager.chatGroupUserInformationMap["${groupId}_$userId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
   }
   if (userName == null || userName.length < 1) {
     return name;
@@ -802,24 +802,24 @@ ChatDataModel getTimeAlertModel(int sentTime, String chatId) {
 
 //将发送的临时消息加入全局
 addTemporaryMessage(ChatDataModel chatDataModel, ConversationDto conversation) {
-  if (Application.postChatDataModelList[conversation.id] == null) {
+  if (MessageManager.postChatDataModelList[conversation.id] == null) {
     List<ChatDataModel> modelList = <ChatDataModel>[];
     modelList.add(chatDataModel);
-    Application.postChatDataModelList[conversation.id] = modelList;
+    MessageManager.postChatDataModelList[conversation.id] = modelList;
   } else {
-    Application.postChatDataModelList[conversation.id].add(chatDataModel);
+    MessageManager.postChatDataModelList[conversation.id].add(chatDataModel);
   }
 }
 
 //从全局的临时消息中删除发送完成的消息
 deletePostCompleteMessage(ConversationDto conversation) {
-  if (Application.postChatDataModelList[conversation.id] == null ||
-      Application.postChatDataModelList[conversation.id].length < 1) {
+  if (MessageManager.postChatDataModelList[conversation.id] == null ||
+      MessageManager.postChatDataModelList[conversation.id].length < 1) {
     return;
   } else {
-    for (int i = 0; i < Application.postChatDataModelList[conversation.id].length; i++) {
-      if (!Application.postChatDataModelList[conversation.id][i].isTemporary) {
-        Application.postChatDataModelList[conversation.id].removeAt(i);
+    for (int i = 0; i < MessageManager.postChatDataModelList[conversation.id].length; i++) {
+      if (!MessageManager.postChatDataModelList[conversation.id][i].isTemporary) {
+        MessageManager.postChatDataModelList[conversation.id].removeAt(i);
       }
     }
   }
@@ -828,20 +828,20 @@ deletePostCompleteMessage(ConversationDto conversation) {
 //从全局的临时消息中删除取消的消息
 deleteCancelMessage(String conversationId,String messageId) {
   if(conversationId!=null) {
-    if (Application.postChatDataModelList[conversationId] == null ||
-        Application.postChatDataModelList[conversationId].length < 1) {
+    if (MessageManager.postChatDataModelList[conversationId] == null ||
+        MessageManager.postChatDataModelList[conversationId].length < 1) {
       return;
     } else {
-      for (int i = 0; i < Application.postChatDataModelList[conversationId].length; i++) {
-        if (Application.postChatDataModelList[conversationId][i].id == messageId) {
-          Application.postChatDataModelList[conversationId].removeAt(i);
+      for (int i = 0; i < MessageManager.postChatDataModelList[conversationId].length; i++) {
+        if (MessageManager.postChatDataModelList[conversationId][i].id == messageId) {
+          MessageManager.postChatDataModelList[conversationId].removeAt(i);
           break;
         }
       }
     }
   }else{
     bool isFind=false;
-    Application.postChatDataModelList.forEach((key, value) {
+    MessageManager.postChatDataModelList.forEach((key, value) {
       if(isFind){
         return;
       }

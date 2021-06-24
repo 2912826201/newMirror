@@ -354,21 +354,21 @@ class _PerfectUserState extends State<PerfectUserPage> {
     } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
-      Application.topChatModelList.clear();
+      MessageManager.topChatModelList.clear();
       Map<String, dynamic> topChatModelMap = await getTopChatList();
       if (topChatModelMap != null && topChatModelMap["list"] != null) {
         topChatModelMap["list"].forEach((v) {
-          Application.topChatModelList.add(TopChatModel.fromJson(v));
+          MessageManager.topChatModelList.add(TopChatModel.fromJson(v));
         });
       }
     } catch (e) {}
     //todo 获取有哪些消息是免打扰的消息
     try {
-      Application.queryNoPromptUidList.clear();
+      MessageManager.queryNoPromptUidList.clear();
       Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
       if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
         queryNoPromptUidListMap["list"].forEach((v) {
-          Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+          MessageManager.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
         });
       }
     } catch (e) {}

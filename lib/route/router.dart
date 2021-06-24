@@ -16,6 +16,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
@@ -666,8 +667,8 @@ class AppRouter {
     map["systemLastTime"] = systemLastTime;
     map["textContent"] = textContent;
     RuntimeProperties.shareMessage = shareMessage;
-    Application.chatDataList.clear();
-    Application.chatDataList.addAll(chatDataModelList);
+    MessageManager.chatDataList.clear();
+    MessageManager.chatDataList.addAll(chatDataModelList);
     _navigateToPage(context, pathChatPage, map);
   }
 

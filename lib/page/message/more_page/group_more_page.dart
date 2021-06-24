@@ -14,6 +14,7 @@ import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/message/item/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -354,10 +355,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
 
   String getGroupMeName() {
-    String userName = ((Application.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
+    String userName = ((MessageManager.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
     if (userName == null || userName.length < 1) {
-      userName = (Application.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
+      userName = (MessageManager.chatGroupUserInformationMap["${widget.chatGroupId}_${Application.profile.uid}"] ??
           Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
     if (userName == null || userName.length < 1) {
@@ -497,10 +498,10 @@ class GroupMorePageState extends State<GroupMorePage> {
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
-      int index = TopChatModel.containsIndex(Application.topChatModelList, topChatModel);
+      int index = TopChatModel.containsIndex(MessageManager.topChatModelList, topChatModel);
       if(topChat){
         if(index<0){
-          Application.topChatModelList.add(topChatModel);
+          MessageManager.topChatModelList.add(topChatModel);
           if (null != widget.dto) {
             widget.dto.isTop = 1;
             context.read<ConversationNotifier>().insertTop(widget.dto);
@@ -508,7 +509,7 @@ class GroupMorePageState extends State<GroupMorePage> {
         }
       }else{
         if (index >= 0) {
-          Application.topChatModelList.removeAt(index);
+          MessageManager.topChatModelList.removeAt(index);
           if (null != widget.dto) {
             widget.dto.isTop = 0;
             context.read<ConversationNotifier>().insertCommon(widget.dto);
@@ -519,8 +520,8 @@ class GroupMorePageState extends State<GroupMorePage> {
       topChat = !topChat;
     }
 
-    // Application.topChatModelList.forEach((element) {
-    //   print("Application.topChatModelList:${element.toJson().toString()}");
+    // MessageManager.topChatModelList.forEach((element) {
+    //   print("MessageManager.topChatModelList:${element.toJson().toString()}");
     // });
 
     if (mounted) {
@@ -536,14 +537,14 @@ class GroupMorePageState extends State<GroupMorePage> {
         targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
     if (map != null && map["state"] != null && map["state"]) {
       NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE, targetId: int.parse(widget.chatGroupId));
-      int index = NoPromptUidModel.containsIndex(Application.queryNoPromptUidList, model);
+      int index = NoPromptUidModel.containsIndex(MessageManager.queryNoPromptUidList, model);
       if(disturbTheNews){
         if (index < 0) {
-          Application.queryNoPromptUidList.add(model);
+          MessageManager.queryNoPromptUidList.add(model);
         }
       }else{
         if (index >= 0) {
-          Application.queryNoPromptUidList.remove(index);
+          MessageManager.queryNoPromptUidList.remove(index);
         }
       }
     } else {
@@ -557,11 +558,11 @@ class GroupMorePageState extends State<GroupMorePage> {
   //获取消息是否免打扰
   Future<void> getConversationNotificationStatus() async {
     //判断有没有置顶
-    if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
+    if (MessageManager.topChatModelList == null || MessageManager.topChatModelList.length < 1) {
       topChat = false;
       print("没有置顶");
     } else {
-      for (TopChatModel topChatModel in Application.topChatModelList) {
+      for (TopChatModel topChatModel in MessageManager.topChatModelList) {
         if (topChatModel.type == 1 && topChatModel.chatId.toString() == widget.chatGroupId) {
           topChat = true;
           print("有置顶");
@@ -571,10 +572,10 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     //判断有没有免打扰
-    if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
+    if (MessageManager.queryNoPromptUidList == null || MessageManager.queryNoPromptUidList.length < 1) {
       disturbTheNews = false;
     } else {
-      for (NoPromptUidModel noPromptUidModel in Application.queryNoPromptUidList) {
+      for (NoPromptUidModel noPromptUidModel in MessageManager.queryNoPromptUidList) {
         if (noPromptUidModel.type == GROUP_TYPE && noPromptUidModel.targetId.toString() == widget.chatGroupId) {
           disturbTheNews = true;
           break;

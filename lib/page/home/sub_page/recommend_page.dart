@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -587,7 +586,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         !this.isShowNewUserDialog &&
         Application.profile.uid != coachIsAccountId) {
       bool isShowNewUserDialog = false;
-      if (Application.isShowNewUserDialog) {
+      if (RuntimeProperties.isShowNewUserDialog) {
         isShowNewUserDialog = true;
       } else if (AppPrefs.isFirstLaunchToDay()) {
         isShowNewUserDialog = true;
@@ -596,7 +595,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         isShowNewUserDialog = false;
       }
       if (isShowNewUserDialog && Application.haveOrNotNewVersion) {
-        Application.isShowNewUserDialog = false;
+        RuntimeProperties.isShowNewUserDialog = false;
         this.isShowNewUserDialog = true;
         showImageDialog(context, onClickListener: () {
           AppRouter.navigateNewUserPromotionPage(context);

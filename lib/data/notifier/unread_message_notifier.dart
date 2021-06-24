@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/im/message_manager.dart';
 
 /// unread_message_notifier
 /// Created by yangjiayi on 2021/1/27.
@@ -13,39 +13,39 @@ class UnreadMessageNotifier extends ChangeNotifier {
 
   void changeUnreadMsg({int comments, int ats, int lauds}) {
     bool needChange = false;
-    if (Application.unreadNoticeNumber == 0) {
+    if (MessageManager.unreadNoticeNumber == 0) {
       if (comments != null&&comment!=comments) {
         needChange = true;
-        Application.unreadNoticeNumber += comments;
+        MessageManager.unreadNoticeNumber += comments;
         comment = comments;
       }
       if (ats != null&&at!=ats) {
         needChange = true;
-        Application.unreadNoticeNumber += ats;
+        MessageManager.unreadNoticeNumber += ats;
         at = ats;
       }
       if (lauds != null&&laud!=lauds) {
         needChange = true;
-        Application.unreadNoticeNumber += lauds;
+        MessageManager.unreadNoticeNumber += lauds;
         laud = lauds;
       }
     } else {
       if (comments != null&&comment!=comments) {
         needChange = true;
-        Application.unreadNoticeNumber -= comment;
-        Application.unreadNoticeNumber += comments;
+        MessageManager.unreadNoticeNumber -= comment;
+        MessageManager.unreadNoticeNumber += comments;
         comment = comments;
       }
       if (ats != null&&at!=ats) {
         needChange = true;
-        Application.unreadNoticeNumber -= at;
-        Application.unreadNoticeNumber += ats;
+        MessageManager.unreadNoticeNumber -= at;
+        MessageManager.unreadNoticeNumber += ats;
         at = ats;
       }
       if (lauds != null&&laud!=lauds) {
         needChange = true;
-        Application.unreadNoticeNumber -= laud;
-        Application.unreadNoticeNumber += lauds;
+        MessageManager.unreadNoticeNumber -= laud;
+        MessageManager.unreadNoticeNumber += lauds;
         laud = lauds;
       }
     }

@@ -12,7 +12,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/message/message_view/alert_msg.dart';
 import 'package:mirror/page/message/message_view/feed_msg.dart';
 import 'package:mirror/util/file_util.dart';
@@ -337,10 +337,10 @@ class SendMessageViewState extends State<SendMessageView> {
 
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
-      String userName = ((Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+      String userName = ((MessageManager.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
           Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
       if (userName == null || userName.length < 1) {
-        userName = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+        userName = (MessageManager.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
             Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
       }
       if (userName == null || userName.length < 1) {
@@ -353,7 +353,7 @@ class SendMessageViewState extends State<SendMessageView> {
   }
 
   String getChatUserUrl(String uId, String url) {
-    String userUrl = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
+    String userUrl = (MessageManager.chatGroupUserInformationMap["${widget.chatId}_$uId"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_USER_IMAGE];
     if (userUrl == null) {
       return url;

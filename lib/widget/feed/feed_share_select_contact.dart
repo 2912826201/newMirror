@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lpinyin/lpinyin.dart';
-import 'package:mirror/api/api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -11,6 +10,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -406,10 +406,10 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   String getGroupMeName(String chatGroupId, String uid, String name) {
-    String userName = ((Application.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
+    String userName = ((MessageManager.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
     if (userName == null || userName.length < 1) {
-      userName = (Application.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
+      userName = (MessageManager.chatGroupUserInformationMap["${chatGroupId}_$uid"] ??
           Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
     if (userName == null || userName.length < 1) {
@@ -556,8 +556,8 @@ class _FriendsPageState extends State<FriendsPage> {
     // 去除本来就在群内的好友
     if (widget.type == 3) {
       for (int i = 0; i < followListModel.list.length; i++) {
-        // print("111111date:${Application.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"]}");
-        if (Application.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"] != null) {
+        // print("111111date:${MessageManager.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"]}");
+        if (MessageManager.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"] != null) {
           followListModel.list.removeAt(i);
           i--;
         }

@@ -10,6 +10,7 @@ import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
+import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -27,7 +28,6 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
 
 /// message_manager
 /// Created by yangjiayi on 2020/12/21.
@@ -35,10 +35,48 @@ import 'package:mirror/page/message/item/chat_page_ui.dart';
 //用于提供各种增删改查更新状态的方法
 
 class MessageManager {
+  //群组at的列表
+  static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
+
+  //发送消息的临时列表
+  //key是:用户id_会话id_会话类型
+  static Map<String, List<ChatDataModel>> postChatDataModelList = Map();
+
+  //未读数-消息
+  static int unreadMessageNumber = 0;
+
+  //未读数-通知
+  static int unreadNoticeNumber = 0;
+
+  //互动通知未读数时间戳
+  static int unreadNoticeTimeStamp;
+
+  //聊天群的群成员信息
+  static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
+
+  //进入聊天界面前先获取的消息列表
+  static List<ChatDataModel> chatDataList = <ChatDataModel>[];
+
+  //那些消息是置顶的
+  static List<TopChatModel> topChatModelList = [];
+
+  //那些消息是免打扰的
+  static List<NoPromptUidModel> queryNoPromptUidList = [];
+
   //登出时清掉所有和用户相关的消息数据
   static clearUserMessage(BuildContext context) {
     //会话信息
     context.read<ConversationNotifier>().clearAllData();
+    atMesGroupModel?.atMsgMap?.clear();
+    topChatModelList.clear();
+    chatDataList.clear();
+    postChatDataModelList.clear();
+    queryNoPromptUidList.clear();
+    chatGroupUserInformationMap.clear();
+    postChatDataModelList.clear();
+    unreadMessageNumber = 0;
+    unreadNoticeNumber = 0;
+    unreadNoticeTimeStamp = null;
     //TODO 应该还会有其他信息需要清
   }
 
@@ -229,7 +267,7 @@ class MessageManager {
     dto.isTop = 0;
     TopChatModel topChatModel =
         new TopChatModel(type: dto.type == GROUP_TYPE ? 1 : 0, chatId: int.parse(dto.conversationId));
-    if (TopChatModel.contains(Application.topChatModelList, topChatModel)) {
+    if (TopChatModel.contains(topChatModelList, topChatModel)) {
       dto.isTop = 1;
     }
 
@@ -258,8 +296,8 @@ class MessageManager {
 
         //加上全局未读数
         NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
-        if (!NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
-          Application.unreadMessageNumber += 1;
+        if (!NoPromptUidModel.contains(queryNoPromptUidList, model)) {
+          unreadMessageNumber += 1;
           EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
         }
       }

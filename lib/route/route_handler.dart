@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -14,6 +13,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
@@ -419,7 +419,7 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
       textContent: data["textContent"],
       conversation: conversation,
       shareMessage: shareMessage,
-      chatDataList: Application.chatDataList,
+      chatDataList: MessageManager.chatDataList,
       context: context);
 });
 

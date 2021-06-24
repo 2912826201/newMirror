@@ -12,6 +12,7 @@ import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 // hide NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -22,7 +23,6 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/colors_util.dart';
-import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -549,7 +549,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           AppRouter.navigateToLoginPage(context);
           return;
         }
-        Application.topicMap[model.id] = model;
+        RuntimeProperties.topicMap[model.id] = model;
         AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
             publishMode: 1, topicId: model.id);
       },

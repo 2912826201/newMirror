@@ -92,7 +92,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 
     //如果topicId不为空 则取topicModel出来生成预设的插入话题
     if (widget.topicId != null) {
-      TopicDtoModel topicModel = Application.topicMap[widget.topicId];
+      TopicDtoModel topicModel = RuntimeProperties.topicMap[widget.topicId];
       if (topicModel != null) {
         _controller.text = "#${topicModel.name}";
         _controller.selection = TextSelection(

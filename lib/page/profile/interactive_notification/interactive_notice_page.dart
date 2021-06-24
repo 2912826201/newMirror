@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -15,6 +14,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -72,7 +72,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     if (listPage == 1) {
       controller.loadComplete();
       if (model != null) {
-        Application.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
+        MessageManager.unreadNoticeTimeStamp = DateTime.now().millisecondsSinceEpoch;
         hasNext = model.hasNext;
         lastTime = model.lastTime;
         msgList.clear();
