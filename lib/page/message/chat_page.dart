@@ -1218,8 +1218,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
       return;
     } else {
+      bool isHaveMessage = false;
       for (ChatDataModel dataModel in chatDataList) {
         if (dataModel.msg?.messageId == messageId) {
+          isHaveMessage = true;
           if (dataModel.msg?.sentStatus == status) {
             return;
           } else {
@@ -1238,6 +1240,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             return;
           }
         }
+      }
+      if (!isHaveMessage) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        Future.delayed(Duration(milliseconds: 500), () {
+          if (mounted) {
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
+        });
       }
     }
   }
