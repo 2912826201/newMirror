@@ -11,7 +11,6 @@ import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading.dart';
@@ -37,7 +36,6 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 /// application
@@ -67,9 +65,6 @@ class Application {
   //视频课程的tag
   static VideoTagModel videoTagModel;
 
-  //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
-  static String hintText = "";
-
   //IfPage的TabController
   static TabController ifPageController;
 
@@ -79,47 +74,19 @@ class Application {
   static List<CameraDescription> cameras;
   static bool isCameraInUse = false;
 
-  // 动态model
-  static HomeFeedModel feedModel;
-
-  // 是否唤起键盘上方输入框
-  static bool isArouse = false;
-
-  //健身照片详情页返回内容
-  static TrainingGalleryResult galleryResult;
-  // 评论类型
-  static CommentTypes commentTypes = CommentTypes.commentFeed;
-
-  // 动态主评论
-  static CommentDtoModel commentDtoModel;
-
-  // 动态子评论
-  static CommentDtoModel replysModel;
-
   //对比图是否保存分享
   static bool imageIsSaveOrShared = false;
   //互动通知未读数时间戳
   static int unreadNoticeTimeStamp;
-  // 用于传递所选图片视频内容，用完后需要删除
-  static SelectedMediaFiles selectedMediaFiles;
 
   // 用于记录登录页之前页面的路由名称，以便完成登录后回退到该页完成页面返回
   static String loginPopRouteName;
 
-  //发送验证码的全局计时
-  static int smsCodeSendTime;
-
   static Dio dio;
-
-  //全局的记录发送验证码的手机号
-  static String sendSmsPhoneNum;
 
   //键盘的高度
   static double keyboardHeightIfPage = 0;
   static double keyboardHeightChatPage = 0;
-
-  //用户分享的消息
-  static Message shareMessage;
 
   //省级地区的数据
   static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();

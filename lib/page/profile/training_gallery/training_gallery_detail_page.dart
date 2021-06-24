@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -210,12 +210,12 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     for (TrainingGalleryImageModel image in _imageList) {
       if (image.id == id) {
         _imageList.remove(image);
-        if (Application.galleryResult == null) {
-          Application.galleryResult = TrainingGalleryResult();
-          Application.galleryResult.operation = -1;
-          Application.galleryResult.list = [];
+        if (RuntimeProperties.galleryResult == null) {
+          RuntimeProperties.galleryResult = TrainingGalleryResult();
+          RuntimeProperties.galleryResult.operation = -1;
+          RuntimeProperties.galleryResult.list = [];
         }
-        Application.galleryResult.list.add(image);
+        RuntimeProperties.galleryResult.list.add(image);
         break;
       }
     }

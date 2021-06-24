@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/route/router.dart';
@@ -9,7 +9,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -143,7 +142,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //判断是否重新进入发送验证码的界面
   bool _reEnterSendSmsPage() {
     int currentTime = DateTime.now().millisecondsSinceEpoch;
-    int lastTime = Application.smsCodeSendTime;
+    int lastTime = RuntimeProperties.smsCodeSendTime;
     lastTime ??= currentTime - 60 * 1000;
     //是否是重入发送验证码的情况
     if ((currentTime - lastTime) < 60 * 1000) {
@@ -157,7 +156,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //发送验证码的函数
   _sendMessage() async {
     //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
-    if (_reEnterSendSmsPage() && Application.sendSmsPhoneNum == this.inputController.text) {
+    if (_reEnterSendSmsPage() && RuntimeProperties.sendSmsPhoneNum == this.inputController.text) {
       print("发送验证码页面重入");
       setState(() {
         sendMsging = false;
@@ -175,7 +174,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       print("发送验证码成功");
       ToastShow.show(msg: "验证码发送成功！", context: context);
       _titleOfSendTextBtn = "发送";
-      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
+      RuntimeProperties.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
       AppRouter.navigateToSmsCodePage(context, inputController.text, true);
     } else {
       ToastShow.show(msg: "验证码发送失败，请重试", context: context);

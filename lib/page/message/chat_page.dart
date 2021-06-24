@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -1680,12 +1681,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     _messageInputBodyClick();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
-      SelectedMediaFiles files = Application.selectedMediaFiles;
+      SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (true != result || files == null) {
         ////print("没有选择媒体文件");
         return;
       }
-      Application.selectedMediaFiles = null;
+      RuntimeProperties.selectedMediaFiles = null;
       selectedMediaFiles.type = files.type;
       selectedMediaFiles.list = files.list;
       _handPicOrVideo(selectedMediaFiles);

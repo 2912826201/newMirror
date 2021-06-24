@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -191,12 +190,12 @@ class _feedBackPage extends State<FeedBackPage> {
       ToastShow.show(msg: "最多只能选择8张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(context, 8-fileList.length, typeImage, false, startPageGallery, false, (result) {
-      SelectedMediaFiles files = Application.selectedMediaFiles;
+      SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
         return;
       }
-      Application.selectedMediaFiles = null;
+      RuntimeProperties.selectedMediaFiles = null;
       List<MediaFileModel> model = files.list;
       model.forEach((element) async {
         if(element.file!=null){

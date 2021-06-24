@@ -4,10 +4,10 @@ import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -82,14 +82,11 @@ import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_page.dart';
-import 'package:mirror/page/training/video_course/video_course_result_share_dialog.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/page/webview/webview_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
-import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -414,8 +411,8 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   // map["systemPage"] = systemPage;
   // map["systemLastTime"] = systemLastTime;
   //map["textContent"] = textContent;
-  Message shareMessage = Application.shareMessage;
-  Application.shareMessage = null;
+  Message shareMessage = RuntimeProperties.shareMessage;
+  RuntimeProperties.shareMessage = null;
   return ChatPage(
       systemPage: data["systemPage"],
       systemLastTime: data["systemLastTime"],

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -73,7 +73,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                   files.type = mediaTypeKeyImage;
                   files.list = [model];
 
-                  Application.selectedMediaFiles = files;
+                  RuntimeProperties.selectedMediaFiles = files;
 
                   Navigator.pop(context, true);
                 },

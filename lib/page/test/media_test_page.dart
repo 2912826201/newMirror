@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/test/feed_video_test_page.dart';
@@ -79,12 +79,12 @@ class _MediaTestState extends State<MediaTestPage> {
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false,
                       (result) async {
-                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
                       return;
                     }
-                    Application.selectedMediaFiles = null;
+                    RuntimeProperties.selectedMediaFiles = null;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
                     list = files.list;
@@ -112,12 +112,12 @@ class _MediaTestState extends State<MediaTestPage> {
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false,
                       (result) async {
-                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
                       return;
                     }
-                    Application.selectedMediaFiles = null;
+                    RuntimeProperties.selectedMediaFiles = null;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
                     list = files.list;
@@ -140,12 +140,12 @@ class _MediaTestState extends State<MediaTestPage> {
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto, false,
                       (result) async {
-                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
                       return;
                     }
-                    Application.selectedMediaFiles = null;
+                    RuntimeProperties.selectedMediaFiles = null;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
                     list = files.list;

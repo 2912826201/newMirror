@@ -5,8 +5,8 @@ import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/user_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -276,12 +276,12 @@ class scanCodePageState extends State<ScanCodePage> {
 
   _getImagePicker() {
     AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
-      SelectedMediaFiles files = Application.selectedMediaFiles;
+      SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (result != true || files == null) {
         print('===============================值为空退回');
         return;
       }
-      Application.selectedMediaFiles = null;
+      RuntimeProperties.selectedMediaFiles = null;
       MediaFileModel model = files.list.first;
       if (model != null) {
         print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());

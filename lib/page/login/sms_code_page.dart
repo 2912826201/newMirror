@@ -9,6 +9,7 @@ import 'package:mirror/api/push_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -31,7 +32,6 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -90,7 +90,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
   void initState() {
     isSent = widget.isSent;
     //进行记录手机号
-    Application.sendSmsPhoneNum = widget.phoneNumber;
+    RuntimeProperties.sendSmsPhoneNum = widget.phoneNumber;
     _smsBtnTitleColor = _sendSmsOriginTitleColor;
     _smsBtnColor = _sendSmsOriginColor;
     super.initState();
@@ -244,11 +244,11 @@ class _SmsCodePageState extends State<SmsCodePage> {
     if (responseModel != null && responseModel.code == 200) {
       print("验证码已发送~");
       //跟新发送sms发送的时间
-      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
+      RuntimeProperties.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
       isSent = true;
     } else {
       //失败页也暂时进行发送的时间记录
-      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
+      RuntimeProperties.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
       print("验证码发送失败");
     }
   }
@@ -485,12 +485,12 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
 
   //时间差值
   int _getTimeGap() {
-    int previousTime = Application.smsCodeSendTime;
+    int previousTime = RuntimeProperties.smsCodeSendTime;
     int currentTime = DateTime.now().millisecondsSinceEpoch;
     //第一次
     if (previousTime == null) {
       previousTime = currentTime;
-      Application.smsCodeSendTime = previousTime;
+      RuntimeProperties.smsCodeSendTime = previousTime;
     }
     int deviation = (currentTime - previousTime);
     //此处用于解决点击"重新发送"按钮时，计数瞬间显示出现负数的情况
