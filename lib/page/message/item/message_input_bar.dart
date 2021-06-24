@@ -12,6 +12,7 @@ typedef VoiceFile = void Function(String path, int time);
 class MessageInputBar extends StatefulWidget {
   final GestureTapCallback voiceOnTap;
   final bool isVoice;
+  final bool isEmojio;
   final Widget edit;
   final VoidCallback onEmojio;
   final VoiceFile voiceFile;
@@ -24,6 +25,7 @@ class MessageInputBar extends StatefulWidget {
     Key key,
     this.voiceOnTap,
     this.isVoice,
+    this.isEmojio,
     this.edit,
     this.more,
     this.id,
@@ -34,11 +36,12 @@ class MessageInputBar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => MessageInputBarState(isVoice);
+  State<StatefulWidget> createState() => MessageInputBarState(isVoice, isEmojio);
 }
 
 class MessageInputBarState extends State<MessageInputBar> {
   bool isVoice;
+  bool isEmojio;
 
   setIsVoice(bool isVoice) {
     this.isVoice = isVoice;
@@ -46,11 +49,17 @@ class MessageInputBarState extends State<MessageInputBar> {
     streamVoiceIconWidget.sink.add(isVoice);
   }
 
+  setIsEmojio(bool isEmojio) {
+    this.isEmojio = isEmojio;
+    streamVoiceWidget.sink.add(isVoice);
+    streamVoiceIconWidget.sink.add(isVoice);
+  }
 
   StreamController<bool> streamVoiceWidget = StreamController<bool>();
   StreamController<bool> streamVoiceIconWidget = StreamController<bool>();
+  StreamController<bool> streamEmojioIconWidget = StreamController<bool>();
 
-  MessageInputBarState(this.isVoice);
+  MessageInputBarState(this.isVoice, this.isEmojio);
 
   @override
   void initState() {
@@ -62,6 +71,7 @@ class MessageInputBarState extends State<MessageInputBar> {
     super.dispose();
     streamVoiceWidget.close();
     streamVoiceIconWidget.close();
+    streamEmojioIconWidget.close();
   }
 
   @override
@@ -102,17 +112,6 @@ class MessageInputBarState extends State<MessageInputBar> {
                         );
                       },
                     ),
-                    // child: AppIconButton(
-                    //   onTap: () {
-                    //     if (widget.voiceOnTap != null) {
-                    //       widget.voiceOnTap();
-                    //     }
-                    //   },
-                    //   iconSize: 24,
-                    //   buttonWidth: 36,
-                    //   buttonHeight: 36,
-                    //   svgName: isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
-                    // ),
                   ),
                   Expanded(
                       child: SizedBox(
@@ -142,14 +141,18 @@ class MessageInputBarState extends State<MessageInputBar> {
                   Container(
                     height: 48.0,
                     padding: EdgeInsets.only(left: 10),
-                    child: AppIconButton(
-                      onTap: () {
-                        widget.onEmojio();
+                    child: StreamBuilder(
+                      stream: streamEmojioIconWidget.stream,
+                      builder: (context, snapshot) {
+                        // return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
+                        return AppIconButton(
+                          onTap: widget.onEmojio,
+                          iconSize: 24,
+                          buttonWidth: 36,
+                          buttonHeight: 36,
+                          svgName: isEmojio ? AppIcon.input_keyboard : AppIcon.input_emotion,
+                        );
                       },
-                      iconSize: 24,
-                      buttonWidth: 36,
-                      buttonHeight: 36,
-                      svgName: AppIcon.input_emotion,
                     ),
                   ),
                   Container(

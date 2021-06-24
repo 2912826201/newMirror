@@ -69,8 +69,8 @@
               android:resource="@drawable/launch_background"
               />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -78,13 +78,21 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+
+        <service
+            android:name="com.aimymusic.mirror.service.BadgeIntentService"
+            android:exported="false"></service>
+
         <!-- 高德申请的key -->
-        <meta-data android:name="com.amap.api.v2.apikey" android:value="18ddc6ba8332f5f7fab942b4fdf3ad9c" />
-      <!--  <receiver android:name=".MyPhoneListenerObserver">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
-                <action android:name="android.intent.action.PHONE_STATE"/>
-            </intent-filter>
-        </receiver>-->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="18ddc6ba8332f5f7fab942b4fdf3ad9c" />
+        <!--  <receiver android:name=".MyPhoneListenerObserver">
+              <intent-filter android:priority="1000">
+                  <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
+                  <action android:name="android.intent.action.PHONE_STATE"/>
+              </intent-filter>
+          </receiver>-->
     </application>
 </manifest>

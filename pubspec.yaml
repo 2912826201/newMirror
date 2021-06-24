@@ -161,8 +161,6 @@ dependencies:
   fps_monitor: ^2.0.0
   #lottie动画
   lottie: ^1.0.1
-  #app图标上的小红点
-  flutter_app_badger: ^1.2.0
 
 
   #测试跳转指定item
