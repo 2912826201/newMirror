@@ -4,6 +4,7 @@ import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -15,7 +16,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
@@ -24,10 +25,8 @@ import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:mirror/util/event_bus.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:provider/provider.dart';
 
 /// router
 /// Created by yangjiayi on 2020/11/14.
@@ -667,9 +666,9 @@ class AppRouter {
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
     map["textContent"] = textContent;
-    Application.shareMessage = shareMessage;
-    Application.chatDataList.clear();
-    Application.chatDataList.addAll(chatDataModelList);
+    RuntimeProperties.shareMessage = shareMessage;
+    MessageManager.chatDataList.clear();
+    MessageManager.chatDataList.addAll(chatDataModelList);
     _navigateToPage(context, pathChatPage, map);
   }
 

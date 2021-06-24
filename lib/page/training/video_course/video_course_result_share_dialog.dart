@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -374,7 +375,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
     mediaFileModel.sizeInfo.width = image.width;
     mediaFileModel.sizeInfo.height = image.height;
     selectedMediaFiles.list = [mediaFileModel];
-    Application.selectedMediaFiles = selectedMediaFiles;
+    RuntimeProperties.selectedMediaFiles = selectedMediaFiles;
     Navigator.pop(context);
     AppRouter.navigateToReleasePage(context, videoCourseId: widget.course.id);
   }

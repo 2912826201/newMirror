@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -550,11 +551,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //判断有没有at我的消息
   void judgeIsHaveAtMeMsg() {
     //print("判断有没有at我的消息");
-    if (Application.atMesGroupModel == null || Application.atMesGroupModel.atMsgMap == null) {
+    if (MessageManager.atMesGroupModel == null || MessageManager.atMesGroupModel.atMsgMap == null) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
     } else {
-      atMeMsg = Application.atMesGroupModel.getAtMsg(conversation.conversationId);
+      atMeMsg = MessageManager.atMesGroupModel.getAtMsg(conversation.conversationId);
       if (atMeMsg == null) {
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
@@ -573,7 +574,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (chatDataList == null || chatDataList.length < 1) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
-      Application.atMesGroupModel.remove(atMeMsg);
+      MessageManager.atMesGroupModel.remove(atMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     } else {
       for (int i = 0; i < chatDataList.length; i++) {
@@ -592,7 +593,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             //print("当前消息在屏幕中间-消除at");
             isHaveAtMeMsg = false;
             isHaveAtMeMsgPr = false;
-            Application.atMesGroupModel.remove(atMeMsg);
+            MessageManager.atMesGroupModel.remove(atMeMsg);
             ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           }
           break;
@@ -600,7 +601,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           //print("找不到id--匹配时间");
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
         }
@@ -633,7 +634,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         ////print('2--------------------------已经是关闭--关闭标识at');
         isHaveAtMeMsgPr = false;
         isHaveAtMeMsgIndex = -1;
-        Application.atMesGroupModel.remove(atMeMsg);
+        MessageManager.atMesGroupModel.remove(atMeMsg);
         setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       } else {
@@ -676,7 +677,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgIndex = -1;
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           return;
@@ -709,7 +710,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         isHaveAtMeMsgIndex = -1;
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
-        Application.atMesGroupModel.remove(atMeMsg);
+        MessageManager.atMesGroupModel.remove(atMeMsg);
         setHaveAtMeMsg(isHaveAtMeMsg);
         ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
       });
@@ -748,7 +749,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           isHaveAtMeMsgIndex = -1;
           isHaveAtMeMsg = false;
           isHaveAtMeMsgPr = false;
-          Application.atMesGroupModel.remove(atMeMsg);
+          MessageManager.atMesGroupModel.remove(atMeMsg);
           setHaveAtMeMsg(isHaveAtMeMsg);
           ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
           break;
@@ -1218,8 +1219,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
       return;
     } else {
+      bool isHaveMessage = false;
       for (ChatDataModel dataModel in chatDataList) {
         if (dataModel.msg?.messageId == messageId) {
+          isHaveMessage = true;
           if (dataModel.msg?.sentStatus == status) {
             return;
           } else {
@@ -1238,6 +1241,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             return;
           }
         }
+      }
+      if (!isHaveMessage) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        Future.delayed(Duration(milliseconds: 500), () {
+          if (mounted) {
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          }
+        });
       }
     }
   }
@@ -1498,7 +1509,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             isHaveUser = false;
           }
         } else {
-          if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+          if (MessageManager.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
               null) {
             isHaveUser = false;
           }
@@ -1682,12 +1693,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     _messageInputBodyClick();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
-      SelectedMediaFiles files = Application.selectedMediaFiles;
+      SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (true != result || files == null) {
         ////print("没有选择媒体文件");
         return;
       }
-      Application.selectedMediaFiles = null;
+      RuntimeProperties.selectedMediaFiles = null;
       selectedMediaFiles.type = files.type;
       selectedMediaFiles.list = files.list;
       _handPicOrVideo(selectedMediaFiles);
@@ -1801,7 +1812,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   _topMoreBtnClick() {
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-    // Application.atMesGroupModel.add(atMsg);
+    // MessageManager.atMesGroupModel.add(atMsg);
     context.read<VoiceSettingNotifier>().stop();
     _messageInputBodyClick();
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),

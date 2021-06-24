@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -260,11 +261,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           }
         } else {
           AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
-            if (Application.galleryResult == null) {
+            if (RuntimeProperties.galleryResult == null) {
               return;
             }
-            TrainingGalleryResult galleryResult = Application.galleryResult;
-            Application.galleryResult  = null;
+            TrainingGalleryResult galleryResult = RuntimeProperties.galleryResult;
+            RuntimeProperties.galleryResult  = null;
             //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
             //要确保遍历后再进行增删操作
             if (galleryResult.operation == -1) {
@@ -330,12 +331,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   _handleMediaResult(dynamic result) async {
-    SelectedMediaFiles files = Application.selectedMediaFiles;
+    SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
     if (true != result || files == null) {
       print("没有选择媒体文件");
       return;
     }
-    Application.selectedMediaFiles = null;
+    RuntimeProperties.selectedMediaFiles = null;
     print(files.type + ":" + files.list.toString());
 
     if (files.type != mediaTypeKeyImage) {

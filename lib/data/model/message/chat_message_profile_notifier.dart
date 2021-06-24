@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/data/database/group_chat_user_information_helper.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -45,7 +45,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
           if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
             AtMsg atMsg =
                 new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-            Application.atMesGroupModel.add(atMsg);
+            MessageManager.atMesGroupModel.add(atMsg);
             break;
           }
         }
@@ -55,11 +55,11 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
 
   //撤回
   judgeWithdrawIsAtMsg(Message msg) {
-    // print("Application.atMesGroupModel:${Application.atMesGroupModel.atMsgMap.length}");
+    // print("MessageManager.atMesGroupModel:${MessageManager.atMesGroupModel.atMsgMap.length}");
     // print("111111111111111111111111111");
-    AtMsg atMsg = Application.atMesGroupModel.getAtMsg(msg.targetId);
+    AtMsg atMsg = MessageManager.atMesGroupModel.getAtMsg(msg.targetId);
     if (atMsg != null && atMsg.messageUId == msg.messageUId) {
-      Application.atMesGroupModel.remove(atMsg);
+      MessageManager.atMesGroupModel.remove(atMsg);
     }
   }
 

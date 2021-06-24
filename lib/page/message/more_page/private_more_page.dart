@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
@@ -11,6 +10,7 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -170,8 +170,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
       if (topChat) {
         if(topChatIndex<0) {
-          Application.topChatModelList.add(topChatModel);
-          topChatIndex = Application.topChatModelList.length - 1;
+          MessageManager.topChatModelList.add(topChatModel);
+          topChatIndex = MessageManager.topChatModelList.length - 1;
         }
         if (null != widget.dto) {
           widget.dto.isTop = 1;
@@ -179,7 +179,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
       } else {
         if (topChatIndex >= 0) {
-          Application.topChatModelList.removeAt(topChatIndex);
+          MessageManager.topChatModelList.removeAt(topChatIndex);
         }
         topChatIndex = -1;
         if (null != widget.dto) {
@@ -204,12 +204,12 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       NoPromptUidModel model = NoPromptUidModel(type: widget.chatType, targetId: int.parse(widget.chatUserId));
       if (disturbTheNews) {
-        Application.queryNoPromptUidList.add(model);
-        disturbTheNewsIndex = Application.queryNoPromptUidList.length - 1;
+        MessageManager.queryNoPromptUidList.add(model);
+        disturbTheNewsIndex = MessageManager.queryNoPromptUidList.length - 1;
         disturbTheNews = true;
       } else {
         if (disturbTheNewsIndex >= 0) {
-          Application.queryNoPromptUidList.removeAt(disturbTheNewsIndex);
+          MessageManager.queryNoPromptUidList.removeAt(disturbTheNewsIndex);
         }
         disturbTheNewsIndex = -1;
         disturbTheNews = false;
@@ -225,12 +225,12 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //获取消息是否免打扰
   Future<void> getConversationNotificationStatus() async {
     //检测是否置顶
-    if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
+    if (MessageManager.topChatModelList == null || MessageManager.topChatModelList.length < 1) {
       topChat = false;
     } else {
-      for (int i = 0; i < Application.topChatModelList.length; i++) {
-        if (Application.topChatModelList[i].type == 0 &&
-            Application.topChatModelList[i].chatId.toString() == widget.chatUserId) {
+      for (int i = 0; i < MessageManager.topChatModelList.length; i++) {
+        if (MessageManager.topChatModelList[i].type == 0 &&
+            MessageManager.topChatModelList[i].chatId.toString() == widget.chatUserId) {
           topChat = true;
           topChatIndex = i;
           break;
@@ -239,12 +239,12 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
 
     //判断有没有免打扰
-    if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
+    if (MessageManager.queryNoPromptUidList == null || MessageManager.queryNoPromptUidList.length < 1) {
       disturbTheNews = false;
     } else {
-      for (int i = 0; i < Application.queryNoPromptUidList.length; i++) {
-        if (Application.queryNoPromptUidList[i].type == widget.chatType &&
-            Application.queryNoPromptUidList[i].targetId.toString() == widget.chatUserId) {
+      for (int i = 0; i < MessageManager.queryNoPromptUidList.length; i++) {
+        if (MessageManager.queryNoPromptUidList[i].type == widget.chatType &&
+            MessageManager.queryNoPromptUidList[i].targetId.toString() == widget.chatUserId) {
           disturbTheNews = true;
           disturbTheNewsIndex = i;
           break;

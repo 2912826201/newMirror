@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -87,7 +87,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
                   files.type = mediaTypeKeyVideo;
                   files.list = [model];
 
-                  Application.selectedMediaFiles = files;
+                  RuntimeProperties.selectedMediaFiles = files;
 
                   Navigator.pop(context, true);
                 },

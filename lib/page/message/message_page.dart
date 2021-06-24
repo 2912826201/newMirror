@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
@@ -9,7 +8,6 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
-import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/notifier/unread_message_notifier.dart';
@@ -28,7 +26,6 @@ import 'package:mirror/widget/create_group_popup.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:app_settings/app_settings.dart';
 import 'message_chat_page_manager.dart';
@@ -84,7 +81,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
     refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value) {
       if(value!=null&&value){
-        Application.unreadNoticeTimeStamp = null;
+        MessageManager.unreadNoticeTimeStamp = null;
       }
       //然后获取新的未读数
       _getUnreadMsgCount();
@@ -284,8 +281,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           InkWell(
             onTap: () {
               AppRouter.navigateToInteractivePage(context, type: type, callBack: (result) async {
-                if(Application.unreadNoticeTimeStamp!=null){
-                  _removeUnreadNotice(Application.unreadNoticeTimeStamp, type);
+                if(MessageManager.unreadNoticeTimeStamp!=null){
+                  _removeUnreadNotice(MessageManager.unreadNoticeTimeStamp, type);
                 }
 
               });
@@ -474,7 +471,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     int messageCount = conversation.unreadCount;
     NoPromptUidModel model =
         NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));
-    if (NoPromptUidModel.contains(Application.queryNoPromptUidList, model)) {
+    if (NoPromptUidModel.contains(MessageManager.queryNoPromptUidList, model)) {
       messageCount = 0;
     }
     //
@@ -486,7 +483,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     //
 
     bool isMentioned;
-    AtMsg atMeMsg = Application.atMesGroupModel.getAtMsg(conversation.conversationId);
+    AtMsg atMeMsg = MessageManager.atMesGroupModel.getAtMsg(conversation.conversationId);
     if (atMeMsg == null) {
       isMentioned = false;
     } else {
@@ -691,15 +688,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   String _getChatUserName(String groupId, String uId, String name) {
     // print("${groupId}_$uId");
-    // print(Application.chatGroupUserInformationMap);
-    // print(Application.chatGroupUserInformationMap["${groupId}_$uId"].toString());
+    // print(MessageManager.chatGroupUserInformationMap);
+    // print(MessageManager.chatGroupUserInformationMap["${groupId}_$uId"].toString());
     // print(GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME);
-    // print((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-    String userName = ((Application.chatGroupUserInformationMap["${groupId}_$uId"] ??
+    // print((MessageManager.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    String userName = ((MessageManager.chatGroupUserInformationMap["${groupId}_$uId"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
     if (userName == null || userName.length < 1) {
       userName =
-          (Application.chatGroupUserInformationMap["${groupId}_$uId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
+          (MessageManager.chatGroupUserInformationMap["${groupId}_$uId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
     if (userName == null) {
       return name;

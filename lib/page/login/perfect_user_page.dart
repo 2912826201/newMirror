@@ -12,6 +12,7 @@ import 'package:mirror/api/push_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -31,8 +32,6 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
@@ -138,7 +137,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
       child: InkWell(
         onTap: () {
           AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
-            SelectedMediaFiles files = Application.selectedMediaFiles;
+            SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
             if (result != true || files == null) {
               print('===============================值为空退回');
               return;
@@ -146,7 +145,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
             if (fileList.isNotEmpty) {
               fileList.clear();
             }
-            Application.selectedMediaFiles = null;
+            RuntimeProperties.selectedMediaFiles = null;
             MediaFileModel model = files.list.first;
             print(
                 'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
@@ -280,7 +279,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
     bool perfectResult = await perfectUserInfo(name, portrait);
     if (perfectResult) {
       //登录成功之后则要清除掉计数
-      Application.smsCodeSendTime = null;
+      RuntimeProperties.smsCodeSendTime = null;
       print("完善用户资料成功");
       //成功后重新刷新token
       Loading.hideLoading(context);
@@ -355,21 +354,21 @@ class _PerfectUserState extends State<PerfectUserPage> {
     } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
-      Application.topChatModelList.clear();
+      MessageManager.topChatModelList.clear();
       Map<String, dynamic> topChatModelMap = await getTopChatList();
       if (topChatModelMap != null && topChatModelMap["list"] != null) {
         topChatModelMap["list"].forEach((v) {
-          Application.topChatModelList.add(TopChatModel.fromJson(v));
+          MessageManager.topChatModelList.add(TopChatModel.fromJson(v));
         });
       }
     } catch (e) {}
     //todo 获取有哪些消息是免打扰的消息
     try {
-      Application.queryNoPromptUidList.clear();
+      MessageManager.queryNoPromptUidList.clear();
       Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
       if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
         queryNoPromptUidListMap["list"].forEach((v) {
-          Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+          MessageManager.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
         });
       }
     } catch (e) {}

@@ -3,6 +3,7 @@ import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/version_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -153,8 +154,8 @@ class _SettingHomePageState extends State<SettingHomePage> {
         // 清空曝光过的listKey
         ExposureDetectorController.instance.signOutClearHistory();
         //清楚通知的数量
-        Application.unreadMessageNumber=0;
-        Application.unreadNoticeNumber=0;
+        MessageManager.unreadMessageNumber=0;
+        MessageManager.unreadNoticeNumber=0;
         await Application.appLogout(context: context);
       },
       child: Container(

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -9,6 +8,7 @@ import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -474,11 +474,11 @@ class _IFTabBarState extends State<IFTabBar> {
                   Visibility(
                     visible: currentIndex == 2
                         ? false
-                        : Application.unreadNoticeNumber + Application.unreadMessageNumber < 1
+                        : MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber < 1
                             ? false
                             : true,
                     child: Positioned(
-                      child: CountBadge(Application.unreadNoticeNumber + Application.unreadMessageNumber, false),
+                      child: CountBadge(MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber, false),
                       left: 12,
                       top: (tabBarHeight - 24) / 2 - 7,
                     ),

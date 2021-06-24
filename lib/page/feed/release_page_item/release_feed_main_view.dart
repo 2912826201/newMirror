@@ -4,8 +4,7 @@ import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
@@ -287,7 +286,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
               true,
               startPageGallery,
               false, (result) async {
-            SelectedMediaFiles files = Application.selectedMediaFiles;
+            SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
             if (true != result || files == null) {
               print("没有选择媒体文件");
               return;
@@ -295,7 +294,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             if (widget.selectedMediaFiles.type == null) {
               widget.selectedMediaFiles.type = files.type;
             }
-            Application.selectedMediaFiles = null;
+            RuntimeProperties.selectedMediaFiles = null;
             print(files.type + ":" + files.list.toString());
             // for (MediaFileModel model in files.list) {
             //   if (model.croppedImage != null && model.croppedImageData == null) {

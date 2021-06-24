@@ -5,10 +5,9 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_holo_date_picker/date_picker.dart';
-import 'package:flutter_holo_date_picker/i18n/date_picker_i18n.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -19,7 +18,6 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -176,7 +174,7 @@ class _EditInformationState extends State<EditInformation> {
                         onTap: () {
                           AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true,
                               (result) async {
-                            SelectedMediaFiles files = Application.selectedMediaFiles;
+                            SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
                             if (result != true || files == null) {
                               print('===============================值为空退回');
                               return;
@@ -184,7 +182,7 @@ class _EditInformationState extends State<EditInformation> {
                             if (fileList.isNotEmpty) {
                               fileList.clear();
                             }
-                            Application.selectedMediaFiles = null;
+                            RuntimeProperties.selectedMediaFiles = null;
                             MediaFileModel model = files.list.first;
                             print(
                                 'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');

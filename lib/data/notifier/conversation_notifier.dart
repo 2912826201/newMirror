@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/event_bus.dart';
 
 /// conversation_notifier
@@ -125,11 +125,11 @@ class ConversationNotifier with ChangeNotifier {
   }
 
   _updateUnreadMessageNumber(){
-    Application.unreadMessageNumber=0;
+    MessageManager.unreadMessageNumber=0;
     _conversationMap.forEach((key, value) {
       NoPromptUidModel model=NoPromptUidModel(type: value.type,targetId: int.parse(value.conversationId));
-      if(!NoPromptUidModel.contains(Application.queryNoPromptUidList,model)){
-        Application.unreadMessageNumber+=value.unreadCount;
+      if(!NoPromptUidModel.contains(MessageManager.queryNoPromptUidList,model)){
+        MessageManager.unreadMessageNumber+=value.unreadCount;
       }
     });
     EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);

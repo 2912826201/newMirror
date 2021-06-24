@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// group_chat_user_information_helper
@@ -29,7 +29,7 @@ class GroupChatUserInformationDBHelper {
       return true;
     }else{
       if(await _updateJudge(informationDto)){
-        Application.chatGroupUserInformationMap[informationDto.groupChatId]=informationDto.toMap();
+        MessageManager.chatGroupUserInformationMap[informationDto.groupChatId]=informationDto.toMap();
         return true;
       }else{
         return false;
@@ -65,19 +65,19 @@ class GroupChatUserInformationDBHelper {
   }
 
   Future<void> clearAll() async {
-    Application.chatGroupUserInformationMap.clear();
+    MessageManager.chatGroupUserInformationMap.clear();
     await DBHelper.instance.db.delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION);
   }
 
   Future<void> clearGroupUser(String groupChatId) async {
     List<String> removeKey = [];
-    Application.chatGroupUserInformationMap.forEach((key, value) {
+    MessageManager.chatGroupUserInformationMap.forEach((key, value) {
       if (key.contains("${groupChatId}_")) {
         removeKey.add(key);
       }
     });
     removeKey.forEach((element) {
-      Application.chatGroupUserInformationMap.remove(element);
+      MessageManager.chatGroupUserInformationMap.remove(element);
     });
     await DBHelper.instance.db.delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
         where: "$GROUP_CHAT_USER_INFORMATION_GROUP_ID = '$groupChatId'");
@@ -172,11 +172,11 @@ class GroupChatUserInformationDBHelper {
 
 
   void _remove(String groupId,String userId) async {
-    print("清除群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
+    print("清除群友信息：${MessageManager.chatGroupUserInformationMap["${groupId}_$userId"]}");
     if(groupId==null||userId==null){
       return;
     }
-    Application.chatGroupUserInformationMap["${groupId}_$userId"]=null;
+    MessageManager.chatGroupUserInformationMap["${groupId}_$userId"]=null;
     DBHelper.instance.db
         .delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
         where: "$GROUP_CHAT_USER_INFORMATION_ID = '${groupId}_$userId'");
@@ -186,8 +186,8 @@ class GroupChatUserInformationDBHelper {
 
 
   bool _isHaveEqualMap(GroupChatUserInformationDto informationDto){
-    if(Application.chatGroupUserInformationMap[informationDto.groupChatId]!=null){
-      return informationDto.isEqualMap(Application.chatGroupUserInformationMap[informationDto.groupChatId]);
+    if(MessageManager.chatGroupUserInformationMap[informationDto.groupChatId]!=null){
+      return informationDto.isEqualMap(MessageManager.chatGroupUserInformationMap[informationDto.groupChatId]);
     }
     return false;
   }

@@ -58,7 +58,7 @@ class ChatPageUtil {
           action = Container();
         }
       } else {
-        if (Application.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
+        if (MessageManager.chatGroupUserInformationMap["${conversation.conversationId}_${Application.profile.uid}"] ==
             null) {
           action = Container();
         }
@@ -154,23 +154,23 @@ class ChatPageUtil {
 
   //加入发送未完成的消息
   addPostNoCompleteMessage(ConversationDto conversation, List<ChatDataModel> chatDataList) {
-    if (Application.postChatDataModelList[conversation.id] == null ||
-        Application.postChatDataModelList[conversation.id].length < 1) {
+    if (MessageManager.postChatDataModelList[conversation.id] == null ||
+        MessageManager.postChatDataModelList[conversation.id].length < 1) {
       return;
     } else {
-      for (int i = Application.postChatDataModelList[conversation.id].length - 1; i >= 0; i--) {
+      for (int i = MessageManager.postChatDataModelList[conversation.id].length - 1; i >= 0; i--) {
         bool isHave = false;
         for (int j = 0; j < chatDataList.length; j++) {
           if (chatDataList[j].msg != null &&
-              Application.postChatDataModelList[conversation.id][i].msg != null &&
-              chatDataList[j].msg.messageId == Application.postChatDataModelList[conversation.id][i].msg.messageId) {
+              MessageManager.postChatDataModelList[conversation.id][i].msg != null &&
+              chatDataList[j].msg.messageId == MessageManager.postChatDataModelList[conversation.id][i].msg.messageId) {
             isHave = true;
           }
         }
         if (isHave) {
-          Application.postChatDataModelList[conversation.id].removeAt(i);
+          MessageManager.postChatDataModelList[conversation.id].removeAt(i);
         } else {
-          chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
+          chatDataList.insert(0, MessageManager.postChatDataModelList[conversation.id][i]);
         }
       }
     }

@@ -7,6 +7,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
@@ -1002,7 +1003,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               files.type = type;
               files.list = mediaFileList;
 
-              Application.selectedMediaFiles = files;
+              RuntimeProperties.selectedMediaFiles = files;
 
               //跳转时 将之前的视频播放停止
               notifier.controllerList.forEach((controller) {

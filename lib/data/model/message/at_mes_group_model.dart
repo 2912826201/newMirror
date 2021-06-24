@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:mirror/config/application.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// count : 0
@@ -60,7 +60,7 @@ void initAtMesGroupModel() async {
   if (content != null) {
     AtMesGroupModel atMesGroupModel = AtMesGroupModel();
     atMesGroupModel.atMsgMap = json.decode(content);
-    Application.atMesGroupModel = atMesGroupModel;
+    MessageManager.atMesGroupModel = atMesGroupModel;
   }
 }
 

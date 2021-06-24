@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -82,16 +83,16 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   @override
   void initState() {
     //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
-    print("查明￥${Application.selectedMediaFiles}");
+    print("查明￥${RuntimeProperties.selectedMediaFiles}");
     // 获取定位权限
     locationPermissions();
     WidgetsBinding.instance.addObserver(this);
-    _selectedMediaFiles = Application.selectedMediaFiles;
-    Application.selectedMediaFiles = null;
+    _selectedMediaFiles = RuntimeProperties.selectedMediaFiles;
+    RuntimeProperties.selectedMediaFiles = null;
 
     //如果topicId不为空 则取topicModel出来生成预设的插入话题
     if (widget.topicId != null) {
-      TopicDtoModel topicModel = Application.topicMap[widget.topicId];
+      TopicDtoModel topicModel = RuntimeProperties.topicMap[widget.topicId];
       if (topicModel != null) {
         _controller.text = "#${topicModel.name}";
         _controller.selection = TextSelection(
