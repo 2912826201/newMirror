@@ -12,6 +12,7 @@ import 'package:mirror/data/model/topic/topic_background_config.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading.dart';
@@ -222,6 +223,7 @@ class Application {
         //TODO 处理登出后需要清掉的用户的其他数据
         MessageManager.clearUserMessage(appContext);
         _clearUserRuntimeCache();
+        EventBus.getDefault().post(msg:true,registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
         //友盟上报登出
         UmengCommonSdk.onProfileSignOff();
         //跳转页面 移除所有页面 重新打开首页

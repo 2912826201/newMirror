@@ -83,8 +83,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     height: 21,
                     margin: const EdgeInsets.only(left: 16),
                     child: Stack(
-                      overflow: Overflow.visible,
-                      alignment: const FractionalOffset(0, 0.5),
+                      clipBehavior: Clip.none, alignment: const FractionalOffset(0, 0.5),
                       children: avatarOverlap(context, laudUserInfo),
                     )),
               );
