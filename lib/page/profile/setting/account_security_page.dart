@@ -74,19 +74,19 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             SizedBox(
               height: 16,
             ),
-            _itemRow("QQ", qQNumber != null ? qQNumber : "去绑定"),
+            _itemRow("QQ", qQNumber??"去绑定"),
             Container(
               width: width,
               height: 0.5,
               color: AppColor.bgWhite,
             ),
-            _itemRow("微信绑定", weChatNumber != null ? weChatNumber : "去绑定"),
+            _itemRow("微信绑定", weChatNumber?? "去绑定"),
             Container(
               width: width,
               height: 0.5,
               color: AppColor.bgWhite,
             ),
-            _itemRow("微博绑定", weiboNumber != null ? weiboNumber : "去绑定"),
+            _itemRow("微博绑定", weiboNumber ??"去绑定"),
             Container(
               width: width,
               height: 0.5,
@@ -95,7 +95,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             isIos
                 ? Column(
                     children: [
-                      _itemRow("Apple ID", appleId != null ? appleId : "去绑定"),
+                      _itemRow("Apple ID", appleId??"去绑定"),
                       Container(
                         width: width,
                         height: 0.5,

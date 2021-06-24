@@ -532,7 +532,7 @@ class _IFTabBarState extends State<IFTabBar> {
         children: [
           AnimatedOpacity(
             opacity: snapshot.data == 0 ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 150),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText1),
               child: const Text(
@@ -544,7 +544,7 @@ class _IFTabBarState extends State<IFTabBar> {
           AppConfig.needShowTraining
               ? AnimatedOpacity(
                   opacity: snapshot.data == 1 ? 1 : 0,
-                  duration: const Duration(milliseconds: 250),
+                  duration: const Duration(milliseconds: 150),
                   child: Container(
                     margin: EdgeInsets.only(left: leftMarginText2),
                     child: const Text("训练", style: AppStyle.whiteMedium15),
@@ -553,7 +553,7 @@ class _IFTabBarState extends State<IFTabBar> {
               : Container(),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 150),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText3),
               child: const Text("消息", style: AppStyle.whiteMedium15),
@@ -561,7 +561,7 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AnimatedOpacity(
             opacity: snapshot.data == 3 ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 150),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText4),
               child: const Text("我的", style: AppStyle.whiteMedium15),

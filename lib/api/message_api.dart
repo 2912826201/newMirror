@@ -203,7 +203,7 @@ Future<Map> kickedGroupChat({int groupChatId, String uids}) async {
   }
 }
 
-///邀请加入群聊
+///250加入群聊
 ///请求参数
 ///groupChatId:群id
 ///uids:1000000,1013036用户id字符串，以逗号隔开
