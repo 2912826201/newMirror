@@ -58,22 +58,35 @@ class GroupChatUserInformationDBHelper {
 
     if(result!=null&&result.length>0){
       for (Map<String, dynamic> map in result) {
-        dataMap[map[GROUP_CHAT_USER_INFORMATION_ID]]=map;
+        dataMap[map[GROUP_CHAT_USER_INFORMATION_ID]] = map;
       }
     }
     return dataMap;
   }
 
   Future<void> clearAll() async {
+    Application.chatGroupUserInformationMap.clear();
     await DBHelper.instance.db.delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION);
   }
 
+  Future<void> clearGroupUser(String groupChatId) async {
+    List<String> removeKey = [];
+    Application.chatGroupUserInformationMap.forEach((key, value) {
+      if (key.contains("${groupChatId}_")) {
+        removeKey.add(key);
+      }
+    });
+    removeKey.forEach((element) {
+      Application.chatGroupUserInformationMap.remove(element);
+    });
+    await DBHelper.instance.db.delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
+        where: "$GROUP_CHAT_USER_INFORMATION_GROUP_ID = '$groupChatId'");
+  }
 
-  Future<Map<String,GroupChatUserInformationDto>> queryGroupListMap(String chatGroupId) async {
-    Map<String,GroupChatUserInformationDto> mapList =Map();
-    List<Map<String, dynamic>> result =await DBHelper.instance.db.query(
-        TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
-        where:"$GROUP_CHAT_USER_INFORMATION_GROUP_ID = '$chatGroupId'");
+  Future<Map<String, GroupChatUserInformationDto>> queryGroupListMap(String chatGroupId) async {
+    Map<String, GroupChatUserInformationDto> mapList = Map();
+    List<Map<String, dynamic>> result = await DBHelper.instance.db
+        .query(TABLE_NAME_GROUP_CHAT_USER_INFORMATION, where: "$GROUP_CHAT_USER_INFORMATION_GROUP_ID = '$chatGroupId'");
 
     print("result:${result.length}， result1:${result.toString()}");
 

@@ -35,6 +35,7 @@ import '../message/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
 import 'jpush_test_page.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -489,6 +490,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("极光测试页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  JPush().getLaunchAppNotification().then((value){
+                    print("getLaunchAppNotification:$value");
+                    ToastShow.show(msg: "getLaunchAppNotification:$value", context: context);});
+                },
+                child: Text("iOS获取打开APP的推送内容")
               ),
             ],
           ),
