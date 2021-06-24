@@ -176,6 +176,7 @@ Future<bool> ProfileCancelBlack(int blackId) async {
 
 ///检测黑名单关系
 Future<BlackModel> ProfileCheckBlack(int checkId) async {
+  print('-------------------------------请求黑名单接口');
   BaseResponseModel responseModel = await requestApi(CHECK_BLACK, {"checkId": checkId});
   if (responseModel.isSuccess && responseModel.data != null) {
     return BlackModel.fromJson(responseModel.data);

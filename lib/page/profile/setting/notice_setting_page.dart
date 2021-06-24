@@ -157,7 +157,9 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                   children: [
                     InkWell(
                       onTap: () {
-                        AppSettings.openNotificationSettings();
+                        AppSettings.openNotificationSettings().catchError((e){
+                          print('------openNotificationSettings---------openNotificationSettings-----$e');
+                        });
                       },
                       child: _getNotice(snapshot.data),
                     ),
