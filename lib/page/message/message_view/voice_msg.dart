@@ -66,6 +66,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   Timer timer;
   String urlMd5String;
   String urlString;
+  String urlFilePathString;
 
   @override
   void initState() {
@@ -238,9 +239,13 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                         }
                         String filePathMd5=_getUrlMd5String();
                         if(context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String:filePathMd5)){
-                          context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, filePathMd5);
+                          context
+                              .read<VoiceSettingNotifier>()
+                              .judgePlayModel(urlString, urlFilePathString, context, filePathMd5);
                         }else {
-                          context.read<VoiceSettingNotifier>().judgePlayModel(urlString, context, urlMd5String);
+                          context
+                              .read<VoiceSettingNotifier>()
+                              .judgePlayModel(urlString, urlFilePathString, context, urlMd5String);
                         }
                         Map<String, dynamic> map =Map();
                         map["urlMd5String"]=urlMd5String;
@@ -422,17 +427,20 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   String _getUrlMd5String() {
     if (widget.isTemporary) {
       urlString = widget.chatVoiceModel.filePath;
+      urlFilePathString = widget.chatVoiceModel.filePath;
       urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
       return urlMd5String;
       // print("地址Benin1：${widget.chatVoiceModel.filePath}");
     } else {
       if (widget.chatVoiceModel.pathUrl != null) {
         urlString = widget.chatVoiceModel.pathUrl;
+        urlFilePathString = widget.chatVoiceModel.filePath;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.pathUrl);
         // print("地址Benin2：${widget.chatVoiceModel.pathUrl},messageUId:${widget.chatVoiceModel.filePath}");
         return StringUtil.generateMd5(widget.chatVoiceModel.filePath);
       } else {
         urlString = widget.chatVoiceModel.filePath;
+        urlFilePathString = widget.chatVoiceModel.filePath;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
         // print("地址Benin3：${widget.chatVoiceModel.filePath}");
         // print("urlMd5String：$urlMd5String");

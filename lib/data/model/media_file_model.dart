@@ -9,6 +9,7 @@ import 'package:photo_manager/photo_manager.dart';
 
 const mediaTypeKeyImage = "image";
 const mediaTypeKeyVideo = "video";
+const mediaTypeKeyVoice = "voice";
 
 //选的图片视频等信息 根据开发进度不断完善
 class MediaFileModel {

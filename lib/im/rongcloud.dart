@@ -123,12 +123,21 @@ class RongCloud {
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendVoiceMessage(Message message) async {
+  Future<Message> sendVoiceAndroidMessage(Message message) async {
     if (Application.platform == 1) {
       return RongIMClient.getMessage(
           (await RongIMClient.sendIntactMessageWithCallBack(message, "", "", null)).messageId);
     } else {
       return RongIMClient.sendIntactMessageWithCallBack(message, "", "", null);
+    }
+  }
+
+  //todo 现在没有加 每一秒只发送5条数据的限制
+  Future<Message> sendVoiceIosMessage(VoiceMessage message, int conversationType, String targetId) async {
+    if (Application.platform == 1) {
+      return RongIMClient.getMessage((await RongIMClient.sendMessage(conversationType, targetId, message)).messageId);
+    } else {
+      return RongIMClient.sendMessage(conversationType, targetId, message);
     }
   }
 

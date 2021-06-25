@@ -53,7 +53,7 @@ class FileUtil {
 
     final storage = Storage();
     int _finishedCount = 0;
-
+    print("上传文件:${fileList.length}");
     for (int i = 0; i < fileList.length; i++) {
       PutController putController = PutController();
       // 设置进度监听

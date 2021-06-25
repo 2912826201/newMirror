@@ -985,7 +985,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     // //print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
     postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
-      // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1097,12 +1097,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     if (chatDataList[position].isTemporary) {
       if (chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_IMAGE ||
-          chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-        _resetPostTemporaryImageVideo(position);
+          chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_VIDEO ||
+          chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+        _resetPostTemporaryImageVideoVoice(position);
       } else {
         ToastShow.show(msg: "未处理：${chatDataList[position].type}", context: _context);
       }
-    } else if (chatDataList[position].msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+    } else if (chatDataList[position].msg != null &&
+        chatDataList[position].msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       TextMessage textMessage = ((chatDataList[position].msg.content) as TextMessage);
       //print("textMessage.content:${textMessage.content}");
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
@@ -1113,13 +1115,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           _resetPostMessageTemporaryImageVideo(position, map);
           return;
         }
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+        Map<String, dynamic> map = json.decode(mapModel["data"]);
+        if (mapModel["isTemporary"] != null && mapModel["isTemporary"]) {
+          _resetPostMessageTemporaryVoice(position, map);
+          return;
+        }
       }
     }
     _resetPostMsg(position);
   }
 
-  //重新发送临时的图片视频
-  void _resetPostTemporaryImageVideo(int position) {
+  //重新发送临时的图片视频和录音
+  void _resetPostTemporaryImageVideoVoice(int position) {
     chatDataList.insert(0, chatDataList[position]);
     chatDataList.removeAt(position + 1);
     List<ChatDataModel> modelList = <ChatDataModel>[];
@@ -1127,16 +1135,24 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     String type = mediaTypeKeyVideo;
     if (chatDataList[0].type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       type = mediaTypeKeyImage;
+    } else if (chatDataList[0].type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+      type = mediaTypeKeyVoice;
     }
     chatDataList[0].isTemporary = false;
     deletePostCompleteMessage(conversation);
     chatDataList[0].isTemporary = true;
     addTemporaryMessage(chatDataList[0], conversation);
-    postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), (isSuccess) {
-      if(!isSuccess) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      }
-    });
+    if (type == mediaTypeKeyVoice) {
+      postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
+        // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      });
+    } else {
+      postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), (isSuccess) {
+        if (!isSuccess) {
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        }
+      });
+    }
   }
 
   //重新发送融云数据库内的临时图片视频
@@ -1174,10 +1190,33 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), (isSuccess) {
-      if(!isSuccess) {
+      if (!isSuccess) {
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     });
+  }
+
+  _resetPostMessageTemporaryVoice(int position, Map<String, dynamic> infoMap) {
+    RongCloud.init().deleteMessageById(chatDataList[position].msg, null);
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type = getChatTypeModel(chatDataList[position]);
+    ChatVoiceModel chatVoiceModel = ChatVoiceModel();
+    chatVoiceModel.filePath = infoMap["filePath"];
+    chatVoiceModel.longTime = infoMap["duration"];
+    chatDataModel.chatVoiceModel = chatVoiceModel;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    chatDataList[position].isTemporary = false;
+    deletePostCompleteMessage(conversation);
+    chatDataList.removeAt(position);
+    addTemporaryMessage(chatDataModel, conversation);
+    judgeAddAlertTime();
+    chatDataList.insert(0, chatDataModel);
+    animateToBottom();
+    if (mounted) {
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    }
+    postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {});
   }
 
   //重新发送融云数据的正常消息

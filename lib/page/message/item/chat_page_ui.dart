@@ -181,7 +181,9 @@ class ChatPageUtil {
     if (chatDataList != null && chatDataList.length > 0) {
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
-          if(AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i])) {
+          if (AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i]) &&
+              chatDataList[i].msg != null &&
+              chatDataList[i].msg.sentTime != null) {
             chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
           }
         } else if (chatDataList[i].msg != null &&
