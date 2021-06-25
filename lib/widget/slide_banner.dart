@@ -76,7 +76,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   // 分页标签数字
   final StreamController<int> paginationTabStreamController = StreamController<int>();
   List<Widget> cupertinoButtonList = [];
-  int beforTime = DateTime.now().millisecond;
+  int beforIndex = 0;
   // 是否可点赞
   bool isSetUpLuad = true;
 
@@ -408,29 +408,18 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     onPageChanged: (index) {
                     autoPlay(index);
                       if (index > 1) {
-                        int nowTime = DateTime.now().millisecond;
                         if (index < imageCount - 3) {
-                          if (nowTime - beforTime >= 250) {
                             scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                          } else {
-                            Future.delayed(Duration(milliseconds: nowTime - beforTime), () {
-                              scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                                  duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                            });
-                          }
-                        } else if (index == imageCount - 3) {
-                          if (nowTime - beforTime >= 250) {
+                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                        } else if (index >= imageCount - 3) {
                             scrollController.animateTo(scrollController.position.maxScrollExtent,
-                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                          } else {
-                            Future.delayed(Duration(milliseconds: nowTime - beforTime), () {
-                              scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                                  duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                            });
-                          }
+                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                         }
+                      }else if(beforIndex!=null&&beforIndex>index){
+                        scrollController.animateTo(scrollController.position.minScrollExtent,
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                       }
+                    beforIndex = index;
                     },
                   ),
                   // child: Swiper.children(
