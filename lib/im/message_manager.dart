@@ -566,6 +566,8 @@ class MessageManager {
               return "[直播课程]";
             case ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE:
               return "[视频课程]";
+            case ChatTypeModel.MESSAGE_TYPE_VOICE:
+              return "[语音]";
             case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
               return _parseGrpNtf(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_CMD:
