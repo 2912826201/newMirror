@@ -26,6 +26,8 @@ import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/customize_tab_bar/customize_tab_bar.dart' as Custom;
@@ -206,6 +208,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
+  List<String> listHotCourseRecommend1 = ["七月减肥季", "瘦腿", "新手减脂", "跑步", "腹肌", "帕梅拉", "养生瑜伽", "夜跑"];
+  List<String> listHotCourseRecommend2 = ["瑜伽", "七月减肥季", "减脂餐", "健身装备", "游泳馆", "食物热量排行", "肌肉拉伤恢复", "搏击操"];
 
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -275,17 +279,38 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   @override
   Widget build(BuildContext context) {
     print("最近搜索历史 记录");
-    return Column(
-      children: [
-        // 最近搜索标题栏
-        searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
-        searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-        liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
-        liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
-        topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
-        topicList.isNotEmpty ? HotTopicContent() : Container(),
-      ],
-    );
+    return Container(
+      width: ScreenUtil.instance.width,
+      height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - ScreenUtil.instance.statusBarHeight,
+      child:SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(
+          children: [
+            // 最近搜索标题栏
+            searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
+            searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
+            topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+            topicList.isNotEmpty
+                ? liveVideoList.isNotEmpty
+                ? HotCourseRecommendStyleOne()
+                : HotCourseRecommendStyleTwo()
+                : Container(),
+            // topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+            // topicList.isNotEmpty
+            //     ? liveVideoList.isNotEmpty
+            //     ?
+            // HotCourseRecommendStyleTwo() : HotCourseRecommendStyleOne()
+            //     : Container(),
+            liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
+            liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
+            topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
+            topicList.isNotEmpty ? HotTopicContent() : Container(),
+          ],
+        ),
+      ) ,
+    )
+      ;
+
   }
 
 // 最近搜索标题栏
@@ -331,10 +356,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 // 历史记录
   historyRecord(BuildContext context) {
     return Container(
-      height: 23,
-      // color: AppColor.mainRed,
+      height: 24,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
           itemCount: searchHistoryList.length > 10 ? 10 : searchHistoryList.length,
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -347,12 +372,120 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                     color: AppColor.textHint.withOpacity(0.24),
                     borderRadius: const BorderRadius.all(Radius.circular(3))),
                 margin: EdgeInsets.only(left: 16, right: historyRecordItemSpacing(searchHistoryList.length, index)),
-                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 1),
+                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 4, top: 4),
                 alignment: const Alignment(0, 0),
-                child: Center(child: Text(searchHistoryList[index].word)),
+                child: Center(
+                    child: Text(
+                  searchHistoryList[index].word,
+                  style: TextStyle(fontSize: 12),
+                )),
               ),
             );
           }),
+    );
+  }
+
+  // 热门推荐标题栏
+  HotCourseRecommend() {
+    return Container(
+        width: ScreenUtil.instance.screenWidthDp,
+        margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
+        height: 48,
+        // 左居中对齐
+        alignment: const Alignment(-1, 0),
+        child: const Text(
+          "热门推荐",
+          style: AppStyle.textMedium15,
+        ));
+  }
+
+  // 热门推荐类容样式一
+  HotCourseRecommendStyleOne() {
+    //listHotCourseRecommend1
+    List<Widget> _container = List.generate(listHotCourseRecommend1.length, (index) {
+      return GestureDetector(
+          onTap: () {
+            context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend1[index]);
+            context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend1[index];
+          },
+          child: Container(
+            height: 24,
+            width: getTextSize(
+                        listHotCourseRecommend1[index],
+                        TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        1)
+                    .width +
+                16,
+            decoration: BoxDecoration(
+                color: AppColor.textHint.withOpacity(0.24), borderRadius: const BorderRadius.all(Radius.circular(3))),
+            child: Center(
+                child: Text(listHotCourseRecommend1[index],
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ))),
+          ));
+    });
+    return Container(
+      width: ScreenUtil.instance.width,
+      margin: EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
+      child: Wrap(
+
+        alignment: WrapAlignment.start,
+        runAlignment: WrapAlignment.end,
+        spacing: 16,
+        runSpacing: 16,
+        children: _container,
+      ),
+    );
+  }
+
+// 热门推荐类容样式二
+  HotCourseRecommendStyleTwo() {
+    List<Widget> _container = List.generate(listHotCourseRecommend2.length, (index) {
+      return Container(
+        // color: AppColor.color707070,
+        width: (ScreenUtil.instance.width - 48) / 2,
+        child: Row(
+          children: [
+            GestureDetector(
+                onTap: () {
+                  context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend2[index]);
+                  context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend2[index];
+                },
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration:
+                      BoxDecoration(color: AppColor.mainRed, borderRadius: const BorderRadius.all(Radius.circular(3))),
+                  margin: EdgeInsets.only(right: 6),
+                )),
+            GestureDetector(
+                onTap: () {
+                  context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend2[index]);
+                  context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend2[index];
+                },
+                child: Text(listHotCourseRecommend2[index],
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    )))
+          ],
+        ),
+      );
+    });
+    return Wrap(
+      alignment: WrapAlignment.start,
+      runAlignment: WrapAlignment.end,
+      spacing: 16,
+      runSpacing: 16,
+      children: _container,
     );
   }
 
