@@ -86,7 +86,7 @@ class FeedSharePopups extends StatelessWidget {
       if (fromTrainingGallery) {
         ShareViewModel feed = ShareViewModel(
           name: "动态",
-          icon: AppIcon.share_download_circle,
+          icon: AppIcon.share_feed_circle,
         );
         shareViewModel.insert(1, feed);
       }
