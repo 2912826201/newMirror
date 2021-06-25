@@ -21,7 +21,6 @@ import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:provider/provider.dart';
 
-
 // 轮播图
 class SlideBanner extends StatefulWidget {
   SlideBanner(
@@ -77,7 +76,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   // 分页标签数字
   final StreamController<int> paginationTabStreamController = StreamController<int>();
   List<Widget> cupertinoButtonList = [];
-
+  int beforIndex = 0;
   // 是否可点赞
   bool isSetUpLuad = true;
 
@@ -116,7 +115,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
 
   // 滑动回调
   autoPlay(int index) {
-    print("轮播图回调");
+    print("轮播图回调$index");
     pagingIndicatorStreamController.sink.add(index);
     paginationTabStreamController.sink.add(index);
   }
@@ -130,49 +129,49 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       //   item.url = null;
       // }
       // 查看大图设置
- // cupertinoButtons.add(CupertinoButton(
- //          borderRadius: BorderRadius.zero,
- //          padding: EdgeInsets.zero,
- //          onPressed: () {
- //            print('---------------------------------大图预览');
- //            ImagePreview.preview(
- //              context,
- //              initialIndex: indexs,
- //              onIndexChanged: (ind) {
- //                // 移动到指定下标，设置不播放动画
- //                swiperController.move(ind, animation: false);
- //                autoPlay(ind);
- //              },
- //              images: List.generate(widget.model.picUrls.length, (index) {
- //                return ImageOptions(
- //                  url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
- //                  tag: widget.model.picUrls[index].url + "$indexs",
- //                );
- //              }),
- //            ).then((value) {
- //              context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
- //            });
- //          },
- //          child: ImagePreviewHero(
- //            tag: item.url + "$indexs",
- //            child: CachedNetworkImage(
- //              /// imageUrl的淡入动画的持续时间。
- //              // fadeInDuration: Duration(milliseconds: 0),
- //              imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
- //              width: ScreenUtil.instance.width,
- //              height: height,
- //              fit: BoxFit.cover,
- //              placeholder: (context, url) => Container(
- //                color: AppColor.bgWhite,
- //              ),
- //              errorWidget: (context, url, e) {
- //                return Container(
- //                  color: AppColor.bgWhite,
- //                );
- //              },
- //            ),
- //          ),
- //        ));
+      // cupertinoButtons.add(CupertinoButton(
+      //          borderRadius: BorderRadius.zero,
+      //          padding: EdgeInsets.zero,
+      //          onPressed: () {
+      //            print('---------------------------------大图预览');
+      //            ImagePreview.preview(
+      //              context,
+      //              initialIndex: indexs,
+      //              onIndexChanged: (ind) {
+      //                // 移动到指定下标，设置不播放动画
+      //                swiperController.move(ind, animation: false);
+      //                autoPlay(ind);
+      //              },
+      //              images: List.generate(widget.model.picUrls.length, (index) {
+      //                return ImageOptions(
+      //                  url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
+      //                  tag: widget.model.picUrls[index].url + "$indexs",
+      //                );
+      //              }),
+      //            ).then((value) {
+      //              context.read<FeedMapNotifier>().changeImageDetailsStatus(false);
+      //            });
+      //          },
+      //          child: ImagePreviewHero(
+      //            tag: item.url + "$indexs",
+      //            child: CachedNetworkImage(
+      //              /// imageUrl的淡入动画的持续时间。
+      //              // fadeInDuration: Duration(milliseconds: 0),
+      //              imageUrl: item.url != null ? FileUtil.getImageSlim(item.url) : "",
+      //              width: ScreenUtil.instance.width,
+      //              height: height,
+      //              fit: BoxFit.cover,
+      //              placeholder: (context, url) => Container(
+      //                color: AppColor.bgWhite,
+      //              ),
+      //              errorWidget: (context, url, e) {
+      //                return Container(
+      //                  color: AppColor.bgWhite,
+      //                );
+      //              },
+      //            ),
+      //          ),
+      //        ));
 
       // 轮播图设置
       cupertinoButtons.add((!widget.isHero)
@@ -407,16 +406,20 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     cycleRolling: false,
                     autoRolling: false,
                     onPageChanged: (index) {
-                      autoPlay(index);
+                    autoPlay(index);
                       if (index > 1) {
                         if (index < imageCount - 3) {
-                          scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                              duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                        } else if (index == imageCount - 3) {
-                          scrollController.animateTo(scrollController.position.maxScrollExtent,
-                              duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                            scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                        } else if (index >= imageCount - 3) {
+                            scrollController.animateTo(scrollController.position.maxScrollExtent,
+                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                         }
+                      }else if(beforIndex!=null&&beforIndex>index){
+                        scrollController.animateTo(scrollController.position.minScrollExtent,
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                       }
+                    beforIndex = index;
                     },
                   ),
                   // child: Swiper.children(
