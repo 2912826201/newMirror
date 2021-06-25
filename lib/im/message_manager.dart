@@ -49,7 +49,7 @@ class MessageManager {
   static int unreadNoticeNumber = 0;
 
   //互动通知未读数时间戳
-  static int unreadNoticeTimeStamp;
+  static int unreadNoticeTimeStamp = 0;
 
   //聊天群的群成员信息
   static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
@@ -76,7 +76,7 @@ class MessageManager {
     postChatDataModelList.clear();
     unreadMessageNumber = 0;
     unreadNoticeNumber = 0;
-    unreadNoticeTimeStamp = null;
+    unreadNoticeTimeStamp = 0;
     //TODO 应该还会有其他信息需要清
   }
 

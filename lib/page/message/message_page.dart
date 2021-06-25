@@ -80,8 +80,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         break;
     }
     refreshUnreadMsg(type, timeStamp: unReadTimeStamp).then((value) {
-      if(value!=null&&value){
-        MessageManager.unreadNoticeTimeStamp = null;
+      //处理成功后将未读时间戳归零
+      if (value != null && value) {
+        MessageManager.unreadNoticeTimeStamp = 0;
       }
       //然后获取新的未读数
       _getUnreadMsgCount();
@@ -281,10 +282,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           InkWell(
             onTap: () {
               AppRouter.navigateToInteractivePage(context, type: type, callBack: (result) async {
-                if(MessageManager.unreadNoticeTimeStamp!=null){
+                if (MessageManager.unreadNoticeTimeStamp > 0) {
                   _removeUnreadNotice(MessageManager.unreadNoticeTimeStamp, type);
                 }
-
               });
             },
             child: Stack(
@@ -513,7 +513,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                                   conversation.type == LIVE_TYPE ||
                                   conversation.type == TRAINING_TYPE
                               ? _getOfficialAvatar(conversation.conversationId)
-                              : _getConversationAvatar(avatarList, conversation.isTop,conversation.conversationId)),
+                              : _getConversationAvatar(avatarList, conversation.isTop, conversation.conversationId)),
                       SizedBox(
                         width: 12,
                       ),
@@ -608,7 +608,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                             conversation.type == LIVE_TYPE ||
                             conversation.type == TRAINING_TYPE
                         ? _getOfficialAvatar(conversation.conversationId)
-                        : _getConversationAvatar(avatarList, conversation.isTop,conversation.conversationId)),
+                        : _getConversationAvatar(avatarList, conversation.isTop, conversation.conversationId)),
                 SizedBox(
                   width: 12,
                 ),
@@ -695,8 +695,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     String userName = ((MessageManager.chatGroupUserInformationMap["${groupId}_$uId"] ??
         Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
     if (userName == null || userName.length < 1) {
-      userName =
-          (MessageManager.chatGroupUserInformationMap["${groupId}_$uId"] ?? Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
+      userName = (MessageManager.chatGroupUserInformationMap["${groupId}_$uId"] ??
+          Map())[GROUP_CHAT_USER_INFORMATION_USER_NAME];
     }
     if (userName == null) {
       return name;
@@ -705,7 +705,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-  Widget _getConversationAvatar(List<String> avatarList, int isTop,String userId) {
+  Widget _getConversationAvatar(List<String> avatarList, int isTop, String userId) {
     print("avatarList:::${avatarList.length}");
     if (avatarList.length == 1) {
       return UserAvatarImageUtil.init().getUserImageWidget(avatarList.first, userId, 45);
