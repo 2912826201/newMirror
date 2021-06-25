@@ -264,24 +264,50 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
 }
 
 //发送音频
-Future<Message> postMessageManagerVoice(String targetId, ChatVoiceModel chatVoiceModel, int conversationType) async {
-  VoiceMessage msg = new VoiceMessage();
-  msg.localPath = chatVoiceModel.filePath;
-  msg.extra = jsonEncode(chatVoiceModel.toJson());
-  msg.duration = chatVoiceModel.longTime;
+Future<void> postMessageManagerVoice(String targetId, ChatVoiceModel chatVoiceModel, int conversationType,
+    Function(Message msg, int code) finished) async {
+  List<UploadResultModel> uploadResultModelList = await onPostVoice(chatVoiceModel.filePath);
+  TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo(groupId: conversationType == RCConversationType.Group ? targetId : null);
+  Map<String, dynamic> voiceMap = Map();
+  voiceMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  voiceMap["toUserId"] = targetId;
+  voiceMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_VOICE;
+  voiceMap["name"] = ChatTypeModel.MESSAGE_TYPE_VOICE_NAME;
+  Map fileMap = Map();
+  if (uploadResultModelList != null && uploadResultModelList.length > 0) {
+    fileMap.addAll(uploadResultModelList.first.toJson());
+  } else {
+    fileMap["isTemporary"] = true;
+  }
+  fileMap["duration"] = chatVoiceModel.longTime;
+  fileMap["filePath"] = chatVoiceModel.filePath;
+  voiceMap["data"] = jsonEncode(fileMap);
+  msg.content = jsonEncode(voiceMap);
+
   Message message = new Message();
   message.conversationType = conversationType;
   message.senderUserId = Application.profile.uid.toString();
   message.targetId = targetId;
   message.content = msg;
-  message.objectName = VoiceMessage.objectName;
+  message.objectName = TextMessage.objectName;
   message.sentTime = new DateTime.now().millisecondsSinceEpoch;
   message.canIncludeExpansion = true;
   Map map = Map();
   map["read"] = "0";
   message.expansionDic = map;
-  return await Application.rongCloud.sendVoiceMessage(message);
+
+  if (uploadResultModelList != null && uploadResultModelList.length > 0) {
+    finished(await Application.rongCloud.sendVoiceAndroidMessage(message), 1);
+  } else {
+    insertTemporaryVoice(message, finished);
+  }
+}
+
+//插入临时的录音-本地
+Future<void> insertTemporaryVoice(Message message, Function(Message msg, int code) finished) async {
+  Application.rongCloud.insertOutgoingMessage(message.conversationType, message.targetId, message.content, finished,
+      sendTime: message.sentTime, sendStatus: RCSentStatus.Failed);
 }
 
 //发送用户名片
@@ -515,16 +541,23 @@ Message getSystemMsg(ChatSystemMessageModel model, int targetId) {
   return message;
 }
 
-//voice 的更新
-void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {
-  VoiceMessage voiceMessage = ((chatDataModel.msg.content) as VoiceMessage);
-  Map<String, dynamic> mapModel = json.decode(voiceMessage.extra);
-  mapModel["read"] = 1;
-  voiceMessage.extra = json.encode(mapModel);
-  chatDataModel.msg.content = voiceMessage;
-  Map<String, dynamic> expansionDic = Map();
-  expansionDic["read"] = "1";
-  Application.rongCloud.updateMessage(expansionDic, chatDataModel.msg.messageUId, finished);
+void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) async {
+  if (await isOffline()) {
+    return;
+  }
+  if (chatDataModel != null && chatDataModel.msg != null) {
+    if (chatDataModel.msg.expansionDic != null && chatDataModel.msg.expansionDic["read"] == 1) {
+      return;
+    }
+    Map<String, dynamic> expansionDic = Map();
+    expansionDic["read"] = "1";
+    if (chatDataModel.msg.expansionDic == null) {
+      chatDataModel.msg.expansionDic = expansionDic;
+    } else {
+      chatDataModel.msg.expansionDic["read"] = 1;
+    }
+    Application.rongCloud.updateMessage(expansionDic, chatDataModel.msg.messageUId, finished);
+  }
 }
 
 //发送有选项的model
@@ -610,14 +643,20 @@ Future<void> postImage(int start, int end, List<UploadResultModel> uploadResultM
 
 //发送语音
 void postVoice(ChatDataModel chatDataModel, String targetId, int conversationType, VoidCallback voidCallback) async {
-  chatDataModel.msg = await postMessageManagerVoice(targetId, chatDataModel.chatVoiceModel, conversationType);
-  chatDataModel.isTemporary = false;
-  voidCallback();
+  postMessageManagerVoice(targetId, chatDataModel.chatVoiceModel, conversationType, (Message msg, int code) {
+    if (msg != null) {
+      chatDataModel.msg = msg;
+      chatDataModel.isTemporary = false;
+    } else {
+      chatDataModel.status = RCSentStatus.Failed;
+    }
+    voidCallback();
+  });
 }
 
 //重新发送消息
 void resetPostMessage(ChatDataModel chatDataModel, VoidCallback voidCallback) async {
-  Message msg = await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  Message msg = await Application.rongCloud.sendVoiceAndroidMessage(chatDataModel.msg);
   if (chatDataModel.msg.messageId != msg.messageId) {
     RongCloud.init().deleteMessageById(chatDataModel.msg, null);
   }
@@ -647,8 +686,6 @@ Future<UploadResultModel> onPostImgOrVideoSinge(File file) async {
 //上传图片和视频
 Future<List<UploadResultModel>> onPostImgOrVideo(List<ChatDataModel> modelList, String type) async {
   List<File> fileList = [];
-  List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
-  UploadResults results;
   if (type == mediaTypeKeyImage) {
     String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
     int i = 0;
@@ -663,11 +700,33 @@ Future<List<UploadResultModel>> onPostImgOrVideo(List<ChatDataModel> modelList, 
         fileList.add(imageFile);
       }
     });
-    results = await FileUtil().uploadPics(fileList, (percent) {});
   } else if (type == mediaTypeKeyVideo) {
     modelList.forEach((element) {
       fileList.add(element.mediaFileModel.file);
     });
+  }
+
+  return await onPostFile(fileList, type);
+}
+
+//上传录音
+Future<List<UploadResultModel>> onPostVoice(String filePath) async {
+  List<File> fileList = [];
+  fileList.add(File(filePath));
+  print("上传录音:${fileList.length}");
+  return await onPostFile(fileList, mediaTypeKeyVoice);
+}
+
+//上传资源
+Future<List<UploadResultModel>> onPostFile(List<File> fileList, String type) async {
+  List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
+  UploadResults results;
+
+  if (type == mediaTypeKeyImage) {
+    results = await FileUtil().uploadPics(fileList, (percent) {});
+  } else if (type == mediaTypeKeyVideo) {
+    results = await FileUtil().uploadMedias(fileList, (percent) {});
+  } else if (type == mediaTypeKeyVoice) {
     results = await FileUtil().uploadMedias(fileList, (percent) {});
   }
   print(results.isSuccess);

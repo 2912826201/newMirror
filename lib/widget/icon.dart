@@ -128,6 +128,7 @@ class AppIcon {
   static const String remocon_stop_74 = "assets/svg/remocon_stop_74.svg";
   static const String remocon_play_74 = "assets/svg/remocon_play_74.svg";
   static const String share_qq_circle = "assets/svg/share_qq_circle.svg";
+  static const String share_feed_circle = "assets/svg/share_feed_circle.svg";
   static const String share_qzone_circle = "assets/svg/share_qzone_circle.svg";
   static const String share_wechat_circle = "assets/svg/share_wechat_circle.svg";
   static const String share_moment_circle = "assets/svg/share_moment_circle.svg";

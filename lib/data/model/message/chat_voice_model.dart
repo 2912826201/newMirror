@@ -29,7 +29,15 @@ class ChatVoiceModel {
     filePath = json["filePath"];
     pathUrl = json["pathUrl"];
     longTime = json["longTime"];
-    read = json["read"];
+
+    if (json["read"] != null && json["read"] is int) {
+      read = json["read"];
+    } else if (json["read"] != null && json["read"] is String) {
+      try {
+        int read = int.parse(json["read"]);
+        this.read = read;
+      } catch (e) {}
+    }
   }
 
   Map<String, dynamic> toJson() {

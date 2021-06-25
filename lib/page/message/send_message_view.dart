@@ -251,6 +251,23 @@ class SendMessageViewState extends State<SendMessageView> {
             mediaFileModel: widget.model.mediaFileModel,
             sizeInfoMap: map,
             heroId: msg.messageId.toString());
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+        //-------------------------------------------------录音消息--------------------------------------------
+        Map<String, dynamic> map = json.decode(mapModel["data"]);
+        map["isTemporary"] = mapModel["isTemporary"] ?? false;
+        map["messageId"] = msg.messageId;
+        try {
+          if (msg.expansionDic != null && msg.expansionDic["read"] != null) {
+            if (msg.expansionDic["read"] == "1") {
+              map["read"] = 1;
+            }
+            if (msg.expansionDic["read"] == "0") {
+              map["read"] = 0;
+            }
+          }
+        } catch (e) {}
+
+        return getTextVoiceMessage(map, msg.messageUId);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
         //-------------------------------------------------直播课程消息--------------------------------------------
         Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
@@ -333,6 +350,18 @@ class SendMessageViewState extends State<SendMessageView> {
     //print("mapModel[read]" + mapModel["read"].toString());
     return getVoiceMsgData(msg.messageUId, mapModel, false,
         StringUtil.generateMd5(voiceMessage.remoteUrl != null ? voiceMessage.remoteUrl : mapModel["filePath"]));
+  }
+
+  //语音信息--自定义的
+  Widget getTextVoiceMessage(Map<String, dynamic> map, String messageUId) {
+    // 语音消息
+    Map<String, dynamic> mapModel = Map();
+    mapModel["filePath"] = map["filePath"];
+    mapModel["pathUrl"] = map["url"];
+    mapModel["longTime"] = map["duration"];
+    mapModel["read"] = map["read"];
+    return getVoiceMsgData(messageUId, mapModel, false,
+        StringUtil.generateMd5(mapModel["pathUrl"] != null ? mapModel["pathUrl"] : mapModel["filePath"]));
   }
 
   String getChatUserName(String uId, String name) {

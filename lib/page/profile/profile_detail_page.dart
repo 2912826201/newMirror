@@ -352,6 +352,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     ? isMselfId
                         ? TabBarView(
                             controller: _mController,
+                            physics: ClampingScrollPhysics(),
                             children: <Widget>[
                               ProfileDetailsList(
                                 type: 2,

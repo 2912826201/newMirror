@@ -163,9 +163,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   void startRecorder() async {
     var outputFile = File(_mPath);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
-    }
+    // if (outputFile.existsSync()) {
+    //   await outputFile.delete();
+    // }
 
     await _recorder.start();
     var recording = await _recorder.current(channel: 0);
@@ -261,8 +261,10 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         }
         //print("进行发送");
         widget.voiceFile(_mPath, costTime);
-        isRecordering=false;
-        costTime=0;
+
+        // print("发送录音:path:$_mPath,time:$costTime,${File(_mPath).existsSync()}");
+        isRecordering = false;
+        costTime = 0;
         // //print("进行发送：_mPath：$_mPath");
       }
     }
