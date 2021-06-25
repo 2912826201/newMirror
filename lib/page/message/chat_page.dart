@@ -957,6 +957,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //发送录音
   _voiceFile(String path, int time) async {
+    // print("发送录音:path:$path,time:$time,${File(path).existsSync()}");
+
     ChatDataModel chatDataModel = new ChatDataModel();
     ChatVoiceModel voiceModel = new ChatVoiceModel();
     voiceModel.filePath = path;
