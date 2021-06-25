@@ -144,9 +144,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 记录唤起表情前的光标位置
   int emojiCursorPosition;
 
-  // 键盘弹起次数
-  int bounceCount = 0;
-
   // 键盘底部偏移
   double keyboardMaxBottom = 0.0;
   double keyboardMinBottom = 0.0;
@@ -159,6 +156,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   // 是否退出
   bool isPop = false;
+
+  // 是否点击emoji
+  bool isClickEmoji = false;
 
   @override
   void initState() {
@@ -482,18 +482,30 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     print("222222222222222222222");
     String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
     print("键盘高度${MediaQuery.of(context).viewInsets.bottom}");
+    print("11:${context.watch<CommentEnterNotifier>().isCloseKeyboard}");
+    // 每次都获取最小的键盘偏移
+    if (isPostFrameCallback) {
+      if (keyboardMinBottom > _inputBoxKey.currentContext.findRenderObject().getTransformTo(null)?.getTranslation().y) {
+        keyboardMinBottom = _inputBoxKey.currentContext.findRenderObject().getTransformTo(null)?.getTranslation().y;
+      }
+    }
+    // 当偏移大于最小偏移时说明键盘是弹起中或者弹起状态设置 就需要关闭键盘
+    if (isPostFrameCallback &&
+        _inputBoxKey.currentContext.findRenderObject().getTransformTo(null)?.getTranslation().y > keyboardMinBottom) {
+      context.watch<CommentEnterNotifier>().isCloseKeyboard = true;
+    }
     // 当键盘高度为0时就是收起键盘，并且在绘制第一帧之后这是为了处理GlobalKey的绑定，在绘制第一帧内获取了键盘的最大y轴keyboardMaxBottom，使用在收起时走build在获取会比keyboardMaxBottom小，当点击的是外层纱布不能进入防止重复Pop,
     // 设置isPop是同理。
     if (MediaQuery.of(context).viewInsets.bottom == 0.0 &&
         !isPop &&
         isPostFrameCallback &&
         _inputBoxKey.currentContext.findRenderObject().getTransformTo(null)?.getTranslation().y < keyboardMaxBottom &&
-        !widget.isClickGauze) {
+        !widget.isClickGauze &&
+        context.watch<CommentEnterNotifier>().isCloseKeyboard) {
       isPop = true;
       print("就退出一次啊${widget.isClickGauze}");
       Navigator.of(context).pop();
     }
-
     return mounted
         ? Container(
             padding: EdgeInsets.only(
@@ -654,7 +666,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                 ),
                 Container(
                     width: ScreenUtil.instance.width,
-                    key: _inputBoxKey,
                     padding: EdgeInsets.only(
                       top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
                       bottom: returnInputOffset(context.watch<CommentEnterNotifier>().emojiState),
@@ -665,6 +676,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                     child: Stack(
                       children: [
                         Container(
+                          key: _inputBoxKey,
                           width: Platform.isIOS
                               ? ScreenUtil.instance.width - 32
                               : ScreenUtil.instance.width - 32 - (widget.isShowPostBtn ? 52 + 12 : 0),
@@ -734,6 +746,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     // 开启键盘关闭表情
                                     // if (!commentFocus.hasFocus) {
                                     context.read<CommentEnterNotifier>().openEmojiCallback(false);
+                                    context.read<CommentEnterNotifier>().setIsCloseKeyboard(false);
                                     // }
                                   },
                                   // 装饰器修改外观
@@ -821,6 +834,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     print("点击emojiIcon时的光标位置：：：$emojiCursorPosition");
                                     // 显示表情刷新Ui
                                     context.read<CommentEnterNotifier>().openEmojiCallback(true);
+                                    context.read<CommentEnterNotifier>().setIsCloseKeyboard(false);
                                   },
                                   iconSize: 24,
                                   svgName: AppIcon.input_emotion,
@@ -1061,6 +1075,9 @@ class CommentEnterNotifier extends ChangeNotifier {
   // @后的实时搜索文本
   String atSearchStr;
 
+  // 是否需要关闭键盘
+  bool isCloseKeyboard = true;
+
   changeCallback(String str) {
     this.textFieldStr = str;
     notifyListeners();
@@ -1105,6 +1122,11 @@ class CommentEnterNotifier extends ChangeNotifier {
 
   openEmojiCallback(bool isOpen) {
     this.emojiState = isOpen;
+    notifyListeners();
+  }
+
+  setIsCloseKeyboard(bool isClose) {
+    this.isCloseKeyboard = isClose;
     notifyListeners();
   }
 }
