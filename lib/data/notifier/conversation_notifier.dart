@@ -14,6 +14,8 @@ class ConversationNotifier with ChangeNotifier {
   //非置顶
   List<String> _commonIdList = [];
 
+  List<String> get chatIdList => _commonIdList + _topIdList;
+
   Map<String, ConversationDto> _conversationMap = {};
 
   int get topListLength => _topIdList.length;
