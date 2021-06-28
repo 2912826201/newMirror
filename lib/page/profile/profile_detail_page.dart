@@ -502,7 +502,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       child: Stack(
         children: [
           Container(
-              height: backGroundHeight ,
+              height: backGroundHeight,
               width: width,
               clipBehavior: Clip.hardEdge,
               // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
