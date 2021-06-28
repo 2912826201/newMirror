@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -324,13 +325,15 @@ class ImgVideoMsg extends StatelessWidget {
     );
   }
 
-  Widget getImageAsset(String assetPath) {
+  Widget getImageAsset(String assetPath, {double width, double height}) {
     //print("assetPath:${assetPath}");
-    return Image.asset(
-      assetPath ?? "",
-      width: width,
-      height: height,
-      fit: BoxFit.cover,
+    return UnconstrainedBox(
+      child: Image.asset(
+        assetPath ?? "",
+        width: width ?? this.width,
+        height: height ?? this.height,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
@@ -356,13 +359,9 @@ class ImgVideoMsg extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: AppColor.bgWhite,
-      alignment: Alignment.bottomCenter,
-      padding: EdgeInsets.only(bottom: 10),
-      child: Text(
-        "文件损坏",
-        style: TextStyle(fontSize: 12, color: AppColor.black),
-      ),
+      color: AppColor.color343434,
+      child: getImageAsset("assets/png/image_error.png",
+          width: min(80, min(height, width)), height: min(80, min(height, width))),
     );
   }
 

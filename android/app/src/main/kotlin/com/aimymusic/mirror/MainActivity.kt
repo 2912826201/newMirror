@@ -1,16 +1,14 @@
 package com.aimymusic.mirror
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.aimymusic.mirror.method.AppBadgerMethodCallHandlerImpl
 import com.aimymusic.mirror.method.OnMethodCallListener
-import com.aimymusic.mirror.service.BadgeIntentService
+import com.aimymusic.mirror.util.BadgeUtil
 import com.aimymusic.mirror.util.RomUtil
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
@@ -19,6 +17,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import io.flutter.Log
 
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
@@ -86,12 +85,8 @@ class MainActivity : FlutterActivity(){
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AppBadgerMethodCallHandlerImpl.badgerChannel)
-                .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context, object : OnMethodCallListener {
-                    override fun onMethodCall(callMethod: String, badgeCount: Int) {
-                        if (RomUtil.isMiui()) {
-                            startService(Intent(context, BadgeIntentService::class.java).putExtra("badgeCount", badgeCount))
-                        }
-                    }
-                }))
+                .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context))
     }
+
+
 }
