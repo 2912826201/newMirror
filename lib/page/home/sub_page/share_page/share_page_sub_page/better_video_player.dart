@@ -100,9 +100,10 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
               );
             },
             errorWidget: (context, url, error) {
+              print("offsetY：#$offsetY");
               return Container(
                 color: AppColor.color343434,
-                alignment: Alignment.center,
+                padding: EdgeInsets.only(top: (containerSize.height - ScreenUtil.instance.width * 0.53) / 2.0),
                 child: getImageAsset("assets/png/image_error.png"),
               );
             }),
@@ -127,6 +128,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   Widget getImageAsset(String assetPath) {
     //print("assetPath:${assetPath}");
     return UnconstrainedBox(
+      alignment: Alignment.topCenter,
       child: Image.asset(
         assetPath ?? "",
         width: ScreenUtil.instance.width * 0.53,
