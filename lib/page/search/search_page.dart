@@ -208,7 +208,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
-  List<String> listHotCourseRecommend1 = ["七月减肥季", "瘦腿","新手减脂", "跑步", "腹肌", "帕梅拉", "养生瑜伽", "夜跑"];
+  List<String> listHotCourseRecommend1 = ["七月减肥季", "瘦腿", "新手减脂", "跑步", "腹肌", "帕梅拉", "养生瑜伽", "夜跑"];
   List<String> listHotCourseRecommend2 = ["瑜伽", "七月减肥季", "减脂餐", "健身装备", "游泳馆", "食物热量排行", "肌肉拉伤恢复", "搏击操"];
 
   // Token can be shared with different requests.
@@ -280,37 +280,65 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   Widget build(BuildContext context) {
     print("最近搜索历史 记录");
     return Container(
-      width: ScreenUtil.instance.width,
-      height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - ScreenUtil.instance.statusBarHeight,
-      child:SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          children: [
-            // 最近搜索标题栏
-            searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
-            searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-            topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-            topicList.isNotEmpty
-                ? liveVideoList.isNotEmpty
-                ? HotCourseRecommendStyleOne()
-                : HotCourseRecommendStyleTwo()
-                : Container(),
-            topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-            topicList.isNotEmpty
-                ? liveVideoList.isNotEmpty
-                ?
-            HotCourseRecommendStyleTwo() : HotCourseRecommendStyleOne()
-                : Container(),
-            liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
-            liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
-            topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
-            topicList.isNotEmpty ? HotTopicContent() : Container(),
-          ],
-        ),
-      ) ,
-    )
-      ;
+        width: ScreenUtil.instance.width,
+        height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - ScreenUtil.instance.statusBarHeight,
+        child:
+            // SingleChildScrollView(
+            //   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            MediaQuery.removePadding(
+          removeTop: true,
+          context: context,
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: [
+              // 最近搜索标题栏
+              searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
+              searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
+              topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+              topicList.isNotEmpty
+                  ? liveVideoList.isNotEmpty
+                      ? HotCourseRecommendStyleOne()
+                      : HotCourseRecommendStyleTwo()
+                  : Container(),
+              topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+              topicList.isNotEmpty
+                  ? liveVideoList.isNotEmpty
+                      ? HotCourseRecommendStyleTwo()
+                      : HotCourseRecommendStyleOne()
+                  : Container(),
+              liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
+              liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
+              topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
+              topicList.isNotEmpty ? HotTopicContent() : Container(),
+            ],
+          ),
+        )
 
+        // child: Column(
+        //   children: [
+        //     // 最近搜索标题栏
+        //     searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
+        //     searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
+        //     topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+        //     topicList.isNotEmpty
+        //         ? liveVideoList.isNotEmpty
+        //         ? HotCourseRecommendStyleOne()
+        //         : HotCourseRecommendStyleTwo()
+        //         : Container(),
+        //     topicList.isNotEmpty ? HotCourseRecommend() : Container(),
+        //     topicList.isNotEmpty
+        //         ? liveVideoList.isNotEmpty
+        //         ?
+        //     HotCourseRecommendStyleTwo() : HotCourseRecommendStyleOne()
+        //         : Container(),
+        //     liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
+        //     liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
+        //     topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
+        //     topicList.isNotEmpty ? HotTopicContent() : Container(),
+        //   ],
+        // ),
+        // ) ,
+        );
   }
 
 // 最近搜索标题栏
@@ -357,7 +385,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   historyRecord(BuildContext context) {
     return Container(
       height: 24,
-      alignment: Alignment(-1,0),
+      alignment: Alignment(-1, 0),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
@@ -437,7 +465,6 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         right: 16,
       ),
       child: Wrap(
-
         alignment: WrapAlignment.start,
         runAlignment: WrapAlignment.end,
         spacing: 16,
@@ -481,13 +508,19 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         ),
       );
     });
-    return Wrap(
-      alignment: WrapAlignment.start,
-      runAlignment: WrapAlignment.end,
-      spacing: 16,
-      runSpacing: 16,
-      children: _container,
-    );
+    return Container(
+        width: ScreenUtil.instance.width,
+        margin: EdgeInsets.only(
+          left: 16,
+          right: 16,
+        ),
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          runAlignment: WrapAlignment.end,
+          spacing: 16,
+          runSpacing: 16,
+          children: _container,
+        ));
   }
 
 // 热门课程标题栏

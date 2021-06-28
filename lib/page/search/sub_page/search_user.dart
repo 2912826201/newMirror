@@ -138,7 +138,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
   _getSearchUser(String text) async {
     if (dataPage > 1 && hashNext == 0) {
       print('=============================退出请求');
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       return;
     }
     refreshOver = false;
@@ -189,7 +189,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         _lastTime = model.lastTime;
         _refreshController.loadComplete();
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadComplete();
       }
     }
     refreshOver = true;
