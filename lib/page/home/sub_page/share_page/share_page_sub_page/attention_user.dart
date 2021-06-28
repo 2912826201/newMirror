@@ -30,9 +30,13 @@ class AttentionUserState extends State<AttentionUser> {
       width: ScreenUtil.instance.width,
       height: list.length == 0 ? 0 : 251,
       duration: const Duration(milliseconds: 250),
+      // color: AppColor.color707070,
       curve: Curves.linear,
       //NOTE 此用list布局不用Column是因为使用AnimatedContainer动态改变高度时Column的高度不受限制会导致界面UI底部溢出
-      child: ListView.builder(
+      child: MediaQuery.removePadding(
+          removeTop: true,
+          context: context,
+          child:ListView.builder(
           itemCount: 2,
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
@@ -71,7 +75,7 @@ class AttentionUserState extends State<AttentionUser> {
             } else {
               return attentionList();
             }
-          }),
+          })),
     );
   }
 
