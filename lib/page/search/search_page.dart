@@ -15,6 +15,7 @@ import 'package:mirror/data/database/search_history_db_helper.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/search/search_hot_words.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -208,8 +209,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
-  List<String> listHotCourseRecommend1 = ["七月减肥季", "瘦腿", "新手减脂", "跑步", "腹肌", "帕梅拉", "养生瑜伽", "夜跑"];
-  List<String> listHotCourseRecommend2 = ["瑜伽", "七月减肥季", "减脂餐", "健身装备", "游泳馆", "食物热量排行", "肌肉拉伤恢复", "搏击操"];
+  List<SearchHotWords> hotWordList = [];
 
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -232,6 +232,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       SearchHistoryDBHelper().querySearchHistory(
           context.read<ProfileNotifier>().profile != null ? context.read<ProfileNotifier>().profile.uid : -1),
     );
+    // 请求热门词汇
+    requestList.add(getHotWords(token));
     // 请求热门课程
     if (AppConfig.needShowTraining) requestList.add(recommendCourse(token));
     // 合并请求
@@ -248,10 +250,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       if (mounted && context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
+      if (results[2] != null) {
+        hotWordList = results[2];
+      }
       if (AppConfig.needShowTraining) {
         List<CourseModel> liveList = [];
-        if (results[2] != null) {
-          liveList = results[2];
+        if (results[3] != null) {
+          liveList = results[3];
           if (liveList.isNotEmpty) {
             liveVideoList.addAll(liveList);
           }
@@ -282,10 +287,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
     return Container(
         width: ScreenUtil.instance.width,
         height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - ScreenUtil.instance.statusBarHeight,
-        child:
-            // SingleChildScrollView(
-            //   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            MediaQuery.removePadding(
+        child: MediaQuery.removePadding(
           removeTop: true,
           context: context,
           child: ListView(
@@ -294,51 +296,25 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               // 最近搜索标题栏
               searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
               searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-              topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-              topicList.isNotEmpty
+              hotWordList.isNotEmpty ? HotCourseRecommend() : Container(),
+              hotWordList.isNotEmpty
                   ? liveVideoList.isNotEmpty
                       ? HotCourseRecommendStyleOne()
                       : HotCourseRecommendStyleTwo()
                   : Container(),
-              topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-              topicList.isNotEmpty
-                  ? liveVideoList.isNotEmpty
-                      ? HotCourseRecommendStyleTwo()
-                      : HotCourseRecommendStyleOne()
-                  : Container(),
+              // hotWordList.isNotEmpty ? HotCourseRecommend() : Container(),
+              // hotWordList.isNotEmpty
+              //     ? liveVideoList.isNotEmpty
+              //         ? HotCourseRecommendStyleTwo()
+              //         : HotCourseRecommendStyleOne()
+              //     : Container(),
               liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
               liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
               topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
               topicList.isNotEmpty ? HotTopicContent() : Container(),
             ],
           ),
-        )
-
-        // child: Column(
-        //   children: [
-        //     // 最近搜索标题栏
-        //     searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
-        //     searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-        //     topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-        //     topicList.isNotEmpty
-        //         ? liveVideoList.isNotEmpty
-        //         ? HotCourseRecommendStyleOne()
-        //         : HotCourseRecommendStyleTwo()
-        //         : Container(),
-        //     topicList.isNotEmpty ? HotCourseRecommend() : Container(),
-        //     topicList.isNotEmpty
-        //         ? liveVideoList.isNotEmpty
-        //         ?
-        //     HotCourseRecommendStyleTwo() : HotCourseRecommendStyleOne()
-        //         : Container(),
-        //     liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
-        //     liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
-        //     topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
-        //     topicList.isNotEmpty ? HotTopicContent() : Container(),
-        //   ],
-        // ),
-        // ) ,
-        );
+        ));
   }
 
 // 最近搜索标题栏
@@ -431,16 +407,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   // 热门推荐类容样式一
   HotCourseRecommendStyleOne() {
     //listHotCourseRecommend1
-    List<Widget> _container = List.generate(listHotCourseRecommend1.length, (index) {
+    List<Widget> _container = List.generate(hotWordList.length, (index) {
       return GestureDetector(
           onTap: () {
-            context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend1[index]);
-            context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend1[index];
+            context.read<SearchEnterNotifier>().changeCallback(hotWordList[index].name);
+            context.read<SearchEnterNotifier>().textController.text = hotWordList[index].name;
           },
           child: Container(
             height: 24,
             width: getTextSize(
-                        listHotCourseRecommend1[index],
+                        hotWordList[index].name,
                         TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -451,7 +427,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             decoration: BoxDecoration(
                 color: AppColor.textHint.withOpacity(0.24), borderRadius: const BorderRadius.all(Radius.circular(3))),
             child: Center(
-                child: Text(listHotCourseRecommend1[index],
+                child: Text(hotWordList[index].name,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -476,7 +452,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
 // 热门推荐类容样式二
   HotCourseRecommendStyleTwo() {
-    List<Widget> _container = List.generate(listHotCourseRecommend2.length, (index) {
+    List<Widget> _container = List.generate(hotWordList.length, (index) {
       return Container(
         // color: AppColor.color707070,
         width: (ScreenUtil.instance.width - 48) / 2,
@@ -484,8 +460,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           children: [
             GestureDetector(
                 onTap: () {
-                  context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend2[index]);
-                  context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend2[index];
+                  context.read<SearchEnterNotifier>().changeCallback(hotWordList[index].name);
+                  context.read<SearchEnterNotifier>().textController.text = hotWordList[index].name;
                 },
                 child: Container(
                   width: 6,
@@ -496,10 +472,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                 )),
             GestureDetector(
                 onTap: () {
-                  context.read<SearchEnterNotifier>().changeCallback(listHotCourseRecommend2[index]);
-                  context.read<SearchEnterNotifier>().textController.text = listHotCourseRecommend2[index];
+                  context.read<SearchEnterNotifier>().changeCallback(hotWordList[index].name);
+                  context.read<SearchEnterNotifier>().textController.text = hotWordList[index].name;
                 },
-                child: Text(listHotCourseRecommend2[index],
+                child: Text(hotWordList[index].name,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
