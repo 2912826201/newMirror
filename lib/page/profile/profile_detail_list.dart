@@ -172,7 +172,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   _tabBarDoubleTap(result) {
     print('-----------------------------333333333333333333333333333333');
-    int type = result;
+    int type = result as int;
     if (type == widget.type) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));
     }

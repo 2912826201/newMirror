@@ -289,7 +289,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: height,
           width: width,
           child: Stack(
-            children: [_minehomeBody(), Positioned(top: 0, child: appBar())],
+            children: [_minehomeBody(), Positioned(top: 0, child: _appBar())],
           )),
     );
   }
@@ -299,6 +299,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     return NestedScrollView(
         key: _key,
         controller: scrollController,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         pinnedHeaderSliverHeightBuilder: () {
           return ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
         },
@@ -333,6 +334,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) {
+                        // scrollController.animateTo(scrollController.position.minScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
                         EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                       },
                       indicatorSize: Custom.TabBarIndicatorSize.label,
@@ -396,7 +398,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         ));
   }
 
-  Widget appBar() {
+  Widget _appBar() {
     double userNameWidth = 0;
     userNameWidth = width - (CustomAppBar.appBarButtonWidth * 2 + 32);
     if (!isMselfId) {
@@ -500,7 +502,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       child: Stack(
         children: [
           Container(
-              height: backGroundHeight - followFansHeight,
+              height: backGroundHeight,
               width: width,
               clipBehavior: Clip.hardEdge,
               // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
@@ -511,7 +513,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     sigmaY: 28.0,
                   ),
                   child: CachedNetworkImage(
-                    height: backGroundHeight - followFansHeight,
+                    height: backGroundHeight,
                     width: width,
                     imageUrl: _avatar ?? "",
                     fit: BoxFit.fitWidth,
@@ -528,7 +530,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           Positioned(
                child: Container(
             width: width,
-            height: backGroundHeight - followFansHeight,
+            height: backGroundHeight,
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [AppColor.white.withOpacity(0.6), AppColor.white],

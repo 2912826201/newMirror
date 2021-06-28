@@ -23,6 +23,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,8 @@ class MessagePage extends StatefulWidget {
   MessageState createState() => MessageState();
 }
 
-class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+class MessageState extends State<MessagePage>
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver, TickerProviderStateMixin {
   bool isOffline = false;
   StreamSubscription<ConnectivityResult> connectivityListener;
 
@@ -53,6 +55,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   @override
   bool get wantKeepAlive => true;
+  Map<int, AnimationController> animationMap = {};
 
   @override
   void initState() {
@@ -168,6 +171,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     super.build(context);
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
+    print("_listLength::::$_listLength");
+    print(
+        "context.watch<ConversationNotifier>().chatIdList:::::${context.watch<ConversationNotifier>().chatIdList.length}");
+    print(" MessageManager.chatDataList::::${MessageManager.chatDataList.length}");
+
+    context.watch<ConversationNotifier>().chatIdList.forEach((v) {
+      animationMap[int.parse(v.split("_").last)] =
+          AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    });
     return Scaffold(
       appBar: CustomAppBar(
         hasLeading: false,
@@ -408,53 +420,104 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   Widget _buildConversationItem(int index, ConversationDto conversation) {
     if (conversation.type == PRIVATE_TYPE || conversation.type == GROUP_TYPE) {
       if (Application.platform == 0) {
-        return GestureDetector(
-          child: _conversationItem(index, conversation),
-          onTap: () {
-            getMessageType(conversation, context);
-            jumpChatPageConversationDto(context, conversation);
-          },
-          onLongPress: () {
-            showAppDialog(context,
-                title: "删除消息",
-                info: "确认删除这条对话消息吗？",
-                barrierDismissible: false,
-                cancel: AppDialogButton("取消", () {
-                  print("点了取消");
-                  return true;
-                }),
-                confirm: AppDialogButton("确定", () {
-                  print("点击了确定");
-                  MessageManager.removeConversation(
-                      context, conversation.conversationId, conversation.uid, conversation.type);
-                  Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
-                  return true;
-                }));
-          },
-        );
+        return SizeTransitionView(
+            id: int.parse(conversation.conversationId),
+            animationMap: animationMap,
+            child: GestureDetector(
+              child: _conversationItem(index, conversation),
+              onTap: () {
+                getMessageType(conversation, context);
+                jumpChatPageConversationDto(context, conversation);
+              },
+              onLongPress: () {
+                showAppDialog(context,
+                    title: "删除消息",
+                    info: "确认删除这条对话消息吗？",
+                    barrierDismissible: false,
+                    cancel: AppDialogButton("取消", () {
+                      print("点了取消");
+                      return true;
+                    }),
+                    confirm: AppDialogButton("确定", () {
+                      print("点击了确定");
+                      // 动画删除item
+                      if (animationMap.containsKey(int.parse(conversation.conversationId))) {
+                        animationMap[int.parse(conversation.conversationId)].forward().then((value) {
+                          // context.watch<ConversationNotifier>().removeListener(() { })
+                          // attentionModelList.removeWhere((element) {
+                          //   return element.id == id;
+                          // });
+                          // conversation.r
+                          // attentionIdList.removeWhere((v) => v == id);
+                          // 这是为了加载无动态缺省布局
+
+                          // if (mounted) {
+                          //   setState(() {
+                          animationMap.remove(int.parse(conversation.conversationId));
+                          // });
+                          // }
+                          // if ( MessageManager.chatDataList.where((element) => element.contains(int.parse(conversation.conversationId))){
+                          MessageManager.removeConversation(
+                              context, conversation.conversationId, conversation.uid, conversation.type);
+                          Application.rongCloud
+                              .clearMessages(conversation.getType(), conversation.conversationId, null);
+                          // }
+                        });
+                      }
+
+                      return true;
+                    }));
+              },
+            ));
       } else {
-        return LeftScrollListView(
-          itemKey: conversation.id,
-          itemTag: "conversation",
-          itemIndex: index,
-          isDoubleDelete: true,
-          itemChild: _conversationItem(index, conversation, isIos: true),
-          onTap: () {
-            getMessageType(conversation, context);
-            jumpChatPageConversationDto(context, conversation);
-          },
-          onClickRightBtn: (ind) {
-            ConversationAnimationModel animationModel = ConversationAnimationModel();
-            animationModel.index = ind;
-            animationModel.conversationItemHeight = 0.0;
-            streamController.sink.add(animationModel);
-            new Future.delayed(Duration(milliseconds: 350), () {
-              MessageManager.removeConversation(
-                  context, conversation.conversationId, conversation.uid, conversation.type);
-              Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
-            });
-          },
-        );
+        return SizeTransitionView(
+            id: int.parse(conversation.conversationId),
+            animationMap: animationMap,
+            child: LeftScrollListView(
+              itemKey: conversation.id,
+              itemTag: "conversation",
+              itemIndex: index,
+              isDoubleDelete: true,
+              itemChild: _conversationItem(index, conversation, isIos: true),
+              onTap: () {
+                getMessageType(conversation, context);
+                jumpChatPageConversationDto(context, conversation);
+              },
+              onClickRightBtn: (ind) {
+                // ConversationAnimationModel animationModel = ConversationAnimationModel();
+                // animationModel.index = ind;
+                // animationModel.conversationItemHeight = 0.0;
+                // streamController.sink.add(animationModel);
+                // 动画删除item
+                if (animationMap.containsKey(int.parse(conversation.conversationId))) {
+                  animationMap[int.parse(conversation.conversationId)].forward().then((value) {
+                    // context.watch<ConversationNotifier>().removeListener(() { })
+                    // attentionModelList.removeWhere((element) {
+                    //   return element.id == id;
+                    // });
+                    // conversation.r
+                    // attentionIdList.removeWhere((v) => v == id);
+                    // 这是为了加载无动态缺省布局
+
+                    // if (mounted) {
+                    //   setState(() {
+                    animationMap.remove(int.parse(conversation.conversationId));
+                    // });
+                    // }
+                    // if ( MessageManager.chatDataList.where((element) => element.contains(int.parse(conversation.conversationId))){
+                    // new Future.delayed(Duration(milliseconds: 350), () {
+                    MessageManager.removeConversation(
+                        context, conversation.conversationId, conversation.uid, conversation.type);
+                    Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+                    // });
+                    // MessageManager.removeConversation(
+                    //     context, conversation.conversationId, conversation.uid, conversation.type);
+                    // Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+                    // }
+                  });
+                }
+              },
+            ));
       }
     } else {
       return GestureDetector(
@@ -491,109 +554,121 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
     List<String> avatarList = conversation.avatarUri.split(",");
     return isIos
-        ? StreamBuilder<ConversationAnimationModel>(
-            initialData: ConversationAnimationModel(),
-            stream: streamController.stream,
-            builder: (BuildContext stramContext, AsyncSnapshot<ConversationAnimationModel> snapshot) {
-              return AnimatedContainer(
-                height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 69,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.linear,
-                child: Container(
-                  height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 69,
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        ?
+        // StreamBuilder<ConversationAnimationModel>(
+        //         initialData: ConversationAnimationModel(),
+        //         stream: streamController.stream,
+        //         builder: (BuildContext stramContext, AsyncSnapshot<ConversationAnimationModel> snapshot) {
+        //           return AnimatedContainer(
+        //             height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 69,
+        //             duration: const Duration(milliseconds: 250),
+        //             curve: Curves.linear,
+        //             child:
+        Container(
+            height:
+                // index == snapshot.data.index ? snapshot.data.conversationItemHeight :
+                69,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    height:
+                        // index == snapshot.data.index ? snapshot.data.conversationItemHeight :
+                        45,
+                    width: 45,
+                    child: conversation.type == OFFICIAL_TYPE ||
+                            conversation.type == LIVE_TYPE ||
+                            conversation.type == TRAINING_TYPE
+                        ? _getOfficialAvatar(conversation.conversationId)
+                        : _getConversationAvatar(avatarList, conversation.isTop, conversation.conversationId)),
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
                     children: [
-                      Container(
-                          height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 45,
-                          width: 45,
-                          child: conversation.type == OFFICIAL_TYPE ||
-                                  conversation.type == LIVE_TYPE ||
-                                  conversation.type == TRAINING_TYPE
-                              ? _getOfficialAvatar(conversation.conversationId)
-                              : _getConversationAvatar(avatarList, conversation.isTop, conversation.conversationId)),
-                      SizedBox(
-                        width: 12,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child:
+                                  // index == snapshot.data.index
+                                  //     ? Container()
+                                  //     :
+                                  Text(
+                            StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 1,
+                            style: AppStyle.textRegular14,
+                          )),
+                          // index == snapshot.data.index
+                          //     ? Container()
+                          //     :
+                          Text(
+                            DateUtil.getShowMessageDateString(
+                                DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                            style: AppStyle.textHintRegular12,
+                          )
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                    child: index == snapshot.data.index
-                                        ? Container()
-                                        : Text(
-                                            StringUtil.strNoEmpty(conversation.name)
-                                                ? conversation.name
-                                                : conversation.conversationId,
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                            maxLines: 1,
-                                            style: AppStyle.textRegular14,
-                                          )),
-                                index == snapshot.data.index
-                                    ? Container()
-                                    : Text(
-                                        DateUtil.getShowMessageDateString(
-                                            DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
-                                        style: AppStyle.textHintRegular12,
-                                      )
-                              ],
-                            ),
-                            Spacer(),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                isMentioned
-                                    ? Text(
-                                        "[有人@你]",
-                                        style: AppStyle.redRegular13,
-                                      )
-                                    : Container(),
-                                Expanded(
-                                    child: index == snapshot.data.index
-                                        ? Container()
-                                        : Text(
-                                            //FIXME 这个逻辑需要在群成员数据库写好后替换掉
-                                            _getItemContent(conversation) ?? "",
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                            maxLines: 1,
-                                            style: AppStyle.textSecondaryRegular13,
-                                          )),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                index == snapshot.data.index ? Container() : CountBadge(messageCount, false),
-                              ],
-                            ),
-                            SizedBox(
-                              height: index == snapshot.data.index ? snapshot.data.conversationItemHeight : 12.5,
-                            ),
-                            Container(
-                              height: 0.5,
-                              color: AppColor.bgWhite,
-                            )
-                          ],
-                        ),
+                      Spacer(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          isMentioned
+                              ? Text(
+                                  "[有人@你]",
+                                  style: AppStyle.redRegular13,
+                                )
+                              : Container(),
+                          Expanded(
+                              child:
+                                  // index == snapshot.data.index
+                                  //     ? Container()
+                                  //     :
+                                  Text(
+                            //FIXME 这个逻辑需要在群成员数据库写好后替换掉
+                            _getItemContent(conversation) ?? "",
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 1,
+                            style: AppStyle.textSecondaryRegular13,
+                          )),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          // index == snapshot.data.index ? Container() :
+                          CountBadge(messageCount, false),
+                        ],
+                      ),
+                      SizedBox(
+                        height:
+                            // index == snapshot.data.index ? snapshot.data.conversationItemHeight :
+                            12.5,
+                      ),
+                      Container(
+                        height: 0.5,
+                        color: AppColor.bgWhite,
                       )
                     ],
                   ),
-                ),
-              );
-              //   AnimatedContainer(
-              //   duration: const Duration(milliseconds: 500),
-              //   curve: Curves.linear,
-              //   height: snapshot.data,
-              //   child: Container(
-              //     height: snapshot.data,
-              //   ),
-              // );
-            })
+                )
+              ],
+            ),
+            // ),
+          )
+        //   AnimatedContainer(
+        //   duration: const Duration(milliseconds: 500),
+        //   curve: Curves.linear,
+        //   height: snapshot.data,
+        //   child: Container(
+        //     height: snapshot.data,
+        //   ),
+        // );
+        // })
         : Container(
             height: 69,
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),

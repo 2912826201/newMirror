@@ -167,7 +167,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         _refreshController.refreshCompleted();
         _refreshController.loadComplete();
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadComplete();
       }
     }
     print("topicList的长度：：：：${topicList.length}");

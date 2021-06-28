@@ -203,6 +203,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
       if (refreshOrLoading) {
         _refreshController.refreshFailed();
       } else {
+        print("11111111114444444");
         _refreshController.loadFailed();
       }
     }
@@ -211,7 +212,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         _refreshController.refreshCompleted();
         _refreshController.loadComplete();
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadComplete();
       }
       // 加载完毕
       // loadText = "已加载全部动态";
