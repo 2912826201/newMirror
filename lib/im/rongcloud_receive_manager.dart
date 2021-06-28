@@ -5,6 +5,7 @@ import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,6 @@ class RongCloudReceiveManager {
   //第二个参数表示的是还剩下的未取的消息数量，第三个参数表示是否是按照包的形势拉取的信息，第四个参数表示的是是否是离线消息
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     //TODO SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
-
     try {
       String msgStr = msg.toString();
       print("收到了融云消息1：$msgStr");
