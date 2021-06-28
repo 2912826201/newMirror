@@ -21,6 +21,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -271,12 +272,13 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   children: [
                     const Spacer(),
                     Container(
-                      height: ScreenUtil.instance.screenWidthDp * 0.59,
-                      width: ScreenUtil.instance.screenWidthDp * 0.59,
-                      color: AppColor.bgWhite,
+                      width: 224,
+                      height: 224,
+                      child: Image.asset(DefaultImage.nodata),
                     ),
+                    SizedBox(height: 16,),
                     const Text(
-                      "该动态已失效",
+                      "该动态已删除或失效",
                       style: AppStyle.textHintRegular16,
                     ),
                     const Spacer()
