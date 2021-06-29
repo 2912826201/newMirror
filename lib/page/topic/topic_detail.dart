@@ -23,6 +23,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/colors_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -52,7 +53,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   TabController _tabController;
 
   //   主控制器
-  ScrollController _scrollController = new ScrollController();
+  // ScrollController _scrollController = new ScrollController();
 
   // 图标颜色
   Color iconColor = AppColor.bgWhite;
@@ -85,7 +86,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollController.dispose();
+    // _scrollController.dispose();
 
     super.dispose();
   }
@@ -94,21 +95,21 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   void initState() {
     followStreamController = StreamController.broadcast();
     notFollowStreamController = StreamController.broadcast();
-    // 请求话题详情页数据
-    requestTopicInfo();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
 
-    _scrollController
-      ..addListener(() {
-        print('--------$headSlideHeight-------------${_scrollController.offset}');
-        if (_scrollController.hasClients) {
-          if (_scrollController.offset >= headSlideHeight) {
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // 请求话题详情页数据
+      requestTopicInfo();
+      PrimaryScrollController.of(context).addListener(() {
+        print("点击状态栏还会有回调吗？");
+        if (PrimaryScrollController.of(context).hasClients) {
+          if (PrimaryScrollController.of(context).offset >= headSlideHeight) {
             topicUiChangeModel.opacity = 1;
             topicUiChangeModel.canOnclick = true;
             appBarStreamController.sink.add(topicUiChangeModel);
-          } else if (headSlideHeight - _scrollController.offset > 1) {
-            if (_scrollController.offset < headSlideHeight) {
-              double offset = _scrollController.offset / headSlideHeight;
+          } else if (headSlideHeight - PrimaryScrollController.of(context).offset > 1) {
+            if (PrimaryScrollController.of(context).offset < headSlideHeight) {
+              double offset = PrimaryScrollController.of(context).offset / headSlideHeight;
               topicUiChangeModel.opacity = offset;
             } else {
               topicUiChangeModel.opacity = 0.0;
@@ -116,8 +117,42 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             topicUiChangeModel.canOnclick = false;
             appBarStreamController.sink.add(topicUiChangeModel);
           }
+          print("PrimaryScrollController.of(context).offset :::${PrimaryScrollController.of(context).offset}");
+          // if(PrimaryScrollController.of(context).offset == 0.0) {
+          //   // _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+          //   // _key.currentState.innerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+          //   TopicDoubleTapTabbar topicDoubleTapTabbar = TopicDoubleTapTabbar();
+          //   topicDoubleTapTabbar.topicId = model.id;
+          //   topicDoubleTapTabbar.tabControllerIndex = _tabController.index;
+          //   topicDoubleTapTabbar.innerController = _key.currentState.innerController;
+          //   topicDoubleTapTabbar.outerController = _key.currentState.outerController;
+          //   // _key.currentState.widget.physics = NeverScrollableScrollPhysics();
+          //   // EventBus.getDefault()
+          //   //     .post(msg: topicDoubleTapTabbar, registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${model.id}");
+          // }
         }
       });
+    });
+    // _scrollController
+    //   ..addListener(() {
+    //     // print('--------$headSlideHeight-------------${_scrollController.offset}');
+    //     if (_scrollController.hasClients) {
+    //       if (_scrollController.offset >= headSlideHeight) {
+    //         topicUiChangeModel.opacity = 1;
+    //         topicUiChangeModel.canOnclick = true;
+    //         appBarStreamController.sink.add(topicUiChangeModel);
+    //       } else if (headSlideHeight - _scrollController.offset > 1) {
+    //         if (_scrollController.offset < headSlideHeight) {
+    //           double offset = _scrollController.offset / headSlideHeight;
+    //           topicUiChangeModel.opacity = offset;
+    //         } else {
+    //           topicUiChangeModel.opacity = 0.0;
+    //         }
+    //         topicUiChangeModel.canOnclick = false;
+    //         appBarStreamController.sink.add(topicUiChangeModel);
+    //       }
+    //     }
+    //   });
     super.initState();
   }
 
@@ -205,7 +240,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 children: [
                   NestedScrollView(
                       key: _key,
-                      controller: _scrollController,
+                      controller: PrimaryScrollController.of(context),
                       headerSliverBuilder: (BuildContext c, bool f) {
                         return <Widget>[
                           SliverToBoxAdapter(
@@ -376,7 +411,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // 回到顶部
-                                  subpageRefresh();
+                                subpageRefresh();
                               } else {
                                 _tabController.animateTo(index);
                               }
@@ -404,14 +439,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             TopicList(
                               topicId: model.id,
                               type: 5,
-                              // key: topicLisKey,
                               tabKey: Key('Tab${model.id}0'),
                             ),
                             // 最新话题
                             TopicList(
                               topicId: model.id,
                               type: 4,
-                              // key: topicLisKey1,
                               tabKey: Key('Tab${model.id}1'),
                             ),
                           ],
@@ -455,15 +488,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 子页面下拉刷新
   subpageRefresh() {
-    TopicDoubleTapTabbar topicDoubleTapTabbar = TopicDoubleTapTabbar();
-    topicDoubleTapTabbar.topicId = model.id;
-    topicDoubleTapTabbar.tabControllerIndex = _tabController.index;
-    _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+    // _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+    _key.currentState.currentInnerPosition.jumpTo(0.0);
     // _key.currentState.innerController.animateTo(-100, duration: Duration(milliseconds: 250), curve:  Curves.linear);
     // _key.currentState.outerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve:  Curves.linear);
     // _scrollController.jumpTo(0);
-    // EventBus.getDefault()
-    //     .post(msg: topicDoubleTapTabbar, registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${model.id}");
   }
 
   // 大图预览内部的Item
@@ -689,4 +718,10 @@ class TopicUiChangeModel {
 class TopicDoubleTapTabbar {
   int tabControllerIndex;
   int topicId;
+
+  // 内部控制器
+  ScrollController innerController;
+
+// 外部部控制器
+  ScrollController outerController;
 }
