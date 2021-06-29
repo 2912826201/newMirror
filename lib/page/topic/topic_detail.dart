@@ -118,7 +118,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             topicUiChangeModel.canOnclick = false;
             appBarStreamController.sink.add(topicUiChangeModel);
           }
-          // print("PrimaryScrollController.of(context).offset :::${PrimaryScrollController.of(context).offset}");
+          // print("_key.currentState.currentInnerPosition.viewportDimension:::${_key.currentState.currentInnerPosition.viewportDimension}");
+          // print("_key.currentState.currentInnerPosition.pixels:::${_key.currentState.currentInnerPosition.pixels}");
+          // print("_key.currentState.currentInnerPosition.extentBefore:::${_key.currentState.currentInnerPosition.extentBefore}");
+          // print("_key.currentState.currentInnerPosition.extentAfter:::${_key.currentState.currentInnerPosition.extentAfter}");
+          // print("_key.currentState.currentInnerPosition.extentInside:::${_key.currentState.currentInnerPosition.extentInside}");
+          print("PrimaryScrollController.of(context).offset :::${PrimaryScrollController.of(context).offset}");
           // if(PrimaryScrollController.of(context).offset == 0.0) {
           //   // _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
           //   // _key.currentState.innerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
@@ -411,7 +416,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             unselectedLabelStyle: const TextStyle(fontSize: 16),
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
-                                if(PrimaryScrollController.of(context).offset != 0) {
+                                // print(_key.currentState.innerController);
+                                if(PrimaryScrollController.of(context).offset != 0 && PrimaryScrollController.of(context).offset > (headSlideHeight - 0.5)) {
                                   occlusionLayerStreamController.sink.add(true);
                                   // 回到顶部
                                   subpageRefresh();
@@ -502,11 +508,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 子页面下拉刷新
   subpageRefresh() {
-    _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
-    new Future.delayed(Duration(milliseconds: 300), () {
-      occlusionLayerStreamController.sink.add(false);
-    });
-
+    _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear).then((value) => occlusionLayerStreamController.sink.add(false));
   }
 
   // 大图预览内部的Item
