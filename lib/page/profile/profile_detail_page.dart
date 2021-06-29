@@ -63,7 +63,7 @@ class ProfileDetailPage extends StatefulWidget {
   }
 }
 
-class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
+class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
   //头像size
   final double avatarSize = 71;
 
@@ -800,4 +800,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     }
     loadingStreamController.sink.add(false);
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
