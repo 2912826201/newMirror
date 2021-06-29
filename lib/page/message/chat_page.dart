@@ -156,6 +156,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   bool isHaveAtMeMsg = false;
   bool isHaveAtMeMsgPr = false;
 
+  int lastIndex = 0;
+
   //at我的消息的信息
   AtMsg atMeMsg;
 
@@ -197,8 +199,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   bool readOnly = false;
 
-  String urlMd5StringVideo="";
-  String filePathMd5Video="";
+  String urlMd5StringVideo = "";
+  String filePathMd5Video = "";
+
+  bool isnRefreshSystemInformation = false;
 
   @override
   void initState() {
@@ -612,7 +616,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    //print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    this.lastIndex = lastIndex;
+    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     //print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
@@ -1438,13 +1443,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _scrollController = PrimaryScrollController.of(context);
       _scrollController.addListener(() {
         scrollPositionPixels = _scrollController.position.pixels;
-        // //print("scrollPositionPixels3：$scrollPositionPixels");
-        if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        double scrollMaxPositionPixels = _scrollController.position.pixels;
+        print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
+        print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
+        int chatDataListLength = 0;
+        if (chatDataList != null && chatDataList.length >= 0) {
+          chatDataListLength = chatDataList.length;
+        }
+        if (scrollPositionPixels == scrollMaxPositionPixels && lastIndex + 1 >= chatDataListLength) {
+          print("loadStatus:$loadStatus");
           if (loadStatus == LoadingStatus.STATUS_IDEL) {
             // 先设置状态，防止下拉就直接加载reload
             if (mounted) {
               loadStatus = LoadingStatus.STATUS_LOADING;
-              chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
             }
             if (conversation.getType() != RCConversationType.System) {
               _onLoadMoreHistoryMessages();
@@ -1452,7 +1463,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
               _onRefreshSystemInformation();
             }
           }
-        } else if (_scrollController.position.pixels <= 0) {
+          chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+        } else if (scrollPositionPixels <= 0) {
           if (mounted && isHaveReceiveChatDataList) {
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
@@ -2045,6 +2057,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //加载更多的系统通知
   _onRefreshSystemInformation() async {
+    if (isnRefreshSystemInformation) {
+      return;
+    }
+    isnRefreshSystemInformation = true;
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
       ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
@@ -2055,9 +2071,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
       loadStatus = LoadingStatus.STATUS_IDEL;
     } else {
+      print("222222222222222222222222");
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    isnRefreshSystemInformation = false;
   }
 
 
@@ -2079,8 +2098,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           }
           loadStatus = LoadingStatus.STATUS_IDEL;
         }else{
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
+          print("111111111111111111111111");
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
         chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
