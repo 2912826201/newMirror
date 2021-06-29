@@ -1433,27 +1433,32 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   initScrollController() {
-    _scrollController.addListener(() {
-      scrollPositionPixels = _scrollController.position.pixels;
-      // //print("scrollPositionPixels3：$scrollPositionPixels");
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if (loadStatus == LoadingStatus.STATUS_IDEL) {
-          // 先设置状态，防止下拉就直接加载reload
-          if (mounted) {
-            loadStatus = LoadingStatus.STATUS_LOADING;
-            chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollController = PrimaryScrollController.of(context);
+      _scrollController.addListener(() {
+        scrollPositionPixels = _scrollController.position.pixels;
+        // //print("scrollPositionPixels3：$scrollPositionPixels");
+        if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+          if (loadStatus == LoadingStatus.STATUS_IDEL) {
+            // 先设置状态，防止下拉就直接加载reload
+            if (mounted) {
+              loadStatus = LoadingStatus.STATUS_LOADING;
+              chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+            }
+            if (conversation.getType() != RCConversationType.System) {
+              _onLoadMoreHistoryMessages();
+            } else {
+              _onRefreshSystemInformation();
+            }
           }
-          if (conversation.getType() != RCConversationType.System) {
-            _onLoadMoreHistoryMessages();
-          } else {
-            _onRefreshSystemInformation();
+        } else if (_scrollController.position.pixels <= 0) {
+          if (mounted && isHaveReceiveChatDataList) {
+            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         }
-      } else if (_scrollController.position.pixels <= 0) {
-        if (mounted && isHaveReceiveChatDataList) {
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-        }
-      }
+      });
+
+      setState(() {});
     });
   }
 
