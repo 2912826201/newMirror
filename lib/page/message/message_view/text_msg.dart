@@ -129,7 +129,7 @@ class TextMsg extends StatelessWidget {
             visible: isShowChatUserName,
             child: Container(
               margin:
-                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+                  isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
                 style: TextStyle(fontSize: 12, color: AppColor.textSecondary),

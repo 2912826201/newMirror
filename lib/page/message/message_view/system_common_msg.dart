@@ -131,7 +131,7 @@ class SystemCommonMsg extends StatelessWidget {
           Visibility(
             visible: isShowChatUserName,
             child: Container(
-              margin:const EdgeInsets.only( bottom: 4),
+              margin: const EdgeInsets.only(bottom: 5),
               child: Text(
                 name,
                 style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
@@ -198,18 +198,23 @@ class SystemCommonMsg extends StatelessWidget {
   }
 
   List<Widget> _getSystemCommonList(BuildContext context){
-    List<Widget> arrayWidget=[];
-    if(StringUtil.isURL(subModel.picUrl)){
+    List<Widget> arrayWidget = [];
+    if (StringUtil.isURL(subModel.picUrl)) {
       arrayWidget.add(_getImageWidget());
     }
 
-    if(subModel.text!=null&&subModel.text.length>0){
+    if (subModel.text != null && subModel.text.length > 0) {
       arrayWidget.add(_getTextWidget());
     }
 
-    if(subModel.linkUrl!=null&&subModel.linkUrl.length>0){
-      arrayWidget.add(_getUrlJumpWidget());
+    if (subModel.picUrl == null && subModel.text == null) {
+      arrayWidget.add(_getTextWidget(text: "  " * 8));
+    } else {
+      if (subModel.linkUrl != null && subModel.linkUrl.length > 0) {
+        arrayWidget.add(_getUrlJumpWidget());
+      }
     }
+
     return arrayWidget;
   }
 
@@ -245,15 +250,15 @@ class SystemCommonMsg extends StatelessWidget {
     );
   }
 
-  Widget _getTextWidget(){
+  Widget _getTextWidget({String text}) {
     return Container(
       color: AppColor.transparent,
-      constraints: StringUtil.isURL(subModel.picUrl)?
-        BoxConstraints(maxWidth: textMaxWidth+24.0,minWidth: textMaxWidth+24.0):
-        BoxConstraints(maxWidth: textMaxWidth+24.0),
+      constraints: StringUtil.isURL(subModel.picUrl)
+          ? BoxConstraints(maxWidth: textMaxWidth + 24.0, minWidth: textMaxWidth + 24.0)
+          : BoxConstraints(maxWidth: textMaxWidth + 24.0),
       padding: const EdgeInsets.all(12.0),
       child: Text(
-        subModel.text,
+        text ?? subModel.text,
         style: AppStyle.textPrimary2Medium12,
         maxLines: textMaxLine,
         overflow: TextOverflow.ellipsis,
