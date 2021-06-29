@@ -169,6 +169,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
     int childCount = getChildCount();
     return ListView.custom(
       physics: isShowTop ? ClampingScrollPhysics() : BouncingScrollPhysics(),
+      // physics: ClampingScrollPhysics(),
       controller: widget.scrollController,
       reverse: true,
       shrinkWrap: isShowTop,

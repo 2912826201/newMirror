@@ -202,7 +202,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   String urlMd5StringVideo = "";
   String filePathMd5Video = "";
 
-  bool isnRefreshSystemInformation = false;
+  bool isnRefreshSystemInformationIng = false;
+  bool isAnimateToTopIng = false;
+  int isAnimateToTopIngCount = 0;
 
   @override
   void initState() {
@@ -252,6 +254,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick),
+      handleStatusBarTap: _animateToTop,
       body: MessageInputBody(
         onTap: () => _messageInputBodyClick(),
         decoration: BoxDecoration(color: AppColor.bgWhite),
@@ -617,7 +620,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
     this.lastIndex = lastIndex;
-    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     //print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
@@ -1444,14 +1447,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _scrollController.addListener(() {
         scrollPositionPixels = _scrollController.position.pixels;
         double scrollMaxPositionPixels = _scrollController.position.maxScrollExtent;
-        print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
-        print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
+        // print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
+        // print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
         int chatDataListLength = 0;
         if (chatDataList != null && chatDataList.length >= 0) {
           chatDataListLength = chatDataList.length;
         }
         if (scrollPositionPixels == scrollMaxPositionPixels && lastIndex + 1 >= chatDataListLength) {
-          print("loadStatus:$loadStatus");
+          // print("loadStatus:$loadStatus");
           if (loadStatus == LoadingStatus.STATUS_IDEL) {
             // 先设置状态，防止下拉就直接加载reload
             if (mounted) {
@@ -1623,10 +1626,42 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   //向上滚动
-  void _animateToTopHeight({int milliseconds = 200, double scrollExtent}) {
+  void _animateToTopHeight({int milliseconds = 200, double scrollExtent}) async {
+    if (scrollExtent == null) {
+      return;
+    }
     _scrollController.animateTo(scrollExtent, duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
   }
 
+  void _animateToTop({double messageItemHeight}) async {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      return;
+    }
+    if (isAnimateToTopIng && messageItemHeight == null) {
+      return;
+    }
+    isAnimateToTopIng = true;
+    isAnimateToTopIngCount++;
+    double scrollMaxHeight = _scrollController.position.maxScrollExtent;
+    double messageHeight;
+    if (messageItemHeight == null) {
+      bool isShowName = conversation.getType() == RCConversationType.Group;
+      messageHeight = MessageItemHeightUtil.init().getMessageHeight(chatDataList, isShowName);
+    } else {
+      messageHeight = messageItemHeight;
+    }
+    if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 6) {
+      _animateToTopHeight(scrollExtent: messageHeight);
+      await Future.delayed(Duration(milliseconds: 300), () {});
+      _animateToTop(messageItemHeight: messageHeight);
+    } else {
+      _animateToTopHeight(scrollExtent: scrollMaxHeight);
+      Future.delayed(Duration(milliseconds: 300), () {
+        isAnimateToTopIngCount = 0;
+        isAnimateToTopIng = false;
+      });
+    }
+  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -1867,6 +1902,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
+    // _animateToTop();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
@@ -2057,10 +2093,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //加载更多的系统通知
   _onRefreshSystemInformation() async {
-    if (isnRefreshSystemInformation) {
+    if (isnRefreshSystemInformationIng) {
       return;
     }
-    isnRefreshSystemInformation = true;
+    isnRefreshSystemInformationIng = true;
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
       ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
@@ -2071,12 +2107,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
       loadStatus = LoadingStatus.STATUS_IDEL;
     } else {
-      print("222222222222222222222222");
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
     EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-    isnRefreshSystemInformation = false;
+    isnRefreshSystemInformationIng = false;
   }
 
 
@@ -2098,7 +2133,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           }
           loadStatus = LoadingStatus.STATUS_IDEL;
         }else{
-          print("111111111111111111111111");
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
         chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
