@@ -197,21 +197,22 @@ class MessageState extends State<MessagePage>
         ],
       ),
       backgroundColor: AppColor.white,
-      body: ScrollConfiguration(
-        behavior: NoBlueEffectBehavior(),
-        child: ListView.builder(
-          physics: BouncingScrollPhysics(),
-          itemCount: _listLength + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _buildTopView(context.watch<UnreadMessageNotifier>());
-            } else {
-              //因为有上方头部视图 所以index要-1
-              return _buildConversationItem(
-                  index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
-            }
-          },
-        ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: _buildTopView(context.watch<UnreadMessageNotifier>()),
+          ),
+          SliverFixedExtentList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return _buildConversationItem(
+                    index, context.watch<ConversationNotifier>().getConversationInAllList(index));
+              },
+              childCount: _listLength,
+            ),
+            itemExtent: 69,
+          ),
+        ],
       ),
     );
   }
@@ -424,7 +425,7 @@ class MessageState extends State<MessagePage>
             id: int.parse(conversation.conversationId),
             animationMap: animationMap,
             child: GestureDetector(
-              child: _conversationItem(index, conversation),
+              child: _conversationItem(conversation),
               onTap: () {
                 getMessageType(conversation, context);
                 jumpChatPageConversationDto(context, conversation);
@@ -478,7 +479,7 @@ class MessageState extends State<MessagePage>
               itemTag: "conversation",
               itemIndex: index,
               isDoubleDelete: true,
-              itemChild: _conversationItem(index, conversation, isIos: true),
+              itemChild: _conversationItem(conversation, isIos: true),
               onTap: () {
                 getMessageType(conversation, context);
                 jumpChatPageConversationDto(context, conversation);
@@ -521,7 +522,7 @@ class MessageState extends State<MessagePage>
       }
     } else {
       return GestureDetector(
-        child: _conversationItem(index, conversation),
+        child: _conversationItem(conversation),
         onTap: () {
           getMessageType(conversation, context);
           jumpChatPageConversationDto(context, conversation);
@@ -530,7 +531,7 @@ class MessageState extends State<MessagePage>
     }
   }
 
-  Widget _conversationItem(int index, ConversationDto conversation, {bool isIos = false}) {
+  Widget _conversationItem(ConversationDto conversation, {bool isIos = false}) {
     int messageCount = conversation.unreadCount;
     NoPromptUidModel model =
         NoPromptUidModel(type: conversation.type, targetId: int.parse(conversation.conversationId));
