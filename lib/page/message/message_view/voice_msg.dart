@@ -156,8 +156,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
             visible: widget.isShowChatUserName,
             child: Container(
               margin: widget.isMyself
-                  ? const EdgeInsets.only(right: 10, bottom: 4)
-                  : const EdgeInsets.only(left: 10, bottom: 4),
+                  ? const EdgeInsets.only(right: 10, bottom: 5)
+                  : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 widget.name,
                 style: TextStyle(fontSize: 12, color: AppColor.textSecondary),

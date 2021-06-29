@@ -731,26 +731,27 @@ class _QueryFollowState extends State<QueryFollowList> {
                                 }
                               })
                           : fristRequestIsOver
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                              ? Expanded(
+                          child:ListView(
+                                  // crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(
                                       height: 150,
                                     ),
-                                    Container(
+                                    Center(child: Container(
                                       width: 285,
                                       height: 285,
                                       child: Image.asset(defaultImage),
-                                    ),
+                                    ),),
                                     SizedBox(
                                       height: 12,
                                     ),
-                                    Text(
+                                    Center(child: Text(
                                       hintText,
                                       style: AppStyle.textHintRegular14,
-                                    ),
+                                    ) ,),
                                   ],
-                                )
+                                ) )
                               : Container(),
                     )),
               ),

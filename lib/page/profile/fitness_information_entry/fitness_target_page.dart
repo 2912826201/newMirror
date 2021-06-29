@@ -26,10 +26,6 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
     super.initState();
     targetList = Application.videoTagModel.target;
     targetList.sort((a, b) => a.id.compareTo(b.id));
-    targetList.forEach((element) {
-      print('target Id============================${element.id}');
-      print('target name============================${element.name}');
-    });
   }
 
   @override

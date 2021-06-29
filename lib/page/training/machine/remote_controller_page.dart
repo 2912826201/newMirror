@@ -684,8 +684,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
       ToastShow.show(msg: "发送内容为空", context: context);
       return;
     }
-    if (liveRoomId != null) {
-      ToastShow.show(msg: "进入直播间错误",context: context);
+    if (liveRoomId == null) {
+      ToastShow.show(msg: "进入直播间错误", context: context);
       return;
     }
     _sendChatRoomMsg(content);

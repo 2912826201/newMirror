@@ -32,7 +32,6 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
       return false;
     },
     child: Scaffold(
-     /* resizeToAvoidBottomPadding: false,*/
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         hasDivider: false,
