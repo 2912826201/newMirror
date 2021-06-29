@@ -10,11 +10,12 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Scaffold;
 import 'package:flutter/services.dart';
 import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 import 'package:mirror/api/message_api.dart';
