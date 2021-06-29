@@ -69,7 +69,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
           },
         ),
         Container(
-          padding: EdgeInsets.only(left: 16, right: 16),
+          padding: const EdgeInsets.only(left: 16, right: 16),
           width: width,
           height: 0.5,
           color: AppColor.bgWhite.withOpacity(0.65),
@@ -140,7 +140,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     return Container(
       height: 48,
       width: width,
-      padding: EdgeInsets.only(left: 16, right: 16),
+      padding:const EdgeInsets.only(left: 16, right: 16),
       alignment: Alignment.centerLeft,
       child: Text(
         text,
