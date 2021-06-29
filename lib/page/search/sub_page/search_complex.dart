@@ -209,7 +209,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       if (hasNext == 0) {
         print("-------------------_______________________________");
         // 加载完毕
-        _refreshController.loadNoData();
+        _refreshController.loadComplete();
       }
 
       // 更新全局监听
@@ -231,7 +231,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
     } else {
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       feedList.clear();
       animationMap.clear();
     }
@@ -286,11 +286,13 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           print("-------------------_______________________________");
         }
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadComplete();
       }
       if (mounted) {
         setState(() {});
       }
+    }else {
+      _refreshController.loadComplete();
     }
   }
 
@@ -333,6 +335,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                         print('-------------------focusNode---focusNode----focusNode--focusNode');
                         FocusScope.of(context).requestFocus(FocusNode());
                       }
+                      print('-------------------focusNode---focusNode----focusNode--focusNode');
                       requestFeednIterface();
                     },
                     child: CustomScrollView(

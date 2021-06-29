@@ -86,7 +86,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   _getFollowList() async {
     if (listPage > 1 && hasNext == 0) {
       print('=============================退出请求');
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       return;
     }
     print('====================关注页请求接口');
@@ -136,7 +136,7 @@ class _QueryFollowState extends State<QueryFollowList> {
           });
           _refreshController.loadComplete();
         } else {
-          _refreshController.loadNoData();
+          _refreshController.loadComplete();
         }
       } else {
         _refreshController.loadFailed();
@@ -151,7 +151,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   _getSearchUser(String text) async {
     if (listPage > 1 && hasNext == 0) {
       print('=============================退出请求');
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       return;
     }
     refreshOver = false;
@@ -211,7 +211,7 @@ class _QueryFollowState extends State<QueryFollowList> {
           _lastTime = model.lastTime;
           _refreshController.loadComplete();
         } else {
-          _refreshController.loadNoData();
+          _refreshController.loadComplete();
         }
       } else {
         _refreshController.loadFailed();
@@ -225,7 +225,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   _getFansList() async {
     if (listPage > 1 && hasNext == 0) {
       print('===========================接口退回');
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       return;
     }
     print('====================粉丝页请求接口');
@@ -274,13 +274,13 @@ class _QueryFollowState extends State<QueryFollowList> {
             buddyList.add(element);
           });
         } else {
-          _refreshController.loadNoData();
+          _refreshController.loadComplete();
         }
       } else {
         _refreshController.loadFailed();
       }
     } else {
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
     }
     if (mounted) {
       setState(() {});
@@ -290,7 +290,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   ///获取关注话题列表
   _getTopicList() async {
     if (listPage > 1 && hasNext == 0) {
-      _refreshController.loadNoData();
+      _refreshController.loadComplete();
       return;
     }
     print('====================话题页请求接口');
@@ -597,6 +597,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                               physics: AlwaysScrollableScrollPhysics(),
                               addRepaintBoundaries: false,
                               addAutomaticKeepAlives: false,
+                              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                               //这里是将插入的假数据展示成跳转话题页的item
                               itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
                               itemBuilder: (context, index) {

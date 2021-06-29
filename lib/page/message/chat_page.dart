@@ -17,8 +17,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
-
-// import 'package:interactiveviewer_gallery/interactiveviewer_gallery.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';

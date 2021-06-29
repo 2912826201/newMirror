@@ -31,13 +31,12 @@ class FeedBackPage extends StatefulWidget {
 
 class _feedBackPage extends State<FeedBackPage> {
   String editText = "";
-  List<Uint8List> imageDataList = [];
   List<File> fileList = [];
+  double width = ScreenUtil.instance.screenWidthDp;
+  double height = ScreenUtil.instance.height;
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(

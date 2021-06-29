@@ -54,10 +54,10 @@ class ScanCodePage extends StatefulWidget {
   ScanCodePage({this.showMyCode});
 
   @override
-  scanCodePageState createState() => scanCodePageState();
+  _ScanCodePageState createState() => _ScanCodePageState();
 }
 
-class scanCodePageState extends State<ScanCodePage> {
+class _ScanCodePageState extends State<ScanCodePage> {
   String codeData;
   StreamController<double> streamController = StreamController<double>();
   bool upOrDown = false;

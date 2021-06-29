@@ -27,7 +27,8 @@ class BlackListPage extends StatefulWidget {
 
 class _BlackListState extends State<BlackListPage> {
   List<BlackUserModel> blackList = [];
-
+  final double width = ScreenUtil.instance.screenWidthDp;
+  final double height = ScreenUtil.instance.height;
   _getBlackList() async {
     BlackListModel modelList = await SettingBlackList();
     if (modelList != null) {
@@ -51,8 +52,6 @@ class _BlackListState extends State<BlackListPage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(

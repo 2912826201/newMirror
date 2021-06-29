@@ -30,6 +30,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
   @override
   void initState() {
     super.initState();
+
   }
 
 
@@ -38,11 +39,11 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(
-          titleString: "更多",
-          leadingOnTap: () {
-            Navigator.pop(this.context);
-          },
-        ),
+      titleString: "更多",
+      leadingOnTap: () {
+        Navigator.pop(this.context);
+      },
+    ),
         body: Container(height: height, width: width, color: AppColor.white, child: _columnLayOut()));
   }
 
@@ -132,12 +133,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
       cancel: AppDialogButton("再想想", () {
         return true;
       }),
-      title: type == 1
-          ? "提交举报"
-          : type == 2
-              ? "确认加入黑名单吗"
-              : "取消拉黑",
-      info: type == 1 ? "确认举报用户" : "",
     );
   }
 

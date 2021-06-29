@@ -52,4 +52,5 @@ class AppColor {
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
   static const color707070 = Color.fromRGBO(0x70, 0x70, 0x70, 1.0);
   static const colorfcb6bf = Color.fromRGBO(0xFC, 0xB6, 0xBF, 1.0);
+  static const color343434 = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
 }

@@ -18,9 +18,7 @@ class EditInformationName extends StatefulWidget {
   EditInformationName({this.userName, this.title});
 
   @override
-  State<StatefulWidget> createState() {
-    return _EditInformationNameState();
-  }
+  _EditInformationNameState createState()=>_EditInformationNameState();
 }
 
 class _EditInformationNameState extends State<EditInformationName> {
