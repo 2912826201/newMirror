@@ -245,13 +245,27 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     },
                     errorWidget: (context, url, e) {
                       return Container(
-                        color: AppColor.bgWhite,
+                        color: AppColor.color343434,
+                        alignment: Alignment.center,
+                        child: getImageAsset("assets/png/image_error.png"),
                       );
                     },
                   )),
             ));
     });
     return cupertinoButtons;
+  }
+
+  Widget getImageAsset(String assetPath) {
+    //print("assetPath:${assetPath}");
+    return UnconstrainedBox(
+      child: Image.asset(
+        assetPath ?? "",
+        width: ScreenUtil.instance.width * 0.53,
+        height: ScreenUtil.instance.width * 0.53,
+        fit: BoxFit.cover,
+      ),
+    );
   }
 
   // 本地图片

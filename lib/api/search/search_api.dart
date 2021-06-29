@@ -3,9 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
+import 'package:mirror/data/model/search/search_hot_words.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 
 import '../api.dart';
+
 // 搜索课程
 const String SRARCHCOURSE = "/sport/web/videoCourse/searchCourse";
 
@@ -14,15 +16,18 @@ const String SEARCHFEED = "/appuser/web/feed/searchFeed";
 
 // 推荐视频课程
 const String RECOMMENDCOURSE = "/sport/web/videoCourse/recommendCourse";
+// 获取热门词汇
+const String GETHOTWORDS = "/appuser/web/feed/getHotWords";
 //获取搜索动态列表
-Future<DataResponseModel> searchFeed({@required String key, @required int size, int lastTime, CancelToken token}) async {
+Future<DataResponseModel> searchFeed(
+    {@required String key, @required int size, int lastTime, CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["key"] = key;
   params["size"] = size;
   params["lastTime"] = lastTime;
-  BaseResponseModel responseModel = await requestApi(SEARCHFEED, params,token: token);
+  BaseResponseModel responseModel = await requestApi(SEARCHFEED, params, token: token);
   if (responseModel.isSuccess) {
-    DataResponseModel  dataResponseModel;
+    DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
     }
@@ -33,14 +38,15 @@ Future<DataResponseModel> searchFeed({@required String key, @required int size, 
 }
 // 获取搜索课程列表
 
-Future<DataResponseModel> searchCourse({@required String key, @required int size, int lastTime, CancelToken token}) async {
+Future<DataResponseModel> searchCourse(
+    {@required String key, @required int size, int lastTime, CancelToken token}) async {
   Map<String, dynamic> params = {};
   params["key"] = key;
   params["size"] = size;
   params["lastTime"] = lastTime;
-  BaseResponseModel responseModel = await requestApi(SRARCHCOURSE, params,token: token);
+  BaseResponseModel responseModel = await requestApi(SRARCHCOURSE, params, token: token);
   if (responseModel.isSuccess) {
-    DataResponseModel  dataResponseModel;
+    DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
     }
@@ -53,12 +59,29 @@ Future<DataResponseModel> searchCourse({@required String key, @required int size
 // 获取推荐课程
 Future<List<CourseModel>> recommendCourse(CancelToken token) async {
   Map<String, dynamic> params = {};
-  BaseResponseModel responseModel = await requestApi(RECOMMENDCOURSE, params,token: token);
+  BaseResponseModel responseModel = await requestApi(RECOMMENDCOURSE, params, token: token);
   if (responseModel.isSuccess) {
     List<CourseModel> list = [];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
         list.add(CourseModel.fromJson(e));
+      });
+    }
+    return list;
+  } else {
+    return null;
+  }
+}
+
+// 获取热门词汇
+Future<List<SearchHotWords>> getHotWords(CancelToken token) async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(GETHOTWORDS, params, token: token);
+  if (responseModel.isSuccess) {
+    List<SearchHotWords> list = [];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
+        list.add(SearchHotWords.fromJson(e));
       });
     }
     return list;

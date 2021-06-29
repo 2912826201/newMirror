@@ -90,19 +90,23 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         //定义按下播放器时播放器是否以全屏启动
         fullScreenByDefault: false,
         placeholder: CachedNetworkImage(
-          imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
-          width: videoSize.width,
-          height: videoSize.height,
-          fit: BoxFit.cover,
-          placeholder: (context, url) {
-            return Container(
-              color: AppColor.bgWhite,
-            );
-          },
-          errorWidget: (context, url, error) => Container(
-            color: AppColor.bgWhite,
-          ),
-        ),
+            imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
+            width: videoSize.width,
+            height: videoSize.height,
+            fit: BoxFit.cover,
+            placeholder: (context, url) {
+              return Container(
+                color: AppColor.color343434,
+              );
+            },
+            errorWidget: (context, url, error) {
+              print("offsetY：#$offsetY");
+              return Container(
+                color: AppColor.color343434,
+                padding: EdgeInsets.only(top: (containerSize.height - ScreenUtil.instance.width * 0.53) / 2.0),
+                child: getImageAsset("assets/png/image_error.png"),
+              );
+            }),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
         ));
@@ -119,6 +123,19 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         firstTapTimep = null;
       }
     });
+  }
+
+  Widget getImageAsset(String assetPath) {
+    //print("assetPath:${assetPath}");
+    return UnconstrainedBox(
+      alignment: Alignment.topCenter,
+      child: Image.asset(
+        assetPath ?? "",
+        width: ScreenUtil.instance.width * 0.53,
+        height: ScreenUtil.instance.width * 0.53,
+        fit: BoxFit.cover,
+      ),
+    );
   }
 
   @override

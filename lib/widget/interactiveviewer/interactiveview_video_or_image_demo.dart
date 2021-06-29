@@ -596,9 +596,9 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
             return Container(
               width: ScreenUtil.instance.width,
               height: ScreenUtil.instance.height,
-              color: AppColor.black,
+              color: AppColor.color343434,
               alignment: Alignment.center,
-              child: Text("文件损坏", style: TextStyle(fontSize: 24, color: AppColor.white),),
+              child: getImageAsset("assets/png/image_error.png"),
             );
           }
       );
@@ -610,31 +610,41 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
           videoImageFile,
           fit: BoxFit.cover,
         );
-      }else{
+      } else {
         return Container(color: AppColor.black);
       }
-    }else{
+    } else {
       print("getPlaceholder:null}");
       return Container(color: AppColor.black);
     }
   }
 
-  void getSourceUrl(){
-    if(StringUtil.isURL(widget.source.url)){
-      sourceUrl=widget.source.url;
-    }else if(widget.source.videoFilePath!=null){
-      File videoFile = File(widget.source.videoFilePath);
-      if (videoFile.existsSync()) {
-        sourceUrl=widget.source.videoFilePath;
-      }else{
-        sourceUrl="";
-      }
-    }else{
-      sourceUrl="";
-    }
+  Widget getImageAsset(String assetPath) {
+    //print("assetPath:${assetPath}");
+    return UnconstrainedBox(
+      child: Image.asset(
+        assetPath ?? "",
+        width: ScreenUtil.instance.width * 0.426,
+        height: ScreenUtil.instance.width * 0.426,
+        fit: BoxFit.cover,
+      ),
+    );
   }
 
-
+  void getSourceUrl() {
+    if (StringUtil.isURL(widget.source.url)) {
+      sourceUrl = widget.source.url;
+    } else if (widget.source.videoFilePath != null) {
+      File videoFile = File(widget.source.videoFilePath);
+      if (videoFile.existsSync()) {
+        sourceUrl = widget.source.videoFilePath;
+      } else {
+        sourceUrl = "";
+      }
+    } else {
+      sourceUrl = "";
+    }
+  }
 }
 
 class VideoControl extends StatefulWidget {

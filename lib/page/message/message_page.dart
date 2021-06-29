@@ -96,15 +96,11 @@ class MessageState extends State<MessagePage>
   _checkNotificationPermission() {
     return NotificationPermissions.getNotificationPermissionStatus().then((status) {
       switch (status) {
-        case PermissionStatus.denied:
-          hasNotificationPermission = false;
-          break;
         case PermissionStatus.granted:
           hasNotificationPermission = true;
           break;
+        case PermissionStatus.denied:
         case PermissionStatus.unknown:
-          hasNotificationPermission = false;
-          break;
         case PermissionStatus.provisional:
           hasNotificationPermission = false;
           break;

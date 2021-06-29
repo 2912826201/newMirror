@@ -31,6 +31,7 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
@@ -349,14 +350,18 @@ _initJPush() {
       print("main flutter onReceiveNotification2: ${mapModel["redirectUri"]}");
       int notificationId = message["extras"]["cn.jpush.android.NOTIFICATION_ID"];
       //fixme 等待接通厂商通道后测试杀掉app会不会走这里
-      // jpush.clearNotification(notificationId: notificationId);
+      if (!Application.isBackGround) {
+        jpush.clearNotification(notificationId: notificationId);
+      }
       if (message["alert"] != null && message["alert"].toString().contains("撤回了一条消息")) {
         return;
       }
       //fixme app外部icon 上的小红点 等待需求
-      // int flutterAppBadgerCount = AppPrefs.getFlutterAppBadgerCount();
-      // FlutterAppBadger.updateBadgeCount(flutterAppBadgerCount+1);
-      // AppPrefs.setFlutterAppBadgerCount(flutterAppBadgerCount+1);
+      if (Application.platform == 0) {
+        int flutterAppBadgerCount = AppPrefs.getFlutterAppBadgerCount();
+        BadgerUtil.init().updateBadgeCount(flutterAppBadgerCount + 1);
+        AppPrefs.setFlutterAppBadgerCount(flutterAppBadgerCount + 1);
+      }
     },
     // 点击通知回调方法。
     onOpenNotification: (Map<String, dynamic> message) async {
@@ -367,7 +372,6 @@ _initJPush() {
       } else {
         print("mapModel有问题:${message["extras"]["cn.jpush.android.EXTRA"]}");
       }
-      // JpushAnalyzeCodeUtil.init().analyzeCode(code)
     },
     // 接收自定义消息回调方法。
     onReceiveMessage: (Map<String, dynamic> message) async {
