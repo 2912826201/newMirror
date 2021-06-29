@@ -1353,6 +1353,7 @@ class Scaffold extends StatefulWidget {
     this.drawerEnableOpenDragGesture = true,
     this.endDrawerEnableOpenDragGesture = true,
     this.restorationId,
+    this.handleStatusBarTap,
   })  : assert(primary != null),
         assert(extendBody != null),
         assert(extendBodyBehindAppBar != null),
@@ -1678,6 +1679,9 @@ class Scaffold extends StatefulWidget {
   ///  * [RestorationManager], which explains how state restoration works in
   ///    Flutter.
   final String restorationId;
+
+  ///ios 状态栏点击事件
+  final Function() handleStatusBarTap;
 
   /// Finds the [ScaffoldState] from the closest instance of this class that
   /// encloses the given context.
@@ -2601,6 +2605,7 @@ class ScaffoldState extends State<Scaffold> with TickerProviderStateMixin, Resto
   void _handleStatusBarTap() {
     final ScrollController _primaryScrollController = PrimaryScrollController.of(context);
     if (_primaryScrollController != null && _primaryScrollController.hasClients) {
+      print("_primaryScrollController.position.maxScrollExtent${_primaryScrollController.position.maxScrollExtent}");
       _primaryScrollController.animateTo(
         _primaryScrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
@@ -3055,7 +3060,7 @@ class ScaffoldState extends State<Scaffold> with TickerProviderStateMixin, Resto
           children,
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: _handleStatusBarTap,
+            onTap: widget.handleStatusBarTap??_handleStatusBarTap,
             // iOS accessibility automatically adds scroll-to-top to the clock in the status bar
             excludeFromSemantics: true,
           ),
