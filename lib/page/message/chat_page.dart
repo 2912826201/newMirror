@@ -1443,7 +1443,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _scrollController = PrimaryScrollController.of(context);
       _scrollController.addListener(() {
         scrollPositionPixels = _scrollController.position.pixels;
-        double scrollMaxPositionPixels = _scrollController.position.pixels;
+        double scrollMaxPositionPixels = _scrollController.position.maxScrollExtent;
         print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
         print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
         int chatDataListLength = 0;
