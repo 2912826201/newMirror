@@ -131,3 +131,14 @@ https://zhuanlan.zhihu.com/p/365347452
   上传完成后填写版本信息。信息中第一行写版本号，版本号和禅道上保持一致。然后写更新内容（从禅道版本中查看修复了哪些bug，git提交记录中摘取重要的修改信息）
   点击发布按钮完成发布。之后去禅道创建下一个版本或build号的新版本。
   
+## 问题解决
+一、iOS运行时报iproxy的问题。原因为SDK是从网络下载的，部分文件需要修改权限。执行以下命令：
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/idevice_id
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/ideviceinfo
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/idevicename
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/idevicescreenshot
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/idevicesyslog
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/usbmuxd/iproxy
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/ideviceinstaller/ideviceinstaller
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/ios-deploy/ios-deploy
+  sudo xattr -r -d com.apple.quarantine SDK路径/flutter/bin/cache/artifacts/libimobiledevice/idevicescreenshot
