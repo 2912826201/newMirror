@@ -21,14 +21,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicList extends StatefulWidget {
-  TopicList({this.topicId, this.type, this.tabKey});
+  TopicList({Key key,this.topicId, this.type, this.tabKey}) : super(key: key);
 
   int type;
 
   // 话题ID
   int topicId;
   final Key tabKey;
-
   @override
   TopicListState createState() => TopicListState();
 }
@@ -55,17 +54,23 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   // 双击刷新
   onDoubleTap(TopicDoubleTapTabbar topicDoubleTapTabbar) {
-    bool isrefresh = false;
-    if (topicDoubleTapTabbar.topicId == widget.topicId) {
-      if (topicDoubleTapTabbar.tabControllerIndex == 0 && widget.type == 5) {
-        isrefresh = true;
-      } else if (topicDoubleTapTabbar.tabControllerIndex == 1 && widget.type == 4) {
-        isrefresh = true;
-      }
-      if (isrefresh) {
-        refreshController.requestRefresh(duration: Duration(milliseconds: 250));
-      }
-    }
+    // bool isrefresh = false;
+    // if (topicDoubleTapTabbar.topicId == widget.topicId) {
+    //   if (topicDoubleTapTabbar.tabControllerIndex == 0 && widget.type == 5) {
+    //     isrefresh = true;
+    //   } else if (topicDoubleTapTabbar.tabControllerIndex == 1 && widget.type == 4) {
+    //     isrefresh = true;
+    //   }
+    //   if (isrefresh) {
+    //     refreshController.requestRefresh(duration: Duration(milliseconds: 250));
+    //   }
+    // _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+    // widget.
+    // refreshController.
+    // }
+    // print("执行几次");
+    // topicDoubleTapTabbar.innerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
+    // topicDoubleTapTabbar.outerController.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
   }
 
   @override
