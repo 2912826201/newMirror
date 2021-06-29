@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/test/activation_test_page.dart';
 import 'package:mirror/page/test/agora_input_page.dart';
 import 'package:mirror/page/test/download_test_page.dart';
+import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
 import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
@@ -507,6 +508,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     }));
                   },
                   child: Text("BadgerTestPage")),
+              RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ListViewTestPage();
+                    }));
+                  },
+                  child: Text("ListView性能测试")),
             ],
           ),
         ),
