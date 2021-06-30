@@ -357,7 +357,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) async {
-                        if(PrimaryScrollController.of(context).offset != 0) {
+                        print('PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context)
+                            .offset}------$userDetailBoardHeight-----${(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
+                            CustomAppBar.appBarHeight )}');
+                        if(PrimaryScrollController.of(context).offset!=0&&PrimaryScrollController.of(context)
+                            .offset>=(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
+                            CustomAppBar.appBarHeight )) {
                           needTouchCallBackStreamController.sink.add(false);
                           _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250)
                               , curve: Curves.linear).then((value){
