@@ -93,7 +93,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           child: widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
               ? _button("重新扫描", () {
                   Navigator.pop(context);
-                  gotoScanCodePage(context);
+                  gotoScanCodePage(context,showMyCode: true);
                 })
               : widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
                   ? _button("完成", () {

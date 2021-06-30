@@ -26,25 +26,29 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/constant/color.dart';
 
 
-void gotoScanCodePage(BuildContext context){
-  Permission.camera.request().then((value) {
+void gotoScanCodePage(BuildContext context,{bool showMyCode = false}){
+  Permission.camera.status.then((value) {
     if (value.isGranted) {
-      AppRouter.navigateToScanCodePage(context, showMyCode: true);
-    }else if(value.isPermanentlyDenied){
-      showAppDialog(context,
-          title: "获取相机权限",
-          info: "使用该功能需要打开相机权限",
-          cancel: AppDialogButton("取消", () {
-            return true;
-          }),
-          confirm: AppDialogButton(
-            "去打开",
-                () {
-              AppSettings.openAppSettings();
-              return true;
-            },
-          ),
-          barrierDismissible: false);
+      AppRouter.navigateToScanCodePage(context, showMyCode: showMyCode);
+    }else if(value.isDenied){
+      Permission.camera.request().then((status){
+        if(status.isPermanentlyDenied){
+          showAppDialog(context,
+              title: "获取相机权限",
+              info: "使用该功能需要打开相机权限",
+              cancel: AppDialogButton("取消", () {
+                return true;
+              }),
+              confirm: AppDialogButton(
+                "去打开",
+                    () {
+                  AppSettings.openAppSettings();
+                  return true;
+                },
+              ),
+              barrierDismissible: false);
+        }
+      });
     }
   });
 }

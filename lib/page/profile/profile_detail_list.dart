@@ -65,6 +65,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         }
         if (model.list != null && model.list.length != 0) {
           listNoData = false;
+          print('model.list.sublist(0);----------${model.list.sublist(0).length}');
           model.list.forEach((result) {
             print('---------------------${HomeFeedModel.fromJson(result).id}');
             followModel.add(HomeFeedModel.fromJson(result));

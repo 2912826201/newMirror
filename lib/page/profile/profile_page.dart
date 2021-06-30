@@ -558,7 +558,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
         break;
       case "扫一扫":
-       gotoScanCodePage(context);
+       gotoScanCodePage(context,showMyCode: true);
         break;
       case "设置":
         AppRouter.navigateToSettingHomePage(context);
