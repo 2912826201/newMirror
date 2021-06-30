@@ -1650,17 +1650,26 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     } else {
       messageHeight = messageItemHeight;
     }
-    if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 6) {
-      _animateToTopHeight(scrollExtent: messageHeight);
-      await Future.delayed(Duration(milliseconds: 300), () {});
+    if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 2) {
+      int milliseconds = getMilliseconds(messageHeight).toInt();
+      _animateToTopHeight(scrollExtent: messageHeight, milliseconds: milliseconds);
+      await Future.delayed(Duration(milliseconds: milliseconds), () {});
       _animateToTop(messageItemHeight: messageHeight);
     } else {
-      _animateToTopHeight(scrollExtent: scrollMaxHeight);
-      Future.delayed(Duration(milliseconds: 300), () {
+      int milliseconds = getMilliseconds(scrollMaxHeight).toInt();
+      _animateToTopHeight(scrollExtent: scrollMaxHeight, milliseconds: milliseconds);
+      Future.delayed(Duration(milliseconds: milliseconds), () {
         isAnimateToTopIngCount = 0;
         isAnimateToTopIng = false;
       });
     }
+  }
+
+  double getMilliseconds(double scrollMaxHeight) {
+    int millisecond = 400;
+    double pixels = _scrollController.position.pixels;
+    double height = MediaQuery.of(context).size.height;
+    return (((scrollMaxHeight - pixels) / height) + 1) * millisecond;
   }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
@@ -1902,14 +1911,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
-    // _animateToTop();
+    _animateToTop();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
-    context.read<VoiceSettingNotifier>().stop();
-    _messageInputBodyClick();
-    judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
+    // context.read<VoiceSettingNotifier>().stop();
+    // _messageInputBodyClick();
+    // judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
+    //     _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
   }
 
   //更多的界面-里面进行了一些的点击事件
