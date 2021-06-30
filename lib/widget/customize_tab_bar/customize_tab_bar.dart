@@ -1003,7 +1003,7 @@ class _TabBarState extends State<TabBar> {
   }
 
   int firstTapTimep;
-  int beforTapType;
+  int beforTapType = 0;
   bool _handleDoubleTap(int index) {
     assert(index >= 0 && index < widget.tabs.length);
     if(beforTapType!=index){
