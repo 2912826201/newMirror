@@ -63,6 +63,7 @@ class _BlackListState extends State<BlackListPage> {
               height: height,
               width: width,
               child: ListView.builder(
+                controller: PrimaryScrollController.of(context),
                   itemCount: blackList.length,
                   itemBuilder: (context, index) {
                     return Column(
