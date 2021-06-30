@@ -84,7 +84,8 @@ class FriendsCell extends StatelessWidget {
         child: Container(
           color: Colors.white,
           height: 48,
-          margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0, left: 16, right: 16),
+          margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0),
+          padding: EdgeInsets.only(left: 16, right: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -101,7 +102,8 @@ class FriendsCell extends StatelessWidget {
       return Container(
         color: Colors.white,
         height: 48,
-        margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0, left: 16, right: 16),
+        margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0),
+        padding: EdgeInsets.only(left: 16, right: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[

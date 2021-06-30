@@ -106,6 +106,10 @@ class VideoCourseListPageState extends XCState {
     loadingStatus = LoadingStatus.STATUS_LOADING;
     _setTitleItemSubSettingData();
     _initData();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      scrollController = PrimaryScrollController.of(context);
+      setState(() {});
+    });
   }
 
   @override
