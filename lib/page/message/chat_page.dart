@@ -1911,14 +1911,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
-    _animateToTop();
+    // _animateToTop();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
-    // context.read<VoiceSettingNotifier>().stop();
-    // _messageInputBodyClick();
-    // judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-    //     _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
+    context.read<VoiceSettingNotifier>().stop();
+    _messageInputBodyClick();
+    judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
+        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
   }
 
   //更多的界面-里面进行了一些的点击事件
