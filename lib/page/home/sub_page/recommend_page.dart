@@ -291,7 +291,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       children: [
         Container(
           child: SizeCacheWidget(
-            estimateCount: 20,
+            // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
+            estimateCount: 6,
             child: SmartRefresher(
                 enablePullUp: recommendModelList.isNotEmpty ? true : false,
                 enablePullDown: true,

@@ -6,6 +6,8 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
@@ -39,10 +41,8 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-
 class SearchFeed extends StatefulWidget {
-  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController, this.controller})
-      : super(key: key);
+  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController, this.controller}) : super(key: key);
   final FocusNode focusNode;
   final String keyWord;
   final TabController controller;
@@ -242,83 +242,92 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                 margin: const EdgeInsets.only(top: 12),
                 child: ScrollConfiguration(
                     behavior: OverScrollBehavior(),
-                    child: SmartRefresher(
-                        enablePullDown: true,
-                        enablePullUp: true,
-                        footer: SmartRefresherHeadFooter.init().getFooter(),
-                        header: SmartRefresherHeadFooter.init().getHeader(),
-                        controller: _refreshController,
-                        onRefresh: () {
-                          lastTime = null;
-                          hasNext = null;
-                          _refreshController.loadComplete();
-                          requestFeednIterface(refreshOrLoading: true);
-                        },
-                        onLoading: () {
-                          requestFeednIterface(refreshOrLoading: false);
-                        },
-                        child: CustomScrollView(
-                            controller: PrimaryScrollController.of(context),
-                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                            // _scrollController,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              // SliverToBoxAdapter(
-                              //     child: Container(
-                              //   margin: EdgeInsets.only(left: 16, right: 16),
-                              //   child: MediaQuery.removePadding(
-                              //       removeTop: true,
-                              //       context: context,
-                              //       // 瀑布流
-                              //       child: WaterfallFlow.builder(
-                              //         primary: false,
-                              //         shrinkWrap: true,
-                              //         // controller: _scrollController,
-                              //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                              //           crossAxisCount: 2,
-                              //           // 上下间隔
-                              //           mainAxisSpacing: 4.0,
-                              //           //   // 左右间隔
-                              //           crossAxisSpacing: 8.0,
-                              //         ),
-                              //         itemBuilder: (context, index) {
-                              //           // 获取动态id
-                              //           int id;
-                              //           // 获取动态id指定model
-                              //           HomeFeedModel model;
-                              //           if (index < feedList.length) {
-                              //             id = feedList[index].id;
-                              //             model = context.read<FeedMapNotifier>().feedMap[id];
-                              //           }
-                              //           if (index == feedList.length) {
-                              //             return LoadingView(
-                              //               loadText: loadText,
-                              //               loadStatus: loadStatus,
-                              //             );
-                              //           } else if (index == feedList.length + 1) {
-                              //             return Container();
-                              //           } else {
-                              //             return SearchFeeditem(
-                              //               model: model,
-                              //               list: feedList,
-                              //               index: index,
-                              //               focusNode: widget.focusNode,
-                              //               pageName: "searchFeed",
-                              //               feedLastTime: lastTime,
-                              //               searchKeyWords: widget.textController.text,
-                              //               feedHasNext: hasNext,
-                              //             );
-                              //           }
-                              //         },
-                              //         itemCount: feedList.length + 1,
-                              //       )
-                              //      ),
-                              // )),
-                              SliverList(
-                                  delegate: SliverChildBuilderDelegate((content, index) {
-                                return _buildItem(index);
-                              }, childCount: feedList.length))
-                            ]))))
+                    child: SizeCacheWidget(
+                      // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
+                        estimateCount: 6,
+                        child: SmartRefresher(
+                            enablePullDown: true,
+                            enablePullUp: true,
+                            footer: SmartRefresherHeadFooter.init().getFooter(),
+                            header: SmartRefresherHeadFooter.init().getHeader(),
+                            controller: _refreshController,
+                            onRefresh: () {
+                              lastTime = null;
+                              hasNext = null;
+                              _refreshController.loadComplete();
+                              requestFeednIterface(refreshOrLoading: true);
+                            },
+                            onLoading: () {
+                              requestFeednIterface(refreshOrLoading: false);
+                            },
+                            child: CustomScrollView(
+                                controller: PrimaryScrollController.of(context),
+                                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                                // _scrollController,
+                                physics: AlwaysScrollableScrollPhysics(),
+                                slivers: [
+                                  // SliverToBoxAdapter(
+                                  //     child: Container(
+                                  //   margin: EdgeInsets.only(left: 16, right: 16),
+                                  //   child: MediaQuery.removePadding(
+                                  //       removeTop: true,
+                                  //       context: context,
+                                  //       // 瀑布流
+                                  //       child: WaterfallFlow.builder(
+                                  //         primary: false,
+                                  //         shrinkWrap: true,
+                                  //         // controller: _scrollController,
+                                  //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                                  //           crossAxisCount: 2,
+                                  //           // 上下间隔
+                                  //           mainAxisSpacing: 4.0,
+                                  //           //   // 左右间隔
+                                  //           crossAxisSpacing: 8.0,
+                                  //         ),
+                                  //         itemBuilder: (context, index) {
+                                  //           // 获取动态id
+                                  //           int id;
+                                  //           // 获取动态id指定model
+                                  //           HomeFeedModel model;
+                                  //           if (index < feedList.length) {
+                                  //             id = feedList[index].id;
+                                  //             model = context.read<FeedMapNotifier>().feedMap[id];
+                                  //           }
+                                  //           if (index == feedList.length) {
+                                  //             return LoadingView(
+                                  //               loadText: loadText,
+                                  //               loadStatus: loadStatus,
+                                  //             );
+                                  //           } else if (index == feedList.length + 1) {
+                                  //             return Container();
+                                  //           } else {
+                                  //             return SearchFeeditem(
+                                  //               model: model,
+                                  //               list: feedList,
+                                  //               index: index,
+                                  //               focusNode: widget.focusNode,
+                                  //               pageName: "searchFeed",
+                                  //               feedLastTime: lastTime,
+                                  //               searchKeyWords: widget.textController.text,
+                                  //               feedHasNext: hasNext,
+                                  //             );
+                                  //           }
+                                  //         },
+                                  //         itemCount: feedList.length + 1,
+                                  //       )
+                                  //      ),
+                                  // )),
+                                  SliverList(
+                                      delegate: SliverChildBuilderDelegate((content, index) {
+                                    return FrameSeparateWidget(
+                                        index: index,
+                                        placeHolder: Container(
+                                          height: 512,
+                                          width: ScreenUtil.instance.width,
+                                        ),
+                                        child: _buildItem(index));
+                                  }, childCount: feedList.length))
+                                ])))))
             : Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
