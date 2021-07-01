@@ -289,7 +289,9 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
   void close() {
     // print('close2');
     if (translateX != 0) {
-      animationController.animateTo(0);
+      if (animationController != null) {
+        animationController.animateTo(0);
+      }
     }
     if (widget.onClose != null) {
       widget.onClose();
@@ -302,6 +304,7 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
 
   @override
   void dispose() {
+    print("itemIndex:${widget.itemIndex}");
     animationController.dispose();
     super.dispose();
   }
