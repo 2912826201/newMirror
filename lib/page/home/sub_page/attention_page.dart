@@ -49,8 +49,6 @@ class AttentionPage extends StatefulWidget {
 GlobalKey<AttentionPageState> attentionKey = GlobalKey();
 
 class AttentionPageState extends State<AttentionPage> with TickerProviderStateMixin {
-  @override
-  bool get wantKeepAlive => true; //必须重写
 
   var status = Status.loggedIn;
 

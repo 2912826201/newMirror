@@ -41,7 +41,8 @@ class MessagePage extends StatefulWidget {
 }
 
 class MessageState extends State<MessagePage>
-    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver, TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver, TickerProviderStateMixin
+{
   bool isOffline = false;
   StreamSubscription<ConnectivityResult> connectivityListener;
 
@@ -173,9 +174,13 @@ class MessageState extends State<MessagePage>
     print(" MessageManager.chatDataList::::${MessageManager.chatDataList.length}");
 
     context.watch<ConversationNotifier>().chatIdList.forEach((v) {
+      print("${v}");
+      print("${v.split("_")}");
+      print("${v.split("_").last}");
       animationMap[int.parse(v.split("_").last)] =
           AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
     });
+    print("animationMap:::::${animationMap}");
     return Scaffold(
       appBar: CustomAppBar(
         hasLeading: false,
@@ -198,7 +203,17 @@ class MessageState extends State<MessagePage>
           SliverToBoxAdapter(
             child: _buildTopView(context.watch<UnreadMessageNotifier>()),
           ),
-          SliverFixedExtentList(
+          // SliverFixedExtentList(
+          //   delegate: SliverChildBuilderDelegate(
+          //     (context, index) {
+          //       return _buildConversationItem(
+          //           index, context.watch<ConversationNotifier>().getConversationInAllList(index));
+          //     },
+          //     childCount: _listLength,
+          //   ),
+          //   itemExtent: 69,
+          // ),
+          SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 return _buildConversationItem(
@@ -206,8 +221,7 @@ class MessageState extends State<MessagePage>
               },
               childCount: _listLength,
             ),
-            itemExtent: 69,
-          ),
+          )
         ],
       ),
     );
@@ -440,25 +454,11 @@ class MessageState extends State<MessagePage>
                       // 动画删除item
                       if (animationMap.containsKey(int.parse(conversation.conversationId))) {
                         animationMap[int.parse(conversation.conversationId)].forward().then((value) {
-                          // context.watch<ConversationNotifier>().removeListener(() { })
-                          // attentionModelList.removeWhere((element) {
-                          //   return element.id == id;
-                          // });
-                          // conversation.r
-                          // attentionIdList.removeWhere((v) => v == id);
-                          // 这是为了加载无动态缺省布局
-
-                          // if (mounted) {
-                          //   setState(() {
                           animationMap.remove(int.parse(conversation.conversationId));
-                          // });
-                          // }
-                          // if ( MessageManager.chatDataList.where((element) => element.contains(int.parse(conversation.conversationId))){
                           MessageManager.removeConversation(
                               context, conversation.conversationId, conversation.uid, conversation.type);
                           Application.rongCloud
                               .clearMessages(conversation.getType(), conversation.conversationId, null);
-                          // }
                         });
                       }
 
@@ -481,36 +481,13 @@ class MessageState extends State<MessagePage>
                 jumpChatPageConversationDto(context, conversation);
               },
               onClickRightBtn: (ind) {
-                // ConversationAnimationModel animationModel = ConversationAnimationModel();
-                // animationModel.index = ind;
-                // animationModel.conversationItemHeight = 0.0;
-                // streamController.sink.add(animationModel);
                 // 动画删除item
                 if (animationMap.containsKey(int.parse(conversation.conversationId))) {
                   animationMap[int.parse(conversation.conversationId)].forward().then((value) {
-                    // context.watch<ConversationNotifier>().removeListener(() { })
-                    // attentionModelList.removeWhere((element) {
-                    //   return element.id == id;
-                    // });
-                    // conversation.r
-                    // attentionIdList.removeWhere((v) => v == id);
-                    // 这是为了加载无动态缺省布局
-
-                    // if (mounted) {
-                    //   setState(() {
                     animationMap.remove(int.parse(conversation.conversationId));
-                    // });
-                    // }
-                    // if ( MessageManager.chatDataList.where((element) => element.contains(int.parse(conversation.conversationId))){
-                    // new Future.delayed(Duration(milliseconds: 350), () {
                     MessageManager.removeConversation(
                         context, conversation.conversationId, conversation.uid, conversation.type);
                     Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
-                    // });
-                    // MessageManager.removeConversation(
-                    //     context, conversation.conversationId, conversation.uid, conversation.type);
-                    // Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
-                    // }
                   });
                 }
               },
