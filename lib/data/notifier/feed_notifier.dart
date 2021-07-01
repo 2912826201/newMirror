@@ -97,9 +97,6 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList, {bool needNotify = true}) {
     _feedList.forEach((element) {
-      if(value._feedMap.containsKey(element.id)){
-        return;
-      }
       value._feedMap[element.id] = element;
       value._feedMap[element.id].hotComment = [];
       if (element.comments.isNotEmpty && element.comments.length > 1) {

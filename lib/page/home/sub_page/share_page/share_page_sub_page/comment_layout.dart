@@ -108,13 +108,11 @@ class CommentLayout extends StatelessWidget {
                           }
                         },
                         child: Container(
-                          child: model.hotComment.length > 0
-                              ? RichText(
+                          child: RichText(
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   text: TextSpan(children: getSubCommentText(item, context)),
-                                )
-                              : Container(),
+                                ),
                         )),
                   ),
               ],
