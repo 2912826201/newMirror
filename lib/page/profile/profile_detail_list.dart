@@ -125,8 +125,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             }
           });
         });
-      /*  // 可以同步是因为加了页面去判断只在推荐页做展示
-        context.read<FeedMapNotifier>().updateFeedMap(followModel);*/
+        // 可以同步是因为加了页面去判断只在推荐页做展示
+        context.read<FeedMapNotifier>().updateFeedMap(followModel);
       }
     });
   }

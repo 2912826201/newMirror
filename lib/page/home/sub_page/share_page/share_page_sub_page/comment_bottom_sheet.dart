@@ -176,7 +176,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                       style: AppStyle.textPrimary2Medium14,
                     );
                   }, selector: (context, notifier) {
-                    return notifier.value.feedMap[feedId].totalCount;
+                    return notifier.value.feedMap[feedId].commentCount;
                   }),
                   // Text(
                   //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
