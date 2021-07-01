@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -47,8 +49,6 @@ class AttentionPage extends StatefulWidget {
 GlobalKey<AttentionPageState> attentionKey = GlobalKey();
 
 class AttentionPageState extends State<AttentionPage> with TickerProviderStateMixin {
-  @override
-  bool get wantKeepAlive => true; //必须重写
 
   var status = Status.loggedIn;
 
@@ -416,70 +416,83 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       }
       ;
     }
-    return SmartRefresher(
-          enablePullUp: status == Status.concern ? true : false,
-          enablePullDown: true,
-          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
-          header: SmartRefresherHeadFooter.init().getHeader(),
-          controller: _refreshController,
-          onLoading: () {
-            setState(() {
-              showNoMroe = IntegerUtil.showNoMore(attentionlistKey);
-            });
-            dataPage += 1;
-            getRecommendFeed(refreshOrLoading: false);
-          },
-          onRefresh: () {
-            dataPage = 1;
-            _refreshController.loadComplete();
-            lastTime = null;
-            // 清空曝光过的listKey
-            ExposureDetectorController.instance.signOutClearHistory();
-            getRecommendFeed(refreshOrLoading: true);
-          },
-          child: CustomScrollView(
-            controller: PrimaryScrollController.of(context),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            key: attentionlistKey,
-            physics: context.watch<FeedMapNotifier>().value.isDropDown
-                ? AlwaysScrollableScrollPhysics()
-                : NeverScrollableScrollPhysics(),
-            slivers: [
-              attentionIdList.length > 0
-                  ? SliverList(
-                      delegate: SliverChildBuilderDelegate((content, index) {
-                      if (status == Status.noConcern) {
-                        return pageDisplay(0, HomeFeedModel());
-                      }
-                      // 获取动态id
-                      int id;
-                      // 获取动态id指定model
-                      HomeFeedModel feedModel;
-                      if (index < attentionIdList.length) {
-                        id = attentionIdList[index];
-                        feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
-                      }
-                      print("attentionIdList数据源长度：：：：${attentionIdList.length}");
-                      return SizeTransitionView(
-                        id: id,
-                        animationMap: animationMap,
-                        child: ExposureDetector(
-                          key: Key('attention_page_$id'),
-                          child: pageDisplay(index, feedModel),
-                          onExposure: (visibilityInfo) {
-                            // 如果没有显示
-                            if (attentionIdList[index] != -1 &&
-                                context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
-                              context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
-                              print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                            }
-                          },
-                        ),
-                      );
-                    }, childCount: attentionIdList.length))
-                  : SliverToBoxAdapter()
-            ],
-          ));
+    return SizeCacheWidget(
+      // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
+        estimateCount: 6,
+        child: SmartRefresher(
+            enablePullUp: status == Status.concern ? true : false,
+            enablePullDown: true,
+            footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMroe),
+            header: SmartRefresherHeadFooter.init().getHeader(),
+            controller: _refreshController,
+            onLoading: () {
+              setState(() {
+                showNoMroe = IntegerUtil.showNoMore(attentionlistKey);
+              });
+              dataPage += 1;
+              getRecommendFeed(refreshOrLoading: false);
+            },
+            onRefresh: () {
+              dataPage = 1;
+              _refreshController.loadComplete();
+              lastTime = null;
+              // 清空曝光过的listKey
+              ExposureDetectorController.instance.signOutClearHistory();
+              getRecommendFeed(refreshOrLoading: true);
+            },
+            child: CustomScrollView(
+              controller: PrimaryScrollController.of(context),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              key: attentionlistKey,
+              physics: context.watch<FeedMapNotifier>().value.isDropDown
+                  ? AlwaysScrollableScrollPhysics()
+                  : NeverScrollableScrollPhysics(),
+              slivers: [
+                attentionIdList.length > 0
+                    ? SliverList(
+                        delegate: SliverChildBuilderDelegate((content, index) {
+                        if (status == Status.noConcern) {
+                          return pageDisplay(0, HomeFeedModel());
+                        }
+                        // 获取动态id
+                        int id;
+                        // 获取动态id指定model
+                        HomeFeedModel feedModel;
+                        if (index < attentionIdList.length) {
+                          id = attentionIdList[index];
+                          feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
+                        }
+                        print("attentionIdList数据源长度：：：：${attentionIdList.length}");
+                        return FrameSeparateWidget(
+                            index: index,
+                            placeHolder: Container(
+                              height: 512,
+                              width: ScreenUtil.instance.width,
+                            ),
+                            child: SizeTransitionView(
+                              id: id,
+                              animationMap: animationMap,
+                              child: ExposureDetector(
+                                key: Key('attention_page_$id'),
+                                child: pageDisplay(index, feedModel),
+                                onExposure: (visibilityInfo) {
+                                  // 如果没有显示
+                                  if (attentionIdList[index] != -1 &&
+                                      context
+                                          .read<FeedMapNotifier>()
+                                          .value
+                                          .feedMap[attentionIdList[index]]
+                                          .isShowInputBox) {
+                                    context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
+                                    print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                  }
+                                },
+                              ),
+                            ));
+                      }, childCount: attentionIdList.length))
+                    : SliverToBoxAdapter()
+              ],
+            )));
   }
 
   // 缺省图关注视图切换

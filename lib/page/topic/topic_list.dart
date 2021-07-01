@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/api.dart';
 
 import 'package:mirror/api/topic/topic_api.dart';
@@ -12,6 +14,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
@@ -21,13 +24,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicList extends StatefulWidget {
-  TopicList({Key key,this.topicId, this.type, this.tabKey}) : super(key: key);
+  TopicList({Key key, this.topicId, this.type, this.tabKey}) : super(key: key);
 
   int type;
 
   // 话题ID
   int topicId;
   final Key tabKey;
+
   @override
   TopicListState createState() => TopicListState();
 }
@@ -167,26 +171,23 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   }
 
   _deleteFeedCallBack(int id) {
-      if (animationMap.containsKey(id)) {
-        animationMap[id].forward().then((value) {
-          recommendTopicList.removeWhere((v) => v.id == id);
-          if (mounted) {
-            setState(() {
-              animationMap.removeWhere((key, value) => key == id);
-            });
-          }
-          if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
-            context.read<FeedMapNotifier>().deleteFeed(id);
-          }
-          if (recommendTopicList.length == 0) {
-            requestRecommendTopic(refreshOrLoading: true);
-          }
-        });
-      }
+    if (animationMap.containsKey(id)) {
+      animationMap[id].forward().then((value) {
+        recommendTopicList.removeWhere((v) => v.id == id);
+        if (mounted) {
+          setState(() {
+            animationMap.removeWhere((key, value) => key == id);
+          });
+        }
+        if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+          context.read<FeedMapNotifier>().deleteFeed(id);
+        }
+        if (recommendTopicList.length == 0) {
+          requestRecommendTopic(refreshOrLoading: true);
+        }
+      });
+    }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -199,126 +200,135 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
             context: context,
             child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
-                child: SmartRefresher(
-                  enablePullDown: true,
-                  enablePullUp: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(),
-                  header: SmartRefresherHeadFooter.init().getHeader(),
-                  controller: refreshController,
-                  onRefresh: () {
-                    recommendHasNext = null;
-                    refreshController.loadComplete();
-                    requestRecommendTopic(refreshOrLoading: true);
-                  },
-                  onLoading: () {
-                    requestRecommendTopic(refreshOrLoading: false);
-                  },
-                  child: isShowDefaultMap == null
-                      ? Container()
-                      : isShowDefaultMap
-                          ? CustomScrollView(
-                              slivers: [
-                                SliverList(
-                                    delegate: SliverChildBuilderDelegate((content, index) {
-                                  HomeFeedModel feedModel = recommendTopicList[index];
-                                  return SizeTransitionView(
-                                      id: feedModel.id,
-                                      animationMap: animationMap,
-                                      child: ExposureDetector(
-                                        key: Key('topic_list_${widget.type}_${feedModel.id}'),
-                                        child: DynamicListLayout(
-                                          index: recommendTopicList.indexOf(feedModel),
-                                          pageName: "topicRecommend",
-                                          isShowRecommendUser: false,
-                                          isShowConcern: false,
-                                          model: feedModel,
-                                          topicId: widget.topicId,
-                                          // 可选参数 子Item的个数
-                                          key:
-                                              GlobalObjectKey("topicRecommend${recommendTopicList.indexOf(feedModel)}"),
+                child: SizeCacheWidget(
+                    // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
+                    estimateCount: 6,
+                    child: SmartRefresher(
+                      enablePullDown: true,
+                      enablePullUp: true,
+                      footer: SmartRefresherHeadFooter.init().getFooter(),
+                      header: SmartRefresherHeadFooter.init().getHeader(),
+                      controller: refreshController,
+                      onRefresh: () {
+                        recommendHasNext = null;
+                        refreshController.loadComplete();
+                        requestRecommendTopic(refreshOrLoading: true);
+                      },
+                      onLoading: () {
+                        requestRecommendTopic(refreshOrLoading: false);
+                      },
+                      child: isShowDefaultMap == null
+                          ? Container()
+                          : isShowDefaultMap
+                              ? CustomScrollView(
+                                  slivers: [
+                                    SliverList(
+                                        delegate: SliverChildBuilderDelegate((content, index) {
+                                      HomeFeedModel feedModel = recommendTopicList[index];
+                                      return FrameSeparateWidget(
+                                          index: index,
+                                          placeHolder: Container(
+                                            height: 512,
+                                            width: ScreenUtil.instance.width,
+                                          ),
+                                          child: SizeTransitionView(
+                                              id: feedModel.id,
+                                              animationMap: animationMap,
+                                              child: ExposureDetector(
+                                                key: Key('topic_list_${widget.type}_${feedModel.id}'),
+                                                child: DynamicListLayout(
+                                                  index: recommendTopicList.indexOf(feedModel),
+                                                  pageName: "topicRecommend",
+                                                  isShowRecommendUser: false,
+                                                  isShowConcern: false,
+                                                  model: feedModel,
+                                                  topicId: widget.topicId,
+                                                  // 可选参数 子Item的个数
+                                                  key: GlobalObjectKey(
+                                                      "topicRecommend${recommendTopicList.indexOf(feedModel)}"),
+                                                ),
+                                                onExposure: (visibilityInfo) {
+                                                  // 如果没有显示
+                                                  if (context
+                                                      .read<FeedMapNotifier>()
+                                                      .value
+                                                      .feedMap[feedModel.id]
+                                                      .isShowInputBox) {
+                                                    context.read<FeedMapNotifier>().showInputBox(feedModel.id);
+                                                    print(
+                                                        '第${recommendTopicList.indexOf(feedModel)} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                                  }
+                                                },
+                                              )));
+                                    }, childCount: recommendTopicList.length)),
+                                    // SliverAnimatedList(
+                                    // key: _listKey,
+                                    // itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+                                    //   HomeFeedModel model = recommendTopicList[index];
+                                    //   return _buildItem(model, animation);
+                                    // },
+                                    // initialItemCount: recommendTopicList.length)
+                                  ],
+                                )
+                              // CustomScrollView(
+                              //     slivers: [
+                              //       SliverFillRemaining(
+                              //         // child: Container(
+                              //         //     margin: EdgeInsets.only(left: 16, right: 16),
+                              //             child: WaterfallFlow.builder(
+                              //               physics: NeverScrollableScrollPhysics(),
+                              //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                              //                 crossAxisCount: 2,
+                              //                 // 上下间隔
+                              //                 mainAxisSpacing: 4.0,
+                              //                 //   // 左右间隔
+                              //                 crossAxisSpacing: 8.0,
+                              //               ),
+                              //               itemBuilder: (context, index) {
+                              //                 // 获取动态id
+                              //                 int id;
+                              //                 // 获取动态id指定model
+                              //                 HomeFeedModel model;
+                              //                 if (index < recommendTopicList.length) {
+                              //                   id = recommendTopicList[index].id;
+                              //                   model = context.read<FeedMapNotifier>().value.feedMap[id];
+                              //                 }
+                              //                 return SearchFeeditem(
+                              //                   model: model,
+                              //                   list: recommendTopicList,
+                              //                   index: index,
+                              //                   pageName: "topicRecommend",
+                              //                 );
+                              //               },
+                              //               itemCount: recommendTopicList.length,
+                              //             )),
+                              //       // )
+                              //     ],
+                              //   )
+                              : Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 224,
+                                        height: 224,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
                                         ),
-                                        onExposure: (visibilityInfo) {
-                                          // 如果没有显示
-                                          if (context
-                                              .read<FeedMapNotifier>()
-                                              .value
-                                              .feedMap[feedModel.id]
-                                              .isShowInputBox) {
-                                            context.read<FeedMapNotifier>().showInputBox(feedModel.id);
-                                            print(
-                                                '第${recommendTopicList.indexOf(feedModel)} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                                          }
-                                        },
-                                      ));
-                                }, childCount: recommendTopicList.length)),
-                                // SliverAnimatedList(
-                                // key: _listKey,
-                                // itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                                //   HomeFeedModel model = recommendTopicList[index];
-                                //   return _buildItem(model, animation);
-                                // },
-                                // initialItemCount: recommendTopicList.length)
-                              ],
-                            )
-                          // CustomScrollView(
-                          //     slivers: [
-                          //       SliverFillRemaining(
-                          //         // child: Container(
-                          //         //     margin: EdgeInsets.only(left: 16, right: 16),
-                          //             child: WaterfallFlow.builder(
-                          //               physics: NeverScrollableScrollPhysics(),
-                          //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                          //                 crossAxisCount: 2,
-                          //                 // 上下间隔
-                          //                 mainAxisSpacing: 4.0,
-                          //                 //   // 左右间隔
-                          //                 crossAxisSpacing: 8.0,
-                          //               ),
-                          //               itemBuilder: (context, index) {
-                          //                 // 获取动态id
-                          //                 int id;
-                          //                 // 获取动态id指定model
-                          //                 HomeFeedModel model;
-                          //                 if (index < recommendTopicList.length) {
-                          //                   id = recommendTopicList[index].id;
-                          //                   model = context.read<FeedMapNotifier>().value.feedMap[id];
-                          //                 }
-                          //                 return SearchFeeditem(
-                          //                   model: model,
-                          //                   list: recommendTopicList,
-                          //                   index: index,
-                          //                   pageName: "topicRecommend",
-                          //                 );
-                          //               },
-                          //               itemCount: recommendTopicList.length,
-                          //             )),
-                          //       // )
-                          //     ],
-                          //   )
-                          : Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 224,
-                                    height: 224,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
-                                    ),
-                                    margin: const EdgeInsets.only(bottom: 16),
+                                        margin: const EdgeInsets.only(bottom: 16),
+                                      ),
+                                      const Text(
+                                        "这里空空如也，去推荐看看吧",
+                                        style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                      ),
+                                    ],
                                   ),
-                                  const Text(
-                                    "这里空空如也，去推荐看看吧",
-                                    style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-                                  ),
-                                ],
-                              ),
-                            ),
-                ))));
+                                ),
+                    )))));
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child);
   }
 }
