@@ -193,6 +193,7 @@ void _jumpChatPage(
     systemPage: systemPage,
     systemLastTime: systemLastTime,
     textContent: textContent,
+    unreadCount: conversation.unreadCount,
   );
 }
 

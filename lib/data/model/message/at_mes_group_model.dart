@@ -14,8 +14,10 @@ class AtMesGroupModel {
       if (this.atMsgMap == null) {
         atMsgMap = Map();
       }
-      atMsgMap[atMsg.groupId.toString()] = jsonEncode(atMsg.toJson());
-      saveAtMesGroupModel(jsonEncode(atMsgMap));
+      if (atMsgMap[atMsg.groupId.toString()] == null) {
+        atMsgMap[atMsg.groupId.toString()] = jsonEncode(atMsg.toJson());
+        saveAtMesGroupModel(jsonEncode(atMsgMap));
+      }
     }
   }
 
@@ -25,6 +27,7 @@ class AtMesGroupModel {
       if (this.atMsgMap != null) {
         atMsgMap.remove(atMsg.groupId.toString());
         saveAtMesGroupModel(jsonEncode(atMsgMap));
+        atMsg = null;
       }
     }
   }

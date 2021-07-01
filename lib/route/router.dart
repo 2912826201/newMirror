@@ -657,6 +657,7 @@ class AppRouter {
       @required List<ChatDataModel> chatDataModelList,
       String systemLastTime,
       int systemPage = 0,
+      int unreadCount = 0,
       String textContent,
       Message shareMessage}) {
     Map<String, dynamic> map = Map();
@@ -666,6 +667,7 @@ class AppRouter {
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
     map["textContent"] = textContent;
+    map["unreadCount"] = unreadCount;
     RuntimeProperties.shareMessage = shareMessage;
     MessageManager.chatDataList.clear();
     MessageManager.chatDataList.addAll(chatDataModelList);

@@ -219,11 +219,7 @@ class MessageItemHeightUtil {
     double textMaxWidth = ScreenUtil.instance.width - (16 + 7 + 38 + 2) * 2;
     itemHeight += getTextSize(content, TextStyle(fontSize: 14), 100, textMaxWidth).height;
 
-    if (isOnlyContentHeight) {
-      return itemHeight;
-    } else {
-      return math.max(itemHeight, 48.0 + 24.0);
-    }
+    return itemHeight;
   }
 
   //获取语音消息的高度
@@ -247,11 +243,7 @@ class MessageItemHeightUtil {
     //动画条的最高值
     itemHeight += 20.0;
 
-    if (isOnlyContentHeight) {
-      return itemHeight;
-    } else {
-      return math.max(itemHeight, 48.0 + 24.0);
-    }
+    return itemHeight;
   }
 
   //获取选择列表消息的高度
@@ -270,11 +262,7 @@ class MessageItemHeightUtil {
       itemHeight += getTextSize(selectList[i], TextStyle(fontSize: 13), 100, 298.0).height;
     }
 
-    if (isOnlyContentHeight) {
-      return itemHeight;
-    } else {
-      return math.max(itemHeight, 48.0 + 24.0);
-    }
+    return itemHeight;
   }
 
   //获取图片消息视频消息的高度

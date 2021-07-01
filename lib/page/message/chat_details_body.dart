@@ -6,6 +6,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/item/chat_top_at_mark.dart';
+import 'package:mirror/page/message/item/chat_top_new_msg_mark.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
@@ -25,33 +26,37 @@ class ChatDetailsBody extends StatefulWidget {
   final bool isPersonalButler;
   final GestureTapCallback onTap;
   final VoidCallback onAtUiClickListener;
+  final VoidCallback onNewMsgClickListener;
   final FirstEndCallback firstEndCallback;
   final int conversationDtoType;
+  final int newMsgCount;
   final bool isHaveAtMeMsg;
   final String chatId;
   final LoadingStatus loadStatus;
-  final Function(void Function(),String longClickString) setCallRemoveLongPanel;
+  final Function(void Function(), String longClickString) setCallRemoveLongPanel;
   final Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
 
-  ChatDetailsBody(
-      {Key key,
-      this.scrollController,
-      this.chatDataList,
-      this.chatId,
+  ChatDetailsBody({
+    Key key,
+    this.scrollController,
+    this.chatDataList,
+    this.chatId,
       this.conversationDtoType,
       this.loadStatus,
       this.isShowChatUserName,
-      this.isHaveAtMeMsg,
-      this.firstEndCallback,
-      this.chatName,
-      this.onTap,
-      this.isPersonalButler = false,
-      this.voidMessageClickCallBack,
-      this.onAtUiClickListener,
-      this.setCallRemoveLongPanel,
-      this.voidItemLongClickCallBack,
-      this.setHaveAtMeMsg,
-      })
+    this.isHaveAtMeMsg,
+    this.firstEndCallback,
+    this.chatName,
+    this.onTap,
+    this.isPersonalButler = false,
+    this.voidMessageClickCallBack,
+    this.onAtUiClickListener,
+    this.setCallRemoveLongPanel,
+    this.voidItemLongClickCallBack,
+    this.setHaveAtMeMsg,
+    this.newMsgCount,
+    this.onNewMsgClickListener,
+  })
       : super(key: key);
 
   @override
@@ -125,6 +130,14 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
             onAtUiClickListener: widget.onAtUiClickListener,
             isHaveAtMeMsg: widget.isHaveAtMeMsg,
             setHaveAtMeMsg: widget.setHaveAtMeMsg,
+          ),
+          top: 24,
+          right: 0,
+        ),
+        Positioned(
+          child: ChatTopNewMsgMark(
+            onNewMsgClickListener: widget.onNewMsgClickListener,
+            newMsgCount: widget.newMsgCount,
           ),
           top: 24,
           right: 0,

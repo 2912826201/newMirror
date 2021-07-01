@@ -236,6 +236,7 @@ class TextMsg extends StatelessWidget {
         }
       }
     }
+    // textSpanArray.add(getNullContent(" 第$position个",isMyself,1,false));
     return textSpanArray;
   }
 

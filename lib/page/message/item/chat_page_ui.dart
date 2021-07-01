@@ -415,22 +415,20 @@ class ChatPageUtil {
             if(chatDataList.length<1){
               MessageManager.updateConversationByMessage(context, chatMessageList[0].msg);
             }
-            chatDataList.addAll(chatMessageList);
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          }
-        });
+          chatDataList.addAll(chatMessageList);
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        }
+      });
     }
   }
 
-
-
   //刷新数据--加载更多以前的数据
-  onLoadMoreHistoryMessages(List<ChatDataModel> chatDataList,
-      ConversationDto conversation,
-      Function(bool isHaveMore) onFinishListener) async {
+  onLoadMoreHistoryMessages(
+      List<ChatDataModel> chatDataList, ConversationDto conversation, Function(bool isHaveMore) onFinishListener,
+      {int loadMsgCount}) async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
-        chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
+        chatDataList[chatDataList.length - 1].msg.sentTime, loadMsgCount ?? chatAddHistoryMessageCount, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
     if (msgList != null && msgList.length > 1) {
       dataList.clear();
