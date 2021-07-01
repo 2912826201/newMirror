@@ -596,6 +596,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
                               addRepaintBoundaries: false,
+                              controller: PrimaryScrollController.of(context),
                               addAutomaticKeepAlives: false,
                               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                               //这里是将插入的假数据展示成跳转话题页的item
@@ -731,27 +732,32 @@ class _QueryFollowState extends State<QueryFollowList> {
                                 }
                               })
                           : fristRequestIsOver
-                              ? Expanded(
-                          child:ListView(
-                                  // crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: 150,
-                                    ),
-                                    Center(child: Container(
-                                      width: 285,
-                                      height: 285,
-                                      child: Image.asset(defaultImage),
-                                    ),),
-                                    SizedBox(
-                                      height: 12,
-                                    ),
-                                    Center(child: Text(
-                                      hintText,
-                                      style: AppStyle.textHintRegular14,
-                                    ) ,),
-                                  ],
-                                ) )
+                              ? Container(
+                                  height: height,
+                                  child: ListView(
+                                    // crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 150,
+                                      ),
+                                      Center(
+                                        child: Container(
+                                          width: 285,
+                                          height: 285,
+                                          child: Image.asset(defaultImage),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 12,
+                                      ),
+                                      Center(
+                                        child: Text(
+                                          hintText,
+                                          style: AppStyle.textHintRegular14,
+                                        ),
+                                      ),
+                                    ],
+                                  ))
                               : Container(),
                     )),
               ),

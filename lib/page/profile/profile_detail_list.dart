@@ -65,6 +65,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         }
         if (model.list != null && model.list.length != 0) {
           listNoData = false;
+          print('model.list.sublist(0);----------${model.list.sublist(0).length}');
           model.list.forEach((result) {
             print('---------------------${HomeFeedModel.fromJson(result).id}');
             followModel.add(HomeFeedModel.fromJson(result));
@@ -92,6 +93,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       if (model != null) {
         followlastTime = model.lastTime;
         if (model.list.isNotEmpty) {
+
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             animationMap[HomeFeedModel.fromJson(result).id] =
@@ -123,8 +125,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             }
           });
         });
-        // 可以同步是因为加了页面去判断只在推荐页做展示
-        context.read<FeedMapNotifier>().updateFeedMap(followModel);
+      /*  // 可以同步是因为加了页面去判断只在推荐页做展示
+        context.read<FeedMapNotifier>().updateFeedMap(followModel);*/
       }
     });
   }

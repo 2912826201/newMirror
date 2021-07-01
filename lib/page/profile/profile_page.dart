@@ -45,7 +45,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   UserModel userModel;
-  static const EventChannel eventChannel = EventChannel('com.aimymusic.mirror_phoneListener');
 
   //头像的高度
   double userAvatarHeight = 71;
@@ -58,23 +57,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
-
-  /* static const basicMessageChannel = BasicMessageChannel('messageChannel', StandardMessageCodec());
-  static const methodChannel = const MethodChannel('PhoneStatusListener');*/
-
-/*  //设置消息监听
-  Future<dynamic> nativeMessageListener() async {
-    methodChannel.setMethodCallHandler((resultCall) {
-      //处理原生 Android iOS 发送过来的消息
-      MethodCall call = resultCall;
-      String method = call.method;
-      Map arguments = call.arguments;
-      int code = arguments["phoneStatus"];
-      // String message = arguments["message"];
-      // String recive = " code $code message $message and method $method ";
-      print("---code---phoneStatus---code-method$method---code----$code");
-    });
-  }*/
 
   @override
   // TODO: implement wantKeepAlive
@@ -558,7 +540,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
         break;
       case "扫一扫":
-       gotoScanCodePage(context);
+       gotoScanCodePage(context,showMyCode: true);
         break;
       case "设置":
         AppRouter.navigateToSettingHomePage(context);

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -164,7 +165,7 @@ class _WebViewPageState extends State<WebViewPage> {
     if (!StringUtil.isURL(url)) {
       print("不是url:$url");
       return;
-    } else if (!(url.contains("aimymusic.com/h5/app"))) {
+    } else if (!(url.contains(AppConfig.getApiHost()))) {
       print("不是我们的url:$url");
       return;
     }

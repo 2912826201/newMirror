@@ -116,6 +116,10 @@ class _FriendsPageState extends State<FriendsPage> {
     loadingStatus = LoadingStatus.STATUS_LOADING;
     getAllData();
     _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollController = PrimaryScrollController.of(context);
+      setState(() {});
+    });
   }
 
   @override

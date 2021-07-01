@@ -63,7 +63,8 @@ class ProfileDetailPage extends StatefulWidget {
   }
 }
 
-class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+class _ProfileDetailState extends State<ProfileDetailPage>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   //头像size
   final double avatarSize = 71;
 
@@ -107,13 +108,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
   StreamController<bool> loadingStreamController;
+
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   bool isBlack = false;
   final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
+  StreamController<bool> needTouchCallBackStreamController = StreamController<bool>();
 
   @override
   void initState() {
-    super.initState();
     EventBus.getDefault()
         .registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE, registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
     loadingStreamController = StreamController.broadcast();
@@ -132,6 +134,25 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     }
     _mController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      PrimaryScrollController.of(context).addListener(() {
+        if (!PrimaryScrollController.of(context).hasClients) return;
+        if (PrimaryScrollController.of(context).offset >= userDetailBoardHeight) {
+          if (!isScroll) {
+            canOnClick = false;
+            isScroll = true;
+          }
+        } else {
+          double offset = PrimaryScrollController.of(context).offset /
+              (userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight);
+          if (offset <= 1) {
+            appBarOpacityStreamController.sink.add(offset);
+          }
+          if (isScroll) {
+            canOnClick = true;
+            isScroll = false;
+          }
+        }
+      });
       print('=========================个人主页addPostFrameCallback');
       Future.delayed(Duration(milliseconds: 250), () {
         _getUserInfo(id: widget.userId);
@@ -143,24 +164,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       //   WidgetsBinding.instance.scheduleFrame();
       // });
     });
-    scrollController.addListener(() {
-      if (scrollController.offset >= userDetailBoardHeight) {
-        if (!isScroll) {
-          canOnClick = false;
-          isScroll = true;
-        }
-      } else {
-        double offset = scrollController.offset /
-            (userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight);
-        if (offset <= 1) {
-          appBarOpacityStreamController.sink.add(offset);
-        }
-        if (isScroll) {
-          canOnClick = true;
-          isScroll = false;
-        }
-      }
-    });
+    super.initState();
   }
 
   void loginRefreashPage() {
@@ -193,9 +197,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _initBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
-      if(model.inYouBlack == 1){
+      if (model.inYouBlack == 1) {
         context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true, needNotify: true);
-      }else{
+      } else {
         context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, false, needNotify: true);
       }
     }
@@ -270,6 +274,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('=======================================个人主页build');
     //资料板高度，各部分高度加间距
     userDetailBoardHeight = ScreenUtil.instance.statusBarHeight +
@@ -289,7 +294,26 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           height: height,
           width: width,
           child: Stack(
-            children: [_minehomeBody(), Positioned(top: 0, child: _appBar())],
+            children: [
+               _minehomeBody(),
+              Positioned(top: 0, child: _appBar()),
+              Positioned(
+                top: 0,
+                  child:StreamBuilder<bool>(
+                  initialData: true,
+                  stream: needTouchCallBackStreamController.stream,
+                  builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                    if (!snapshot.data) {
+                      return Container(
+                        color: AppColor.transparent,
+                        height: height,
+                        width: width,
+                      );
+                    }else{
+                      return Container();
+                    }
+                  }) ),
+            ],
           )),
     );
   }
@@ -298,7 +322,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _minehomeBody() {
     return NestedScrollView(
         key: _key,
-        controller: scrollController,
+        controller: PrimaryScrollController.of(context),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         pinnedHeaderSliverHeightBuilder: () {
           return ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
@@ -333,9 +357,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       labelColor: AppColor.black,
                       indicatorColor: AppColor.black,
                       controller: _mController,
-                      onDoubleTap: (index) {
-                        // scrollController.animateTo(scrollController.position.minScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
-                        EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                      onDoubleTap: (index) async {
+                        print('PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context)
+                            .offset}------$userDetailBoardHeight-----${(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
+                            CustomAppBar.appBarHeight )}');
+                        if(PrimaryScrollController.of(context).offset!=0&&PrimaryScrollController.of(context)
+                            .offset>=(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
+                            CustomAppBar.appBarHeight )) {
+                          needTouchCallBackStreamController.sink.add(false);
+                          _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250)
+                              , curve: Curves.linear).then((value){
+                            needTouchCallBackStreamController.sink.add(true);
+                          });
+                        }
+                        // EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
                       },
                       indicatorSize: Custom.TabBarIndicatorSize.label,
                       indicator: RoundUnderlineTabIndicator(
@@ -528,7 +563,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               },*/
                   ))),
           Positioned(
-               child: Container(
+              child: Container(
             width: width,
             height: backGroundHeight,
             decoration: BoxDecoration(
@@ -755,7 +790,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         width: avatarSize,
         memCacheHeight: 250,
         memCacheWidth: 250,
-        useOldImageOnUrlChange: true,
+        // useOldImageOnUrlChange: true,
         imageUrl: _avatar ?? " ",
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(

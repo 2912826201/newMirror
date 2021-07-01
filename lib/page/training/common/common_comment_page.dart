@@ -1012,6 +1012,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           scrollHeight += commentListSubSettingList[i].globalKey.currentContext.size.height;
           if (commentListSubSettingList[i].commentId == targetId) {
             index = i;
+            print('---index---------index-----index----$index');
             break;
           }
         }
@@ -1078,11 +1079,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           scrollHeight += childCommentHeight;
         }
         if (scrollHeight > 0) {
-          PrimaryScrollController.of(context).animateTo(
-            scrollHeight,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          if(widget.isBottomSheetAndHomePage){
+            widget.scrollController.animateTo(
+              scrollHeight,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.linear,
+            );
+          }else{
+            PrimaryScrollController.of(context).animateTo(
+              scrollHeight,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.linear,
+            );
+          }
+
         }
       }
     });

@@ -133,7 +133,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-
   }
 
   @override
@@ -201,7 +200,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                 },
                 child: msgList != null && msgList.isNotEmpty
                     ? ListView.builder(
-                        controller: scrollController,
+                        controller: PrimaryScrollController.of(context),
                         shrinkWrap: true,
                         //解决无限高度问题
                         physics: AlwaysScrollableScrollPhysics(),
