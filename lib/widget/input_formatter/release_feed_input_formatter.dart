@@ -12,7 +12,6 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 
-
 // at回调
 typedef TriggerAtCallback = Future<String> Function(String at);
 // #回调
@@ -55,6 +54,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
   // 上下文
   BuildContext context;
+
   ReleaseFeedInputFormatter({
     TriggerAtCallback triggerAtCallback,
     ValueChangedCallback valueChangedCallback,
@@ -91,7 +91,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("rules￥￥${rules.toString()}");
     // Note 升级2.0后删除@,新值返回的是去掉空格的，不是2.0版本前@文本一起删除的值所有这里处理一下返回的@下标
     rules.forEach((v) {
-      if(newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
+      if (newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
         if (!isMonitorTop) {
           print("atCursorIndex::::${atCursorIndexs.toString()}");
           if (atCursorIndexs.length > 0) {
@@ -115,10 +115,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       // 旧值文本长度
       int oldUtf8Length = utf8.encode(oldValue.text).length;
       print("oldUtf8Length:::1:::$oldUtf8Length");
-      bool isMaxNumberOfBytes=false;
+      bool isMaxNumberOfBytes = false;
       // 拼接没有超出限制的文本
       newInputText.characters.forEach((element) {
-        if(isMaxNumberOfBytes){
+        if (isMaxNumberOfBytes) {
           return;
         }
         oldUtf8Length += utf8.encode(element).length;
@@ -126,13 +126,13 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         if (oldUtf8Length <= maxNumberOfBytes) {
           oldText += element;
         } else {
-          isMaxNumberOfBytes=true;
+          isMaxNumberOfBytes = true;
           print("跳出");
           return;
         }
       });
 
-      if(isMaxNumberOfBytes){
+      if (isMaxNumberOfBytes) {
         ToastShow.show(msg: "字数超出限制", context: context, gravity: Toast.CENTER);
       }
 
@@ -185,7 +185,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
       // 跟随@后面输入的实时搜索值
       rules.forEach((v) {
-        if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+        if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
           if (atIndex > 0 && newValue.selection.start >= atIndex) {
             atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
             print(atSearchStr);
@@ -193,6 +193,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
           if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
             topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
           }
+        } else {
+          atSearchStr = "";
+          topicSearchStr = "";
         }
       });
     } else {
@@ -210,7 +213,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       if (Platform.isIOS && oldValue.isComposingRangeValid) {
         // 跟随@后面输入的实时搜索值
         rules.forEach((v) {
-          if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+          if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
             if (atIndex > 0 && newValue.selection.start >= atIndex) {
               atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
               print(atSearchStr);
@@ -218,6 +221,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
             if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
               topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
             }
+          } else {
+            atSearchStr = "";
+            topicSearchStr = "";
           }
         });
         // if (atIndex > 0 && newValue.selection.start >= atIndex) {
@@ -328,7 +334,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       _shutDownCallback();
     }
     rules.forEach((v) {
-      if(newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+      if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
         if (atIndex > 0 && startIndex + 1 > atIndex) {
           print("111");
           print(oldValue.text);
@@ -339,7 +345,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         if (topicIndex > 0 && startIndex + 1 > topicIndex) {
           topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
         }
-      }});
+      } else {
+        atSearchStr = "";
+        topicSearchStr = "";
+      }
+    });
     print("3");
 
     bool isRule = false;
@@ -547,7 +557,7 @@ class Rule {
 }
 
 class AtIndex {
-   int index;
+  int index;
 
   AtIndex(this.index);
 

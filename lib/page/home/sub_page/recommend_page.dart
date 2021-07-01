@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
@@ -288,113 +290,123 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     return Stack(
       children: [
         Container(
-          child: SmartRefresher(
-              enablePullUp: recommendModelList.isNotEmpty ? true : false,
-              enablePullDown: true,
-              footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-              header: SmartRefresherHeadFooter.init().getHeader(),
-              controller: _refreshController,
-              onLoading: () {
-                setState(() {
-                  showNoMore = IntegerUtil.showNoMore(globalKey);
-                });
-                getRecommendFeed();
-              },
-              onRefresh: () {
-                hasNext = null;
-                _refreshController.loadComplete();
-                mergeRequest();
-              },
-              child: CustomScrollView(
-                key: globalKey,
-                controller: PrimaryScrollController.of(context),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                // BouncingScrollPhysics
-                physics:
-                    // ClampingScrollPhysics(),
-                    // RangeMaintainingScrollPhysics(),
-                    // FixedExtentScrollPhysics(),
-                    // AlwaysScrollableScrollPhysics(),
-                    // Platform
-                    context.watch<FeedMapNotifier>().value.isDropDown
-                        ? AlwaysScrollableScrollPhysics()
-                        : NeverScrollableScrollPhysics(),
-                slivers: [
-                  // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                  // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                  // 横向滑动区域
-                  SliverToBoxAdapter(
-                    child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
-                  ),
-                  // 垂直列表
-                  isRequestData == null
-                      ? SliverToBoxAdapter()
-                      : recommendModelList.isNotEmpty
-                          ? SliverList(
-                              // controller: _controller,
-                              delegate: SliverChildBuilderDelegate((content, index) {
-                                // 获取动态id
-                                int id;
-                                // 获取动态id指定model
-                                HomeFeedModel model;
-                                if (index < recommendIdList.length) {
-                                  id = recommendIdList[index];
-                                  model = context.read<FeedMapNotifier>().value.feedMap[id];
-                                }
-                                return ExposureDetector(
-                                  key: Key('recommend_page_${id}'),
-                                  child: DynamicListLayout(
-                                      index: index,
-                                      model: model,
-                                      pageName: "recommendPage",
-                                      isShowConcern: true,
-                                      // 可选参数 子Item的个数
-                                      // key: GlobalObjectKey("recommend$index"),
-                                      isShowRecommendUser: false),
-                                  onExposure: (visibilityInfo) {
-                                    print("回调看数据:${recommendIdList.toString()}");
-                                    // 如果没有显示
-                                    if (context
-                                        .read<FeedMapNotifier>()
-                                        .value
-                                        .feedMap[recommendIdList[index]]
-                                        .isShowInputBox) {
-                                      context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
-                                    }
-                                    print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                                  },
-                                );
-                              }, childCount: recommendIdList.length),
-                            )
-                          : SliverToBoxAdapter(
-                              child: Container(
-                              height: ScreenUtil.instance.height -
-                                  48 -
-                                  44 -
-                                  ScreenUtil.instance.bottomBarHeight -
-                                  ScreenUtil.instance.statusBarHeight,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 224,
-                                    height: 224,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+          child: SizeCacheWidget(
+            estimateCount: 20,
+            child: SmartRefresher(
+                enablePullUp: recommendModelList.isNotEmpty ? true : false,
+                enablePullDown: true,
+                footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                header: SmartRefresherHeadFooter.init().getHeader(),
+                controller: _refreshController,
+                onLoading: () {
+                  setState(() {
+                    showNoMore = IntegerUtil.showNoMore(globalKey);
+                  });
+                  getRecommendFeed();
+                },
+                onRefresh: () {
+                  hasNext = null;
+                  _refreshController.loadComplete();
+                  mergeRequest();
+                },
+                child: CustomScrollView(
+                  key: globalKey,
+                  controller: PrimaryScrollController.of(context),
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  // BouncingScrollPhysics
+                  physics:
+                      // ClampingScrollPhysics(),
+                      // RangeMaintainingScrollPhysics(),
+                      // FixedExtentScrollPhysics(),
+                      // AlwaysScrollableScrollPhysics(),
+                      // Platform
+                      context.watch<FeedMapNotifier>().value.isDropDown
+                          ? AlwaysScrollableScrollPhysics()
+                          : NeverScrollableScrollPhysics(),
+                  slivers: [
+                    // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                    // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                    // 横向滑动区域
+                    SliverToBoxAdapter(
+                      child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
+                    ),
+                    // 垂直列表
+                    isRequestData == null
+                        ? SliverToBoxAdapter()
+                        : recommendModelList.isNotEmpty
+                            ? SliverList(
+                                // controller: _controller,
+                                delegate: SliverChildBuilderDelegate((content, index) {
+                                  // 获取动态id
+                                  int id;
+                                  // 获取动态id指定model
+                                  HomeFeedModel model;
+                                  if (index < recommendIdList.length) {
+                                    id = recommendIdList[index];
+                                    model = context.read<FeedMapNotifier>().value.feedMap[id];
+                                  }
+                                  return FrameSeparateWidget(
+                                    index: index,
+                                    placeHolder: Container(
+                                      height: 512,
+                                      width: ScreenUtil.instance.width,
                                     ),
-                                    margin: const EdgeInsets.only(bottom: 16),
-                                  ),
-                                  const Text(
-                                    "这里空空如也，去关注看看吧",
-                                    style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-                                  ),
-                                ],
-                              ),
-                            )),
-                ],
-              )),
+                                    child:  ExposureDetector(
+                                      key: Key('recommend_page_${id}'),
+                                      child: DynamicListLayout(
+                                          index: index,
+                                          model: model,
+                                          pageName: "recommendPage",
+                                          isShowConcern: true,
+                                          // 可选参数 子Item的个数
+                                          // key: GlobalObjectKey("recommend$index"),
+                                          isShowRecommendUser: false),
+                                      onExposure: (visibilityInfo) {
+                                        print("回调看数据:${recommendIdList.toString()}");
+                                        // 如果没有显示
+                                        if (context
+                                            .read<FeedMapNotifier>()
+                                            .value
+                                            .feedMap[recommendIdList[index]]
+                                            .isShowInputBox) {
+                                          context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
+                                        }
+                                        print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                      },
+                                    ),
+                                  );
+                                }, childCount: recommendIdList.length),
+                              )
+                            : SliverToBoxAdapter(
+                                child: Container(
+                                height: ScreenUtil.instance.height -
+                                    48 -
+                                    44 -
+                                    ScreenUtil.instance.bottomBarHeight -
+                                    ScreenUtil.instance.statusBarHeight,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 224,
+                                      height: 224,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                                      ),
+                                      margin: const EdgeInsets.only(bottom: 16),
+                                    ),
+                                    const Text(
+                                      "这里空空如也，去关注看看吧",
+                                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                  ],
+                )),
+          ),
         )
       ],
     );
