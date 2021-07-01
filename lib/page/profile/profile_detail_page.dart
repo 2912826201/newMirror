@@ -108,6 +108,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
   StreamController<bool> loadingStreamController;
+
   StreamController<double> appBarOpacityStreamController = StreamController<double>();
   bool isBlack = false;
   final GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();

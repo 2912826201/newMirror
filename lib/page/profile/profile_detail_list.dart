@@ -93,6 +93,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       if (model != null) {
         followlastTime = model.lastTime;
         if (model.list.isNotEmpty) {
+
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             animationMap[HomeFeedModel.fromJson(result).id] =

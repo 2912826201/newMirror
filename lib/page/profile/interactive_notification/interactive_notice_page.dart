@@ -133,7 +133,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-
   }
 
   @override
