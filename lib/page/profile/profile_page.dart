@@ -1,5 +1,6 @@
 // import 'dart:html';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -231,64 +232,60 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       width: width,
       child: Stack(
         children: [
-          Container(
+          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+            print("头像地址:$avatar");
+            return CachedNetworkImage(
+              height: gaussianBlurHeight,
               width: width,
-              height: gaussianBlurHeight + 72,
-              clipBehavior: Clip.hardEdge,
-              // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
-              decoration: const BoxDecoration(),
-              child: ImageFiltered(
-                imageFilter: ui.ImageFilter.blur(
-                  sigmaX: 28.0,
-                  sigmaY: 28.0,
-                ),
-                child: CachedNetworkImage(
-                  height: gaussianBlurHeight + 72,
-                  width: width,
-                  imageUrl: context.watch<ProfileNotifier>().profile.avatarUri != null
-                      ? context.watch<ProfileNotifier>().profile.avatarUri
-                      : "",
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: AppColor.bgWhite,
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: AppColor.bgWhite,
-                  ),
-                ),
-              )),
+              imageUrl: avatar != null ? avatar : "",
+              fit: BoxFit.none,
+              placeholder: (context, url) => Container(
+                color: AppColor.bgWhite,
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.bgWhite,
+              ),
+            );
+          }, selector: (context, notifier) {
+            return notifier.profile.avatarUri;
+          }),
           Positioned(
               child: Container(
+                width: width,
+                height: gaussianBlurHeight,
+                color: AppColor.white.withOpacity(0.6),
+              )),
+          Container(
             width: width,
             height: gaussianBlurHeight + 72,
-            /*   color: AppColor.white.withOpacity(0.6),*/
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [AppColor.white.withOpacity(0.6), AppColor.white],
-                    begin: FractionalOffset(0, 0.5),
-                    end: FractionalOffset(0, 1))),
-          )),
-          Container(
-            height: gaussianBlurHeight + 72,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: ScreenUtil.instance.statusBarHeight,
+            clipBehavior: Clip.hardEdge,
+            // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+            decoration: BoxDecoration(),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+              child: Container(
+                height: gaussianBlurHeight,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: ScreenUtil.instance.statusBarHeight,
+                    ),
+                    SizedBox(
+                      height: CustomAppBar.appBarHeight,
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    _getUserImage(),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    _userFollowRow(),
+                  ],
                 ),
-                SizedBox(
-                  height: CustomAppBar.appBarHeight,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                _getUserImage(),
-                const SizedBox(
-                  height: 12,
-                ),
-                _userFollowRow(),
-              ],
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
