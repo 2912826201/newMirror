@@ -1,32 +1,44 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/widget/icon.dart';
 
 class ChatTopNewMsgMark extends StatefulWidget {
   final Function() onNewMsgClickListener;
   final int newMsgCount;
+  final Function(Function(int newMsgCount)) setNewMsgCount;
 
-  ChatTopNewMsgMark({Key key, this.onNewMsgClickListener, this.newMsgCount = 0}) : super(key: key);
+  ChatTopNewMsgMark({Key key, this.onNewMsgClickListener, this.newMsgCount = 0, this.setNewMsgCount}) : super(key: key);
 
   @override
-  ChatTopNewMsgMarkState createState() => ChatTopNewMsgMarkState(newMsgCount);
+  ChatTopNewMsgMarkState createState() => ChatTopNewMsgMarkState(newMsgCount, setNewMsgCount);
 }
 
 class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
-  int newMsgCount;
+  int unreadCount;
+  final Function(Function(int newMsgCount)) setNewMsgCount;
 
-  ChatTopNewMsgMarkState(this.newMsgCount);
+  ChatTopNewMsgMarkState(this.unreadCount, this.setNewMsgCount) {
+    if (setNewMsgCount != null) {
+      setNewMsgCount(_setNewMsgCount);
+    }
+  }
+
+  _setNewMsgCount(int unreadCount) {
+    this.unreadCount = unreadCount;
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return newMsgCount > 0 ? getAtUi() : Container();
+    return unreadCount > 0 ? getAtUi() : Container();
   }
 
   //获取at的视图
   Widget getAtUi() {
     return GestureDetector(
       onTap: () {
-        newMsgCount = 0;
+        unreadCount = 0;
         if (widget.onNewMsgClickListener != null) {
           widget.onNewMsgClickListener();
         }
@@ -45,7 +57,7 @@ class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
               width: 12,
             ),
             Text(
-              "$newMsgCount条新消息",
+              "$unreadCount条新消息",
               style: TextStyle(fontSize: 14, color: AppColor.mainBlue),
             ),
           ],

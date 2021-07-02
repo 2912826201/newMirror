@@ -125,16 +125,18 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   String textContent;
   int systemPage = 0;
   int unreadCount;
+  int unreadCountNew;
 
-  ChatPageState(this.conversation,
-      this.shareMessage,
-      this._context,
-      this.systemLastTime,
-      this.systemPage,
-      this.chatDataList,
-      this.textContent,
-      this.unreadCount,);
-
+  ChatPageState(
+    this.conversation,
+    this.shareMessage,
+    this._context,
+    this.systemLastTime,
+    this.systemPage,
+    this.chatDataList,
+    this.textContent,
+    this.unreadCount,
+  );
 
   //新消息大于多少个数量展示未读消息
   final int newMsgCountThanShow = 20;
@@ -226,6 +228,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   void initState() {
     super.initState();
     //print("ChatPage-initState");
+
+    // unreadCount=46;
+    unreadCountNew = unreadCount;
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -366,6 +371,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     if (isHaveAtMeMsg) {
       unreadCount = 0;
+      unreadCountNew = 0;
     }
     print("getChatDetailsBody:${chatDataList.length}");
 
@@ -389,6 +395,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       firstEndCallback: firstEndCallbackListView,
       setCallRemoveLongPanel: _setCallRemoveLongPanel,
       setHaveAtMeMsg: _setHaveAtMeMsg,
+      setNewMsgCount: _setUnreadCountCall,
     );
   }
 
@@ -650,6 +657,28 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
+    //检查滑动中有没有at的消息
+    checkIsHaveAtMsg();
+
+    checkArrivalsNewMsgPosition();
+  }
+
+  //检查是否到达新消息的位置
+  void checkArrivalsNewMsgPosition() {
+    //当未读数大于0时
+    if (unreadCountNew > 0) {
+      if (unreadCountNew < lastIndex) {
+        unreadCount = 0;
+        unreadCountNew = 0;
+        setUnreadCount(unreadCount);
+        print("unreadCount:$unreadCount,lastIndex:$lastIndex");
+        return;
+      }
+    }
+  }
+
+  //检查滑动中有没有at的消息
+  void checkIsHaveAtMsg() {
     if (isHaveAtMeMsgPr) {
       if (isHaveAtMeMsgIndex < 0) {
         if (!isHaveAtMeMsg) {
@@ -745,23 +774,28 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //点击了有新消息的标识
   void onNewMsgClickListener() {
-    ChatPageUtil.init(context).onLoadMoreHistoryMessages(
-      chatDataList, conversation,
-          (bool isHaveMore) {
-        if (isHaveMore) {
-          loadStatus = LoadingStatus.STATUS_IDEL;
-        } else {
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
-        chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-        Future.delayed(Duration(milliseconds: 300), () {
-          print("开始滚动，列表内有：${chatDataList.length}");
-          _animateToIndex();
-        });
-      }, loadMsgCount: unreadCount - 20 + 2,
-      // }, loadMsgCount: newMsgCountThanShow,
-    );
+    if (unreadCountNew < chatDataList.length) {
+      _animateToIndex(index: unreadCountNew);
+    } else {
+      ChatPageUtil.init(context).onLoadMoreHistoryMessages(
+        chatDataList, conversation,
+        (bool isHaveMore) {
+          if (isHaveMore) {
+            loadStatus = LoadingStatus.STATUS_IDEL;
+          } else {
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
+          chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          Future.delayed(Duration(milliseconds: 300), () {
+            print("开始滚动，列表内有：${chatDataList.length}");
+            _animateToIndex();
+          });
+        },
+        loadMsgCount: unreadCountNew - chatDataList.length + 2,
+        // }, loadMsgCount: newMsgCountThanShow,
+      );
+    }
   }
 
   //刷新appbar
@@ -868,6 +902,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
     }
 
+    //未读消息的跳转数目加1
+    if (unreadCountNew > 0) {
+      unreadCountNew++;
+    }
+
     //print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, conversation.getType(), mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
@@ -924,14 +963,20 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
+
+    //未读消息的跳转数目加modelList.length
+    if (unreadCountNew > 0) {
+      unreadCountNew += modelList.length;
+    }
+
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(),
-    (isSuccess) {
-      isNewSourceList=true;
+        (isSuccess) {
+      isNewSourceList = true;
       print("isSuccess:$isSuccess");
       modelList.forEach((element) {
-        deleteCancelMessage(element.conversationId,element.id??"");
+        deleteCancelMessage(element.conversationId, element.id ?? "");
       });
-      if(!isSuccess) {
+      if (!isSuccess) {
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     });
@@ -968,6 +1013,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         chatDataList.addAll(list);
       }
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    }
+
+    //未读消息的跳转数目加1
+    if (unreadCountNew > 0) {
+      unreadCountNew++;
     }
     // //print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
     postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
@@ -1344,6 +1394,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (scrollPositionPixels < 500) {
       isHaveReceiveChatDataList = false;
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    } else {
+      //未读消息的跳转数目加1
+      if (unreadCountNew > 0) {
+        unreadCountNew++;
+      }
     }
     //清聊天未读数
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -1583,12 +1638,17 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     );
   }
 
-
   //滚动到聊天界面的顶部
   void _animateToIndex({int index}) async {
     _scrollController.scrollToIndex(index ?? chatDataList.length - 1, preferPosition: AutoScrollPosition.middle);
   }
 
+  // double getMilliseconds(double scrollMaxHeight) {
+  //   int millisecond = 400;
+  //   double pixels = _scrollController.position.pixels;
+  //   double height = MediaQuery.of(context).size.height;
+  //   return (((scrollMaxHeight - pixels) / height) + 1) * millisecond;
+  // }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -2104,8 +2164,24 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //取消at标识
   void setHaveAtMeMsg(bool isHaveAtMeMsg) {
     if (setHaveAtMeMsgCall != null) {
-      Future.delayed(Duration(milliseconds: 100),(){
+      Future.delayed(Duration(milliseconds: 100), () {
         setHaveAtMeMsgCall(isHaveAtMeMsg);
+      });
+    }
+  }
+
+  //取消新消息的标识
+  void Function(int unreadCount) setUnreadCountCall;
+
+  void _setUnreadCountCall(void Function(int unreadCount) call) {
+    this.setUnreadCountCall = call;
+  }
+
+  //取消at标识
+  void setUnreadCount(int unreadCount) {
+    if (setUnreadCountCall != null) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        setUnreadCountCall(unreadCount);
       });
     }
   }
@@ -2117,8 +2193,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (conversation.type == MANAGER_TYPE && position != null) {
       position--;
     }
-    String urlMd5StringVideo=map==null?"":map["urlMd5String"];
-    String filePathMd5Video=map==null?"":map["filePathMd5"];
+    String urlMd5StringVideo = map == null ? "" : map["urlMd5String"];
+    String filePathMd5Video = map == null ? "" : map["filePathMd5"];
 
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       ////print("暂无此配置");

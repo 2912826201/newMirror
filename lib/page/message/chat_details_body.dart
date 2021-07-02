@@ -36,15 +36,16 @@ class ChatDetailsBody extends StatefulWidget {
   final LoadingStatus loadStatus;
   final Function(void Function(), String longClickString) setCallRemoveLongPanel;
   final Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
+  final Function(Function(int unreadCount)) setNewMsgCount;
 
   ChatDetailsBody({
     Key key,
     this.scrollController,
     this.chatDataList,
     this.chatId,
-      this.conversationDtoType,
-      this.loadStatus,
-      this.isShowChatUserName,
+    this.conversationDtoType,
+    this.loadStatus,
+    this.isShowChatUserName,
     this.isHaveAtMeMsg,
     this.firstEndCallback,
     this.chatName,
@@ -55,6 +56,7 @@ class ChatDetailsBody extends StatefulWidget {
     this.setCallRemoveLongPanel,
     this.voidItemLongClickCallBack,
     this.setHaveAtMeMsg,
+    this.setNewMsgCount,
     this.newMsgCount,
     this.onNewMsgClickListener,
   })
@@ -139,6 +141,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
           child: ChatTopNewMsgMark(
             onNewMsgClickListener: widget.onNewMsgClickListener,
             newMsgCount: widget.newMsgCount,
+            setNewMsgCount: widget.setNewMsgCount,
           ),
           top: 24,
           right: 0,

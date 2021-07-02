@@ -231,12 +231,12 @@ class TextMsg extends StatelessWidget {
       for (int i = 0; i < contentArray.length; i++) {
         if (contentArray[i] != null && contentArray[i].length > 0) {
           textSpanArray.addAll(judgeIsAtUser(contentArray[i], isMyself, i, isUrl: StringUtil.isURL(contentArray[i])));
-        }else{
+        } else {
           textSpanArray.addAll([getNullContentSpace(" ", isMyself, i, false)]);
         }
       }
     }
-    // textSpanArray.add(getNullContent(" 第$position个",isMyself,1,false));
+    textSpanArray.add(getNullContent(" 第$position个", isMyself, 1, false));
     return textSpanArray;
   }
 
