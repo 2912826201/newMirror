@@ -597,7 +597,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     }
     if (context.read<TokenNotifier>().isLoggedIn &&
         !this.isShowNewUserDialog &&
-        Application.profile.uid != coachIsAccountId) {
+        Application.profile.uid != coachAccountId) {
       bool isShowNewUserDialog = false;
       if (RuntimeProperties.isShowNewUserDialog) {
         isShowNewUserDialog = true;

@@ -365,7 +365,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     bool isShowName = conversation.getType() == RCConversationType.Group;
     bool isPersonalButler = false;
     //todo 单独展示底部选着面板的id-1002885-1008051
-    if (conversation.type == PRIVATE_TYPE && conversation.uid == coachIsAccountId) {
+    if (conversation.type == PRIVATE_TYPE && conversation.uid == coachAccountId) {
       isPersonalButler = true;
     }
 

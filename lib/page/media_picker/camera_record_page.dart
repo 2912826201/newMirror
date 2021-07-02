@@ -419,7 +419,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                 AppSettings.openAppSettings();
                               } else {
                                 // undetermined在新版中被移除了 不需要做区分 直接重新请求
+                                int requestTime = DateTime.now().millisecondsSinceEpoch;
                                 status = await Permission.camera.request();
+                                int responseTime = DateTime.now().millisecondsSinceEpoch;
                                 if (status.isGranted) {
                                   setState(() {
                                     _permissionCameraGranted = true;
@@ -430,6 +432,13 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                     if (Application.cameras.isNotEmpty) {
                                       onCameraSelected(Application.cameras[_cameraIndex]);
                                     }
+                                  }
+                                } else if(status.isPermanentlyDenied){
+                                  //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
+                                  //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
+                                  //时长较长说明是用户手动选择的永久拒绝 不做处理
+                                  if(responseTime - requestTime < permissionCheckDuration){
+                                    AppSettings.openAppSettings();
                                   }
                                 }
                               }
@@ -471,7 +480,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                       AppSettings.openAppSettings();
                                     } else {
                                       // undetermined在新版中被移除了 不需要做区分 直接重新请求
+                                      int requestTime = DateTime.now().millisecondsSinceEpoch;
                                       status = await Permission.microphone.request();
+                                      int responseTime = DateTime.now().millisecondsSinceEpoch;
                                       if (status.isGranted) {
                                         setState(() {
                                           _permissionMicrophoneGranted = true;
@@ -482,6 +493,13 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                           if (Application.cameras.isNotEmpty) {
                                             onCameraSelected(Application.cameras[_cameraIndex]);
                                           }
+                                        }
+                                      } else if(status.isPermanentlyDenied){
+                                        //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
+                                        //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
+                                        //时长较长说明是用户手动选择的永久拒绝 不做处理
+                                        if(responseTime - requestTime < permissionCheckDuration){
+                                          AppSettings.openAppSettings();
                                         }
                                       }
                                     }
