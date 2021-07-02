@@ -23,6 +23,9 @@ String prefsKeyIsLiveRoomMute = "liveRoomMute";
 //app图标上的小红点个数
 String prefsKeyFlutterAppBadgerCount = "flutterAppBadgerCount";
 
+// 视频声音开关
+String videoSoundSwitch = "videoSoundSwitchPrefs";
+
 class AppPrefs {
   static SharedPreferences _instance;
 
@@ -45,7 +48,7 @@ class AppPrefs {
     return _instance.setBool(prefsKeyIsFirstLaunch, isFirstLaunch);
   }
 
-  static bool isFirstLaunchToDay(){
+  static bool isFirstLaunchToDay() {
     bool value = _instance.getBool(getFirstLaunchToDayString());
     if (value == null) {
       value = true;
@@ -54,7 +57,7 @@ class AppPrefs {
     return value;
   }
 
-  static String getFirstLaunchToDayString(){
+  static String getFirstLaunchToDayString() {
     return "${prefsKeyIsFirstLaunchToDay}_${Application.profile.uid}_${DateUtil.formatToDayDateString()}";
   }
 
@@ -62,82 +65,89 @@ class AppPrefs {
     return _instance.setBool(getFirstLaunchToDayString(), false);
   }
 
-    ///存分段下载数据
-  static setDownLoadChunkData(String url,String downLoadDetailData){
-    if(AppPrefs.getDownLoadKeyList()==null){
+  ///存分段下载数据
+  static setDownLoadChunkData(String url, String downLoadDetailData) {
+    if (AppPrefs.getDownLoadKeyList() == null) {
       _instance.setStringList(downLoadKeyList, []);
     }
-    if(!AppPrefs.getDownLoadKeyList().contains(url)){
-      List<String> keyList= AppPrefs.getDownLoadKeyList();
+    if (!AppPrefs.getDownLoadKeyList().contains(url)) {
+      List<String> keyList = AppPrefs.getDownLoadKeyList();
       keyList.add(url);
-      _instance.setStringList(downLoadKeyList,keyList);
+      _instance.setStringList(downLoadKeyList, keyList);
     }
     return _instance.setString(url, downLoadDetailData);
   }
+
   ///移除下载任务
-  static removeDownLadTask(String url){
-     _instance.setString(url, null);
-     List<String> keyList= AppPrefs.getDownLoadKeyList();
-     keyList.remove(url);
-     _instance.setStringList(downLoadKeyList,keyList);
-     return;
+  static removeDownLadTask(String url) {
+    _instance.setString(url, null);
+    List<String> keyList = AppPrefs.getDownLoadKeyList();
+    keyList.remove(url);
+    _instance.setStringList(downLoadKeyList, keyList);
+    return;
   }
+
   ///清空下载任务
-  static clearDownLadTask(){
-    if(AppPrefs.getDownLoadKeyList()!=null){
+  static clearDownLadTask() {
+    if (AppPrefs.getDownLoadKeyList() != null) {
       AppPrefs.getDownLoadKeyList().forEach((element) {
-          _instance.setString(element, null);
+        _instance.setString(element, null);
       });
     }
     _instance.setStringList(downLoadKeyList, []);
     return;
   }
+
   ///获取下载任务队列(url)
-  static List<String> getDownLoadKeyList(){
-    if(_instance.getStringList(downLoadKeyList)!=null){
+  static List<String> getDownLoadKeyList() {
+    if (_instance.getStringList(downLoadKeyList) != null) {
       return _instance.getStringList(downLoadKeyList);
     }
     return null;
   }
+
   ///获取分段下载数据
-  static getDwonLaodChunkData(String url){
+  static getDwonLaodChunkData(String url) {
     String data = _instance.getString(url);
-    if(data==null){
+    if (data == null) {
       return null;
     }
     return data;
   }
+
   // 设置发布动态本地插入数据
-  static setPublishFeedLocalInsertData(String key,String releaseString) {
+  static setPublishFeedLocalInsertData(String key, String releaseString) {
     return _instance.setString(key, releaseString);
   }
+
   // 获取发布动态本地插入数据
   static String getPublishFeedLocalInsertData(String key) {
     String value = _instance.getString(key);
-    if(value == null) {
+    if (value == null) {
       value = null;
     }
-   return  value;
+    return value;
   }
- // 删除发布动态本地数据key
+
+  // 删除发布动态本地数据key
   static removePublishFeed(String key) {
     _instance.remove(key);
   }
 
-  static setLiveRoomMuteMessage(int liveRoomId)async {
+  static setLiveRoomMuteMessage(int liveRoomId) async {
     Map<String, dynamic> map = await queryMute(liveRoomId);
-    if(null!=map["data"]&&null!=map["data"]["remainingMuteTime"]){
+    if (null != map["data"] && null != map["data"]["remainingMuteTime"]) {
       print("--------------${map["data"]["remainingMuteTime"]}");
-      if(map["data"]["remainingMuteTime"] is int && map["data"]["remainingMuteTime"]~/60~/1000>0){
-        setLiveRoomMute(liveRoomId.toString(), map["data"]["remainingMuteTime"]~/1000, true);
-      }else{
+      if (map["data"]["remainingMuteTime"] is int && map["data"]["remainingMuteTime"] ~/ 60 ~/ 1000 > 0) {
+        setLiveRoomMute(liveRoomId.toString(), map["data"]["remainingMuteTime"] ~/ 1000, true);
+      } else {
         setLiveRoomMute(liveRoomId.toString(), -1, false);
       }
     }
   }
 
   // 设置在直播间禁言状态
-  static setLiveRoomMute(String liveRoomId,int seconds,bool isMute) {
+  static setLiveRoomMute(String liveRoomId, int seconds, bool isMute) {
     _instance.setBool("${prefsKeyIsLiveRoomMute}_isMute_${Application.profile?.uid}_$liveRoomId", isMute);
     _instance.setInt("${prefsKeyIsLiveRoomMute}_startTime_${Application.profile?.uid}_$liveRoomId",
         DateTime.now().millisecondsSinceEpoch);
@@ -177,5 +187,19 @@ class AppPrefs {
       count = 0;
     }
     return count;
+  }
+
+  // 设置视频声音
+  static setVideoSoundSwitch(bool isSwitch) {
+    _instance.setBool(videoSoundSwitch, isSwitch);
+  }
+
+  // 获取视频声音
+  static getVideoSoundSwitch() {
+    bool isSwitch = _instance.getBool(videoSoundSwitch);
+    if (null == isSwitch) {
+      isSwitch = false;
+    }
+    return isSwitch;
   }
 }

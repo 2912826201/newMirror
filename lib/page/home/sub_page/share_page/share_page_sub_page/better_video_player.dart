@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -71,11 +72,14 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     // if (mounted) {
     //   setState(() {});
     // }
-
     eventListener = (BetterPlayerEvent event) {
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
-          controller?.setVolume(0);
+         if(AppPrefs.getVideoSoundSwitch()) {
+           controller?.setVolume(1.0);
+         } else {
+           controller?.setVolume(0);
+         }
           break;
         default:
           break;
@@ -112,7 +116,11 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         ));
 
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
-    controller.setVolume(0);
+    if( AppPrefs.getVideoSoundSwitch()) {
+      controller?.setVolume(1.0);
+    } else {
+      controller?.setVolume(0);
+    }
     Application.feedVideoControllerList.add(controller.hashCode);
     if (mounted) {
       setState(() {});
@@ -327,8 +335,10 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                                                 behavior: HitTestBehavior.opaque,
                                                 onTap: () {
                                                   if (controller.videoPlayerController.value.volume > 0) {
+                                                    AppPrefs.setVideoSoundSwitch(false);
                                                     controller.setVolume(0.0);
                                                   } else {
+                                                    AppPrefs.setVideoSoundSwitch(true);
                                                     controller.setVolume(1.0);
                                                   }
                                                   streamController.sink
