@@ -83,7 +83,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
          }
           break;
         default:
-          ToastShow.show(msg: "初始化失败", context: context);
+          // ToastShow.show(msg: "初始化失败", context: context);
           break;
       }
     };
