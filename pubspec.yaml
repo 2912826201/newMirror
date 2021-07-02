@@ -37,7 +37,7 @@ dependencies:
   # sqlite数据库
   sqflite: ^2.0.0+3
   # 处理权限 最新版改动较大需要对应调整开发所以暂时约束版本
-  permission_handler: '6.1.3'
+  permission_handler: ^8.1.2
   # 本地媒体库
   photo_manager: ^1.2.2
   # 融云IM
@@ -246,6 +246,4 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue-1.otf
-    - family: STHeitiSCMedium
-      fonts:
-        - asset: assets/fonts/STHeitiSCMedium.ttc
+

@@ -142,7 +142,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
     if (Application.platform == 0) {
       isGranted = (await Permission.storage.status)?.isGranted;
     } else {
-      isGranted = (await Permission.photos.status)?.isGranted;
+      PermissionStatus permissionStatus = await Permission.photos.status;
+      if (permissionStatus != null) {
+        //iOS有只给部分照片权限的情况
+        isGranted = permissionStatus.isGranted || permissionStatus.isLimited;
+      }
     }
 
     if (isGranted == null) {
@@ -374,8 +378,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                                                         notifier.useOriginalRatio))
                                                                 : selectedSize)
                                                             .width,
-                                                        controller: context.select(
-                                                            (SelectedMapNotifier notifier) => notifier.cropperController),
+                                                        controller: context.select((SelectedMapNotifier notifier) =>
+                                                            notifier.cropperController),
                                                         backBoxColor0: AppColor.transparent,
                                                         backBoxColor1: AppColor.transparent,
                                                       )
@@ -468,7 +472,8 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                               status = await Permission.photos.status;
                             }
 
-                            if (status.isGranted) {
+                            if (status.isGranted || status.isLimited) {
+                              //iOS有只给部分照片权限的情况
                               _permissionGranted = true;
                               _fetchGalleryData(true);
                             } else if (status.isPermanentlyDenied) {
@@ -476,6 +481,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                               AppSettings.openAppSettings();
                             } else {
                               //重新请求权限
+                              int requestTime = DateTime.now().millisecondsSinceEpoch;
                               if (Application.platform == 0) {
                                 status = await Permission.storage.request();
                               } else {
@@ -483,9 +489,18 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                 status = await Permission.photos.request();
                               }
 
-                              if (status.isGranted) {
+                              int responseTime = DateTime.now().millisecondsSinceEpoch;
+                              if (status.isGranted || status.isLimited) {
+                                //iOS有只给部分照片权限的情况
                                 _permissionGranted = true;
                                 _fetchGalleryData(true);
+                              } else if(status.isPermanentlyDenied){
+                                //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
+                                //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
+                                //时长较长说明是用户手动选择的永久拒绝 不做处理
+                                if(responseTime - requestTime < permissionCheckDuration){
+                                  AppSettings.openAppSettings();
+                                }
                               }
                             }
                           },

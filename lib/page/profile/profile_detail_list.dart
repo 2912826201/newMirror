@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart' hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -212,7 +214,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: SmartRefresher(
+          child: SizeCacheWidget(
+              estimateCount: 5,
+              child:SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
               footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
@@ -224,7 +228,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 }
               },
               onRefresh: _onRefresh,
-              child: _showDataUi())),
+              child: _showDataUi()))),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
@@ -241,7 +245,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             itemBuilder: (context, index) {
               HomeFeedModel model;
               model = followModel[index];
-              return SizeTransition(
+              return FrameSeparateWidget(
+                  index: index,
+                  placeHolder: Container(
+                  color: AppColor.white,
+                  height: 500,
+              ),
+              child: SizeTransition(
                   sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
                 parent: animationMap[model.id],
                 curve: Curves.fastOutSlowIn,
@@ -270,7 +280,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   }
                   print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                 },
-              ));
+              )));
             })
         : ListView(
             children: [
