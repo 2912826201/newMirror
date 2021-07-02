@@ -202,7 +202,9 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _initDateResources();
+    Future.delayed(Duration.zero,(){
+      _initDateResources();
+    });
   }
 
   @override
