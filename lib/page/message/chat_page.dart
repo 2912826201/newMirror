@@ -270,7 +270,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick),
-      handleStatusBarTap: _animateToTop,
+      handleStatusBarTap: _animateToIndex,
       body: MessageInputBody(
         onTap: () => _messageInputBodyClick(),
         decoration: BoxDecoration(color: AppColor.bgWhite),
@@ -383,7 +383,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isHaveAtMeMsg: isHaveAtMeMsg,
       loadStatus: loadStatus,
       newMsgCount: unreadCount >= newMsgCountThanShow ? unreadCount : 0,
-      // newMsgCount: newMsgCountThanShow,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       onNewMsgClickListener: onNewMsgClickListener,
@@ -684,10 +683,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //at标识符号的点击事件
   void onAtUiClickListener() async {
-    //print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
+    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (isHaveAtMeMsgIndex < 0) {
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
-        ////print("chatDataList.len:${chatDataList.length}");
+        //print("chatDataList.len:${chatDataList.length}");
         List msgList = new List();
         msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
             chatDataList[chatDataList.length - 1].msg.sentTime, chatAddHistoryMessageCount, 0);
@@ -720,6 +719,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           break;
         }
       }
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      await Future.delayed(Duration(milliseconds: 100), () {});
     }
 
     if (!isHaveAtMeMsg) {
@@ -727,27 +728,18 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       return;
     }
 
-    List<ChatDataModel> list = [];
-    for (int i = 0; i < isHaveAtMeMsgIndex; i++) {
-      list.add(chatDataList[i]);
-    }
-    bool isShowName = conversation.getType() == RCConversationType.Group;
-    double messageHeight = MessageItemHeightUtil.init().getMessageHeight(list, isShowName);
-    //print("messageHeight:$messageHeight,_scrollController:${_scrollController.position.maxScrollExtent}");
-    //print("isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex");
-    int indexAtMsg=isHaveAtMeMsgIndex;
-    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-    Future.delayed(Duration(milliseconds: 100), () {
-      _animateToTopHeight(scrollExtent: messageHeight - 50);
-      Future.delayed(Duration(milliseconds: 300), () {
-        chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(indexAtMsg);
-        isHaveAtMeMsgIndex = -1;
-        isHaveAtMeMsg = false;
-        isHaveAtMeMsgPr = false;
-        MessageManager.atMesGroupModel.remove(atMeMsg);
-        setHaveAtMeMsg(isHaveAtMeMsg);
-        ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
-      });
+    print("isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
+    _animateToIndex(index: isHaveAtMeMsgIndex);
+
+    int indexAtMsg = isHaveAtMeMsgIndex;
+    Future.delayed(Duration(milliseconds: 300), () {
+      chatDetailsBodyChildKey.currentState.setAtItemMessagePosition(indexAtMsg);
+      isHaveAtMeMsgIndex = -1;
+      isHaveAtMeMsg = false;
+      isHaveAtMeMsgPr = false;
+      MessageManager.atMesGroupModel.remove(atMeMsg);
+      setHaveAtMeMsg(isHaveAtMeMsg);
+      ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
     });
   }
 
@@ -765,9 +757,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         Future.delayed(Duration(milliseconds: 300), () {
           print("开始滚动，列表内有：${chatDataList.length}");
-          _animateToTop();
+          _animateToIndex();
         });
       }, loadMsgCount: unreadCount - 20 + 2,
+      // }, loadMsgCount: newMsgCountThanShow,
     );
   }
 
@@ -853,7 +846,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
-    animateToBottom();
+    _animateToIndex(index: 0);
 
     //print("recallNotificationMessagePosition:$recallNotificationMessagePosition");
     if (recallNotificationMessagePosition >= 0) {
@@ -909,9 +902,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
       chatDataModel.id="${conversation.id}_"
-          "${DateTime.now().microsecondsSinceEpoch}_"
-          "${chatDataList.length+modelList.length}";
-      chatDataModel.conversationId=conversation.id;
+          "${DateTime
+          .now()
+          .microsecondsSinceEpoch}_"
+          "${chatDataList.length + modelList.length}";
+      chatDataModel.conversationId = conversation.id;
       modelList.add(chatDataModel);
       addTemporaryMessage(chatDataModel, conversation);
     }
@@ -919,7 +914,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       judgeAddAlertTime();
       chatDataList.insertAll(0, modelList);
     }
-    animateToBottom();
+    _animateToIndex(index: 0);
     if (mounted) {
       if (chatDataList.length > 100) {
         List<ChatDataModel> list = [];
@@ -955,14 +950,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatDataModel.chatVoiceModel = voiceModel;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
-    chatDataModel.id="${conversation.id}_"
-        "${DateTime.now().microsecondsSinceEpoch}_"
+    chatDataModel.id = "${conversation.id}_"
+        "${DateTime
+        .now()
+        .microsecondsSinceEpoch}_"
         "${chatDataList.length}";
-    chatDataModel.conversationId=conversation.id;
+    chatDataModel.conversationId = conversation.id;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
-    animateToBottom();
+    _animateToIndex(index: 0);
     if (mounted) {
       if (chatDataList.length > 100) {
         List<ChatDataModel> list = [];
@@ -990,7 +987,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
-    animateToBottom();
+    _animateToIndex(index: 0);
     if (mounted) {
       _textController.text = "";
       if (chatDataList.length > 100) {
@@ -1174,7 +1171,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       judgeAddAlertTime();
       chatDataList.insertAll(0, modelList);
     }
-    animateToBottom();
+    _animateToIndex(index: 0);
     if (mounted) {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
@@ -1202,7 +1199,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     addTemporaryMessage(chatDataModel, conversation);
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
-    animateToBottom();
+    _animateToIndex(index: 0);
     if (mounted) {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
@@ -1220,7 +1217,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     judgeAddAlertTime();
     chatDataList.removeAt(position);
     chatDataList.insert(0, chatDataModel);
-    animateToBottom();
+    _animateToIndex(index: 0);
 
     if (mounted) {
       _textController.text = "";
@@ -1586,96 +1583,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     );
   }
 
-  //滚动到底部
-  void animateToBottom() {
-    try {
-      _scrollController.animateTo(0.0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
-    } catch (e) {}
-  }
-
-  //向上滚动
-  void animateToTop({int milliseconds = 200}) {
-    if (isHaveAtMeMsgIndex < 0) {
-      oldMaxScrollExtent = _scrollController.position.maxScrollExtent;
-    } else {
-      oldMaxScrollExtent += 100.0;
-    }
-    _scrollController.animateTo(oldMaxScrollExtent,
-        duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
-  }
-
-  //向上滚动
-  void _animateToTopHeight({int milliseconds = 200, double scrollExtent}) async {
-    if (scrollExtent == null) {
-      return;
-    }
-    _scrollController.animateTo(scrollExtent, duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
-  }
 
   //滚动到聊天界面的顶部
-  void _animateToTop({double messageItemHeight}) async {
-    _scrollController.scrollToIndex(chatDataList.length - 1, preferPosition: AutoScrollPosition.begin);
-    // if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-    //   return;
-    // }
-    // if (isAnimateToTopIng && messageItemHeight == null) {
-    //   return;
-    // }
-    // print("开始滚动啦");
-    // isAnimateToTopIng = true;
-    // isAnimateToTopIngCount++;
-    // double scrollMaxHeight = _scrollController.position.maxScrollExtent;
-    // double messageHeight;
-    // if (messageItemHeight == null) {
-    //   bool isShowName = conversation.getType() == RCConversationType.Group;
-    //   messageHeight = MessageItemHeightUtil.init().getMessageHeight(chatDataList, isShowName);
-    // } else {
-    //   messageHeight = messageItemHeight;
-    // }
-    // print(
-    //     "scrollMaxHeight:$scrollMaxHeight,messageHeight:$messageHeight,isAnimateToTopIngCount:$isAnimateToTopIngCount");
-    //
-    // if (messageHeight < scrollMaxHeight) {
-    //   if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 2) {
-    //     int milliseconds = getMilliseconds(messageHeight).toInt();
-    //     _animateToTopHeight(scrollExtent: messageHeight, milliseconds: milliseconds);
-    //     await Future.delayed(Duration(milliseconds: milliseconds), () {});
-    //     print("messageHeight:$messageHeight,milliseconds:$milliseconds");
-    //
-    //     _animateToTop(messageItemHeight: messageHeight);
-    //   } else {
-    //     int milliseconds = getMilliseconds(scrollMaxHeight).toInt();
-    //     _animateToTopHeight(scrollExtent: scrollMaxHeight, milliseconds: milliseconds);
-    //     Future.delayed(Duration(milliseconds: milliseconds), () {
-    //       print("scrollMaxHeight:$scrollMaxHeight,milliseconds:$milliseconds");
-    //       isAnimateToTopIngCount = 0;
-    //       isAnimateToTopIng = false;
-    //     });
-    //   }
-    // } else {
-    //   double scrollExtent;
-    //   if (lastIndex + 1 >= chatDataList.length) {
-    //     scrollExtent = scrollMaxHeight;
-    //   } else {
-    //     scrollExtent = messageHeight;
-    //   }
-    //   int milliseconds = getMilliseconds(scrollExtent).toInt();
-    //   _animateToTopHeight(scrollExtent: scrollExtent, milliseconds: milliseconds);
-    //   Future.delayed(Duration(milliseconds: milliseconds), () {
-    //     print("scrollExtent:$scrollExtent,milliseconds:$milliseconds");
-    //     isAnimateToTopIngCount = 0;
-    //     isAnimateToTopIng = false;
-    //     print("_scrollController.position.maxScrollExtent:${_scrollController.position.maxScrollExtent}");
-    //   });
-    // }
+  void _animateToIndex({int index}) async {
+    _scrollController.scrollToIndex(index ?? chatDataList.length - 1, preferPosition: AutoScrollPosition.middle);
   }
 
-  double getMilliseconds(double scrollMaxHeight) {
-    int millisecond = 400;
-    double pixels = _scrollController.position.pixels;
-    double height = MediaQuery.of(context).size.height;
-    return (((scrollMaxHeight - pixels) / height) + 1) * millisecond;
-  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -1920,7 +1833,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
-    context.read<VoiceSettingNotifier>().stop();
+    // context.read<VoiceSettingNotifier>().stop();
     _messageInputBodyClick();
     judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
         _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
