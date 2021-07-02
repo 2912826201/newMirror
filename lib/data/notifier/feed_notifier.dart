@@ -95,22 +95,21 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   }
 
 // 更新全局动态map
-  void updateFeedMap(List<HomeFeedModel> _feedList, {bool needNotify = true}) {
+  void updateFeedMap(List<HomeFeedModel> _feedList, {bool needNotify = true,bool isProfile = false}) {
     _feedList.forEach((element) {
       if(!value._feedMap.containsKey(element.id)){
+        print('---------------------------!value._feedMap.containsKey(element.id)');
         value._feedMap[element.id] = element;
       }else{
+        print('-------------------else--------!value._feedMap.containsKey(element.id)');
         List<CommentDtoModel> commentList = [];
-        int commentCount = 0;
-        commentCount = value._feedMap[element.id].commentCount;
-        if(value._feedMap[element.id].comments!=null&&value._feedMap[element.id].comments.isNotEmpty){
+        if(value._feedMap[element.id].comments.isNotEmpty){
           commentList.addAll(value._feedMap[element.id].comments);
         }
         value._feedMap[element.id] = element;
         value._feedMap[element.id].comments = commentList;
       }
       value._feedMap[element.id].hotComment = [];
-
       if (element.comments.isNotEmpty && element.comments.length > 1) {
         for (int i = 0; i < 2; i++) {
           value._feedMap[element.id].hotComment.add(element.comments[i]);

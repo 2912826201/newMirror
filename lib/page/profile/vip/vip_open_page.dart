@@ -19,9 +19,7 @@ class VipOpenPage extends StatefulWidget {
   int vipState;
   VipOpenPage({this.vipState});
   @override
-  State<StatefulWidget> createState() {
-    return _VipOpenPage();
-  }
+  _VipOpenPage createState() =>_VipOpenPage();
 }
 
 class _VipOpenPage extends State<VipOpenPage> {

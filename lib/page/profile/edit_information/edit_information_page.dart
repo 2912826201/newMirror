@@ -338,7 +338,7 @@ class _EditInformationState extends State<EditInformation> {
       height: title == "简介" ? textHeight + 25 : 48,
       width: width,
       padding: title == "简介"
-          ? EdgeInsets.only(top: 13, left: 16, right: 16, bottom: 12)
+          ? EdgeInsets.only(top: 13, left: 16, right: 16)
           : EdgeInsets.only(left: 16, right: 16),
       child: Row(
         children: [
@@ -354,7 +354,7 @@ class _EditInformationState extends State<EditInformation> {
           ),
           Container(
             alignment: title != "简介" ? Alignment.centerLeft : Alignment.topLeft,
-            height: title == "简介" ? textHeight : 23,
+            // height: title == "简介" ? textHeight : 23,
             width: width * 0.67,
             child: Text(
               textContent != null ? textContent : "去编辑",
