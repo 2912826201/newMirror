@@ -6,13 +6,13 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/page/message/item/message_item_height_util.dart';
+import 'package:mirror/page/message/widget/long_click_popup_menu.dart';
+import '../util/message_item_height_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 
-import '../item/currency_msg.dart';
+import 'package:mirror/page/message/widget/currency_msg.dart';
 
 ///直播课程视频课程消息
 // ignore: must_be_immutable

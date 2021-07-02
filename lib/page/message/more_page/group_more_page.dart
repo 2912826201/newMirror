@@ -15,7 +15,7 @@ import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
-import 'package:mirror/page/message/item/currency_msg.dart';
+import 'package:mirror/page/message/widget/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
@@ -31,7 +31,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../message_chat_page_manager.dart';
+import '../util/message_chat_page_manager.dart';
 
 typedef VoidCallback = void Function();
 

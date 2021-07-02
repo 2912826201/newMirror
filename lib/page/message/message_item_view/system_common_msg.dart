@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +6,9 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
-import 'package:mirror/page/message/item/currency_msg.dart';
-import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import '../util/chat_page_util.dart';
+import 'package:mirror/page/message/widget/currency_msg.dart';
+import 'package:mirror/page/message/widget/long_click_popup_menu.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -17,7 +16,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/icon.dart';
 
-import '../item/message_item_height_util.dart';
+import '../util/message_item_height_util.dart';
 
 // ignore: must_be_immutable
 class SystemCommonMsg extends StatelessWidget {

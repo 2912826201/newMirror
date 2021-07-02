@@ -20,7 +20,7 @@ import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/page/message/item/add_time_message_util.dart';
+import 'add_time_message_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -28,7 +28,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
-import '../message_chat_page_manager.dart';
+import 'message_chat_page_manager.dart';
 
 class ChatPageUtil {
   static ChatPageUtil _chatPageUi;
@@ -177,7 +177,7 @@ class ChatPageUtil {
   }
 
   //加入时间提示
-  void getTimeAlert(List<ChatDataModel> chatDataList, String chatId) {
+  void setTimeAlert(List<ChatDataModel> chatDataList, String chatId) {
     if (chatDataList != null && chatDataList.length > 0) {
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
@@ -187,14 +187,35 @@ class ChatPageUtil {
             chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
           }
         } else if (chatDataList[i].msg != null &&
-            chatDataList[i + 1].msg!=null&&
+            chatDataList[i + 1].msg != null &&
             (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
-          if(AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i])) {
+          if (AddTimeMessageUtil.init().isCanAddTimeMessage(chatDataList[i])) {
             chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime, chatId));
           }
         }
       }
     }
+  }
+
+  //加入 以下是新消息 提示
+  void addNewAlertMsg(List<ChatDataModel> chatDataList, int position, String chatId) {
+    if (chatDataList != null && chatDataList.length > 0 && position != null && position < chatDataList.length) {
+      chatDataList.insert(position, getNewAlertMsgModel(chatDataList[position].msg.sentTime, chatId));
+    }
+  }
+
+  //获取 以下是新消息的临时消息
+  ChatDataModel getNewAlertMsgModel(int sendTime, String chatId) {
+    ChatDataModel dataModel = new ChatDataModel();
+    dataModel.msg = getTemporaryMsg(
+      text: "--- 以下是新消息 ---",
+      sendTime: sendTime,
+      targetId: chatId,
+      conversationType: RCConversationType.Private,
+      subObjectName: ChatTypeModel.MESSAGE_TYPE_ALERT,
+      name: ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
+    );
+    return dataModel;
   }
 
   //获取普通消息
@@ -217,7 +238,7 @@ class ChatPageUtil {
     }
 
     //加入时间提示
-    getTimeAlert(chatDataList, conversation.conversationId);
+    setTimeAlert(chatDataList, conversation.conversationId);
 
     return chatDataList;
   }
@@ -234,11 +255,11 @@ class ChatPageUtil {
     if (dataListMap != null && dataListMap["list"] != null) {
       systemPage++;
       dataListMap["list"].forEach((v) {
-        ChatSystemMessageModel model=ChatSystemMessageModel.fromJson(v);
+        ChatSystemMessageModel model = ChatSystemMessageModel.fromJson(v);
         dataList.add(getMessage(getSystemMsg(model, conversation.type), isHaveAnimation: false));
       });
     }
-    getTimeAlert(dataList, conversation.conversationId);
+    setTimeAlert(dataList, conversation.conversationId);
     return [dataList, systemLastTime, systemPage];
   }
 
@@ -436,7 +457,7 @@ class ChatPageUtil {
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
       }
       if (dataList != null && dataList.length > 0) {
-        getTimeAlert(dataList, conversation.conversationId);
+        setTimeAlert(dataList, conversation.conversationId);
         //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
         if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
           chatDataList.removeAt(chatDataList.length - 1);
@@ -494,11 +515,11 @@ class ChatPageUtil {
         finished(null);
       }else{
         print("有历史消息:${msgList.length}");
-        List<ChatDataModel> chatDataModelList=[];
+        List<ChatDataModel> chatDataModelList = [];
         for (int i = 0; i < msgList.length; i++) {
           chatDataModelList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
         }
-        ChatPageUtil.init(context).getTimeAlert(chatDataModelList, targetId);
+        ChatPageUtil.init(context).setTimeAlert(chatDataModelList, targetId);
         finished(chatDataModelList);
       }
     });

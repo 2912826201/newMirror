@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
@@ -41,9 +42,9 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/message/item/chat_bottom_Setting_box.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/message/widget/chat_bottom_Setting_box.dart';
+import 'util/chat_page_util.dart';
+import 'util/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -58,15 +59,15 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
-import 'item/chat_at_user_name_list.dart';
-import 'item/chat_more_icon.dart';
-import 'item/message_body_input.dart';
-import 'item/message_input_bar.dart';
+import 'widget/chat_at_user_name_list.dart';
+import 'widget/chat_more_icon.dart';
+import 'widget/message_body_input.dart';
+import 'widget/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 
-import 'item/message_item_gallery_util.dart';
-import 'item/message_item_height_util.dart';
+import 'util/message_item_gallery_util.dart';
+import 'util/message_item_height_util.dart';
 
 ////////////////////////////////
 //
@@ -126,6 +127,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   int systemPage = 0;
   int unreadCount;
   int unreadCountNew;
+  bool isAddUnreadCountAlertMsg = false;
 
   ChatPageState(
     this.conversation,
@@ -229,7 +231,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     super.initState();
     //print("ChatPage-initState");
 
-    // unreadCount=46;
+    // unreadCount=106;
     unreadCountNew = unreadCount;
 
     WidgetsBinding.instance.addObserver(this);
@@ -726,7 +728,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           }
 
           if (dataList != null && dataList.length > 0) {
-            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).setTimeAlert(dataList, conversation.conversationId);
             //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -786,6 +788,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             loadStatus = LoadingStatus.STATUS_COMPLETED;
           }
           chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+          judgeIsAddUnreadCountAlertMsg();
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           Future.delayed(Duration(milliseconds: 300), () {
             print("开始滚动，列表内有：${chatDataList.length}");
@@ -1640,15 +1643,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //滚动到聊天界面的顶部
   void _animateToIndex({int index}) async {
-    _scrollController.scrollToIndex(index ?? chatDataList.length - 1, preferPosition: AutoScrollPosition.middle);
+    _scrollController.scrollToIndex(index ?? chatDataList.length - 1,
+        duration: Duration(milliseconds: getMilliseconds(index ?? chatDataList.length - 1)),
+        preferPosition: AutoScrollPosition.middle);
   }
 
-  // double getMilliseconds(double scrollMaxHeight) {
-  //   int millisecond = 400;
-  //   double pixels = _scrollController.position.pixels;
-  //   double height = MediaQuery.of(context).size.height;
-  //   return (((scrollMaxHeight - pixels) / height) + 1) * millisecond;
-  // }
+  int getMilliseconds(int scrollIndex) {
+    return (((max(0, scrollIndex - lastIndex)) / chatAddHistoryMessageCount + 1) * 400).toInt();
+  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -1889,14 +1891,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
-    // _animateToTop();
+    _animateToIndex();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
     // context.read<VoiceSettingNotifier>().stop();
-    _messageInputBodyClick();
-    judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
+    // _messageInputBodyClick();
+    // judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
+    //     _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
   }
 
   //更多的界面-里面进行了一些的点击事件
@@ -2086,7 +2088,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     isnRefreshSystemInformationIng = true;
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
-      ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
+      ChatPageUtil.init(context).setTimeAlert(dataList, conversation.conversationId);
       if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
         chatDataList.removeAt(chatDataList.length - 1);
       }
@@ -2113,29 +2115,38 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     ChatPageUtil.init(context).onLoadMoreHistoryMessages(
       chatDataList, conversation,
       (bool isHaveMore){
-        if(isHaveMore){
-          //判断有没有艾特我的消息
-          if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
-            judgeNowChatIsHaveAt();
-          }
-          loadStatus = LoadingStatus.STATUS_IDEL;
-        }else{
+          if (isHaveMore) {
+        //判断有没有艾特我的消息
+        if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
+          judgeNowChatIsHaveAt();
+        }
+        loadStatus = LoadingStatus.STATUS_IDEL;
+      } else {
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
-        chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+      judgeIsAddUnreadCountAlertMsg();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    });
+  }
+
+  void judgeIsAddUnreadCountAlertMsg() {
+    if (unreadCountNew > 0 && !isAddUnreadCountAlertMsg) {
+      if (unreadCountNew <= chatDataList.length) {
+        ChatPageUtil.init(context).addNewAlertMsg(chatDataList, unreadCountNew, conversation.conversationId);
+        isAddUnreadCountAlertMsg = true;
       }
-    );
+    }
   }
 
   //取消长按界面
 
   void Function() removeLongPanelCall;
 
-  void _setCallRemoveLongPanel(void Function() call,String longClickString) {
+  void _setCallRemoveLongPanel(void Function() call, String longClickString) {
     // print("111111longClickString:$longClickString");
-    if(removeLongPanelCall!=null&&
-        longClickString!=null&&
+    if (removeLongPanelCall != null &&
+        longClickString != null &&
         longClickString!=""&&
         !longClickString.contains("撤回")){
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);

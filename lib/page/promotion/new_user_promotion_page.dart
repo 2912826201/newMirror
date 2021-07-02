@@ -12,7 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
+import '../message/util/message_chat_page_manager.dart';
 import 'package:provider/provider.dart';
 
 class NewUserPromotionPage extends StatefulWidget {

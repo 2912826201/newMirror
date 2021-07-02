@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/page/message/item/chat_voice.dart';
+import 'package:mirror/page/message/widget/chat_voice.dart';
 import 'package:mirror/widget/icon.dart';
 
 typedef VoiceFile = void Function(String path, int time);

@@ -10,7 +10,7 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
-import '../message_chat_page_manager.dart';
+import '../util/message_chat_page_manager.dart';
 import 'currency_msg.dart';
 
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
