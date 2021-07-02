@@ -12,7 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
+import '../message/util/message_chat_page_manager.dart';
 import 'package:provider/provider.dart';
 
 class NewUserPromotionPage extends StatefulWidget {
@@ -83,7 +83,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
                   AppRouter.navigateToLoginPage(context);
                   return;
                 }
-                if(Application.profile.uid==coachIsAccountId){
+                if(Application.profile.uid==coachAccountId){
                   ToastShow.show(msg: "导师本人不能参加活动！", context: context);
                   return;
                 }
@@ -119,10 +119,10 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
   jumpPage()async{
     Future.delayed(Duration(milliseconds: 100),()async{
       Navigator.of(context).pop();
-      ProfileAddFollow(coachIsAccountId);
+      ProfileAddFollow(coachAccountId);
       UserModel userModel=UserModel();
       userModel.nickName="大灰狼";
-      userModel.uid=coachIsAccountId;
+      userModel.uid=coachAccountId;
       userModel.avatarUri="http://devpic.aimymusic.com/ifapp/1002885/1618397003729.jpg";
       jumpChatPageUser(context, userModel,textContent: "我要参加训练营");
     });

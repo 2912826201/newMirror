@@ -184,7 +184,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               Container(
                 height: (width - 65) / 3,
                 width: boxWidth,
-                color: AppColor.bgWhite,
+                child: Image.asset("assets/png/training_bg.png",fit:BoxFit.cover,height: (width - 65) / 3,width: boxWidth,),
               ),
               Container(
                 height: (width - 65) / 3,

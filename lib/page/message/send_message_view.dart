@@ -13,20 +13,20 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/im/message_manager.dart';
-import 'package:mirror/page/message/message_view/alert_msg.dart';
-import 'package:mirror/page/message/message_view/feed_msg.dart';
+import 'package:mirror/page/message/message_item_view/alert_msg.dart';
+import 'package:mirror/page/message/message_item_view/feed_msg.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'item/currency_msg.dart';
-import 'message_view/img_video_msg.dart';
-import 'message_view/live_video_course_msg.dart';
-import 'message_view/select_msg.dart';
-import 'message_view/system_common_msg.dart';
-import 'message_view/text_msg.dart';
-import 'message_view/user_msg.dart';
-import 'message_view/voice_msg.dart';
+import 'widget/currency_msg.dart';
+import 'message_item_view/img_video_msg.dart';
+import 'message_item_view/live_video_course_msg.dart';
+import 'message_item_view/select_msg.dart';
+import 'message_item_view/system_common_msg.dart';
+import 'message_item_view/text_msg.dart';
+import 'message_item_view/user_msg.dart';
+import 'message_item_view/voice_msg.dart';
 
 // ignore: must_be_immutable
 class SendMessageView extends StatefulWidget {

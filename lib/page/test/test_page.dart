@@ -32,7 +32,7 @@ import 'package:mirror/widget/version_update_dialog.dart';
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
-import '../message/message_chat_page_manager.dart';
+import '../message/util/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
 import 'badger_test_page.dart';

@@ -9,7 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
+import '../message/util/message_chat_page_manager.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';

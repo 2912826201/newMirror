@@ -29,7 +29,7 @@ import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:app_settings/app_settings.dart';
-import 'message_chat_page_manager.dart';
+import 'util/message_chat_page_manager.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 
 /// message_page

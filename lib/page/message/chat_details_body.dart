@@ -5,16 +5,16 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
-import 'package:mirror/page/message/item/chat_top_at_mark.dart';
-import 'package:mirror/page/message/item/chat_top_new_msg_mark.dart';
+import 'package:mirror/page/message/widget/chat_top_at_mark.dart';
+import 'package:mirror/page/message/widget/chat_top_new_msg_mark.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-import 'item/chat_system_bottom_bar.dart';
-import 'item/currency_msg.dart';
-import 'item/message_item_height_util.dart';
+import 'widget/chat_system_bottom_bar.dart';
+import 'widget/currency_msg.dart';
+import 'util/message_item_height_util.dart';
 
 ///消息展示body主体 简单进行包装一下
 class ChatDetailsBody extends StatefulWidget {
@@ -36,15 +36,16 @@ class ChatDetailsBody extends StatefulWidget {
   final LoadingStatus loadStatus;
   final Function(void Function(), String longClickString) setCallRemoveLongPanel;
   final Function(Function(bool isHaveAtMeMsg)) setHaveAtMeMsg;
+  final Function(Function(int unreadCount)) setNewMsgCount;
 
   ChatDetailsBody({
     Key key,
     this.scrollController,
     this.chatDataList,
     this.chatId,
-      this.conversationDtoType,
-      this.loadStatus,
-      this.isShowChatUserName,
+    this.conversationDtoType,
+    this.loadStatus,
+    this.isShowChatUserName,
     this.isHaveAtMeMsg,
     this.firstEndCallback,
     this.chatName,
@@ -55,6 +56,7 @@ class ChatDetailsBody extends StatefulWidget {
     this.setCallRemoveLongPanel,
     this.voidItemLongClickCallBack,
     this.setHaveAtMeMsg,
+    this.setNewMsgCount,
     this.newMsgCount,
     this.onNewMsgClickListener,
   })
@@ -139,6 +141,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
           child: ChatTopNewMsgMark(
             onNewMsgClickListener: widget.onNewMsgClickListener,
             newMsgCount: widget.newMsgCount,
+            setNewMsgCount: widget.setNewMsgCount,
           ),
           top: 24,
           right: 0,
