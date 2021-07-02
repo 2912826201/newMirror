@@ -54,6 +54,7 @@ import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
@@ -152,9 +153,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //输入框的焦点
   FocusNode _focusNode = new FocusNode();
 
-
   //列表的滑动监听
-  ScrollController _scrollController = ScrollController();
+  // ScrollController _scrollController = ScrollController();
+  AutoScrollController _scrollController;
 
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;
@@ -1422,39 +1423,37 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   initScrollController() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _scrollController = PrimaryScrollController.of(context);
-      _scrollController.addListener(() {
-        scrollPositionPixels = _scrollController.position.pixels;
-        double scrollMaxPositionPixels = _scrollController.position.maxScrollExtent;
-        // print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
-        // print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
-        int chatDataListLength = 0;
-        if (chatDataList != null && chatDataList.length >= 0) {
-          chatDataListLength = chatDataList.length;
-        }
-        if (scrollPositionPixels == scrollMaxPositionPixels && lastIndex + 1 >= chatDataListLength) {
-          // print("loadStatus:$loadStatus");
-          if (loadStatus == LoadingStatus.STATUS_IDEL) {
-            // 先设置状态，防止下拉就直接加载reload
-            if (mounted) {
-              loadStatus = LoadingStatus.STATUS_LOADING;
-            }
-            if (conversation.getType() != RCConversationType.System) {
-              _onLoadMoreHistoryMessages();
-            } else {
-              _onRefreshSystemInformation();
-            }
+    _scrollController = AutoScrollController(
+        viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+        axis: Axis.vertical);
+    _scrollController.addListener(() {
+      scrollPositionPixels = _scrollController.position.pixels;
+      double scrollMaxPositionPixels = _scrollController.position.maxScrollExtent;
+      // print("scrollPositionPixels3：$scrollPositionPixels,scrollMaxPositionPixels:$scrollMaxPositionPixels");
+      // print("scrollPositionPixels3：$lastIndex,scrollMaxPositionPixels:${chatDataList.length}");
+      int chatDataListLength = 0;
+      if (chatDataList != null && chatDataList.length >= 0) {
+        chatDataListLength = chatDataList.length;
+      }
+      if (scrollPositionPixels == scrollMaxPositionPixels && lastIndex + 1 >= chatDataListLength) {
+        // print("loadStatus:$loadStatus");
+        if (loadStatus == LoadingStatus.STATUS_IDEL) {
+          // 先设置状态，防止下拉就直接加载reload
+          if (mounted) {
+            loadStatus = LoadingStatus.STATUS_LOADING;
           }
-          chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-        } else if (scrollPositionPixels <= 0) {
-          if (mounted && isHaveReceiveChatDataList) {
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          if (conversation.getType() != RCConversationType.System) {
+            _onLoadMoreHistoryMessages();
+          } else {
+            _onRefreshSystemInformation();
           }
         }
-      });
-
-      setState(() {});
+        chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+      } else if (scrollPositionPixels <= 0) {
+        if (mounted && isHaveReceiveChatDataList) {
+          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        }
+      }
     });
   }
 
@@ -1615,59 +1614,60 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //滚动到聊天界面的顶部
   void _animateToTop({double messageItemHeight}) async {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      return;
-    }
-    if (isAnimateToTopIng && messageItemHeight == null) {
-      return;
-    }
-    print("开始滚动啦");
-    isAnimateToTopIng = true;
-    isAnimateToTopIngCount++;
-    double scrollMaxHeight = _scrollController.position.maxScrollExtent;
-    double messageHeight;
-    if (messageItemHeight == null) {
-      bool isShowName = conversation.getType() == RCConversationType.Group;
-      messageHeight = MessageItemHeightUtil.init().getMessageHeight(chatDataList, isShowName);
-    } else {
-      messageHeight = messageItemHeight;
-    }
-    print(
-        "scrollMaxHeight:$scrollMaxHeight,messageHeight:$messageHeight,isAnimateToTopIngCount:$isAnimateToTopIngCount");
-
-    if (messageHeight < scrollMaxHeight) {
-      if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 2) {
-        int milliseconds = getMilliseconds(messageHeight).toInt();
-        _animateToTopHeight(scrollExtent: messageHeight, milliseconds: milliseconds);
-        await Future.delayed(Duration(milliseconds: milliseconds), () {});
-        print("messageHeight:$messageHeight,milliseconds:$milliseconds");
-
-        _animateToTop(messageItemHeight: messageHeight);
-      } else {
-        int milliseconds = getMilliseconds(scrollMaxHeight).toInt();
-        _animateToTopHeight(scrollExtent: scrollMaxHeight, milliseconds: milliseconds);
-        Future.delayed(Duration(milliseconds: milliseconds), () {
-          print("scrollMaxHeight:$scrollMaxHeight,milliseconds:$milliseconds");
-          isAnimateToTopIngCount = 0;
-          isAnimateToTopIng = false;
-        });
-      }
-    } else {
-      double scrollExtent;
-      if (lastIndex + 1 >= chatDataList.length) {
-        scrollExtent = scrollMaxHeight;
-      } else {
-        scrollExtent = messageHeight;
-      }
-      int milliseconds = getMilliseconds(scrollExtent).toInt();
-      _animateToTopHeight(scrollExtent: scrollExtent, milliseconds: milliseconds);
-      Future.delayed(Duration(milliseconds: milliseconds), () {
-        print("scrollExtent:$scrollExtent,milliseconds:$milliseconds");
-        isAnimateToTopIngCount = 0;
-        isAnimateToTopIng = false;
-        print("_scrollController.position.maxScrollExtent:${_scrollController.position.maxScrollExtent}");
-      });
-    }
+    _scrollController.scrollToIndex(chatDataList.length - 1, preferPosition: AutoScrollPosition.begin);
+    // if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    //   return;
+    // }
+    // if (isAnimateToTopIng && messageItemHeight == null) {
+    //   return;
+    // }
+    // print("开始滚动啦");
+    // isAnimateToTopIng = true;
+    // isAnimateToTopIngCount++;
+    // double scrollMaxHeight = _scrollController.position.maxScrollExtent;
+    // double messageHeight;
+    // if (messageItemHeight == null) {
+    //   bool isShowName = conversation.getType() == RCConversationType.Group;
+    //   messageHeight = MessageItemHeightUtil.init().getMessageHeight(chatDataList, isShowName);
+    // } else {
+    //   messageHeight = messageItemHeight;
+    // }
+    // print(
+    //     "scrollMaxHeight:$scrollMaxHeight,messageHeight:$messageHeight,isAnimateToTopIngCount:$isAnimateToTopIngCount");
+    //
+    // if (messageHeight < scrollMaxHeight) {
+    //   if (scrollMaxHeight - 200 > messageHeight && isAnimateToTopIngCount < 2) {
+    //     int milliseconds = getMilliseconds(messageHeight).toInt();
+    //     _animateToTopHeight(scrollExtent: messageHeight, milliseconds: milliseconds);
+    //     await Future.delayed(Duration(milliseconds: milliseconds), () {});
+    //     print("messageHeight:$messageHeight,milliseconds:$milliseconds");
+    //
+    //     _animateToTop(messageItemHeight: messageHeight);
+    //   } else {
+    //     int milliseconds = getMilliseconds(scrollMaxHeight).toInt();
+    //     _animateToTopHeight(scrollExtent: scrollMaxHeight, milliseconds: milliseconds);
+    //     Future.delayed(Duration(milliseconds: milliseconds), () {
+    //       print("scrollMaxHeight:$scrollMaxHeight,milliseconds:$milliseconds");
+    //       isAnimateToTopIngCount = 0;
+    //       isAnimateToTopIng = false;
+    //     });
+    //   }
+    // } else {
+    //   double scrollExtent;
+    //   if (lastIndex + 1 >= chatDataList.length) {
+    //     scrollExtent = scrollMaxHeight;
+    //   } else {
+    //     scrollExtent = messageHeight;
+    //   }
+    //   int milliseconds = getMilliseconds(scrollExtent).toInt();
+    //   _animateToTopHeight(scrollExtent: scrollExtent, milliseconds: milliseconds);
+    //   Future.delayed(Duration(milliseconds: milliseconds), () {
+    //     print("scrollExtent:$scrollExtent,milliseconds:$milliseconds");
+    //     isAnimateToTopIngCount = 0;
+    //     isAnimateToTopIng = false;
+    //     print("_scrollController.position.maxScrollExtent:${_scrollController.position.maxScrollExtent}");
+    //   });
+    // }
   }
 
   double getMilliseconds(double scrollMaxHeight) {

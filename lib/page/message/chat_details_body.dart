@@ -10,6 +10,7 @@ import 'package:mirror/page/message/item/chat_top_new_msg_mark.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'item/chat_system_bottom_bar.dart';
 import 'item/currency_msg.dart';
@@ -188,27 +189,16 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
       shrinkWrap: isShowTop,
       childrenDelegate: FirstEndItemChildrenDelegate(
         (BuildContext context, int index) {
-          if (index == childCount - 1 && isHaveLoadAnimation) {
-            return loadStatusWidget;
-          } else if (index == 0 && widget.isPersonalButler) {
-            return Container(
-              width: double.infinity,
-              height: 48,
-              color: AppColor.transparent,
-            );
-          } else {
-            return Container(
-              margin: index == 0
-                  ? const EdgeInsets.only(bottom: 16)
-                  : (index == childCount - 1)
-                      ? const EdgeInsets.only(top: 8)
-                      : null,
-              child: judgeStartAnimation(getChatDataListIndex(index)),
-            );
-          }
+          return AutoScrollTag(
+            key: ValueKey(index),
+            controller: widget.scrollController,
+            index: index,
+            child: getItem(index, childCount),
+            highlightColor: Colors.black.withOpacity(0.1),
+          );
         },
         firstEndCallback: (int firstIndex, int lastIndex) {
-          if (isScroll&& widget.firstEndCallback!=null) {
+          if (isScroll && widget.firstEndCallback != null) {
             widget.firstEndCallback(firstIndex, lastIndex);
           }
         },
@@ -216,6 +206,27 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
       ),
       dragStartBehavior: DragStartBehavior.down,
     );
+  }
+
+  Widget getItem(int index, int childCount) {
+    if (index == childCount - 1 && isHaveLoadAnimation) {
+      return loadStatusWidget;
+    } else if (index == 0 && widget.isPersonalButler) {
+      return Container(
+        width: double.infinity,
+        height: 48,
+        color: AppColor.transparent,
+      );
+    } else {
+      return Container(
+        margin: index == 0
+            ? const EdgeInsets.only(bottom: 16)
+            : (index == childCount - 1)
+                ? const EdgeInsets.only(top: 8)
+                : null,
+        child: judgeStartAnimation(getChatDataListIndex(index)),
+      );
+    }
   }
 
   int getChatDataListIndex(int childCountIndex) {
