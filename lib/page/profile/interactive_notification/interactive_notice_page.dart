@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:keframe/frame_separate_widget.dart';
+import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -30,7 +32,6 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 
 import '../../../widget/overscroll_behavior.dart';
 import '../profile_detail_page.dart';
@@ -144,7 +145,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   }
 
   _commentOrFeedDetailCallBack(int deleteId) {
-    msgList.removeWhere((element){
+    msgList.removeWhere((element) {
       if (element.refType == 0 && element.refId == deleteId.toString()) {
         return;
       } else if (element.refType == 2) {
@@ -160,7 +161,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     if (msgList.length == 0 && hasNext == 0) {
       controller.requestRefresh();
     }
-    if(mounted) {
+    if (mounted) {
       setState(() {});
     }
   }
@@ -183,64 +184,78 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         ),
         body: ScrollConfiguration(
             behavior: OverScrollBehavior(),
-            child: SmartRefresher(
-                controller: controller,
-                enablePullUp: true,
-                enablePullDown: true,
-                footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-                header: SmartRefresherHeadFooter.init().getHeader(),
-                onRefresh: _onRefresh,
-                onLoading: () {
-                  if (msgList.isNotEmpty) {
-                    setState(() {
-                      showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                    });
-                  }
-                  _onLoading();
-                },
-                child: msgList != null && msgList.isNotEmpty
-                    ? ListView.builder(
-                        controller: PrimaryScrollController.of(context),
-                        shrinkWrap: true,
-                        //解决无限高度问题
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: msgList.length,
-                        itemBuilder: (context, index) {
-                          return InteractiveNoticeItem(
-                            type: widget.type,
-                            msgModel: msgList[index],
-                            index: index,
-                            globalKey: index == msgList.length - 1 ? globalKey : null,
-                          );
-                        })
-                    : fristRequestIsOver
-                        ? Center(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height: height * 0.22,
+            child: /*SizeCacheWidget(
+              estimateCount: 20,
+                child:*/ SmartRefresher(
+                    controller: controller,
+                    enablePullUp: true,
+                    enablePullDown: true,
+                    footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                    header: SmartRefresherHeadFooter.init().getHeader(),
+                    onRefresh: _onRefresh,
+                    onLoading: () {
+                      if (msgList.isNotEmpty) {
+                        setState(() {
+                          try{
+                            showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                          }catch(e){
+                            print(' onLoading:erorr::::::$e');
+                          }
+                        });
+                      }
+                      _onLoading();
+                    },
+                    child: msgList != null && msgList.isNotEmpty
+                        ? ListView.builder(
+                            controller: PrimaryScrollController.of(context),
+                            shrinkWrap: true,
+                            //解决无限高度问题
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemCount: msgList.length,
+                            itemBuilder: (context, index) {
+                              return /*FrameSeparateWidget(
+                                index: index,
+                                placeHolder: Container(
+                                  height: 85,
+                                  width: width,
+                                  color: AppColor.white,
                                 ),
-                                Container(
-                                  width: 285,
-                                  height: 285,
-                                  child: Image.asset(defaultImage),
+                                child:*/InteractiveNoticeItem(
+                                  type: widget.type,
+                                  msgModel: msgList[index],
+                                  index: index,
+                                  globalKey: index == msgList.length - 1 ? globalKey : null,
+                                )/*,
+                              )*/;
+                            })
+                        : fristRequestIsOver
+                            ? Center(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      height: height * 0.22,
+                                    ),
+                                    Container(
+                                      width: 285,
+                                      height: 285,
+                                      child: Image.asset(defaultImage),
+                                    ),
+                                    SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text(
+                                      hintText,
+                                      style: AppStyle.textPrimary3Regular14,
+                                    )
+                                  ],
                                 ),
-                                SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  hintText,
-                                  style: AppStyle.textPrimary3Regular14,
-                                )
-                              ],
-                            ),
-                          )
-                        : Container(
-                            height: height,
-                            width: width,
-                            color: AppColor.white,
-                          ))));
+                              )
+                            : Container(
+                                height: height,
+                                width: width,
+                                color: AppColor.white,
+                              )))/*)*/);
   }
 }
 

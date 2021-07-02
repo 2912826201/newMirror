@@ -34,6 +34,7 @@ class QueryFollowList extends StatefulWidget {
 
   QueryFollowList({this.type, this.userId});
 
+
   @override
   State<StatefulWidget> createState() {
     return _QueryFollowState();
