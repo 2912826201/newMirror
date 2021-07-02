@@ -7,7 +7,7 @@ class VideoExposureDetectorController {
 
   static VideoExposureDetectorController get instance => _instance;
 
-  Duration updateInterval = const Duration(milliseconds: 100);
+  Duration updateInterval = const Duration(milliseconds: 10);
 
   // list 元素曝光的比例
   double exposureFraction = 0.5;

@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:better_player/better_player.dart';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
@@ -129,7 +130,9 @@ class Application {
 
   // 动态视频控制器
   static List<int> feedVideoControllerList = [];
-
+  static List<BetterPlayerController> feedVideoControllerLists = [];
+  // 查看视频曝光的元素看时间最明显
+  static List<String> feedVideoTimeList = [];
   //公共登出方法
   static appLogout({BuildContext context, bool isKicked = false}) async {
     if (context != null) {
