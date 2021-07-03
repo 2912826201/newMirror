@@ -232,6 +232,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     //print("ChatPage-initState");
 
     // unreadCount=106;
+    unreadCount = unreadCount ?? 0;
     unreadCountNew = unreadCount;
 
     WidgetsBinding.instance.addObserver(this);
