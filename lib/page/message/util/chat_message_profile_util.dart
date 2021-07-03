@@ -1,46 +1,82 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
-import 'at_mes_group_model.dart';
-import 'chat_type_model.dart';
+class ChatMessageProfileUtil {
+  static ChatMessageProfileUtil _util;
 
-class ChatMessageProfileNotifier extends ChangeNotifier {
-  ChatMessageProfileNotifier() {
-    clear();
+  static ChatMessageProfileUtil init() {
+    if (_util == null) {
+      _util = ChatMessageProfileUtil();
+    }
+    return _util;
   }
 
   ///这是什么类型的对话--融云的分类-数字
   ///[chatTypeId] 会话类型，参见枚举 [RCConversationType]
   int chatTypeId;
 
+  String id;
+
   ///对话用户id
   String chatUserId;
 
+  //这个对话的未读数
+  static int unreadCount = 0;
+
+  //当未读数之后接受的消息的数量+未读数
+  static int unreadCountNew = 0;
+
   //设置数据
-  setData(int chatTypeId, String chatUserId) {
-    this.chatTypeId = chatTypeId;
-    this.chatUserId = chatUserId;
+  setData(ConversationDto conversation, {bool isSetUnreadCount = false}) {
+    if (conversation != null) {
+      this.chatTypeId = conversation.getType();
+      this.chatUserId = conversation.conversationId;
+      this.id = conversation.id;
+      if (isSetUnreadCount) {
+        unreadCount = unreadCount;
+        unreadCount = 0;
+        unreadCountNew = 0;
+        setUnreadCount();
+      }
+    } else {
+      clear();
+    }
   }
 
   clear() {
     chatTypeId = -1;
     chatUserId = "";
+    unreadCount = 0;
+    unreadCountNew = 0;
   }
 
+  setUnreadCount() {
+    ConversationDto dto = Application.appContext.read<ConversationNotifier>().getConversationById(id);
+    if (dto != null && dto.unreadCount != null && dto.unreadCount is int) {
+      unreadCount = dto.unreadCount;
+      unreadCountNew = unreadCount;
+    }
+  }
 
-  judgeIsHaveAtUserMsg(Message msg){
+  //判断这个消息是不是at的消息
+  //并且判断加不加在数据库中
+  judgeIsHaveAtUserMsg(Message msg) {
     if (msg != null &&
         msg.content != null &&
         msg.content.mentionedInfo != null &&
         msg.content.mentionedInfo.userIdList != null &&
         msg.content.mentionedInfo.userIdList.length > 0) {
-      bool isNowMsg=msg.targetId == this.chatUserId && msg.conversationType == chatTypeId;
-      if(!isNowMsg) {
+      bool isNowMsg = msg.targetId == this.chatUserId && msg.conversationType == chatTypeId;
+      if (!isNowMsg) {
         for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
           if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
             AtMsg atMsg =

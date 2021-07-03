@@ -667,7 +667,6 @@ class AppRouter {
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
     map["textContent"] = textContent;
-    map["unreadCount"] = unreadCount;
     RuntimeProperties.shareMessage = shareMessage;
     MessageManager.chatDataList.clear();
     MessageManager.chatDataList.addAll(chatDataModelList);

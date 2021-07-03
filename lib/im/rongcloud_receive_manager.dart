@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
+import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/badger_util.dart';
@@ -109,7 +109,7 @@ class RongCloudReceiveManager {
   onRecallMessageReceived(Message message) {
     print("撤回消息====${message.objectName}");
     EventBus.getDefault().post(msg: message, registerName: CHAT_WITHDRAW_MSG);
-    Application.appContext.read<ChatMessageProfileNotifier>().judgeWithdrawIsAtMsg(message);
+    ChatMessageProfileUtil.init().judgeWithdrawIsAtMsg(message);
     MessageManager.updateConversationByMessageList(_context, [message]);
   }
 }

@@ -31,17 +31,22 @@ const String COLUMN_NAME_CONVERSATION_CREATETIME = 'createTime';
 const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 const String COLUMN_NAME_CONVERSATION_UNREADCOUNT = 'unreadCount';
 const String COLUMN_NAME_CONVERSATION_SENDERUID = 'senderUid';
+
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
-  ConversationDto();
+  ConversationDto({
+    this.content = "",
+    this.isTop = 0,
+    this.unreadCount = 0,
+  });
 
   //创建群聊的网络model转换为本地的会话model
-  ConversationDto.fromGroupChat(GroupChatModel gdto){
+  ConversationDto.fromGroupChat(GroupChatModel gdto) {
     this.conversationId = "${gdto.id}";
     this.uid = Application.profile.uid;
     this.type = GROUP_TYPE;
     this.avatarUri = gdto.coverUrl;
-    this.name = gdto.modifiedName == null? gdto.name : gdto.modifiedName;
+    this.name = gdto.modifiedName == null ? gdto.name : gdto.modifiedName;
     this.content = "";
     this.updateTime = gdto.updateTime;
     this.createTime = gdto.createTime;
@@ -88,8 +93,8 @@ class ConversationDto {
       COLUMN_NAME_CONVERSATION_UPDATETIME: updateTime,
       COLUMN_NAME_CONVERSATION_CREATETIME: createTime,
       COLUMN_NAME_CONVERSATION_ISTOP: isTop,
-      COLUMN_NAME_CONVERSATION_UNREADCOUNT:unreadCount,
-      COLUMN_NAME_CONVERSATION_SENDERUID:senderUid,
+      COLUMN_NAME_CONVERSATION_UNREADCOUNT: unreadCount,
+      COLUMN_NAME_CONVERSATION_SENDERUID: senderUid,
     };
     return map;
   }
