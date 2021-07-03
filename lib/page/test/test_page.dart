@@ -402,6 +402,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                 },
                 child: Text("左滑测试"),
               ),
+              RaisedButton(
+                onPressed: () {
+                  Application.slideBanner2Dor3D = !Application.slideBanner2Dor3D;
+                  ToastShow.show(msg: Application.slideBanner2Dor3D ? "切换为3D" : "切换为2D", context: context);
+                },
+                child: Text("3D"),
+              ),
               Container(
                 color: AppColor.mainRed,
                 child: Text(

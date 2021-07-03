@@ -197,6 +197,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.17.0"
+  cube_transition:
+    dependency: "direct main"
+    description:
+      name: cube_transition
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:

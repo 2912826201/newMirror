@@ -131,6 +131,8 @@ class Application {
   // 动态视频控制器
   static List<int> feedVideoControllerList = [];
   static List<BetterPlayerController> feedVideoControllerLists = [];
+  // 轮播图切换状态
+  static bool slideBanner2Dor3D = false;
   // 查看视频曝光的元素看时间最明显
   static List<String> feedVideoTimeList = [];
   //公共登出方法

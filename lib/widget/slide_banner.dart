@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cube_transition/cube_transition.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -15,6 +18,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/image_cached_observer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/banner_view/banner_view.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
@@ -74,11 +78,13 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   final StreamController<int> pagingIndicatorStreamController = StreamController<int>();
 
   // 分页标签数字
-  final StreamController<int> paginationTabStreamController = StreamController<int>();
+  StreamController<int> paginationTabStreamController;
   List<Widget> cupertinoButtonList = [];
   int beforIndex = 0;
+
   // 是否可点赞
   bool isSetUpLuad = true;
+  var indicatorTransform = Matrix4.identity();
 
   @override
   void dispose() {
@@ -93,6 +99,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    paginationTabStreamController = StreamController.broadcast();
     //初始化
     WidgetsBinding.instance.addObserver(this);
     if (widget.model != null && widget.model.selectedMediaFiles != null) {
@@ -386,6 +393,185 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     }
   }
 
+  // 3d轮播
+  _3DSlideBanner() {
+    return CubePageView.builder(
+      itemCount: widget.model.picUrls.length,
+      onPageChanged: (index) {
+        autoPlay(index);
+        print("index::::$index");
+        if (index > 1) {
+          if (index < imageCount - 3) {
+            scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+          } else if (index >= imageCount - 3) {
+            scrollController.animateTo(scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+          }
+        } else if (beforIndex != null && beforIndex > index) {
+          scrollController.animateTo(scrollController.position.minScrollExtent,
+              duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+        }
+        beforIndex = index;
+      },
+      itemBuilder: (context, index, notifier) {
+        PicUrlsModel item = widget.model.picUrls[index];
+        final transform = Matrix4.identity();
+        final t = (index - notifier).abs();
+        final scale = lerpDouble(1.5, 0, t);
+        transform.scale(scale, scale);
+        indicatorTransform = transform;
+        return CubeWidget(
+            index: index,
+            pageNotifier: notifier,
+            child: Stack(children: [
+              GestureDetector(
+                  onDoubleTap: () {
+                    // 获取是否点赞
+                    int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
+                    if (isLaud != 1) {
+                      setUpLuad();
+                    }
+                    // 动画
+                  },
+                  child: CachedNetworkImage(
+                    /// imageUrl的淡入动画的持续时间。
+                    fadeInDuration: Duration(milliseconds: 0),
+                    // useOldImageOnUrlChange: true,
+                    fit: BoxFit.cover,
+                    useOldImageOnUrlChange: true,
+                    imageUrl: item.url != null
+                        ?
+                        // FileUtil.getThumbnail(item.url)
+                        FileUtil.getImageSlim(item.url)
+                        : "",
+                    placeholder: (context, url) {
+                      return CachedNetworkImage(
+                        /// imageUrl的淡入动画的持续时间。
+                        fadeInDuration: Duration(milliseconds: 0),
+                        // useOldImageOnUrlChange: true,
+                        fit: BoxFit.cover,
+                        useOldImageOnUrlChange: true,
+                        imageUrl: item.url != null
+                            ?
+                            // FileUtil.getThumbnail(item.url)
+                            FileUtil.getThumbnail(item.url)
+                            : "",
+                        placeholder: (context, url) {
+                          return Container(
+                            color: AppColor.bgWhite,
+                          );
+                        },
+                        errorWidget: (context, url, e) {
+                          return Container(
+                            color: AppColor.bgWhite,
+                          );
+                        },
+                      );
+                      return Image.network(
+                        FileUtil.getThumbnail(item.url),
+                        fit: BoxFit.cover,
+                      );
+                    },
+                    errorWidget: (context, url, e) {
+                      return Container(
+                        color: AppColor.bgWhite,
+                      );
+                    },
+                  )),
+              Positioned(
+                top: 13,
+                right: 16,
+                // width: getTextSize("9/9",  TextStyle(color: AppColor.white, fontSize: 12), 1).width + 12,
+                // height: getTextSize("9/9",  TextStyle(color: AppColor.white, fontSize: 12), 1).height + 6,
+                child: Offstage(
+                    offstage: imageCount == 1,
+                    child: StreamBuilder<int>(
+                        // 监听Stream，每次值改变的时候，更新Text中的内容
+                        stream: paginationTabStreamController.stream, //数据流
+                        initialData: zindex, //初始值
+                        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                          return Container(
+                              // width: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).width + 12,
+                              // height: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).height + 6,
+                              // color: AppColor.mainRed,
+                              padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                                  color: AppColor.textPrimary1.withOpacity(0.5)),
+                              child: Text(
+                                "${snapshot.data + 1}/${imageCount}",
+                                style:  TextStyle(color: AppColor.white, fontSize: 12),
+                              ),
+                            );
+                        })),
+              )
+            ]));
+      },
+    );
+  }
+
+  // 2d轮播
+  _2DSlideBanner() {
+    return Stack(
+      children: [
+        GestureDetector(
+            onDoubleTap: () {
+              // 获取是否点赞
+              int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
+              if (isLaud != 1) {
+                setUpLuad();
+              }
+              // 动画
+            },
+            child: BannerView(
+              cupertinoButtonList,
+              cycleRolling: false,
+              autoRolling: false,
+              onPageChanged: (index) {
+                autoPlay(index);
+                if (index > 1) {
+                  if (index < imageCount - 3) {
+                    scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                        duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                  } else if (index >= imageCount - 3) {
+                    scrollController.animateTo(scrollController.position.maxScrollExtent,
+                        duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                  }
+                } else if (beforIndex != null && beforIndex > index) {
+                  scrollController.animateTo(scrollController.position.minScrollExtent,
+                      duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                }
+                beforIndex = index;
+              },
+            )),
+        Positioned(
+          top: 13,
+          right: 16,
+          child: Offstage(
+              offstage: imageCount == 1 ,
+              child: StreamBuilder<int>(
+                  // 监听Stream，每次值改变的时候，更新Text中的内容
+                  stream: paginationTabStreamController.stream, //数据流
+                  initialData: zindex, //初始值
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    return Container(
+                      padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          color: AppColor.textPrimary1.withOpacity(0.5)),
+                      child: Text(
+                        "${snapshot.data + 1}/${imageCount}",
+                        style: const TextStyle(color: AppColor.white, fontSize: 12),
+                      ),
+                    );
+                  })),
+          // child:
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -400,89 +586,32 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     return Container(
       child: Column(
         children: [
-          Stack(
-            children: [
-              GestureDetector(
-                onDoubleTap: () {
-                  // 获取是否点赞
-                  int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
-                  if (isLaud != 1) {
-                    setUpLuad();
-                  }
-                  // 动画
-                },
-                child: Container(
-                  width: width,
-                  height: setAspectRatio(widget.height),
-                  // 轮播图
-                  child: BannerView(
-                    cupertinoButtonList,
-                    cycleRolling: false,
-                    autoRolling: false,
-                    onPageChanged: (index) {
-                    autoPlay(index);
-                      if (index > 1) {
-                        if (index < imageCount - 3) {
-                            scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                        } else if (index >= imageCount - 3) {
-                            scrollController.animateTo(scrollController.position.maxScrollExtent,
-                                duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                        }
-                      }else if(beforIndex!=null&&beforIndex>index){
-                        scrollController.animateTo(scrollController.position.minScrollExtent,
-                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                      }
-                    beforIndex = index;
-                    },
-                  ),
-                  // child: Swiper.children(
-                  //   children: cupertinoButtonList,
-                  //   autoplayDelay: 0,
-                  //   duration:0,
-                  //   controller: swiperController,
-                  //   viewportFraction: 0.99999999,
-                  //   loop: false,
-                  //   onIndexChanged: (index) {
-                  //     autoPlay(index);
-                  //     if (index > 1) {
-                  //       if (index < imageCount - 3) {
-                  //         controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                  //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                  //       } else if (index == imageCount - 3) {
-                  //         controller.animateTo(controller.position.maxScrollExtent,
-                  //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                  //       }
-                  //     }
-                  //   },
-                  //   onTap: (index) {},
-                  // )
-                ),
-              ),
-              Positioned(
-                top: 13,
-                right: 16,
-                child: Offstage(
-                    offstage: imageCount == 1,
-                    child: StreamBuilder<int>(
-                        // 监听Stream，每次值改变的时候，更新Text中的内容
-                        stream: paginationTabStreamController.stream, //数据流
-                        initialData: zindex, //初始值
-                        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                          return Container(
-                            padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(12)),
-                                color: AppColor.textPrimary1.withOpacity(0.5)),
-                            child: Text(
-                              "${snapshot.data + 1}/${imageCount}",
-                              style: const TextStyle(color: AppColor.white, fontSize: 12),
-                            ),
-                          );
-                        })),
-                // child:
-              )
-            ],
+          Container(
+            width: width,
+            height: setAspectRatio(widget.height),
+            // 轮播图
+            child: Application.slideBanner2Dor3D ? _3DSlideBanner() : _2DSlideBanner(),
+            // child: Swiper.children(
+            //   children: cupertinoButtonList,
+            //   autoplayDelay: 0,
+            //   duration:0,
+            //   controller: swiperController,
+            //   viewportFraction: 0.99999999,
+            //   loop: false,
+            //   onIndexChanged: (index) {
+            //     autoPlay(index);
+            //     if (index > 1) {
+            //       if (index < imageCount - 3) {
+            //         controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+            //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+            //       } else if (index == imageCount - 3) {
+            //         controller.animateTo(controller.position.maxScrollExtent,
+            //             duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+            //       }
+            //     }
+            //   },
+            //   onTap: (index) {},
+            // )
           ),
           Offstage(
               offstage: imageCount == 1,
