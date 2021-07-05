@@ -1,5 +1,4 @@
 //  点赞，转发，评论三连区域
-import 'package:animated_digit/animated_digit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,18 +48,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 是否可分享
   bool isShare = true;
 
-  // 数字动画控制器
-  AnimatedDigitController animatedDigitController;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     myId = context.read<ProfileNotifier>().profile.uid;
-    new Future.delayed( Duration.zero, () {
-      animatedDigitController = AnimatedDigitController(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].laudCount);
-    });
-    //
   }
 
   @override
@@ -269,11 +261,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             context.read<UserInteractiveNotifier>().laudedChange(
                 widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
             isSetUpLuad = true;
-            if(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ) {
-              animatedDigitController.addValue(1);
-            } else {
-              animatedDigitController.resetValue(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].laudCount);
-            }
             return !isLiked;
           }
         }
@@ -344,8 +331,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
 
   // 横排
   roundedLikeNum(BuildContext context) {
-    // AnimatedDigitController
-
     return GestureDetector(
       onTap: () {
         jumpLike(context);
@@ -355,10 +340,6 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           child: Offstage(
         offstage: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].laudCount) == null,
         child: //用Selector的方式监听数据
-        // AnimatedDigitWidget(
-        //   controller: animatedDigitController,
-        //   textStyle: TextStyle(fontSize: 12),
-        // ),
         Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
             "${StringUtil.getNumber(laudCount)}次赞",
