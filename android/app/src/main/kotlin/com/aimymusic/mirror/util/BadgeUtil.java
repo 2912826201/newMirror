@@ -77,7 +77,7 @@ public class BadgeUtil {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle("标题").setContentText("消息正文").setSmallIcon(iconResId);
-        Notification notification = builder.build();
+        Notification notification = builder.setPriority(Notification.PRIORITY_LOW).build();
         try {
             Field field = notification.getClass().getDeclaredField("extraNotification");
             Object extraNotification = field.get(notification);
