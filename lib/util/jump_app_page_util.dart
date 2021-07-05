@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/jump_app_page_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:provider/provider.dart';
 
 import 'event_bus.dart';
 
@@ -67,14 +70,22 @@ class JumpAppPageUtil {
       case 4:
         //消息页
         print("跳转界面-app界面-消息页");
+        if (!(_context.read<TokenNotifier>().isLoggedIn)) {
+          ToastShow.show(msg: "请先登录app!", context: _context);
+          return;
+        }
         break;
       case 5:
         //我的页面
         print("跳转界面-app界面-我的页面");
+        if (!(_context.read<TokenNotifier>().isLoggedIn)) {
+          ToastShow.show(msg: "请先登录app!", context: _context);
+          return;
+        }
         break;
       default:
         print("跳转界面-app界面-未知界面");
-        break;
+        return;
     }
     if (type > 0 && type < 6) {
       Navigator.of(_context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));

@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
@@ -24,7 +25,6 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:provider/provider.dart';
-
 
 typedef backCallBack = void Function();
 
@@ -52,7 +52,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   void initState() {
     // TODO: implement initState
     super.initState();
-      myId = context.read<ProfileNotifier>().profile.uid;
+    myId = context.read<ProfileNotifier>().profile.uid;
   }
 
   @override
@@ -83,7 +83,8 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     height: 21,
                     margin: const EdgeInsets.only(left: 16),
                     child: Stack(
-                      clipBehavior: Clip.none, alignment: const FractionalOffset(0, 0.5),
+                      clipBehavior: Clip.none,
+                      alignment: const FractionalOffset(0, 0.5),
                       children: avatarOverlap(context, laudUserInfo),
                     )),
               );
@@ -107,7 +108,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             const Spacer(),
             // 横排三连布局
             Container(
-              width: 104,
+              width: Application.slideBanner2Dor3D ? 108 : 104,
               margin: const EdgeInsets.only(right: 16),
               child: roundedTriple(),
             )
@@ -161,7 +162,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
     }
     bool haveMyAvatar = false;
     userInfo.forEach((element) {
-      if(element.uid==myId){
+      if (element.uid == myId) {
         haveMyAvatar = true;
       }
     });
@@ -173,19 +174,19 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(index),
             duration: const Duration(milliseconds: 200),
-            child: animatedZoom(haveMyAvatar,userInfo, index, item: item.avatarUri)));
+            child: animatedZoom(haveMyAvatar, userInfo, index, item: item.avatarUri)));
       } else if (item.uid != myId) {
         avatarList.add(AnimatedPositioned(
             left: avatarOffset(index),
             duration: const Duration(milliseconds: 200),
-            child: animatedZoom(haveMyAvatar,userInfo, index, item: item.avatarUri)));
+            child: animatedZoom(haveMyAvatar, userInfo, index, item: item.avatarUri)));
       }
     }
     return avatarList;
   }
 
   // 内部缩放动画
-  animatedZoom(bool haveMyAvatar,List<BuddyModel> userInfo, int index, {String item}) {
+  animatedZoom(bool haveMyAvatar, List<BuddyModel> userInfo, int index, {String item}) {
     // 当存在用户本人点赞时，第4个头像缩放
     if (haveMyAvatar && index == 3) {
       return AnimatedContainer(
@@ -220,7 +221,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   }
 
   // 头像动画偏移位置
-  avatarOffset( int index) {
+  avatarOffset(int index) {
     if (index == 3) {
       return 20.5 + (index - 1) * 10.0;
     } else {
@@ -318,18 +319,44 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   roundedTriple() {
     return Row(
       children: [
-        AppIconButton(
-          svgName: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
-                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-              ? AppIcon.like_red_24
-              : AppIcon.like_24,
-          iconSize: 24,
-          onTap: () {
-            setUpLuad();
-          },
-        ),
+        Application.slideBanner2Dor3D
+            ? Container(
+                height: 24,
+                child: LikeButton(
+                  likeBuilder: (bool isLiked) {
+                    return isLiked
+                        ? AppIcon.getAppIcon(
+                            AppIcon.like_red_24,
+                            24,
+                            containerHeight: 24,
+                            containerWidth: 24,
+                          )
+                        : AppIcon.getAppIcon(
+                            AppIcon.like_24,
+                            24,
+                            containerHeight: 24,
+                            containerWidth: 24,
+                          );
+                  },
+                  size: 24,
+                  // onTap: (bool isLike) {
+                  //   setUpLuad();
+                  // },
+                ),
+              )
+            : AppIconButton(
+                svgName: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                            null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                    ? AppIcon.like_red_24
+                    : AppIcon.like_24,
+                iconSize: 24,
+                onTap: () {
+                  setUpLuad();
+                },
+              ),
         Container(
           margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(

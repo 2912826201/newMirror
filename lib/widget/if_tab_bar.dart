@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -10,6 +11,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -251,7 +253,11 @@ class _IFTabBarState extends State<IFTabBar> {
   _resetUnreadMessage() {
     Future.delayed(Duration(milliseconds: 200), () {
       if (mounted) {
-        setState(() {});
+        setState(() {
+          int number = MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber;
+          BadgerUtil.init().updateBadgeCount(number);
+          AppPrefs.setFlutterAppBadgerCount(number);
+        });
       }
     });
   }
