@@ -395,7 +395,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                                   style: AppStyle.textRegular14,
                                                   child: AnimatedTextKit(
                                                     animatedTexts: [
-                                                      TyperAnimatedText(model.description),
+                                                      TyperAnimatedText(model.description,speed: Duration(milliseconds: 20),),
                                                     ],
                                                     totalRepeatCount: 1,
                                                   ),
