@@ -184,6 +184,9 @@ void _jumpChatPage(
     systemPage = list[2];
     print("chatDataModelList:${chatDataModelList.length}");
   }
+  if (AppRouter.isHaveChatPage()) {
+    Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+  }
   AppRouter.navigateToChatPage(
     context: context,
     conversation: conversation,

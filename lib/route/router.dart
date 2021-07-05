@@ -997,4 +997,16 @@ class AppRouter {
     } catch (e) {}
     return false;
   }
+
+  //判断打开聊天界面没有
+  static bool isHaveChatPage() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathChatPage)) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
 }
