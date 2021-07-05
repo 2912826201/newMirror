@@ -157,13 +157,15 @@ Future _initApp() async {
 
   Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
-  // 申请通知权限
-  // 检查是否已有通知的权限
-  PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
-  bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
-  //判断如果还没拥有通知权限就申请获取权限
-  if (!status) {
-    permissionStatus = await NotificationPermissions.requestNotificationPermissions();
+  // 申请通知权限 iOS在此处处理 Android要APP自己写弹窗所以放在IfPage中
+  if (Application.platform == 1) {
+    // 检查是否已有通知的权限
+    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
+    //判断如果还没拥有通知权限就申请获取权限
+    if (!status) {
+      permissionStatus = await NotificationPermissions.requestNotificationPermissions();
+    }
   }
   //初始化SharedPreferences
   AppPrefs.init();
