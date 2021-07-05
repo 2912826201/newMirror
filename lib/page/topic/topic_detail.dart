@@ -210,9 +210,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 头部高度
   sliverAppBarHeight() {
-    // UI图原始高度
-    double uiHeigth = Application.slideBanner2Dor3D ? 109.0 : 84;
-    double height = uiHeigth  + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
+    double height = 109.0  + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
     if (model.description != null) {
       //加上文字高度
       height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
