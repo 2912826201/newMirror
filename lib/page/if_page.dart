@@ -51,13 +51,13 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
           showAppDialog(
             context,
             title: "请求通知权限",
-            info: "接收消息通知及活动通知",
+            info: "第一时间获取评论,私信,@我等信息通知",
             barrierDismissible: false,
-            confirm: AppDialogButton("去设置", () {
+            confirm: AppDialogButton("去打开", () {
               NotificationPermissions.requestNotificationPermissions();
               return true;
             }),
-            cancel: AppDialogButton("下次一定", () {
+            cancel: AppDialogButton("取消", () {
               return true;
             }),
           );
