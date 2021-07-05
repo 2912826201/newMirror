@@ -537,8 +537,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
       if (model.version != AppConfig.version) {
         ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context: context);
       } else {
-        if (model.os == Application.platform && url != null) {
-          if (Application.platform == 0) {
+        if (model.os == CheckPhoneSystemUtil.platform && url != null) {
+          if (CheckPhoneSystemUtil.init().isAndroid()) {
             String oldPath = await FileUtil().getDownloadedPath(url);
             if (oldPath != null) {
               showAppDialog(

@@ -13,6 +13,7 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -139,7 +140,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   _checkPermission() async {
     bool isGranted;
     //安卓和iOS的权限不一样
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       isGranted = (await Permission.storage.status)?.isGranted;
     } else {
       PermissionStatus permissionStatus = await Permission.photos.status;
@@ -466,7 +467,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                           onTap: () async {
                             PermissionStatus status;
                             //安卓和iOS的权限不一样
-                            if (Application.platform == 0) {
+                            if (CheckPhoneSystemUtil.init().isAndroid()) {
                               status = await Permission.storage.status;
                             } else {
                               status = await Permission.photos.status;
@@ -482,7 +483,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                             } else {
                               //重新请求权限
                               int requestTime = DateTime.now().millisecondsSinceEpoch;
-                              if (Application.platform == 0) {
+                              if (CheckPhoneSystemUtil.init().isAndroid()) {
                                 status = await Permission.storage.request();
                               } else {
                                 // undetermined在新版中被移除了 不需要做区分 直接重新请求

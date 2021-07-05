@@ -5,6 +5,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -39,12 +40,12 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
 
   _getNotificationStatus() async {
     // Android申请通知权限
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       // 检查是否已有通知的权限
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
       //判断如果还没拥有通知权限就申请获取权限
-      if (!status&&AppPrefs.isFirstGetNotification()) {
+      if (!status && AppPrefs.isFirstGetNotification()) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           //请求通知权限
           showAppDialog(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -187,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           margin: const EdgeInsets.only(right: 12),
         ),
-        Application.platform == 0
+        CheckPhoneSystemUtil.init().isAndroid()
             ? Container()
             : Container(
                 child: AppIconButton(

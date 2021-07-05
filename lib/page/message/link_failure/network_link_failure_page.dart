@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
 class NetworkLinkFailure extends StatefulWidget {
@@ -41,7 +42,8 @@ class _NetworkLinkFailureState extends State<NetworkLinkFailure> {
                 text: TextSpan(style: AppStyle.textRegular14, children: [
                   TextSpan(text: "进入设备"),
                   TextSpan(
-                      text: "“设置”-“${Application.platform == 1 ? "无线局域网" : "WLAN"}”", style: AppStyle.textMedium14),
+                      text: "“设置”-“${CheckPhoneSystemUtil.init().isIos() ? "无线局域网" : "WLAN"}”",
+                      style: AppStyle.textMedium14),
                   TextSpan(text: "选择一个可用的WiFi热点接入。"),
                 ]),
               ),
@@ -53,18 +55,20 @@ class _NetworkLinkFailureState extends State<NetworkLinkFailure> {
                 text: TextSpan(style: AppStyle.textRegular14, children: [
                   TextSpan(text: "进入设备"),
                   TextSpan(
-                      text: "“设置”-${Application.platform == 1 ? "“蜂窝移动数据”" : "移动网络"}", style: AppStyle.textMedium14),
-                  TextSpan(text: "点击启用${Application.platform == 1 ? "蜂窝数据" : "数据网络"}（启用后运营商可能会收取数据通信费用）"),
+                      text: "“设置”-${CheckPhoneSystemUtil.init().isIos() ? "“蜂窝移动数据”" : "移动网络"}",
+                      style: AppStyle.textMedium14),
+                  TextSpan(text: "点击启用${CheckPhoneSystemUtil.init().isIos() ? "蜂窝数据" : "数据网络"}（启用后运营商可能会收取数据通信费用）"),
                 ]),
               ),
             ),
             SizedBox(height: 24),
-            Text("如果您已接入无线局域网或${Application.platform == 1 ? "蜂窝移动数据" : "WLAN"}：", style: AppStyle.textRegular14),
+            Text("如果您已接入无线局域网或${CheckPhoneSystemUtil.init().isIos() ? "蜂窝移动数据" : "WLAN"}：",
+                style: AppStyle.textRegular14),
             SizedBox(height: 24),
             Text("请检查您所连接的WiFi热点是否接入互联网，或该热点是否允许您的设备访问互联网。", style: AppStyle.textRegular14),
             SizedBox(height: 24),
             Visibility(
-              visible: Application.platform == 1,
+              visible: CheckPhoneSystemUtil.init().isIos(),
               child: Container(
                 child: RichText(
                   textAlign: TextAlign.start,

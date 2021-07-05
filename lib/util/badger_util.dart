@@ -24,7 +24,7 @@ class BadgerUtil {
 
   //更新显示个数
   updateBadgeCount(int badgeCount) async {
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       Permission.notification.request().then((value) async {
         if (value.isGranted) {
           if (await CheckPhoneSystemUtil.init().isHuawei()) {
@@ -42,14 +42,14 @@ class BadgerUtil {
 
   //移除个数
   removeBadge() {
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       _channel.invokeMethod('removeBadge');
     }
   }
 
   //判断是不是支持设置badger
   Future<bool> isAppBadgeSupported() async {
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       bool appBadgeSupported = await _channel.invokeMethod('isAppBadgeSupported');
       return appBadgeSupported ?? false;
     }

@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 
@@ -570,7 +571,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
         beginText = oldValue.text.substring(0, oldValue.selection.baseOffset);
 
-        if (Application.platform == 0) {
+        if (CheckPhoneSystemUtil.init().isAndroid()) {
           beginText = beginText.characters.getRange(0, beginText.characters.length - 1).string;
         }
         lastText =

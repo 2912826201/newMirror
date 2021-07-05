@@ -3,6 +3,7 @@ import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/im/rongcloud_status_manager.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../config/config.dart';
@@ -124,7 +125,7 @@ class RongCloud {
 
   //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendVoiceAndroidMessage(Message message) async {
-    if (Application.platform == 1) {
+    if (CheckPhoneSystemUtil.init().isIos()) {
       return RongIMClient.getMessage(
           (await RongIMClient.sendIntactMessageWithCallBack(message, "", "", null)).messageId);
     } else {
@@ -134,7 +135,7 @@ class RongCloud {
 
   //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendVoiceIosMessage(VoiceMessage message, int conversationType, String targetId) async {
-    if (Application.platform == 1) {
+    if (CheckPhoneSystemUtil.init().isIos()) {
       return RongIMClient.getMessage((await RongIMClient.sendMessage(conversationType, targetId, message)).messageId);
     } else {
       return RongIMClient.sendMessage(conversationType, targetId, message);

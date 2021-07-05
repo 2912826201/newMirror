@@ -15,6 +15,7 @@ import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/badger_util.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -432,7 +433,7 @@ class MessageState extends State<MessagePage>
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
     if (conversation.type == PRIVATE_TYPE || conversation.type == GROUP_TYPE) {
-      if (Application.platform == 0) {
+      if (CheckPhoneSystemUtil.init().isAndroid()) {
         return SizeTransitionView(
             id: int.parse(conversation.conversationId),
             animationMap: animationMap,

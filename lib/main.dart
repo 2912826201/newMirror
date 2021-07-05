@@ -150,18 +150,16 @@ Future _initApp() async {
   });
 
   //获取操作系统
-  Application.platform = Platform.isAndroid
+  CheckPhoneSystemUtil.platform = Platform.isAndroid
       ? 0
       : Platform.isIOS
           ? 1
           : -1;
 
-  CheckPhoneSystemUtil.platform = Application.platform;
-
   Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
   // 申请通知权限 iOS在此处处理 Android要APP自己写弹窗所以放在IfPage中
-  if (Application.platform == 1) {
+  if (CheckPhoneSystemUtil.init().isIos()) {
     // 检查是否已有通知的权限
     PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
     bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
@@ -355,7 +353,7 @@ _initJPush() {
       print("main flutter onReceiveNotification2: ${mapModel["redirectUri"]}");
       int notificationId = message["extras"]["cn.jpush.android.NOTIFICATION_ID"];
       //fixme 等待接通厂商通道后测试杀掉app会不会走这里
-      if (!Application.isBackGround && Application.platform == 0) {
+      if (!Application.isBackGround && CheckPhoneSystemUtil.init().isAndroid()) {
         jpush.clearNotification(notificationId: notificationId);
       }
       if (await CheckPhoneSystemUtil.init().isHuawei()) {

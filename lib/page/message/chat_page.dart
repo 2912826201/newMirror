@@ -11,6 +11,7 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -408,7 +409,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           edit: _editWidget(),
           value: _textController.text,
           more: ChatMoreIcon(
-            isComMomButton: StringUtil.strNoEmpty(_textController.text) && Application.platform == 0,
+            isComMomButton: StringUtil.strNoEmpty(_textController.text) && CheckPhoneSystemUtil.init().isAndroid(),
             onTap: () {
               _onSubmitClick();
             },
@@ -2314,7 +2315,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
       _textController.text += json.decode(map["content"])["data"];
       bottomSettingChildKey.currentState.setCursorIndexPr(_textController.text.length);
-      if (Application.platform == 0) {
+      if (CheckPhoneSystemUtil.init().isAndroid()) {
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,
           extentOffset: _textController.text.length,

@@ -12,6 +12,7 @@ import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -247,7 +248,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
           onItemCLick(index);
         },
       );
-    } else if (Application.platform == 0) {
+    } else if (CheckPhoneSystemUtil.init().isAndroid()) {
       return GestureDetector(
         child: getItem(courseVideoDto, index),
         onTap: () {
