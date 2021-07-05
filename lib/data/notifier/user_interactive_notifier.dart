@@ -113,7 +113,7 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
   void setFirstModel(int id, {bool isFollow,bool needNotify = false}) {
     if (!value._profileUiChangeModel.containsKey(id)) {
       ProfileUiChangeModel model = ProfileUiChangeModel();
-      if (isFollow != null) {
+      if (id != Application.appContext.read<ProfileNotifier>().profile.uid) {
         model.isFollow = isFollow;
         model.feedStringList.clear();
         if (!isFollow) {
