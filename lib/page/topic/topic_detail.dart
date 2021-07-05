@@ -1,6 +1,7 @@
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'dart:async';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
@@ -210,7 +211,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 头部高度
   sliverAppBarHeight() {
-    double height = 109.0  + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
+    double height = 109.0 + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
     if (model.description != null) {
       //加上文字高度
       height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
@@ -257,27 +258,29 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             child: Stack(
                               children: [
                                 // 背景颜色
-                              Application.slideTopicBezierCurve ?  ClipPath(
-                                  //路径裁切组件
-                                  clipper: BottomClipper(), //路径
-                                  child: Container(
-                                    height: 114 + ScreenUtil.instance.statusBarHeight,
-                                    width: ScreenUtil.instance.width,
-                                    color: getBackgroundColor(),
-                                    child: Image.asset(
-                                      backgroundImages[model.patternId],
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ) : Container(
-                                height: 84 + ScreenUtil.instance.statusBarHeight,
-                                width: ScreenUtil.instance.width,
-                                color: getBackgroundColor(),
-                                child: Image.asset(
-                                  backgroundImages[model.patternId],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                                Application.slideTopicBezierCurve
+                                    ? ClipPath(
+                                        //路径裁切组件
+                                        clipper: BottomClipper(), //路径
+                                        child: Container(
+                                          height: 114 + ScreenUtil.instance.statusBarHeight,
+                                          width: ScreenUtil.instance.width,
+                                          color: getBackgroundColor(),
+                                          child: Image.asset(
+                                            backgroundImages[model.patternId],
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 84 + ScreenUtil.instance.statusBarHeight,
+                                        width: ScreenUtil.instance.width,
+                                        color: getBackgroundColor(),
+                                        child: Image.asset(
+                                          backgroundImages[model.patternId],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                 // 头像
                                 Positioned(
                                     left: 14,
@@ -383,14 +386,25 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                     ? Positioned(
                                         bottom: 0,
                                         child: Container(
-                                          // color: Colors.tealAccent,
                                           width: ScreenUtil.instance.width,
                                           padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
-                                          child: Text(
-                                            model.description,
-                                            style: AppStyle.textRegular14,
-                                            maxLines: 10,
-                                          ),
+                                          child: Application.slideAnimatedTextTypewriter
+                                              ? DefaultTextStyle(
+                                                  textAlign: TextAlign.start,
+                                                  maxLines: 10,
+                                                  style: AppStyle.textRegular14,
+                                                  child: AnimatedTextKit(
+                                                    animatedTexts: [
+                                                      TyperAnimatedText(model.description),
+                                                    ],
+                                                    totalRepeatCount: 1,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  model.description,
+                                                  style: AppStyle.textRegular14,
+                                                  maxLines: 10,
+                                                ),
                                         ))
                                     : Container(),
                               ],

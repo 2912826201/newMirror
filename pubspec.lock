@@ -36,13 +36,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.1"
-  animated_digit:
+  animated_text_kit:
     dependency: "direct main"
     description:
-      name: animated_digit
+      name: animated_text_kit
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.2"
+    version: "4.2.1"
   animations:
     dependency: "direct main"
     description:

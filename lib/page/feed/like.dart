@@ -1,8 +1,10 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
@@ -30,6 +32,7 @@ class LikeState extends State<Like> {
   // 是否存在下一页
   int feedLuadHasNext;
   RefreshController refreshController = RefreshController();
+
   @override
   void initState() {
     requestFeedLuadList(isFrist: true);
@@ -150,6 +153,13 @@ class LikeListViewItem extends StatelessWidget {
 
   LikeListViewItem({this.model});
 
+  List<MaterialColor> colorizeColors = [
+    Colors.grey,
+    Colors.blue,
+    Colors.yellow,
+    Colors.red,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -192,7 +202,28 @@ class LikeListViewItem extends StatelessWidget {
             children: <Widget>[
               Container(
                 width: ScreenUtil.instance.width - 32.0 - 38.0 - 16.0 - 4.0,
-                child: Text(
+                child: Application.slideColorizeAnimatedText
+                    ? DefaultTextStyle(
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      ColorizeAnimatedText(
+                        model.nickName,
+                        colors: colorizeColors,
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                  ),
+                ) :
+                Text(
                   "${model.nickName}",
                   // '用户昵称显示',
                   style: const TextStyle(
@@ -205,21 +236,42 @@ class LikeListViewItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Offstage(
-                offstage: model.description == null,
-                child: Container(
+              model.description != null ?
+               Container(
                   width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
-                  child: Text(
-                    "${model.description}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColor.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              )
+                  child: Application.slideColorizeAnimatedText
+                      ? DefaultTextStyle(
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              ColorizeAnimatedText(
+                                model.description,
+                                colors: colorizeColors,
+                                textStyle: const TextStyle(
+                                  // color: AppColor.textSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                            totalRepeatCount: 1,
+                          ),
+                        )
+                      : Text(
+                          "${model.description}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColor.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                ) : Container(),
+
             ],
           )
         ],

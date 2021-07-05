@@ -137,6 +137,12 @@ class Application {
   static bool slideTopicBezierCurve = false;
   // 动态点赞动画切换
   static bool slideFeedLike = false;
+  // 点赞文字颜色动画切换
+  static bool slideColorizeAnimatedText = false;
+  // 话题详情页简介文字打字机效果切换
+  static bool slideAnimatedTextTypewriter = false;
+  // 发布动态周边信息滑动动画渐隐渐现动画
+  static bool slideReleaseFeedFadeInAnimation = false;
   // 查看视频曝光的元素看时间最明显
   static List<String> feedVideoTimeList = [];
   //公共登出方法

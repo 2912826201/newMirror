@@ -1,6 +1,7 @@
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -13,7 +14,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
-  SearchOrLocationWidget({this.checkIndex, this.selectAddress,this.currentAddressInfo});
+  SearchOrLocationWidget({this.checkIndex, this.selectAddress, this.currentAddressInfo});
 
   @override
   _SearchOrLocationWidgetState createState() => _SearchOrLocationWidgetState();
@@ -23,6 +24,7 @@ class SearchOrLocationWidget extends StatefulWidget {
 
   // 传入之前选择地址
   PeripheralInformationPoi selectAddress;
+
   //当前位置的信息
   Location currentAddressInfo;
 }
@@ -54,7 +56,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
           // scrollController.jumpTo(0);
           PrimaryScrollController.of(context).jumpTo(0);
         });
-      } else if (searchText != val){
+      } else if (searchText != val) {
         print('调用搜索接口');
         // scrollController.jumpTo(0);
         PrimaryScrollController.of(context).jumpTo(0);
@@ -131,44 +133,88 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
             //数据列表
             Expanded(
                 child: pois.isNotEmpty
-                    ? SmartRefresher(
-                        enablePullUp: true,
-                        enablePullDown: false,
-                        footer: SmartRefresherHeadFooter.init().getFooter(),
-                        controller: _refreshController,
-                        onLoading: onLoadMore,
-                        // child: MediaQuery.removePadding(
-                        //   removeTop: true,
-                        //   context: context,
-                        child: ListView.builder(
-                            controller:
-                            PrimaryScrollController.of(context),
-                            // scrollController,
-                            itemExtent:69,
-                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                            itemCount: searchController.text != null && searchController.text.isNotEmpty
-                                ? searchPois.length
-                                : pois.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(
-                                      context,
-                                      searchController.text != null && searchController.text.isNotEmpty
-                                          ? searchPois[index]
-                                          : pois[index],
-                                    );
-                                  },
-                                  child: LocationItem(
-                                    poi: searchController.text != null && searchController.text.isNotEmpty
-                                        ? searchPois[index]
-                                        : pois[index],
-                                    checkIndex: widget.checkIndex,
-                                    index: index,
-                                  ));
-                            }),
-                        // ),
-                      )
+                    ? Application.slideReleaseFeedFadeInAnimation
+                        ? AnimationLimiter(
+                            child: SmartRefresher(
+                            enablePullUp: true,
+                            enablePullDown: false,
+                            footer: SmartRefresherHeadFooter.init().getFooter(),
+                            controller: _refreshController,
+                            onLoading: onLoadMore,
+                            // child: MediaQuery.removePadding(
+                            //   removeTop: true,
+                            //   context: context,
+                            child: ListView.builder(
+                                controller: PrimaryScrollController.of(context),
+                                // scrollController,
+                                itemExtent: 69,
+                                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                                itemCount: searchController.text != null && searchController.text.isNotEmpty
+                                    ? searchPois.length
+                                    : pois.length,
+                                itemBuilder: (context, index) {
+                                  return AnimationConfiguration.staggeredList(
+                                      position: index,
+                                      duration: const Duration(milliseconds: 375),
+                                      child: SlideAnimation(
+                                        child: FadeInAnimation(
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.pop(
+                                                  context,
+                                                  searchController.text != null && searchController.text.isNotEmpty
+                                                      ? searchPois[index]
+                                                      : pois[index],
+                                                );
+                                              },
+                                              child: LocationItem(
+                                                poi: searchController.text != null && searchController.text.isNotEmpty
+                                                    ? searchPois[index]
+                                                    : pois[index],
+                                                checkIndex: widget.checkIndex,
+                                                index: index,
+                                              )),
+                                        ),
+                                      ));
+                                }),
+                            // ),
+                          ))
+                        : SmartRefresher(
+                            enablePullUp: true,
+                            enablePullDown: false,
+                            footer: SmartRefresherHeadFooter.init().getFooter(),
+                            controller: _refreshController,
+                            onLoading: onLoadMore,
+                            // child: MediaQuery.removePadding(
+                            //   removeTop: true,
+                            //   context: context,
+                            child: ListView.builder(
+                                controller: PrimaryScrollController.of(context),
+                                // scrollController,
+                                itemExtent: 69,
+                                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                                itemCount: searchController.text != null && searchController.text.isNotEmpty
+                                    ? searchPois.length
+                                    : pois.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(
+                                          context,
+                                          searchController.text != null && searchController.text.isNotEmpty
+                                              ? searchPois[index]
+                                              : pois[index],
+                                        );
+                                      },
+                                      child: LocationItem(
+                                        poi: searchController.text != null && searchController.text.isNotEmpty
+                                            ? searchPois[index]
+                                            : pois[index],
+                                        checkIndex: widget.checkIndex,
+                                        index: index,
+                                      ));
+                                }),
+                          )
                     : Container())
           ],
         ),
@@ -225,7 +271,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
             pages = (total / pageSize).floor() + 1;
           }
         }
-        if(mounted) {
+        if (mounted) {
           setState(() {});
         }
       } else {
@@ -330,7 +376,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       } else {
         pages = (total / pageSize).floor() + 1;
       }
-      if(mounted) {
+      if (mounted) {
         setState(() {});
       }
     } else {
