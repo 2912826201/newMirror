@@ -272,7 +272,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                     ),
                                   ),
                                 ) : Container(
-                                height: 114 + ScreenUtil.instance.statusBarHeight,
+                                height: 84 + ScreenUtil.instance.statusBarHeight,
                                 width: ScreenUtil.instance.width,
                                 color: getBackgroundColor(),
                                 child: Image.asset(
