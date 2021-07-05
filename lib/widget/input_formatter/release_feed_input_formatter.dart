@@ -90,16 +90,25 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("at光标$atIndex");
     print("rules￥￥${rules.toString()}");
     // Note 升级2.0后删除@,新值返回的是去掉空格的，不是2.0版本前@文本一起删除的值所有这里处理一下返回的@下标
-    rules.forEach((v) {
-      if (newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
-        if (!isMonitorTop) {
-          print("atCursorIndex::::${atCursorIndexs.toString()}");
-          if (atCursorIndexs.length > 0) {
-            atCursorIndexs.first.index = 0;
-          }
+    if(rules.isNotEmpty) {
+      if (!isMonitorTop) {
+        print("atCursorIndex::::${atCursorIndexs.toString()}");
+        if (atCursorIndexs.length > 0) {
+          atCursorIndexs.first.index = 0;
         }
       }
-    });
+    } else {
+      rules.forEach((v) {
+        if (newValue.selection.end > v.startIndex && v.endIndex - 1 == newValue.selection.end) {
+          if (!isMonitorTop) {
+            print("atCursorIndex::::${atCursorIndexs.toString()}");
+            if (atCursorIndexs.length > 0) {
+              atCursorIndexs.first.index = 0;
+            }
+          }
+        }
+      });
+    }
     print("新值11111$newValue");
     print(newValue.text == "\n");
     // 需求要求按照字节数算超过好后不输入
@@ -143,12 +152,6 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
             extentOffset: oldText.length,
           ));
     }
-    if (!isMonitorTop) {
-      print("atCursorIndex::::${atCursorIndexs.toString()}");
-      if (atCursorIndexs.length > 0) {
-        atIndex = atCursorIndexs.first.index;
-      }
-    }
     // if (oldValue.text == newValue.text && Platform.isIOS) {
     //   return oldValue;
     // }
@@ -184,20 +187,50 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
 
       // 跟随@后面输入的实时搜索值
-      rules.forEach((v) {
-        if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
-          if (atIndex > 0 && newValue.selection.start >= atIndex) {
-            atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
-            print(atSearchStr);
+      if(rules.isNotEmpty) {
+        print("有高亮文本");
+        for (Rule rule in rules) {
+          // 点击的是@高亮文本
+          if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && rule.isAt) {
+
+          } else {
+            if (atIndex > 0 && newValue.selection.start >= atIndex) {
+              atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+              print(atSearchStr);
+            }
           }
-          if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
-            topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+          // 点击话题高亮
+          if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && !rule.isAt) {
+
+          } else {
+            if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+              topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+            }
           }
-        } else {
-          atSearchStr = "";
-          topicSearchStr = "";
         }
-      });
+      } else {
+        print("没有高亮文本");
+        print("atIndex::::$atIndex");
+        print("newValue.selection.start :::::${newValue.selection.start}");
+        if (atIndex > 0 && newValue.selection.start >= atIndex) {
+          atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+          print(atSearchStr);
+        }
+        if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+          topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+        }
+      }
+      // rules.forEach((v) {
+      //   if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+      //     if (atIndex > 0 && newValue.selection.start >= atIndex) {
+      //       atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+      //       print(atSearchStr);
+      //     }
+      //     if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
+      //       topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+      //     }
+      //   }
+      // });
     } else {
       /// 删除或替换内容 （含直接delete、选中后输入别的字符替换）
       print("删除");
@@ -212,20 +245,49 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
       if (Platform.isIOS && oldValue.isComposingRangeValid) {
         // 跟随@后面输入的实时搜索值
-        rules.forEach((v) {
-          if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
-            if (atIndex > 0 && newValue.selection.start >= atIndex) {
-              atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
-              print(atSearchStr);
+        if(rules != null) {
+          for (Rule rule in rules) {
+            // 点击的是@高亮文本
+            if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && rule.isAt) {
+
+            } else {
+              if (atIndex > 0 && newValue.selection.start >= atIndex) {
+                atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+                print(atSearchStr);
+              }
             }
-            if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
-              topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+            // 点击话题高亮
+            if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && !rule.isAt) {
+
+            } else {
+              if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+                topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+              }
             }
-          } else {
-            atSearchStr = "";
-            topicSearchStr = "";
           }
-        });
+        } else {
+          if (atIndex > 0 && newValue.selection.start >= atIndex) {
+            atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+            print(atSearchStr);
+          }
+          if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+            topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+          }
+        }
+        // rules.forEach((v) {
+        //   if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+        //     if (atIndex > 0 && newValue.selection.start >= atIndex) {
+        //       atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+        //       print(atSearchStr);
+        //     }
+        //     if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
+        //       topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+        //     }
+        //   } else {
+        //     atSearchStr = "";
+        //     topicSearchStr = "";
+        //   }
+        // });
         // if (atIndex > 0 && newValue.selection.start >= atIndex) {
         //   atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
         //   print(atSearchStr);
@@ -333,23 +395,53 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       topicIndex = 0;
       _shutDownCallback();
     }
-    rules.forEach((v) {
-      if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
-        if (atIndex > 0 && startIndex + 1 > atIndex) {
-          print("111");
-          print(oldValue.text);
-          print(oldValue.text.substring(atIndex, startIndex));
-          atSearchStr = oldValue.text.substring(atIndex, startIndex);
+    if(rules.isNotEmpty) {
+      print("有高亮文本");
+      for (Rule rule in rules) {
+        // 点击的是@高亮文本
+        if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && rule.isAt) {
+
+        } else {
+          if (atIndex > 0 && newValue.selection.start >= atIndex) {
+            atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+            print(atSearchStr);
+          }
         }
-        print("2");
-        if (topicIndex > 0 && startIndex + 1 > topicIndex) {
-          topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
+        // 点击话题高亮
+        if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && !rule.isAt) {
+
+        } else {
+          if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+            topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+          }
         }
-      } else {
-        atSearchStr = "";
-        topicSearchStr = "";
       }
-    });
+    } else {
+      print("没有高亮文本");
+      print("atIndex::::$atIndex");
+      print("newValue.selection.start :::::${newValue.selection.start}");
+      if (atIndex > 0 && newValue.selection.start >= atIndex) {
+        atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
+        print(atSearchStr);
+      }
+      if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+        topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
+      }
+    }
+    // rules.forEach((v) {
+    //   if (newValue.selection.end > v.startIndex && newValue.selection.end < v.endIndex) {
+    //     if (atIndex > 0 && startIndex + 1 > atIndex) {
+    //       print("111");
+    //       print(oldValue.text);
+    //       print(oldValue.text.substring(atIndex, startIndex));
+    //       atSearchStr = oldValue.text.substring(atIndex, startIndex);
+    //     }
+    //     print("2");
+    //     if (topicIndex > 0 && startIndex + 1 > topicIndex) {
+    //       topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
+    //     }
+    //   }
+    // });
     print("3");
 
     bool isRule = false;
