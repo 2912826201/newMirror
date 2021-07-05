@@ -1,4 +1,5 @@
 //  点赞，转发，评论三连区域
+import 'package:animated_digit/animated_digit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,11 +49,18 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 是否可分享
   bool isShare = true;
 
+  // 数字动画控制器
+  AnimatedDigitController animatedDigitController;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     myId = context.read<ProfileNotifier>().profile.uid;
+    new Future.delayed( Duration.zero, () {
+      animatedDigitController = AnimatedDigitController(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].laudCount);
+    });
+    //
   }
 
   @override
@@ -108,7 +116,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             const Spacer(),
             // 横排三连布局
             Container(
-              width: Application.slideBanner2Dor3D ? 108 : 104,
+              width: Application.slideFeedLike ? 108 : 104,
               margin: const EdgeInsets.only(right: 16),
               child: roundedTriple(),
             )
@@ -234,6 +242,48 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
     AppRouter.navigateToLikePage(context, widget.model);
   }
 
+  // 点赞动画
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    print("isLiked::::::$isLiked");
+    bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    print("000000000000000000");
+    if (isLoggedIn) {
+      print("11111111111111111");
+      if (isSetUpLuad) {
+        print("22222222222");
+        isSetUpLuad = false;
+        BaseResponseModel model = await laud(
+            id: widget.model.id,
+            laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+        if (model != null) {
+          if (model.code == CODE_BLACKED) {
+            ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+            isSetUpLuad = true;
+          } else {
+            print("进了！！！！！！！！！！！");
+            context.read<FeedMapNotifier>().setLaud(
+                context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0,
+                context.read<ProfileNotifier>().profile.avatarUri,
+                widget.model.id);
+            // model
+            context.read<UserInteractiveNotifier>().laudedChange(
+                widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+            isSetUpLuad = true;
+            if(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ) {
+              animatedDigitController.addValue(1);
+            } else {
+              animatedDigitController.resetValue(context.read<FeedMapNotifier>().value.feedMap[widget.model.id].laudCount);
+            }
+            return !isLiked;
+          }
+        }
+      }
+    } else {
+      // 去登录
+      AppRouter.navigateToLoginPage(context);
+    }
+  }
+
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -294,6 +344,8 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
 
   // 横排
   roundedLikeNum(BuildContext context) {
+    // AnimatedDigitController
+
     return GestureDetector(
       onTap: () {
         jumpLike(context);
@@ -303,7 +355,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           child: Offstage(
         offstage: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].laudCount) == null,
         child: //用Selector的方式监听数据
-            Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
+        // AnimatedDigitWidget(
+        //   controller: animatedDigitController,
+        //   textStyle: TextStyle(fontSize: 12),
+        // ),
+        Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
             "${StringUtil.getNumber(laudCount)}次赞",
             style: const TextStyle(fontSize: 12),
@@ -319,7 +375,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   roundedTriple() {
     return Row(
       children: [
-        Application.slideBanner2Dor3D
+        Application.slideFeedLike
             ? Container(
                 height: 24,
                 child: LikeButton(
@@ -338,10 +394,15 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                             containerWidth: 24,
                           );
                   },
+                  isLiked: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                          context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                          context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                              null &&
+                          context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                      ? true
+                      : false,
                   size: 24,
-                  // onTap: (bool isLike) {
-                  //   setUpLuad();
-                  // },
+                  onTap: onLikeButtonTapped,
                 ),
               )
             : AppIconButton(

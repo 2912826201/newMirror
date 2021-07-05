@@ -181,9 +181,10 @@ dependencies:
   interactiveviewer_gallery: any
   # 分帧加载
   keframe: ^2.0.1
-  #直定义动效系列
+  # 自定义动效系列
   cube_transition: ^1.0.2
   like_button: ^2.0.2
+  animated_digit: ^2.0.2
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
   #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。
