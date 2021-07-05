@@ -257,7 +257,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             child: Stack(
                               children: [
                                 // 背景颜色
-                              Application.slideBanner2Dor3D ?  ClipPath(
+                              Application.slideTopicBezierCurve ?  ClipPath(
                                   //路径裁切组件
                                   clipper: BottomClipper(), //路径
                                   child: Container(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/feed/ui_Control_Page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -57,11 +58,18 @@ class _AboutPageState extends State<AboutPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Spacer(),
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage("images/test/ic_launcher.png"), fit: BoxFit.cover),
+                    GestureDetector(
+                      onDoubleTap: () {
+                        Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                            return UiControllerPage();
+                        }));
+                      },
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: AssetImage("images/test/ic_launcher.png"), fit: BoxFit.cover),
+                        ),
                       ),
                     ),
                     SizedBox(

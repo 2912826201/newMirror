@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -24,7 +25,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
   bool isInit = false;
 
   @override
-  void initState() async {
+  void initState() {
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
     Application.ifPageController = _controller;
@@ -32,14 +33,18 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     super.initState();
     //初始化
     WidgetsBinding.instance.addObserver(this);
+    //Fixme ifpage会重构两次 ，会走两次initState
+    _getNotificationStatus();
+  }
 
+  _getNotificationStatus() async {
     // Android申请通知权限
     if (Application.platform == 0) {
       // 检查是否已有通知的权限
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
       //判断如果还没拥有通知权限就申请获取权限
-      if (!status) {
+      if (!status&&AppPrefs.isFirstGetNotification()) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           //请求通知权限
           showAppDialog(
@@ -56,6 +61,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             }),
           );
         });
+        AppPrefs.setFristGetNotification(false);
       }
     }
   }
