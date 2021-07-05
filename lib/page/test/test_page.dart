@@ -405,9 +405,9 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               RaisedButton(
                 onPressed: () {
                   Application.slideBanner2Dor3D = !Application.slideBanner2Dor3D;
-                  ToastShow.show(msg: Application.slideBanner2Dor3D ? "切换为3D" : "切换为2D", context: context);
+                  ToastShow.show(msg: Application.slideBanner2Dor3D ? "轮播图切换为3D，话题详情页贝塞尔曲线" : "轮播图切换为2D，话题详情页取消贝塞尔曲线", context: context);
                 },
-                child: Text("3D"),
+                child: Text("直定义UI布局"),
               ),
               Container(
                 color: AppColor.mainRed,
