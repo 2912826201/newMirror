@@ -20,6 +20,7 @@ import 'package:mirror/page/test/qiniu_test_page.dart';
 import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -522,6 +523,12 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     }));
                   },
                   child: Text("ListView性能测试")),
+              RaisedButton(
+                  onPressed: () async {
+                    print("判断手机厂商:${await CheckPhoneSystemUtil.init().getPhoneSystem()}");
+                    print("是不是华为手机:${await CheckPhoneSystemUtil.init().isEmui()}");
+                  },
+                  child: Text("判断手机厂商")),
             ],
           ),
         ),

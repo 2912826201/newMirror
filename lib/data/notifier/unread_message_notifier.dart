@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/util/event_bus.dart';
 
 /// unread_message_notifier
 /// Created by yangjiayi on 2021/1/27.
@@ -50,6 +51,7 @@ class UnreadMessageNotifier extends ChangeNotifier {
       }
     }
     if(needChange){
+      EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
       notifyListeners();
     }
   }

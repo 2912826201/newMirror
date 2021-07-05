@@ -254,9 +254,7 @@ class _IFTabBarState extends State<IFTabBar> {
     Future.delayed(Duration(milliseconds: 200), () {
       if (mounted) {
         setState(() {
-          int number = MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber;
-          BadgerUtil.init().updateBadgeCount(number);
-          AppPrefs.setFlutterAppBadgerCount(number);
+          BadgerUtil.init().setBadgeCount();
         });
       }
     });

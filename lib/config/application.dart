@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/topic/topic_background_config.dart';
@@ -74,6 +75,8 @@ class Application {
   static String loginPopRouteName;
 
   static Dio dio;
+
+  static JPush jpush;
 
   //键盘的高度
   static double keyboardHeightIfPage = 0;
