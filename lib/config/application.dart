@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/topic/topic_background_config.dart';
@@ -75,6 +76,8 @@ class Application {
 
   static Dio dio;
 
+  static JPush jpush;
+
   //键盘的高度
   static double keyboardHeightIfPage = 0;
   static double keyboardHeightChatPage = 0;
@@ -93,9 +96,6 @@ class Application {
 
   //app的页面导航key
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-  //系统平台 0-android 1-ios
-  static int platform;
 
   static int openAppTime = 0;
 

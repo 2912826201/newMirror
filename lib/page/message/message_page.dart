@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -13,6 +14,8 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/badger_util.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -430,7 +433,7 @@ class MessageState extends State<MessagePage>
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
     if (conversation.type == PRIVATE_TYPE || conversation.type == GROUP_TYPE) {
-      if (Application.platform == 0) {
+      if (CheckPhoneSystemUtil.init().isAndroid()) {
         return SizeTransitionView(
             id: int.parse(conversation.conversationId),
             animationMap: animationMap,

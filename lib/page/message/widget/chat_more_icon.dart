@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
@@ -40,8 +41,9 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
   }
 
   _resetMoreBtn(bool isVoiceState) {
-    bool isShowSubmitBtn=StringUtil.strNoEmpty(widget.textController.text) && Application.platform == 0&&!isVoiceState;
-    if(isShowSubmitBtn==isComMomButton){
+    bool isShowSubmitBtn =
+        StringUtil.strNoEmpty(widget.textController.text) && CheckPhoneSystemUtil.init().isAndroid() && !isVoiceState;
+    if (isShowSubmitBtn == isComMomButton) {
       return;
     }
     isComMomButton = isShowSubmitBtn;

@@ -24,6 +24,7 @@ import 'package:mirror/page/training/live_broadcast/live_room_video_operation_pa
 import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -314,7 +315,7 @@ class AppRouter {
     if (startPage == startPageGallery) {
       PermissionStatus status;
       //安卓和iOS的权限不一样
-      if (Application.platform == 0) {
+      if (CheckPhoneSystemUtil.init().isAndroid()) {
         status = await Permission.storage.status;
       } else {
         status = await Permission.photos.status;
@@ -322,7 +323,7 @@ class AppRouter {
 
       if (status.isDenied) {
         //undetermined在新版中被移除了 合并进了denied 这种情况下可以通过请求弹窗获取权限
-        if (Application.platform == 0) {
+        if (CheckPhoneSystemUtil.init().isAndroid()) {
           await Permission.storage.request();
         } else {
           await Permission.photos.request();
@@ -333,7 +334,7 @@ class AppRouter {
         //安卓的拒绝不再提示 iOS的拒绝授权 直接进 在里面点去授权
       } else {
         //其他情况 尝试请求 无需处理结果 都在里面做后续处理
-        if (Application.platform == 0) {
+        if (CheckPhoneSystemUtil.init().isAndroid()) {
           await Permission.storage.request();
         } else {
           await Permission.photos.request();

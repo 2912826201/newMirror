@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.aimymusic.mirror.method.AppBadgerMethodCallHandlerImpl
 import com.aimymusic.mirror.method.OnMethodCallListener
+import com.aimymusic.mirror.method.SystemMethodCallHandlerImpl
 import com.aimymusic.mirror.util.BadgeUtil
 import com.aimymusic.mirror.util.RomUtil
 import com.umeng.analytics.MobclickAgent
@@ -86,6 +87,8 @@ class MainActivity : FlutterActivity(){
         GeneratedPluginRegistrant.registerWith(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AppBadgerMethodCallHandlerImpl.badgerChannel)
                 .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context))
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SystemMethodCallHandlerImpl.badgerChannel)
+                .setMethodCallHandler(SystemMethodCallHandlerImpl(context))
     }
 
 

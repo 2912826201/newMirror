@@ -239,7 +239,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
   Widget _showDialog() {
     return showAppDialog(context,
         title: "获取系统通知设置",
-        info: "第一时间获取评论,私信,@,等消息通知",
+        info: "第一时间获取评论,私信,@我等信息通知",
         cancel: AppDialogButton("取消", () {
           return true;
         }),

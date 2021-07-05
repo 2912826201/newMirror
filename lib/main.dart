@@ -32,6 +32,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/util/badger_util.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
@@ -149,7 +150,7 @@ Future _initApp() async {
   });
 
   //获取操作系统
-  Application.platform = Platform.isAndroid
+  CheckPhoneSystemUtil.platform = Platform.isAndroid
       ? 0
       : Platform.isIOS
           ? 1
@@ -158,7 +159,7 @@ Future _initApp() async {
   Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
   // 申请通知权限 iOS在此处处理 Android要APP自己写弹窗所以放在IfPage中
-  if (Application.platform == 1) {
+  if (CheckPhoneSystemUtil.init().isIos()) {
     // 检查是否已有通知的权限
     PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
     bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
@@ -204,7 +205,8 @@ Future _initApp() async {
   // );
 
   //初始化极光推送
-  JPush jpush = _initJPush();
+  // JPush jpush = _initJPush();
+  Application.jpush = _initJPush();
 
   MessageManager.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
@@ -288,7 +290,7 @@ Future _initApp() async {
   //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
   if (Application.token.anonymous == 0) {
     //上报极光推送RegistrationID
-    jpush.getRegistrationID().then((rid) {
+    Application.jpush.getRegistrationID().then((rid) {
       uploadDeviceId(rid);
     });
     //todo 获取登录的机器信息
@@ -351,18 +353,17 @@ _initJPush() {
       print("main flutter onReceiveNotification2: ${mapModel["redirectUri"]}");
       int notificationId = message["extras"]["cn.jpush.android.NOTIFICATION_ID"];
       //fixme 等待接通厂商通道后测试杀掉app会不会走这里
-      if (!Application.isBackGround) {
+      if (!Application.isBackGround && CheckPhoneSystemUtil.init().isAndroid()) {
         jpush.clearNotification(notificationId: notificationId);
       }
-      if (message["alert"] != null && message["alert"].toString().contains("撤回了一条消息")) {
-        return;
+      if (await CheckPhoneSystemUtil.init().isHuawei()) {
+        //判断是不是华为手机
+        BadgerUtil.init().setBadgeCount();
       }
-      //fixme app外部icon 上的小红点 等待需求
-      if (Application.platform == 0) {
-        int flutterAppBadgerCount = AppPrefs.getFlutterAppBadgerCount();
-        BadgerUtil.init().updateBadgeCount(flutterAppBadgerCount + 1);
-        AppPrefs.setFlutterAppBadgerCount(flutterAppBadgerCount + 1);
-      }
+
+      // if (message["alert"] != null && message["alert"].toString().contains("撤回了一条消息")) {
+      //   return;
+      // }
     },
     // 点击通知回调方法。
     onOpenNotification: (Map<String, dynamic> message) async {

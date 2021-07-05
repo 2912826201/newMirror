@@ -1,5 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
+import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class BadgerUtil {
@@ -20,12 +23,16 @@ class BadgerUtil {
   }
 
   //更新显示个数
-  updateBadgeCount(int badgeCount) {
-    if (Application.platform == 0) {
-      Permission.notification.request().then((value) {
+  updateBadgeCount(int badgeCount) async {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
+      Permission.notification.request().then((value) async {
         if (value.isGranted) {
-          print("有通知权限");
-          _channel.invokeMethod('updateBadgeCount', badgeCount);
+          if (await CheckPhoneSystemUtil.init().isHuawei()) {
+            //判断是不是华为手机
+            Application.jpush.setBadge(badgeCount);
+          } else {
+            _channel.invokeMethod('updateBadgeCount', badgeCount);
+          }
         } else if (value.isPermanentlyDenied) {
           print("没有通知权限");
         }
@@ -35,16 +42,22 @@ class BadgerUtil {
 
   //移除个数
   removeBadge() {
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       _channel.invokeMethod('removeBadge');
     }
   }
 
   //判断是不是支持设置badger
   Future<bool> isAppBadgeSupported() async {
-    if (Application.platform == 0) {
+    if (CheckPhoneSystemUtil.init().isAndroid()) {
       bool appBadgeSupported = await _channel.invokeMethod('isAppBadgeSupported');
       return appBadgeSupported ?? false;
     }
+  }
+
+  setBadgeCount() {
+    int number = MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber;
+    updateBadgeCount(number);
+    AppPrefs.setFlutterAppBadgerCount(number);
   }
 }

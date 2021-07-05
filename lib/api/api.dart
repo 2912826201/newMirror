@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import '../config/config.dart';
@@ -186,7 +187,7 @@ Dio _getDioGetInstance() {
 void _setHeaders(int authType, Dio dio) {
   //TODO 渠道号暂时写死
   dio.options.headers["aimy-drivers"] =
-      "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":${AppConfig.channelCode}}";
+      "{\"os\":${CheckPhoneSystemUtil.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":${AppConfig.channelCode}}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;
   switch (authType) {

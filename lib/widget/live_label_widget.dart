@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 
 class LiveLabelWidget extends StatelessWidget {
   // 是否需要白边
@@ -40,9 +41,9 @@ class LiveLabelWidget extends StatelessWidget {
           ),
           //NOTE Android上垂直居中会偏上一点。。。所以单独处理一下 加个margin
           Container(
-            height: Application.platform == 0 ? 15 : 16,
+            height: CheckPhoneSystemUtil.init().isAndroid() ? 15 : 16,
             alignment: Alignment.center,
-            margin: EdgeInsets.only(top: Application.platform == 0 ? 1 : 0),
+            margin: EdgeInsets.only(top: CheckPhoneSystemUtil.init().isAndroid() ? 1 : 0),
             child: Text(
               "LIVE",
               style: TextStyle(
