@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
@@ -31,7 +30,7 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
+import 'chat_page_util.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -42,8 +41,8 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-import 'more_page/group_more_page.dart';
-import 'more_page/private_more_page.dart';
+import '../more_page/group_more_page.dart';
+import '../more_page/private_more_page.dart';
 
 ///几乎所有的消息发送添加转发页
 
@@ -184,6 +183,9 @@ void _jumpChatPage(
     systemLastTime = list[1];
     systemPage = list[2];
     print("chatDataModelList:${chatDataModelList.length}");
+  }
+  if (AppRouter.isHaveChatPage()) {
+    Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
   }
   AppRouter.navigateToChatPage(
     context: context,
@@ -502,14 +504,27 @@ void getReChatDataModel(
 
 //封装时间戳
 Message getAlertTimeMsg({int time, int sendTime, String targetId, int conversationType}) {
+  return getTemporaryMsg(
+    text: time.toString(),
+    sendTime: sendTime,
+    targetId: targetId,
+    conversationType: RCConversationType.Private,
+    subObjectName: ChatTypeModel.MESSAGE_TYPE_ALERT_TIME,
+    name: ChatTypeModel.MESSAGE_TYPE_ALERT_TIME_NAME,
+  );
+}
+
+//封装message临时
+Message getTemporaryMsg(
+    {String text, int sendTime, String targetId, int conversationType, String subObjectName, String name}) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> timeMap = Map();
   timeMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   timeMap["toUserId"] = targetId;
-  timeMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
-  timeMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_TIME_NAME;
-  timeMap["data"] = time.toString();
+  timeMap["subObjectName"] = subObjectName;
+  timeMap["name"] = name;
+  timeMap["data"] = text;
   msg.content = jsonEncode(timeMap);
   Message message = new Message();
   message.content = msg;

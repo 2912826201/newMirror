@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
@@ -32,7 +33,7 @@ import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
+import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -41,9 +42,9 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/message/item/chat_bottom_Setting_box.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/message/widget/chat_bottom_Setting_box.dart';
+import 'util/chat_page_util.dart';
+import 'util/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -58,15 +59,15 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
-import 'item/chat_at_user_name_list.dart';
-import 'item/chat_more_icon.dart';
-import 'item/message_body_input.dart';
-import 'item/message_input_bar.dart';
+import 'widget/chat_at_user_name_list.dart';
+import 'widget/chat_more_icon.dart';
+import 'widget/message_body_input.dart';
+import 'widget/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 
-import 'item/message_item_gallery_util.dart';
-import 'item/message_item_height_util.dart';
+import 'util/message_item_gallery_util.dart';
+import 'util/message_item_height_util.dart';
 
 ////////////////////////////////
 //
@@ -80,7 +81,6 @@ class ChatPage extends StatefulWidget {
   final BuildContext context;
   final List<ChatDataModel> chatDataList;
   final int systemPage;
-  final int unreadCount;
   final String systemLastTime;
   final String textContent;
 
@@ -90,7 +90,6 @@ class ChatPage extends StatefulWidget {
       this.shareMessage,
       this.chatDataList,
       this.textContent,
-      this.unreadCount = 0,
       this.systemLastTime,
       this.systemPage,
       this.context})
@@ -107,9 +106,7 @@ class ChatPage extends StatefulWidget {
       systemLastTime,
       systemPage,
       chatDataList,
-      textContent,
-      unreadCount,
-    );
+        textContent);
   }
 }
 
@@ -124,8 +121,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   String systemLastTime;
   String textContent;
   int systemPage = 0;
-  int unreadCount;
-  int unreadCountNew;
+  bool isAddUnreadCountAlertMsg = false;
 
   ChatPageState(
     this.conversation,
@@ -135,7 +131,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     this.systemPage,
     this.chatDataList,
     this.textContent,
-    this.unreadCount,
   );
 
   //新消息大于多少个数量展示未读消息
@@ -229,12 +224,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     super.initState();
     //print("ChatPage-initState");
 
-    // unreadCount=46;
-    unreadCountNew = unreadCount;
-
     WidgetsBinding.instance.addObserver(this);
 
-    context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
+    ChatMessageProfileUtil.init().setData(conversation, isSetUnreadCount: true);
 
     if (conversation.getType() == RCConversationType.Group) {
       EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
@@ -265,9 +257,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     //print("conversation.getType(), conversation.conversationId:${conversation.getType()},${conversation.conversationId}");
-    isNewSourceList=true;
+    isNewSourceList = true;
     sourceList.clear();
-    context.read<ChatMessageProfileNotifier>().setData(conversation.getType(), conversation.conversationId);
+    ChatMessageProfileUtil.init().setData(conversation);
   }
 
   @override
@@ -326,7 +318,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     _messageInputBodyClick();
     _scrollController.dispose();
     streamEditWidget.close();
-    context.read<ChatMessageProfileNotifier>().setData(0, "");
+    ChatMessageProfileUtil.init().clear();
     if (atMeMsg != null) {
       MessageManager.atMesGroupModel.remove(atMeMsg);
       ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -365,13 +357,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     bool isShowName = conversation.getType() == RCConversationType.Group;
     bool isPersonalButler = false;
     //todo 单独展示底部选着面板的id-1002885-1008051
-    if (conversation.type == PRIVATE_TYPE && conversation.uid == coachIsAccountId) {
+    if (conversation.type == PRIVATE_TYPE && conversation.uid == coachAccountId) {
       isPersonalButler = true;
     }
 
     if (isHaveAtMeMsg) {
-      unreadCount = 0;
-      unreadCountNew = 0;
+      ChatMessageProfileUtil.unreadCount = 0;
+      ChatMessageProfileUtil.unreadCountNew = 0;
     }
     print("getChatDetailsBody:${chatDataList.length}");
 
@@ -388,7 +380,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       isPersonalButler: isPersonalButler,
       isHaveAtMeMsg: isHaveAtMeMsg,
       loadStatus: loadStatus,
-      newMsgCount: unreadCount >= newMsgCountThanShow ? unreadCount : 0,
+      newMsgCount: ChatMessageProfileUtil.unreadCount >= newMsgCountThanShow ? ChatMessageProfileUtil.unreadCount : 0,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       onNewMsgClickListener: onNewMsgClickListener,
@@ -666,12 +658,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //检查是否到达新消息的位置
   void checkArrivalsNewMsgPosition() {
     //当未读数大于0时
-    if (unreadCountNew > 0) {
-      if (unreadCountNew < lastIndex) {
-        unreadCount = 0;
-        unreadCountNew = 0;
-        setUnreadCount(unreadCount);
-        print("unreadCount:$unreadCount,lastIndex:$lastIndex");
+    if (ChatMessageProfileUtil.unreadCountNew > 0 && ChatMessageProfileUtil.unreadCount > 0) {
+      if (ChatMessageProfileUtil.unreadCountNew < lastIndex) {
+        ChatMessageProfileUtil.unreadCount = 0;
+        ChatMessageProfileUtil.unreadCountNew = 0;
+        setUnreadCount(ChatMessageProfileUtil.unreadCount);
+        print("unreadCount:$ChatMessageProfileUtil.unreadCount,lastIndex:$lastIndex");
         return;
       }
     }
@@ -726,7 +718,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           }
 
           if (dataList != null && dataList.length > 0) {
-            ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
+            ChatPageUtil.init(context).setTimeAlert(dataList, conversation.conversationId);
             //print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
             if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
               chatDataList.removeAt(chatDataList.length - 1);
@@ -774,8 +766,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //点击了有新消息的标识
   void onNewMsgClickListener() {
-    if (unreadCountNew < chatDataList.length) {
-      _animateToIndex(index: unreadCountNew);
+    if (ChatMessageProfileUtil.unreadCountNew < chatDataList.length) {
+      _animateToIndex(index: ChatMessageProfileUtil.unreadCountNew);
     } else {
       ChatPageUtil.init(context).onLoadMoreHistoryMessages(
         chatDataList, conversation,
@@ -786,13 +778,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             loadStatus = LoadingStatus.STATUS_COMPLETED;
           }
           chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+          judgeIsAddUnreadCountAlertMsg();
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           Future.delayed(Duration(milliseconds: 300), () {
             print("开始滚动，列表内有：${chatDataList.length}");
             _animateToIndex();
           });
         },
-        loadMsgCount: unreadCountNew - chatDataList.length + 2,
+        loadMsgCount: ChatMessageProfileUtil.unreadCountNew - chatDataList.length + 2,
         // }, loadMsgCount: newMsgCountThanShow,
       );
     }
@@ -903,8 +896,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     //未读消息的跳转数目加1
-    if (unreadCountNew > 0) {
-      unreadCountNew++;
+    if (ChatMessageProfileUtil.unreadCountNew > 0) {
+      ChatMessageProfileUtil.unreadCountNew++;
     }
 
     //print("chatDataList[0]:${chatDataList[0]}");
@@ -965,8 +958,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     //未读消息的跳转数目加modelList.length
-    if (unreadCountNew > 0) {
-      unreadCountNew += modelList.length;
+    if (ChatMessageProfileUtil.unreadCountNew > 0) {
+      ChatMessageProfileUtil.unreadCountNew += modelList.length;
     }
 
     postImgOrVideo(modelList, conversation.conversationId, selectedMediaFiles.type, conversation.getType(),
@@ -1016,8 +1009,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     //未读消息的跳转数目加1
-    if (unreadCountNew > 0) {
-      unreadCountNew++;
+    if (ChatMessageProfileUtil.unreadCountNew > 0) {
+      ChatMessageProfileUtil.unreadCountNew++;
     }
     // //print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
     postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
@@ -1396,8 +1389,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     } else {
       //未读消息的跳转数目加1
-      if (unreadCountNew > 0) {
-        unreadCountNew++;
+      if (ChatMessageProfileUtil.unreadCountNew > 0) {
+        ChatMessageProfileUtil.unreadCountNew++;
       }
     }
     //清聊天未读数
@@ -1640,15 +1633,14 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //滚动到聊天界面的顶部
   void _animateToIndex({int index}) async {
-    _scrollController.scrollToIndex(index ?? chatDataList.length - 1, preferPosition: AutoScrollPosition.middle);
+    _scrollController.scrollToIndex(index ?? chatDataList.length - 1,
+        duration: Duration(milliseconds: getMilliseconds(index ?? chatDataList.length - 1)),
+        preferPosition: AutoScrollPosition.middle);
   }
 
-  // double getMilliseconds(double scrollMaxHeight) {
-  //   int millisecond = 400;
-  //   double pixels = _scrollController.position.pixels;
-  //   double height = MediaQuery.of(context).size.height;
-  //   return (((scrollMaxHeight - pixels) / height) + 1) * millisecond;
-  // }
+  int getMilliseconds(int scrollIndex) {
+    return (((max(0, scrollIndex - lastIndex)) / chatAddHistoryMessageCount + 1) * 400).toInt();
+  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -1889,7 +1881,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
-    // _animateToTop();
+    // _animateToIndex();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
@@ -2086,7 +2078,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     isnRefreshSystemInformationIng = true;
     List<ChatDataModel> dataList = await getSystemInformationNet();
     if (dataList != null && dataList.length > 0) {
-      ChatPageUtil.init(context).getTimeAlert(dataList, conversation.conversationId);
+      ChatPageUtil.init(context).setTimeAlert(dataList, conversation.conversationId);
       if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
         chatDataList.removeAt(chatDataList.length - 1);
       }
@@ -2113,29 +2105,39 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     ChatPageUtil.init(context).onLoadMoreHistoryMessages(
       chatDataList, conversation,
       (bool isHaveMore){
-        if(isHaveMore){
-          //判断有没有艾特我的消息
-          if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
-            judgeNowChatIsHaveAt();
-          }
-          loadStatus = LoadingStatus.STATUS_IDEL;
-        }else{
+          if (isHaveMore) {
+        //判断有没有艾特我的消息
+        if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
+          judgeNowChatIsHaveAt();
+        }
+        loadStatus = LoadingStatus.STATUS_IDEL;
+      } else {
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
-        chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
+      judgeIsAddUnreadCountAlertMsg();
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    });
+  }
+
+  void judgeIsAddUnreadCountAlertMsg() {
+    if (ChatMessageProfileUtil.unreadCountNew > 0 && !isAddUnreadCountAlertMsg) {
+      if (ChatMessageProfileUtil.unreadCountNew <= chatDataList.length) {
+        ChatPageUtil.init(context)
+            .addNewAlertMsg(chatDataList, ChatMessageProfileUtil.unreadCountNew, conversation.conversationId);
+        isAddUnreadCountAlertMsg = true;
       }
-    );
+    }
   }
 
   //取消长按界面
 
   void Function() removeLongPanelCall;
 
-  void _setCallRemoveLongPanel(void Function() call,String longClickString) {
+  void _setCallRemoveLongPanel(void Function() call, String longClickString) {
     // print("111111longClickString:$longClickString");
-    if(removeLongPanelCall!=null&&
-        longClickString!=null&&
+    if (removeLongPanelCall != null &&
+        longClickString != null &&
         longClickString!=""&&
         !longClickString.contains("撤回")){
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);

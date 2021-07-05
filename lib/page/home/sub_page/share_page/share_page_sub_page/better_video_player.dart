@@ -18,6 +18,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -58,7 +59,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
   int firstTapTimep;
-
+  bool isExposure = false;
   @override
   void initState() {
     super.initState();
@@ -82,6 +83,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
          }
           break;
         default:
+          // ToastShow.show(msg: "初始化失败", context: context);
           break;
       }
     };
@@ -122,6 +124,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
       controller?.setVolume(0);
     }
     Application.feedVideoControllerList.add(controller.hashCode);
+    Application.feedVideoControllerLists.add(controller);
+    Application.feedVideoTimeList.add(DateUtil.generateFormatDate(widget.feedModel.createTime, false));
     if (mounted) {
       setState(() {});
     }
@@ -159,6 +163,8 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   // 移除控制器标识
   deletedControllerContrastValue(){
    Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
+   Application.feedVideoControllerLists.removeWhere((v) => v == controller);
+   Application.feedVideoTimeList.removeWhere((element) => element ==  DateUtil.generateFormatDate(widget.feedModel.createTime, false));
   }
   // 点赞
   setUpLuad() async {
@@ -191,28 +197,48 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   Widget build(BuildContext context) {
     return VideoExposure(
         key: Key("${widget.feedModel.createTime}_key"),
-        onVisibilityChanged: (info) {
+        onVisibilityChanged: (info) async {
           print("visibilityInfo:::::::::::${info.visibleFraction}");
-          if (info.visibleFraction >= 0.6) {
+          if (info.visibleFraction >= 0.5) {
             if (controller == null) {
-              init();
+              await init();
             }
             if(controller != null && !Application.feedVideoControllerList.contains(controller.hashCode)) {
               Application.feedVideoControllerList.add(controller.hashCode);
+              Application.feedVideoControllerLists.add(controller);
+              Application.feedVideoTimeList.add(DateUtil.generateFormatDate(widget.feedModel.createTime, false));
             }
-            if (!controller.isPlaying()) {
-              if(Application.feedVideoControllerList.first == controller.hashCode) {
-                controller.play();
-              }
+            if(Application.feedVideoControllerList.first == controller.hashCode) {
+              controller.play();
+              print("视频时长：：：${widget.durationString}");
+              print("查看时间更直观：：：：${DateUtil.generateFormatDate(widget.feedModel.createTime, false)}");
             }
-          } else if (info.visibleFraction < 0.6 && info.visibleFraction >= 0.0) {
+            Application.feedVideoControllerList.forEach((element) {
+              print(element);
+            });
+            print('当前控制器：：：${controller.hashCode}');
+            // if (!controller.isPlaying()) {
+
+            // }
+          } else if (info.visibleFraction < 0.5 && info.visibleFraction >= 0.0) {
             deletedControllerContrastValue();
             print("!!!!!!!!!!!!!!!!!!!!!!!");
+            Application.feedVideoControllerList.forEach((element) {
+              print(element);
+            });
+            if(Application.feedVideoControllerLists.length == 1){
+              Application.feedVideoControllerLists.first.play();
+            }
+            print('当前控制器：：：${controller.hashCode}');
             if (controller != null && controller.isPlaying()) {
               controller.pause();
+              isExposure = false;
             }
           }
           print("控制器长度：：：：${Application.feedVideoControllerList.length}");
+          Application.feedVideoTimeList.forEach((element) {
+            print("控制器存在的动态时间：：：：$element");
+          });
         },
         child: controller == null
             ? Container(

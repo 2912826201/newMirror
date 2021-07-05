@@ -14,7 +14,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
-import '../item/currency_msg.dart';
+import 'package:mirror/page/message/widget/currency_msg.dart';
 
 class AlertMsg extends StatefulWidget {
   final RecallNotificationMessage recallNotificationMessage;

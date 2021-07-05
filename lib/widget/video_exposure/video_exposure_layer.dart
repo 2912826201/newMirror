@@ -177,7 +177,7 @@ class VideoExposureLayer extends ContainerLayer {
           VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
       layer._fireCallback(info);
     }
-    _updated.clear();
+    // _updated.clear();
   }
 
   /// Invokes the visibility callback if [VisibilityInfo] hasn't meaningfully

@@ -417,7 +417,6 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
       systemPage: data["systemPage"],
       systemLastTime: data["systemLastTime"],
       textContent: data["textContent"],
-      unreadCount: data["unreadCount"],
       conversation: conversation,
       shareMessage: shareMessage,
       chatDataList: MessageManager.chatDataList,

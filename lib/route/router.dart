@@ -327,12 +327,12 @@ class AppRouter {
         } else {
           await Permission.photos.request();
         }
-      } else if (status.isGranted) {
-        //已授权直接进
+      } else if (status.isGranted || status.isLimited) {
+        //已授权直接进(iOS有给部分照片权限的选项，视为已授权)
       } else if (status.isPermanentlyDenied) {
-        //安卓的拒绝不再提示也直接进 在里面点去授权
+        //安卓的拒绝不再提示 iOS的拒绝授权 直接进 在里面点去授权
       } else {
-        //其他情况 尝试请求
+        //其他情况 尝试请求 无需处理结果 都在里面做后续处理
         if (Application.platform == 0) {
           await Permission.storage.request();
         } else {
@@ -667,7 +667,6 @@ class AppRouter {
     map["systemPage"] = systemPage;
     map["systemLastTime"] = systemLastTime;
     map["textContent"] = textContent;
-    map["unreadCount"] = unreadCount;
     RuntimeProperties.shareMessage = shareMessage;
     MessageManager.chatDataList.clear();
     MessageManager.chatDataList.addAll(chatDataModelList);
@@ -992,6 +991,18 @@ class AppRouter {
     try {
       for (String element in Application.pagePopRouterName) {
         if (element.contains(pathNewUserPromotionPage)) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  //判断打开聊天界面没有
+  static bool isHaveChatPage() {
+    try {
+      for (String element in Application.pagePopRouterName) {
+        if (element.contains(pathChatPage)) {
           return true;
         }
       }

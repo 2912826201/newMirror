@@ -11,7 +11,7 @@ import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
+import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -118,9 +118,9 @@ class MessageManager {
       } else {
         //将旧数据的创建时间赋值过来
         dto.createTime = exist.createTime;
+
         //将未读数累加
-        if (Application.appContext.read<ChatMessageProfileNotifier>() != null &&
-            Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)) {
+        if (ChatMessageProfileUtil.init().isCurrentChatGroupId(msg)) {
           dto.unreadCount = 0;
         } else {
           dto.unreadCount += exist.unreadCount;
@@ -278,8 +278,7 @@ class MessageManager {
         msg.receivedStatus != RCReceivedStatus.Unread) {
       dto.unreadCount = 0;
     } else {
-      if (Application.appContext.read<ChatMessageProfileNotifier>() != null &&
-          Application.appContext.read<ChatMessageProfileNotifier>().isCurrentChatGroupId(msg)) {
+      if (ChatMessageProfileUtil.init().isCurrentChatGroupId(msg)) {
         dto.unreadCount = 0;
       } else {
         if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
@@ -307,7 +306,7 @@ class MessageManager {
 
   //判断有没有at我的消息
   static void judgeIsHaveAtUserMes(Message msg) {
-    Application.appContext.read<ChatMessageProfileNotifier>().judgeIsHaveAtUserMsg(msg);
+    ChatMessageProfileUtil.init().judgeIsHaveAtUserMsg(msg);
   }
 
   //判断是不是群聊的消息-更新群成员的信息
@@ -350,7 +349,7 @@ class MessageManager {
       switch (dataMap["subType"]) {
         case 0:
           //0-加入群聊
-          Application.appContext.read<ChatMessageProfileNotifier>().entryGroup(message);
+          ChatMessageProfileUtil.init().entryGroup(message);
           break;
         case 1:
           //1-退出群聊
@@ -361,7 +360,7 @@ class MessageManager {
         case 2:
           //2-移除群聊
           print("22222移除群聊");
-          Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
+          ChatMessageProfileUtil.init().removeGroup(message);
 
           //判断是不是群通知-移除群成员的消息
           GroupChatUserInformationDBHelper().removeMessageGroup(message);

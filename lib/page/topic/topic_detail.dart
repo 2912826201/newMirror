@@ -62,8 +62,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   double headSlideHeight;
 
   TopicDtoModel model;
+
   // tabBar渐隐渐显控制器
   StreamController<TopicUiChangeModel> appBarStreamController = StreamController<TopicUiChangeModel>();
+
   // 遮挡层显示控制器
   StreamController<bool> occlusionLayerStreamController = StreamController<bool>();
   bool streamCanChange = false;
@@ -208,8 +210,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 头部高度
   sliverAppBarHeight() {
-    // UI图原始高度
-    double height = 109.0 + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
+    double height = 109.0  + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
     if (model.description != null) {
       //加上文字高度
       height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
@@ -256,15 +257,27 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             child: Stack(
                               children: [
                                 // 背景颜色
-                                Container(
-                                  height: 84 + ScreenUtil.instance.statusBarHeight,
-                                  width: ScreenUtil.instance.width,
-                                  color: getBackgroundColor(),
-                                  child: Image.asset(
-                                    backgroundImages[model.patternId],
-                                    fit: BoxFit.cover,
+                              Application.slideBanner2Dor3D ?  ClipPath(
+                                  //路径裁切组件
+                                  clipper: BottomClipper(), //路径
+                                  child: Container(
+                                    height: 114 + ScreenUtil.instance.statusBarHeight,
+                                    width: ScreenUtil.instance.width,
+                                    color: getBackgroundColor(),
+                                    child: Image.asset(
+                                      backgroundImages[model.patternId],
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
+                                ) : Container(
+                                height: 84 + ScreenUtil.instance.statusBarHeight,
+                                width: ScreenUtil.instance.width,
+                                color: getBackgroundColor(),
+                                child: Image.asset(
+                                  backgroundImages[model.patternId],
+                                  fit: BoxFit.cover,
                                 ),
+                              ),
                                 // 头像
                                 Positioned(
                                     left: 14,
@@ -370,6 +383,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                     ? Positioned(
                                         bottom: 0,
                                         child: Container(
+                                          // color: Colors.tealAccent,
                                           width: ScreenUtil.instance.width,
                                           padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
                                           child: Text(
@@ -417,11 +431,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             onDoubleTap: (index) {
                               if (_tabController.index == index) {
                                 // print(_key.currentState.innerController);
-                                if(PrimaryScrollController.of(context).offset != 0 && PrimaryScrollController.of(context).offset > (headSlideHeight - 0.5)) {
+                                if (PrimaryScrollController.of(context).offset != 0 &&
+                                    PrimaryScrollController.of(context).offset > (headSlideHeight - 0.5)) {
                                   occlusionLayerStreamController.sink.add(true);
                                   // 回到顶部
                                   subpageRefresh();
                                 }
+                                ;
                               } else {
                                 _tabController.animateTo(index);
                               }
@@ -467,16 +483,20 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     right: (ScreenUtil.instance.width - 127) / 2,
                     child: _gotoRelease(),
                   ),
-                  Positioned(top: 0, child:StreamBuilder<bool>(
-                      initialData: false,
-                      stream: occlusionLayerStreamController.stream,
-                      builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                        return snapshot.data ? Container(
-                          color: AppColor.transparent,
-                          width: ScreenUtil.instance.width,
-                          height: ScreenUtil.instance.height,
-                        ) : Container();
-                      }))
+                  Positioned(
+                      top: 0,
+                      child: StreamBuilder<bool>(
+                          initialData: false,
+                          stream: occlusionLayerStreamController.stream,
+                          builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                            return snapshot.data
+                                ? Container(
+                                    color: AppColor.transparent,
+                                    width: ScreenUtil.instance.width,
+                                    height: ScreenUtil.instance.height,
+                                  )
+                                : Container();
+                          }))
                 ],
               )
             : Container(
@@ -508,7 +528,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 子页面下拉刷新
   subpageRefresh() {
-    _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear).then((value) => occlusionLayerStreamController.sink.add(false));
+    _key.currentState.currentInnerPosition
+        .animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear)
+        .then((value) => occlusionLayerStreamController.sink.add(false));
   }
 
   // 大图预览内部的Item
@@ -740,4 +762,53 @@ class TopicDoubleTapTabbar {
 
 // 外部部控制器
   ScrollController outerController;
+}
+
+class BottomClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    // path.lineTo(0, 0); //第1个点
+    // path.lineTo(0, size.height - 50.0); //第2个点
+    // var firstControlPoint = Offset(size.width / 2, size.height);
+    // var firstEdnPoint = Offset(size.width, size.height - 50.0);
+    // path.quadraticBezierTo(
+    //     firstControlPoint.dx,
+    //     firstControlPoint.dy,
+    //     firstEdnPoint.dx,
+    //     firstEdnPoint.dy
+    // );
+    // path.lineTo(size.width, size.height - 50.0); //第3个点
+    // path.lineTo(size.width, 0); //第4个点
+    //波浪曲线路径
+    path.lineTo(0, 0); //第1个点
+    path.lineTo(0, size.height - 40.0); //第2个点
+    var firstControlPoint = Offset(size.width / 4, size.height); //第一段曲线控制点
+    var firstEndPoint = Offset(size.width / 2.25, size.height - 30); //第一段曲线结束点
+    path.quadraticBezierTo(
+        //形成曲线
+        firstControlPoint.dx,
+        firstControlPoint.dy,
+        firstEndPoint.dx,
+        firstEndPoint.dy);
+
+    var secondControlPoint = Offset(size.width / 4 * 3, size.height - 90); //第二段曲线控制点
+    var secondEndPoint = Offset(size.width, size.height - 40); //第二段曲线结束点
+    path.quadraticBezierTo(
+        //形成曲线
+        secondControlPoint.dx,
+        secondControlPoint.dy,
+        secondEndPoint.dx,
+        secondEndPoint.dy);
+
+    path.lineTo(size.width, size.height - 40);
+    path.lineTo(size.width, 0);
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return false;
+  }
 }

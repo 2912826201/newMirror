@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/page/message/item/chat_page_ui.dart';
+import '../page/message/util/chat_page_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'dart:math' as math;

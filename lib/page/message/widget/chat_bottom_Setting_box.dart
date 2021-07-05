@@ -10,7 +10,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
-import 'emoji_manager.dart';
+import '../util/emoji_manager.dart';
 
 class ChatBottomSettingBox extends StatefulWidget {
   final bool bottomSettingPanelState;

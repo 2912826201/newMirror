@@ -35,8 +35,8 @@ import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
@@ -53,7 +53,7 @@ import 'data/model/data_response_model.dart';
 import 'data/model/feed/feed_flow_data_notifier.dart';
 import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
-import 'data/model/message/chat_message_profile_notifier.dart';
+import 'page/message/util/chat_message_profile_util.dart';
 import 'data/model/message/chat_voice_setting.dart';
 import 'data/model/message/group_user_model.dart';
 import 'data/model/message/no_prompt_uid_model.dart';
@@ -92,8 +92,6 @@ void main() {
               ChangeNotifierProvider(create: (_) => VoiceAlertData()),
               //聊天界面用户用户录音的功能
               ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-              //接收融云消息-进行判断
-              ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
               //群聊界面的@用户功能
               ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
               //用户相关界面信息
@@ -160,11 +158,12 @@ Future _initApp() async {
   Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
   // 申请通知权限
-  // 检查是否已有读写内存的权限
-  bool status = await Permission.notification.isGranted;
-  //判断如果还没拥有读写权限就申请获取权限
+  // 检查是否已有通知的权限
+  PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+  bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
+  //判断如果还没拥有通知权限就申请获取权限
   if (!status) {
-    await Permission.notification.request().isGranted;
+    permissionStatus = await NotificationPermissions.requestNotificationPermissions();
   }
   //初始化SharedPreferences
   AppPrefs.init();

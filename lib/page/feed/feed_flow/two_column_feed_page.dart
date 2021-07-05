@@ -8,7 +8,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/page/message/item/currency_msg.dart';
+import 'package:mirror/page/message/widget/currency_msg.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';

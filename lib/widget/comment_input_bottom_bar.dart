@@ -13,7 +13,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/message/item/emoji_manager.dart';
+import '../page/message/util/emoji_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/text_span_field/range_style.dart';
