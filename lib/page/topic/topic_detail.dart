@@ -211,7 +211,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 头部高度
   sliverAppBarHeight() {
     // UI图原始高度
-    double height = 109.0 + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
+    double uiHeigth = Application.slideBanner2Dor3D ? 109.0 : 84;
+    double height = uiHeigth  + ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight;
     if (model.description != null) {
       //加上文字高度
       height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
@@ -258,7 +259,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             child: Stack(
                               children: [
                                 // 背景颜色
-                                ClipPath(
+                              Application.slideBanner2Dor3D ?  ClipPath(
                                   //路径裁切组件
                                   clipper: BottomClipper(), //路径
                                   child: Container(
@@ -270,7 +271,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       fit: BoxFit.cover,
                                     ),
                                   ),
+                                ) : Container(
+                                height: 114 + ScreenUtil.instance.statusBarHeight,
+                                width: ScreenUtil.instance.width,
+                                color: getBackgroundColor(),
+                                child: Image.asset(
+                                  backgroundImages[model.patternId],
+                                  fit: BoxFit.cover,
                                 ),
+                              ),
                                 // 头像
                                 Positioned(
                                     left: 14,
