@@ -26,6 +26,8 @@ String prefsKeyFlutterAppBadgerCount = "flutterAppBadgerCount";
 // 视频声音开关
 String videoSoundSwitch = "videoSoundSwitchPrefs";
 
+//是否第一次获取通知权限
+String isFristGetNotification = "isFristGetNotification";
 class AppPrefs {
   static SharedPreferences _instance;
 
@@ -48,6 +50,17 @@ class AppPrefs {
     return _instance.setBool(prefsKeyIsFirstLaunch, isFirstLaunch);
   }
 
+  static setFristGetNotification(bool isFrist) {
+    return _instance.setBool(isFristGetNotification, isFrist);
+  }
+  // 是否是第一获取通知权限
+  static bool isFirstGetNotification() {
+    bool value = _instance.getBool(isFristGetNotification);
+    if (value == null) {
+      value = true;
+    }
+    return value;
+  }
   static bool isFirstLaunchToDay() {
     bool value = _instance.getBool(getFirstLaunchToDayString());
     if (value == null) {
