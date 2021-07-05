@@ -213,10 +213,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child: SizeCacheWidget(
-              key:Key(widget.id.toString()),
-              estimateCount: 6,
-              child: SmartRefresher(
+          child:  SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
                   footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
@@ -228,7 +225,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                     }
                   },
                   onRefresh: _onRefresh,
-                  child: _showDataUi()))),
+                  child: _showDataUi())),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
@@ -244,13 +241,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             itemBuilder: (context, index) {
               HomeFeedModel model;
               model = followModel[index];
-              return FrameSeparateWidget(
-                  index: index,
-                  placeHolder: Container(
-                    color: AppColor.white,
-                    height: 500,
-                  ),
-                  child: SizeTransition(
+              return  SizeTransition(
                       sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
                         parent: animationMap[model.id],
                         curve: Curves.fastOutSlowIn,
@@ -279,7 +270,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                           }
                           print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                         },
-                      )));
+                      ));
             })
         : ListView(
             children: [
