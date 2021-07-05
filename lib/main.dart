@@ -35,8 +35,8 @@ import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
@@ -157,14 +157,15 @@ Future _initApp() async {
 
   Application.openAppTime = DateTime.now().millisecondsSinceEpoch;
 
-  // 申请通知权限
-  // 检查是否已有通知的权限
-  PermissionStatus permissionStatus = await Permission.notification.status;
-  bool status = permissionStatus != null && permissionStatus.isGranted;
-  //判断如果还没拥有通知权限就申请获取权限
-  if (!status) {
-    permissionStatus = await Permission.notification.request();
-    print("notification permission: $permissionStatus");
+  // 申请通知权限 iOS在此处处理 Android要APP自己写弹窗所以放在IfPage中
+  if (Application.platform == 1) {
+    // 检查是否已有通知的权限
+    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
+    //判断如果还没拥有通知权限就申请获取权限
+    if (!status) {
+      permissionStatus = await NotificationPermissions.requestNotificationPermissions();
+    }
   }
   //初始化SharedPreferences
   AppPrefs.init();
