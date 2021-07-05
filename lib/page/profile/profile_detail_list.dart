@@ -29,7 +29,7 @@ class ProfileDetailsList extends StatefulWidget {
   bool isMySelf;
   Key pageKey;
   bool imageLoading;
-  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf,this.imageLoading});
+  ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf, this.imageLoading});
 
   @override
   ProfileDetailsListState createState() {
@@ -95,7 +95,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       if (model != null) {
         followlastTime = model.lastTime;
         if (model.list.isNotEmpty) {
-
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             animationMap[HomeFeedModel.fromJson(result).id] =
@@ -215,28 +214,28 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
           child: SizeCacheWidget(
-              estimateCount: 5,
-              child:SmartRefresher(
-              enablePullUp: true,
-              enablePullDown: true,
-              footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
-              header: SmartRefresherHeadFooter.init().getHeader(),
-              controller: _refreshController,
-              onLoading: () {
-                if (refreshOver) {
-                  _onLoadding();
-                }
-              },
-              onRefresh: _onRefresh,
-              child: _showDataUi()))),
+              key:Key(widget.id.toString()),
+              estimateCount: 6,
+              child: SmartRefresher(
+                  enablePullUp: true,
+                  enablePullDown: true,
+                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
+                  controller: _refreshController,
+                  onLoading: () {
+                    if (refreshOver) {
+                      _onLoadding();
+                    }
+                  },
+                  onRefresh: _onRefresh,
+                  child: _showDataUi()))),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
 
   Widget _showDataUi() {
     return !listNoData
-        ?
-        ListView.builder(
+        ? ListView.builder(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10),
             //解决无限高度问题
@@ -248,39 +247,39 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               return FrameSeparateWidget(
                   index: index,
                   placeHolder: Container(
-                  color: AppColor.white,
-                  height: 500,
-              ),
-              child: SizeTransition(
-                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
-                parent: animationMap[model.id],
-                curve: Curves.fastOutSlowIn,
-              )),
-              axis: Axis.vertical,
-              axisAlignment: 1.0,
-              child: ExposureDetector(
-                key: widget.type == 2
-                    ? Key('profile_feed_${followModel[index].id}')
-                    : Key('profile_like_${followModel[index].id}'),
-                child: DynamicListLayout(
-                    index: index,
-                    pageName: "profileDetails",
-                    isShowRecommendUser: false,
-                    isShowConcern: false,
-                    model: model,
-                    isMySelf: widget.isMySelf,
-                    mineDetailId: widget.id,
-                    key: GlobalObjectKey("attention$index"),
-                    removeFollowChanged: (model) {},
-                    deleteFeedChanged: (feedId) {}),
-                onExposure: (visibilityInfo) {
-                  // 如果没有显示
-                  if (model.isShowInputBox) {
-                    context.read<FeedMapNotifier>().showInputBox(model.id);
-                  }
-                  print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                },
-              )));
+                    color: AppColor.white,
+                    height: 500,
+                  ),
+                  child: SizeTransition(
+                      sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                        parent: animationMap[model.id],
+                        curve: Curves.fastOutSlowIn,
+                      )),
+                      axis: Axis.vertical,
+                      axisAlignment: 1.0,
+                      child: ExposureDetector(
+                        key: widget.type == 2
+                            ? Key('profile_feed_${followModel[index].id}')
+                            : Key('profile_like_${followModel[index].id}'),
+                        child: DynamicListLayout(
+                            index: index,
+                            pageName: "profileDetails",
+                            isShowRecommendUser: false,
+                            isShowConcern: false,
+                            model: model,
+                            isMySelf: widget.isMySelf,
+                            mineDetailId: widget.id,
+                            key: GlobalObjectKey("attention$index"),
+                            removeFollowChanged: (model) {},
+                            deleteFeedChanged: (feedId) {}),
+                        onExposure: (visibilityInfo) {
+                          // 如果没有显示
+                          if (model.isShowInputBox) {
+                            context.read<FeedMapNotifier>().showInputBox(model.id);
+                          }
+                          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                        },
+                      )));
             })
         : ListView(
             children: [

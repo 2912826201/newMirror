@@ -421,7 +421,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   occlusionLayerStreamController.sink.add(true);
                                   // 回到顶部
                                   subpageRefresh();
-                                };
+                                }
                               } else {
                                 _tabController.animateTo(index);
                               }
