@@ -240,13 +240,12 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       print(oldValue.selection.end);
       if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end) {
         print("进了这里面");
-
         /// 直接delete情况 / 选中一部分替换的情况
         return checkRules(oldValue, newValue);
       }
-      if (Platform.isIOS && oldValue.isComposingRangeValid) {
+      // if (Platform.isIOS && oldValue.isComposingRangeValid) {
         // 跟随@后面输入的实时搜索值
-        if(rules != null) {
+        if(rules.isNotEmpty) {
           for (Rule rule in rules) {
             // 点击的是@高亮文本
             if (newValue.selection.start < rule.endIndex && newValue.selection.start > rule.startIndex && rule.isAt) {
@@ -296,17 +295,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         // if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
         //   topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
         // }
-      }
+      // }
     }
 
     print("还调用了下面");
     // ios在输入中就要去修正索引
-    if (Platform.isIOS && oldValue.isComposingRangeValid) {
-      print("ios输入中");
-      if (rules.isNotEmpty) {
-        _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
-      }
-    }
     // 输入完成时安卓修正索引，ios再次修正
     if (!oldValue.composing.isValid) {
       print("ios 安卓：：：： 输入完成");
@@ -345,6 +338,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // 此是应对ios在输入中时也要回调回去。
     if (Platform.isIOS && oldValue.isComposingRangeValid) {
       print("ios输入中返回回去");
+      if (rules.isNotEmpty) {
+        _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
+      }
       _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr, true);
     }
     return newValue;
