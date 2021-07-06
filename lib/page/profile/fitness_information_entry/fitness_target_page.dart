@@ -70,7 +70,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
            Expanded(child: ListView.builder(
                     itemCount: targetList.length,
                     itemBuilder: (context, index) {
-                      return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快熟减掉赘肉，击退小肚腩", index);
+                      return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快速减掉赘肉，击退小肚腩", index);
                     })),
           ],
         ),

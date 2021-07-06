@@ -200,9 +200,9 @@ class _ProfileDetailState extends State<ProfileDetailPage>
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
       if (model.inYouBlack == 1) {
-        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true, needNotify: true);
+        context.read<UserInteractiveNotifier>().changeBlackStatus(widget.userId, true, needNotify: true);
       } else {
-        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, false, needNotify: true);
+        context.read<UserInteractiveNotifier>().changeBlackStatus(widget.userId, false, needNotify: true);
       }
     }
   }
