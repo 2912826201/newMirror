@@ -190,11 +190,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (followModel.length == 0) {
           listNoData = true;
         }
-        if (mounted) {
-          setState(() {
-            animationMap.remove(id);
-          });
-        }
+        animationMap.remove(id);
+        if (mounted) setState(() {});
         if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
           context.read<FeedMapNotifier>().deleteFeed(id);
         }
@@ -213,7 +210,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child:  SmartRefresher(
+          child: SizeCacheWidget(
+              estimateCount:8,
+              child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,
                   footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
@@ -225,7 +224,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                     }
                   },
                   onRefresh: _onRefresh,
-                  child: _showDataUi())),
+                  child: _showDataUi()))),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
@@ -233,44 +232,18 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   Widget _showDataUi() {
     return !listNoData
         ? ListView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.only(top: 10),
-            //解决无限高度问题
-            physics: AlwaysScrollableScrollPhysics(),
+            // shrinkWrap: true,
+            // padding: EdgeInsets.only(top: 10),
+            // //解决无限高度问题
+            // physics: AlwaysScrollableScrollPhysics(),
             itemCount: followModel.length,
             itemBuilder: (context, index) {
-              HomeFeedModel model;
-              model = followModel[index];
-              return  SizeTransition(
-                      sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
-                        parent: animationMap[model.id],
-                        curve: Curves.fastOutSlowIn,
-                      )),
-                      axis: Axis.vertical,
-                      axisAlignment: 1.0,
-                      child: ExposureDetector(
-                        key: widget.type == 2
-                            ? Key('profile_feed_${followModel[index].id}')
-                            : Key('profile_like_${followModel[index].id}'),
-                        child: DynamicListLayout(
-                            index: index,
-                            pageName: "profileDetails",
-                            isShowRecommendUser: false,
-                            isShowConcern: false,
-                            model: model,
-                            isMySelf: widget.isMySelf,
-                            mineDetailId: widget.id,
-                            key: GlobalObjectKey("attention$index"),
-                            removeFollowChanged: (model) {},
-                            deleteFeedChanged: (feedId) {}),
-                        onExposure: (visibilityInfo) {
-                          // 如果没有显示
-                          if (model.isShowInputBox) {
-                            context.read<FeedMapNotifier>().showInputBox(model.id);
-                          }
-                          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
-                        },
-                      ));
+              return FrameSeparateWidget(
+                index: index,
+                placeHolder: Container(
+                  height: 500,
+                  color: AppColor.mainRed,
+                ), child:_listItem(index),);
             })
         : ListView(
             children: [
@@ -294,6 +267,40 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
           );
   }
 
+  Widget _listItem(int index){
+    HomeFeedModel model;
+    model = followModel[index];
+   return  SizeTransition(
+        sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+          parent: animationMap[model.id],
+          curve: Curves.fastOutSlowIn,
+        )),
+        axis: Axis.vertical,
+        axisAlignment: 1.0,
+        child: ExposureDetector(
+          key: widget.type == 2
+              ? Key('profile_feed_${followModel[index].id}')
+              : Key('profile_like_${followModel[index].id}'),
+          child: DynamicListLayout(
+              index: index,
+              pageName: "profileDetails",
+              isShowRecommendUser: false,
+              isShowConcern: false,
+              model: model,
+              isMySelf: widget.isMySelf,
+              mineDetailId: widget.id,
+              key: GlobalObjectKey("attention$index"),
+              removeFollowChanged: (model) {},
+              deleteFeedChanged: (feedId) {}),
+          onExposure: (visibilityInfo) {
+            // 如果没有显示
+            if (model.isShowInputBox) {
+              context.read<FeedMapNotifier>().showInputBox(model.id);
+            }
+            print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+          },
+        ));
+  }
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;

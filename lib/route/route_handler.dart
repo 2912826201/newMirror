@@ -180,7 +180,8 @@ var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ProfileDetailsMore();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ProfileDetailsMore(userId:data["userId"],);
 });
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

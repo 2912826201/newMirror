@@ -209,11 +209,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               });
             }
             // 默认关闭话题动态
-            recommendModelList.forEach((v) {
-              if (v.recommendSourceDto != null) {
-                v.recommendSourceDto.type = 0;
-              }
-            });
+            // recommendModelList.forEach((v) {
+            //   if (v.recommendSourceDto != null) {
+            //     v.recommendSourceDto.type = 0;
+            //   }
+            // });
             _refreshController.refreshCompleted();
             hasNext = dataModel.hasNext;
             print("第一次的hasNext：：$hasNext");
