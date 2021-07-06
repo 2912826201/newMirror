@@ -500,8 +500,10 @@ class AppRouter {
     _navigateToPage(context, pathMyQrCodePage, {}, callback: callBack);
   }
 
-  static void navigateToProfileDetailMore(BuildContext context) {
-    _navigateToPage(context, pathProfileDetailsMore, {});
+  static void navigateToProfileDetailMore(BuildContext context,int userId,Function(dynamic result) callBack) {
+    Map<String, dynamic> map = Map();
+    map["userId"] = userId;
+    _navigateToPage(context, pathProfileDetailsMore, map,callback: callBack);
   }
 
   static void navigateToProfileFollowListPage(BuildContext context, int userId, int type) {
