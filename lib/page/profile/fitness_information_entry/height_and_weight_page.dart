@@ -33,11 +33,12 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
     },
     child: Scaffold(
       backgroundColor: AppColor.white,
+      // resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         hasDivider: false,
         leading: Container(),
       ),
-      body: InkWell(
+      body: GestureDetector(
         onTap: (){
           FocusScope.of(context).requestFocus(blankNode);
         },
@@ -78,7 +79,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
             ),
             _heightAndWeightItem("体重", "KG", width),
             SizedBox(
-              height: 200,
+              height: 62,
             ),
             Container(
               width: width,

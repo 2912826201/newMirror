@@ -80,7 +80,7 @@ class CheckPhoneSystemUtil {
   //判断是不是ios手机
   //系统平台 0-android 1-ios
   bool isIos() {
-    return platform == 0;
+    return platform == 1;
   }
 
   //判断是不是android手机
