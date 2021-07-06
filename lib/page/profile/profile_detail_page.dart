@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
 import 'package:flutter/material.dart' hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
+import 'package:keframe/frame_separate_widget.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -296,24 +297,24 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           width: width,
           child: Stack(
             children: [
-               _minehomeBody(),
+              _minehomeBody(),
               Positioned(top: 0, child: _appBar()),
               Positioned(
-                top: 0,
-                  child:StreamBuilder<bool>(
-                  initialData: true,
-                  stream: needTouchCallBackStreamController.stream,
-                  builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                    if (!snapshot.data) {
-                      return Container(
-                        color: AppColor.transparent,
-                        height: height,
-                        width: width,
-                      );
-                    }else{
-                      return Container();
-                    }
-                  }) ),
+                  top: 0,
+                  child: StreamBuilder<bool>(
+                      initialData: true,
+                      stream: needTouchCallBackStreamController.stream,
+                      builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                        if (!snapshot.data) {
+                          return Container(
+                            color: AppColor.transparent,
+                            height: height,
+                            width: width,
+                          );
+                        } else {
+                          return Container();
+                        }
+                      })),
             ],
           )),
     );
@@ -338,7 +339,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(
-              child: profileDetailData(userDetailBoardHeight),
+              child: FrameSeparateWidget(index: -2, child: profileDetailData(userDetailBoardHeight)),
             ),
           ];
         },
@@ -347,7 +348,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         body: Column(
           children: [
             isMselfId
-                ? Container(
+                ? FrameSeparateWidget(index: -1, child:Container(
                     color: AppColor.white,
                     padding: EdgeInsets.only(left: width / 4, right: width / 4),
                     child: Custom.TabBar(
@@ -359,15 +360,17 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                       indicatorColor: AppColor.black,
                       controller: _mController,
                       onDoubleTap: (index) async {
-                        print('PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context)
-                            .offset}------$userDetailBoardHeight-----${(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
-                            CustomAppBar.appBarHeight )}');
-                        if(PrimaryScrollController.of(context).offset!=0&&PrimaryScrollController.of(context)
-                            .offset>=(userDetailBoardHeight-ScreenUtil.instance.statusBarHeight -
-                            CustomAppBar.appBarHeight )) {
+                        print(
+                            'PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context).offset}------$userDetailBoardHeight-----${(userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight)}');
+                        if (PrimaryScrollController.of(context).offset != 0 &&
+                            PrimaryScrollController.of(context).offset >=
+                                (userDetailBoardHeight -
+                                    ScreenUtil.instance.statusBarHeight -
+                                    CustomAppBar.appBarHeight)) {
                           needTouchCallBackStreamController.sink.add(false);
-                          _key.currentState.currentInnerPosition.animateTo(0.0, duration: Duration(milliseconds: 250)
-                              , curve: Curves.linear).then((value){
+                          _key.currentState.currentInnerPosition
+                              .animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear)
+                              .then((value) {
                             needTouchCallBackStreamController.sink.add(true);
                           });
                         }
@@ -383,7 +386,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                         Tab(text: '喜欢'),
                       ],
                     ),
-                  )
+                  ))
                 : Container(),
             Expanded(
                 child: userStatus != 1
@@ -445,84 +448,92 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         initialData: 0,
         stream: appBarOpacityStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-          return Container(
-            color: AppColor.white.withOpacity(snapshot.data),
-            height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
-            width: width,
-            padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
-            child: Center(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: CustomAppBarIconButton(
-                      svgName: AppIcon.nav_return,
-                      iconColor: AppColor.black,
-                      onTap: () {
-                        Navigator.pop(this.context,
-                            context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow);
-                      },
-                    ),
-                  )),
-                  Container(
-                    width: userNameWidth,
-                    child: Center(
-                      child: Text(
-                        _textName ?? "",
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            color: AppColor.black.withOpacity(snapshot.data)),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CustomAppBarIconButton(
-                        svgName: AppIcon.nav_share,
+          return FrameSeparateWidget(
+            index: -3,
+            child: Container(
+              color: AppColor.white.withOpacity(snapshot.data),
+              height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
+              width: width,
+              padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
+              child: Center(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: CustomAppBarIconButton(
+                        svgName: AppIcon.nav_return,
                         iconColor: AppColor.black,
                         onTap: () {
-                          openShareBottomSheet(
-                              context: context,
-                              map: userModel.toJson(),
-                              chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                              sharedType: 1);
+                          Navigator.pop(
+                              this.context,
+                              context
+                                  .read<UserInteractiveNotifier>()
+                                  .value
+                                  .profileUiChangeModel[widget.userId]
+                                  .isFollow);
                         },
                       ),
-                      !isMselfId
-                          ? CustomAppBarIconButton(
-                              svgName: AppIcon.nav_more,
-                              iconColor: AppColor.black,
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                  return ProfileDetailsMore(
-                                    userId: widget.userId,
-                                  );
-                                })).then((value) {
-                                  _getFollowCount(id: widget.userId);
-                                });
-                              },
-                            )
-                          : Container(
-                              width: 0,
-                            ),
-                      !isMselfId
-                          ? SizedBox(
-                              width: 8,
-                            )
-                          : Container(
-                              width: 0,
-                            )
-                    ],
-                  ))
-                ],
+                    )),
+                    Container(
+                      width: userNameWidth,
+                      child: Center(
+                        child: Text(
+                          _textName ?? "",
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              color: AppColor.black.withOpacity(snapshot.data)),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        CustomAppBarIconButton(
+                          svgName: AppIcon.nav_share,
+                          iconColor: AppColor.black,
+                          onTap: () {
+                            openShareBottomSheet(
+                                context: context,
+                                map: userModel.toJson(),
+                                chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                                sharedType: 1);
+                          },
+                        ),
+                        !isMselfId
+                            ? CustomAppBarIconButton(
+                                svgName: AppIcon.nav_more,
+                                iconColor: AppColor.black,
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                    return ProfileDetailsMore(
+                                      userId: widget.userId,
+                                    );
+                                  })).then((value) {
+                                    _getFollowCount(id: widget.userId);
+                                  });
+                                },
+                              )
+                            : Container(
+                                width: 0,
+                              ),
+                        !isMselfId
+                            ? SizedBox(
+                                width: 8,
+                              )
+                            : Container(
+                                width: 0,
+                              )
+                      ],
+                    ))
+                  ],
+                ),
               ),
             ),
           );
