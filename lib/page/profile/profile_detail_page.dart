@@ -348,45 +348,48 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         body: Column(
           children: [
             isMselfId
-                ? FrameSeparateWidget(index: -1, child:Container(
-                    color: AppColor.white,
-                    padding: EdgeInsets.only(left: width / 4, right: width / 4),
-                    child: Custom.TabBar(
-                      unselectedLabelStyle:
-                          TextStyle(fontSize: 15.5, fontWeight: FontWeight.w400, color: AppColor.textHint),
-                      unselectedLabelColor: AppColor.textSecondary,
-                      labelStyle: TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
-                      labelColor: AppColor.black,
-                      indicatorColor: AppColor.black,
-                      controller: _mController,
-                      onDoubleTap: (index) async {
-                        print(
-                            'PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context).offset}------$userDetailBoardHeight-----${(userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight)}');
-                        if (PrimaryScrollController.of(context).offset != 0 &&
-                            PrimaryScrollController.of(context).offset >=
-                                (userDetailBoardHeight -
-                                    ScreenUtil.instance.statusBarHeight -
-                                    CustomAppBar.appBarHeight)) {
-                          needTouchCallBackStreamController.sink.add(false);
-                          _key.currentState.currentInnerPosition
-                              .animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear)
-                              .then((value) {
-                            needTouchCallBackStreamController.sink.add(true);
-                          });
-                        }
-                        // EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
-                      },
-                      indicatorSize: Custom.TabBarIndicatorSize.label,
-                      indicator: RoundUnderlineTabIndicator(
-                          insets: EdgeInsets.only(bottom: 0),
-                          wantWidth: 20,
-                          borderSide: BorderSide(width: 2, color: AppColor.black)),
-                      tabs: <Widget>[
-                        Tab(text: '动态'),
-                        Tab(text: '喜欢'),
-                      ],
-                    ),
-                  ))
+                ? FrameSeparateWidget(
+                    index: -1,
+                    child: Container(
+                      color: AppColor.white,
+                      padding: EdgeInsets.only(left: width / 4, right: width / 4),
+                      child: Custom.TabBar(
+                        unselectedLabelStyle:
+                            TextStyle(fontSize: 15.5, fontWeight: FontWeight.w400, color: AppColor.textHint),
+                        unselectedLabelColor: AppColor.textSecondary,
+                        labelStyle:
+                            TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+                        labelColor: AppColor.black,
+                        indicatorColor: AppColor.black,
+                        controller: _mController,
+                        onDoubleTap: (index) async {
+                          print(
+                              'PrimaryScrollController.of(context).offset====${PrimaryScrollController.of(context).offset}------$userDetailBoardHeight-----${(userDetailBoardHeight - ScreenUtil.instance.statusBarHeight - CustomAppBar.appBarHeight)}');
+                          if (PrimaryScrollController.of(context).offset != 0 &&
+                              PrimaryScrollController.of(context).offset >=
+                                  (userDetailBoardHeight -
+                                      ScreenUtil.instance.statusBarHeight -
+                                      CustomAppBar.appBarHeight)) {
+                            needTouchCallBackStreamController.sink.add(false);
+                            _key.currentState.currentInnerPosition
+                                .animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear)
+                                .then((value) {
+                              needTouchCallBackStreamController.sink.add(true);
+                            });
+                          }
+                          // EventBus.getDefault().post(msg: index == 0 ? 2 : 6, registerName: DOUBLE_TAP_TABBAR);
+                        },
+                        indicatorSize: Custom.TabBarIndicatorSize.label,
+                        indicator: RoundUnderlineTabIndicator(
+                            insets: EdgeInsets.only(bottom: 0),
+                            wantWidth: 20,
+                            borderSide: BorderSide(width: 2, color: AppColor.black)),
+                        tabs: <Widget>[
+                          Tab(text: '动态'),
+                          Tab(text: '喜欢'),
+                        ],
+                      ),
+                    ))
                 : Container(),
             Expanded(
                 child: userStatus != 1
@@ -511,13 +514,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                                 svgName: AppIcon.nav_more,
                                 iconColor: AppColor.black,
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                    return ProfileDetailsMore(
-                                      userId: widget.userId,
-                                    );
-                                  })).then((value) {
-                                    _getFollowCount(id: widget.userId);
-                                  });
+                                  AppRouter.navigateToProfileDetailMore(
+                                      context, widget.userId, (result) => _getFollowCount(id: widget.userId));
                                 },
                               )
                             : Container(
