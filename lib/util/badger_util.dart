@@ -37,6 +37,8 @@ class BadgerUtil {
           print("没有通知权限");
         }
       });
+    } else {
+      Application.jpush.setBadge(badgeCount);
     }
   }
 
@@ -44,6 +46,8 @@ class BadgerUtil {
   removeBadge() {
     if (CheckPhoneSystemUtil.init().isAndroid()) {
       _channel.invokeMethod('removeBadge');
+    } else {
+      Application.jpush.setBadge(0);
     }
   }
 
