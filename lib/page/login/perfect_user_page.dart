@@ -93,6 +93,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
         value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
         child: Scaffold(
           backgroundColor: AppColor.white,
+          resizeToAvoidBottomInset: false,
           appBar: null,
           body: Container(
             width: width,

@@ -134,6 +134,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(
           svgName: AppIcon.nav_close,
