@@ -245,6 +245,7 @@ class _IFTabBarState extends State<IFTabBar> {
         widget.tabBarClickListener(pagePosition);
       }
       if (streamController != null) {
+        currentIndex = pagePosition;
         streamController.sink.add(pagePosition);
       }
     }
