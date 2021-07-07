@@ -54,7 +54,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           return true;
         }),
         confirm: AppDialogButton("去打开", () {
-          AppSettings.openAppSettings();
+          AppSettings.openLocationSettings();
           return true;
         }));
   }
@@ -75,18 +75,18 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         // 请求了许可但是未授权，弹窗提醒
         //fixme 权限枚举变化
         // if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
-        if (status != PermissionStatus.granted) {
-          _showDialog(context);
-        }
-        //  请求了许可授了权，跳转页面
-        if (status == PermissionStatus.granted) {
-          // 外层的请求定位需要2秒的时间返回位置，在这期间点击widget.currentAddressInfo是空值
+        if (status.isGranted) {
           if(widget.currentAddressInfo != null) {
             AppRouter.navigateSearchOrLocationPage(
                 context, checkIndex, selectAddress, widget.currentAddressInfo, (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
               return childrenACallBack(poi);
             });
+          }
+        } else {
+          PermissionStatus status = await Permission.locationWhenInUse.request();
+          if(status.isPermanentlyDenied){
+            _showDialog(context);
           }
         }
         print("跳转选择地址页面");

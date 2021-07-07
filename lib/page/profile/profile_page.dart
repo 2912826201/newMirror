@@ -59,7 +59,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
-  StreamController<double> streamController = StreamController<double>();
+  StreamController<double> topStreamController = StreamController<double>();
+  StreamController<double> bottomStreamController = StreamController<double>();
   double beforOffset;
   double totalOffset;
   @override
@@ -131,17 +132,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         },
         onPointerUp: (PointerUpEvent event){
           beforOffset = null;
-          streamController.sink.add(0);
+          topStreamController.sink.add(0);
+          bottomStreamController.sink.add(0);
         },
         onPointerMove: (PointerMoveEvent event){
           print('--------------------${event.position.dy}');
-          if(beforOffset < event.position.dy){
+          if(controller.offset==controller.position.minScrollExtent&&beforOffset < event.position.dy){
             print('----------------------向下');
             double offset = event.position.dy-beforOffset;
             if(offset>200){
              return;
             }
-            streamController.sink.add(offset);
+            topStreamController.sink.add(offset);
+          }else if(controller.offset==controller.position.maxScrollExtent){
+            double offset = beforOffset - event.position.dy;
+            if(offset>200){
+              return;
+            }
+            bottomStreamController.sink.add(offset);
           }
         },
         child: SingleChildScrollView(
@@ -194,7 +202,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         /*
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
         if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
-      ],
+
+    StreamBuilder<double>(
+    initialData: 0,
+    stream: bottomStreamController.stream,
+    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+    return AnimatedContainer(
+    duration: Duration(milliseconds: snapshot.data==0?200:1),
+    curve: Curves.linear,
+    height: snapshot.data,
+    child: Container(
+    height: snapshot.data,
+    ),);})
+    ],
     );
   }
 
@@ -268,10 +288,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget _blurrectAvatar() {
     return StreamBuilder<double>(
         initialData: 0,
-        stream: streamController.stream,
+        stream: topStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return AnimatedContainer(
-            duration: Duration(milliseconds: snapshot.data==0?250:1),
+            duration: Duration(milliseconds: snapshot.data==0?200:1),
             curve: Curves.linear,
             height: gaussianBlurHeight + 72 + snapshot.data,
             child: Container(
@@ -282,7 +302,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
                     print("头像地址:$avatar");
                     return AnimatedContainer(
-                        duration: Duration(milliseconds: snapshot.data==0?250:1),
+                        duration: Duration(milliseconds: snapshot.data==0?200:1),
                     curve: Curves.linear,
                     height: gaussianBlurHeight +  snapshot.data,
                     child: CachedNetworkImage(
@@ -302,7 +322,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   }),
                   Positioned(
                       child: AnimatedContainer(
-                          duration: Duration(milliseconds: snapshot.data==0?250:1),
+                          duration: Duration(milliseconds: snapshot.data==0?200:1),
                           curve: Curves.linear,
                           height: gaussianBlurHeight +  snapshot.data,
                           child: Container(
@@ -311,7 +331,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     color: AppColor.white.withOpacity(0.6),
                   ))),
               AnimatedContainer(
-                duration: Duration(milliseconds: snapshot.data==0?250:1),
+                duration: Duration(milliseconds: snapshot.data==0?200:1),
                 curve: Curves.linear,
                 height: gaussianBlurHeight + 72 +  snapshot.data,
                 child:Container(
