@@ -37,6 +37,7 @@ import '../message/util/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
 import 'badger_test_page.dart';
+import 'explosion_image_test.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -394,6 +395,15 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               //     child: Text("视频课结果页"),
               //   ),
               // ]),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                    //     return SliverListDemoPage();
+                    return  ExplosionImageTest();
+                  }));
+                },
+                child: Text("粒子爆炸"),
+              ),
               RaisedButton(
                 onPressed: () {
                   Navigator.of(context).push(new MaterialPageRoute(builder: (context) {

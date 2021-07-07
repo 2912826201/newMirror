@@ -14,6 +14,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/test/tik_tok_test/tikTokGesture.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/image_cached_observer_util.dart';
@@ -315,6 +316,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
     }
   }
 
+
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -426,6 +428,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
             pageNotifier: notifier,
             child: Stack(children: [
               GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onDoubleTap: () {
                     // 获取是否点赞
                     int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
@@ -492,18 +495,18 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                         initialData: zindex, //初始值
                         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                           return Container(
-                              // width: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).width + 12,
-                              // height: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).height + 6,
-                              // color: AppColor.mainRed,
-                              padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                                  color: AppColor.textPrimary1.withOpacity(0.5)),
-                              child: Text(
-                                "${snapshot.data + 1}/${imageCount}",
-                                style:  TextStyle(color: AppColor.white, fontSize: 12),
-                              ),
-                            );
+                            // width: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).width + 12,
+                            // height: getTextSize("${snapshot.data + 1}/${imageCount}",  TextStyle(color: AppColor.white, fontSize: 12), 1).height + 6,
+                            // color: AppColor.mainRed,
+                            padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                color: AppColor.textPrimary1.withOpacity(0.5)),
+                            child: Text(
+                              "${snapshot.data + 1}/${imageCount}",
+                              style: TextStyle(color: AppColor.white, fontSize: 12),
+                            ),
+                          );
                         })),
               )
             ]));
@@ -515,41 +518,76 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
   _2DSlideBanner() {
     return Stack(
       children: [
-        GestureDetector(
-            onDoubleTap: () {
-              // 获取是否点赞
-              int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
-              if (isLaud != 1) {
-                setUpLuad();
-              }
-              // 动画
-            },
-            child: BannerView(
-              cupertinoButtonList,
-              cycleRolling: false,
-              autoRolling: false,
-              onPageChanged: (index) {
-                autoPlay(index);
-                if (index > 1) {
-                  if (index < imageCount - 3) {
-                    scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                        duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                  } else if (index >= imageCount - 3) {
-                    scrollController.animateTo(scrollController.position.maxScrollExtent,
-                        duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+        Application.slideFeedLike
+            ? TikTokGesture(
+                onAddFavorite: () {
+                  print("双击");
+                  // 获取是否点赞
+                  int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
+                  if (isLaud != 1) {
+                    setUpLuad();
                   }
-                } else if (beforIndex != null && beforIndex > index) {
-                  scrollController.animateTo(scrollController.position.minScrollExtent,
-                      duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
-                }
-                beforIndex = index;
-              },
-            )),
+                },
+                onSingleTap: () {
+                  print("单击");
+                },
+                child: BannerView(
+                  cupertinoButtonList,
+                  cycleRolling: false,
+                  autoRolling: false,
+                  onPageChanged: (index) {
+                    autoPlay(index);
+                    if (index > 1) {
+                      if (index < imageCount - 3) {
+                        scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                      } else if (index >= imageCount - 3) {
+                        scrollController.animateTo(scrollController.position.maxScrollExtent,
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                      }
+                    } else if (beforIndex != null && beforIndex > index) {
+                      scrollController.animateTo(scrollController.position.minScrollExtent,
+                          duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                    }
+                    beforIndex = index;
+                  },
+                ),
+              )
+            : GestureDetector(
+                onDoubleTap: () {
+                  // 获取是否点赞
+                  int isLaud = context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud;
+                  if (isLaud != 1) {
+                    setUpLuad();
+                  }
+                  // 动画
+                },
+                child: BannerView(
+                  cupertinoButtonList,
+                  cycleRolling: false,
+                  autoRolling: false,
+                  onPageChanged: (index) {
+                    autoPlay(index);
+                    if (index > 1) {
+                      if (index < imageCount - 3) {
+                        scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                      } else if (index >= imageCount - 3) {
+                        scrollController.animateTo(scrollController.position.maxScrollExtent,
+                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                      }
+                    } else if (beforIndex != null && beforIndex > index) {
+                      scrollController.animateTo(scrollController.position.minScrollExtent,
+                          duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                    }
+                    beforIndex = index;
+                  },
+                )),
         Positioned(
           top: 13,
           right: 16,
           child: Offstage(
-              offstage: imageCount == 1 ,
+              offstage: imageCount == 1,
               child: StreamBuilder<int>(
                   // 监听Stream，每次值改变的时候，更新Text中的内容
                   stream: paginationTabStreamController.stream, //数据流
