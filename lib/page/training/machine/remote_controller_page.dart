@@ -295,9 +295,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   Widget _buildMachinePic() {
     return Center(
       child: Container(
-        height: 210,
-        width: 114.5,
-        color: AppColor.mainBlue,
+        // color: AppColor.mainBlue,
+        child: Image.asset("assets/png/terminal_png.png"),
       ),
     );
   }

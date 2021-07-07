@@ -284,9 +284,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               child: Row(
                 children: [
                   Container(
-                    color: AppColor.mainBlue,
+                    color: AppColor.colorf5f5f5,
                     width: 100,
                     height: 64,
+                    child: Image.asset("assets/png/terminal_png.png"),
                   ),
                   SizedBox(
                     width: 12,

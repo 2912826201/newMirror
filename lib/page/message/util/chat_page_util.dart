@@ -212,8 +212,8 @@ class ChatPageUtil {
       sendTime: sendTime,
       targetId: chatId,
       conversationType: RCConversationType.Private,
-      subObjectName: ChatTypeModel.MESSAGE_TYPE_ALERT,
-      name: ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
+      subObjectName: ChatTypeModel.MESSAGE_TYPE_NEW_MSG_ALERT,
+      name: ChatTypeModel.MESSAGE_TYPE_NEW_MSG_ALERT_NAME,
     );
     return dataModel;
   }
@@ -356,27 +356,6 @@ class ChatPageUtil {
     }
     return true;
   }
-
-
-  //判断这个消息是不是提示消息
-  bool _getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    }
-    return false;
-  }
-
-
 
   //判断这个消息是不是时间的提示
   bool isTimeAlertMsg(ChatDataModel chatDataModel){
@@ -584,4 +563,23 @@ class ChatPageUtil {
     }
   }
 
+  //判断这个消息是不是提示消息
+  bool getIsAlertMessage(String chatTypeModel) {
+    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_NEW_MSG_ALERT) {
+      return true;
+    }
+    return false;
+  }
 }

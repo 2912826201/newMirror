@@ -1096,7 +1096,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   _exitPageListener() {
     showAppDialog(context,
         info: "课程还未结束,确认退出吗？",
-        topImageUrl: "",
+        topImageUrl: "assets/png/unfinished_training_png.png",
+        isTransparentBack: true,
         barrierDismissible: false,
         cancel: AppDialogButton("仍要退出", () {
           _exitPage();

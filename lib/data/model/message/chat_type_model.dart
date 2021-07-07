@@ -41,7 +41,6 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_SYSTEM_COMMON ="IF:SystemMessage";
   static const String MESSAGE_TYPE_SYSTEM_COMMON_NAME = "系统通知，该版本较低请升级版本再行查看";
 
-
   // 撤回的消息 不知为何会有两种ObjectName
   static const String MESSAGE_TYPE_RECALL_MSG1 = "RC:RcNtf";
   static const String MESSAGE_TYPE_RECALL_MSG2 = "RC:RcCmd";
@@ -50,6 +49,10 @@ class ChatTypeModel {
   //自定义消息类型：提示信息
   static const String MESSAGE_TYPE_ALERT = "IF:AlertMessage";
   static const String MESSAGE_TYPE_ALERT_NAME = "提示消息，该版本较低请升级版本再行查看";
+
+  //自定义消息类型：提示信息-新消息提示
+  static const String MESSAGE_TYPE_NEW_MSG_ALERT = "IF:NewMsgAlertMessage";
+  static const String MESSAGE_TYPE_NEW_MSG_ALERT_NAME = "新消息提示消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-时间提示
   static const String MESSAGE_TYPE_ALERT_TIME = "IF:AlertTimeMessage";

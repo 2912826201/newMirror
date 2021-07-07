@@ -31,11 +31,11 @@ class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
 
   @override
   Widget build(BuildContext context) {
-    return unreadCount > 0 ? getAtUi() : Container();
+    return unreadCount > 0 ? getNewMsgUi() : Container();
   }
 
-  //获取at的视图
-  Widget getAtUi() {
+  //获取新消息条数的ui
+  Widget getNewMsgUi() {
     return GestureDetector(
       onTap: () {
         unreadCount = 0;
@@ -46,15 +46,16 @@ class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
       },
       child: Container(
         height: 44,
-        width: 114,
+        padding: EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(22), bottomLeft: Radius.circular(22)),
         ),
         child: Row(
           children: [
-            SizedBox(
-              width: 12,
+            Container(
+              padding: EdgeInsets.only(top: 3),
+              child: Image.asset("assets/png/icon_up.png", width: 16, height: 16),
             ),
             Text(
               "$unreadCount条新消息",

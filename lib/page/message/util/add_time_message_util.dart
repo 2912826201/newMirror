@@ -11,13 +11,14 @@ import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
-class AddTimeMessageUtil{
+import 'chat_page_util.dart';
 
+class AddTimeMessageUtil {
   static AddTimeMessageUtil _util;
 
-  static AddTimeMessageUtil init(){
-    if(_util==null){
-      _util=AddTimeMessageUtil();
+  static AddTimeMessageUtil init() {
+    if (_util == null) {
+      _util = AddTimeMessageUtil();
     }
     return _util;
   }
@@ -81,7 +82,7 @@ class AddTimeMessageUtil{
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
       // print("mapModel：${mapModel.toString()}");
-      if (_getIsAlertMessage(mapModel["subObjectName"])) {
+      if (ChatPageUtil.init(Application.appContext).getIsAlertMessage(mapModel["subObjectName"])) {
         //-------------------------------------------------提示消息--------------------------------------------
         return _getAlertIsAddTimeMsg(mapModel);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
@@ -95,23 +96,6 @@ class AddTimeMessageUtil{
     return true;
   }
 
-  //判断这个消息是不是提示消息
-  bool _getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    }
-    return false;
-  }
 
 
 
