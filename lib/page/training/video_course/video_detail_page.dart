@@ -28,6 +28,7 @@ import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -353,7 +354,7 @@ class VideoDetailPageState extends XCState {
             ),
           ),
           getTitleWidget(videoModel, context, globalKeyList[1]),
-          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2],getDataAction),
+          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2], getDataAction),
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, AppStyle.textMedium18, globalKeyList[3]),
           getActionUiVideo(videoModel, context, AppStyle.textMedium18),
@@ -480,8 +481,8 @@ class VideoDetailPageState extends XCState {
 
   //获取下载中的ui
   Widget getDownloadingUi(String text) {
-    if(_progressText.contains("异常")||_progressText.contains("暂停")){
-      text="下载暂停";
+    if (_progressText.contains("异常") || _progressText.contains("暂停")) {
+      text = "下载暂停";
     }
     return Container(
       width: double.infinity,
@@ -645,7 +646,7 @@ class VideoDetailPageState extends XCState {
     };
   }
 
-  initConnectivity(){
+  initConnectivity() {
     connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       switch (result) {
         case ConnectivityResult.mobile:
@@ -655,7 +656,7 @@ class VideoDetailPageState extends XCState {
           print('----------wifi-----------------wifi');
           break;
         case ConnectivityResult.none:
-          if(isDownLoading) {
+          if (isDownLoading) {
             dio.lock();
             try {
               if (context != null && mounted) {
@@ -673,7 +674,7 @@ class VideoDetailPageState extends XCState {
   }
 
   //没有登陆点击事件
-  void onNoLoginClickListener() async{
+  void onNoLoginClickListener() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
@@ -682,38 +683,40 @@ class VideoDetailPageState extends XCState {
     // 去登录
     AppRouter.navigateToLoginPage(context);
   }
-void getStoragePermision()async{
-      var permissionStatus = await Permission.storage.status;
-      switch(permissionStatus){
-        case PermissionStatus.granted:
-          onJudgeIsDownLoadCompleteVideo();
-          break;
-        case PermissionStatus.denied:
-          var status = await Permission.storage.request();
-          switch(status){
-            case PermissionStatus.granted:
-              onJudgeIsDownLoadCompleteVideo();
-              break;
-            case PermissionStatus.permanentlyDenied:
-              showAppDialog(context,
-                  title: "获取存储权限",
-                  info: "使用该功能需要打开存储权限",
-                  cancel: AppDialogButton("取消", () {
+
+  void getStoragePermision() async {
+    var permissionStatus = await Permission.storage.status;
+    switch (permissionStatus) {
+      case PermissionStatus.granted:
+        onJudgeIsDownLoadCompleteVideo();
+        break;
+      case PermissionStatus.denied:
+        var status = await Permission.storage.request();
+        switch (status) {
+          case PermissionStatus.granted:
+            onJudgeIsDownLoadCompleteVideo();
+            break;
+          case PermissionStatus.permanentlyDenied:
+            showAppDialog(context,
+                title: "获取存储权限",
+                info: "使用该功能需要打开存储权限",
+                cancel: AppDialogButton("取消", () {
+                  return true;
+                }),
+                confirm: AppDialogButton(
+                  "去打开",
+                  () {
+                    AppSettings.openAppSettings();
                     return true;
-                  }),
-                  confirm: AppDialogButton(
-                    "去打开",
-                        () {
-                      AppSettings.openAppSettings();
-                      return true;
-                    },
-                  ),
-                  barrierDismissible: false);
-              break;
-          }
-          break;
-      }
-}
+                  },
+                ),
+                barrierDismissible: false);
+            break;
+        }
+        break;
+    }
+  }
+
   //判断有没有完整的下载好视频
   void onJudgeIsDownLoadCompleteVideo() async {
     if (await isOffline()) {
@@ -744,22 +747,21 @@ void getStoragePermision()async{
     }
   }
 
-  onDownLoadErrorClick()async{
+  onDownLoadErrorClick() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    if(_progressText.contains("异常")||_progressText.contains("暂停")){
+    if (_progressText.contains("异常") || _progressText.contains("暂停")) {
       dio = Dio();
-      _progressText="正常下载";
+      _progressText = "正常下载";
       startDownVideo(downloadStringArray[0]);
-    }else{
+    } else {
       dio.lock();
-      _progressText="下载暂停";
+      _progressText = "下载暂停";
       setState(() {});
     }
   }
-
 
   //全部的视频地址已经下载完成--跳转
   void downloadAllCompleteVideo() {
@@ -777,7 +779,7 @@ void getStoragePermision()async{
         }
       }
       DownloadVideoCourseDBHelper().update(videoModel, urls, filePaths);
-      if(context!=null&&mounted) {
+      if (context != null && mounted) {
         AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
       }
     });
@@ -786,7 +788,7 @@ void getStoragePermision()async{
   //开始下载
   void startDownVideo(String downloadUrl) async {
     FileUtil().chunkDownLoad(context, downloadUrl, _progressListener,
-        cancelToken: cancelToken, dio: dio,type:downloadTypeCourse);
+        cancelToken: cancelToken, dio: dio, type: downloadTypeCourse);
   }
 
   //格式化进度
@@ -798,7 +800,7 @@ void getStoragePermision()async{
   //获取底部按钮
   Widget _getBottomBar() {
     //todo 判断用户是不是vip缺少开通vip的回调
-    bool isVip = context.read<TokenNotifier>().isLoggedIn?Application.profile.isVip == 1:false;
+    bool isVip = context.read<TokenNotifier>().isLoggedIn ? Application.profile.isVip == 1 : false;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
@@ -834,7 +836,7 @@ void getStoragePermision()async{
         //试听图片
         childrenArray.add(GestureDetector(
           child: widget3,
-          onTap: getStoragePermision,
+          onTap: CheckPhoneSystemUtil.init().isAndroid()?getStoragePermision:onJudgeIsDownLoadCompleteVideo,
         ));
 
         print("videoModel.priceType:${videoModel.priceType}");
@@ -1000,7 +1002,6 @@ void getStoragePermision()async{
     videoModel.coachDto?.relation = 1;
   }
 
-
   ///点击了教练
   onClickCoach() async {
     if (await isOffline()) {
@@ -1009,14 +1010,15 @@ void getStoragePermision()async{
     }
     jumpToUserProfilePage(context, videoModel.coachDto?.uid,
         avatarUrl: videoModel.coachDto?.avatarUri, userName: videoModel.coachDto?.nickName, callback: (dynamic r) {
-          bool result=context.read<UserInteractiveNotifier>().value.profileUiChangeModel[videoModel.coachDto.uid].isFollow;
-          print("result:$result");
-          if (null != result && result is bool) {
-            videoModel.coachDto.relation = result ? 0 : 1;
-            if (mounted) {
-              reload(() {});
-            }
-          }
+      bool result =
+          context.read<UserInteractiveNotifier>().value.profileUiChangeModel[videoModel.coachDto.uid].isFollow;
+      print("result:$result");
+      if (null != result && result is bool) {
+        videoModel.coachDto.relation = result ? 0 : 1;
+        if (mounted) {
+          reload(() {});
+        }
+      }
     });
   }
 
@@ -1032,7 +1034,7 @@ void getStoragePermision()async{
   }
 
   //登陆终端按钮
-  void _loginTerminalBtn() async{
+  void _loginTerminalBtn() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
@@ -1183,7 +1185,7 @@ void getStoragePermision()async{
   }
 
   //开通vip
-  void _openVip() async{
+  void _openVip() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
@@ -1192,7 +1194,7 @@ void getStoragePermision()async{
   }
 
   //使用终端进行训练
-  void _useTerminal() async{
+  void _useTerminal() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
