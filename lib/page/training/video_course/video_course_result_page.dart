@@ -27,8 +27,8 @@ import 'package:provider/provider.dart';
 /// Created by yangjiayi on 2021/1/14.
 
 class VideoCourseResultPage extends StatefulWidget {
-  TrainingCompleteResultModel result;
-  CourseModel course;
+  final TrainingCompleteResultModel result;
+  final CourseModel course;
 
   VideoCourseResultPage(this.result, this.course, {Key key}) : super(key: key);
 
@@ -37,27 +37,33 @@ class VideoCourseResultPage extends StatefulWidget {
 }
 
 class _VideoCourseResultState extends State<VideoCourseResultPage> {
+  TrainingCompleteResultModel result;
+  CourseModel course;
   int _feedbackIndex = -1;
   bool _isFeedbacking = false;
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     EventBus.getDefault().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
   @override
   void initState() {
+    result = widget.result;
+    course = widget.course;
     super.initState();
     //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
     EventBus.getDefault().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
   setData(List list) {
-    widget.result = list[0];
-    widget.course = list[1];
-    setState(() {});
+    result = list[0];
+    course = list[1];
+    _feedbackIndex = -1;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -110,7 +116,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                   builder: (context) {
                     return WillPopScope(
                       onWillPop: () async => true, //用来屏蔽安卓返回键关弹窗
-                      child: VideoCourseResultShareDialog(widget.result, widget.course),
+                      child: VideoCourseResultShareDialog(result, course),
                     );
                   });
             },
@@ -166,7 +172,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             alignment: Alignment.centerLeft,
             child: Text(
-              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n${widget.course.title}",
+              "恭喜你，${Application.profile.nickName}\n第${result.no}次完成\n${course.title}",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
@@ -187,11 +193,11 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                         width: 144.0,
                         rateList: [
                           //修正分数 至少有25分
-                          widget.result.synthesisRank > 25 ? widget.result.synthesisRank / 100 : 0.25,
-                          widget.result.completionDegree > 25 ? widget.result.completionDegree / 100 : 0.25,
-                          widget.result.lowerRank > 25 ? widget.result.lowerRank / 100 : 0.25,
-                          widget.result.upperRank > 25 ? widget.result.upperRank / 100 : 0.25,
-                          widget.result.coreRank > 25 ? widget.result.coreRank / 100 : 0.25
+                          result.synthesisRank > 25 ? result.synthesisRank / 100 : 0.25,
+                          result.completionDegree > 25 ? result.completionDegree / 100 : 0.25,
+                          result.lowerRank > 25 ? result.lowerRank / 100 : 0.25,
+                          result.upperRank > 25 ? result.upperRank / 100 : 0.25,
+                          result.coreRank > 25 ? result.coreRank / 100 : 0.25
                         ],
                       ),
                     ),
@@ -209,9 +215,10 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.ideographic,
                                 children: [
                                   Text(
-                                    "${widget.result.synthesisScore}",
+                                    "${result.synthesisScore}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   )
                                 ],
@@ -245,9 +252,10 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.ideographic,
                                 children: [
                                   Text(
-                                    "${IntegerUtil.formationCalorie(widget.result.calorie, isHaveCompany: false)}",
+                                    "${IntegerUtil.formationCalorie(result.calorie, isHaveCompany: false)}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
                                   SizedBox(
@@ -288,9 +296,10 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.ideographic,
                                 children: [
                                   Text(
-                                    "${widget.result.mseconds ~/ 60000}",
+                                    "${result.mseconds ~/ 60000}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
                                   SizedBox(
@@ -354,7 +363,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                 child: CachedNetworkImage(
                   height: 32,
                   width: 32,
-                  imageUrl: FileUtil.getSmallImage(widget.course.coachDto.avatarUri),
+                  imageUrl: FileUtil.getSmallImage(course.coachDto.avatarUri),
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                     color: AppColor.bgWhite,
@@ -366,7 +375,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               width: 12,
             ),
             Text(
-              widget.course.coachDto.nickName,
+              course.coachDto.nickName,
               style: TextStyle(color: AppColor.textPrimary2, fontSize: 14, fontWeight: FontWeight.w500),
             ),
             SizedBox(
@@ -375,22 +384,22 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             AppIcon.getAppIcon(AppIcon.identity_coach_16, 16),
             Spacer(),
             FollowButton(
-              id: widget.course.coachDto.uid,
-              relation: widget.course.coachDto.relation,
+              id: course.coachDto.uid,
+              relation: course.coachDto.relation,
               buttonType: FollowButtonType.COACH,
               resetDataListener: () {},
               onClickAttention: (int relation) {
-                widget.course.coachDto.relation = relation;
+                course.coachDto.relation = relation;
               },
             ),
 
             // InkWell(
             //     onTap: () {
-            //       if (widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2) {
-            //         ProfileAddFollow(widget.course.coachId).then((relation) {
+            //       if (course.coachDto.relation == 0 || course.coachDto.relation == 2) {
+            //         ProfileAddFollow(course.coachId).then((relation) {
             //           if (relation != null) {
             //             setState(() {
-            //               widget.course.coachDto.relation = relation;
+            //               course.coachDto.relation = relation;
             //             });
             //           }
             //         });
@@ -401,18 +410,18 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             //       height: 24,
             //       alignment: Alignment.centerRight,
             //       decoration: BoxDecoration(
-            //         color: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+            //         color: course.coachDto.relation == 0 || course.coachDto.relation == 2
             //             ? AppColor.textPrimary1
             //             : AppColor.transparent,
             //         borderRadius: BorderRadius.all(Radius.circular(14)),
             //         border: Border.all(
             //             width:
-            //                 widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? 0.5 : 0.0),
+            //                 course.coachDto.relation == 0 || course.coachDto.relation == 2 ? 0.5 : 0.0),
             //       ),
             //       child: Center(
             //         child: Text(
-            //             widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2 ? "关注" : "已关注",
-            //             style: widget.course.coachDto.relation == 0 || widget.course.coachDto.relation == 2
+            //             course.coachDto.relation == 0 || course.coachDto.relation == 2 ? "关注" : "已关注",
+            //             style: course.coachDto.relation == 0 || course.coachDto.relation == 2
             //                 ? AppStyle.whiteRegular12
             //                 : AppStyle.textSecondaryRegular12),
             //       ),
@@ -444,106 +453,135 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             SizedBox(
               height: 6,
             ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () async {
-                      if (!_isFeedbacking && _feedbackIndex < 0) {
-                        _isFeedbacking = true;
-                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 0);
-                        _isFeedbacking = false;
-                        if (feedbackResult) {
-                          setState(() {
-                            _feedbackIndex = 0;
-                          });
-                        }
-                      }
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          color: _feedbackIndex == 0 ? AppColor.mainRed : AppColor.mainBlue,
-                          height: 45,
-                          width: 45,
+            _feedbackIndex < 0
+                ? Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () async {
+                            if (!_isFeedbacking && _feedbackIndex < 0) {
+                              _isFeedbacking = true;
+                              bool feedbackResult = await videoCourseCommitFeeling(result.id, 0);
+                              _isFeedbacking = false;
+                              if (feedbackResult) {
+                                setState(() {
+                                  _feedbackIndex = 0;
+                                });
+                              }
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/png/video_course_result_easy.png",
+                                fit: BoxFit.cover,
+                                height: 45,
+                                width: 45,
+                              ),
+                              SizedBox(
+                                height: 6,
+                              ),
+                              Text("太简单了", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 6,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () async {
+                            if (!_isFeedbacking && _feedbackIndex < 0) {
+                              _isFeedbacking = true;
+                              bool feedbackResult = await videoCourseCommitFeeling(result.id, 1);
+                              _isFeedbacking = false;
+                              if (feedbackResult) {
+                                setState(() {
+                                  _feedbackIndex = 1;
+                                });
+                              }
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/png/video_course_result_good.png",
+                                fit: BoxFit.cover,
+                                height: 45,
+                                width: 45,
+                              ),
+                              SizedBox(
+                                height: 6,
+                              ),
+                              Text("很棒", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
+                            ],
+                          ),
                         ),
-                        Text("太简单了", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () async {
+                            if (!_isFeedbacking && _feedbackIndex < 0) {
+                              _isFeedbacking = true;
+                              bool feedbackResult = await videoCourseCommitFeeling(result.id, 2);
+                              _isFeedbacking = false;
+                              if (feedbackResult) {
+                                setState(() {
+                                  _feedbackIndex = 2;
+                                });
+                              }
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/png/video_course_result_hard.png",
+                                fit: BoxFit.cover,
+                                height: 45,
+                                width: 45,
+                              ),
+                              SizedBox(
+                                height: 6,
+                              ),
+                              Text("太难了", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(_feedbackIndex == 0
+                          ? "太厉害了，尝试挑战更高难度训练吧"
+                          : _feedbackIndex == 1
+                              ? "真棒，继续加油吧"
+                              : _feedbackIndex == 2
+                                  ? "别着急，尝试下简单的课程吧"
+                                  : ""),
+                      Image.asset(
+                        _feedbackIndex == 0
+                            ? "assets/png/video_course_result_easy.png"
+                            : _feedbackIndex == 1
+                                ? "assets/png/video_course_result_good.png"
+                                : _feedbackIndex == 2
+                                    ? "assets/png/video_course_result_hard.png"
+                                    : "",
+                        fit: BoxFit.cover,
+                        height: 45,
+                        width: 45,
+                      ),
+                    ],
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () async {
-                      if (!_isFeedbacking && _feedbackIndex < 0) {
-                        _isFeedbacking = true;
-                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 1);
-                        _isFeedbacking = false;
-                        if (feedbackResult) {
-                          setState(() {
-                            _feedbackIndex = 1;
-                          });
-                        }
-                      }
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          color: _feedbackIndex == 1 ? AppColor.mainRed : AppColor.mainBlue,
-                          height: 45,
-                          width: 45,
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text("很棒", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () async {
-                      if (!_isFeedbacking && _feedbackIndex < 0) {
-                        _isFeedbacking = true;
-                        bool feedbackResult = await videoCourseCommitFeeling(widget.result.id, 2);
-                        _isFeedbacking = false;
-                        if (feedbackResult) {
-                          setState(() {
-                            _feedbackIndex = 2;
-                          });
-                        }
-                      }
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          color: _feedbackIndex == 2 ? AppColor.mainRed : AppColor.mainBlue,
-                          height: 45,
-                          width: 45,
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text("太难了", style: TextStyle(color: AppColor.textSecondary, fontSize: 13))
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
           ],
         ),
       ),
@@ -556,15 +594,13 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
-    jumpToUserProfilePage(context, widget.course.coachDto.uid,
-        avatarUrl: widget.course.coachDto?.avatarUri,
-        userName: widget.course.coachDto?.nickName, callback: (dynamic r) {
+    jumpToUserProfilePage(context, course.coachDto.uid,
+        avatarUrl: course.coachDto?.avatarUri, userName: course.coachDto?.nickName, callback: (dynamic r) {
       if (mounted && context != null) {
-        bool result =
-            context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.course.coachDto.uid].isFollow;
+        bool result = context.read<UserInteractiveNotifier>().value.profileUiChangeModel[course.coachDto.uid].isFollow;
         print("result:$result");
         if (null != result && result is bool) {
-          widget.course.coachDto.relation = result ? 0 : 1;
+          course.coachDto.relation = result ? 0 : 1;
           if (mounted) {
             setState(() {});
           }

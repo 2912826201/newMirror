@@ -566,19 +566,19 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                   cupertinoButtonList,
                   cycleRolling: false,
                   autoRolling: false,
-                  onPageChanged: (index) {
-                    autoPlay(index);
+                  onPageChanged: (index) async {
+                   await autoPlay(index);
                     if (index > 1) {
                       if (index < imageCount - 3) {
                         scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                            duration: Duration(milliseconds: 350), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                       } else if (index >= imageCount - 3) {
                         scrollController.animateTo(scrollController.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                            duration: Duration(milliseconds: 350), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                       }
                     } else if (beforIndex != null && beforIndex > index) {
                       scrollController.animateTo(scrollController.position.minScrollExtent,
-                          duration: Duration(milliseconds: 150), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          duration: Duration(milliseconds: 350), curve: Cubic(1.0, 1.0, 1.0, 1.0));
                     }
                     beforIndex = index;
                   },
