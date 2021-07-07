@@ -385,11 +385,11 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               //   RaisedButton(
               //     onPressed: () async {
               //       TrainingCompleteResultModel result = TrainingCompleteResultModel();
-              //       result.synthesisRank = 0.67;
-              //       result.upperRank = 1.0;
-              //       result.lowerRank = 0.8;
-              //       result.coreRank = 0.33;
-              //       result.completionDegree = 0.57;
+              //       result.synthesisRank = 67;
+              //       result.upperRank = 100;
+              //       result.lowerRank = 80;
+              //       result.coreRank = 33;
+              //       result.completionDegree = 57;
               //       result.no = 233;
               //       result.calorie = 198;
               //       result.mseconds = 2040000;
