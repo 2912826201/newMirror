@@ -3,12 +3,16 @@ import 'dart:math';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/test/activation_test_page.dart';
@@ -379,7 +383,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               ]),
               // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               //   RaisedButton(
-              //     onPressed: () {
+              //     onPressed: () async {
               //       TrainingCompleteResultModel result = TrainingCompleteResultModel();
               //       result.synthesisRank = 0.67;
               //       result.upperRank = 1.0;
@@ -390,7 +394,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               //       result.calorie = 198;
               //       result.mseconds = 2040000;
               //       result.synthesisScore = 12894;
-              //       AppRouter.navigateToVideoCourseResult(context, result);
+              //       CourseModel course = await getCourseModel(courseId: 77, type: mode_video);
+              //       AppRouter.navigateToVideoCourseResult(context, result, course);
               //     },
               //     child: Text("视频课结果页"),
               //   ),

@@ -240,6 +240,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.ideographic,
                   children: [
                     Text(
                       "${widget.result.synthesisScore}",
@@ -276,6 +277,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.ideographic,
                   children: [
                     Text(
                       "${IntegerUtil.formationCalorie(widget.result.calorie, isHaveCompany: false)}",
@@ -319,6 +321,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.ideographic,
                   children: [
                     Text(
                       "${widget.result.mseconds ~/ 60000}",
