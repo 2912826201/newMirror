@@ -172,7 +172,7 @@ class HeadViewState extends State<HeadView> {
           onTap: () {
             if (!context.read<TokenNotifier>().isLoggedIn) {
               AppRouter.navigateToLoginPage(context);
-              ToastShow.show(msg: "请先登录", context: context);
+              ToastShow.show(msg: "请先登录app!", context: context);
               return;
             }
             _checkBlackStatus(widget.model.pushId, context, false);
@@ -449,7 +449,7 @@ class HeadViewState extends State<HeadView> {
                           break;
                         case "举报":
                           if (!context.read<TokenNotifier>().isLoggedIn) {
-                            ToastShow.show(msg: "请先登录·", context: context);
+                            ToastShow.show(msg: "请先登录app!", context: context);
                             return;
                           }
                           _showDialog();

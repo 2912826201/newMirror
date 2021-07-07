@@ -597,7 +597,7 @@ class _FollowButtonState extends State<FollowButton> {
               return false;
             }
             if (!context.read<TokenNotifier>().isLoggedIn) {
-              ToastShow.show(msg: "请先登录", context: context);
+              ToastShow.show(msg: "请先登录app!", context: context);
               AppRouter.navigateToLoginPage(context);
               return false;
             }
