@@ -836,7 +836,8 @@ class VideoDetailPageState extends XCState {
         //试听图片
         childrenArray.add(GestureDetector(
           child: widget3,
-          onTap: CheckPhoneSystemUtil.init().isAndroid()?getStoragePermision:onJudgeIsDownLoadCompleteVideo,
+          // onTap: CheckPhoneSystemUtil.init().isAndroid()?getStoragePermision:onJudgeIsDownLoadCompleteVideo,
+          onTap: onJudgeIsDownLoadCompleteVideo,
         ));
 
         print("videoModel.priceType:${videoModel.priceType}");
