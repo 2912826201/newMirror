@@ -57,8 +57,11 @@ class _AppDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            child: _buildTopImageView(),
+          Transform.translate(
+            offset: Offset(0, 2),
+            child: Container(
+              child: _buildTopImageView(),
+            ),
           ),
           Container(
             decoration: isTransparentBack
