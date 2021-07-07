@@ -53,4 +53,6 @@ class AppColor {
   static const color707070 = Color.fromRGBO(0x70, 0x70, 0x70, 1.0);
   static const colorfcb6bf = Color.fromRGBO(0xFC, 0xB6, 0xBF, 1.0);
   static const color343434 = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
+  static const colorf5f5f5 = Color.fromRGBO(0xf5, 0xf5, 0xf5, 1.0);
+  static const colorebebf5 = Color.fromRGBO(0xeb, 0xeb, 0xf5, 1.0);
 }

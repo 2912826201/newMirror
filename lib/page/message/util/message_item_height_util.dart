@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -13,6 +14,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import 'chat_page_util.dart';
 
 class MessageItemHeightUtil {
   static MessageItemHeightUtil _itemHeightUtil;
@@ -170,7 +173,7 @@ class MessageItemHeightUtil {
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
         //-------------------------------------------------视频课程消息--------------------------------------------
         return getLiveVideoCourseMsgHeight(isShowName);
-      } else if (getIsAlertMessage(mapModel["subObjectName"])) {
+      } else if (ChatPageUtil.init(Application.appContext).getIsAlertMessage(mapModel["subObjectName"])) {
         //-------------------------------------------------提示消息--------------------------------------------
         return getAlertMsgHeight();
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
@@ -478,23 +481,5 @@ class MessageItemHeightUtil {
 
 
     return itemHeight;
-  }
-
-  //判断这个消息是不是提示消息
-  bool getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    }
-    return false;
   }
 }

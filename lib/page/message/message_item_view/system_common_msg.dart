@@ -230,18 +230,25 @@ class SystemCommonMsg extends StatelessWidget {
           }
         },
         child: Container(
-          color: AppColor.transparent,
+          color: AppColor.bgWhite,
           child: CachedNetworkImage(
             width: 200.0,
             height: 100.0,
             imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
+            // imageUrl: "",
             fit: BoxFit.cover,
             fadeInDuration: Duration(milliseconds: 0),
             placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.colorebebf5,
+              child: Image.asset("assets/png/preload_png.png", width: 78, height: 34),
             ),
             errorWidget: (context, url, error) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.color343434,
+              child: Image.asset(
+                "assets/png/image_error.png",
+                width: 80,
+                height: 80,
+              ),
             ),
           ),
         ),
@@ -291,7 +298,6 @@ class SystemCommonMsg extends StatelessWidget {
       ),
     );
   }
-
 
   initData(BuildContext context){
     if(StringUtil.isURL(subModel.picUrl)){
