@@ -95,7 +95,8 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
     }
     notifyListeners();
   }
-  void changeBalckStatus(int id,bool status,{bool needNotify = true}) {
+
+  void changeBlackStatus(int id,bool status,{bool needNotify = true}) {
     value.profileUiChangeModel[id].inMyBlack  = status;
     if(needNotify){
       notifyListeners();

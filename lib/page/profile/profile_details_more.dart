@@ -167,7 +167,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     bool blackStatus = await ProfileAddBlack(widget.userId);
     print('拉黑是否成功====================================$blackStatus');
     if (blackStatus == true) {
-      context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, true);
+      context.read<UserInteractiveNotifier>().changeBlackStatus(widget.userId, true);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       context.read<UserInteractiveNotifier>().removeListId(widget.userId,isAdd: false);
       context.read<UserInteractiveNotifier>().removeUserFollowId(widget.userId);
@@ -186,7 +186,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     if (blackStatus != null) {
       if (blackStatus == true) {
         ToastShow.show(msg: "解除拉黑成功", context: context);
-        context.read<UserInteractiveNotifier>().changeBalckStatus(widget.userId, false);
+        context.read<UserInteractiveNotifier>().changeBlackStatus(widget.userId, false);
         context.read<UserInteractiveNotifier>().removeListId(widget.userId);
       } else {
         ToastShow.show(msg: "操作失败", context: context);

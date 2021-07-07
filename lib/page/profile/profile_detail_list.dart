@@ -211,7 +211,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
           child: SizeCacheWidget(
-              estimateCount:8,
+              estimateCount:6,
               child: SmartRefresher(
                   enablePullUp: true,
                   enablePullDown: true,

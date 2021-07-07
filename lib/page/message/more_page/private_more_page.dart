@@ -305,7 +305,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
         try{
           if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel.containsKey(int.parse(widget.chatUserId))) {
-            context.read<UserInteractiveNotifier>().changeBalckStatus( int.parse(widget.chatUserId), true, needNotify: false);
+            context.read<UserInteractiveNotifier>().changeBlackStatus( int.parse(widget.chatUserId), true, needNotify: false);
             context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
             context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId), false);
           }
@@ -337,7 +337,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             dismissProgressDialog();
           });
         }
-        context.read<UserInteractiveNotifier>().changeBalckStatus( int.parse(widget.chatUserId), false, needNotify:
+        context.read<UserInteractiveNotifier>().changeBlackStatus( int.parse(widget.chatUserId), false, needNotify:
         false);
       } else {
         ToastShow.show(msg: "解除拉黑失败", context: context);

@@ -1,4 +1,5 @@
 // import 'dart:html';
+import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
@@ -58,7 +59,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   bool haveNewVersion = false;
   String content;
   String url;
-
+  StreamController<double> topStreamController = StreamController<double>();
+  StreamController<double> bottomStreamController = StreamController<double>();
+  double beforOffset;
+  double totalOffset;
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -75,6 +79,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     gaussianBlurHeight = ScreenUtil.instance.statusBarHeight + CustomAppBar.appBarHeight + 12 + userAvatarHeight;
     getProfileModel();
     if (!AppConfig.needShowTraining) _getNewVersion();
+    controller.addListener(() {
+      // print('我的页滚动=====================${controller.offset}');
+
+    });
   }
 
   _getNewVersion() async {
@@ -100,6 +108,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     }
   }
 
+
+  bool notificationListener(ScrollNotification notification){
+    print('-------------------${notification.metrics.axis}');
+    print('-------------------${notification.metrics.pixels}');
+    print('-------------------${notification.metrics.pixels}');
+    return false;
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -110,11 +125,38 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: null,
       backgroundColor: AppColor.white,
-      body: SingleChildScrollView(
+      body:  Listener(
+        // onNotification:notificationListener,
+        onPointerDown: (PointerDownEvent event){
+          beforOffset = event.position.dy;
+        },
+        onPointerUp: (PointerUpEvent event){
+          beforOffset = null;
+          topStreamController.sink.add(0);
+          bottomStreamController.sink.add(0);
+        },
+        onPointerMove: (PointerMoveEvent event){
+          print('--------------------${event.position.dy}');
+          if(controller.offset==controller.position.minScrollExtent&&beforOffset < event.position.dy){
+            print('----------------------向下');
+            double offset = event.position.dy-beforOffset;
+            if(offset>200){
+             return;
+            }
+            topStreamController.sink.add(offset);
+          }else if(controller.offset==controller.position.maxScrollExtent){
+            double offset = beforOffset - event.position.dy;
+            if(offset>200){
+              return;
+            }
+            bottomStreamController.sink.add(offset);
+          }
+        },
+        child: SingleChildScrollView(
         controller: controller,
-        physics: BouncingScrollPhysics(),
+        physics: ClampingScrollPhysics(),
         child: _buildSuggestions(),
-      ),
+      ),),
     );
   }
 
@@ -160,7 +202,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         /*
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
         if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
-      ],
+
+    StreamBuilder<double>(
+    initialData: 0,
+    stream: bottomStreamController.stream,
+    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+    return AnimatedContainer(
+    duration: Duration(milliseconds: snapshot.data==0?200:1),
+    curve: Curves.linear,
+    height: snapshot.data,
+    child: Container(
+    height: snapshot.data,
+    ),);})
+    ],
     );
   }
 
@@ -184,7 +238,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               Container(
                 height: (width - 65) / 3,
                 width: boxWidth,
-                child: Image.asset("assets/png/training_bg.png",fit:BoxFit.cover,height: (width - 65) / 3,width: boxWidth,),
+                child: Image.asset(
+                  "assets/png/training_bg.png",
+                  fit: BoxFit.cover,
+                  height: (width - 65) / 3,
+                  width: boxWidth,
+                ),
               ),
               Container(
                 height: (width - 65) / 3,
@@ -227,68 +286,88 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里设置高斯模糊和白蒙层
   Widget _blurrectAvatar() {
-    return Container(
-      height: gaussianBlurHeight + 72,
-      width: width,
-      child: Stack(
-        children: [
-          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-            print("头像地址:$avatar");
-            return CachedNetworkImage(
-              height: gaussianBlurHeight,
+    return StreamBuilder<double>(
+        initialData: 0,
+        stream: topStreamController.stream,
+        builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+          return AnimatedContainer(
+            duration: Duration(milliseconds: snapshot.data==0?200:1),
+            curve: Curves.linear,
+            height: gaussianBlurHeight + 72 + snapshot.data,
+            child: Container(
+              height: gaussianBlurHeight + 72 + snapshot.data,
               width: width,
-              imageUrl: avatar != null ? avatar : "",
-              fit: BoxFit.none,
-              placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
-              ),
-            );
-          }, selector: (context, notifier) {
-            return notifier.profile.avatarUri;
-          }),
-          Positioned(
-              child: Container(
-                width: width,
-                height: gaussianBlurHeight,
-                color: AppColor.white.withOpacity(0.6),
-              )),
-          Container(
-            width: width,
-            height: gaussianBlurHeight + 72,
-            clipBehavior: Clip.hardEdge,
-            // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
-            decoration: BoxDecoration(),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: Container(
-                height: gaussianBlurHeight,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: ScreenUtil.instance.statusBarHeight,
+              child: Stack(
+                children: [
+                  Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+                    print("头像地址:$avatar");
+                    return AnimatedContainer(
+                        duration: Duration(milliseconds: snapshot.data==0?200:1),
+                    curve: Curves.linear,
+                    height: gaussianBlurHeight +  snapshot.data,
+                    child: CachedNetworkImage(
+                      height: gaussianBlurHeight + snapshot.data,
+                      width: width,
+                      imageUrl: avatar != null ? avatar : "",
+                      fit: BoxFit.none,
+                      placeholder: (context, url) => Container(
+                        color: AppColor.bgWhite,
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColor.bgWhite,
+                      ),
+                    ));
+                  }, selector: (context, notifier) {
+                    return notifier.profile.avatarUri;
+                  }),
+                  Positioned(
+                      child: AnimatedContainer(
+                          duration: Duration(milliseconds: snapshot.data==0?200:1),
+                          curve: Curves.linear,
+                          height: gaussianBlurHeight +  snapshot.data,
+                          child: Container(
+                    width: width,
+                    height: gaussianBlurHeight + snapshot.data,
+                    color: AppColor.white.withOpacity(0.6),
+                  ))),
+              AnimatedContainer(
+                duration: Duration(milliseconds: snapshot.data==0?200:1),
+                curve: Curves.linear,
+                height: gaussianBlurHeight + 72 +  snapshot.data,
+                child:Container(
+                    width: width,
+                    height: gaussianBlurHeight + 72 + snapshot.data,
+                    clipBehavior: Clip.hardEdge,
+                    // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+                    decoration: BoxDecoration(),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              height: ScreenUtil.instance.statusBarHeight,
+                            ),
+                            SizedBox(
+                              height: CustomAppBar.appBarHeight,
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            _getUserImage(),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            _userFollowRow(),
+                          ],
+                        ),
                     ),
-                    SizedBox(
-                      height: CustomAppBar.appBarHeight,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _getUserImage(),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _userFollowRow(),
-                  ],
-                ),
+                  ))
+                ],
               ),
             ),
-          )
-        ],
-      ),
-    );
+          );
+        });
   }
 
   //底部功能列表
@@ -537,7 +616,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
         break;
       case "扫一扫":
-       gotoScanCodePage(context,showMyCode: true);
+        gotoScanCodePage(context, showMyCode: true);
         break;
       case "设置":
         AppRouter.navigateToSettingHomePage(context);
