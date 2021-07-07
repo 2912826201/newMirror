@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,6 +32,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -680,7 +682,38 @@ class VideoDetailPageState extends XCState {
     // 去登录
     AppRouter.navigateToLoginPage(context);
   }
-
+void getStoragePermision()async{
+      var permissionStatus = await Permission.storage.status;
+      switch(permissionStatus){
+        case PermissionStatus.granted:
+          onJudgeIsDownLoadCompleteVideo();
+          break;
+        case PermissionStatus.denied:
+          var status = await Permission.storage.request();
+          switch(status){
+            case PermissionStatus.granted:
+              onJudgeIsDownLoadCompleteVideo();
+              break;
+            case PermissionStatus.permanentlyDenied:
+              showAppDialog(context,
+                  title: "获取存储权限",
+                  info: "使用该功能需要打开存储权限",
+                  cancel: AppDialogButton("取消", () {
+                    return true;
+                  }),
+                  confirm: AppDialogButton(
+                    "去打开",
+                        () {
+                      AppSettings.openAppSettings();
+                      return true;
+                    },
+                  ),
+                  barrierDismissible: false);
+              break;
+          }
+          break;
+      }
+}
   //判断有没有完整的下载好视频
   void onJudgeIsDownLoadCompleteVideo() async {
     if (await isOffline()) {
@@ -801,7 +834,7 @@ class VideoDetailPageState extends XCState {
         //试听图片
         childrenArray.add(GestureDetector(
           child: widget3,
-          onTap: onJudgeIsDownLoadCompleteVideo,
+          onTap: getStoragePermision,
         ));
 
         print("videoModel.priceType:${videoModel.priceType}");

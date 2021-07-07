@@ -93,7 +93,7 @@ class AppPrefs {
 
   ///移除下载任务
   static removeDownLadTask(String url) {
-    _instance.setString(url, null);
+    _instance.remove(url);
     List<String> keyList = AppPrefs.getDownLoadKeyList();
     keyList.remove(url);
     _instance.setStringList(downLoadKeyList, keyList);
@@ -104,7 +104,7 @@ class AppPrefs {
   static clearDownLadTask() {
     if (AppPrefs.getDownLoadKeyList() != null) {
       AppPrefs.getDownLoadKeyList().forEach((element) {
-        _instance.setString(element, null);
+        _instance.remove(element);
       });
     }
     _instance.setStringList(downLoadKeyList, []);
