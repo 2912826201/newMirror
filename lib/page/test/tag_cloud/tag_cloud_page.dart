@@ -39,7 +39,7 @@ class _TagCloudPageState extends State<TagCloudPage> {
       appBar: AppBar(
         title: Text("标签云测试"),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child:
         Column(
             mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: [
