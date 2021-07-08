@@ -230,10 +230,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   Widget _showDataUi() {
     return !listNoData
         ? ListView.builder(
-            // shrinkWrap: true,
-            // padding: EdgeInsets.only(top: 10),
-            // //解决无限高度问题
-            // physics: AlwaysScrollableScrollPhysics(),
             itemCount: followModel.length,
             itemBuilder: (context, index) {
               return _listItem(index);

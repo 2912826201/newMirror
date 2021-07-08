@@ -87,6 +87,12 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           PermissionStatus status = await Permission.locationWhenInUse.request();
           if(status.isPermanentlyDenied){
             _showDialog(context);
+          }else if(status.isGranted){
+            AppRouter.navigateSearchOrLocationPage(
+                context, checkIndex, selectAddress, widget.currentAddressInfo, (result) {
+              PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+              return childrenACallBack(poi);
+            });
           }
         }
         print("跳转选择地址页面");

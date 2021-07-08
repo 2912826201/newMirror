@@ -30,7 +30,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
   @override
   void initState() {
     super.initState();
-
   }
 
 
@@ -115,6 +114,8 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
   void _showDialog(int type) {
     showAppDialog(
       context,
+      title: "提交举报",
+      info: "确认举报该用户",
       confirm: AppDialogButton(
           type == 1
               ? "必须举报!"
@@ -179,8 +180,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
 
   ///取消拉黑
   _cancelBlack() async {
-
-
     bool blackStatus = await ProfileCancelBlack(widget.userId);
     print('取消拉黑是否成功====================================$blackStatus');
     if (blackStatus != null) {

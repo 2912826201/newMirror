@@ -122,7 +122,7 @@ class Loading {
   ///关闭loading
   static hideLoading(BuildContext context) {
     if (isShow) {
-      streamController.onCancel;
+      streamController.onCancel();
       streamController.close();
       Navigator.of(context).pop();
     }
