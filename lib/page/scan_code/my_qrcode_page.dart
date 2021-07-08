@@ -47,12 +47,8 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
     String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
     Uint8List pngByte = _byteData.buffer.asUint8List();
     imageFile = await FileUtil().writeImageDataToFile(pngByte, timeStr);
-    print('rootWidgetKey width===============${rootWidgetKey.currentContext.size.width}');
-    print('rootWidgetKey height===============${rootWidgetKey.currentContext.size.height}');
     width = rootWidgetKey.currentContext.size.width * dpr;
     height = rootWidgetKey.currentContext.size.height * dpr;
-    print('model height===========================$width');
-    print('nodel weith=========================$height');
   }
 
   @override

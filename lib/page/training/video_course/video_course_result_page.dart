@@ -557,30 +557,47 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                       ),
                     ],
                   )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(_feedbackIndex == 0
-                          ? "太厉害了，尝试挑战更高难度训练吧"
-                          : _feedbackIndex == 1
-                              ? "真棒，继续加油吧"
-                              : _feedbackIndex == 2
-                                  ? "别着急，尝试下简单的课程吧"
-                                  : ""),
-                      Image.asset(
-                        _feedbackIndex == 0
-                            ? "assets/png/video_course_result_easy.png"
-                            : _feedbackIndex == 1
-                                ? "assets/png/video_course_result_good.png"
+                : Container(
+                    height: 52,
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      color: AppColor.bgWhite,
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 20,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _feedbackIndex == 0
+                                ? "太厉害了，下次尝试更高难度的训练吧！"
+                                : _feedbackIndex == 1
+                                ? "真棒，继续加油吧~"
                                 : _feedbackIndex == 2
-                                    ? "assets/png/video_course_result_hard.png"
-                                    : "",
-                        fit: BoxFit.cover,
-                        height: 45,
-                        width: 45,
-                      ),
-                    ],
+                                ? "别着急，下次尝试简单点的课程吧~"
+                                : "",
+                            style: TextStyle(
+                              color: AppColor.textSecondary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Image.asset(
+                          "assets/png/video_course_result_fighting.png",
+                          fit: BoxFit.cover,
+                          height: 14,
+                          width: 14,
+                        ),
+                      ],
+                    ),
                   ),
           ],
         ),

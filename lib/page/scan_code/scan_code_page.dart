@@ -42,11 +42,13 @@ void gotoScanCodePage(BuildContext context,{bool showMyCode = false}){
               confirm: AppDialogButton(
                 "去打开",
                     () {
-                  AppSettings.openAppSettings();
+                  AppSettings.openAppSettings(asAnotherTask: true);
                   return true;
                 },
               ),
               barrierDismissible: false);
+        }else if(status.isGranted){
+          AppRouter.navigateToScanCodePage(context, showMyCode: showMyCode);
         }
       });
     }
