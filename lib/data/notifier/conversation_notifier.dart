@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -63,11 +64,12 @@ class ConversationNotifier with ChangeNotifier {
     _topIdList.remove(dto.id);
     _commonIdList.remove(dto.id);
     _topIdList.insert(0, dto.id);
-    if(_conversationMap[dto.id]==null) {
+    if (_conversationMap[dto.id] == null) {
       _conversationMap[dto.id] = dto;
-    }else{
-      _conversationMap[dto.id].isTop=1;
+    } else {
+      _conversationMap[dto.id].isTop = 1;
     }
+    ConversationDBHelper().updateConversation(_conversationMap[dto.id]);
     _notifyListeners();
   }
 
@@ -91,11 +93,12 @@ class ConversationNotifier with ChangeNotifier {
     _commonIdList.remove(dto.id);
     _topIdList.remove(dto.id);
     _commonIdList.insert(0, dto.id);
-    if(_conversationMap[dto.id]==null) {
+    if (_conversationMap[dto.id] == null) {
       _conversationMap[dto.id] = dto;
-    }else{
-      _conversationMap[dto.id].isTop=0;
+    } else {
+      _conversationMap[dto.id].isTop = 0;
     }
+    ConversationDBHelper().updateConversation(_conversationMap[dto.id]);
     _notifyListeners();
   }
 
