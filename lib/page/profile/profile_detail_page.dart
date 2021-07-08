@@ -339,7 +339,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(
-              child: FrameSeparateWidget(index: -2, child: profileDetailData(userDetailBoardHeight)),
+              child: profileDetailData(userDetailBoardHeight),
             ),
           ];
         },
@@ -451,9 +451,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         initialData: 0,
         stream: appBarOpacityStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-          return FrameSeparateWidget(
-            index: -3,
-            child: Container(
+          return  Container(
               color: AppColor.white.withOpacity(snapshot.data),
               height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
               width: width,
@@ -533,8 +531,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                   ],
                 ),
               ),
-            ),
-          );
+            );
         });
   }
 
