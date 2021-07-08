@@ -74,8 +74,9 @@ Future<bool> logout() async {
 //启动app调用(服务端处理数据)
 Future<bool> startApp() async {
   BaseResponseModel responseModel = await requestApi(
-      STARTAPP, {"token": Application.token == null ? "" : Application.token.accessToken},
-      authType: AUTH_TYPE_NONE);
+    STARTAPP,
+    {"token": Application.token == null ? "" : Application.token.accessToken},
+  );
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel.code == CODE_SUCCESS;
