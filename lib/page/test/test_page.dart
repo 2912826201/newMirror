@@ -21,6 +21,7 @@ import 'package:mirror/page/test/download_test_page.dart';
 import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
+import 'package:mirror/page/test/tag_cloud/tag_cloud_page.dart';
 import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
@@ -431,6 +432,15 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("左滑测试"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                    //     return SliverListDemoPage();
+                    return TagCloudPage();
+                  }));
+                },
+                child: Text("标签云测试"),
               ),
               Container(
                 color: AppColor.mainRed,
