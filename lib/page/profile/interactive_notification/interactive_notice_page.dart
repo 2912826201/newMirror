@@ -333,8 +333,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
     }
     if (widget.msgModel.refData != null) {
+      print('-----------------------widget.msgModel.refData != null');
       if (widget.msgModel.refType == 0) {
         feedModel = HomeFeedModel.fromJson(widget.msgModel.refData);
+        print('------------feedModel.');
       } else if (widget.msgModel.refType == 2) {
         fatherCommentModel = CommentDtoModel.fromJson(widget.msgModel.refData);
       } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
@@ -385,6 +387,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
     senderName = widget.msgModel.senderName;
     coverImage = widget.msgModel.coverUrl.coverUrl;
+    print('-coverImage-------coverImage-----------coverImage-------$coverImage-----');
     _getRefData(context);
     if (widget.type == 0 && widget.msgModel.commentData != null) {
       if (widget.msgModel.refType == 2) {
@@ -490,7 +493,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           SizedBox(
             width: 16,
           ),
-          !feedIsDelete
+          !feedIsDelete&&coverImage!=null
               ? InkWell(
                   onTap: () {
                     print('========================点击了${widget.msgModel.refId}');
@@ -502,7 +505,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       child: CachedNetworkImage(
                         height: imageWidth,
                         width: imageWidth,
-                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : " ",
+                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : "",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: AppColor.bgWhite,
