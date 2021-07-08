@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/jump_app_page_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -66,6 +67,10 @@ class JumpAppPageUtil {
       case 3:
         //训练页
         print("跳转界面-app界面-训练页");
+        if (!AppConfig.needShowTraining) {
+          print("没有打开训练模式");
+          return;
+        }
         break;
       case 4:
         //消息页
