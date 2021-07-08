@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
+
 /// dialog
 /// Created by yangjiayi on 2020/12/31.
 
@@ -26,6 +28,9 @@ class _AppDialog extends StatelessWidget {
   final String topImageUrl;
   final Widget customizeWidget;
 
+  //是不是透明
+  final bool isTransparentBack;
+
   final List<Widget> _viewList = [];
 
   _AppDialog(
@@ -37,6 +42,7 @@ class _AppDialog extends StatelessWidget {
       this.info,
       this.circleImageUrl,
       this.customizeWidget,
+      this.isTransparentBack = false,
       this.topImageUrl})
       : super(key: key);
 
@@ -45,13 +51,35 @@ class _AppDialog extends StatelessWidget {
     return Container(
       width: _dialogWidth,
       decoration: BoxDecoration(
-        color: AppColor.white,
+        color: isTransparentBack ? AppColor.transparent : AppColor.white,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _buildDialogView(context),
+        children: [
+          Transform.translate(
+            offset: Offset(0, 2),
+            child: Container(
+              child: _buildTopImageView(),
+            ),
+          ),
+          Container(
+            decoration: isTransparentBack
+                ? BoxDecoration(
+                    color: AppColor.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(7),
+                      bottomRight: Radius.circular(7),
+                    ),
+                  )
+                : null,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: _buildDialogView(context),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -60,7 +88,7 @@ class _AppDialog extends StatelessWidget {
     _viewList.clear();
     //上下的外边距交给按钮上方布局中的最上方(topImage)和最下方组件(info)控制
     //而每添加一个组件 组件需自动添加一个上方的内边距
-    _buildTopImageView();
+    // _buildTopImageView();
     _buildCircleImageView();
     _buildTitle();
     _buildInfo();
@@ -72,16 +100,20 @@ class _AppDialog extends StatelessWidget {
 
   _buildTopImageView() {
     //如果有头部图片 上边距从头部图片下面开始算 因为每个组件都要加内上边距 所以只加个差值
-    if (topImageUrl != null) {
-      _viewList.add(Container(
-        height: _topImageHeight,
-        color: AppColor.mainBlue,
-      ));
-    }
-    _viewList.add(SizedBox(
-      height: _outerPadding - _innerPadding,
-    ));
+
+    return Container(
+      width: double.infinity,
+      child: _getImageWidget(topImageUrl),
+    );
+    //
+    // if (topImageUrl != null) {
+    //   _viewList.add();
+    // }
+    // _viewList.add(SizedBox(
+    //   height: _outerPadding - _innerPadding,
+    // ));
   }
+
   _buildCircleImageView() {
     if (circleImageUrl != null) {
       _viewList.add(Padding(
@@ -262,6 +294,21 @@ class _AppDialog extends StatelessWidget {
       });
     }
   }
+
+  Widget _getImageWidget(String imageUrl) {
+    if (imageUrl == null) return Container();
+    if (StringUtil.isURL(imageUrl))
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+      );
+    if (imageUrl.startsWith("assets/png/"))
+      return Image.asset(
+        imageUrl,
+        fit: BoxFit.cover,
+      );
+    return Container();
+  }
 }
 
 // 弹窗按钮的封装类
@@ -285,6 +332,7 @@ showAppDialog(BuildContext context,
     Widget customizeWidget,
     String circleImageUrl,
     String topImageUrl,
+    bool isTransparentBack = false,
     bool barrierDismissible = true}) {
   showDialog(
       context: context,
@@ -293,6 +341,8 @@ showAppDialog(BuildContext context,
         return WillPopScope(
             onWillPop: () async => barrierDismissible, //用来屏蔽安卓返回键关弹窗
             child: Dialog(
+              backgroundColor: isTransparentBack ? AppColor.transparent : null,
+              elevation: isTransparentBack ? 0 : null,
               child: _AppDialog(
                   confirm: confirm,
                   cancel: cancel,
@@ -301,6 +351,7 @@ showAppDialog(BuildContext context,
                   info: info,
                   customizeWidget: customizeWidget,
                   circleImageUrl: circleImageUrl,
+                  isTransparentBack: isTransparentBack,
                   topImageUrl: topImageUrl),
             ));
       });

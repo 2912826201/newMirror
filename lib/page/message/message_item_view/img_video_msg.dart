@@ -372,7 +372,16 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       imageUrl: imageUrl ?? "",
       fit: BoxFit.cover,
-      placeholder: (context, url) => getImageShowImage(isPlaceholder: true),
+      placeholder: (context, url) {
+        if (isMyself) {
+          return getImageShowImage(isPlaceholder: true);
+        } else {
+          return Container(
+            color: AppColor.colorebebf5,
+            child: Image.asset("assets/png/preload_png.png", width: width * 0.39, height: width * 0.39 * 0.43),
+          );
+        }
+      },
       errorWidget: (context, url, error) {
         isOpenGallery = false;
         return getImageShowImage(isPlaceholder: false);

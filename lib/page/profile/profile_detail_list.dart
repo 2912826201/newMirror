@@ -242,7 +242,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                 index: index,
                 placeHolder: Container(
                   height: 500,
-                  color: AppColor.mainRed,
+                  color: AppColor.white,
                 ), child:_listItem(index),);
             })
         : ListView(

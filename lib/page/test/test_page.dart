@@ -3,12 +3,16 @@ import 'dart:math';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/training/course_mode.dart';
+import 'package:mirror/data/model/training/course_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/test/activation_test_page.dart';
@@ -356,6 +360,20 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                 ),
                 RaisedButton(
                   onPressed: () {
+                    // showAppDialog(context,
+                    //     info: "确认退出当前试听课程吗？",
+                    //     topImageUrl: "assets/png/unfinished_training_png.png",
+                    //     isTransparentBack:true,
+                    //     cancel: AppDialogButton("仍要退出", () {
+                    //       //先暂停再退出页面 避免返回到上一个界面后仍在播放一小段时间
+                    //       // _controller?.pause();
+                    //       // Navigator.pop(context);
+                    //       return true;
+                    //     }),
+                    //     confirm: AppDialogButton("继续训练", () {
+                    //       return true;
+                    //     }));
+
                     showAppDialog(
                       context,
                       circleImageUrl: "",
@@ -379,18 +397,19 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               ]),
               // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               //   RaisedButton(
-              //     onPressed: () {
+              //     onPressed: () async {
               //       TrainingCompleteResultModel result = TrainingCompleteResultModel();
-              //       result.synthesisRank = 0.67;
-              //       result.upperRank = 1.0;
-              //       result.lowerRank = 0.8;
-              //       result.coreRank = 0.33;
-              //       result.completionDegree = 0.57;
+              //       result.synthesisRank = 67;
+              //       result.upperRank = 100;
+              //       result.lowerRank = 80;
+              //       result.coreRank = 33;
+              //       result.completionDegree = 57;
               //       result.no = 233;
               //       result.calorie = 198;
               //       result.mseconds = 2040000;
               //       result.synthesisScore = 12894;
-              //       AppRouter.navigateToVideoCourseResult(context, result);
+              //       CourseModel course = await getCourseModel(courseId: 77, type: mode_video);
+              //       AppRouter.navigateToVideoCourseResult(context, result, course);
               //     },
               //     child: Text("视频课结果页"),
               //   ),

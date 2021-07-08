@@ -15,10 +15,12 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/message/message_item_view/alert_msg.dart';
 import 'package:mirror/page/message/message_item_view/feed_msg.dart';
+import 'package:mirror/page/message/util/chat_page_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'message_item_view/new_msg_alert_msg.dart';
 import 'widget/currency_msg.dart';
 import 'message_item_view/img_video_msg.dart';
 import 'message_item_view/live_video_course_msg.dart';
@@ -276,7 +278,10 @@ class SendMessageViewState extends State<SendMessageView> {
         //-------------------------------------------------视频课程消息--------------------------------------------
         Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
         return getLiveVideoCourseMsg(liveVideoModelMap, false, msg.messageUId);
-      } else if (getIsAlertMessage(mapModel["subObjectName"])) {
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_NEW_MSG_ALERT) {
+        //-------------------------------------------------新消息-提示消息--------------------------------------------
+        return getNewMsgAlertMsg();
+      } else if (ChatPageUtil.init(context).getIsAlertMessage(mapModel["subObjectName"])) {
         //-------------------------------------------------提示消息--------------------------------------------
         return getAlertMsg(map: mapModel);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
@@ -309,24 +314,6 @@ class SendMessageViewState extends State<SendMessageView> {
     } else {
       return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
-  }
-
-  //判断这个消息是不是提示消息
-  bool getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    }
-    return false;
   }
 
   //************************获取消息模块的方法 ----start
@@ -563,8 +550,13 @@ class SendMessageViewState extends State<SendMessageView> {
     );
   }
 
+  //新消息提示
+  Widget getNewMsgAlertMsg() {
+    return NewMsgAlertMsg();
+  }
+
   //系统消息的普通item
-  Widget getSystemCommonMsg(ChatSystemMessageSubModel subModel,String heroId) {
+  Widget getSystemCommonMsg(ChatSystemMessageSubModel subModel, String heroId) {
     return SystemCommonMsg(
         subModel: subModel,
         isMyself: false,

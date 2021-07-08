@@ -81,7 +81,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     if (!AppConfig.needShowTraining) _getNewVersion();
     controller.addListener(() {
       // print('我的页滚动=====================${controller.offset}');
-
     });
   }
 
@@ -108,13 +107,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-
-  bool notificationListener(ScrollNotification notification){
+  bool notificationListener(ScrollNotification notification) {
     print('-------------------${notification.metrics.axis}');
     print('-------------------${notification.metrics.pixels}');
     print('-------------------${notification.metrics.pixels}');
     return false;
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -125,38 +124,39 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: null,
       backgroundColor: AppColor.white,
-      body:  Listener(
+      body: Listener(
         // onNotification:notificationListener,
-        onPointerDown: (PointerDownEvent event){
+        onPointerDown: (PointerDownEvent event) {
           beforOffset = event.position.dy;
         },
-        onPointerUp: (PointerUpEvent event){
+        onPointerUp: (PointerUpEvent event) {
           beforOffset = null;
           topStreamController.sink.add(0);
           bottomStreamController.sink.add(0);
         },
-        onPointerMove: (PointerMoveEvent event){
+        onPointerMove: (PointerMoveEvent event) {
           print('--------------------${event.position.dy}');
-          if(controller.offset==controller.position.minScrollExtent&&beforOffset < event.position.dy){
+          if (controller.offset == controller.position.minScrollExtent && beforOffset < event.position.dy) {
             print('----------------------向下');
-            double offset = event.position.dy-beforOffset;
-            if(offset>200){
-             return;
+            double offset = event.position.dy - beforOffset;
+            if (offset > 200) {
+              return;
             }
             topStreamController.sink.add(offset);
-          }else if(controller.offset==controller.position.maxScrollExtent){
+          } else if (controller.offset == controller.position.maxScrollExtent) {
             double offset = beforOffset - event.position.dy;
-            if(offset>200){
+            if (offset > 200) {
               return;
             }
             bottomStreamController.sink.add(offset);
           }
         },
         child: SingleChildScrollView(
-        controller: controller,
-        physics: ClampingScrollPhysics(),
-        child: _buildSuggestions(),
-      ),),
+          controller: controller,
+          physics: ClampingScrollPhysics(),
+          child: _buildSuggestions(),
+        ),
+      ),
     );
   }
 
@@ -203,18 +203,20 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
         if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
 
-    StreamBuilder<double>(
-    initialData: 0,
-    stream: bottomStreamController.stream,
-    builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-    return AnimatedContainer(
-    duration: Duration(milliseconds: snapshot.data==0?200:1),
-    curve: Curves.linear,
-    height: snapshot.data,
-    child: Container(
-    height: snapshot.data,
-    ),);})
-    ],
+        StreamBuilder<double>(
+            initialData: 0,
+            stream: bottomStreamController.stream,
+            builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+              return AnimatedContainer(
+                duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                curve: Curves.linear,
+                height: snapshot.data,
+                child: Container(
+                  height: snapshot.data,
+                ),
+              );
+            })
+      ],
     );
   }
 
@@ -291,7 +293,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         stream: topStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return AnimatedContainer(
-            duration: Duration(milliseconds: snapshot.data==0?200:1),
+            duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
             curve: Curves.linear,
             height: gaussianBlurHeight + 72 + snapshot.data,
             child: Container(
@@ -302,67 +304,67 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
                     print("头像地址:$avatar");
                     return AnimatedContainer(
-                        duration: Duration(milliseconds: snapshot.data==0?200:1),
-                    curve: Curves.linear,
-                    height: gaussianBlurHeight +  snapshot.data,
-                    child: CachedNetworkImage(
-                      height: gaussianBlurHeight + snapshot.data,
-                      width: width,
-                      imageUrl: avatar != null ? avatar : "",
-                      fit: BoxFit.none,
-                      placeholder: (context, url) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColor.bgWhite,
-                      ),
-                    ));
+                        duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                        curve: Curves.linear,
+                        height: gaussianBlurHeight + snapshot.data,
+                        child: CachedNetworkImage(
+                          height: gaussianBlurHeight + snapshot.data,
+                          width: width,
+                          imageUrl: avatar != null ? avatar : "",
+                          fit: BoxFit.none,
+                          placeholder: (context, url) => Container(
+                            color: AppColor.bgWhite,
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColor.bgWhite,
+                          ),
+                        ));
                   }, selector: (context, notifier) {
                     return notifier.profile.avatarUri;
                   }),
                   Positioned(
                       child: AnimatedContainer(
-                          duration: Duration(milliseconds: snapshot.data==0?200:1),
+                          duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
                           curve: Curves.linear,
-                          height: gaussianBlurHeight +  snapshot.data,
+                          height: gaussianBlurHeight + snapshot.data,
                           child: Container(
-                    width: width,
-                    height: gaussianBlurHeight + snapshot.data,
-                    color: AppColor.white.withOpacity(0.6),
-                  ))),
-              AnimatedContainer(
-                duration: Duration(milliseconds: snapshot.data==0?200:1),
-                curve: Curves.linear,
-                height: gaussianBlurHeight + 72 +  snapshot.data,
-                child:Container(
-                    width: width,
-                    height: gaussianBlurHeight + 72 + snapshot.data,
-                    clipBehavior: Clip.hardEdge,
-                    // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
-                    decoration: BoxDecoration(),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              height: ScreenUtil.instance.statusBarHeight,
-                            ),
-                            SizedBox(
-                              height: CustomAppBar.appBarHeight,
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            _getUserImage(),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            _userFollowRow(),
-                          ],
+                            width: width,
+                            height: gaussianBlurHeight + snapshot.data,
+                            color: AppColor.white.withOpacity(0.6),
+                          ))),
+                  AnimatedContainer(
+                      duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                      curve: Curves.linear,
+                      height: gaussianBlurHeight + 72 + snapshot.data,
+                      child: Container(
+                        width: width,
+                        height: gaussianBlurHeight + 72 + snapshot.data,
+                        clipBehavior: Clip.hardEdge,
+                        // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+                        decoration: BoxDecoration(),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                height: ScreenUtil.instance.statusBarHeight,
+                              ),
+                              SizedBox(
+                                height: CustomAppBar.appBarHeight,
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              _getUserImage(),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              _userFollowRow(),
+                            ],
+                          ),
                         ),
-                    ),
-                  ))
+                      ))
                 ],
               ),
             ),
