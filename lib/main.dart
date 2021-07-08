@@ -386,6 +386,7 @@ _initJPush() {
     production: AppConfig.env != Env.DEV,
     debug: AppConfig.env == Env.DEV, // 设置是否打印 debug 日志
   );
+  jpush.clearAllNotifications();
   return jpush;
 }
 
