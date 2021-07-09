@@ -54,6 +54,7 @@ import 'data/model/data_response_model.dart';
 import 'data/model/feed/feed_flow_data_notifier.dart';
 import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
+import 'generated/l10n.dart';
 import 'page/message/util/chat_message_profile_util.dart';
 import 'data/model/message/chat_voice_setting.dart';
 import 'data/model/message/group_user_model.dart';
@@ -454,6 +455,7 @@ class MyAppState extends State<MyApp> {
        本地化的代理类
       */
       localizationsDelegates: [
+        S.delegate,
         GlobalMaterialLocalizations.delegate, // 指定本地化的字符串和一些其他的值
         GlobalCupertinoLocalizations.delegate, // 对应的Cupertino风格
         GlobalWidgetsLocalizations.delegate, // 指定默认的文本排列方向, 由左到右或由右到左
