@@ -205,11 +205,12 @@ class SearchMiddleView extends StatefulWidget {
   SearchMiddleViewState createState() => SearchMiddleViewState();
 }
 
-class SearchMiddleViewState extends State<SearchMiddleView> {
+class SearchMiddleViewState extends State<SearchMiddleView> with TickerProviderStateMixin {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<CourseModel> liveVideoList = [];
   List<SearchHotWords> hotWordList = [];
+  AnimationController animation;
 
   // Token can be shared with different requests.
   CancelToken token = CancelToken();
@@ -224,6 +225,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
   @override
   void initState() {
+    animation = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
     List<Future> requestList = [];
     // 请求推荐话题接口
     requestList.add(getRecommendTopic(size: 20, token: token));
@@ -294,8 +296,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
               // 最近搜索标题栏
-              searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
-              searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
+              searchHistoryList.isNotEmpty ? historyRecordSizeTransition() : Container(),
               hotWordList.isNotEmpty ? HotCourseRecommend() : Container(),
               hotWordList.isNotEmpty
                   ? liveVideoList.isNotEmpty
@@ -335,10 +336,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             iconSize: 18,
             svgName: AppIcon.trash_bucket,
             onTap: () {
-              SearchHistoryDBHelper().clearSearchHistory(context.read<ProfileNotifier>().profile.uid);
-              setState(() {
-                searchHistoryList.clear();
+              animation.forward().then((value) {
+                SearchHistoryDBHelper().clearSearchHistory(context.read<ProfileNotifier>().profile.uid);
+                setState(() {
+                  searchHistoryList.clear();
+                });
               });
+              // SearchHistoryDBHelper().clearSearchHistory(context.read<ProfileNotifier>().profile.uid);
+              // setState(() {
+              //   searchHistoryList.clear();
+              // });
             },
           ),
         ],
@@ -355,6 +362,23 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
     } else {
       return 0.0;
     }
+  }
+
+// 历史记录删除动画
+  historyRecordSizeTransition() {
+    return SizeTransition(
+        sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.fastOutSlowIn,
+        )),
+        axis: Axis.vertical,
+        axisAlignment: 1.0,
+        child: Container(
+            width: ScreenUtil.instance.screenWidthDp,
+            child: Column(children: [
+              searchTitleBar(context),
+              historyRecord(context),
+            ])));
   }
 
 // 历史记录
