@@ -455,6 +455,8 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
                     animationMap[fileModel.croppedImage.hashCode].forward().then((value) {
                       animationMap.removeWhere((key, value) => key == fileModel.croppedImage.hashCode);
                       widget.selectedMediaFiles.list.removeWhere((element) => element == fileModel);
+                      setState(() {
+                      });
                     });
                   }
                 }
