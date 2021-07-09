@@ -111,6 +111,7 @@ class VideoDetailPageState extends XCState {
 
   //下载监听
   Function(String, int, int) _progressListener;
+
   CancelToken cancelToken = CancelToken();
   Connectivity connectivity = Connectivity();
   Dio dio = Dio();
@@ -800,9 +801,6 @@ class VideoDetailPageState extends XCState {
       if (downloadStringArray.length < 1) {
         isDownLoading = false;
         downloadAllCompleteVideo();
-      } else {
-        isDownLoading = true;
-        startDownVideo(downloadStringArray[0]);
       }
     });
   }

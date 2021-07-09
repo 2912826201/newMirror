@@ -267,7 +267,7 @@ class HeadViewState extends State<HeadView> {
       }
     } else {
       context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
-          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
+          isFollow: widget.model.isFollow == 0 || widget.model.isFollow == 2,needNotify: mounted);
     }
   }
 

@@ -199,11 +199,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             if (dataModel.list.isNotEmpty) {
               print('==========================dataModel.list.isNotEmpty');
               dataModel.list.forEach((v) {
-                context
-                    .read<UserInteractiveNotifier>()
-                    .value
-                    .profileUiChangeModel
-                    .remove(HomeFeedModel.fromJson(v).pushId);
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });

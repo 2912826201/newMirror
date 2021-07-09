@@ -313,13 +313,13 @@ class FeedMsg extends StatelessWidget {
                       children: [
                         Container(
                           child: Text(homeFeedMode.name ?? "",
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textMedium16),
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textMedium14),
                           constraints: BoxConstraints(
                             maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),
                         ),
                         Container(
-                          child: Text(" 的动态", style: AppStyle.textMedium16),
+                          child: Text(" 的动态", style: AppStyle.textMedium14),
                         )
                       ],
                     ),
@@ -335,7 +335,7 @@ class FeedMsg extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     child: Text(homeFeedMode.content,
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textPrimary2Regular16),
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textRegular16),
                   ),
                 ),
               ),

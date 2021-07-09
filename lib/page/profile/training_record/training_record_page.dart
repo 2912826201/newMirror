@@ -35,7 +35,11 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
 
   //数据是否在加载中
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  // RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+  Map<String, RefreshController> controllerList = Map();
+
+  // List<RefreshController> _refreshControllerList=[];
 
   //每一天的数据
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
@@ -537,6 +541,8 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 
 //获取横向列表
   Widget getHorizontalListView(String typeString) {
+    RefreshController _refreshController = RefreshController(initialRefresh: false);
+    controllerList["typeString"] = _refreshController;
     int itemCount;
     if (typeString == "月") {
       itemCount = monthModelList.length + 2;
@@ -922,7 +928,9 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 //加载数据
   void onLoadData() async {
     if (pageIndex != 0 && endTime < Application.profile.createTime) {
-      _refreshController.loadComplete();
+      controllerList.forEach((key, value) {
+        value.loadComplete();
+      });
       return;
     }
     startTime = getStartTime(pageIndex, pageSize, endTime);
@@ -935,7 +943,9 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       // this.dayModelList.addAll(dayModelList);
       getWeekModelList(dayModelList);
     }
-    _refreshController.loadComplete();
+    controllerList.forEach((key, value) {
+      value.loadComplete();
+    });
 
     allDataModel = await getTrainingRecords();
     if (mounted) {
