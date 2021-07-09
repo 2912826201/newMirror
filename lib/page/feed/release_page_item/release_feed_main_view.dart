@@ -363,19 +363,17 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
     return ReorderableRow(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: widget.selectedMediaFiles.list.map((e) {
-          return  widget.selectedMediaFiles.type == mediaTypeKeyVideo ?
-               listItem(widget.selectedMediaFiles.list.indexOf(e),key: ValueKey(e.filePath)) :
-            SizeTransition(
-              key: ValueKey(e.filePath),
-              sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
-                parent: animationMap[e.croppedImage.hashCode],
-                curve: Curves.fastOutSlowIn,
-              )),
-              axis: Axis.horizontal,
-              axisAlignment: 1.0,
-              child: listItem(widget.selectedMediaFiles.list.indexOf(e),fileModel: e)
-          );
-
+          return widget.selectedMediaFiles.type == mediaTypeKeyVideo
+              ? listItem(widget.selectedMediaFiles.list.indexOf(e), key: ValueKey(e.filePath))
+              : SizeTransition(
+                  key: ValueKey(e.filePath),
+                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                    parent: animationMap[e.croppedImage.hashCode],
+                    curve: Curves.fastOutSlowIn,
+                  )),
+                  axis: Axis.horizontal,
+                  axisAlignment: 1.0,
+                  child: listItem(widget.selectedMediaFiles.list.indexOf(e), fileModel: e));
         }).toList(),
         onReorder: _onReorder,
         onNoReorder: (index) {
@@ -384,7 +382,7 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
         footer: addView());
   }
 
-  Widget listItem(int index,{Key key,MediaFileModel fileModel}) {
+  Widget listItem(int index, {Key key, MediaFileModel fileModel}) {
     return Container(
       key: key,
       width: 92,
@@ -448,15 +446,10 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
               iconSize: 18,
               onTap: () {
                 print("关闭");
-                animationMap.forEach((key, value) {
-                  print("查看唯一路径：${key}");
-                });
-
                 if (mounted) {
                   if (widget.selectedMediaFiles.list.length == 1) {
                     ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
                     return;
-                    // widget.selectedMediaFiles.type = null;
                   }
                   if (animationMap.containsKey(fileModel.croppedImage.hashCode)) {
                     animationMap[fileModel.croppedImage.hashCode].forward().then((value) {
