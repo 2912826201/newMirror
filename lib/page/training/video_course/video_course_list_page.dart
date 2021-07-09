@@ -79,7 +79,7 @@ class VideoCourseListPageState extends XCState {
   int pagePosition = 1;
 
   //上拉加载数据
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   //是否还有更多的数据
   bool isHaveMoreData = true;
@@ -103,7 +103,7 @@ class VideoCourseListPageState extends XCState {
   void initState() {
     super.initState();
     videoTagModel = Application.videoTagModel;
-    loadingStatus = LoadingStatus.STATUS_LOADING;
+    loadingStatus = LoadingStatus.STATUS_COMPLETED;
     _setTitleItemSubSettingData();
     _initData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -301,7 +301,7 @@ class VideoCourseListPageState extends XCState {
 
   //list box
   Widget _listBox() {
-    if (loadingStatus == LoadingStatus.STATUS_COMPLETED && videoModelArray != null && videoModelArray.length > 0) {
+    if (loadingStatus == LoadingStatus.STATUS_COMPLETED && videoModelArray != null) {
       return _listContentBox();
     } else if (loadingStatus == LoadingStatus.STATUS_LOADING) {
       return UnconstrainedBox(
@@ -489,7 +489,7 @@ class VideoCourseListPageState extends XCState {
                   reload(() {
                     _titleItemList.clear();
                     _titleItemList.addAll(_titleItemListTemp);
-                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    loadingStatus = LoadingStatus.STATUS_COMPLETED;
                     _onRefresh();
                   });
                 }
@@ -521,7 +521,7 @@ class VideoCourseListPageState extends XCState {
                 showScreenTitlePosition = -1;
                 if (mounted) {
                   reload(() {
-                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    loadingStatus = LoadingStatus.STATUS_COMPLETED;
                     _onRefresh();
                   });
                 }
@@ -694,9 +694,9 @@ class VideoCourseListPageState extends XCState {
   _initData() async {
     //判断该不该回去title
     await _getTitleValue();
-    videoModelArray.clear();
+    // videoModelArray.clear();
     //获取展示数据
-    _loadData();
+    // _loadData();
   }
 
   //获取筛选title
@@ -740,6 +740,7 @@ class VideoCourseListPageState extends XCState {
       part: _part,
       level: _level,
     );
+
     if (model != null && model["list"] != null) {
       if (isRefreshOrLoad) {
         videoModelArray.clear();
@@ -747,57 +748,44 @@ class VideoCourseListPageState extends XCState {
 
       int count = videoModelArray.length;
 
-      model["list"].forEach((v) {
-        videoModelArray.add(CourseModel.fromJson(v));
-      });
+      try {
+        model["list"].forEach((v) {
+          videoModelArray.add(CourseModel.fromJson(v));
+        });
+      } catch (e) {}
 
-      Future.delayed(Duration(milliseconds: 500), () {
-        if (isRefreshOrLoad) {
-          _refreshController.refreshCompleted();
-        } else {
-          _refreshController.loadComplete();
-        }
-        if (mounted) {
-          reload(() {
-            loadingStatus = LoadingStatus.STATUS_COMPLETED;
-            if (count == videoModelArray.length) {
-              isHaveMoreData = false;
-            } else {
-              isHaveMoreData = true;
-              pagePosition++;
-            }
-            isRefreshing=false;
-          });
-        }
-      });
-    } else {
-      Future.delayed(Duration(milliseconds: 500), () {
-        if (isRefreshOrLoad) {
-          _refreshController.refreshCompleted();
-        } else {
-          _refreshController.loadComplete();
-        }
-        if (mounted) {
-          reload(() {
+      if (isRefreshOrLoad) {
+        _refreshController.refreshCompleted();
+      } else {
+        _refreshController.loadComplete();
+      }
+      if (mounted) {
+        reload(() {
+          loadingStatus = LoadingStatus.STATUS_COMPLETED;
+          if (videoModelArray.length < 1) {
             loadingStatus = LoadingStatus.STATUS_IDEL;
-          });
-        }
-      });
+          }
+          if (count == videoModelArray.length) {
+            isHaveMoreData = false;
+          } else {
+            isHaveMoreData = true;
+            pagePosition++;
+          }
+          isRefreshing = false;
+        });
+      }
+    } else {
+      if (isRefreshOrLoad) {
+        _refreshController.refreshCompleted();
+      } else {
+        _refreshController.loadComplete();
+      }
+      if (mounted) {
+        reload(() {
+          loadingStatus = LoadingStatus.STATUS_IDEL;
+        });
+      }
     }
-    // try {
-    // } catch (e) {
-    //   print(e);
-    //   Future.delayed(Duration(milliseconds: 500), () {
-    //     if (isRefreshOrLoad) {
-    //       _refreshController.refreshCompleted();
-    //     } else {
-    //       _refreshController.loadNoData();
-    //     }
-    //     reload(() {
-    //       loadingStatus = LoadingStatus.STATUS_IDEL;
-    //     });
-    //   });
-    // }
   }
 
   //刷新数据
