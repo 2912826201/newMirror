@@ -49,6 +49,7 @@ class UserInteractiveNotifier extends  ValueNotifier<UserNotifierModel>  {
   void changeShowImageFrame(bool isShow) {
     value._showImageFrame = isShow;
     notifyListeners();
+
   }
 
   //未读粉丝数

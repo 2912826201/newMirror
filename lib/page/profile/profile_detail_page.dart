@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
 import 'package:flutter/material.dart' hide TabBar, TabBarView, NestedScrollView, NestedScrollViewState;
+import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
 import 'package:keframe/frame_separate_widget.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
@@ -18,6 +19,8 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import '../message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
@@ -241,7 +244,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       print('-------------------------userStatus = ${userModel.status}');
       if (_signature != null) {
         ///判断文字的高度，动态改变
-        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, width*0.7, 10);
+        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, width * 0.7, 10);
         _signatureHeight = testSize.height;
       }
       _textName = userModel.nickName;
@@ -451,87 +454,82 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         initialData: 0,
         stream: appBarOpacityStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-          return  Container(
-              color: AppColor.white.withOpacity(snapshot.data),
-              height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
-              width: width,
-              padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
-              child: Center(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: CustomAppBarIconButton(
-                        svgName: AppIcon.nav_return,
-                        iconColor: AppColor.black,
-                        onTap: () {
-                          Navigator.pop(
-                              this.context,
-                              context
-                                  .read<UserInteractiveNotifier>()
-                                  .value
-                                  .profileUiChangeModel[widget.userId]
-                                  .isFollow);
-                        },
-                      ),
-                    )),
-                    Container(
-                      width: userNameWidth,
-                      child: Center(
-                        child: Text(
-                          _textName ?? "",
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18,
-                              color: AppColor.black.withOpacity(snapshot.data)),
-                        ),
+          return Container(
+            color: AppColor.white.withOpacity(snapshot.data),
+            height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
+            width: width,
+            padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
+            child: Center(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CustomAppBarIconButton(
+                      svgName: AppIcon.nav_return,
+                      iconColor: AppColor.black,
+                      onTap: () {
+                        Navigator.pop(this.context,
+                            context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow);
+                      },
+                    ),
+                  )),
+                  Container(
+                    width: userNameWidth,
+                    child: Center(
+                      child: Text(
+                        _textName ?? "",
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: AppColor.black.withOpacity(snapshot.data)),
                       ),
                     ),
-                    Expanded(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        CustomAppBarIconButton(
-                          svgName: AppIcon.nav_share,
-                          iconColor: AppColor.black,
-                          onTap: () {
-                            openShareBottomSheet(
-                                context: context,
-                                map: userModel.toJson(),
-                                chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                                sharedType: 1);
-                          },
-                        ),
-                        !isMselfId
-                            ? CustomAppBarIconButton(
-                                svgName: AppIcon.nav_more,
-                                iconColor: AppColor.black,
-                                onTap: () {
-                                  AppRouter.navigateToProfileDetailMore(
-                                      context, widget.userId, (result) => _getFollowCount(id: widget.userId));
-                                },
-                              )
-                            : Container(
-                                width: 0,
-                              ),
-                        !isMselfId
-                            ? SizedBox(
-                                width: 8,
-                              )
-                            : Container(
-                                width: 0,
-                              )
-                      ],
-                    ))
-                  ],
-                ),
+                  ),
+                  Expanded(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomAppBarIconButton(
+                        svgName: AppIcon.nav_share,
+                        iconColor: AppColor.black,
+                        onTap: () {
+                          openShareBottomSheet(
+                              context: context,
+                              map: userModel.toJson(),
+                              chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                              sharedType: 1);
+                        },
+                      ),
+                      !isMselfId
+                          ? CustomAppBarIconButton(
+                              svgName: AppIcon.nav_more,
+                              iconColor: AppColor.black,
+                              onTap: () {
+                                AppRouter.navigateToProfileDetailMore(
+                                    context, widget.userId, (result) => _getFollowCount(id: widget.userId));
+                              },
+                            )
+                          : Container(
+                              width: 0,
+                            ),
+                      !isMselfId
+                          ? SizedBox(
+                              width: 8,
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    ],
+                  ))
+                ],
               ),
-            );
+            ),
+          );
         });
   }
 
@@ -781,26 +779,49 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 );
         });
   }
-
+  // 大图预览内部的Item
+  Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
+    DemoSourceEntity sourceEntity = DemoSourceEntity(
+      widget.userId.toString(),
+      " image",
+      _avatar,
+    );
+    print("____sourceEntity:${sourceEntity.toString()}");
+    return DemoImageItem(sourceEntity, isFocus, index, setFocus);
+  }
   ///头像
   Widget _mineAvatar() {
     return ClipOval(
-      child: CachedNetworkImage(
-        height: avatarSize,
-        width: avatarSize,
-        memCacheHeight: 250,
-        memCacheWidth: 250,
-        // useOldImageOnUrlChange: true,
-        imageUrl: _avatar ?? " ",
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          color: AppColor.bgWhite,
-        ),
-        /*errorWidget:(context, url, e) {
+            child: Hero(
+          tag: widget.userId.toString(),
+          child: GestureDetector(
+            onTap: (){
+              Navigator.of(context).push(
+                HeroDialogRoute<void>(builder: (BuildContext context) {
+                  return InteractiveviewerGallery(
+                      sources: [_avatar],
+                      initIndex: 0,
+                      itemBuilder: itemBuilder);
+                }),
+              );
+            },
+            child:  CachedNetworkImage(
+                height: avatarSize,
+                width: avatarSize,
+                memCacheHeight: 250,
+                memCacheWidth: 250,
+                // useOldImageOnUrlChange: true,
+                imageUrl: _avatar ?? " ",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.bgWhite,
+                ),
+                /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/
-      ),
-    );
+              ),
+          ),
+        ));
   }
 
   ///这是关注粉丝获赞

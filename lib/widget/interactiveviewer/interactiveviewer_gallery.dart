@@ -217,13 +217,15 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
               },
               onDoubleTap: onDoubleTap,
               onTap: () {
-                if(widget.sources[index] is TopicDtoModel) {
+                Navigator.of(context).pop();
+                /*if(widget.sources[index] is TopicDtoModel) {
                   Navigator.of(context).pop();
                   return;
                 }
                 if ( widget.sources[index] is DemoSourceEntity && widget.sources[index].type == "image") {
                   Navigator.of(context).pop();
-                }
+                  return;
+                }*/
               },
               child: widget.itemBuilder(context, index, index == currentIndex,setFocusListener),
             );
