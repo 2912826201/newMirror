@@ -284,6 +284,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     return Container(
       padding: const EdgeInsets.fromLTRB(22, 0, 16, 0),
       alignment: Alignment.centerLeft,
+      width: ScreenUtil.instance.screenWidth,
+      color: AppColor.white,
       height: 28,
       child: Text(
         _friendList[index].getSuspensionTag(),
@@ -392,14 +394,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         ),
         Expanded(
           child: Container(
-            child: AzListView(
-              data: _friendList,
-              itemCount: _friendList.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: _buildFriendItem,
-              susItemBuilder: _buildHeader,
-              indexBarData: [],
-            ),
+            child: getNotificationListener(),
           ),
         ),
         GestureDetector(
@@ -422,6 +417,31 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
           height: ScreenUtil.instance.bottomBarHeight,
         ),
       ],
+    );
+  }
+
+  Widget getNotificationListener() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        // 注册通知回调
+        if (notification is ScrollStartNotification) {
+          // 滚动开始
+          FocusScope.of(context).requestFocus(FocusNode());
+        } else if (notification is ScrollUpdateNotification) {
+          // 滚动位置更新
+        } else if (notification is ScrollEndNotification) {
+          // 滚动结束
+        }
+        return false;
+      },
+      child: AzListView(
+        data: _friendList,
+        itemCount: _friendList.length,
+        padding: EdgeInsets.zero,
+        itemBuilder: _buildFriendItem,
+        susItemBuilder: _buildHeader,
+        indexBarData: [],
+      ),
     );
   }
 
