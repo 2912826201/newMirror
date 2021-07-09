@@ -12,6 +12,7 @@ import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/notifier/unread_message_notifier.dart';
+import 'package:mirror/generated/l10n.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/badger_util.dart';
@@ -341,10 +342,10 @@ class MessageState extends State<MessagePage>
           ),
           Text(
             type == 0
-                ? "评论"
+                ? "${S.of(context).message_comment}"
                 : type == 1
-                    ? "@我"
-                    : "点赞",
+                    ? "${S.of(context).message_at}"
+                    : "${S.of(context).message_like}",
             style: AppStyle.textRegular16,
           )
         ],

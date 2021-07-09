@@ -241,7 +241,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       print('-------------------------userStatus = ${userModel.status}');
       if (_signature != null) {
         ///判断文字的高度，动态改变
-        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
+        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, width*0.7, 10);
         _signatureHeight = testSize.height;
       }
       _textName = userModel.nickName;
@@ -628,13 +628,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
             ///签名
             Container(
-              height: _signatureHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
               child: Text(_signature ?? " ", softWrap: true, style: AppStyle.textRegular14),
             ),
             SizedBox(
-              height: 16,
+              height: 14,
             ),
 
             ///关注，获赞，粉丝

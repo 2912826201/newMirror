@@ -63,10 +63,12 @@ class DownloadCourseVideoDto {
     }
     String string = "";
     for (int i = 0; i < values.length; i++) {
-      if (i == 0) {
-        string += values[i];
-      } else {
-        string = string + "," + values[i];
+      if (values[i] != null) {
+        if (i == 0) {
+          string += values[i];
+        } else {
+          string = string + "," + values[i];
+        }
       }
     }
     return string;
