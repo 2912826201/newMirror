@@ -518,6 +518,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   onTap: () {
                     Toast.show("该内容已删除", context);
                   },
+
                   child: Container(
                     height: 38,
                     width: 38,
