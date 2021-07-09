@@ -74,12 +74,6 @@ class _feedBackPage extends State<FeedBackPage> {
             SizedBox(
               height: 13.5,
             ),
-            /* GestureDetector(
-              onLongPress: (){
-                Clipboard.setData(ClipboardData(text:"322292818"));
-               */ /* ToastShow.show(msg: "", context: context);*/ /*
-              },
-              child:*/
             SelectableText(
               "意见反馈QQ群: 322292818",
               style: AppStyle.textSecondaryRegular14,
@@ -90,7 +84,6 @@ class _feedBackPage extends State<FeedBackPage> {
                 }
               },
             ),
-            /* ),*/
             SizedBox(
               height: 25.5,
             ),
