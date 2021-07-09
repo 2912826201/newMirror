@@ -630,10 +630,12 @@ class VideoDetailPageState extends XCState {
       _progress = ((_progress * 10000) ~/ 1) / 10000.0;
       if (received == total) {
         completeDownCount++;
-        downloadStringArray.removeAt(0);
+        if (downloadStringArray.length > 0) {
+          downloadStringArray.removeAt(0);
+        }
         if (downloadStringArray.length < 1) {
           isDownLoading = false;
-          downloadAllCompleteVideo();
+          // downloadAllCompleteVideo();
         } else {
           startDownVideo(downloadStringArray[0]);
         }
@@ -775,12 +777,18 @@ class VideoDetailPageState extends XCState {
           if (videoPathMap[map["videoUrl"]] == null) {
             videoPathMap[map["videoUrl"]] = await FileUtil().getDownloadedPath(map["videoUrl"]);
           }
-          filePaths.add(videoPathMap[map["videoUrl"]]);
+          if (videoPathMap[map["videoUrl"]] != null) {
+            filePaths.add(videoPathMap[map["videoUrl"]]);
+          }
         }
       }
-      DownloadVideoCourseDBHelper().update(videoModel, urls, filePaths);
-      if (context != null && mounted) {
-        AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
+      if (filePaths.length < 1) {
+        ToastShow.show(msg: "视频下载失败", context: context);
+      } else {
+        DownloadVideoCourseDBHelper().update(videoModel, urls, filePaths);
+        if (context != null && mounted) {
+          AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
+        }
       }
     });
   }
@@ -788,7 +796,15 @@ class VideoDetailPageState extends XCState {
   //开始下载
   void startDownVideo(String downloadUrl) async {
     FileUtil().chunkDownLoad(context, downloadUrl, _progressListener,
-        cancelToken: cancelToken, dio: dio, type: downloadTypeCourse);
+        cancelToken: cancelToken, dio: dio, type: downloadTypeCourse, downloadCompleteListener: () {
+      if (downloadStringArray.length < 1) {
+        isDownLoading = false;
+        downloadAllCompleteVideo();
+      } else {
+        isDownLoading = true;
+        startDownVideo(downloadStringArray[0]);
+      }
+    });
   }
 
   //格式化进度

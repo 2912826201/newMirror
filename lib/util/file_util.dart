@@ -317,7 +317,7 @@ class FileUtil {
   ///断点续传
   Future<DownloadDto> chunkDownLoad(
       BuildContext context, String url, Function(String taskId, int received, int total) onProgressListener,
-      {CancelToken cancelToken, Dio dio, int type = downloadTypeCommon}) async {
+      {CancelToken cancelToken, Dio dio, int type = downloadTypeCommon, Function() downloadCompleteListener}) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -344,13 +344,16 @@ class FileUtil {
     dto.filePath = filePath;
     print("start");
     return await ChunkDownLaod.downloadWithChunks(url, filePath, cancelToken: cancelToken,
-            onReceiveProgress: (received, total) {
-      onProgressListener(taskId, received, total);
-    }, dio: dio)
-        .then((response) {
-      print('-------------------------下载完成2${response.statusCode}');
+        onReceiveProgress: (received, total) {
+          onProgressListener(taskId, received, total);
+        }, dio: dio)
+        .then((response) async {
+      print('-------------------------下载完成2${response.statusCode},url:$url,filePath:$filePath');
       if (response.statusCode == HttpStatus.ok) {
-        DownloadDBHelper().insertDownload(taskId, url, filePath);
+        await DownloadDBHelper().insertDownload(taskId, url, filePath);
+        if (downloadCompleteListener != null) {
+          downloadCompleteListener();
+        }
         return dto;
       } else {
         return null;
