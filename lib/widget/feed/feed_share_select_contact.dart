@@ -555,9 +555,6 @@ class _FriendsPageState extends State<FriendsPage> {
       return;
     }
     followListModel.list.addAll(listModel.list);
-    followListModel.list.addAll(listModel.list);
-    followListModel.list.addAll(listModel.list);
-    followListModel.list.addAll(listModel.list);
     followListModel.lastTime = listModel.lastTime;
 
     // 去除本来就在群内的好友
