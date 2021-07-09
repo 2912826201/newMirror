@@ -530,7 +530,7 @@ class _FriendsPageState extends State<FriendsPage> {
     setState(() {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
     });
-    // setGroupOffsetMap();
+    setGroupOffsetMap();
   }
 
   //获取所有的群聊
@@ -555,13 +555,17 @@ class _FriendsPageState extends State<FriendsPage> {
       return;
     }
     followListModel.list.addAll(listModel.list);
+    followListModel.list.addAll(listModel.list);
+    followListModel.list.addAll(listModel.list);
+    followListModel.list.addAll(listModel.list);
     followListModel.lastTime = listModel.lastTime;
 
     // 去除本来就在群内的好友
     if (widget.type == 3) {
       for (int i = 0; i < followListModel.list.length; i++) {
         // print("111111date:${MessageManager.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"]}");
-        if (MessageManager.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"] != null) {
+        if (MessageManager.chatGroupUserInformationMap["${widget.groupChatId}_${followListModel.list[i].uid}"] !=
+            null) {
           followListModel.list.removeAt(i);
           i--;
         }
