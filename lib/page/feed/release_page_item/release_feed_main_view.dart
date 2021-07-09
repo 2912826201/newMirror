@@ -14,6 +14,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/size_transition_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
@@ -76,20 +77,20 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         //fixme 权限枚举变化
         // if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
         if (status.isGranted) {
-          if(widget.currentAddressInfo != null) {
-            AppRouter.navigateSearchOrLocationPage(
-                context, checkIndex, selectAddress, widget.currentAddressInfo, (result) {
+          if (widget.currentAddressInfo != null) {
+            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, widget.currentAddressInfo,
+                (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
               return childrenACallBack(poi);
             });
           }
         } else {
           PermissionStatus status = await Permission.locationWhenInUse.request();
-          if(status.isPermanentlyDenied){
+          if (status.isPermanentlyDenied) {
             _showDialog(context);
-          }else if(status.isGranted){
-            AppRouter.navigateSearchOrLocationPage(
-                context, checkIndex, selectAddress, widget.currentAddressInfo, (result) {
+          } else if (status.isGranted) {
+            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, widget.currentAddressInfo,
+                (result) {
               PeripheralInformationPoi poi = result as PeripheralInformationPoi;
               return childrenACallBack(poi);
             });
@@ -149,10 +150,8 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   childrenACallBack(PeripheralInformationPoi poi) {
     if (poi.name != "不显示所在位置") {
       isShowList = false;
-      if(poi != null) {
-        context
-            .read<ReleaseFeedInputNotifier>()
-            .seletedAddressText = poi.name;
+      if (poi != null) {
+        context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;
       }
       selectAddress = poi;
       checkIndex = 1;
@@ -244,8 +243,9 @@ class SeletedPhoto extends StatefulWidget {
   SeletedPhotoState createState() => SeletedPhotoState();
 }
 
-class SeletedPhotoState extends State<SeletedPhoto> {
+class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixin {
   ScrollController scrollController = ScrollController();
+  Map<int, AnimationController> animationMap = {};
 
   // 解析数据
   // resolveData() async {
@@ -264,6 +264,13 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   @override
   void initState() {
     // resolveData();
+    if (widget.selectedMediaFiles.type != mediaTypeKeyVideo) {
+      widget.selectedMediaFiles.list.forEach((element) {
+        print("查看数据￥${element.toString()}");
+        animationMap[element.croppedImage.hashCode] =
+            AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+      });
+    }
   }
 
   // 进入相册的添加视图
@@ -286,12 +293,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             fixedHeight = widget.selectedMediaFiles.list.first.sizeInfo.height;
           }
           AppRouter.navigateToMediaPickerPage(
-              context,
-              9 - widget.selectedMediaFiles.list.length,
-              type,
-              true,
-              startPageGallery,
-              false, (result) async {
+              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false, (result) async {
             SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
             if (true != result || files == null) {
               print("没有选择媒体文件");
@@ -312,13 +314,16 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             //     model.croppedImageData = picBytes;
             //   }
             // }
+            if (files.type == mediaTypeKeyImage) {
+              files.list.forEach((element) {
+                animationMap[element.croppedImage.hashCode] =
+                    AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+              });
+            }
             widget.selectedMediaFiles.list.addAll(files.list);
             setState(() {});
             // context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
-          },
-              fixedWidth: fixedWidth,
-              fixedHeight: fixedHeight,
-              startCount: widget.selectedMediaFiles.list.length);
+          }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
         child: Container(
           margin: const EdgeInsets.only(left: 10, top: 9, right: 16),
@@ -356,22 +361,30 @@ class SeletedPhotoState extends State<SeletedPhoto> {
 
   Widget _canPullReorderRow() {
     return ReorderableRow(
-      crossAxisAlignment :  CrossAxisAlignment .start ,
-      children:widget.selectedMediaFiles.list.map((e){
-        return listItem(widget.selectedMediaFiles.list.indexOf(e));
-      }).toList(),
-      onReorder: _onReorder,
-      onNoReorder: (index){
-        print ('${ DateTime.now().toString().substring(5, 22) } 重新排序已取消。index :$index ' );
-      },
-      footer:addView()
-    );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: widget.selectedMediaFiles.list.map((e) {
+          return widget.selectedMediaFiles.type == mediaTypeKeyVideo
+              ? listItem(widget.selectedMediaFiles.list.indexOf(e), key: ValueKey(e.filePath))
+              : SizeTransition(
+                  key: ValueKey(e.filePath),
+                  sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                    parent: animationMap[e.croppedImage.hashCode],
+                    curve: Curves.fastOutSlowIn,
+                  )),
+                  axis: Axis.horizontal,
+                  axisAlignment: 1.0,
+                  child: listItem(widget.selectedMediaFiles.list.indexOf(e), fileModel: e));
+        }).toList(),
+        onReorder: _onReorder,
+        onNoReorder: (index) {
+          print('${DateTime.now().toString().substring(5, 22)} 重新排序已取消。index :$index ');
+        },
+        footer: addView());
   }
 
-
-  Widget listItem(int index) {
+  Widget listItem(int index, {Key key, MediaFileModel fileModel}) {
     return Container(
-      key: ValueKey(widget.selectedMediaFiles.list[index].filePath),
+      key: key,
       width: 92,
       height: 92,
       margin: EdgeInsets.only(left: index == 0 ? 16 : 10),
@@ -389,41 +402,42 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             left: 0,
             child: widget.selectedMediaFiles.type == mediaTypeKeyVideo
                 ? Image.memory(
-              widget.selectedMediaFiles.list[index].thumb,
-              fit: BoxFit.cover,
-              width: 86,
-              height: 86,
-            )
+                    widget.selectedMediaFiles.list[index].thumb,
+                    fit: BoxFit.cover,
+                    width: 86,
+                    height: 86,
+                  )
                 : widget.selectedMediaFiles.list[index].croppedImageData != null
-                ? Image.memory(
-              widget.selectedMediaFiles.list[index].croppedImageData,
-              fit: BoxFit.cover,
-              width: 86,
-              height: 86,
-            )
-                : widget.selectedMediaFiles.list[index].croppedImage != null
-                ? RawImage(
-              image: widget.selectedMediaFiles.list[index].croppedImage,
-              width: 86,
-              height: 86,
-              fit: BoxFit.cover,
-            )
-                : widget.selectedMediaFiles.list[index].file != null
-                ? Image.file(
-              widget.selectedMediaFiles.list[index].file,
-              fit: BoxFit.cover,
-              width: 86,
-              height: 86,
-            )
-                : Container(
-              width: 86,
-              height: 86,
-              child: Center(
-                child: CupertinoActivityIndicator(
-                  radius: 10,
-                ),
-              ),
-            ),
+                    ? Image.memory(
+                        widget.selectedMediaFiles.list[index].croppedImageData,
+                        fit: BoxFit.cover,
+                        // color: Colors.,
+                        width: 86,
+                        height: 86,
+                      )
+                    : widget.selectedMediaFiles.list[index].croppedImage != null
+                        ? RawImage(
+                            image: widget.selectedMediaFiles.list[index].croppedImage,
+                            width: 86,
+                            height: 86,
+                            fit: BoxFit.cover,
+                          )
+                        : widget.selectedMediaFiles.list[index].file != null
+                            ? Image.file(
+                                widget.selectedMediaFiles.list[index].file,
+                                fit: BoxFit.cover,
+                                width: 86,
+                                height: 86,
+                              )
+                            : Container(
+                                width: 86,
+                                height: 86,
+                                child: Center(
+                                  child: CupertinoActivityIndicator(
+                                    radius: 10,
+                                  ),
+                                ),
+                              ),
           ),
           Positioned(
             right: 0,
@@ -433,14 +447,18 @@ class SeletedPhotoState extends State<SeletedPhoto> {
               onTap: () {
                 print("关闭");
                 if (mounted) {
-                  setState(() {
-                    if (widget.selectedMediaFiles.list.length == 1) {
-                      ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
-                      return;
-                      // widget.selectedMediaFiles.type = null;
-                    }
-                    widget.selectedMediaFiles.list.removeAt(index);
-                  });
+                  if (widget.selectedMediaFiles.list.length == 1) {
+                    ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
+                    return;
+                  }
+                  if (animationMap.containsKey(fileModel.croppedImage.hashCode)) {
+                    animationMap[fileModel.croppedImage.hashCode].forward().then((value) {
+                      animationMap.removeWhere((key, value) => key == fileModel.croppedImage.hashCode);
+                      widget.selectedMediaFiles.list.removeWhere((element) => element == fileModel);
+                      setState(() {
+                      });
+                    });
+                  }
                 }
               },
             ),

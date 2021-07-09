@@ -24,9 +24,8 @@ class MediaFileModel {
   SizeInfo sizeInfo = SizeInfo();
 
   String toString() {
-    return "file:${file?.path},sizeInfo:{${sizeInfo.toString()}}";
+    return "file:${file?.path},sizeInfo:{${sizeInfo.toString()}, type:{$type}, filePath:{$filePath}, thumbPath:{$thumbPath},thumb:{$thumb},croppedImageData:{$croppedImageData},croppedImage:{$croppedImage}}";
   }
-
   String filePath;
   String thumbPath;
 
