@@ -107,6 +107,10 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   int _restStartTimeStamp = 0;
   double _restProgress = 0.0;
 
+  //视频尺寸
+  double _videoWidth = 0.0;
+  double _videoHeight = 0.0;
+
   _VideoCoursePlayState() {
     _playerListener = () {
       if (!mounted) {
@@ -150,6 +154,10 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   void initState() {
     super.initState();
+    _videoHeight = ScreenUtil.instance.height -
+        ScreenUtil.instance.statusBarHeight -
+        ScreenUtil.instance.bottomBarHeight -
+        60;
     _parseModelToPartList();
     _parsePartList();
     if (_timer == null) {
@@ -191,18 +199,22 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     child: Stack(
                       children: [
                         Container(
-                          color: AppColor.black,
+                          color: AppColor.mainRed,
                         ),
-                        Container(
-                          height: ScreenUtil.instance.screenWidthDp / 0.75,
-                          alignment: Alignment.center,
-                          child: _controller != null && _controller.value.isInitialized
-                              ? AspectRatio(
-                                  aspectRatio: _controller.value.aspectRatio,
-                                  child: VideoPlayer(_controller),
-                                )
-                              : Container(),
-                        ),
+                        //只有视频准备好时才能算出宽度，才展示视频区域
+                        _controller != null && _controller.value.isInitialized
+                            ? Positioned(
+                                left: (ScreenUtil.instance.screenWidthDp - _videoWidth) / 2,
+                                child: SizedBox(
+                                  height: _videoHeight,
+                                  width: _videoWidth,
+                                  child: AspectRatio(
+                                    aspectRatio: _controller.value.aspectRatio,
+                                    child: VideoPlayer(_controller),
+                                  ),
+                                ),
+                              )
+                            : Container(),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -569,6 +581,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         File(widget.videoPathMap[_partList[_currentPartIndex].videoList[_currentVideoIndex]]))
       ..initialize().then((_) {
         setState(() {
+          _videoWidth = _videoHeight * _controller.value.aspectRatio;
           _controller.addListener(_playerListener);
           _controller.play();
         });
