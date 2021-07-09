@@ -335,6 +335,7 @@ class _FriendsPageState extends State<FriendsPage> {
         color: AppColor.bgWhite,
         margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
         child: ListView.builder(
+          physics: ClampingScrollPhysics(),
             controller: _scrollController,
             itemCount: _listUserDataList.length,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
