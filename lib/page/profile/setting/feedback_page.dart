@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
@@ -19,7 +20,6 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
-
 
 ///意见反馈
 class FeedBackPage extends StatefulWidget {
@@ -39,6 +39,7 @@ class _feedBackPage extends State<FeedBackPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         titleString: "意见反馈",
         actions: [
@@ -61,17 +62,37 @@ class _feedBackPage extends State<FeedBackPage> {
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 48,
-              width: width,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "你的意见和建议,是对我们最大的支持",
-                  style: AppStyle.textRegular16,
-                ),
-              ),
+            SizedBox(
+              height: 13.5,
+            ),
+            Text(
+              "你的意见和建议,是对我们最大的支持",
+              style: AppStyle.textRegular16,
+            ),
+            SizedBox(
+              height: 13.5,
+            ),
+            /* GestureDetector(
+              onLongPress: (){
+                Clipboard.setData(ClipboardData(text:"322292818"));
+               */ /* ToastShow.show(msg: "", context: context);*/ /*
+              },
+              child:*/
+            SelectableText(
+              "意见反馈QQ群: 322292818",
+              style: AppStyle.textSecondaryRegular14,
+              onSelectionChanged: (TextSelection selection, SelectionChangedCause cause) {
+                print('-----------------------------------$cause------');
+                if(cause == SelectionChangedCause.toolBar){
+                  ToastShow.show(msg: "已复制到剪切板", context: context);
+                }
+              },
+            ),
+            /* ),*/
+            SizedBox(
+              height: 25.5,
             ),
             _inputBox(width),
             _imageList(width),
@@ -117,7 +138,7 @@ class _feedBackPage extends State<FeedBackPage> {
       height: 95,
       width: width,
       child: ListView.separated(
-          itemCount: fileList.length<8 ? fileList.length + 1 : fileList.length,
+          itemCount: fileList.length < 8 ? fileList.length + 1 : fileList.length,
           scrollDirection: Axis.horizontal,
           separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                 width: 10.0,
@@ -165,30 +186,31 @@ class _feedBackPage extends State<FeedBackPage> {
 
   Widget _addImageItem() {
     return InkWell(
-            onTap: () {
-              _getImage();
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 9, right: 16),
-              width: 86,
-              height: 86,
-              decoration: BoxDecoration(
-                color: AppColor.bgWhite,
-                borderRadius: BorderRadius.all(Radius.circular(3.0)),
-              ),
-              child: Center(
-                child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
-              ),
-            ),
-          );
+      onTap: () {
+        _getImage();
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 9, right: 16),
+        width: 86,
+        height: 86,
+        decoration: BoxDecoration(
+          color: AppColor.bgWhite,
+          borderRadius: BorderRadius.all(Radius.circular(3.0)),
+        ),
+        child: Center(
+          child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
+        ),
+      ),
+    );
   }
 
   //从相册获取照片
   _getImage() {
-    if(fileList.length==8){
+    if (fileList.length == 8) {
       ToastShow.show(msg: "最多只能选择8张图片哦~", context: context);
     }
-    AppRouter.navigateToMediaPickerPage(context, 8-fileList.length, typeImage, false, startPageGallery, false, (result) {
+    AppRouter.navigateToMediaPickerPage(context, 8 - fileList.length, typeImage, false, startPageGallery, false,
+        (result) {
       SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -197,10 +219,9 @@ class _feedBackPage extends State<FeedBackPage> {
       RuntimeProperties.selectedMediaFiles = null;
       List<MediaFileModel> model = files.list;
       model.forEach((element) async {
-        if(element.file!=null){
+        if (element.file != null) {
           fileList.add(element.file);
-          setState(() {
-          });
+          setState(() {});
         }
       });
     });
@@ -211,7 +232,7 @@ class _feedBackPage extends State<FeedBackPage> {
       ToastShow.show(msg: "图片和文字不可为空", context: context);
       return;
     }
-    Loading.showLoading(context,infoText: "正在反馈");
+    Loading.showLoading(context, infoText: "正在反馈");
     List<String> list = [];
     var result = await FileUtil().uploadPics(fileList, (percent) {
       print('===========================正在上传%%$percent');

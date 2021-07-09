@@ -64,6 +64,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                 if (mounted) {
                   setState(() {});
                 }
+
               } else {
                 ToastShow.show(msg: "暂无课程", context: context);
               }
