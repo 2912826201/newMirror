@@ -3,10 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/test/verification_codeInput_demo_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AttentionUser extends StatefulWidget {
   AttentionUser({Key key}) : super(key: key);
@@ -34,9 +37,9 @@ class AttentionUserState extends State<AttentionUser> {
       curve: Curves.linear,
       //NOTE 此用list布局不用Column是因为使用AnimatedContainer动态改变高度时Column的高度不受限制会导致界面UI底部溢出
       child: MediaQuery.removePadding(
-          removeTop: true,
-          context: context,
-          child:ListView.builder(
+        removeTop: true,
+        context: context,
+        child: ListView.builder(
           itemCount: 2,
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
@@ -75,7 +78,9 @@ class AttentionUserState extends State<AttentionUser> {
             } else {
               return attentionList();
             }
-          })),
+          },
+        ),
+      ),
     );
   }
 
@@ -139,31 +144,95 @@ class attentionUserAnimateList extends StatefulWidget {
 }
 
 class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
+  RefreshController _refreshController = RefreshController();
+  ScrollController _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(Duration.zero, () {
+        _controller.jumpTo(_controller.position.maxScrollExtent + 16);
+        print("列表的最大偏移：：：：${_controller.position.maxScrollExtent}");
+      });
+    });
+  }
+
+  // 列表间距
+  ListSpacing(bool isLeft, int index) {
+    double spacing = 0.0;
+    // 左边距
+    if (isLeft) {
+      // 之前是翻转列表小于三个时翻转回来间距调整
+      if (widget.itemCount < 3) {
+        if (index > 0) {
+          spacing = 12;
+        } else {
+          spacing = 16;
+        }
+      } else {
+        if (index == widget.lists.length - 1) {
+          spacing = 16;
+        } else {
+          spacing = 0;
+        }
+      }
+      // 右边距
+    } else {
+      if (widget.itemCount < 3) {
+        if (index == widget.lists.length - 1) {
+          spacing = 16;
+        } else {
+          spacing = 0;
+        }
+      } else {
+        if (index > 0) {
+          spacing = 12;
+        } else {
+          spacing = 16;
+        }
+      }
+    }
+    return spacing;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: widget.itemCount,
-        scrollDirection: widget.scrollDirection,
-        reverse: widget.reverse,
-        controller: widget.controller,
-        primary: widget.primary,
-        physics:
-            (widget.physics != null ? widget.physics : BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())),
-        shrinkWrap: widget.shrinkWrap,
-        padding: widget.padding,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.only(
-              left: index > 0 ? 12 : 16,
-              right: index == widget.lists.length - 1 ? 16 : 0,
-            ),
-            child: _ListItem(
-              index,
-              removeTargetItem,
-              widget.lists[index],
-            ),
-          );
-        });
+    return SmartRefresher(
+        enablePullUp: false,
+        enablePullDown: widget.itemCount < 3 ? false : true,
+        controller: _refreshController,
+        header: SmartRefresherHeadFooter.init().getAttentionUserFooter(),
+        onRefresh: () {
+          _refreshController.refreshCompleted();
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+            return VerificationCodeInputDemoPage2();
+          }));
+        },
+        child: ListView.builder(
+            itemCount: widget.itemCount,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.itemCount < 3 ? false : true,
+            controller: _controller,
+            primary: widget.primary,
+            physics: (widget.physics != null
+                ? widget.physics
+                : BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())),
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: EdgeInsets.only(
+                  left: ListSpacing(true, index),
+                  right: ListSpacing(false, index),
+                ),
+                child: _ListItem(
+                  index,
+                  removeTargetItem,
+                  widget.lists[index],
+                ),
+              );
+            }));
   }
 
   // 刷新列表，替换数据

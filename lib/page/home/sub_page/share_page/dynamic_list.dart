@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -168,9 +170,9 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   ? CommentLayout(model: widget.model)
                   : Container(),
               // 输入框
-              CommentInputBox(feedModel: widget.model),
+             AppConfig.needShowTraining ? CommentInputBox(feedModel: widget.model) : Container(),
               // Note 推荐用户 暂时屏蔽
-              // getAttention(widget.index, widget.isShowRecommendUser),
+              getAttention(widget.index, widget.isShowRecommendUser),
               // 分割块
               Container(
                 height: 18,
