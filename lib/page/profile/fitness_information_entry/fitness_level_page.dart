@@ -24,9 +24,6 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
     super.initState();
     levelList = Application.videoTagModel.level;
     levelList.sort((a, b) => a.id.compareTo(b.id));
-    levelList.forEach((element) {
-      print('levelListId==========================${element.id}');
-    });
   }
 
   @override

@@ -602,12 +602,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (model != null && model["state"] == true) {
       _deleteCommentData(courseCommentHot, commentId, true);
       _deleteCommentData(courseCommentTime, commentId, false);
-      if (courseCommentHot != null && !widget.isShowHotOrTime) {
+      if (!widget.isVideoCoursePage&&courseCommentHot != null && !widget.isShowHotOrTime) {
         context
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-      context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId, commentDtoModel);
+      if(!widget.isVideoCoursePage)context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId, commentDtoModel);
 
       ///TODO 这里是修改的删除评论的eventbus
       EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
@@ -635,16 +635,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
-          /*   commentModel.totalCount--;*/
+          if(widget.isVideoCoursePage)commentModel.totalCount--;
           break;
         }
         int judge = 0;
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
             commentModel.list[i].replys.removeAt(j);
-/*
-            commentModel.totalCount--;
-*/
+            if(widget.isVideoCoursePage)commentModel.totalCount--;
             (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
               (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
@@ -943,7 +941,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .add(model.id);
 
                         print("courseCommentHot.totalCount${courseCommentHot.totalCount}");
-                        context.read<FeedMapNotifier>().updateTotalCount(courseCommentHot.totalCount, widget.targetId);
+                        if(!widget.isVideoCoursePage)context.read<FeedMapNotifier>().updateTotalCount(courseCommentHot.totalCount, widget.targetId);
                       }
                     }
                   }
@@ -971,7 +969,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .comments[i]
                             .screenOutIds
                             .add(model.id);
-                        context.read<FeedMapNotifier>().updateTotalCount(courseCommentTime.totalCount, widget.targetId);
+                        if(!widget.isVideoCoursePage)context.read<FeedMapNotifier>().updateTotalCount(courseCommentTime.totalCount, widget.targetId);
                       }
                     }
                   }
@@ -1079,7 +1077,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           scrollHeight += childCommentHeight;
         }
         if (scrollHeight > 0) {
-          if(widget.isBottomSheetAndHomePage){
+          if(widget.isBottomSheetAndHomePage||widget.isVideoCoursePage){
             widget.scrollController.animateTo(
               scrollHeight,
               duration: Duration(milliseconds: 300),
@@ -1092,7 +1090,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               curve: Curves.linear,
             );
           }
-
         }
       }
     });
