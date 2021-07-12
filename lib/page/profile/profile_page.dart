@@ -26,7 +26,6 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class DefaultImage {
@@ -286,6 +285,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
+  int getAnimateOffset(AsyncSnapshot<double> snapshot){
+    double offset = snapshot.data;
+    if(offset==0){
+      return 250;
+    }else if(offset > 60 && offset < 100){
+      return 100;
+    }else if(offset>=100&&offset<150){
+      return 200;
+    }else if(offset >=150){
+      return 350;
+    }
+    return 1;
+  }
   ///这里设置高斯模糊和白蒙层
   Widget _blurrectAvatar() {
     return StreamBuilder<double>(
@@ -293,7 +305,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         stream: topStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return AnimatedContainer(
-            duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+            duration: Duration(milliseconds: getAnimateOffset(snapshot)),
             curve: Curves.linear,
             height: gaussianBlurHeight + 72 + snapshot.data,
             child: Container(
@@ -304,7 +316,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
                     print("头像地址:$avatar");
                     return AnimatedContainer(
-                        duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                        duration: Duration(milliseconds: getAnimateOffset(snapshot)),
                         curve: Curves.linear,
                         height: gaussianBlurHeight + snapshot.data,
                         child: CachedNetworkImage(
@@ -324,7 +336,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   }),
                   Positioned(
                       child: AnimatedContainer(
-                          duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                          duration: Duration(milliseconds: getAnimateOffset(snapshot)),
                           curve: Curves.linear,
                           height: gaussianBlurHeight + snapshot.data,
                           child: Container(
@@ -333,7 +345,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                             color: AppColor.white.withOpacity(0.6),
                           ))),
                   AnimatedContainer(
-                      duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                      duration: Duration(milliseconds: getAnimateOffset(snapshot)),
                       curve: Curves.linear,
                       height: gaussianBlurHeight + 72 + snapshot.data,
                       child: Container(
