@@ -4,7 +4,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Scaffold;
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -33,6 +33,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
@@ -197,6 +198,7 @@ class VideoDetailPageState extends XCState {
     return Scaffold(
       appBar: null,
       body: _buildSuggestions(),
+      handleStatusBarTap: _animateToIndex,
     );
   }
 
@@ -581,20 +583,21 @@ class VideoDetailPageState extends XCState {
 
   //分享的点击事件
   void _shareBtnClick() async {
-    if (await isOffline()) {
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return;
-    }
-    if (!(context != null && isLoggedIn)) {
-      ToastShow.show(msg: "请先登录app!", context: context);
-      AppRouter.navigateToLoginPage(context);
-      return;
-    }
-    openShareBottomSheet(
-        context: context,
-        sharedType: 1,
-        map: videoModel.toJson(),
-        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+    _animateToIndex();
+    // if (await isOffline()) {
+    //   ToastShow.show(msg: "请检查网络!", context: context);
+    //   return;
+    // }
+    // if (!(context != null && isLoggedIn)) {
+    //   ToastShow.show(msg: "请先登录app!", context: context);
+    //   AppRouter.navigateToLoginPage(context);
+    //   return;
+    // }
+    // openShareBottomSheet(
+    //     context: context,
+    //     sharedType: 1,
+    //     map: videoModel.toJson(),
+    //     chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   //收藏按钮
@@ -1198,6 +1201,12 @@ class VideoDetailPageState extends XCState {
     }
     containerHeight = containerWidth / containerRatio;
     return containerHeight;
+  }
+
+  //滚动到界面的顶部
+  void _animateToIndex({int index}) async {
+    print("滚动到顶部");
+    scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
   //开通vip
