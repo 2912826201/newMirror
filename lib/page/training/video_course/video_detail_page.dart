@@ -583,21 +583,20 @@ class VideoDetailPageState extends XCState {
 
   //分享的点击事件
   void _shareBtnClick() async {
-    _animateToIndex();
-    // if (await isOffline()) {
-    //   ToastShow.show(msg: "请检查网络!", context: context);
-    //   return;
-    // }
-    // if (!(context != null && isLoggedIn)) {
-    //   ToastShow.show(msg: "请先登录app!", context: context);
-    //   AppRouter.navigateToLoginPage(context);
-    //   return;
-    // }
-    // openShareBottomSheet(
-    //     context: context,
-    //     sharedType: 1,
-    //     map: videoModel.toJson(),
-    //     chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+    if (await isOffline()) {
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
+    if (!(context != null && isLoggedIn)) {
+      ToastShow.show(msg: "请先登录app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
+    openShareBottomSheet(
+        context: context,
+        sharedType: 1,
+        map: videoModel.toJson(),
+        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   //收藏按钮
@@ -1204,7 +1203,7 @@ class VideoDetailPageState extends XCState {
   }
 
   //滚动到界面的顶部
-  void _animateToIndex({int index}) async {
+  void _animateToIndex() async {
     print("滚动到顶部");
     scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
