@@ -11,6 +11,7 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../page/message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -22,6 +23,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../custom_appbar.dart';
 import '../icon.dart';
+import '../smart_refressher_head_footer.dart';
 import 'feed_friends_cell.dart';
 import 'feed_index_bar.dart';
 
@@ -108,6 +110,8 @@ class _FriendsPageState extends State<FriendsPage> {
   //群聊列表
   List<Map<String, dynamic>> groupMapList = [];
 
+  RefreshController _refreshController = RefreshController(); //
+
   @override
   void initState() {
     //初始化，只调用一次
@@ -156,7 +160,17 @@ class _FriendsPageState extends State<FriendsPage> {
         height: double.infinity,
         child: UnconstrainedBox(
           child: Center(
-            child: Text("没有数据"),
+            child: Column(
+              children: [
+                Container(
+                  width: 224.0,
+                  height: 224.0,
+                  child: Image.asset("assets/png/default_no_data.png", fit: BoxFit.cover),
+                ),
+                SizedBox(height: 16),
+                Text("没有可以邀请的好友了", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
+              ],
+            ),
           ),
         ),
       );
@@ -234,7 +248,7 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         Visibility(
-          visible: widget.type == 2 || widget.type == 3,
+          visible: widget.type == 2 || (widget.type == 3 && followListModel.list.length > 0),
           child: GestureDetector(
             child: Container(
               padding: const EdgeInsets.only(right: 8, left: 8),
@@ -334,19 +348,28 @@ class _FriendsPageState extends State<FriendsPage> {
     return Container(
         color: AppColor.bgWhite,
         margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
-        child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _listUserDataList.length,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            itemBuilder: (context, index) {
-              int noBottomIndex = 0;
-              if (index < _listUserDataList.length - 1 &&
-                  _listUserDataList[index + 1].indexLetter != _listUserDataList[index].indexLetter) {
-                noBottomIndex = index + 1;
-              }
-              return itemForRow(context, index, noBottomIndex, _listUserDataList[index],
-                  index == 0 ? null : _listUserDataList[index - 1]);
-            }));
+        child: SmartRefresher(
+          enablePullUp: false,
+          enablePullDown: false,
+          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
+          header: SmartRefresherHeadFooter.init().getHeader(),
+          controller: _refreshController,
+          onLoading: _onLoading,
+          onRefresh: _onRefresh,
+          child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _listUserDataList.length,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              itemBuilder: (context, index) {
+                int noBottomIndex = 0;
+                if (index < _listUserDataList.length - 1 &&
+                    _listUserDataList[index + 1].indexLetter != _listUserDataList[index].indexLetter) {
+                  noBottomIndex = index + 1;
+                }
+                return itemForRow(context, index, noBottomIndex, _listUserDataList[index],
+                    index == 0 ? null : _listUserDataList[index - 1]);
+              }),
+        ));
   }
 
   //每一个item
@@ -516,22 +539,10 @@ class _FriendsPageState extends State<FriendsPage> {
       getAllGroupList();
     } else {
       followListModel.list = userFollowList;
-      getNetData();
+      _onRefresh();
     }
   }
 
-  //初始化
-  void init() {
-    //将所有的用户名按照拼音排序
-    initUserData();
-    //对用户的数据进行排序
-    sortListDatas();
-    //设置每一个偏移量
-    setState(() {
-      loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    });
-    setGroupOffsetMap();
-  }
 
   //获取所有的群聊
   void getAllGroupList() async {
@@ -547,10 +558,16 @@ class _FriendsPageState extends State<FriendsPage> {
     init();
   }
 
-  //获取网络数据好友
-  void getNetData() async {
-    print("获取网络数据好友");
-    BuddyListModel listModel = await getFollowBothList(100, lastTime: followListModel.lastTime);
+  // 下拉刷新
+  _onRefresh() async {
+    followListModel.list.clear();
+    followListModel.lastTime = null;
+    _onLoading(isOnRefresh: true);
+  }
+
+  // 下拉刷新
+  _onLoading({bool isOnRefresh = false}) async {
+    BuddyListModel listModel = await getFollowBothList();
     if (listModel == null || listModel.list == null) {
       return;
     }
@@ -569,7 +586,30 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     }
 
+    noSortlistDatas.clear();
+    nonLetterlistDatas.clear();
+    _listDatas.clear();
+
+    if (isOnRefresh) {
+      _refreshController.refreshCompleted();
+      _refreshController.loadComplete();
+    } else {
+      _refreshController.loadComplete();
+    }
     init();
+  }
+
+  //初始化
+  void init() {
+    //将所有的用户名按照拼音排序
+    initUserData();
+    //对用户的数据进行排序
+    sortListDatas();
+    //设置每一个偏移量
+    setState(() {
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    });
+    setGroupOffsetMap();
   }
 
   void _friendsCallback(String name, int userId, String avatar, int type, BuildContext context) async {

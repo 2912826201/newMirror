@@ -796,6 +796,7 @@ class VideoDetailPageState extends XCState {
 
   //开始下载
   void startDownVideo(String downloadUrl) async {
+    print("downloadUrl:$downloadUrl");
     FileUtil().chunkDownLoad(context, downloadUrl, _progressListener,
         cancelToken: cancelToken, dio: dio, type: downloadTypeCourse, downloadCompleteListener: () {
       if (downloadStringArray.length < 1) {

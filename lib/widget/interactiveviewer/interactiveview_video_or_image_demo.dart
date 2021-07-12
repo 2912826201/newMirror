@@ -436,61 +436,64 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: ScreenUtil.instance.width,
-            height: ScreenUtil.instance.height,
-            color: AppColor.black,
-          ),
-          Hero(
-            tag: isFocus ? widget.source.heroId : "",
-            child: Container(
+      body: Container(
+        color: AppColor.black,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
               width: ScreenUtil.instance.width,
-              height: setAspectRatio(),
-              child: controller != null && controller.isVideoInitialized()
-                  ? BetterPlayer(
-                      controller: controller,
-                    )
-                  : getPlaceholder(),
-              // )
+              height: ScreenUtil.instance.height,
+              color: AppColor.black,
             ),
-          ),
-          getOccludeUi(),
-          Container(
-            width: ScreenUtil.instance.width,
-            height: ScreenUtil.instance.height,
-            child: controller!=null&&controller.isVideoInitialized()
-                ? VideoControl(
-                    setVideoPlayProgress,
-                    onDragCompletedListener,
-                    setPlayOrPause,
-                    isShowController,
-                    setShowController,
-                    controller,
-                    resetController,
-                  )
-                : Container(),
-          ),
-          Positioned(
-            left: 0,
-            top: ScreenUtil.instance.statusBarHeight - 6,
-            child: Visibility(
-              visible: isShowController,
-              child: AppIconButton(
-                iconSize: 24,
-                svgName: AppIcon.close_24,
-                buttonHeight: 40,
-                buttonWidth: 40,
-                iconColor: AppColor.white,
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
+            Hero(
+              tag: isFocus ? widget.source.heroId : "",
+              child: Container(
+                width: ScreenUtil.instance.width,
+                height: setAspectRatio(),
+                child: controller != null && controller.isVideoInitialized()
+                    ? BetterPlayer(
+                        controller: controller,
+                      )
+                    : getPlaceholder(),
+                // )
               ),
             ),
-          ),
-        ],
+            getOccludeUi(),
+            Container(
+              width: ScreenUtil.instance.width,
+              height: ScreenUtil.instance.height,
+              child: controller != null && controller.isVideoInitialized()
+                  ? VideoControl(
+                      setVideoPlayProgress,
+                      onDragCompletedListener,
+                      setPlayOrPause,
+                      isShowController,
+                      setShowController,
+                      controller,
+                      resetController,
+                    )
+                  : Container(),
+            ),
+            Positioned(
+              left: 0,
+              top: ScreenUtil.instance.statusBarHeight - 6,
+              child: Visibility(
+                visible: isShowController,
+                child: AppIconButton(
+                  iconSize: 24,
+                  svgName: AppIcon.close_24,
+                  buttonHeight: 40,
+                  buttonWidth: 40,
+                  iconColor: AppColor.white,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       // body: GestureDetector(
       //   onTap: (){

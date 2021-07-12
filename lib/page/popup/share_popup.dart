@@ -72,9 +72,9 @@ class _SharePopupState extends State<_SharePopup> {
   _getFriendList({int lastTime}) async {
     BuddyListModel listModel;
     if (lastTime == null) {
-      listModel = await getFollowBothList(100);
+      listModel = await getFollowBothList(size: 100);
     } else {
-      listModel = await getFollowBothList(100, lastTime: lastTime);
+      listModel = await getFollowBothList(size: 100, lastTime: lastTime);
     }
     if (listModel != null) {
       _originalFriendList.addAll(listModel.list);

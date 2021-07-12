@@ -283,7 +283,7 @@ Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime,CancelT
 }
 
 ///好友列表--互相关注列表
-Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) async {
+Future<BuddyListModel> getFollowBothList({int size, String uid, int lastTime}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uid"] = uid;
@@ -291,7 +291,9 @@ Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) a
   if (lastTime != null) {
     map["lastTime"] = lastTime;
   }
-  map["size"] = size;
+  if (size != null) {
+    map["size"] = size;
+  }
   BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
   if (responseModel.isSuccess && responseModel.data != null) {
     print('用户互相关注列表请求接口=============================');
