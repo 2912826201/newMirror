@@ -557,6 +557,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   child: Text("ListView性能测试")),
               RaisedButton(
                   onPressed: () async {
+                    ToastShow.show(
+                        msg: "判断手机厂商:${await CheckPhoneSystemUtil.init().getPhoneSystem()}", context: context);
                     print("判断手机厂商:${await CheckPhoneSystemUtil.init().getPhoneSystem()}");
                     print("是不是华为手机:${await CheckPhoneSystemUtil.init().isEmui()}");
                   },
