@@ -159,8 +159,8 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
   @override
   Widget build(BuildContext context) {
     return SmartRefresher(
-        enablePullUp: false,
-        enablePullDown: true,
+        enablePullUp:  false,
+        enablePullDown:  widget.itemCount < 3 ? false : true,
         controller: _refreshController,
         header: SmartRefresherHeadFooter.init().getAttentionUserFooter(),
         onRefresh: () {
@@ -172,7 +172,7 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
         child: ListView.builder(
             itemCount: widget.itemCount,
             scrollDirection: widget.scrollDirection,
-            reverse: true,
+            reverse:widget.itemCount < 3 ? false : true,
             controller: _controller,
             primary: widget.primary,
             physics: (widget.physics != null
