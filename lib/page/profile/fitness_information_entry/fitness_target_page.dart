@@ -84,7 +84,6 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
         setState(() {
           beforIndex = index;
           Application.fitnessEntryModel.target = targetList[index].id - 1;
-          /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
           if (Application.videoTagModel != null) {
             if (Application.videoTagModel.level != null) {
               AppRouter.navigateToFitnessLevelPage(context);

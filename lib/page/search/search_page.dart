@@ -27,7 +27,6 @@ import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';

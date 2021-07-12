@@ -332,7 +332,7 @@ class LiveDetailPageState extends XCState {
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
-        controller: scrollController,
+        controller:  scrollController,
         physics: isBouncingScrollPhysics ? BouncingScrollPhysics() : ClampingScrollPhysics(),
         slivers: <Widget>[
           // header,
