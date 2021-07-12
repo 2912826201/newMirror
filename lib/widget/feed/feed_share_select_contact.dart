@@ -357,6 +357,7 @@ class _FriendsPageState extends State<FriendsPage> {
           onLoading: _onLoading,
           onRefresh: _onRefresh,
           child: ListView.builder(
+              physics: ClampingScrollPhysics(),
               controller: _scrollController,
               itemCount: _listUserDataList.length,
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,

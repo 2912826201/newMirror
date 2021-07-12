@@ -106,7 +106,7 @@ class _IndexBarState extends State<IndexBar> {
                       children: <Widget>[
                         AppIcon.getAppIcon(AppIcon.pin_bubble_index_bar, 28),
                         _indicatorText == '🔍'
-                            ? AppIcon.getAppIcon(AppIcon.input_search, 12)
+                            ? AppIcon.getAppIcon(AppIcon.input_search, 12,color: AppColor.white)
                             : Text(
                                 _indicatorText,
                                 style: TextStyle(fontSize: 12, color: Colors.white),
@@ -115,6 +115,7 @@ class _IndexBarState extends State<IndexBar> {
                     ), //气泡
             ),
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               child: Container(
                 width: 20,
                 // child: ListView.builder(
