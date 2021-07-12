@@ -146,33 +146,73 @@ class attentionUserAnimateList extends StatefulWidget {
 class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
   RefreshController _refreshController = RefreshController();
   ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(Duration.zero,() {
-        _controller.jumpTo( _controller.position.maxScrollExtent + 16);
+      Future.delayed(Duration.zero, () {
+        _controller.jumpTo(_controller.position.maxScrollExtent + 16);
         print("列表的最大偏移：：：：${_controller.position.maxScrollExtent}");
       });
     });
   }
+
+  // 列表间距
+  ListSpacing(bool isLeft, int index) {
+    double spacing = 0.0;
+    // 左边距
+    if (isLeft) {
+      // 之前是翻转列表小于三个时翻转回来间距调整
+      if (widget.itemCount < 3) {
+        if (index > 0) {
+          spacing = 12;
+        } else {
+          spacing = 16;
+        }
+      } else {
+        if (index == widget.lists.length - 1) {
+          spacing = 16;
+        } else {
+          spacing = 0;
+        }
+      }
+      // 右边距
+    } else {
+      if (widget.itemCount < 3) {
+        if (index == widget.lists.length - 1) {
+          spacing = 16;
+        } else {
+          spacing = 0;
+        }
+      } else {
+        if (index > 0) {
+          spacing = 12;
+        } else {
+          spacing = 16;
+        }
+      }
+    }
+    return spacing;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SmartRefresher(
-        enablePullUp:  false,
-        enablePullDown:  widget.itemCount < 3 ? false : true,
+        enablePullUp: false,
+        enablePullDown: widget.itemCount < 3 ? false : true,
         controller: _refreshController,
         header: SmartRefresherHeadFooter.init().getAttentionUserFooter(),
         onRefresh: () {
           _refreshController.refreshCompleted();
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-                return VerificationCodeInputDemoPage2();
-              }));
+            return VerificationCodeInputDemoPage2();
+          }));
         },
         child: ListView.builder(
             itemCount: widget.itemCount,
             scrollDirection: widget.scrollDirection,
-            reverse:widget.itemCount < 3 ? false : true,
+            reverse: widget.itemCount < 3 ? false : true,
             controller: _controller,
             primary: widget.primary,
             physics: (widget.physics != null
@@ -183,11 +223,8 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
             itemBuilder: (context, index) {
               return Container(
                 margin: EdgeInsets.only(
-                  left: index == widget.lists.length - 1 ? 16 : 0,
-                  // index > 0 ? 12 : 16,
-                  right:
-                  // index == widget.lists.length - 1 ? 16 : 0,
-                  index > 0 ? 12 : 16,
+                  left: ListSpacing(true, index),
+                  right: ListSpacing(false, index),
                 ),
                 child: _ListItem(
                   index,
