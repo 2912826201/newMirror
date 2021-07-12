@@ -38,7 +38,8 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
         hasDivider: false,
         leading: Container(),
       ),
-      body: GestureDetector(
+      body: InkWell(
+        highlightColor: AppColor.white,
         onTap: (){
           FocusScope.of(context).requestFocus(blankNode);
         },

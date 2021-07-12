@@ -883,6 +883,7 @@ class _FollowItemState extends State<QueryFollowItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           InkWell(
+            highlightColor: AppColor.white,
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
                   jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName, callback: (result) {

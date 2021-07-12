@@ -165,8 +165,8 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
 
   void deleteCommentCount(int feedId, CommentDtoModel commentDtoModel) {
     if(commentDtoModel.targetId==feedId){
-      value.feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
       value.feedMap[feedId].totalCount -= 1 + commentDtoModel.replyCount;
+      value.feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
     }else{
       value.feedMap[feedId].commentCount-=1;
       value.feedMap[feedId].totalCount -= 1;

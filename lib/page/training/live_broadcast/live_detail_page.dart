@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Scaffold;
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -28,6 +28,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
@@ -188,6 +189,7 @@ class LiveDetailPageState extends XCState {
     return Scaffold(
       appBar: null,
       body: _buildSuggestions(),
+      handleStatusBarTap: _animateToIndex,
     );
   }
 
@@ -332,7 +334,7 @@ class LiveDetailPageState extends XCState {
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
-        controller: scrollController,
+        controller:  scrollController,
         physics: isBouncingScrollPhysics ? BouncingScrollPhysics() : ClampingScrollPhysics(),
         slivers: <Widget>[
           // header,
@@ -921,11 +923,16 @@ class LiveDetailPageState extends XCState {
     }
   }
 
+  //滚动到界面的顶部
+  void _animateToIndex() async {
+    print("滚动到顶部");
+    scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
+
   ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
 
   //去登陆
-  void _login() async{
-
+  void _login() async {
     if (await isOffline()) {
       ToastShow.show(msg: "请检查网络!", context: context);
       return;

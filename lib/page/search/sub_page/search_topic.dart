@@ -10,15 +10,11 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchTopic extends StatefulWidget {
@@ -68,7 +64,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   void initState() {
-    requestFeednIterface(refreshOrLoading: true);
+    requestFeedInterface(refreshOrLoading: true);
     int controllerIndex = 1;
     if (AppConfig.needShowTraining) {
       controllerIndex = 2;
@@ -88,7 +84,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
               lastScore = null;
               hasNext = null;
             }
-            requestFeednIterface(refreshOrLoading: true);
+            requestFeedInterface(refreshOrLoading: true);
           }
         } else {
           Application.tabBarIndexList.add(controllerIndex);
@@ -107,7 +103,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
           if (lastString != widget.keyWord) {
             lastScore = null;
             hasNext = null;
-            requestFeednIterface(refreshOrLoading: true);
+            requestFeedInterface(refreshOrLoading: true);
           }
         });
       }
@@ -130,7 +126,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   }
 
   // 请求动态接口
-  requestFeednIterface({bool refreshOrLoading}) async {
+  requestFeedInterface({bool refreshOrLoading}) async {
     if (hasNext != 0) {
       DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore, token: token);
       if (refreshOrLoading) {
@@ -193,10 +189,10 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                     lastScore = null;
                     hasNext = null;
                     _refreshController.loadComplete();
-                    requestFeednIterface(refreshOrLoading: true);
+                    requestFeedInterface(refreshOrLoading: true);
                   },
                   onLoading: () {
-                    requestFeednIterface(refreshOrLoading: false);
+                    requestFeedInterface(refreshOrLoading: false);
                   },
                   child: CustomScrollView(
                       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
