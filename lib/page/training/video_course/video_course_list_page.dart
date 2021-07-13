@@ -15,6 +15,7 @@ import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -39,7 +40,7 @@ class VideoCourseListPageState extends XCState {
   //当前显示的直播课程的list
   var videoModelArray = <CourseModel>[];
 
-  bool isRefreshing=false;
+  bool isRefreshing = false;
 
   //头部标签
   VideoTagModel videoTagModel;
@@ -717,8 +718,8 @@ class VideoCourseListPageState extends XCState {
 
   //获取数据
   _loadData({bool isRefreshOrLoad = false}) async {
-    if(isRefreshOrLoad){
-      isRefreshing=true;
+    if (isRefreshOrLoad) {
+      isRefreshing = true;
     }
     print("获取数据----------------------------");
     List<int> _level = <int>[];
@@ -798,9 +799,9 @@ class VideoCourseListPageState extends XCState {
 
   //加载数据
   _onLoading() async {
-    if(!isRefreshing) {
+    if (!isRefreshing) {
       await _loadData(isRefreshOrLoad: false);
-    }else{
+    } else {
       _refreshController.loadComplete();
     }
   }
@@ -887,9 +888,12 @@ Widget buildVideoCourseItemLeftImageUi(CourseModel value, Object heroTag) {
     height: 90,
     child: Hero(
       child: CachedNetworkImage(
+        // 指定缓存宽高
+        memCacheWidth: 250,
+        memCacheHeight: 250,
         height: 90,
         width: 120,
-        imageUrl: imageUrl == null ? "" : imageUrl,
+        imageUrl: imageUrl == null ? "" : FileUtil.getMediumImage(imageUrl),
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
           color: AppColor.bgWhite,

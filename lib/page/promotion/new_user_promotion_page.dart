@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -15,6 +13,9 @@ import 'package:mirror/widget/dialog.dart';
 import '../message/util/message_chat_page_manager.dart';
 import 'package:provider/provider.dart';
 
+
+
+
 class NewUserPromotionPage extends StatefulWidget {
   @override
   _NewUserPromotionPageState createState() => _NewUserPromotionPageState();
@@ -29,16 +30,15 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
     return WillPopScope(
         child: Scaffold(
           appBar: CustomAppBar(
-            leadingOnTap:_requestPop,
+            leadingOnTap: _requestPop,
             titleString: "活动界面",
           ),
-          body:  getBodyUi(),
+          body: getBodyUi(),
         ),
         onWillPop: _requestPop);
   }
 
-
-  Widget getBodyUi(){
+  Widget getBodyUi() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -65,7 +65,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
           SingleChildScrollView(
             physics: ClampingScrollPhysics(),
             child: Container(
-              child: Image.asset(image,fit: BoxFit.cover),
+              child: Image.asset(image, fit: BoxFit.cover),
             ),
           ),
           Container(
@@ -77,13 +77,13 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
               child: Container(
                 child: Image.asset(imageBtn),
               ),
-              onTap: (){
+              onTap: () {
                 if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
                   ToastShow.show(msg: "请先登录app!", context: context);
                   AppRouter.navigateToLoginPage(context);
                   return;
                 }
-                if(Application.profile.uid==coachAccountId){
+                if (Application.profile.uid == coachAccountId) {
                   ToastShow.show(msg: "导师本人不能参加活动！", context: context);
                   return;
                 }
@@ -98,6 +98,7 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
 
   // 监听返回事件
   Future<bool> _requestPop() {
+    print("监听返回时间了");
     _exitPageListener();
     return new Future.value(false);
   }
@@ -116,15 +117,15 @@ class _NewUserPromotionPageState extends State<NewUserPromotionPage> {
         }));
   }
 
-  jumpPage()async{
-    Future.delayed(Duration(milliseconds: 100),()async{
+  jumpPage() async {
+    Future.delayed(Duration(milliseconds: 100), () async {
       Navigator.of(context).pop();
       ProfileAddFollow(coachAccountId);
-      UserModel userModel=UserModel();
-      userModel.nickName="大灰狼";
-      userModel.uid=coachAccountId;
-      userModel.avatarUri="http://devpic.aimymusic.com/ifapp/1002885/1618397003729.jpg";
-      jumpChatPageUser(context, userModel,textContent: "我要参加训练营");
+      UserModel userModel = UserModel();
+      userModel.nickName = "大灰狼";
+      userModel.uid = coachAccountId;
+      userModel.avatarUri = "http://devpic.aimymusic.com/ifapp/1002885/1618397003729.jpg";
+      jumpChatPageUser(context, userModel, textContent: "我要参加训练营");
     });
   }
 }
