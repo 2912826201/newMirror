@@ -23,7 +23,6 @@ import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_d
 import 'package:mirror/widget/interactiveviewer/interactiveviewer_gallery.dart';
 import '../message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
-import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
@@ -779,6 +778,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 );
         });
   }
+
   // 大图预览内部的Item
   Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
     DemoSourceEntity sourceEntity = DemoSourceEntity(
@@ -789,39 +789,37 @@ class _ProfileDetailState extends State<ProfileDetailPage>
     print("____sourceEntity:${sourceEntity.toString()}");
     return DemoImageItem(sourceEntity, isFocus, index, setFocus);
   }
+
   ///头像
   Widget _mineAvatar() {
     return ClipOval(
-            child: Hero(
-          tag: widget.userId.toString(),
-          child: GestureDetector(
-            onTap: (){
-              Navigator.of(context).push(
-                HeroDialogRoute<void>(builder: (BuildContext context) {
-                  return InteractiveviewerGallery(
-                      sources: [_avatar],
-                      initIndex: 0,
-                      itemBuilder: itemBuilder);
-                }),
-              );
-            },
-            child:  CachedNetworkImage(
-                height: avatarSize,
-                width: avatarSize,
-                memCacheHeight: 250,
-                memCacheWidth: 250,
-                // useOldImageOnUrlChange: true,
-                imageUrl: _avatar ?? " ",
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
-                ),
-                /*errorWidget:(context, url, e) {
+        child: Hero(
+      tag: widget.userId.toString(),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            HeroDialogRoute<void>(builder: (BuildContext context) {
+              return InteractiveviewerGallery(sources: [_avatar], initIndex: 0, itemBuilder: itemBuilder);
+            }),
+          );
+        },
+        child: CachedNetworkImage(
+          height: avatarSize,
+          width: avatarSize,
+          memCacheHeight: 250,
+          memCacheWidth: 250,
+          // useOldImageOnUrlChange: true,
+          imageUrl: _avatar ?? " ",
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: AppColor.bgWhite,
+          ),
+          /*errorWidget:(context, url, e) {
             return Container(color: AppColor.bgWhite,);
           },*/
-              ),
-          ),
-        ));
+        ),
+      ),
+    ));
   }
 
   ///这是关注粉丝获赞
