@@ -198,8 +198,10 @@ class SystemCommonMsg extends StatelessWidget {
 
   List<Widget> _getSystemCommonList(BuildContext context){
     List<Widget> arrayWidget = [];
-    if (StringUtil.isURL(subModel.picUrl)) {
-      arrayWidget.add(_getImageWidget());
+    if (StringUtil.isURL(subModel.prePicUrl)) {
+      arrayWidget.add(_getImageWidget(subModel.prePicUrl));
+    } else if (StringUtil.isURL(subModel.picUrl)) {
+      arrayWidget.add(_getImageWidget(subModel.picUrl));
     }
 
     if (subModel.text != null && subModel.text.length > 0) {
@@ -217,14 +219,14 @@ class SystemCommonMsg extends StatelessWidget {
     return arrayWidget;
   }
 
-  Widget _getImageWidget(){
+  Widget _getImageWidget(String imageUrl) {
     return Hero(
       tag: heroId,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           if (subModel.linkUrl == null || subModel.linkUrl.length < 1) {
             voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: subModel.picUrl, position: position);
+                contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
           } else {
             _openUrl();
           }
@@ -234,7 +236,7 @@ class SystemCommonMsg extends StatelessWidget {
           child: CachedNetworkImage(
             width: 200.0,
             height: 100.0,
-            imageUrl: subModel.picUrl == null ? "" : FileUtil.getLargeImage(subModel.picUrl),
+            imageUrl: imageUrl == null ? "" : FileUtil.getLargeImage(imageUrl),
             // imageUrl: "",
             fit: BoxFit.cover,
             fadeInDuration: Duration(milliseconds: 0),

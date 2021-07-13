@@ -2363,9 +2363,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     int initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList,chatDataList[position]);
 
-    if(initIndex<0){
-      ToastShow.show(msg: "无法查看详情", context: context);
-      return;
+    if(initIndex<0) {
+      sourceList.clear();
+      sourceList = MessageItemGalleryUtil.init().getMessageGalleryList(chatDataList);
+      isNewSourceList = false;
+
+      initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList, chatDataList[position]);
+      if (initIndex < 0) {
+        ToastShow.show(msg: "无法查看详情$position", context: context);
+        return;
+      }
     }
 
     Navigator.of(context).push(
