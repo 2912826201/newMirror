@@ -21,6 +21,7 @@ import 'video_course_result_page.dart';
 /// video_course_result_share_page
 /// Created by yangjiayi on 2021/5/7.
 
+
 class VideoCourseResultShareDialog extends Dialog {
   final TrainingCompleteResultModel result;
   final CourseModel course;

@@ -85,6 +85,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
     streamController.sink.add(250);
   }
 
+
   void _onQRViewCreated(QRViewController controller) {
     setState(() {
       this.controller = controller;
@@ -127,6 +128,8 @@ class _ScanCodePageState extends State<ScanCodePage> {
               width: ScreenUtil.instance.screenWidthDp,
               height: ScreenUtil.instance.height,
               child: QRView(
+                //note 这是支持扫描的格式,项目目前只需要支持二维码
+                formatsAllowed: [BarcodeFormat.qrcode],
                 key: qrKey,
                 onQRViewCreated: _onQRViewCreated,
               )),

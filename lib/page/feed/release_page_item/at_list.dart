@@ -1,15 +1,18 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
@@ -191,7 +194,7 @@ class AtListState extends State<AtList> {
       lastTime = model.lastTime;
       hasNext = model.hasNext;
     }
-    if(mounted) {
+    if (mounted) {
       // 存入@显示数据
       context.read<ReleaseFeedInputNotifier>().setFollowList(followList);
       // 搜索时会替换@显示数据，备份一份数据
@@ -320,10 +323,29 @@ class AtListState extends State<AtList> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(list[index].avatarUri),
-                            maxRadius: 19,
-                          ),
+                          ClipOval(
+                              child: CachedNetworkImage(
+                            width: 38,
+                            height: 38,
+                            /// imageUrl的淡入动画的持续时间。
+                            // fadeInDuration: Duration(milliseconds: 0),
+                            imageUrl: FileUtil.getSmallImage(list[index].avatarUri) ?? "",
+                            fit: BoxFit.cover,
+                            // 调整磁盘缓存中图像大小
+                            // maxHeightDiskCache: 150,
+                            // maxWidthDiskCache: 150,
+                            // 指定缓存宽高
+                            memCacheWidth: 150,
+                            memCacheHeight: 150,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.bgWhite,
+                            ),
+                            errorWidget: (context, url, e) {
+                              return Container(
+                                color: AppColor.bgWhite,
+                              );
+                            },
+                          )),
                           const SizedBox(width: 12),
                           Text(
                             list[index].nickName,

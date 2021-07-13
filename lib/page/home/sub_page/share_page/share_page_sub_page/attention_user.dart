@@ -18,13 +18,13 @@ class AttentionUser extends StatefulWidget {
 }
 
 class AttentionUserState extends State<AttentionUser> {
-  final List<String> list = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
+  List<String> list = [
     "5",
+    "4",
+    "3",
+    "2",
+    "1",
+    "0",
   ];
 
   @override
@@ -95,6 +95,14 @@ class AttentionUserState extends State<AttentionUser> {
         shrinkWrap: true,
         onActionFinished: (index) {
           list.removeAt(index);
+          if (list.length == 2) {
+            List<String> listString = [];
+            listString.add(list.last);
+            listString.add(list.first);
+            list = listString;
+            setState(() {});
+            print("翻转数组了吗：：：：${listString.toString()}");
+          }
           if (list.length == 0) {
             setState(() {});
           }
@@ -237,10 +245,10 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
 
   // 刷新列表，替换数据
   void removeTargetItem(int index) {
-    setState(() {
-      widget.itemCount = widget.onActionFinished(index);
-      print("widget.itemCount::${widget.itemCount}");
-    });
+    widget.itemCount = widget.onActionFinished(index);
+    print("widget.itemCount::${widget.itemCount}");
+    print("widget.lists::${widget.lists.length}");
+    setState(() {});
   }
 }
 
