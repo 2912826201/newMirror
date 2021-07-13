@@ -132,6 +132,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           beforOffset = null;
           topStreamController.sink.add(0);
           bottomStreamController.sink.add(0);
+          controller.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
         },
         onPointerMove: (PointerMoveEvent event) {
           print('--------------------${event.position.dy}');
@@ -143,6 +144,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             }
             topStreamController.sink.add(offset);
           } else if (controller.offset == controller.position.maxScrollExtent) {
+            if (beforOffset < event.position.dy) {
+              beforOffset = event.position.dy;
+            }
+            print('---else if ----else if ---else if -${controller.offset}---$beforOffset----${event.position.dy}');
             double offset = beforOffset - event.position.dy;
             if (offset > 200) {
               return;
@@ -285,19 +290,20 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  int getAnimateOffset(AsyncSnapshot<double> snapshot){
+  int getAnimateOffset(AsyncSnapshot<double> snapshot) {
     double offset = snapshot.data;
-    if(offset==0){
+    if (offset == 0) {
       return 250;
-    }else if(offset > 60 && offset < 100){
+    } else if (offset > 60 && offset < 100) {
       return 100;
-    }else if(offset>=100&&offset<150){
+    } else if (offset >= 100 && offset < 150) {
       return 200;
-    }else if(offset >=150){
+    } else if (offset >= 150) {
       return 350;
     }
     return 1;
   }
+
   ///这里设置高斯模糊和白蒙层
   Widget _blurrectAvatar() {
     return StreamBuilder<double>(
