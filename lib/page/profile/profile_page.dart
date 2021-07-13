@@ -62,6 +62,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   StreamController<double> bottomStreamController = StreamController<double>();
   double beforOffset;
   double totalOffset;
+  bool isMaxHeightOrNot = false;
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -132,7 +133,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           beforOffset = null;
           topStreamController.sink.add(0);
           bottomStreamController.sink.add(0);
-          controller.animateTo(0.0, duration: Duration(milliseconds: 250), curve: Curves.linear);
         },
         onPointerMove: (PointerMoveEvent event) {
           print('--------------------${event.position.dy}');
@@ -212,7 +212,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             stream: bottomStreamController.stream,
             builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
               return AnimatedContainer(
-                duration: Duration(milliseconds: snapshot.data == 0 ? 200 : 1),
+                duration: Duration(milliseconds: getAnimateOffset(snapshot)),
                 curve: Curves.linear,
                 height: snapshot.data,
                 child: Container(
