@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/util/file_util.dart';
 import '../page/message/util/emoji_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -647,10 +649,30 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(followList[index].avatarUri),
-                                      maxRadius: 19,
-                                    ),
+                                    ClipOval(
+                                        child: CachedNetworkImage(
+                                      width: 38,
+                                      height: 38,
+
+                                      /// imageUrl的淡入动画的持续时间。
+                                      // fadeInDuration: Duration(milliseconds: 0),
+                                      imageUrl: FileUtil.getSmallImage(followList[index].avatarUri) ?? "",
+                                      fit: BoxFit.cover,
+                                      // 调整磁盘缓存中图像大小
+                                      // maxHeightDiskCache: 150,
+                                      // maxWidthDiskCache: 150,
+                                      // 指定缓存宽高
+                                      memCacheWidth: 150,
+                                      memCacheHeight: 150,
+                                      placeholder: (context, url) => Container(
+                                        color: AppColor.bgWhite,
+                                      ),
+                                      errorWidget: (context, url, e) {
+                                        return Container(
+                                          color: AppColor.bgWhite,
+                                        );
+                                      },
+                                    )),
                                     const SizedBox(width: 12),
                                     Text(
                                       followList[index].nickName,
