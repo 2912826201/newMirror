@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
@@ -59,6 +60,16 @@ class UiControllerPage extends StatelessWidget {
             },
             child: Text("发布动态周边信息滑动动画渐隐渐现动画"),
           ),
+                  RaisedButton(
+                    onPressed: () {
+                      AppConfig.needShowTraining = !AppConfig.needShowTraining;
+                      ToastShow.show(
+                          msg: AppConfig.needShowTraining ? "打开训练页" : "关闭训练页",
+                          context: context);
+                    },
+                    child: Text("发布动态周边信息滑动动画渐隐渐现动画"),
+                  ),
+
         ]))));
   }
 }

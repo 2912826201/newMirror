@@ -126,7 +126,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               footer: CustomFooter(
                 height: 40,
                 builder: (BuildContext context, LoadStatus mode) {
-                  Widget body;
+                  Widget body ;
                   if (mode == LoadStatus.loading) {
                     body = Container();
                   } else if (mode == LoadStatus.noMore) {
@@ -145,7 +145,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               ),
               onLoading: _requestCourse,
               child: ListView.builder(
-                physics: BouncingScrollPhysics(),
+                physics: AlwaysScrollableScrollPhysics(),
                 //有个头部 尾部用SmartRefresher的上拉加载footer代替
                 itemCount: _videoCourseList.length + 1,
                 itemBuilder: (context, index) {
@@ -212,15 +212,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                  child: Text(
-                "连接设备",
-                style: AppStyle.textMedium16,
-              ))
-            ],
+          Text(
+            "连接设备",
+            style: AppStyle.textMedium16,
           ),
           GestureDetector(
               onTap: () {
@@ -550,7 +546,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         child: Container(
-          width: ScreenUtil.instance.screenWidthDp,
+          width: ScreenUtil.instance.width,
           child: Row(
             children: [
               buildVideoCourseItemLeftImageUi(videoModel, getHeroTag(videoModel, index)),

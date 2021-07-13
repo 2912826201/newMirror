@@ -85,6 +85,8 @@ class _AnimatedBarsState extends State<_AnimatedBars> {
   Timer timer;
   List<double> intLenArray = [8.0, 10.0, 6.0];
 
+  StreamController<int> _streamController = StreamController<int>();
+
   @override
   void initState() {
     super.initState();
@@ -97,24 +99,29 @@ class _AnimatedBarsState extends State<_AnimatedBars> {
       height: 10,
       width: 10,
       alignment: Alignment.bottomCenter,
-      child: getWidgetArray(),
+      child: StreamBuilder<int>(
+          initialData: 0,
+          stream: _streamController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
+            return getWidgetArray(snapshot.data);
+          }),
     );
   }
 
-  Widget getWidgetArray() {
+  Widget getWidgetArray(int tick) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        getWidget(intLenArray[0], 2),
+        getWidget(intLenArray[(0 + tick) % 3], 2),
         SizedBox(
           width: 2,
         ),
-        getWidget(intLenArray[1], 2),
+        getWidget(intLenArray[(1 + tick) % 3], 2),
         SizedBox(
           width: 2,
         ),
-        getWidget(intLenArray[2], 2),
+        getWidget(intLenArray[(2 + tick) % 3], 2),
       ],
     );
   }
@@ -137,12 +144,7 @@ class _AnimatedBarsState extends State<_AnimatedBars> {
     duration = Duration(milliseconds: 200);
     timer = Timer.periodic(duration, (timer) {
       try {
-        double temp;
-        temp = intLenArray[0];
-        intLenArray[0] = intLenArray[1];
-        intLenArray[1] = intLenArray[2];
-        intLenArray[2] = temp;
-        setState(() {});
+        _streamController.sink.add(timer.tick);
       } catch (e) {
         if (timer != null) {
           timer.cancel();
