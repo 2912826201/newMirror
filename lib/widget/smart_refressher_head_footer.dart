@@ -53,14 +53,12 @@ class SmartRefresherHeadFooter {
   // 推荐用户底部
   getAttentionUserFooter() {
     return WaterDropHeader(
-        refresh:
-            Container(
-            ),
+        refresh: Container(),
         complete: Text(""),
         failed: Text(""),
         idleIcon: Container(
-          margin:EdgeInsets.only(right: 20),
-          width: 20,
+          margin: EdgeInsets.only(right: 20),
+          width: 40,
           height: 190,
           child: Column(
             children: [
@@ -72,6 +70,20 @@ class SmartRefresherHeadFooter {
                   height: 190,
                 ),
               ),
+              SizedBox(height: 11.5 * 13.0),
+              Container(
+                // margin: EdgeInsets.only(left: 15),
+                padding: EdgeInsets.only(left: 20),
+                width: 40,
+                height: 20,
+                // color: AppColor.mainRed,
+                child: Lottie.asset(
+                  'assets/lottie/loading_refresh_black.json',
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.fill,
+                ),
+              )
             ],
           ),
         ),
