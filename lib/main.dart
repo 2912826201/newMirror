@@ -267,7 +267,6 @@ Future _initApp() async {
   //提前获取新版本信息
   getNewVersion().then((value) {
     if (value != null && AppConfig.version != value.version) {
-      print('-----------------------------进了更新');
       Application.versionModel = value;
       Application.haveOrNotNewVersion = true;
     }

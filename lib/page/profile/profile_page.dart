@@ -455,7 +455,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               ),
               Expanded(
                 child: Text(
-                  context.watch<ProfileNotifier>().profile.nickName,
+                  context.watch<ProfileNotifier>().profile.nickName??"",
                   style: AppStyle.textMedium18,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,

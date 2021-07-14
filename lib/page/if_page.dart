@@ -47,8 +47,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
       //判断如果还没拥有通知权限就申请获取权限
-      //note 调试时会出现ifPage重构两次，加缓存判断防止重复弹窗，不影响正式体验
-      if (!status && AppPrefs.isFirstGetNotification()) {
+      //note 调试时会出现ifPage重构两次，不影响正式体验
+      if (!status) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           //请求通知权限
           showAppDialog(
@@ -65,7 +65,6 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             }),
           );
         });
-        AppPrefs.setFristGetNotification(false);
       }
     }
   }
