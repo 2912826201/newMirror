@@ -231,6 +231,7 @@ class ChatPageUtil {
     }
 
     //添加没有发生完成的消息
+    deletePostCompleteMessage(conversation);
     addPostNoCompleteMessage(conversation, chatDataList);
 
     if (shareMessage != null && chatDataList.length > 0) {
