@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -27,14 +28,15 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
 
   @override
   void initState() {
+    super.initState();
     // 最外层TabBar 默认定位到第二页
+    print('IF PAGE INITSTATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
     Application.ifPageController = _controller;
     VisibilityDetectorController.instance.updateInterval = Duration(milliseconds: 200);
-    super.initState();
     //初始化
     WidgetsBinding.instance.addObserver(this);
-    //Fixme ifpage会重构两次 ，会走两次initState
+    //Fixme 调试时ifpage会重构两次 ，会走两次initState，不影响正式体验
     _getNotificationStatus();
   }
 
@@ -45,6 +47,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
       //判断如果还没拥有通知权限就申请获取权限
+      //note 调试时会出现ifPage重构两次，加缓存判断防止重复弹窗，不影响正式体验
       if (!status && AppPrefs.isFirstGetNotification()) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           //请求通知权限
@@ -54,7 +57,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             info: "第一时间获取评论,私信,@我等信息通知",
             barrierDismissible: false,
             confirm: AppDialogButton("去打开", () {
-              NotificationPermissions.requestNotificationPermissions();
+              AppSettings.openNotificationSettings();
               return true;
             }),
             cancel: AppDialogButton("取消", () {

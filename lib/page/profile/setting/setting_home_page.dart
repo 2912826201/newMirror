@@ -32,9 +32,7 @@ class SettingHomePage extends StatefulWidget {
 
 class _SettingHomePageState extends State<SettingHomePage> {
   bool haveNewVersion = false;
-  String url;
-  String content;
-
+  VersionModel versionModel;
   @override
   void initState() {
     // TODO: implement initState
@@ -45,10 +43,9 @@ class _SettingHomePageState extends State<SettingHomePage> {
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if (model != null) {
+      versionModel = model;
       if (model.version != AppConfig.version) {
         haveNewVersion = true;
-        content = model.description;
-        url = model.url;
         if (mounted) {
           setState(() {});
         }
@@ -134,7 +131,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
               if(AppConfig.needShowTraining)InkWell(
                 child: _rowItem(width, "关于"),
                 onTap: () {
-                  AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
+                  AppRouter.navigateToSettingAbout(context, versionModel,haveNewVersion);
                 },
               ),
               Container(

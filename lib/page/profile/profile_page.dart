@@ -56,8 +56,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   double width = ScreenUtil.instance.width;
   double height = ScreenUtil.instance.height;
   bool haveNewVersion = false;
-  String content;
-  String url;
+  VersionModel versionModel;
   StreamController<double> topStreamController = StreamController<double>();
   StreamController<double> bottomStreamController = StreamController<double>();
   double beforOffset;
@@ -87,10 +86,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if (model != null) {
+      versionModel = model;
       if (model.version != AppConfig.version) {
         haveNewVersion = true;
-        content = model.description;
-        url = model.url;
         if (mounted) {
           setState(() {});
         }
@@ -105,13 +103,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
       });
     }
-  }
-
-  bool notificationListener(ScrollNotification notification) {
-    print('-------------------${notification.metrics.axis}');
-    print('-------------------${notification.metrics.pixels}');
-    print('-------------------${notification.metrics.pixels}');
-    return false;
   }
 
   @override
@@ -633,7 +624,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingFeedBack(context);
         break;
       case "关于":
-        AppRouter.navigateToSettingAbout(context, url, haveNewVersion, content);
+        AppRouter.navigateToSettingAbout(context, versionModel, haveNewVersion);
         break;
       case "扫一扫":
         gotoScanCodePage(context, showMyCode: true);
