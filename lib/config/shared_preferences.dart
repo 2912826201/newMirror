@@ -13,6 +13,8 @@ String prefsKeyIsFirstLaunch = "isFirstLaunch";
 
 // 是否同意用户协议和隐私政策
 String prefsKeyIsAgreeUserAgreement = "isAgreeUserAgreement";
+// 绑定同意用户协议只执行一次弹窗的布尔值
+String prefsKeyIsOpenPopup = "isOpenPopup";
 
 String prefsKeyIsFirstLaunchToDay = "isFirstLaunchToDay";
 // 发布动态本地插入数据
@@ -64,6 +66,18 @@ class AppPrefs {
 
   static setIsAgreeUserAgreement(bool isAgree) {
     return _instance.setBool(prefsKeyIsAgreeUserAgreement, isAgree);
+  }
+  // 绑定控制用户协议和隐私政策弹窗只开启一次
+  static bool IsOpenPopup() {
+    bool value = _instance.getBool(prefsKeyIsOpenPopup);
+    if (value == null) {
+      value = false;
+    }
+    return value;
+  }
+
+  static setIsOpenPopup(bool isOpenPopup) {
+    return _instance.setBool(prefsKeyIsOpenPopup, isOpenPopup);
   }
 
   static setFristGetNotification(bool isFrist) {
