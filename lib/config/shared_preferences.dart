@@ -11,6 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 String prefsKeyIsFirstLaunch = "isFirstLaunch";
 
+// 是否同意用户协议和隐私政策
+String prefsKeyIsAgreeUserAgreement = "isAgreeUserAgreement";
+
 String prefsKeyIsFirstLaunchToDay = "isFirstLaunchToDay";
 // 发布动态本地插入数据
 String publishFeedLocalInsertData = "publishFeedLocalInsertDataPrefs";
@@ -48,6 +51,19 @@ class AppPrefs {
 
   static setIsFirstLaunch(bool isFirstLaunch) {
     return _instance.setBool(prefsKeyIsFirstLaunch, isFirstLaunch);
+  }
+
+  //  是否同意用户协议和隐私政策
+  static bool isAgreeUserAgreement() {
+     bool value = _instance.getBool(prefsKeyIsAgreeUserAgreement);
+     if (value == null) {
+       value = false;
+     }
+     return value;
+  }
+
+  static setIsAgreeUserAgreement(bool isAgree) {
+    return _instance.setBool(prefsKeyIsAgreeUserAgreement, isAgree);
   }
 
   static setFristGetNotification(bool isFrist) {

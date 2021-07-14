@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/version_api.dart';
@@ -60,7 +62,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
   @override
   bool get wantKeepAlive => true; //必须重写
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
-
+  String TestText =
+      "交通指引成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交站:广都上街华阳大道口、广都中街华阳大道口、输气大厦、广都上街、南阳盛世、华阳地税所、广都上街华阳大道口、华阳大道广都中街口、华阳大道广都中街口、华阳大道广都中街、广都上街、南阳盛世、丽都街东、广都中街、正东中街、华阳大市场。成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交车:815路、829路、T102路环线、517路、T101路、华阳4A路、501路、801路、813路、825B路、823路、825A路、826路、821路、827路、828路、843路、T103路、华阳2A路、T106路、815A路、华阳5路、807路等。打车去成都天府新区华天兴能燃气有限责任公司华阳客服中心多少钱：成都市出租车的起步价是8.0元、起步距离2.0公里、 每公里1.9元、无燃油附加费 ，请参考。自驾去成都天府新区华天兴能燃气有限责任公司华阳客服中心怎么走：请输入您的出发点，帮您智能规划驾车线路。";
   @override
   void initState() {
     super.initState();
@@ -78,6 +81,10 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("测试页生命周期变化：$state");
+  }
+
+  Future<void> pop() async {
+    await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 
   @override
@@ -419,7 +426,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                 onPressed: () {
                   Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
                     //     return SliverListDemoPage();
-                    return  ExplosionImageTest();
+                    return ExplosionImageTest();
                   }));
                 },
                 child: Text("粒子爆炸"),
@@ -483,7 +490,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                         AppRouter.navigateToLoginSucess(context);
                       },
                     ),
-                    Lottie.asset('assets/lottie/loading_refresh_black.json',
+                    Lottie.asset(
+                      'assets/lottie/loading_refresh_black.json',
                       width: 48,
                       height: 48,
                       fit: BoxFit.fill,
@@ -496,7 +504,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                         ],
                       ),
                     ),
-                    Lottie.asset('assets/lottie/loading_refresh_red.json',
+                    Lottie.asset(
+                      'assets/lottie/loading_refresh_red.json',
                       width: 48,
                       height: 48,
                       fit: BoxFit.fill,
@@ -563,6 +572,40 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     print("是不是华为手机:${await CheckPhoneSystemUtil.init().isEmui()}");
                   },
                   child: Text("判断手机厂商")),
+              RaisedButton(
+                  onPressed: () async {
+                    print("是否同意用户协议::${AppPrefs.isAgreeUserAgreement()}");
+                    if (!AppPrefs.isAgreeUserAgreement()) {
+                      print("11111111");
+                      // Future.delayed(Duration.zero, () {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        showAppDialog(context,
+                            confirm: AppDialogButton("同意", () {
+                              return true;
+                            }),
+                            cancel: AppDialogButton("取消并退出", () {
+                              // Navigator.pop(context);
+                              // pop();
+                              if(Platform.isIOS) {
+                                exit(0);///以编程方式退出，彻底但体验不好
+                              } else if(Platform.isAndroid) {
+                                SystemNavigator.pop(); //官方推荐方法，但不彻底
+                              }
+                              return true;
+                            }),
+                            title: "用户协议和隐私政策",
+                            customizeWidget: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              child: SingleChildScrollView(
+                                child: Text(TestText),
+                              ),
+                            ),
+                            barrierDismissible: false);
+                      });
+                    }
+                  },
+                  child: Text("用户协议和隐私政策")),
             ],
           ),
         ),
