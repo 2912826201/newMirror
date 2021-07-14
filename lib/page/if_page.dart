@@ -1,15 +1,21 @@
+import 'dart:io';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:move_to_background/move_to_background.dart';
 import 'package:notification_permissions/notification_permissions.dart';
+import 'package:rich_text_widget/rich_text_widget.dart';
 
 import 'media_picker/media_picker_page.dart';
 import 'package:visibility_detector/src/visibility_detector_controller.dart';
@@ -21,9 +27,11 @@ class IfPage extends StatefulWidget {
 }
 
 // 嵌套二层TabBar
-class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
+class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
+  String TestText =
+      "我们非常重视您的个人信息和隐私保护，为了更好的保障您的个人权益，在您使用前，请务必阅读我们的《使用条款》和《隐私协议》。如果您同意此协议，请点击“同意”。";
 
   @override
   void initState() {
@@ -34,13 +42,16 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     super.initState();
     //初始化
     WidgetsBinding.instance.addObserver(this);
+    _getInformationGuide();
     //Fixme ifpage会重构两次 ，会走两次initState
-    _getNotificationStatus();
+    if(AppPrefs.isAgreeUserAgreement()) {
+      _getNotificationStatus();
+    }
   }
 
   _getNotificationStatus() async {
     // Android申请通知权限
-    if (CheckPhoneSystemUtil.init().isAndroid()) {
+    if (CheckPhoneSystemUtil.init().isAndroid() &&  AppPrefs.isAgreeUserAgreement()) {
       // 检查是否已有通知的权限
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
@@ -67,6 +78,66 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     }
   }
 
+  // 信息引导弹窗
+  _getInformationGuide() {
+    print("信息引导弹窗");
+    print("AppPrefs.isAgreeUserAgreement:::${AppPrefs.isAgreeUserAgreement()}");
+    print("AppPrefs.IsOpenPopup:::${AppPrefs.IsOpenPopup()}");
+    if ( !AppPrefs.isAgreeUserAgreement()) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        showAppDialog(context,
+            confirm: AppDialogButton("同意", () {
+              // AppPrefs.isAgreeUserAgreement
+              AppPrefs.setIsAgreeUserAgreement(true);
+              _getNotificationStatus();
+              setState(() {});
+              return true;
+            }),
+            cancel: AppDialogButton("不同意", () {
+              // pop();
+              if (Platform.isIOS) {
+                // MoveToBackground.moveTaskToBack();
+                exit(0);
+
+                ///以编程方式退出，彻底但体验不好
+              } else if (Platform.isAndroid) {
+                // MoveToBackground.moveTaskToBack();
+                exit(0);
+                // SystemNavigator.pop(); //官方推荐方法，但不彻底
+              }
+              return true;
+            }),
+            title: "欢迎使用春柠",
+            customizeWidget: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.17,
+              child: SingleChildScrollView(
+                child: RichTextWidget(
+                  // default Text
+                  Text(
+                    TestText,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  // rich text list
+                  richTexts: [
+                    BaseRichText(
+                      "《使用条款》",
+                      style: TextStyle(color: AppColor.mainBlue),
+                      onTap: () => { print("跳转到使用条款")},
+                    ),
+                    BaseRichText(
+                      "《隐私协议》",
+                      style: TextStyle(color: AppColor.mainBlue),
+                      onTap: () => {print("跳转到隐私协议")},
+                    ),
+                  ],
+                )
+              ),
+            ),
+            barrierDismissible: false);
+      });
+    }
+  }
   // //最初的滑动偏移
   // Offset _initialSwipeOffset;
   //
@@ -97,6 +168,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
   //     context.read<FeedMapNotifier>().storageIsSwipeLeft(direction);
   //   }
   // }
+
+  ///监听用户回到app
   @override
   Future didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
@@ -110,8 +183,51 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     }
   }
 
+  List<Widget> _createTabContent() {
+    List<Widget> tabContent = List();
+    tabContent.add(MediaPickerPage(
+      9,
+      typeImageAndVideo,
+      true,
+      startPageGallery,
+      false,
+      publishMode: 2,
+    ));
+    //四个常规业务tabBar
+    tabContent.add(MainPage());
+    return tabContent;
+  }
+
   @override
-  Widget shouldBuild(BuildContext context) {
+  void dispose() {
+    _controller.dispose();
+    print("IFPage销毁了页面");
+    //销毁
+    WidgetsBinding.instance.removeObserver(this);
+    // _childController.dispose();
+    super.dispose();
+  }
+
+  // @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      //fixme 弹起键盘上下文报错
+      if (this.context != null) {
+        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
+          //关闭键盘
+        } else {
+          //显示键盘
+          if (Application.keyboardHeightIfPage <= MediaQuery.of(this.context).viewInsets.bottom) {
+            Application.keyboardHeightIfPage = MediaQuery.of(this.context).viewInsets.bottom;
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     print("if_page_____________________________________________build");
     // 获取屏幕宽度，只能在home内才可调用。
     double screen_bottom = MediaQuery.of(context).padding.bottom;
@@ -133,7 +249,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
         value: SystemUiOverlayStyle.dark,
         // child: Scaffold(
         //     resizeToAvoidBottomInset: false,
-        child: MainPage()
+        child: !AppPrefs.isAgreeUserAgreement() ? Scaffold(body: Container()) : MainPage()
         // NotificationListener<ScrollNotification>(
         //     onNotification: (ScrollNotification notification) {
         //       ScrollMetrics metrics = notification.metrics;
@@ -197,48 +313,5 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
         // ),
         // )
         );
-  }
-
-  List<Widget> _createTabContent() {
-    List<Widget> tabContent = List();
-    tabContent.add(MediaPickerPage(
-      9,
-      typeImageAndVideo,
-      true,
-      startPageGallery,
-      false,
-      publishMode: 2,
-    ));
-    //四个常规业务tabBar
-    tabContent.add(MainPage());
-    return tabContent;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    print("IFPage销毁了页面");
-    //销毁
-    WidgetsBinding.instance.removeObserver(this);
-    // _childController.dispose();
-    super.dispose();
-  }
-
-  // @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      //fixme 弹起键盘上下文报错
-      if (this.context != null) {
-        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
-          //关闭键盘
-        } else {
-          //显示键盘
-          if (Application.keyboardHeightIfPage <= MediaQuery.of(this.context).viewInsets.bottom) {
-            Application.keyboardHeightIfPage = MediaQuery.of(this.context).viewInsets.bottom;
-          }
-        }
-      }
-    });
   }
 }

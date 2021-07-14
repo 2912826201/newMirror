@@ -38,6 +38,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
 import 'package:mirror/widget/volume_popup.dart';
+import 'package:move_to_background/move_to_background.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import '../message/util/message_chat_page_manager.dart';
@@ -47,7 +48,6 @@ import 'badger_test_page.dart';
 import 'explosion_image_test.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
-
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
 
@@ -584,12 +584,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                               return true;
                             }),
                             cancel: AppDialogButton("取消并退出", () {
-                              // Navigator.pop(context);
                               // pop();
                               if(Platform.isIOS) {
+                                // MoveToBackground.moveTaskToBack();
+                                // MoveToBackground.moveTaskToBack();
                                 exit(0);///以编程方式退出，彻底但体验不好
                               } else if(Platform.isAndroid) {
-                                SystemNavigator.pop(); //官方推荐方法，但不彻底
+                                MoveToBackground.moveTaskToBack();
+                                // SystemNavigator.pop(); //官方推荐方法，但不彻底
                               }
                               return true;
                             }),
