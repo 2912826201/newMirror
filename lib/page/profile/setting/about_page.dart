@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/page/feed/ui_Control_Page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -11,24 +12,21 @@ import 'package:mirror/widget/version_update_dialog.dart';
 
 //关于
 class AboutPage extends StatefulWidget {
-  String url;
   bool haveNewVersion;
-  String content;
+  VersionModel versionModel;
 
-  AboutPage({this.url, this.haveNewVersion, this.content});
+  AboutPage({this.haveNewVersion, this.versionModel});
 
   @override
   State<StatefulWidget> createState() {
-    return _AboutPageState(url: url, haveNewVersion: haveNewVersion, content: content);
+    return _AboutPageState( haveNewVersion: haveNewVersion);
   }
 }
 
 class _AboutPageState extends State<AboutPage> {
-  String url;
   bool haveNewVersion;
-  String content;
 
-  _AboutPageState({this.url, this.haveNewVersion, this.content});
+  _AboutPageState({this.haveNewVersion});
   @override
   void initState() {
     // TODO: implement initState
@@ -89,7 +87,8 @@ class _AboutPageState extends State<AboutPage> {
             haveNewVersion
                 ? InkWell(
                     onTap: () {
-                      showVersionDialog(context: context, content: content, url: url, strong: false);
+                      showVersionDialog(context: context, content: widget.versionModel.description, url: widget
+                          .versionModel.url, strong: false);
                     },
                     child: _itemRow("版本更新"),
                   )
