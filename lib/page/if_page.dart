@@ -90,7 +90,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
               // AppPrefs.isAgreeUserAgreement
               AppPrefs.setIsAgreeUserAgreement(true);
               _getNotificationStatus();
-              setState(() {});
+              reload();
               return true;
             }),
             cancel: AppDialogButton("不同意", () {
