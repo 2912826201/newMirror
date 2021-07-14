@@ -161,11 +161,9 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     }
   }
 
-  // getTopUi(),
-  // (!isCleaningMode) ? getHaveMessageBottomPlan() : getNoMessageBottomPlan(),
   @override
   Widget build(BuildContext context) {
-    print("buildbuildbuildbuildbuildbuildbuild");
+    super.build(context);
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -492,36 +490,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
                   width: 48.0,
                   padding: EdgeInsets.only(left: 10),
                   child: AppIconButton(
-                    onTap: () {
-                      if (ClickUtil.isFastClick()) {
-                        return;
-                      }
-                      _emojiStateOld = _emojiState;
-                      if (isShowEmojiBtn) {
-                        _emojiState = isShowEmojiBtn;
-                        isShowEditPlan = false;
-                        isShowEmojiBtn = !isShowEmojiBtn;
-                        if (_focusNode.hasFocus) {
-                          _focusNode.unfocus();
-                        } else {
-                          setState(() {
-                            print("setState-111111111111111111");
-                          });
-                        }
-                      } else {
-                        _emojiState = isShowEmojiBtn;
-                        isShowEditPlan = false;
-                        isShowEmojiBtn = !isShowEmojiBtn;
-                        _bottomSettingPanelState = !_emojiState;
-                        FocusScope.of(context).requestFocus(_focusNode);
-                        // Future.delayed(Duration(milliseconds: 100),(){
-                        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-                        //     _bottomSettingPanelState = false;
-                        //     setState(() {});
-                        //   }
-                        // });
-                      }
-                    },
+                    onTap: _emojiBtnOnclickListener,
                     iconSize: 24,
                     buttonWidth: 36,
                     buttonHeight: 36,
@@ -689,10 +658,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       _textController.text += emojiModelCode;
     }
     cursorIndexPr += emojiModelCode.length;
+    var setCursor = TextSelection(
+      baseOffset: cursorIndexPr,
+      extentOffset: cursorIndexPr,
+    );
+    _textController.selection = setCursor;
     messageCantSendStream.sink.add(0);
-    Future.delayed(Duration(milliseconds: 100), () {
-      textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
-    });
   }
 
   //表情的bar
@@ -750,42 +721,18 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     return TextSpanField(
       onTap: () {
         _emojiStateOld = _emojiState;
-        pageHeightStopCanvas = true;
-        oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
         _emojiState = false;
         _bottomSettingPanelState = true;
-        print("_bottomSettingPanelState:设置true");
-        startOpenKeyBoardHeight();
-        // Future.delayed(Duration(milliseconds: 100),(){
-        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-        //     _bottomSettingPanelState = false;
-        //   }else{
-        //     _bottomSettingPanelState = true;
-        //   }
-        //   setState(() {});
-        // });
-        // setState(() {});
       },
       onLongTap: () {
         _emojiStateOld = _emojiState;
-        pageHeightStopCanvas = true;
-        oldKeyboardHeight = -1;
         isShowEmojiBtn = true;
         _emojiState = false;
         _bottomSettingPanelState = true;
-        print("_bottomSettingPanelState:设置true");
-        startOpenKeyBoardHeight();
-        // Future.delayed(Duration(milliseconds: 100),(){
-        //   if(MediaQuery.of(this.context).viewInsets.bottom<1){
-        //     _bottomSettingPanelState = false;
-        //   }else{
-        //     _bottomSettingPanelState = true;
-        //   }
-        //   setState(() {});
-        // });
-        // setState(() {});
       },
+      readOnly: _emojiState,
+      showCursor: true,
       controller: _textController,
       scrollController: textScrollController,
       focusNode: _focusNode,
@@ -804,6 +751,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       ),
       //内容改变的回调
       onChanged: (text) {
+        cursorIndexPr = _textController.selection.baseOffset;
         messageCantSendStream.sink.add(0);
       },
       textInputAction: TextInputAction.send,
@@ -912,8 +860,8 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           print("setState-55555555555555555");
         });
         Future.delayed(Duration(milliseconds: 80), () {
-          pageHeightStopCanvas = true;
-          oldKeyboardHeight = 0;
+          // pageHeightStopCanvas = true;
+          // oldKeyboardHeight = 0;
           isShowEmojiBtn = true;
           _emojiState = false;
           FocusScope.of(context).requestFocus(_focusNode);
@@ -1372,6 +1320,27 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     messageCantSendStream.sink.add(0);
   }
 
+  //表情按钮的点击事件
+  _emojiBtnOnclickListener() {
+    cursorIndexPr = _textController.selection.baseOffset;
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
+    _emojiStateOld = _emojiState;
+    if (isShowEmojiBtn) {
+      _emojiState = isShowEmojiBtn;
+      isShowEditPlan = false;
+      isShowEmojiBtn = !isShowEmojiBtn;
+      setState(() {});
+    } else {
+      _emojiState = isShowEmojiBtn;
+      isShowEditPlan = false;
+      isShowEmojiBtn = !isShowEmojiBtn;
+      _bottomSettingPanelState = !_emojiState;
+      setState(() {});
+    }
+  }
+
   //发送按钮点击事件
   _onSubmitClick(text) {
     if (null == text || text.length < 1) {
@@ -1473,28 +1442,12 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   @override
-  void endCanvasPage() {
-    print("停止改变屏幕高度");
-    if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
-      if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
-        Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
-        if (mounted) {
-          setState(() {
-            print("setState-aaaaaaaaaaaaaaaaaaaaaa");
-          });
-        }
-      }
-    }
-  }
-
-  @override
-  void startCanvasPage(bool isOpen) {
-    print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
-    print("_bottomSettingPanelState:是$_bottomSettingPanelState");
-    if (isOpen) {
+  void startChangeKeyBoardHeight(bool isOpenKeyboard) {
+    print("开始改变屏幕高度:${isOpenKeyboard ? "打开" : "关闭"}");
+    if (isOpenKeyboard) {
       if (!_emojiStateOld) {
-        if (_bottomSettingPanelState != isOpen) {
-          _bottomSettingPanelState = isOpen;
+        if (_bottomSettingPanelState != isOpenKeyboard) {
+          _bottomSettingPanelState = isOpenKeyboard;
           print("_bottomSettingPanelState:是$_bottomSettingPanelState");
           if (mounted) {
             setState(() {
@@ -1504,28 +1457,27 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
         }
       }
     } else {
-      _bottomSettingPanelState = false;
-      print("_bottomSettingPanelState:是$_bottomSettingPanelState");
-      if (mounted) {
-        setState(() {
-          print("setState-bbbbbbbbbbbbbbbbbbbbbbbb");
-        });
+      if (!_emojiState) {
+        _onClickBodyListener();
       }
     }
-    if (isOpen) {
+    if (isOpenKeyboard) {
       _emojiStateOld = false;
     }
   }
 
   @override
-  void keyBoardHeightThanZero() {
-    // if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
-    //   _focusNode.unfocus();
-    // }
-  }
-
-  @override
-  void secondListener() {
-    // TODO: implement secondListener
+  void endChangeKeyBoardHeight(bool isOpenKeyboard) {
+    print("停止改变屏幕高度:${isOpenKeyboard ? "打开" : "关闭"}");
+    if (isOpenKeyboard) {
+      if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
+        Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
+        if (mounted) {
+          setState(() {
+            print("setState-aaaaaaaaaaaaaaaaaaaaaa");
+          });
+        }
+      }
+    }
   }
 }

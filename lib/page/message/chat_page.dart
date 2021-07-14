@@ -265,6 +265,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: ChatPageUtil.init(context).getAppBar(conversation, _topMoreBtnClick),
@@ -283,10 +284,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
                   (conversation.type != GROUP_TYPE)
                       ? Container()
                       : ChatAtUserList(
-                          isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
-                          onItemClickListener: atListItemClick,
-                          groupChatId: conversation.conversationId,
-                        ),
+                    isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
+                    onItemClickListener: atListItemClick,
+                    groupChatId: conversation.conversationId,
+                  ),
                 ],
               ),
             ),
@@ -366,7 +367,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       ChatMessageProfileUtil.unreadCount = 0;
       ChatMessageProfileUtil.unreadCountNew = 0;
     }
-    print("getChatDetailsBody:${chatDataList.length}");
+    // print("getChatDetailsBody:${chatDataList.length}");
 
     return ChatDetailsBody(
       key: chatDetailsBodyChildKey,
@@ -1706,8 +1707,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       //   }
       // });
     } else {
-      pageHeightStopCanvas = true;
-      oldKeyboardHeight = 0;
+      // pageHeightStopCanvas = true;
+      // oldKeyboardHeight = 0;
     }
     print("readOnly:$readOnly");
     if (readOnly) {
@@ -2363,9 +2364,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     int initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList,chatDataList[position]);
 
-    if(initIndex<0){
-      ToastShow.show(msg: "无法查看详情", context: context);
-      return;
+    if(initIndex<0) {
+      sourceList.clear();
+      sourceList = MessageItemGalleryUtil.init().getMessageGalleryList(chatDataList);
+      isNewSourceList = false;
+
+      initIndex = MessageItemGalleryUtil.init().getPositionMessageGalleryList(sourceList, chatDataList[position]);
+      if (initIndex < 0) {
+        ToastShow.show(msg: "无法查看详情$position", context: context);
+        return;
+      }
     }
 
     Navigator.of(context).push(
@@ -2412,10 +2420,62 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     });
   }
 
+  // @override
+  // void endCanvasPage() {
+  //   //print("停止改变屏幕高度");
+  //   if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
+  //     if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
+  //       Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
+  //       //print("Application.keyboardHeightChatPage:${Application.keyboardHeightChatPage}");
+  //       bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+  //     }
+  //   }
+  // }
+
+  // @override
+  // void startCanvasPage(bool isOpen) {
+  //   //print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
+  //   //print("_bottomSettingPanelState:$_bottomSettingPanelState,_emojiStateOld:$_emojiStateOld");
+  //   if (isOpen) {
+  //     if (!_emojiStateOld) {
+  //       if (_bottomSettingPanelState != isOpen) {
+  //         _bottomSettingPanelState = isOpen;
+  //         bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
+  //       }
+  //     }
+  //   } else {
+  //     _bottomSettingPanelState = false;
+  //     bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
+  //   }
+  //   if (isOpen) {
+  //     _emojiStateOld = false;
+  //   }
+  // }
+
+  // @override
+  // void keyBoardHeightThanZero() {
+  //   if (!_emojiStateOld) {
+  //     if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
+  //       _focusNode.unfocus();
+  //       //print("11111111111111111111111111");
+  //     }
+  //   }
+  // }
+
+  // @override
+  // void secondListener() {
+  //   if (scrollPositionPixels < 500 && chatDataList.length > 100) {
+  //     List<ChatDataModel> list = [];
+  //     list = chatDataList.sublist(0, 100);
+  //     chatDataList.clear();
+  //     chatDataList.addAll(list);
+  //     EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+  //   }
+  // }
+
   @override
-  void endCanvasPage() {
-    //print("停止改变屏幕高度");
-    if (MediaQuery.of(this.context).viewInsets.bottom > 0) {
+  void endChangeKeyBoardHeight(bool isOpenKeyboard) {
+    if (isOpenKeyboard) {
       if (Application.keyboardHeightChatPage != MediaQuery.of(this.context).viewInsets.bottom) {
         Application.keyboardHeightChatPage = MediaQuery.of(this.context).viewInsets.bottom;
         //print("Application.keyboardHeightChatPage:${Application.keyboardHeightChatPage}");
@@ -2425,13 +2485,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   @override
-  void startCanvasPage(bool isOpen) {
-    //print("开始改变屏幕高度:${isOpen ? "打开" : "关闭"}");
-    //print("_bottomSettingPanelState:$_bottomSettingPanelState,_emojiStateOld:$_emojiStateOld");
-    if (isOpen) {
+  void startChangeKeyBoardHeight(bool isOpenKeyboard) {
+    print("startChangeKeyBoardHeight:$isOpenKeyboard");
+    if (isOpenKeyboard) {
       if (!_emojiStateOld) {
-        if (_bottomSettingPanelState != isOpen) {
-          _bottomSettingPanelState = isOpen;
+        if (_bottomSettingPanelState != isOpenKeyboard) {
+          _bottomSettingPanelState = isOpenKeyboard;
           bottomSettingChildKey.currentState.setBottomSettingPanelState(_bottomSettingPanelState);
         }
       }
@@ -2439,29 +2498,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _bottomSettingPanelState = false;
       bottomSettingChildKey.currentState.setBottomSettingPanelState(false);
     }
-    if (isOpen) {
+    if (isOpenKeyboard) {
       _emojiStateOld = false;
-    }
-  }
-
-  @override
-  void keyBoardHeightThanZero() {
-    if (!_emojiStateOld) {
-      if (MediaQuery.of(this.context).viewInsets.bottom > 0 && !_bottomSettingPanelState) {
-        _focusNode.unfocus();
-        //print("11111111111111111111111111");
-      }
-    }
-  }
-
-  @override
-  void secondListener() {
-    if (scrollPositionPixels < 500 && chatDataList.length > 100) {
-      List<ChatDataModel> list = [];
-      list = chatDataList.sublist(0, 100);
-      chatDataList.clear();
-      chatDataList.addAll(list);
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
   }
 }

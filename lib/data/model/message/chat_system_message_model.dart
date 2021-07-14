@@ -87,19 +87,24 @@ class ChatSystemMessageModel {
 
 
 class ChatSystemMessageSubModel{
-  String title;       // 标题
-  String text;        // 文字
-  String picUrl;      // 图片url
-  String linkUrl;     // 跳转链接 可为外部链接也可为内部页面链接
+  String title; // 标题
+  String text; // 文字
+  String picUrl; // 图片url
+  String prePicUrl; // 预览图片url
+  String linkUrl; // 跳转链接 可为外部链接也可为内部页面链接
   String linkText; // 提示点击跳转链接的文字
 
-  ChatSystemMessageSubModel({this.title, this.text, this.picUrl, this.linkUrl, this.linkText});
-
+  ChatSystemMessageSubModel({this.title, this.text, this.picUrl, this.prePicUrl, this.linkUrl, this.linkText});
 
   ChatSystemMessageSubModel.fromJson(dynamic json) {
     title = json["title"];
     text = json["text"];
     picUrl = json["picUrl"];
+    if (json["prePicUrl"] == null || json["prePicUrl"].toString().length < 1) {
+      prePicUrl = json["picUrl"];
+    } else {
+      prePicUrl = json["prePicUrl"];
+    }
     linkUrl = json["linkUrl"];
     linkText = json["linkText"];
   }
