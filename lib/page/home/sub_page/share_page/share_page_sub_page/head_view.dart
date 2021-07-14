@@ -248,6 +248,12 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(widget.pageName == "recommendPage" &&
+        widget.model.recommendSourceDto != null &&
+        widget.model.recommendSourceDto.type == 1){
+      print('------------------动态头像---------${widget.model.topics.first.img}');
+    }
+
     if (context.read<TokenNotifier>().isLoggedIn &&
         widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
@@ -313,7 +319,7 @@ class HeadViewState extends State<HeadView> {
 
                                       /// imageUrl的淡入动画的持续时间。
 
-                                      imageUrl: FileUtil.getSmallImage(widget.model.topics.first.img),
+                                      imageUrl: FileUtil.getSmallImage(widget.model.topics.first.avatarUrl.coverUrl),
                                       fit: BoxFit.cover,
                                       // 调整磁盘缓存中图像大小
                                       // maxHeightDiskCache: 150,
@@ -330,6 +336,16 @@ class HeadViewState extends State<HeadView> {
                                         );
                                       },
                                     )),
+                                    Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child:ClipOval(
+                                          child: Container(
+                                            height: 12,
+                                            width: 12,
+                                            color: AppColor.white,
+                                          ),
+                                        ) ),
                                     Positioned(
                                       bottom: 0,
                                       right: 0,
