@@ -20,6 +20,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/icon.dart';
+
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
