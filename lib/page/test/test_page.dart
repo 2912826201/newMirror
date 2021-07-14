@@ -48,6 +48,9 @@ import 'badger_test_page.dart';
 import 'explosion_image_test.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+
+import 'listview_item_test_page.dart';
+
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
 
@@ -608,6 +611,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     }
                   },
                   child: Text("用户协议和隐私政策")),
+              RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ListviewItemPage();
+                    }));
+                  },
+                  child: Text("测试listview增加item")),
             ],
           ),
         ),

@@ -27,7 +27,7 @@ class IfPage extends StatefulWidget {
 }
 
 // 嵌套二层TabBar
-class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBindingObserver {
+class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
   String TestText =
@@ -227,7 +227,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     print("if_page_____________________________________________build");
     // 获取屏幕宽度，只能在home内才可调用。
     double screen_bottom = MediaQuery.of(context).padding.bottom;

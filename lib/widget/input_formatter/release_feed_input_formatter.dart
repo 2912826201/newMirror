@@ -33,6 +33,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   final String triggerAtSymbol;
   final String triggerTopicSymbol;
 
+
+
   // 是否监听#话题
   final bool isMonitorTop;
   final Function correctRulesListener;

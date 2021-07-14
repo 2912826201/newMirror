@@ -201,6 +201,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               dataModel.list.forEach((v) {
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
+                if(HomeFeedModel.fromJson(v).topics.length!=0){
+                  print('----${recommendModelList.indexOf(HomeFeedModel.fromJson(v))}---------topicFrist---------${HomeFeedModel.fromJson(v).topics
+                      .first.img}');
+                }else{
+                  print('----${recommendModelList.indexOf(HomeFeedModel.fromJson(v))
+                  }---------topicFrist-----length=0}');
+                }
               });
             }
             // 默认关闭话题动态

@@ -16,6 +16,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
@@ -554,11 +555,12 @@ class AppRouter {
     _navigateToPage(context, pathSettingBlackList, map);
   }
 
-  static void navigateToSettingAbout(BuildContext context, String url, bool haveNewVersion, String content) {
+  static void navigateToSettingAbout(BuildContext context,VersionModel versionModel, bool haveNewVersion) {
     Map<String, dynamic> map = Map();
-    map["url"] = url;
     map["haveNewVersion"] = haveNewVersion;
-    map["content"] = content;
+    if(versionModel!=null){
+      map["versionModel"] = versionModel.toJson();
+    }
     _navigateToPage(context, pathSettingAbout, map);
   }
 

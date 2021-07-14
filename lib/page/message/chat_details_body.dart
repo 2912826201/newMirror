@@ -344,10 +344,20 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
 
   _initData() {
     //print("1111");
+
+    bool _isShowTop;
+    if (isShowTop != null) {
+      _isShowTop = isShowTop;
+    }
+
     isShowHaveAnimation = MessageItemHeightUtil.init()
         .judgeMessageItemHeightIsThenScreenHeight(widget.chatDataList, widget.isShowChatUserName);
     //print("isShowHaveAnimation:$isShowHaveAnimation");
     isShowTop = !isShowHaveAnimation;
+
+    if (_isShowTop != null && _isShowTop != isShowTop && !isShowTop && MediaQuery.of(context).viewInsets.bottom > 0) {
+      isShowTop = !isShowTop;
+    }
     if (isShowTop) {
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     } else {

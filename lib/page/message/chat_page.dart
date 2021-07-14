@@ -227,17 +227,23 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
+    //设置这个群聊
     ChatMessageProfileUtil.init().setData(conversation, isSetUnreadCount: true);
 
     if (conversation.getType() == RCConversationType.Group) {
+      //刷新appbar
       EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
+      //判断是否退出群聊或者加入群聊
       EventBus.getDefault().registerSingleParameter(_judgeResetPage, EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
+      //刷新群聊的群成员
       EventBus.getDefault().registerSingleParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE,
           registerName: RESET_CHAR_GROUP_USER_LIST);
     }
-    EventBus.getDefault()
-        .registerSingleParameter(resetSettingStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
+    //发送消息的状态广播
+    EventBus.getDefault().registerSingleParameter(resetMsgStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
+    //接收消息的广播
     EventBus.getDefault().registerSingleParameter(getReceiveMessages, EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
+    //撤回消息的广播
     EventBus.getDefault().registerSingleParameter(withdrawMessage, EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
     if (conversation.getType() != RCConversationType.System) {
       initSetData();
@@ -646,7 +652,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
     this.lastIndex = lastIndex;
-    // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     //print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
@@ -1279,7 +1285,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
 
   //设置消息的状态
-  void resetSettingStatus(List<int> list) async{
+  void resetMsgStatus(List<int> list) async {
     if (list == null || list.length < 2) {
       return;
     }
@@ -1389,12 +1395,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (scrollPositionPixels < 500) {
       isHaveReceiveChatDataList = false;
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-    } else {
-      //未读消息的跳转数目加1
-      if (ChatMessageProfileUtil.unreadCountNew > 0) {
-        ChatMessageProfileUtil.unreadCountNew++;
-      }
     }
+
+    //未读消息的跳转数目加1
+    if (ChatMessageProfileUtil.unreadCountNew > 0) {
+      ChatMessageProfileUtil.unreadCountNew++;
+    }
+
     //清聊天未读数
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
   }
