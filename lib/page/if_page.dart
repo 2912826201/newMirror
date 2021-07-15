@@ -13,6 +13,7 @@ import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/protocol_web_view.dart';
 import 'package:move_to_background/move_to_background.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:rich_text_widget/rich_text_widget.dart';
@@ -30,8 +31,7 @@ class IfPage extends StatefulWidget {
 class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
-  String TestText =
-      "我们非常重视您的个人信息和隐私保护，为了更好的保障您的个人权益，在您使用前，请务必阅读我们的《使用条款》和《隐私协议》。如果您同意此协议，请点击“同意”。";
+  String TestText = "我们非常重视您的个人信息和隐私保护，为了更好的保障您的个人权益，在您使用前，请务必阅读我们的《使用条款》和《隐私协议》。如果您同意此协议，请点击“同意”。";
 
   @override
   void initState() {
@@ -44,14 +44,14 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     WidgetsBinding.instance.addObserver(this);
     _getInformationGuide();
     //Fixme ifpage会重构两次 ，会走两次initState
-    if(AppPrefs.isAgreeUserAgreement()) {
+    if (AppPrefs.isAgreeUserAgreement()) {
       _getNotificationStatus();
     }
   }
 
   _getNotificationStatus() async {
     // Android申请通知权限
-    if (CheckPhoneSystemUtil.init().isAndroid() &&  AppPrefs.isAgreeUserAgreement()) {
+    if (CheckPhoneSystemUtil.init().isAndroid() && AppPrefs.isAgreeUserAgreement()) {
       // 检查是否已有通知的权限
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
@@ -83,7 +83,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     print("信息引导弹窗");
     print("AppPrefs.isAgreeUserAgreement:::${AppPrefs.isAgreeUserAgreement()}");
     print("AppPrefs.IsOpenPopup:::${AppPrefs.IsOpenPopup()}");
-    if ( !AppPrefs.isAgreeUserAgreement()) {
+    if (!AppPrefs.isAgreeUserAgreement()) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         showAppDialog(context,
             confirm: AppDialogButton("同意", () {
@@ -112,32 +112,44 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.17,
               child: SingleChildScrollView(
-                child: RichTextWidget(
-                  // default Text
-                  Text(
-                    TestText,
-                    style: TextStyle(color: Colors.black),
+                  child: RichTextWidget(
+                // default Text
+                Text(
+                  TestText,
+                  style: TextStyle(color: Colors.black),
+                ),
+                // rich text list
+                richTexts: [
+                  BaseRichText(
+                    "《使用条款》",
+                    style: TextStyle(color: AppColor.mainBlue),
+                    onTap: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ProtocolWebView(
+                          type: 0,
+                        );
+                      }))
+                    },
                   ),
-                  // rich text list
-                  richTexts: [
-                    BaseRichText(
-                      "《使用条款》",
-                      style: TextStyle(color: AppColor.mainBlue),
-                      onTap: () => { print("跳转到使用条款")},
-                    ),
-                    BaseRichText(
-                      "《隐私协议》",
-                      style: TextStyle(color: AppColor.mainBlue),
-                      onTap: () => {print("跳转到隐私协议")},
-                    ),
-                  ],
-                )
-              ),
+                  BaseRichText(
+                    "《隐私协议》",
+                    style: TextStyle(color: AppColor.mainBlue),
+                    onTap: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ProtocolWebView(
+                          type: 1,
+                        );
+                      }))
+                    },
+                  ),
+                ],
+              )),
             ),
             barrierDismissible: false);
       });
     }
   }
+
   // //最初的滑动偏移
   // Offset _initialSwipeOffset;
   //
