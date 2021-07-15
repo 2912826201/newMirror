@@ -214,6 +214,7 @@ flutter:
   assets:
     - assets/emoji.json
     - assets/lottie/
+    - assets/files/
     - assets/svg/
     - assets/png/
     - assets/png/2.0x/
