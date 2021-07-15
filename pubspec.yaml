@@ -185,6 +185,7 @@ dependencies:
   cube_transition: ^1.0.2
   like_button: ^2.0.2
   animated_text_kit: ^4.2.1
+  move_to_background: ^1.0.2
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
   #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。
@@ -213,6 +214,7 @@ flutter:
   assets:
     - assets/emoji.json
     - assets/lottie/
+    - assets/files/
     - assets/svg/
     - assets/png/
     - assets/png/2.0x/
