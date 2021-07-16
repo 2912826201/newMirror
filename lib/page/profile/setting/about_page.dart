@@ -8,6 +8,7 @@ import 'package:mirror/page/feed/ui_Control_Page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/protocol_web_view.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
 //关于
@@ -19,7 +20,7 @@ class AboutPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _AboutPageState( haveNewVersion: haveNewVersion);
+    return _AboutPageState(haveNewVersion: haveNewVersion);
   }
 }
 
@@ -27,11 +28,13 @@ class _AboutPageState extends State<AboutPage> {
   bool haveNewVersion;
 
   _AboutPageState({this.haveNewVersion});
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -59,7 +62,7 @@ class _AboutPageState extends State<AboutPage> {
                     GestureDetector(
                       onDoubleTap: () {
                         Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-                            return UiControllerPage();
+                          return UiControllerPage();
                         }));
                       },
                       child: Container(
@@ -82,13 +85,34 @@ class _AboutPageState extends State<AboutPage> {
                 ),
               ),
             ),
-            _itemRow("用户协议"),
-            _itemRow("隐私权政策"),
+            GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ProtocolWebView(
+                      type: 0,
+                    );
+                  }));
+                },
+                child: _itemRow("用户协议")),
+            GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ProtocolWebView(
+                      type: 1,
+                    );
+                  }));
+                },
+                child: _itemRow("隐私权政策")),
             haveNewVersion
                 ? InkWell(
                     onTap: () {
-                      showVersionDialog(context: context, content: widget.versionModel.description, url: widget
-                          .versionModel.url, strong: false);
+                      showVersionDialog(
+                          context: context,
+                          content: widget.versionModel.description,
+                          url: widget.versionModel.url,
+                          strong: false);
                     },
                     child: _itemRow("版本更新"),
                   )
