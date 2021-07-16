@@ -118,7 +118,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     widget.deleteFeedChanged(id);
                   },
                   removeFollowChanged: (m) {
-                    widget.removeFollowChanged(m);
+                    if(widget.pageName == "attentionPage")widget.removeFollowChanged(m);
                   }),
               // 图片区域
               widget.model.picUrls.length > 0

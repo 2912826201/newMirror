@@ -108,7 +108,7 @@ class HeadViewState extends State<HeadView> {
     if (isCancel) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
-        if (!widget.isShowConcern) {
+        if (!widget.isShowConcern&&widget.removeFollowChanged!=null) {
           widget.removeFollowChanged(widget.model);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
