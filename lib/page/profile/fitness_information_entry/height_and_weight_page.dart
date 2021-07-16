@@ -38,16 +38,17 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
         hasDivider: false,
         leading: Container(),
       ),
-      body: InkWell(
+      body: /*InkWell(
         highlightColor: AppColor.white,
         onTap: (){
           FocusScope.of(context).requestFocus(blankNode);
         },
-        child: Container(
+        child:*/ Container(
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 41,right: 41),
         child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
             SizedBox(
               height: 42,
@@ -122,7 +123,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
             ),
           ],
         ),
-      ),),
+      )/*,)*/,
     ));
   }
 
@@ -155,13 +156,14 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                             UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
                     inputFormatters: [PrecisionLimitFormatter(2),FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
                     onChanged: (value) {
+                      print('-------------$value');
                       if (title == "身高") {
                         setState(() {
-                          heights = int.parse(value);
+                          heights = value.isNotEmpty?int.parse(value):0;
                         });
                       } else {
                         setState(() {
-                          weight = int.parse(value);
+                          weight = value.isNotEmpty?int.parse(value):0;
                         });
                       }
                     },

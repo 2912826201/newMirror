@@ -569,7 +569,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           key: Key('search_complex_${feedList[index].id}'),
           child: DynamicListLayout(
             index: index,
-            pageName: "searchComplex",
+            pageName: DynamicPageType.searchComplex,
             isShowRecommendUser: false,
             isShowConcern: false,
             model: feedList[index],

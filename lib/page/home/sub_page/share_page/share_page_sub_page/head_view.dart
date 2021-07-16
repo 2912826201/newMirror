@@ -12,6 +12,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -69,7 +70,7 @@ class HeadViewState extends State<HeadView> {
       print('---------------------------------------删除动态');
       EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       print(widget.pageName);
-      if (widget.pageName == "searchComplex" || widget.pageName == "searchFeed") {
+      if (widget.pageName == DynamicPageType.searchComplex || widget.pageName == DynamicPageType.searchFeed) {
         EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_SEARCH_DELETED_FEED);
       }
       if (widget.isShowConcern) {
@@ -108,7 +109,7 @@ class HeadViewState extends State<HeadView> {
     if (isCancel) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
-        if (!widget.isShowConcern) {
+        if (!widget.isShowConcern&&widget.removeFollowChanged!=null) {
           widget.removeFollowChanged(widget.model);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);

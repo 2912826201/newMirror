@@ -792,8 +792,8 @@ int getRCConversationType(int type) {
 Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) async {
   Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
   List<ChatGroupUserModel> chatGroupUserModelList = [];
-  await GroupChatUserInformationDBHelper().clearGroupUser(groupChatId);
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
+  await GroupChatUserInformationDBHelper().clearGroupUser(groupChatId);
   // print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
@@ -819,9 +819,9 @@ Future<int> getChatGroupUserModelList(String groupChatId, BuildContext context) 
 //获取群成员信息
 Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context) async {
   Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
-  await GroupChatUserInformationDBHelper().clearGroupUser(groupChatId);
   List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
+  await GroupChatUserInformationDBHelper().clearGroupUser(groupChatId);
   print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {

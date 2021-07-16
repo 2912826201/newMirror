@@ -221,11 +221,14 @@ class _PerfectUserState extends State<PerfectUserPage> {
     FocusNode blankNode = FocusNode();
     return InkWell(
       onTap: () {
+        FocusScope.of(context).requestFocus(blankNode);
+        if(onClicking){
+          return;
+        }
         if (fileList.isNotEmpty && username != "") {
           setState(() {
             onClicking = true;
           });
-          FocusScope.of(context).requestFocus(blankNode);
           _upDataUserInfo();
         }
       },

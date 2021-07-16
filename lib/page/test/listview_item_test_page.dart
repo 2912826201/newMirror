@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +11,21 @@ class ListviewItemPage extends StatefulWidget {
 class _ListviewItemPageState extends State<ListviewItemPage> {
   ScrollController _controller;
 
+  List<int> dataList = [];
+
+  int topValue = -1;
+  int bottomValue = 20;
+
   @override
   void initState() {
     super.initState();
     _controller = ScrollController();
+
+    for (int i = 0; i < 20; i++) {
+      dataList.add(i);
+    }
+
+    initController();
   }
 
   @override
@@ -27,22 +40,26 @@ class _ListviewItemPageState extends State<ListviewItemPage> {
               return Container(
                 height: 80,
                 alignment: Alignment.center,
-                color: Colors.primaries[index % Colors.primaries.length],
+                color: Colors.primaries[dataList[index].abs() % Colors.primaries.length],
                 child: Text(
-                  '$index',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  '${dataList[index]}',
+                  style: TextStyle(color: Colors.black, fontSize: 20),
                 ),
               );
             },
             //itemExtent提高性能
             itemExtent: 80,
-            itemCount: 100,
+            itemCount: dataList.length,
           ),
           Positioned(
             child: RaisedButton(
               child: Text('在前面加一个'),
               onPressed: () {
-                _controller.jumpTo(_controller.position.maxScrollExtent);
+                double scrollHeight = _controller.position.pixels;
+                scrollHeight += 80;
+                dataList.insert(0, topValue--);
+                setState(() {});
+                _controller.jumpTo(scrollHeight);
               },
             ),
           ),
@@ -51,12 +68,20 @@ class _ListviewItemPageState extends State<ListviewItemPage> {
             child: RaisedButton(
               child: Text('在后面加一个'),
               onPressed: () {
-                _controller.jumpTo(0);
+                dataList.add(bottomValue++);
+                setState(() {});
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  initController() {
+    _controller.addListener(() {
+      // print("_controller.position.pixels:${_controller.position.pixels}");
+      // print("_controller.position.maxScrollExtent:${_controller.position.maxScrollExtent}");
+    });
   }
 }

@@ -118,6 +118,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //所有的会话消息
   final List<ChatDataModel> chatDataList;
+  final List<ChatDataModel> addChatDataList = [];
 
   String systemLastTime;
   String textContent;
@@ -191,7 +192,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   bool isShowTopAttentionUi = false;
 
   double scrollPositionPixels = 0;
-  bool isHaveReceiveChatDataList = false;
 
   int userNumber = 0;
 
@@ -563,7 +563,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (dataListMap != null && dataListMap["list"] != null) {
       systemPage++;
       dataListMap["list"].forEach((v) {
-        ChatSystemMessageModel model=ChatSystemMessageModel.fromJson(v);
+        ChatSystemMessageModel model = ChatSystemMessageModel.fromJson(v);
         dataList.add(getMessage(getSystemMsg(model, conversation.type), isHaveAnimation: false));
       });
     }
@@ -571,19 +571,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   //判断加不加时间提示
-  judgeAddAlertTime() {
-    if (chatDataList.length > 0) {
-      if (chatDataList[0].msg != null &&
-          new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
-        chatDataList.insert(
-            0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch, conversation.conversationId));
-        if (recallNotificationMessagePosition > 0) {
-          recallNotificationMessagePosition++;
-        }
-      }
-    } else {
-      chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch, conversation.conversationId));
+  ChatDataModel judgeAddAlertTime(ChatDataModel model) {
+    if (model == null) {
+      return getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch, conversation.conversationId);
+    } else if (model.msg != null && new DateTime.now().millisecondsSinceEpoch - model.msg.sentTime >= 5 * 60 * 1000) {
+      return getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch, conversation.conversationId);
     }
+    return null;
   }
 
   //判断有没有at我的消息
@@ -652,7 +646,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
     this.lastIndex = lastIndex;
-    print("firstIndex:$firstIndex,lastIndex:$lastIndex");
+    // print("firstIndex:$firstIndex,lastIndex:$lastIndex");
     //print("isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg,isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex,");
     if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
@@ -878,7 +872,18 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     mentionedInfo.mentionedContent =
         gteAtUserName(atUserIdList, context.read<GroupUserProfileNotifier>().chatGroupUserModelList);
     chatDataModel.mentionedInfo = mentionedInfo;
-    judgeAddAlertTime();
+
+    if (addChatDataList.length > 0) {
+      for (var model in addChatDataList) {
+        chatDataList.insert(0, model);
+      }
+      addChatDataList.clear();
+    }
+
+    ChatDataModel time = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+    if (time != null) {
+      chatDataList.insert(0, time);
+    }
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
     _animateToIndex(index: 0);
@@ -951,7 +956,16 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       addTemporaryMessage(chatDataModel, conversation);
     }
     if (modelList != null) {
-      judgeAddAlertTime();
+      if (addChatDataList.length > 0) {
+        for (var model in addChatDataList) {
+          chatDataList.insert(0, model);
+        }
+        addChatDataList.clear();
+      }
+      ChatDataModel time = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+      if (time != null) {
+        chatDataList.insert(0, time);
+      }
       chatDataList.insertAll(0, modelList);
     }
     _animateToIndex(index: 0);
@@ -997,12 +1011,20 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataModel.id = "${conversation.id}_"
-        "${DateTime
-        .now()
-        .microsecondsSinceEpoch}_"
+        "${DateTime.now().microsecondsSinceEpoch}_"
         "${chatDataList.length}";
     chatDataModel.conversationId = conversation.id;
-    judgeAddAlertTime();
+
+    if (addChatDataList.length > 0) {
+      for (var model in addChatDataList) {
+        chatDataList.insert(0, model);
+      }
+      addChatDataList.clear();
+    }
+    ChatDataModel timeModel = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+    if (timeModel != null) {
+      chatDataList.insert(0, timeModel);
+    }
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
     _animateToIndex(index: 0);
@@ -1035,7 +1057,17 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
-    judgeAddAlertTime();
+
+    if (addChatDataList.length > 0) {
+      for (var model in addChatDataList) {
+        chatDataList.insert(0, model);
+      }
+      addChatDataList.clear();
+    }
+    ChatDataModel time = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+    if (time != null) {
+      chatDataList.insert(0, time);
+    }
     chatDataList.insert(0, chatDataModel);
     addTemporaryMessage(chatDataModel, conversation);
     _animateToIndex(index: 0);
@@ -1109,11 +1141,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       sendTime: new DateTime.now().millisecondsSinceEpoch + 1000,
       text: text,
       finished: (Message msg, int code) {
+        if (addChatDataList.length > 0) {
+          for (var model in addChatDataList) {
+            chatDataList.insert(0, model);
+          }
+          addChatDataList.clear();
+        }
+
         ChatDataModel chatDataModel = new ChatDataModel();
         chatDataModel.msg = msg;
         chatDataModel.isTemporary = false;
         chatDataModel.isHaveAnimation = false;
         chatDataList.insert(0, chatDataModel);
+
+        _animateToIndex(index: 0);
+
         if (mounted) {
           isShowTopAttentionUi = true;
           _resetShowTopAttentionUi();
@@ -1165,22 +1207,23 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //重新发送临时的图片视频和录音
   void _resetPostTemporaryImageVideoVoice(int position) {
-    chatDataList.insert(0, chatDataList[position]);
-    chatDataList.removeAt(position + 1);
+    // chatDataList.insert(0, chatDataList[position]);
+    // chatDataList.removeAt(position + 1);
     List<ChatDataModel> modelList = <ChatDataModel>[];
-    modelList.add(chatDataList[0]);
+    modelList.add(chatDataList[position]);
     String type = mediaTypeKeyVideo;
-    if (chatDataList[0].type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+    if (chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       type = mediaTypeKeyImage;
-    } else if (chatDataList[0].type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+    } else if (chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       type = mediaTypeKeyVoice;
     }
-    chatDataList[0].isTemporary = false;
-    deletePostCompleteMessage(conversation);
-    chatDataList[0].isTemporary = true;
-    addTemporaryMessage(chatDataList[0], conversation);
+    chatDataList[position].isHaveAnimation = false;
+    chatDataList[position].isTemporary = true;
+    // deletePostCompleteMessage(conversation);
+    // chatDataList[position].isTemporary = true;
+    // addTemporaryMessage(chatDataList[position], conversation);
     if (type == mediaTypeKeyVoice) {
-      postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
+      postVoice(chatDataList[position], conversation.conversationId, conversation.getType(), () {
         // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       });
     } else {
@@ -1209,24 +1252,29 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     mediaFileModel.sizeInfo = SizeInfo.fromJson(sizeInfoMap);
     chatDataModel.mediaFileModel = mediaFileModel;
     chatDataModel.isTemporary = true;
-    chatDataModel.isHaveAnimation = true;
+    chatDataModel.isHaveAnimation = false;
 
-    chatDataList[position].isTemporary = false;
-    deletePostCompleteMessage(conversation);
-    chatDataList.removeAt(position);
+    chatDataList[position] = chatDataModel;
+    // deletePostCompleteMessage(conversation);
+    // chatDataList.removeAt(position);
 
-    List<ChatDataModel> modelList = <ChatDataModel>[];
-    modelList.add(chatDataModel);
-    addTemporaryMessage(chatDataModel, conversation);
-    if (modelList != null) {
-      judgeAddAlertTime();
-      chatDataList.insertAll(0, modelList);
-    }
-    _animateToIndex(index: 0);
+    // List<ChatDataModel> modelList = <ChatDataModel>[];
+    // modelList.add(chatDataModel);
+    // addTemporaryMessage(chatDataModel, conversation);
+    // if (modelList != null) {
+
+    // ChatDataModel time=judgeAddAlertTime(chatDataList.length<1?null:chatDataList[0]??null);
+    // if(time!=null){
+    //   chatDataList.insert(0, time);
+    // }
+    // chatDataList.insertAll(0, modelList);
+    // }
+    // _animateToIndex(index: 0);
     if (mounted) {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, conversation.getType(), (isSuccess) {
+    postImgOrVideo([chatDataList[position]], conversation.conversationId, mediaFileModel.type, conversation.getType(),
+        (isSuccess) {
       if (!isSuccess) {
         EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
@@ -1243,32 +1291,40 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     chatVoiceModel.longTime = infoMap["duration"];
     chatDataModel.chatVoiceModel = chatVoiceModel;
     chatDataModel.isTemporary = true;
-    chatDataModel.isHaveAnimation = true;
-    chatDataList[position].isTemporary = false;
-    deletePostCompleteMessage(conversation);
-    chatDataList.removeAt(position);
-    addTemporaryMessage(chatDataModel, conversation);
-    judgeAddAlertTime();
-    chatDataList.insert(0, chatDataModel);
-    _animateToIndex(index: 0);
+    chatDataModel.isHaveAnimation = false;
+    chatDataList[position] = chatDataModel;
+    // deletePostCompleteMessage(conversation);
+    // chatDataList.removeAt(position);
+    // addTemporaryMessage(chatDataModel, conversation);
+
+    // ChatDataModel time=judgeAddAlertTime(chatDataList.length<1?null:chatDataList[0]??null);
+    // if(time!=null){
+    //   chatDataList.insert(0, time);
+    // }
+    // chatDataList.insert(0, chatDataModel);
+    // _animateToIndex(index: 0);
     if (mounted) {
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {});
+    postVoice(chatDataList[position], conversation.conversationId, conversation.getType(), () {});
   }
 
   //重新发送融云数据的正常消息
   void _resetPostMsg(int position) {
     ChatDataModel chatDataModel = new ChatDataModel();
     chatDataModel.isTemporary = false;
-    chatDataModel.isHaveAnimation = true;
+    chatDataModel.isHaveAnimation = false;
     chatDataModel.msg = chatDataList[position].msg;
     chatDataModel.msg.sentStatus = 10;
     chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
-    judgeAddAlertTime();
-    chatDataList.removeAt(position);
-    chatDataList.insert(0, chatDataModel);
-    _animateToIndex(index: 0);
+    chatDataList[position] = chatDataModel;
+    // ChatDataModel time=judgeAddAlertTime(chatDataList.length<1?null:chatDataList[0]??null);
+    // if(time!=null){
+    //   chatDataList.insert(0, time);
+    // }
+    // chatDataList.removeAt(position);
+    // chatDataList.insert(0, chatDataModel);
+    // _animateToIndex(index: 0);
 
     if (mounted) {
       _textController.text = "";
@@ -1276,7 +1332,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
       EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
-    resetPostMessage(chatDataList[0], () {
+    resetPostMessage(chatDataList[position], () {
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
@@ -1344,9 +1400,22 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         message.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       //撤回消息
       for (ChatDataModel model in chatDataList) {
-        if (model.msg.messageUId == message.messageUId) {
+        if (model != null &&
+            model.msg != null &&
+            model.msg.messageUId != null &&
+            model.msg.messageUId == message.messageUId) {
           model.msg = message;
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          break;
+        }
+      }
+      //撤回消息
+      for (ChatDataModel model in addChatDataList) {
+        if (model != null &&
+            model.msg != null &&
+            model.msg.messageUId != null &&
+            model.msg.messageUId == message.messageUId) {
+          model.msg = message;
           break;
         }
       }
@@ -1376,8 +1445,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
     //print("scrollPositionPixels：$scrollPositionPixels");
-    judgeAddAlertTime();
-    chatDataList.insert(0, chatDataModel);
     insertSourceList(chatDataModel);
     //判断是不是群通知
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF && conversation.getType() == RCConversationType.Group) {
@@ -1391,15 +1458,29 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           break;
       }
     }
-    isHaveReceiveChatDataList = true;
-    if (scrollPositionPixels < 500) {
-      isHaveReceiveChatDataList = false;
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-    }
 
-    //未读消息的跳转数目加1
-    if (ChatMessageProfileUtil.unreadCountNew > 0) {
-      ChatMessageProfileUtil.unreadCountNew++;
+    if (scrollPositionPixels < 500) {
+      ChatDataModel time = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+      if (time != null) {
+        chatDataList.insert(0, time);
+      }
+      chatDataList.insert(0, chatDataModel);
+      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      //未读消息的跳转数目加1
+      if (ChatMessageProfileUtil.unreadCountNew > 0) {
+        ChatMessageProfileUtil.unreadCountNew++;
+      }
+    } else {
+      ChatDataModel time;
+      if (addChatDataList.length < 1) {
+        time = judgeAddAlertTime(chatDataList.length < 1 ? null : chatDataList[0] ?? null);
+      } else {
+        time = judgeAddAlertTime(addChatDataList[addChatDataList.length - 1] ?? null);
+      }
+      if (time != null) {
+        addChatDataList.add(time);
+      }
+      addChatDataList.add(chatDataModel);
     }
 
     //清聊天未读数
@@ -1441,17 +1522,18 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       insertExitGroupMsg(message, conversation.conversationId, (Message msg, int code) {
         if (code == 0) {
           //print("scrollPositionPixels加入：$scrollPositionPixels");
-          chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
-          isHaveReceiveChatDataList = true;
           if (scrollPositionPixels < 500) {
-            isHaveReceiveChatDataList = false;
-
+            chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          } else {
+            addChatDataList.add(getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
           }
         }
       });
     } else {
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      if (scrollPositionPixels < 500) {
+        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      }
     }
   }
 
@@ -1504,7 +1586,11 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
         chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
       } else if (scrollPositionPixels <= 0) {
-        if (mounted && isHaveReceiveChatDataList) {
+        if (mounted && addChatDataList.length > 0) {
+          for (var model in addChatDataList) {
+            chatDataList.insert(0, model);
+          }
+          addChatDataList.clear();
           EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       }
@@ -1641,7 +1727,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
   //滚动到聊天界面的顶部
-  void _animateToIndex({int index}) async {
+  void _animateToIndex({int index}) {
     _scrollController.scrollToIndex(index ?? chatDataList.length - 1,
         duration: Duration(milliseconds: getMilliseconds(index ?? chatDataList.length - 1)),
         preferPosition: AutoScrollPosition.middle);
@@ -2266,8 +2352,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       // print("跳转网页地址:$content");
+      _messageInputBodyClick();
       context.read<VoiceSettingNotifier>().stop();
-      StringUtil.launchUrl(content,context);
+      StringUtil.launchUrl(content, context);
       // ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       context.read<VoiceSettingNotifier>().stop();
