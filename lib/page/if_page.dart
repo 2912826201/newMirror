@@ -1,3 +1,6 @@
+import 'dart:html';
+import 'dart:io';
+
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,12 +96,12 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             }),
             cancel: AppDialogButton("不同意", () {
               // pop();
-              if (Platform.isIOS) {
+              if (CheckPhoneSystemUtil.init().isIos()) {
                 // MoveToBackground.moveTaskToBack();
                 exit(0);
 
                 ///以编程方式退出，彻底但体验不好
-              } else if (Platform.isAndroid) {
+              } else if (CheckPhoneSystemUtil.init().isAndroid()) {
                 // MoveToBackground.moveTaskToBack();
                 exit(0);
                 // SystemNavigator.pop(); //官方推荐方法，但不彻底
