@@ -246,6 +246,7 @@ class _feedBackPage extends State<FeedBackPage> {
                 fileList[index],
                 width: 86,
                 height: 86,
+                fit: BoxFit.cover,
               )),
           Positioned(
             right: 0,
