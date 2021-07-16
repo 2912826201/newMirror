@@ -411,6 +411,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       color: AppColor.white,
       padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
             onTap: () {
