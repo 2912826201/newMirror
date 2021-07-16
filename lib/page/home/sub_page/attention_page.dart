@@ -545,7 +545,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       isShowRecommendUser: true,
       model: feedmodel,
       isShowConcern: false,
-      pageName: "attentionPage",
+      pageName: DynamicPageType.attentionPage,
       // 可选参数 子Item的个数
       // key: GlobalObjectKey("attention$index"),
       deleteFeedChanged: (id) {

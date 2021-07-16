@@ -272,7 +272,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               : Key('profile_like_${followModel[index].id}'),
           child: DynamicListLayout(
               index: index,
-              pageName: "profileDetails",
+              pageName: DynamicPageType.profileDetailsPage,
               isShowRecommendUser: false,
               isShowConcern: false,
               model: model,

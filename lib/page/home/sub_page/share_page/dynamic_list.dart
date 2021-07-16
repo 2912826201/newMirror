@@ -22,7 +22,14 @@ import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
-
+class DynamicPageType{
+ static String attentionPage = "attentionPage";
+ static String recommendPage = "recommendPage";
+ static String profileDetailsPage = "profileDetailsPage";
+ static String topicRecommend = "topicRecommend";
+ static String searchComplex = "searchComplex";
+ static String searchFeed = "searchFeed";
+}
 class DynamicListLayout extends StatefulWidget {
   DynamicListLayout({
     Key key,
@@ -118,7 +125,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     widget.deleteFeedChanged(id);
                   },
                   removeFollowChanged: (m) {
-                    if(widget.pageName == "attentionPage")widget.removeFollowChanged(m);
+                    if(widget.pageName == DynamicPageType.attentionPage)widget.removeFollowChanged(m);
                   }),
               // 图片区域
               widget.model.picUrls.length > 0

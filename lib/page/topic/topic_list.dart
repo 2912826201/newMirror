@@ -237,7 +237,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                                 key: Key('topic_list_${widget.type}_${feedModel.id}'),
                                                 child: DynamicListLayout(
                                                   index: recommendTopicList.indexOf(feedModel),
-                                                  pageName: "topicRecommend",
+                                                  pageName: DynamicPageType.topicRecommend,
                                                   isShowRecommendUser: false,
                                                   isShowConcern: false,
                                                   model: feedModel,
