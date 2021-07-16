@@ -259,6 +259,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
     var btnStyle = RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
     var smsBtn = InkWell(
       onTap: () {
+        if(logining){
+          return;
+        }
         FocusScope.of(context).requestFocus(FocusNode());
         if (inputController.text.length != 4) {
           ToastShow.show(msg: "请输入正确格式的验证码!", context: context);

@@ -382,7 +382,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           key: Key('searchFeed${feedList[index].id}'),
           child: DynamicListLayout(
             index: index,
-            pageName: "searchFeed",
+            pageName: DynamicPageType.searchFeed,
             isShowRecommendUser: false,
             isShowConcern: false,
             model: feedList[index],

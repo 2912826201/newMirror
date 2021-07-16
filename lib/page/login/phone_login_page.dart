@@ -273,6 +273,9 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     var smsBtn = InkWell(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
+        if(sendMsging){
+          return false;
+        }
         if (_validationJudge()) {
           setState(() {
             sendMsging = true;

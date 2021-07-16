@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/gestures.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -56,7 +56,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
       PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
       bool status = permissionStatus != null && permissionStatus == PermissionStatus.granted;
       //判断如果还没拥有通知权限就申请获取权限
-      if (!status && AppPrefs.isFirstGetNotification()) {
+      //note 调试时会出现ifPage重构两次，不影响正式体验
+      if (!status) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           //请求通知权限
           showAppDialog(
@@ -65,7 +66,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             info: "第一时间获取评论,私信,@我等信息通知",
             barrierDismissible: false,
             confirm: AppDialogButton("去打开", () {
-              NotificationPermissions.requestNotificationPermissions();
+              AppSettings.openNotificationSettings();
               return true;
             }),
             cancel: AppDialogButton("取消", () {
@@ -73,7 +74,6 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             }),
           );
         });
-        AppPrefs.setFristGetNotification(false);
       }
     }
   }
@@ -95,12 +95,12 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
             }),
             cancel: AppDialogButton("不同意", () {
               // pop();
-              if (Platform.isIOS) {
+              if (CheckPhoneSystemUtil.init().isIos()) {
                 // MoveToBackground.moveTaskToBack();
                 exit(0);
 
                 ///以编程方式退出，彻底但体验不好
-              } else if (Platform.isAndroid) {
+              } else if (CheckPhoneSystemUtil.init().isAndroid()) {
                 // MoveToBackground.moveTaskToBack();
                 exit(0);
                 // SystemNavigator.pop(); //官方推荐方法，但不彻底
