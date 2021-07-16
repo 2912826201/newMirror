@@ -62,6 +62,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   double beforOffset;
   double totalOffset;
   bool isMaxHeightOrNot = false;
+  final String photoAlbumBg = "assets/png/fitness_photo_album.png";
+  final String weightBg = "assets/png/training_bg.png";
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -169,18 +171,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             children: [
               if (AppConfig.needShowTraining)
                 _secondRecordData("训练记录", context.watch<ProfileNotifier>().trainingSeconds,
-                    AppIcon.getAppIcon(AppIcon.profile_record, 18)),
+                    AppIcon.getAppIcon(AppIcon.profile_record, 18), weightBg),
               if (AppConfig.needShowTraining)
                 SizedBox(
                   width: 16,
                 ),
-              _secondRecordData(
-                  "体重记录", context.watch<ProfileNotifier>().weight, AppIcon.getAppIcon(AppIcon.profile_weight, 18)),
+              _secondRecordData("体重记录", context.watch<ProfileNotifier>().weight,
+                  AppIcon.getAppIcon(AppIcon.profile_weight, 18), weightBg),
               SizedBox(
                 width: 16,
               ),
-              _secondRecordData(
-                  "健身相册", context.watch<ProfileNotifier>().albumNum, AppIcon.getAppIcon(AppIcon.profile_gallery, 18)),
+              _secondRecordData("健身相册", context.watch<ProfileNotifier>().albumNum,
+                  AppIcon.getAppIcon(AppIcon.profile_gallery, 18), photoAlbumBg),
             ],
           ),
         ),
@@ -215,7 +217,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  Widget _secondRecordData(String title, num number, Widget icons) {
+  Widget _secondRecordData(String title, num number, Widget icons, String bgUrl) {
     double boxWidth;
     boxWidth = (width - 16 * 3) / 2;
     if (AppConfig.needShowTraining) boxWidth = (width - 16 * 4) / 3;
@@ -236,7 +238,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: (width - 65) / 3,
                 width: boxWidth,
                 child: Image.asset(
-                  "assets/png/training_bg.png",
+                  bgUrl,
                   fit: BoxFit.cover,
                   height: (width - 65) / 3,
                   width: boxWidth,
@@ -455,7 +457,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               ),
               Expanded(
                 child: Text(
-                  context.watch<ProfileNotifier>().profile.nickName??"",
+                  context.watch<ProfileNotifier>().profile.nickName ?? "",
                   style: AppStyle.textMedium18,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,

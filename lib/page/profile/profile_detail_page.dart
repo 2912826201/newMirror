@@ -69,6 +69,7 @@ class ProfileDetailPage extends StatefulWidget {
 
 class _ProfileDetailState extends State<ProfileDetailPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+
   //头像size
   final double avatarSize = 71;
 
@@ -162,11 +163,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         _getUserInfo(id: widget.userId);
         _getFollowCount(id: widget.userId);
       });
-      // WidgetsBinding.instance.addPersistentFrameCallback((callback){
-      //   print("addPersistentFrameCallback be invoke");
-      //   //触发一帧的绘制
-      //   WidgetsBinding.instance.scheduleFrame();
-      // });
     });
     super.initState();
   }
