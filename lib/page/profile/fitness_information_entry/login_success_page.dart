@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
+
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';

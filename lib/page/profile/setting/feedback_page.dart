@@ -14,12 +14,14 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
+import 'package:mirror/widget/triangle_path.dart';
 
 ///意见反馈
 class FeedBackPage extends StatefulWidget {
@@ -34,7 +36,9 @@ class _feedBackPage extends State<FeedBackPage> {
   List<File> fileList = [];
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
-
+  bool longClick = false;
+  Size numTextSize = getTextSize("322292818", AppStyle.textSecondaryRegular14, 1);
+  Size textSize = getTextSize("意见反馈QQ群: ", AppStyle.textSecondaryRegular14, 1);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,20 +65,63 @@ class _feedBackPage extends State<FeedBackPage> {
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
-        child: Column(
+        color: AppColor.white,
+        child:InkWell(
+          highlightColor: AppColor.transparent,
+          onTap: (){
+            longClick = false;
+            setState(() {
+            });
+            // FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 13.5,
+            Container(
+              child: Stack(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 13.5,
+                      ),
+                      Text(
+                        "你的意见和建议,是对我们最大的支持",
+                        style: AppStyle.textRegular16,
+                      ),
+                      SizedBox(
+                        height: 13.5,
+                      ),
+                      Row(
+                        children: [
+                          Text("意见反馈QQ群: ",style: AppStyle.textSecondaryRegular14,),
+                          InkWell(
+                            onLongPress: (){
+                              longClick = true;
+                              setState(() {
+                              });
+                            },
+                            child: Container(
+                              height: numTextSize.height,
+                              width: numTextSize.width,
+                              child: Text("322292818",style:longClick?AppStyle.whiteRegular14: AppStyle
+                                  .textSecondaryRegular14,) ,
+                              color: longClick ? AppColor.mainBlue : AppColor.white,
+                            ),)
+                        ],
+                      ),
+                    ],
+                  ),
+                   Positioned(
+                      top: 10,
+                      left: textSize.width+16+(numTextSize.width/2-textSize.width/2),
+                      child:_bubble(),)
+                ],
+              ),
             ),
-            Text(
-              "你的意见和建议,是对我们最大的支持",
-              style: AppStyle.textRegular16,
-            ),
-            SizedBox(
-              height: 13.5,
-            ),
-            SelectableText(
+
+            /*  SelectableText(
               "意见反馈QQ群: 322292818",
               style: AppStyle.textSecondaryRegular14,
               onSelectionChanged: (TextSelection selection, SelectionChangedCause cause) {
@@ -83,7 +130,7 @@ class _feedBackPage extends State<FeedBackPage> {
                   ToastShow.show(msg: "已复制到剪切板", context: context);
                 }
               },
-            ),
+            ),*/
             SizedBox(
               height: 25.5,
             ),
@@ -91,10 +138,49 @@ class _feedBackPage extends State<FeedBackPage> {
             _imageList(width),
           ],
         ),
-      ),
+      ) ,),
     );
   }
 
+  Widget _bubble(){
+    return InkWell(
+      onTap: (){
+        setState(() {
+          longClick = false;
+        });
+        Clipboard.setData(ClipboardData(text: '322292818'));
+        ToastShow.show(msg: "群号已复制到剪切板", context: context);
+      },
+      child: Opacity(
+        opacity: longClick?1:0,
+        child:Container(
+          height: 40,
+          child:Stack(
+            children: [
+              Container(
+                height: 30,
+                width: 60,
+                child: Center(child: Text("复制",style: AppStyle.whiteMedium14,),),
+                decoration: BoxDecoration(
+                    color: AppColor.black,
+                    borderRadius:BorderRadius.all(Radius.circular(8))
+                ),
+              ),
+              Positioned(
+                  top: 29,
+                  left: 25,
+                  child:RotatedBox(
+                    quarterTurns:2,
+                    child: ClipPath(
+                        clipper: TrianglePath(),
+                        child:Container(
+                          height: 10,
+                          width: 10,
+                          color: AppColor.black,
+                        )),) )
+            ],) ,),),
+    );
+  }
   ///输入框
   Widget _inputBox(double width) {
     return Container(
