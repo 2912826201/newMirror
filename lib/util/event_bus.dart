@@ -151,6 +151,8 @@ const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 // 关注页
 const String EVENTBUS_ATTENTION_PAGE = "AttentionPage";
+// 视频组件
+const String EVENTBUS_VIDEO_VIEW ="video_view";
 // 推荐页
 const String EVENTBUS_RECOMMEND_PAGE = "recommendpage";
 //聊天界面
@@ -175,6 +177,7 @@ const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 //关注粉丝页
 const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
+
 ///广播类型
 //发布动态
 const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
@@ -253,6 +256,8 @@ const String GALLERY_LEAVE = "gallery_leave";
 const String VIDEO_COURSE_RESULT = "video_course_result";
 //话题详情删除动态
 const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
+// 删除视频动态
+const String EVENTBUS_VIDEO_DELETE_FEED = "eventbus_video_delete_feed";
 //话题详情双击tabbar
  String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
  // 搜索页删除动态
