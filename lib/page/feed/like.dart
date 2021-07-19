@@ -75,7 +75,8 @@ class LikeState extends State<Like> {
         appBar: CustomAppBar(
           titleString: "赞",
         ),
-        body: Container(
+        body: laudListModel.length > 0 ?
+        Container(
           decoration: const BoxDecoration(color: Colors.white),
           child: Column(
             children: [
@@ -144,7 +145,7 @@ class LikeState extends State<Like> {
                               )))))
             ],
           ),
-        ));
+        ) : Container());
   }
 }
 
