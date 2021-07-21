@@ -168,6 +168,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           children: [
             Expanded(
                 child: AzListView(
+                  itemScrollController: itemScrollController,
               padding: EdgeInsets.zero,
               itemBuilder: _buildItem,
               susItemBuilder: _buildHeader,
