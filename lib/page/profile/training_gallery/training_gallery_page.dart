@@ -130,7 +130,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       appBar: context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
       handleStatusBarTap: () {
-        itemScrollController.jumpTo(index: 0);
+        itemScrollController.scrollTo(index: 0, duration: Duration(milliseconds: 300));
       },
     );
   }
