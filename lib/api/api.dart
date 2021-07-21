@@ -43,6 +43,8 @@ const int CODE_NO_DATA = 404;
 const int CODE_ERROR = 304;
 //验证码过期或。。、
 const int CODE_EXPIRED = 309;
+//用户被封禁
+const int CODE_USERBAN = 307;
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;
 const int AUTH_TYPE_NONE = 1;

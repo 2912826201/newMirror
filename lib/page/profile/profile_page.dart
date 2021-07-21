@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -18,6 +19,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -637,6 +639,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       case "测试":
         /*jumpChatPageSystem(context);*/
         // showToast("这个flutter告诉android要展示的内容");
+        // AppRouter.navigateToVipPage(context, VipState.EXPIRED,openOrNot: true);
+        // AppSettings.openDisplaySettings(asAnotherTask: true);
         AppRouter.navigateToTestPage(context);
         break;
       case "融云":

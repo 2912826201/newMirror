@@ -6,6 +6,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/triangle_path.dart';
 import 'package:mirror/widget/vip/vip_nameplate_horazontal_list.dart';
 import 'package:mirror/widget/vip/vip_nameplate_pageview.dart';
@@ -102,17 +104,18 @@ class _VipNamePlateState extends State<VipNamePlatePage> {
         children: [
           Expanded(
             flex: 1,
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
+            child:  Container(
                /* height: 20,
                 width: 20,*/
                 alignment: Alignment.centerLeft,
-                child: Image.asset("images/resource/2.0x/return2x.png"),
+                child: CustomAppBarIconButton(
+                  svgName: AppIcon.nav_return,
+                  iconColor: AppColor.black,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-            ),
           ),
           Expanded(
             flex: 1,

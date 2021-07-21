@@ -257,6 +257,7 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   }
 
   Function _controllerCallBackTriggerWithBool(bool b) {
+
     inputController.value = b;
   }
 

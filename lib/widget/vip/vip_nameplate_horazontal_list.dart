@@ -10,6 +10,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/triangle_path.dart';
 import 'package:provider/provider.dart';
 
+import '../overscroll_behavior.dart';
+
 double namePlateWidth = 93.5;
 class VipNamePlateHorazontalList extends StatefulWidget{
   int index;
@@ -49,7 +51,9 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
     return Container(
      height: 88,
      width: ScreenUtil.instance.screenWidthDp,
-     child: ListView.builder(
+     child: ScrollConfiguration(
+     behavior: OverScrollBehavior(),
+    child: ListView.builder(
        controller: widget.scrollController,
        itemCount: itemName.length,
        scrollDirection: Axis.horizontal,
@@ -95,7 +99,7 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
                ),),
              ),);
        }
-       ),
+       )),
    );
   }
 }

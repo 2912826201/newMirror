@@ -162,6 +162,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                 ),
               ),
             ],
+
           ),
         ),
         _textContainerColumn()
