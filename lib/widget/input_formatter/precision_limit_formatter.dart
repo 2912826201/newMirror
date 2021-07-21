@@ -26,6 +26,7 @@ class PrecisionLimitFormatter extends TextInputFormatter {
 
 
 
+
     ///输入完全删除
     if (newValue.text.isEmpty) {
       return TextEditingValue();

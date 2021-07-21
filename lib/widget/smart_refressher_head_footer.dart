@@ -62,6 +62,10 @@ class SmartRefresherHeadFooter {
           height: 190,
           child: Column(
             children: [
+              // RotatedBox(
+              //     quarterTurns: 1,
+              //   child: Text("继续滑动查看更多",style: TextStyle(color: AppColor.textHint, fontSize: 13, letterSpacing: 4, wordSpacing: 4),),
+              // ),
               CustomPaint(
                 painter: VerticalText(
                   text: "继续滑动查看更多",

@@ -90,6 +90,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
+
         value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
         child: Scaffold(
           backgroundColor: AppColor.white,
@@ -108,6 +109,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
                 Center(
                   child: _avatarWidget(),
                 ),
+
                 SizedBox(height: 48),
                 Container(
                   padding: EdgeInsets.only(left: 41, right: 41),

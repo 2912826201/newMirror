@@ -439,6 +439,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   Widget _appBar() {
+
     double userNameWidth = 0;
     userNameWidth = width - (CustomAppBar.appBarButtonWidth * 2 + 32);
     if (!isMselfId) {

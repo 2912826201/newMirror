@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/push_api.dart';
@@ -32,6 +33,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -259,7 +261,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     var btnStyle = RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
     var smsBtn = InkWell(
       onTap: () {
-        if(logining){
+        if (logining) {
           return;
         }
         FocusScope.of(context).requestFocus(FocusNode());
@@ -313,7 +315,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     SmsCodePage phoneNumPage = widget;
     BaseResponseModel responseModel = await login("sms", phoneNumPage.phoneNumber, inputController.text, null);
     if (responseModel != null) {
-      if (responseModel.code == 200) {
+      if (responseModel.code == CODE_SUCCESS) {
         print("登录成功");
         TokenModel token = TokenModel.fromJson(responseModel.data);
         if (token.anonymous == 1 || token.uid == null) {
@@ -335,8 +337,17 @@ class _SmsCodePageState extends State<SmsCodePage> {
             print(e);
           }
         }
-      } else {
-        ToastShow.show(msg: responseModel.message, context: context);
+      } else if (responseModel.code == CODE_USERBAN) {
+        showAppDialog(context,
+            confirm: AppDialogButton("我知道了", () {
+              return true;
+            }),
+            title: "您的账号被封禁",
+            info: "尊敬的用户您好，您的账号由于违反平台规定被封禁。\n" +
+                "封禁时间为“${responseModel.message}”。\n" +
+                "若您对此有疑问，可加入QQ群322292818进行咨询。");
+      }else{
+        ToastShow.show(msg:responseModel.message, context: context);
       }
     } else {
       ToastShow.show(msg: "登录失败！", context: context);
@@ -373,7 +384,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
         EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
       // 重新登录替换关注页布局
-      EventBus.getDefault().post(msg:true,registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      EventBus.getDefault().post(msg: true, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
       EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
       EventBus.getDefault().post(registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
       // 获取话题详情页背景色

@@ -148,7 +148,10 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
 
   // 子页面回调
   childrenACallBack(PeripheralInformationPoi poi) {
-    if (poi.name != "不显示所在位置") {
+    if(poi == null) {
+      return;
+    }
+    if ( poi.name != "不显示所在位置") {
       isShowList = false;
       if (poi != null) {
         context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;

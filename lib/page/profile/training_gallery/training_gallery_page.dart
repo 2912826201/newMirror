@@ -349,13 +349,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       return;
     }
 
-    Loading.showLoading(context);
+    Loading.showLoading(context,infoText: "正在上传...请稍候");
     // _showRetryDialog(files, null);
     await _uploadImage(files);
   }
 
   _uploadImage(SelectedMediaFiles files) async {
-    Loading.showLoading(context);
 
     try {
       for (MediaFileModel model in files.list) {

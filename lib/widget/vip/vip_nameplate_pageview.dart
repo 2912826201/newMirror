@@ -62,11 +62,19 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
           children: widgetList,
           onPageChanged: (index){
                     context.read<VipMoveNotifier>().changeListOldIndex(index);
-                    if(index>1&&index<contentList.length-2){
-                      double i = (ScreenUtil.instance.screenWidthDp-namePlateWidth)/2;
-                      double offset = namePlateWidth * index - i;
-                      widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 400), curve:Curves.ease);
-                    }
+                    if(index<1){
+                      widget.scrollController.animateTo(widget.scrollController.position.minScrollExtent, duration: Duration
+                        (milliseconds:
+                      300), curve:Curves.fastOutSlowIn);
+                    }else if(index>contentList.length-2){
+                      widget.scrollController.animateTo(widget.scrollController.position.maxScrollExtent, duration: Duration
+                        (milliseconds:
+                      300), curve:Curves.fastOutSlowIn);
+                    }else{
+                        double i = (ScreenUtil.instance.screenWidthDp-namePlateWidth)/2;
+                        double offset = namePlateWidth * index - i;
+                        widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 300), curve:Curves.fastOutSlowIn);
+          }
 
           },
         ),

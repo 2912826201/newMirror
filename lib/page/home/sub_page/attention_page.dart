@@ -568,8 +568,17 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
               });
             }
             if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+              if(context.read<FeedMapNotifier>().value.feedMap[id].videos.length != 0) {
+                // 删除视频动态的控制器
+                EventBus.getDefault().post(msg:id, registerName: EVENTBUS_VIDEO_DELETE_FEED);
+              }
               context.read<FeedMapNotifier>().deleteFeed(id);
             }
+            // NODE 删除了控制器后要手动触发一下列表的滑动触发曝光元素
+            Future.delayed(Duration(milliseconds: 100), () {
+              print("列表滑动");
+              PrimaryScrollController.of(context).animateTo(100, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
+            });
           });
         }
         print(attentionIdList.toString());

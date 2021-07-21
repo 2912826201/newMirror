@@ -254,7 +254,7 @@ class _BannerViewState extends State<BannerView> {
       physics:
       pageScrollPhysics(),
       // 在当前元素预加载下一个元素
-      allowImplicitScrolling: false,
+      allowImplicitScrolling: true,
       controller: this._pageController,
       onPageChanged: (index) {
         _Logger.d(TAG, '**********   changed  index: $index  cu: $_currentIndex');

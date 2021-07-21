@@ -17,3 +17,32 @@ class TrianglePath extends CustomClipper<Path>{
     return true;
   }
 }
+class TrianglePainter extends CustomPainter {
+  Color color;
+  Paint _paint;
+  Path _path;
+  double angle;
+
+  TrianglePainter(this.color) {
+    _paint = Paint()
+      ..strokeWidth = 1.0
+      ..color = color
+      ..isAntiAlias = true;
+
+    _path = Path();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final baseX = size.width * 0.5;
+    final baseY = size.height * 0.5;
+    //三角形
+    _path.moveTo(baseX - 0.86 * baseX, 0.5 * baseY);
+    _path.lineTo(baseX, 1.5 * baseY);
+    _path.lineTo(baseX + 0.86 * baseX, 0.5 * baseY);
+    canvas.drawPath(_path, _paint);
+  }
+}
