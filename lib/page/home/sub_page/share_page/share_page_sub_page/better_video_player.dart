@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -59,15 +60,20 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
   int firstTapTimep;
-  bool isExposure = false;
   @override
   void initState() {
     super.initState();
     streamController = StreamController.broadcast();
     streamHeight = StreamController.broadcast();
     _calculateSize();
+    EventBus.getDefault().registerSingleParameter(_deletedVideooController, EVENTBUS_VIDEO_VIEW,
+        registerName: EVENTBUS_VIDEO_DELETE_FEED);
   }
-
+  _deletedVideooController(int id) {
+    if(widget.feedModel.id == id) {
+      deletedControllerContrastValue();
+    }
+  }
   init() async {
     dataSource = BetterPlayerDataSource.network(widget.feedModel.videos.first.url);
     // if (mounted) {
@@ -232,7 +238,6 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             print('当前控制器：：：${controller.hashCode}');
             if (controller != null && controller.isPlaying()) {
               controller.pause();
-              isExposure = false;
             }
           }
           print("控制器长度：：：：${Application.feedVideoControllerList.length}");
