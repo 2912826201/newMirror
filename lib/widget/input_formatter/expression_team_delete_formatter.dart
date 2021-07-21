@@ -60,6 +60,7 @@ class ExpressionTeamDeleteFormatter extends TextInputFormatter {
     print("oldValue::::$oldValue");
     print("newValue::::$newValue");
 
+
     ///这是删除的监听
     if (oldValue.text.length > newValue.text.length&&!newValue.composing.isValid) {
       print('5555555555555555555555555555555555');

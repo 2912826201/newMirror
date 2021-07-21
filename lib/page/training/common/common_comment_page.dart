@@ -720,6 +720,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       int end = atUsers[i].len - subLen;
       if (index < content.length && index >= 0) {
         String firstString = content.substring(0, index);
+        print('-----index$index---------------------end$end -------contentLength${content.length}----content$content');
         String secondString = content.substring(index, end);
         String threeString = content.substring(end, content.length);
         contentArray.add(firstString);

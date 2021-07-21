@@ -217,6 +217,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   header: SmartRefresherHeadFooter.init().getHeader(),
                   controller: _refreshController,
                   onLoading: () {
+
                     if (refreshOver) {
                       _onLoadding();
                     }
