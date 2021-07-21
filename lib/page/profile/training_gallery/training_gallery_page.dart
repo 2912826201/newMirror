@@ -4,12 +4,13 @@ import 'dart:ui' as ui;
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Scaffold;
 import 'package:intl/intl.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/config/application.dart';
@@ -26,6 +27,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 /// training_gallery_page
 /// Created by yangjiayi on 2021/1/20.
@@ -50,7 +52,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   CustomAppBar _selectionModeAppBar;
   final List<TrainingGalleryImageModel> _selectedImageList = [];
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd');
-
+  ItemScrollController itemScrollController = ItemScrollController();
 
   _initData() async {
     await _requestDataList();
@@ -125,8 +127,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
+      appBar: context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
+      handleStatusBarTap: () {
+        itemScrollController.jumpTo(index: 0);
+      },
     );
   }
 
