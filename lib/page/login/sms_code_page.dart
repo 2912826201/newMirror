@@ -344,9 +344,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
             }),
             title: "您的账号被封禁",
             info: "尊敬的用户您好，您的账号由于违反平台规定被封禁。\n" +
-                "${responseModel.message}"
-                    "\n" +
-                "若您对此有疑问，可加入QQ群322292818进行咨询");
+                "封禁时间为“${responseModel.message}”。\n" +
+                "若您对此有疑问，可加入QQ群322292818进行咨询。");
       }else{
         ToastShow.show(msg:responseModel.message, context: context);
       }

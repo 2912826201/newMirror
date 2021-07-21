@@ -4,7 +4,9 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -65,7 +67,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         InkWell(
           child: _itemSelect( AppStyle.textRegular16, "举报"),
           onTap: () {
-            _showDialog(1);
+            onClickListener("举报");
           },
         ),
         Container(
@@ -77,10 +79,9 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         InkWell(
           onTap: () {
             if (context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].inMyBlack) {
-              Loading.showLoading(context);
-              _cancelBlack();
+              onClickListener("取消拉黑");
             } else {
-              _showDialog(2);
+              onClickListener("拉黑");
             }
           },
           child: _itemSelect(AppStyle.textRegular16, context.watch<UserInteractiveNotifier>().value
@@ -96,8 +97,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? InkWell(
                 onTap: () {
-                  Loading.showLoading(context);
-                  _cancelFollow();
+                 onClickListener("取消关注");
                 },
                 child: _itemSelect( AppStyle.redRegular16, "取消关注"),
               )
@@ -201,6 +201,29 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     print('isSucess=======================================$isSucess');
     if (isSucess != null && isSucess) {
       ToastShow.show(msg: "感谢你的反馈，我们会尽快处理!", context: context);
+    }
+  }
+
+
+  onClickListener(String type){
+    if(!context.read<TokenNotifier>().isLoggedIn){
+      ToastShow.show(msg: "请先登录!", context: context);
+      AppRouter.navigateToLoginPage(context);
+    }
+    switch(type){
+      case "取消关注":
+        _cancelFollow();
+        break;
+       case "拉黑":
+         _showDialog(2);
+        break;
+       case "取消拉黑":
+         Loading.showLoading(context);
+         _cancelBlack();
+        break;
+       case "举报":
+         _showDialog(1);
+        break;
     }
   }
 }
