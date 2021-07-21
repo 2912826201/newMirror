@@ -6,6 +6,7 @@ import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/protocol_web_view.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -92,7 +93,13 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ProtocolWebView(
+                type: 0,
+              );
+            }));
+          },
           child: Text(
             "使用条款",
             style: TextStyle(
@@ -110,7 +117,13 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ProtocolWebView(
+                type: 1,
+              );
+            }));
+          },
           child: Text(
             "隐私政策",
             style: TextStyle(
