@@ -315,16 +315,14 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   bool isPlaying = true;
   bool isFocus = true;
   String sourceUrl;
-
+  String placeholderImageUrl;
 
   _DemoVideoItem2State(this.isFocus);
 
-
-  setFocus(bool isFocus){
-    print("123546213");
-    this.isFocus=isFocus;
-    if(isFocus){
-      if(controller!=null) {
+  setFocus(bool isFocus) {
+    this.isFocus = isFocus;
+    if (isFocus) {
+      if (controller != null) {
         if (controller.isVideoInitialized()) {
           controller.play();
           resetControllerListener();
@@ -582,11 +580,11 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
     );
   }
 
-  Widget getPlaceholder(){
-    if(StringUtil.isURL(widget.source.url)){
-      print("getPlaceholder:${FileUtil.getVideoFirstPhoto(sourceUrl)}");
+  Widget getPlaceholder() {
+    if (StringUtil.isURL(placeholderImageUrl)) {
+      print("getPlaceholder:$placeholderImageUrl");
       return CachedNetworkImage(
-          imageUrl: FileUtil.getVideoFirstPhoto(sourceUrl),
+          imageUrl: placeholderImageUrl,
           width: ScreenUtil.instance.width,
           height: setAspectRatio(),
           fadeInDuration: Duration.zero,
@@ -603,11 +601,10 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
               alignment: Alignment.center,
               child: getImageAsset("assets/png/image_error.png"),
             );
-          }
-      );
-    }else if(widget.source.videoImageFilePath!=null){
-      print("getPlaceholder:${widget.source.videoImageFilePath}");
-      File videoImageFile = File(widget.source.videoImageFilePath);
+          });
+    } else if (placeholderImageUrl != null && placeholderImageUrl != "") {
+      print("getPlaceholder:$placeholderImageUrl");
+      File videoImageFile = File(placeholderImageUrl);
       if (videoImageFile.existsSync()) {
         return Image.file(
           videoImageFile,
@@ -635,17 +632,25 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
   }
 
   void getSourceUrl() {
-    if (StringUtil.isURL(widget.source.url)) {
-      sourceUrl = widget.source.url;
-    } else if (widget.source.videoFilePath != null) {
+    sourceUrl = "";
+    placeholderImageUrl = "";
+    if (widget.source.videoFilePath != null) {
       File videoFile = File(widget.source.videoFilePath);
       if (videoFile.existsSync()) {
         sourceUrl = widget.source.videoFilePath;
-      } else {
-        sourceUrl = "";
       }
-    } else {
-      sourceUrl = "";
+      if (widget.source.videoImageFilePath != null) {
+        File videoImageFilePath = File(widget.source.videoFilePath);
+        if (videoImageFilePath.existsSync()) {
+          placeholderImageUrl = widget.source.videoImageFilePath;
+        }
+      }
+    }
+    if (sourceUrl == "" || sourceUrl == "") {
+      if (StringUtil.isURL(widget.source.url)) {
+        if (placeholderImageUrl == "") placeholderImageUrl = FileUtil.getVideoFirstPhoto(widget.source.url);
+        if (sourceUrl == "") sourceUrl = widget.source.url;
+      }
     }
   }
 }
