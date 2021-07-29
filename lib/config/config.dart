@@ -193,6 +193,10 @@ class AppConfig {
       return amapAndroidKey;
     }
   }
+  // 用户协议
+  static String PLATFORM_PROTOCOL = "http://file.aimymusic.com/platformProtocol.html";
+  //隐私
+  static String PRIVACY_CLAUSE = "http://file.aimymusic.com/privacyClause.html";
 }
 
 enum Env {

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/location/location.api.dart';
+import 'package:mirror/config/config.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'custom_appbar.dart';
@@ -23,14 +25,18 @@ class _ProtocolWebViewState extends State<ProtocolWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(titleString: widget.type == 0 ? '艾美平台服务协议' : "艾美隐私条款"),
+        // body: WebView(
+        //   initialUrl: '',
+        //   javascriptMode: JavascriptMode.unrestricted,
+        //   onWebViewCreated: (WebViewController webViewController) {
+        //     _webViewController = webViewController;
+        //     _loadHtmlFromAssets();
+        //   },
+        // )
         body: WebView(
-          initialUrl: '',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _webViewController = webViewController;
-            _loadHtmlFromAssets();
-          },
-        ));
+        initialUrl: widget.type == 0 ? AppConfig.PLATFORM_PROTOCOL : AppConfig.PRIVACY_CLAUSE,
+      )
+    );
   }
 
   _loadHtmlFromAssets() async {
