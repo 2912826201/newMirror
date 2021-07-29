@@ -261,6 +261,7 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
   imgOrVideoMap["name"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE_NAME : ChatTypeModel.MESSAGE_TYPE_VIDEO_NAME;
   Map sizeMap = mediaFileModel.sizeInfo.toJson();
   sizeMap["showImageUrl"] = uploadResultModel.url;
+  sizeMap["filePath"] = uploadResultModel.filePath;
   imgOrVideoMap["data"] = jsonEncode(sizeMap);
   msg.content = jsonEncode(imgOrVideoMap);
   return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);

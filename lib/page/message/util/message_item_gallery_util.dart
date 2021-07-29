@@ -266,7 +266,6 @@ class MessageItemGalleryUtil {
       bool isImageOrVideo = false,
       String heroId,
       Map<String, dynamic> sizeInfoMap}) {
-
     DemoSourceEntity demoSourceEntity=DemoSourceEntity(heroId,isImageOrVideo?"image":"video","");
     demoSourceEntity.isTemporary=isTemporary;
     if(isTemporary){
@@ -298,7 +297,8 @@ class MessageItemGalleryUtil {
             return false;
           }
         } else {
-          demoSourceEntity.url=sizeInfoMap["showImageUrl"];
+          demoSourceEntity.url = sizeInfoMap["showImageUrl"];
+          demoSourceEntity.videoFilePath = sizeInfoMap["filePath"];
         }
       }
     }
