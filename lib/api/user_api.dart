@@ -57,7 +57,7 @@ Future<UserModel> getUserInfo({int uid}) async {
     params["uid"] = uid;
   }
   BaseResponseModel responseModel = await requestApi(GETUSERINFO, params);
-  if (responseModel.isSuccess) {
+  if (responseModel.isSuccess && responseModel.data != null) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return UserModel.fromJson(responseModel.data);
   } else {

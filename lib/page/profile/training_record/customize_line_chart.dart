@@ -73,11 +73,13 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       valueList.add(widget.weightDataModel.recordList[i].weight);
       xValue.add(widget.weightDataModel.recordList[i].dateTime);
     }
-    if (valueList.length >= 5) {
-      pageSize = 5;
-    } else {
-      pageSize = valueList.length;
-    }
+    // if (valueList.length >= 5) {
+    //   pageSize = 5;
+    // } else {
+    //   pageSize = valueList.length;
+    // }
+
+    print("pageSize:$pageSize");
 
     if (widget.weightDataModel.targetWeight == null || widget.weightDataModel.targetWeight < 1) {
       benchmarkValue = -1;
