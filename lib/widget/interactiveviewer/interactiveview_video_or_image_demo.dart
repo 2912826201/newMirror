@@ -27,13 +27,14 @@ class DemoSourceEntity {
   String videoImageFilePath;
   String videoFilePath;
   bool isTemporary;
-
+  bool isTopicNoCover;
   DemoSourceEntity(this.heroId, this.type, this.url,
       {this.previewUrl,
         this.width,
         this.height,
         this.duration,
         this.isTemporary=false,
+        this.isTopicNoCover = false,
       });
 
   Map<String, dynamic> toJson() {
@@ -136,7 +137,11 @@ class _DemoImageItemState extends State<DemoImageItem> {
         return getImageFile(imageFile);
       }
     }
-
+    if(widget.source.isTopicNoCover) {
+      return Image.asset(
+        "assets/png/topic_cover.png",
+      );
+    }
     if(widget.source.url==null){
       return getErrorWidgetImage();
     }

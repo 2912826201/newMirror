@@ -305,8 +305,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               );
                                             },
                                             child: Container(
-                                              width: 71,
-                                              height: 71,
+                                              width: 69,
+                                              height: 69,
                                               padding: const EdgeInsets.all(2),
                                               decoration: const BoxDecoration(
                                                   // 圆角
@@ -318,7 +318,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                                       borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                                                       color: AppColor.white),
                                                   clipBehavior: Clip.antiAlias,
-                                                  child: CachedNetworkImage(
+                                                  child: model.avatarUrl != null ?
+                                                  CachedNetworkImage(
                                                     // 指定缓存宽高
                                                     memCacheWidth: 150,
                                                     memCacheHeight: 150,
@@ -335,7 +336,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                                         color: AppColor.bgWhite,
                                                       );
                                                     },
-                                                  )),
+                                                  ) : Image.asset(
+                                                    "assets/png/topic_cover.png",
+                                                  ),),
                                             )))),
                                 // 话题内容
                                 Positioned(
@@ -395,7 +398,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                                   style: AppStyle.textRegular14,
                                                   child: AnimatedTextKit(
                                                     animatedTexts: [
-                                                      TyperAnimatedText(model.description,speed: Duration(milliseconds: 20),),
+                                                      TyperAnimatedText(
+                                                        model.description,
+                                                        speed: Duration(milliseconds: 20),
+                                                      ),
                                                     ],
                                                     totalRepeatCount: 1,
                                                   ),
@@ -550,10 +556,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 大图预览内部的Item
   Widget itemBuilder(BuildContext context, int index, bool isFocus, Function(Function(bool isFocus), int) setFocus) {
     TopicDtoModel topicDtoModel = topicDtoModelList[index];
+
     DemoSourceEntity sourceEntity = DemoSourceEntity(
       topicDtoModel.id.toString(),
       " image",
-      topicDtoModel.avatarUrl?.coverUrl,
+      topicDtoModel.avatarUrl?.coverUrl ,
+      isTopicNoCover:  topicDtoModel.avatarUrl == null
     );
     print("____sourceEntity:${sourceEntity.toString()}");
     return DemoImageItem(sourceEntity, isFocus, index, setFocus);

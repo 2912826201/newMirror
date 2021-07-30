@@ -186,6 +186,7 @@ dependencies:
   like_button: ^2.0.2
   animated_text_kit: ^4.2.1
   move_to_background: ^1.0.2
+  flutter_echarts: ^2.1.0
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
   #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。
@@ -217,6 +218,7 @@ flutter:
     - assets/files/
     - assets/svg/
     - assets/png/
+    - assets/png/topic_cover.png
     - assets/png/2.0x/
     - assets/png/3.0x/
     - images/
