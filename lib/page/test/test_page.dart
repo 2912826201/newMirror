@@ -20,6 +20,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/test/activation_test_page.dart';
 import 'package:mirror/page/test/agora_input_page.dart';
 import 'package:mirror/page/test/download_test_page.dart';
+import 'package:mirror/page/test/echarts_test/echarts_test.dart';
 import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
@@ -451,6 +452,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("标签云测试"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+                        return EchartsView();
+                  }));
+                },
+                child: Text("Echarts"),
               ),
               Container(
                 color: AppColor.mainRed,
