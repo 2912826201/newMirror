@@ -186,7 +186,6 @@ class EchartsViewState extends State<EchartsView> {
                     chart.on( 'datazoom', function (params) {
                     Messager.postMessage(
                     JSON.stringify({
-                          // myChart:chart,
                           payload: params,
                         })
                         );
