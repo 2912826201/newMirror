@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +52,7 @@ import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
 import 'listview_item_test_page.dart';
+import 'marquee_text_test.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -68,6 +70,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
   String TestText =
       "交通指引成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交站:广都上街华阳大道口、广都中街华阳大道口、输气大厦、广都上街、南阳盛世、华阳地税所、广都上街华阳大道口、华阳大道广都中街口、华阳大道广都中街口、华阳大道广都中街、广都上街、南阳盛世、丽都街东、广都中街、正东中街、华阳大市场。成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交车:815路、829路、T102路环线、517路、T101路、华阳4A路、501路、801路、813路、825B路、823路、825A路、826路、821路、827路、828路、843路、T103路、华阳2A路、T106路、815A路、华阳5路、807路等。打车去成都天府新区华天兴能燃气有限责任公司华阳客服中心多少钱：成都市出租车的起步价是8.0元、起步距离2.0公里、 每公里1.9元、无燃油附加费 ，请参考。自驾去成都天府新区华天兴能燃气有限责任公司华阳客服中心怎么走：请输入您的出发点，帮您智能规划驾车线路。";
+
   @override
   void initState() {
     super.initState();
@@ -170,6 +173,58 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   );
                 },
               ),
+              Container(
+                  width: ScreenUtil.instance.width - 70,
+                  height: 22,
+                  child: Center(
+                    child: YYMarquee(
+                        // ColorizeAnimatedTextKit(
+                        //     text: [
+                        //       "跑马灯样式文本样式文本样式文本"
+                        //     ],
+                        //     textStyle: TextStyle(
+                        //         fontSize: 15.0,
+                        //         fontFamily: "Horizon"
+                        //     ),
+                        //     colors: [
+                        //       Colors.purple,
+                        //       Colors.blue,
+                        //       Colors.yellow,
+                        //       Colors.red,
+                        //     ],
+                        //     textAlign: TextAlign.start,
+                        // ),
+                        DefaultTextStyle(
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                          ),
+                          child: AnimatedTextKit(
+                            repeatForever:true,
+                            pause: Duration(milliseconds: 100),
+                            animatedTexts: [
+                              ColorizeAnimatedText(
+                                "跑马灯样式文本样式文本样式文本",
+                                colors: [
+                                  Colors.grey,
+                                  Colors.blue,
+                                  Colors.yellow,
+                                  Colors.red,
+                                ],
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                            // totalRepeatCount: 10000,
+                          ),
+                        ),
+                        150.0,
+                        new Duration(seconds: 2),
+                        130.0),
+                  )),
               Builder(
                 builder: (context) {
                   return RaisedButton(
@@ -456,7 +511,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               RaisedButton(
                 onPressed: () {
                   Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-                        return EchartsView();
+                    return EchartsView();
                   }));
                 },
                 child: Text("Echarts"),
@@ -597,11 +652,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                             }),
                             cancel: AppDialogButton("取消并退出", () {
                               // pop();
-                              if(Platform.isIOS) {
+                              if (Platform.isIOS) {
                                 // MoveToBackground.moveTaskToBack();
                                 // MoveToBackground.moveTaskToBack();
-                                exit(0);///以编程方式退出，彻底但体验不好
-                              } else if(Platform.isAndroid) {
+                                exit(0);
+
+                                ///以编程方式退出，彻底但体验不好
+                              } else if (Platform.isAndroid) {
                                 MoveToBackground.moveTaskToBack();
                                 // SystemNavigator.pop(); //官方推荐方法，但不彻底
                               }

@@ -9,8 +9,10 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/page/test/marquee_text_test.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -75,77 +77,78 @@ class LikeState extends State<Like> {
         appBar: CustomAppBar(
           titleString: "赞",
         ),
-        body: laudListModel.length > 0 ?
-        Container(
-          decoration: const BoxDecoration(color: Colors.white),
-          child: Column(
-            children: [
-              Expanded(
-                  child: AnimationLimiter(
-                      child: MediaQuery.removePadding(
-                          removeTop: true,
-                          context: context,
-                          child: ScrollConfiguration(
-                              behavior: NoBlueEffectBehavior(),
-                              child: SmartRefresher(
-                                enablePullUp: true,
-                                enablePullDown: false,
-                                controller: refreshController,
-                                footer: CustomFooter(
-                                  // onOffsetChange: (offset) {
-                                  //   if (footerText != "" &&
-                                  //       PrimaryScrollController.of(context).offset > 0 &&
-                                  //       offset >= PrimaryScrollController.of(context).offset) {
-                                  //     print('---------------------------页面数据不够多,不展示文字');
-                                  //     setState(() {
-                                  //       footerText = "";
-                                  //     });
-                                  //   }
-                                  // },
-                                  builder: (BuildContext context, LoadStatus mode) {
-                                    Widget body;
-                                    if (mode == LoadStatus.loading) {
-                                      body = const Text("正在加载");
-                                    } else if (mode == LoadStatus.idle) {
-                                      body = const Text("上拉加载更多");
-                                    } else if (mode == LoadStatus.failed) {
-                                      body = const Text("加载失败,请重试");
-                                    } else {
-                                      body = Text("$footerText");
-                                    }
-                                    return Container(
-                                      child: Center(
-                                        child: body,
+        body: laudListModel.length > 0
+            ? Container(
+                decoration: const BoxDecoration(color: Colors.white),
+                child: Column(
+                  children: [
+                    Expanded(
+                        child: AnimationLimiter(
+                            child: MediaQuery.removePadding(
+                                removeTop: true,
+                                context: context,
+                                child: ScrollConfiguration(
+                                    behavior: NoBlueEffectBehavior(),
+                                    child: SmartRefresher(
+                                      enablePullUp: true,
+                                      enablePullDown: false,
+                                      controller: refreshController,
+                                      footer: CustomFooter(
+                                        // onOffsetChange: (offset) {
+                                        //   if (footerText != "" &&
+                                        //       PrimaryScrollController.of(context).offset > 0 &&
+                                        //       offset >= PrimaryScrollController.of(context).offset) {
+                                        //     print('---------------------------页面数据不够多,不展示文字');
+                                        //     setState(() {
+                                        //       footerText = "";
+                                        //     });
+                                        //   }
+                                        // },
+                                        builder: (BuildContext context, LoadStatus mode) {
+                                          Widget body;
+                                          if (mode == LoadStatus.loading) {
+                                            body = const Text("正在加载");
+                                          } else if (mode == LoadStatus.idle) {
+                                            body = const Text("上拉加载更多");
+                                          } else if (mode == LoadStatus.failed) {
+                                            body = const Text("加载失败,请重试");
+                                          } else {
+                                            body = Text("$footerText");
+                                          }
+                                          return Container(
+                                            child: Center(
+                                              child: body,
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
-                                ),
-                                onLoading: () {
-                                  requestFeedLuadList();
-                                },
-                                child: ListView.builder(
-                                  controller: PrimaryScrollController.of(context),
-                                  // scrollController,
-                                  itemCount: laudListModel.length,
-                                  padding: const EdgeInsets.only(top: 14),
-                                  itemBuilder: (context, index) {
-                                    return AnimationConfiguration.staggeredList(
-                                      position: index,
-                                      duration: const Duration(milliseconds: 375),
-                                      child: SlideAnimation(
-                                        //滑动动画
-                                        verticalOffset: 50.0,
-                                        child: FadeInAnimation(
-                                            //渐隐渐现动画
-                                            child: LikeListViewItem(model: laudListModel[index])),
+                                      onLoading: () {
+                                        requestFeedLuadList();
+                                      },
+                                      child: ListView.builder(
+                                        controller: PrimaryScrollController.of(context),
+                                        // scrollController,
+                                        itemCount: laudListModel.length,
+                                        padding: const EdgeInsets.only(top: 14),
+                                        itemBuilder: (context, index) {
+                                          return AnimationConfiguration.staggeredList(
+                                            position: index,
+                                            duration: const Duration(milliseconds: 375),
+                                            child: SlideAnimation(
+                                              //滑动动画
+                                              verticalOffset: 50.0,
+                                              child: FadeInAnimation(
+                                                  //渐隐渐现动画
+                                                  child: LikeListViewItem(model: laudListModel[index])),
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
-                                ),
-                              )))))
-            ],
-          ),
-        ) : Container());
+                                    )))))
+                  ],
+                ),
+              )
+            : Container());
   }
 }
 
@@ -202,77 +205,92 @@ class LikeListViewItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: ScreenUtil.instance.width - 32.0 - 38.0 - 16.0 - 4.0,
+                width: Application.slideColorizeAnimatedText
+                    ? getTextSize(
+                            model.nickName,
+                            TextStyle(
+                              fontSize: 15,
+                            ),
+                            1)
+                        .width + 32
+                    : ScreenUtil.instance.width - 32.0 - 38.0 - 16.0 - 4.0,
+                height: 18,
                 child: Application.slideColorizeAnimatedText
-                    ? DefaultTextStyle(
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                  ),
-                  child: AnimatedTextKit(
-                    animatedTexts: [
-                      ColorizeAnimatedText(
-                        model.nickName,
-                        colors: colorizeColors,
-                        textStyle: const TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                    totalRepeatCount: 1,
-                  ),
-                ) :
-                Text(
-                  "${model.nickName}",
-                  // '用户昵称显示',
-                  style: const TextStyle(
-                    color: AppColor.textPrimary1,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(height: 2),
-              model.description != null ?
-               Container(
-                  width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
-                  child: Application.slideColorizeAnimatedText
-                      ? DefaultTextStyle(
+                    ? YYMarquee(
+                        DefaultTextStyle(
                           textAlign: TextAlign.start,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 15,
                           ),
                           child: AnimatedTextKit(
+                            repeatForever: true,
+                            pause: Duration(milliseconds: 300),
                             animatedTexts: [
                               ColorizeAnimatedText(
-                                model.description,
+                                model.nickName,
                                 colors: colorizeColors,
                                 textStyle: const TextStyle(
-                                  // color: AppColor.textSecondary,
-                                  fontSize: 12,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
-                            totalRepeatCount: 1,
-                          ),
-                        )
-                      : Text(
-                          "${model.description}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColor.textSecondary,
-                            fontSize: 12,
+                            // totalRepeatCount: 1,
                           ),
                         ),
-                ) : Container(),
-
+                        200.0,
+                        new Duration(seconds: 5),
+                        230.0)
+                    : Text(
+                        "${model.nickName}",
+                        // '用户昵称显示',
+                        style: const TextStyle(
+                          color: AppColor.textPrimary1,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+              ),
+              const SizedBox(height: 2),
+              model.description != null
+                  ? Container(
+                      width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
+                      child: Application.slideColorizeAnimatedText
+                          ? DefaultTextStyle(
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                              child: AnimatedTextKit(
+                                animatedTexts: [
+                                  ColorizeAnimatedText(
+                                    model.description,
+                                    colors: colorizeColors,
+                                    textStyle: const TextStyle(
+                                      // color: AppColor.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                                totalRepeatCount: 1,
+                              ),
+                            )
+                          : Text(
+                              "${model.description}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColor.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
+                    )
+                  : Container(),
             ],
           )
         ],
