@@ -1827,9 +1827,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
 
     if (_emojiState) {
-      _emojiState = false;
+      // _emojiState = false;
       readOnly = false;
-      _emojiStateOld = true;
+      // _emojiStateOld = true;
       textSpanFieldClickListener();
       streamEditWidget.sink.add(0);
     } else {
