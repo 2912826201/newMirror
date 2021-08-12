@@ -323,6 +323,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   @override
   void deactivate() {
     super.deactivate();
+    deletePostCompleteMessage(conversation);
     _messageInputBodyClick();
     _scrollController.dispose();
     streamEditWidget.close();
@@ -340,7 +341,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
     EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
     context.read<VoiceSettingNotifier>().stop();
-    deletePostCompleteMessage(conversation);
   }
 
   @override
@@ -2302,6 +2302,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       if(chatDataList[position].isTemporary){
         if(chatDataList[position].id!=null){
           cancelPostMessage.add(chatDataList[position].id);
+          deleteCancelMessage(conversation.id, chatDataList[position].id ?? "");
           if (mounted) {
             chatDataList.removeAt(position);
             EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
