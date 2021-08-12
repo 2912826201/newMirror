@@ -2581,6 +2581,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   @override
   void startChangeKeyBoardHeight(bool isOpenKeyboard) {
     print("startChangeKeyBoardHeight:$isOpenKeyboard");
+    _removeLongPanelCall();
     if (isOpenKeyboard) {
       if (!_emojiStateOld) {
         if (_bottomSettingPanelState != isOpenKeyboard) {
