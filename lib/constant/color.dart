@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 // 根据蓝湖上设计规范内容更新
 class AppColor {
   //主色黄
-  static const mainYellow = Color.fromRGBO(0xFF, 0x4C, 0x4C, 1.0);
+  static const mainYellow = Color.fromRGBO(0xFF, 0xC9, 0x4C, 1.0);
 
   //辅色红
   static const mainRed = Color.fromRGBO(0xFF, 0x4C, 0x4C, 1.0);

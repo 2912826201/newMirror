@@ -14,7 +14,6 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/protocol_web_view.dart';
-import 'package:move_to_background/move_to_background.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:rich_text_widget/rich_text_widget.dart';
 
@@ -31,7 +30,7 @@ class IfPage extends StatefulWidget {
 class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
-  String TestText = "我们非常重视您的个人信息和隐私保护，为了更好的保障您的个人权益，在您使用前，请务必阅读我们的《使用条款》和《隐私协议》。如果您同意此协议，请点击“同意”。";
+  String testText = "我们非常重视您的个人信息和隐私保护，为了更好的保障您的个人权益，在您使用前，请务必阅读我们的《使用条款》和《隐私协议》。如果您同意此协议，请点击“同意”。";
 
   @override
   void initState() {
@@ -115,7 +114,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                   child: RichTextWidget(
                 // default Text
                 Text(
-                  TestText,
+                  testText,
                   style: TextStyle(color: Colors.black),
                 ),
                 // rich text list

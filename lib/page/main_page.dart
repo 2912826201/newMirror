@@ -4,7 +4,6 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -41,10 +40,9 @@ class MainPageState extends XCState {
     super.dispose();
   }
 
-
   List pages = [
-   HomePage(key: homePageKey),
-   TrainingPage(),
+    HomePage(key: homePageKey),
+    TrainingPage(),
     MessagePage(),
     ProfilePage(),
   ];
@@ -66,6 +64,7 @@ class MainPageState extends XCState {
       }
     });
   }
+
   _getUnReadFansCount() {
     fansUnread().then((value) {
       if (mounted && value != null && value != context.read<UserInteractiveNotifier>().value.fansUnreadCount) {
@@ -73,11 +72,12 @@ class MainPageState extends XCState {
       }
     });
   }
+
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
     return Scaffold(
-      backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainYellow,
         bottomNavigationBar: IFTabBar(
           tabBarClickListener: (index) {
             print('----------index-------$index');
@@ -100,7 +100,7 @@ class MainPageState extends XCState {
             if (_unReadFeedCount == 0) {
               _getUnReadFeedCount();
             }
-            if(Application.appContext.read<UserInteractiveNotifier>().value.fansUnreadCount==0){
+            if (Application.appContext.read<UserInteractiveNotifier>().value.fansUnreadCount == 0) {
               _getUnReadFansCount();
             }
             Future.delayed(Duration.zero, () {
@@ -131,7 +131,7 @@ class MainPageState extends XCState {
             Future.delayed(Duration.zero, () {
               getUnReads();
             });
-           /* print("双击index：：${index} currentIndex:::$currentIndex");
+            /* print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
               homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
             }
@@ -151,7 +151,7 @@ class MainPageState extends XCState {
           },
         ),
         body: PageView.builder(
-          itemBuilder: (BuildContext context,int index) {
+          itemBuilder: (BuildContext context, int index) {
             return pages[index];
           },
           itemCount: 4,

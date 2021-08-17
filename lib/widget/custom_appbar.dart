@@ -22,8 +22,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.titleString = "",
       this.subtitleString,
       this.actions = const [],
-      this.backgroundColor = AppColor.white,
-      this.brightness = Brightness.light,
+      this.backgroundColor = AppColor.mainBlack,
+      this.brightness = Brightness.dark,
       this.hasLeading = true,
       this.leading,
       this.leadingOnTap,
@@ -62,7 +62,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ? CustomAppBarIconButton(
                               // icon: Icons.arrow_back_ios_outlined,
                               svgName: AppIcon.nav_return,
-                              iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
+                              iconColor: brightness == Brightness.light ? AppColor.mainBlack : AppColor.white,
                               onTap: leadingOnTap == null
                                   ? () {
                                       Navigator.pop(context);
@@ -127,7 +127,7 @@ class CustomAppBarIconButton extends StatelessWidget {
     Key key,
     this.icon,
     this.svgName,
-    this.iconColor = AppColor.black,
+    this.iconColor = AppColor.white,
     this.onTap,
   })  : assert(iconColor != null || svgName != null),
         super(key: key);

@@ -187,10 +187,11 @@ class MessageState extends State<MessagePage>
     print("animationMap:::::${animationMap}");
     return Scaffold(
       appBar: CustomAppBar(
+        hasDivider: false,
         hasLeading: false,
         titleString: "消息${context.watch<RongCloudStatusNotifier>().statusString}",
         actions: [
-          CustomAppBarTextButton("创建群聊", AppColor.textPrimary2, () {
+          CustomAppBarTextButton("创建群聊", AppColor.white, () {
             showCreateGroupPopup(context);
           }),
           // CustomAppBarIconButton(
@@ -201,7 +202,7 @@ class MessageState extends State<MessagePage>
           //     }),
         ],
       ),
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainYellow,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -323,7 +324,7 @@ class MessageState extends State<MessagePage>
                         : type == 1
                             ? AppIcon.message_at
                             : AppIcon.message_like,
-                    45),
+                    45, color: AppColor.white),
                 Positioned(
                   left: 29.5,
                   child: CountBadge(
@@ -346,7 +347,7 @@ class MessageState extends State<MessagePage>
                 : type == 1
                     ? "${S.of(context).message_at}"
                     : "${S.of(context).message_like}",
-            style: AppStyle.textRegular16,
+            style: AppStyle.whiteRegular16,
           )
         ],
       ),
