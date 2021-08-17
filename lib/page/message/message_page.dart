@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -15,7 +14,6 @@ import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/generated/l10n.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -25,7 +23,6 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
 import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
@@ -202,7 +199,7 @@ class MessageState extends State<MessagePage>
           //     }),
         ],
       ),
-      backgroundColor: AppColor.mainYellow,
+      backgroundColor: AppColor.mainBlack,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -361,7 +358,7 @@ class MessageState extends State<MessagePage>
       return GestureDetector(
         child: Container(
           height: 36,
-          color: AppColor.orange.withOpacity(0.1),
+          color: AppColor.mainYellow.withOpacity(0.1),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -371,24 +368,24 @@ class MessageState extends State<MessagePage>
               AppIcon.getAppIcon(
                 AppIcon.error_circle,
                 16,
-                color: AppColor.orange,
+                color: AppColor.mainYellow,
               ),
               SizedBox(
                 width: 6,
               ),
               Text(
                 "开启系统通知，以免错过新消息",
-                style: TextStyle(fontSize: 14, color: AppColor.orange),
+                style: TextStyle(fontSize: 14, color: AppColor.mainYellow),
               ),
               Spacer(),
               Text(
                 "去开启",
-                style: TextStyle(fontSize: 14, color: AppColor.orange),
+                style: TextStyle(fontSize: 14, color: AppColor.mainYellow),
               ),
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_16,
                 16,
-                color: AppColor.orange,
+                color: AppColor.mainYellow,
               ),
               SizedBox(
                 width: 16,
@@ -424,7 +421,7 @@ class MessageState extends State<MessagePage>
               ),
               Text(
                 "这里空空如也，去推荐看看吧",
-                style: AppStyle.textSecondaryRegular14,
+                style: AppStyle.text1Regular14,
               ),
               SizedBox(
                 height: 28,
@@ -548,7 +545,7 @@ class MessageState extends State<MessagePage>
                 // index == snapshot.data.index ? snapshot.data.conversationItemHeight :
                 69,
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
+            color: conversation.isTop == 1 ? AppColor.layoutBgGrey : AppColor.mainBlack,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -581,7 +578,7 @@ class MessageState extends State<MessagePage>
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 1,
-                            style: AppStyle.textRegular14,
+                            style: AppStyle.whiteRegular14,
                           )),
                           // index == snapshot.data.index
                           //     ? Container()
@@ -589,7 +586,7 @@ class MessageState extends State<MessagePage>
                           Text(
                             DateUtil.getShowMessageDateString(
                                 DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
-                            style: AppStyle.textHintRegular12,
+                            style: AppStyle.text2Regular12,
                           )
                         ],
                       ),
@@ -614,7 +611,7 @@ class MessageState extends State<MessagePage>
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 1,
-                            style: AppStyle.textSecondaryRegular13,
+                            style: AppStyle.text1Regular13,
                           )),
                           SizedBox(
                             width: 12,
@@ -630,7 +627,7 @@ class MessageState extends State<MessagePage>
                       ),
                       Container(
                         height: 0.5,
-                        color: AppColor.bgWhite,
+                        color: AppColor.dividerWhite24,
                       )
                     ],
                   ),
@@ -678,12 +675,12 @@ class MessageState extends State<MessagePage>
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 1,
-                            style: AppStyle.textRegular14,
+                            style: AppStyle.whiteRegular14,
                           )),
                           Text(
                             DateUtil.getShowMessageDateString(
                                 DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
-                            style: AppStyle.textHintRegular12,
+                            style: AppStyle.text2Regular12,
                           )
                         ],
                       ),
@@ -704,7 +701,7 @@ class MessageState extends State<MessagePage>
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 1,
-                            style: AppStyle.textSecondaryRegular13,
+                            style: AppStyle.text1Regular13,
                           )),
                           SizedBox(
                             width: 12,
@@ -717,7 +714,7 @@ class MessageState extends State<MessagePage>
                       ),
                       Container(
                         height: 0.5,
-                        color: AppColor.bgWhite,
+                        color: AppColor.dividerWhite24,
                       )
                     ],
                   ),

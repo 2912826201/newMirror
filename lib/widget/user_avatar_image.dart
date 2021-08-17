@@ -79,7 +79,7 @@ class UserAvatarImageUtil{
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 //这里的边框颜色需要随背景变化
-                border: Border.all(width: 3, color: isTop == 1 ? AppColor.bgWhite : AppColor.white)),
+                border: Border.all(width: 3, color: isTop == 1 ? AppColor.layoutBgGrey : AppColor.mainBlack)),
             child: ClipOval(
               child: CachedNetworkImage(
                 height: 28,
