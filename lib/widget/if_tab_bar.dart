@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/config/config.dart';
-import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -36,6 +35,9 @@ class IFTabBar extends StatefulWidget {
   _IFTabBarState createState() => _IFTabBarState();
 }
 
+//文字样式
+const tabBarTextStyle = TextStyle(color: AppColor.mainBlack, fontSize: 15, fontWeight: FontWeight.w500);
+
 class _IFTabBarState extends State<IFTabBar> {
   List<Widget> normalIcons = [];
   List<Widget> selectedIcons = [];
@@ -60,9 +62,6 @@ class _IFTabBarState extends State<IFTabBar> {
 
   //选中后按钮图标和字的间距
   double selectedButtonSpace = 8;
-
-  //选中后按钮文字样式
-  TextStyle selectedButtonTextStyle = const TextStyle(color: AppColor.white, fontSize: 15);
 
   ///可得到的常量
   //屏幕宽
@@ -114,6 +113,7 @@ class _IFTabBarState extends State<IFTabBar> {
   StreamController<int> streamController = StreamController<int>();
   int firstTapTime;
   int beforTapTab;
+
   @override
   void dispose() {
     super.dispose();
@@ -131,17 +131,17 @@ class _IFTabBarState extends State<IFTabBar> {
           .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
       EventBus.getDefault().registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     });
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.white));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.white));
 
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.white));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.mainBlack));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.mainBlack));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.mainBlack));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.mainBlack));
     screenWidth = ScreenUtil.instance.screenWidthDp;
-    Size textSize = calculateTextWidth("首页", selectedButtonTextStyle, screenWidth, 1).size;
+    Size textSize = calculateTextWidth("首页", tabBarTextStyle, screenWidth, 1).size;
     selectedButtonTextWidth = textSize.width;
     selectedButtonTextHeight = textSize.height;
     //已选中按钮中 图标和文字距离左右的边距
@@ -270,6 +270,7 @@ class _IFTabBarState extends State<IFTabBar> {
         builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
           return BottomAppBar(
             child: Container(
+              color: AppColor.mainBlack,
               height: tabBarHeight,
               width: screenWidth,
               child: Stack(
@@ -292,7 +293,9 @@ class _IFTabBarState extends State<IFTabBar> {
   }
 
   _onClickListener(int index) {
-    if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+    if ((index == 2 || index == 3) && !context
+        .read<TokenNotifier>()
+        .isLoggedIn) {
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -304,7 +307,7 @@ class _IFTabBarState extends State<IFTabBar> {
   }
 
   Widget _onClickRow(AsyncSnapshot<int> snapshot) {
-    if(snapshot.data != 0){
+    if (snapshot.data != 0) {
       beforTapTab = snapshot.data;
       firstTapTime = null;
     }
@@ -317,23 +320,29 @@ class _IFTabBarState extends State<IFTabBar> {
             highlightColor: AppColor.transparent,
             radius: 0,
             onTap: () {
-              if(beforTapTab!= 0){
+              if (beforTapTab != 0) {
                 firstTapTime = null;
                 beforTapTab = 0;
                 _onClickListener(0);
                 return;
               }
               if (firstTapTime == null) {
-                firstTapTime = DateTime.now().millisecondsSinceEpoch;
+                firstTapTime = DateTime
+                    .now()
+                    .millisecondsSinceEpoch;
               } else {
-                if (DateTime.now().millisecondsSinceEpoch - firstTapTime <= 250) {
+                if (DateTime
+                    .now()
+                    .millisecondsSinceEpoch - firstTapTime <= 250) {
                   if (widget.onDoubleTap != null) {
                     widget.onDoubleTap(0);
                   }
                   firstTapTime = null;
                   return;
                 } else {
-                  firstTapTime = DateTime.now().millisecondsSinceEpoch;
+                  firstTapTime = DateTime
+                      .now()
+                      .millisecondsSinceEpoch;
                 }
               }
               _onClickListener(0);
@@ -345,16 +354,16 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AppConfig.needShowTraining
               ? InkWell(
-                  highlightColor: AppColor.transparent,
-                  radius: 0,
-                  onTap: () {
-                    _onClickListener(1);
-                  },
-                  child: Container(
-                    width: getItemClickWidth(snapshot.data)[1],
-                    height: tabBarHeight,
-                  ),
-                )
+            highlightColor: AppColor.transparent,
+            radius: 0,
+            onTap: () {
+              _onClickListener(1);
+            },
+            child: Container(
+              width: getItemClickWidth(snapshot.data)[1],
+              height: tabBarHeight,
+            ),
+          )
               : Container(),
           InkWell(
             highlightColor: AppColor.transparent,
@@ -396,7 +405,7 @@ class _IFTabBarState extends State<IFTabBar> {
             child: Container(
               height: 32,
               width: 90,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.white),
             ),
           )
         ],
@@ -430,12 +439,12 @@ class _IFTabBarState extends State<IFTabBar> {
                           right: 0,
                           child: notifier.value.unReadFeedCount != 0
                               ? ClipOval(
-                                  child: Container(
-                                    height: 8,
-                                    width: 8,
-                                    color: AppColor.mainRed,
-                                  ),
-                                )
+                            child: Container(
+                              height: 8,
+                              width: 8,
+                              color: AppColor.mainRed,
+                            ),
+                          )
                               : Container());
                     })
                   ],
@@ -445,19 +454,19 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AppConfig.needShowTraining
               ? AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
-                  child: Container(
-                    height: tabBarHeight,
-                    width: 80,
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
-                    ),
-                  ),
-                )
+            duration: const Duration(milliseconds: 250),
+            margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
+            child: Container(
+              height: tabBarHeight,
+              width: 80,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 24,
+                height: 24,
+                child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+              ),
+            ),
+          )
               : Container(),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
@@ -480,8 +489,8 @@ class _IFTabBarState extends State<IFTabBar> {
                     visible: currentIndex == 2
                         ? false
                         : MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber < 1
-                            ? false
-                            : true,
+                        ? false
+                        : true,
                     child: Positioned(
                       child: CountBadge(MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber, false),
                       left: 12,
@@ -511,12 +520,12 @@ class _IFTabBarState extends State<IFTabBar> {
                             right: 4,
                             child: notifier.value.fansUnreadCount > 0
                                 ? ClipOval(
-                                    child: Container(
-                                      height: 8,
-                                      width: 8,
-                                      color: AppColor.mainRed,
-                                    ),
-                                  )
+                              child: Container(
+                                height: 8,
+                                width: 8,
+                                color: AppColor.mainRed,
+                              ),
+                            )
                                 : Container());
                       })
                     ],
@@ -542,26 +551,26 @@ class _IFTabBarState extends State<IFTabBar> {
               margin: EdgeInsets.only(left: leftMarginText1),
               child: const Text(
                 "首页",
-                style: AppStyle.whiteMedium15,
+                style: tabBarTextStyle,
               ),
             ),
           ),
           AppConfig.needShowTraining
               ? AnimatedOpacity(
-                  opacity: snapshot.data == 1 ? 1 : 0,
-                  duration: const Duration(milliseconds: 150),
-                  child: Container(
-                    margin: EdgeInsets.only(left: leftMarginText2),
-                    child: const Text("训练", style: AppStyle.whiteMedium15),
-                  ),
-                )
+            opacity: snapshot.data == 1 ? 1 : 0,
+            duration: const Duration(milliseconds: 150),
+            child: Container(
+              margin: EdgeInsets.only(left: leftMarginText2),
+              child: const Text("训练", style: tabBarTextStyle),
+            ),
+          )
               : Container(),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
             duration: const Duration(milliseconds: 150),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText3),
-              child: const Text("消息", style: AppStyle.whiteMedium15),
+              child: const Text("消息", style: tabBarTextStyle),
             ),
           ),
           AnimatedOpacity(
@@ -569,7 +578,7 @@ class _IFTabBarState extends State<IFTabBar> {
             duration: const Duration(milliseconds: 150),
             child: Container(
               margin: EdgeInsets.only(left: leftMarginText4),
-              child: const Text("我的", style: AppStyle.whiteMedium15),
+              child: const Text("我的", style: tabBarTextStyle),
             ),
           ),
         ],

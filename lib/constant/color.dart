@@ -5,14 +5,42 @@ import 'package:flutter/material.dart';
 
 // 根据蓝湖上设计规范内容更新
 class AppColor {
-  //MR 主题红
-  static const mainRed = Color.fromRGBO(0xFF, 0x40, 0x59, 1.0);
+  //主色黄
+  static const mainYellow = Color.fromRGBO(0xFF, 0x4C, 0x4C, 1.0);
 
-  //MB 主题蓝 @、#
-  static const mainBlue = Color.fromRGBO(0x57, 0x6B, 0x95, 1.0);
+  //辅色红
+  static const mainRed = Color.fromRGBO(0xFF, 0x4C, 0x4C, 1.0);
+
+  //辅色蓝
+  static const mainBlue = Color.fromRGBO(0x4C, 0xA5, 0xFF, 1.0);
+
+  //背景、文字黑
+  static const mainBlack = Color.fromRGBO(0x14, 0x14, 0x14, 1.0);
 
   //N0 白色
   static const white = Color.fromRGBO(0xFF, 0xFF, 0xFF, 1.0);
+
+  // 纯黑
+  static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
+
+  //透明
+  static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
+
+  //卡片底色
+  static const bgGrey = Color.fromRGBO(0x3D, 0x3D, 0x3D, 1.0);
+
+  //分割线
+  static const dividerGrey = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.24);
+
+  //
+  static const textWhite60 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.6);
+
+  //
+  static const textWhite40 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.4);
+
+
+
+  //=====================================下面是旧的颜色 需要逐步替换掉==========================================
 
   //N3 背景
   static const bgBlack = Color.fromRGBO(0x16, 0x16, 0x16, 1.0);
@@ -35,12 +63,6 @@ class AppColor {
   //N4 Disable、提示文字
   static const textHint = Color.fromRGBO(0xCC, 0xCC, 0xCC, 1.0);
 
-  // 标准颜色
-  // 纯黑
-  static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
-
-  //透明
-  static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
   //不在规范中颜色
   static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
