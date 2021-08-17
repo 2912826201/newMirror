@@ -268,34 +268,34 @@ class _IFTabBarState extends State<IFTabBar> {
         initialData: currentIndex,
         stream: streamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
-          return BottomAppBar(
-            child: Container(
-              color: AppColor.mainBlack,
-              height: tabBarHeight,
-              width: screenWidth,
-              child: Stack(
-                children: [
-                  Center(
-                    child: _animatedContainer(snapshot),
-                  ),
-                  Center(
-                    child: _iconRow(snapshot),
-                  ),
-                  Center(
-                    child: IgnorePointer(child: _textRow(snapshot)),
-                  ),
-                  _onClickRow(snapshot)
-                ],
-              ),
+          return
+              // BottomAppBar(
+              // child:
+              Container(
+            color: AppColor.mainBlack,
+            height: tabBarHeight,
+            width: screenWidth,
+            child: Stack(
+              children: [
+                Center(
+                  child: _animatedContainer(snapshot),
+                ),
+                Center(
+                  child: _iconRow(snapshot),
+                ),
+                Center(
+                  child: IgnorePointer(child: _textRow(snapshot)),
+                ),
+                _onClickRow(snapshot)
+              ],
             ),
+            // ),
           );
         });
   }
 
   _onClickListener(int index) {
-    if ((index == 2 || index == 3) && !context
-        .read<TokenNotifier>()
-        .isLoggedIn) {
+    if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
       AppRouter.navigateToLoginPage(context);
       return;
     }
@@ -327,22 +327,16 @@ class _IFTabBarState extends State<IFTabBar> {
                 return;
               }
               if (firstTapTime == null) {
-                firstTapTime = DateTime
-                    .now()
-                    .millisecondsSinceEpoch;
+                firstTapTime = DateTime.now().millisecondsSinceEpoch;
               } else {
-                if (DateTime
-                    .now()
-                    .millisecondsSinceEpoch - firstTapTime <= 250) {
+                if (DateTime.now().millisecondsSinceEpoch - firstTapTime <= 250) {
                   if (widget.onDoubleTap != null) {
                     widget.onDoubleTap(0);
                   }
                   firstTapTime = null;
                   return;
                 } else {
-                  firstTapTime = DateTime
-                      .now()
-                      .millisecondsSinceEpoch;
+                  firstTapTime = DateTime.now().millisecondsSinceEpoch;
                 }
               }
               _onClickListener(0);
@@ -354,16 +348,16 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AppConfig.needShowTraining
               ? InkWell(
-            highlightColor: AppColor.transparent,
-            radius: 0,
-            onTap: () {
-              _onClickListener(1);
-            },
-            child: Container(
-              width: getItemClickWidth(snapshot.data)[1],
-              height: tabBarHeight,
-            ),
-          )
+                  highlightColor: AppColor.transparent,
+                  radius: 0,
+                  onTap: () {
+                    _onClickListener(1);
+                  },
+                  child: Container(
+                    width: getItemClickWidth(snapshot.data)[1],
+                    height: tabBarHeight,
+                  ),
+                )
               : Container(),
           InkWell(
             highlightColor: AppColor.transparent,
@@ -439,12 +433,12 @@ class _IFTabBarState extends State<IFTabBar> {
                           right: 0,
                           child: notifier.value.unReadFeedCount != 0
                               ? ClipOval(
-                            child: Container(
-                              height: 8,
-                              width: 8,
-                              color: AppColor.mainRed,
-                            ),
-                          )
+                                  child: Container(
+                                    height: 8,
+                                    width: 8,
+                                    color: AppColor.mainRed,
+                                  ),
+                                )
                               : Container());
                     })
                   ],
@@ -454,19 +448,19 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AppConfig.needShowTraining
               ? AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
-            child: Container(
-              height: tabBarHeight,
-              width: 80,
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: 24,
-                height: 24,
-                child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
-              ),
-            ),
-          )
+                  duration: const Duration(milliseconds: 250),
+                  margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
+                  child: Container(
+                    height: tabBarHeight,
+                    width: 80,
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+                    ),
+                  ),
+                )
               : Container(),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
@@ -489,8 +483,8 @@ class _IFTabBarState extends State<IFTabBar> {
                     visible: currentIndex == 2
                         ? false
                         : MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber < 1
-                        ? false
-                        : true,
+                            ? false
+                            : true,
                     child: Positioned(
                       child: CountBadge(MessageManager.unreadNoticeNumber + MessageManager.unreadMessageNumber, false),
                       left: 12,
@@ -520,12 +514,12 @@ class _IFTabBarState extends State<IFTabBar> {
                             right: 4,
                             child: notifier.value.fansUnreadCount > 0
                                 ? ClipOval(
-                              child: Container(
-                                height: 8,
-                                width: 8,
-                                color: AppColor.mainRed,
-                              ),
-                            )
+                                    child: Container(
+                                      height: 8,
+                                      width: 8,
+                                      color: AppColor.mainRed,
+                                    ),
+                                  )
                                 : Container());
                       })
                     ],
@@ -557,13 +551,13 @@ class _IFTabBarState extends State<IFTabBar> {
           ),
           AppConfig.needShowTraining
               ? AnimatedOpacity(
-            opacity: snapshot.data == 1 ? 1 : 0,
-            duration: const Duration(milliseconds: 150),
-            child: Container(
-              margin: EdgeInsets.only(left: leftMarginText2),
-              child: const Text("训练", style: tabBarTextStyle),
-            ),
-          )
+                  opacity: snapshot.data == 1 ? 1 : 0,
+                  duration: const Duration(milliseconds: 150),
+                  child: Container(
+                    margin: EdgeInsets.only(left: leftMarginText2),
+                    child: const Text("训练", style: tabBarTextStyle),
+                  ),
+                )
               : Container(),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
