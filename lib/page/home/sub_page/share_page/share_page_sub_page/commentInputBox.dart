@@ -64,7 +64,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
         height: widget.isUnderline ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
         decoration: BoxDecoration(
-          color: AppColor.white,
+          // color: AppColor.white,
           border: Border(top: BorderSide(width: widget.isUnderline ? 0.5 : 0.000000001, color: Color(0xffe5e5e5))),
         ),
         // child: Center(

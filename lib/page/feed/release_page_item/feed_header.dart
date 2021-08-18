@@ -148,15 +148,9 @@ class FeedHeader extends StatelessWidget {
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       height: 44,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(
-            width: 8,
-          ),
           CustomAppBarIconButton(
             svgName: AppIcon.nav_close,
             onTap: () {
@@ -207,7 +201,7 @@ class FeedHeader extends StatelessWidget {
                 }),
           ),
           const SizedBox(
-            width: 16,
+            width: 8,
           ),
         ],
       ),

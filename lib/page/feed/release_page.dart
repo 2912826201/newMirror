@@ -204,33 +204,43 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
+    //白色
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
-      child: Scaffold(
-        backgroundColor: AppColor.white,
-        resizeToAvoidBottomInset: false,
-        body: ChangeNotifierProvider(
-          create: (_) => ReleaseFeedInputNotifier(
-            inputText: "",
-            rules: topicRule == null ? [] : [topicRule],
-            atSearchStr: "",
-            topicSearchStr: "",
-          ),
-          builder: (context, _) {
-            String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
-            return Container(
+      child: ChangeNotifierProvider(
+        create: (_) => ReleaseFeedInputNotifier(
+          inputText: "",
+          rules: topicRule == null ? [] : [topicRule],
+          atSearchStr: "",
+          topicSearchStr: "",
+        ),
+        builder: (context, _) {
+          String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
+          return Scaffold(
+            // backgroundColor: AppColor.mainRed,
+            // resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              brightness: Brightness.dark,
+              backgroundColor: AppColor.mainBlack,
+              automaticallyImplyLeading: false,
+              title: // 头部布局
+                  FeedHeader(
+                selectedMediaFiles: _selectedMediaFiles,
+                controller: _controller,
+                videoCourseId: widget.videoCourseId,
+              ), //注意
+            ),
+            body: Container(
               color: AppColor.white,
-              margin: EdgeInsets.only(
-                top: ScreenUtil.instance.statusBarHeight,
-              ),
               child: Column(
                 children: [
-                  // 头部布局
-                  FeedHeader(
-                    selectedMediaFiles: _selectedMediaFiles,
-                    controller: _controller,
-                    videoCourseId: widget.videoCourseId,
-                  ),
+                  // // 状态栏颜色
+                  // Container(
+                  //   height: ScreenUtil.instance.statusBarHeight,
+                  //   width: ScreenUtil.instance.width,
+                  //   color: AppColor.mainBlack,
+                  // ),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图
@@ -252,9 +262,9 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
                             )
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

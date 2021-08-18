@@ -145,7 +145,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               Offstage(
                 offstage: (widget.model.address == null && widget.model.courseDto == null),
                 child: Container(
-                  color: AppColor.white,
+                  // color: AppColor.white,
                   margin: const EdgeInsets.only(left: 16, right: 16),
                   width: ScreenUtil.instance.width,
                   child: getCourseInfo(widget.model, context),
@@ -158,7 +158,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                 child: Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,
-                  color: AppColor.white,
+                  // color: AppColor.white,
                   child: ExpandableText(
                     text: widget.model.content,
                     topicId: widget.topicId,
@@ -183,7 +183,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               // 分割块
               Container(
                 height: 18,
-                color: AppColor.white,
+                // color: AppColor.white,
               )
             ],
           )

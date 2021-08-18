@@ -68,7 +68,7 @@ class CommentLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return context.watch<FeedMapNotifier>().value.feedMap[model.id] != null
         ? Container(
-            color: AppColor.white,
+            // color: AppColor.white,
             width: ScreenUtil.instance.width,
             margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
             child: Column(
