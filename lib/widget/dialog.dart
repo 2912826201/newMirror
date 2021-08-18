@@ -51,7 +51,7 @@ class _AppDialog extends StatelessWidget {
     return Container(
       width: _dialogWidth,
       decoration: BoxDecoration(
-        color: isTransparentBack ? AppColor.transparent : AppColor.white,
+        color: isTransparentBack ? AppColor.transparent : AppColor.layoutBgGrey,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
@@ -137,7 +137,7 @@ class _AppDialog extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(_outerPadding, _innerPadding, _outerPadding, 0),
         child: Text(
           title,
-          style: AppStyle.textRegular18,
+          style: AppStyle.whiteRegular18,
           softWrap: false,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -201,7 +201,7 @@ class _AppDialog extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 cancel.text,
-                style: AppStyle.textRegular18,
+                style: AppStyle.whiteRegular18,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -238,7 +238,7 @@ class _AppDialog extends StatelessWidget {
     if (cancelButton != null || confirmButton != null) {
       _viewList.add(Container(
         height: _dividerWidth,
-        color: AppColor.textHint,
+        color: AppColor.dividerWhite24,
       ));
 
       List<Widget> rowList = [];
@@ -248,7 +248,7 @@ class _AppDialog extends StatelessWidget {
           rowList.add(Container(
             width: _dividerWidth,
             height: _buttonHeight,
-            color: AppColor.textHint,
+            color: AppColor.dividerWhite24,
           ));
         }
       }
@@ -341,7 +341,7 @@ showAppDialog(BuildContext context,
         return WillPopScope(
             onWillPop: () async => barrierDismissible, //用来屏蔽安卓返回键关弹窗
             child: Dialog(
-              backgroundColor: isTransparentBack ? AppColor.transparent : null,
+              backgroundColor: isTransparentBack ? AppColor.transparent : AppColor.layoutBgGrey,
               elevation: isTransparentBack ? 0 : null,
               child: _AppDialog(
                   confirm: confirm,

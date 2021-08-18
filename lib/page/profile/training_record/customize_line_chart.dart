@@ -254,7 +254,6 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                       color: AppColor.transparent,
                     ),
                     onTap: () {
-                      print("点击了$index");
                       positionSelect = index;
                       isPositionSelectShow = true;
                       if (mounted) {
@@ -285,26 +284,10 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     return valueArray;
   }
 
-  Color getColor() {
-    int index = Random().nextInt(1000);
-    if (index < 100) {
-      return Colors.red;
-    } else if (index < 300) {
-      return Colors.lightGreen;
-    } else if (index < 500) {
-      return Colors.amberAccent;
-    } else if (index < 800) {
-      return Colors.tealAccent;
-    } else {
-      return Colors.deepPurpleAccent;
-    }
-  }
-
   //获取y轴数据
   Widget getYListView() {
     yMaxValue = getYMaxValue();
-    // TextStyle style=TextStyle(fontSize: 12,color: AppColor.textSecondary);
-    TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+    TextStyle style = AppStyle.text1Regular12;
     return Container(
       height: height,
       width: getTextSize("${yMaxValue}kg", style, 1).width,
@@ -398,7 +381,7 @@ class MyPainter extends CustomPainter {
     bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.textHint // 画笔颜色
+      ..color = AppColor.dividerWhite24 // 画笔颜色
       ..style = PaintingStyle.fill;
 
     pointPaint = Paint() // 创建一个画笔并配置其属性
@@ -416,7 +399,7 @@ class MyPainter extends CustomPainter {
     alertBgBorderPaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.mainRed.withOpacity(0.65) // 画笔颜色
+      ..color = AppColor.mainRed.withOpacity(0.60) // 画笔颜色
       ..style = PaintingStyle.stroke; //是否填充
 
     cirLinePaint = Paint() // 创建一个画笔并配置其属性
@@ -472,13 +455,21 @@ class MyPainter extends CustomPainter {
     minValue = pointRadius / 2;
     maxValue = size.width - pointRadius / 2;
 
+    //初始化画笔
     initPaint(size);
+    //初始化点
     initPoints(size);
+    //绘制渐变色
     canvasCirclePlan(canvas, size);
+    //这是背景
     // canvasBgLine(canvas, size);
+    //绘制三次贝塞尔曲线
     canvasCircleLine(canvas, size);
+    //绘制线上的点
     canvasPoint(canvas, size);
+    //绘制x轴
     canvasBottomText(canvas, size);
+    //绘制提示文字
     canvasAlertText(canvas, size);
   }
 
@@ -522,8 +513,10 @@ class MyPainter extends CustomPainter {
 
     double y = points[positionSelect].y - 28 - pointRadius / 2 - 8;
 
+    //先绘制提示的竖线条
     drawAlertLine(canvas, lineX, size);
 
+    //绘制提示文字的背景
     canvas.drawPath(
         Path()
           ..moveTo(x, y)
@@ -533,6 +526,7 @@ class MyPainter extends CustomPainter {
           ..lineTo(x, y)
           ..close(),
         alertBgPaint);
+    //绘制提示文字的背景边框
     canvas.drawPath(
         Path()
           ..moveTo(x, y)
@@ -543,9 +537,11 @@ class MyPainter extends CustomPainter {
           ..close(),
         alertBgBorderPaint);
 
+    //绘制提示文字--体重
     drawAlertText(canvas, x, y, 63, 28);
   }
 
+  //绘制提示的线条
   void drawAlertLine(Canvas canvas, double x, Size size) {
     var dashWidth = 5;
     var dashSpace = 2;
@@ -564,7 +560,7 @@ class MyPainter extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textPrimary1, fontWeight: FontWeight.w500));
+    pb.pushStyle(ui.TextStyle(color: AppColor.mainBlack, fontWeight: FontWeight.w500));
     if (valueList == null || positionSelect >= valueList.length) {
       return;
     } else {
@@ -572,14 +568,15 @@ class MyPainter extends CustomPainter {
     }
     double textWidth = getTextSize("${valueList[positionSelect]}kg", AppStyle.textMedium14, 1).width;
     ParagraphConstraints pc = ParagraphConstraints(width: textWidth);
-    Paragraph paragraph = pb.build()..layout(pc);
+    Paragraph paragraph = pb.build()
+      ..layout(pc);
     double xValue = x + width / 2 - textWidth / 2;
     double yValue = y + height / 2 - 6;
     Offset offset = Offset(xValue, yValue);
     canvas.drawParagraph(paragraph, offset); /**/
   }
 
-  //绘制底部文字
+  //绘制底部文字---x轴
   void canvasBottomText(Canvas canvas, Size size) {
     //画文字
     for (int i = 0; i < points.length; i++) {
@@ -588,7 +585,7 @@ class MyPainter extends CustomPainter {
         fontStyle: FontStyle.italic,
         fontSize: 12.0,
       ));
-      pb.pushStyle(ui.TextStyle(color: AppColor.textSecondary));
+      pb.pushStyle(ui.TextStyle(color: AppColor.textWhite60));
 
       String text;
       if (xValueText == null || i >= xValueText.length) {
@@ -600,10 +597,11 @@ class MyPainter extends CustomPainter {
         text = getBottomTexT(newValue, lastValue);
         pb.addText(text);
       }
-      TextStyle textStyle = TextStyle(color: AppColor.textSecondary);
+      TextStyle textStyle = TextStyle(color: AppColor.textWhite60);
       double textWidth = getTextSize(text, textStyle, 1).width;
       ParagraphConstraints pc = ParagraphConstraints(width: textWidth);
-      Paragraph paragraph = pb.build()..layout(pc);
+      Paragraph paragraph = pb.build()
+        ..layout(pc);
       double xValue = points[i].x - textWidth / 2 + 4;
       if (i == points.length - 1) {
         xValue -= 8;
@@ -759,13 +757,13 @@ class MyPainterBenchMarkLine extends CustomPainter {
     benchmarkLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.textHint // 画笔颜色
+      ..color = AppColor.dividerWhite24 // 画笔颜色
       ..style = PaintingStyle.fill;
 
     bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.textHint // 画笔颜色
+      ..color = AppColor.dividerWhite24 // 画笔颜色
       ..style = PaintingStyle.fill;
   }
 
@@ -794,10 +792,11 @@ class MyPainterBenchMarkLine extends CustomPainter {
       textAlign: TextAlign.left,
       fontSize: 12.0,
     ));
-    pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.w500));
+    pb.pushStyle(ui.TextStyle(color: AppColor.textWhite60, fontWeight: FontWeight.w500));
     pb.addText(benchmarkValueText);
     ParagraphConstraints pc = ParagraphConstraints(width: 60);
-    Paragraph paragraph = pb.build()..layout(pc);
+    Paragraph paragraph = pb.build()
+      ..layout(pc);
     double xValue = size.width - 60;
     Offset offset = Offset(xValue, getPointHeight(benchmarkValue, size) - 23);
     canvas.drawParagraph(paragraph, offset); /**/
