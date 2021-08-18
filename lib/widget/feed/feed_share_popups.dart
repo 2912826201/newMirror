@@ -33,7 +33,7 @@ Future openShareBottomSheet({
   await showModalBottomSheet(
     isScrollControlled: true,
     context: context,
-    backgroundColor: AppColor.white,
+    backgroundColor: AppColor.layoutBgGrey,
     // 圆角
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
@@ -117,7 +117,7 @@ class FeedSharePopups extends StatelessWidget {
             child: Center(
               child: const Text(
                 "分享到",
-                style: AppStyle.textRegular16,
+                style: AppStyle.whiteRegular16,
               ),
             ),
           ),
@@ -212,7 +212,7 @@ class FeedSharePopups extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 shareViewModel[index].name,
-                                style: AppStyle.textRegular12,
+                                style: AppStyle.whiteRegular12,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -227,9 +227,10 @@ class FeedSharePopups extends StatelessWidget {
           Container(
             width: ScreenUtil.instance.screenWidthDp,
             height: 8,
-            color: AppColor.bgWhite,
+            color: AppColor.mainBlack,
           ),
-          InkWell(
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.pop(context);
             },
@@ -239,7 +240,7 @@ class FeedSharePopups extends StatelessWidget {
               child: Center(
                 child: Text(
                   "取消",
-                  style: TextStyle(fontSize: 17, color: AppColor.black),
+                  style: TextStyle(fontSize: 17, color: AppColor.white),
                 ),
               ),
             ),
