@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 // 根据蓝湖上设计规范内容更新
 class AppColor {
   //主色黄
-  static const mainYellow = Color.fromRGBO(0xFF, 0xC9, 0x4C, 1.0);
+  static const mainYellow = Color.fromRGBO(0xFF, 0xE4, 0x34, 1.0);
 
   //辅色红
   static const mainRed = Color.fromRGBO(0xFF, 0x4C, 0x4C, 1.0);
@@ -27,15 +27,18 @@ class AppColor {
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
   //卡片底色
-  static const bgGrey = Color.fromRGBO(0x3D, 0x3D, 0x3D, 1.0);
+  static const layoutBgGrey = Color.fromRGBO(0x3D, 0x3D, 0x3D, 1.0);
 
-  //分割线
-  static const dividerGrey = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.24);
+  //图片背景
+  static const imageBgGrey = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
 
-  //
+  //分割线 注意该颜色为有透明度的颜色
+  static const dividerWhite24 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.24);
+
+  //文字辅色1 注意该颜色为有透明度的颜色
   static const textWhite60 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.6);
 
-  //
+  //文字辅色2 注意该颜色为有透明度的颜色
   static const textWhite40 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.4);
 
 
@@ -66,7 +69,6 @@ class AppColor {
 
   //不在规范中颜色
   static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
-  static const orange = Color.fromRGBO(0xFF, 0x7F, 0x46, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
   static const bgVip3 = Color.fromRGBO(0x80, 0x80, 0x80, 1.0);

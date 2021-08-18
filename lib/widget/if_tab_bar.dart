@@ -36,7 +36,7 @@ class IFTabBar extends StatefulWidget {
 }
 
 //文字样式
-const tabBarTextStyle = TextStyle(color: AppColor.mainBlack, fontSize: 15, fontWeight: FontWeight.w500);
+const tabBarTextStyle = TextStyle(color: AppColor.mainBlack, fontSize: 12, fontWeight: FontWeight.w500);
 
 class _IFTabBarState extends State<IFTabBar> {
   List<Widget> normalIcons = [];

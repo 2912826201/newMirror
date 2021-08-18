@@ -65,10 +65,10 @@ class UserAvatarImageUtil{
               /// imageUrl的淡入动画的持续时间。
               fadeInDuration: Duration(milliseconds: 0),
               placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
+                color: AppColor.imageBgGrey,
               ),
               errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
+                color: AppColor.imageBgGrey,
               ),
             ),
           ),
@@ -79,7 +79,7 @@ class UserAvatarImageUtil{
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 //这里的边框颜色需要随背景变化
-                border: Border.all(width: 3, color: isTop == 1 ? AppColor.bgWhite : AppColor.white)),
+                border: Border.all(width: 3, color: isTop == 1 ? AppColor.layoutBgGrey : AppColor.mainBlack)),
             child: ClipOval(
               child: CachedNetworkImage(
                 height: 28,
@@ -92,10 +92,10 @@ class UserAvatarImageUtil{
                 /// imageUrl的淡入动画的持续时间。
                 fadeInDuration: Duration(milliseconds: 0),
                 placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
               ),
             ),
@@ -120,10 +120,10 @@ class UserAvatarImageUtil{
         fit: BoxFit.cover,
         fadeInDuration: Duration.zero,
         placeholder: (context, url) => Container(
-          color: AppColor.bgWhite,
+          color: AppColor.imageBgGrey,
         ),
         errorWidget: (context, url, error) => Container(
-          color: AppColor.bgWhite,
+          color: AppColor.imageBgGrey,
         ),
       ),
     );
@@ -194,10 +194,10 @@ class UserAvatarImageUtil{
             fit: BoxFit.cover,
             fadeInDuration: Duration(milliseconds: 0),
             placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.imageBgGrey,
             ),
             errorWidget: (context, url, error) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.imageBgGrey,
             ),
           ),
         ),
