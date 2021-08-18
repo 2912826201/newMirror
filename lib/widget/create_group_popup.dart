@@ -133,7 +133,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
       ),
       height: ScreenUtil.instance.height * 0.75,
       child: Column(
@@ -142,7 +142,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
           Container(
             width: 32,
             height: 4,
-            color: AppColor.bgWhite,
+            color: AppColor.white,
             margin: const EdgeInsets.only(top: 16, bottom: 24),
           ),
           Expanded(
@@ -237,7 +237,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               imageUrl: _friendList[index].avatarUri,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
+                color: AppColor.imageBgGrey,
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.imageBgGrey,
               ),
             ),
           ),
@@ -247,7 +250,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
           Expanded(
             child: Text(
               _friendList[index].nickName,
-              style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+              style: AppStyle.whiteRegular16,
               maxLines: 1,
               softWrap: false,
               overflow: TextOverflow.ellipsis,
@@ -285,11 +288,11 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
       padding: const EdgeInsets.fromLTRB(22, 0, 16, 0),
       alignment: Alignment.centerLeft,
       width: ScreenUtil.instance.screenWidth,
-      color: AppColor.white,
+      color: AppColor.transparent,
       height: 28,
       child: Text(
         _friendList[index].getSuspensionTag(),
-        style: AppStyle.textSecondaryRegular14,
+        style: AppStyle.whiteRegular14,
       ),
     );
   }
@@ -299,7 +302,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
       children: [
         Container(
           height: 32,
-          color: AppColor.bgWhite.withOpacity(0.65),
+          color: AppColor.white.withOpacity(0.1),
           width: ScreenUtil.instance.screenWidthDp - 32,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -307,7 +310,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               SizedBox(
                 width: 9,
               ),
-              AppIcon.getAppIcon(AppIcon.input_search, 24),
+              AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.white),
               Expanded(
                 child: Container(
                   height: 32,
@@ -320,7 +323,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                         hintText: '搜索用户',
-                        hintStyle: AppStyle.textSecondaryRegular16,
+                        hintStyle: AppStyle.whiteRegular16,
                         border: InputBorder.none),
                     inputFormatters: [
                       // WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
@@ -368,20 +371,20 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                 AppIcon.getAppIcon(
                   AppIcon.group_chat_24,
                   24,
-                  color: AppColor.textPrimary1,
+                  color: AppColor.white,
                 ),
                 SizedBox(
                   width: 4,
                 ),
                 Text(
                   "已加入的群聊",
-                  style: AppStyle.textRegular16,
+                  style: AppStyle.whiteRegular16,
                 ),
                 Spacer(),
                 AppIcon.getAppIcon(
                   AppIcon.arrow_right_18,
                   18,
-                  color: AppColor.textHint,
+                  color: AppColor.textWhite40,
                 ),
               ],
             ),
@@ -390,7 +393,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           height: 0.5,
-          color: AppColor.bgWhite,
+          color: AppColor.dividerWhite24,
         ),
         Expanded(
           child: Container(
@@ -405,11 +408,11 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             height: 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(3)),
-              color: _selectedUidList.length > 0 ? AppColor.textPrimary1 : AppColor.bgWhite,
+              color: _selectedUidList.length > 0 ? AppColor.mainYellow : AppColor.mainYellow.withOpacity(0.6),
             ),
             child: Text(
               _selectedUidList.length > 1 ? "发起群聊(${_selectedUidList.length})" : "发起聊天",
-              style: TextStyle(color: AppColor.white, fontSize: 16),
+              style: TextStyle(color: AppColor.mainBlack, fontSize: 16),
             ),
           ),
         ),
@@ -457,7 +460,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               AppIconButton(
                 iconSize: 18,
                 svgName: AppIcon.arrow_left_18,
-                iconColor: AppColor.textHint,
+                iconColor: AppColor.white,
                 buttonHeight: 48,
                 buttonWidth: 50,
                 onTap: () {
@@ -467,16 +470,16 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               Spacer(),
               Text(
                 "已加入的群聊",
-                style: AppStyle.textRegular16,
+                style: AppStyle.whiteRegular16,
               )
             ],
           ),
         ),
-        Container(
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-          height: 0.5,
-          color: AppColor.bgWhite,
-        ),
+        // Container(
+        //   margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        //   height: 0.5,
+        //   color: AppColor.dividerWhite24,
+        // ),
         Expanded(
           child: ListView.builder(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -516,10 +519,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                             imageUrl: avatarList.first,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.imageBgGrey,
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.imageBgGrey,
                             ),
                           ),
                         )
@@ -534,10 +537,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                                   imageUrl: avatarList.first,
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => Container(
-                                    color: AppColor.bgWhite,
+                                    color: AppColor.imageBgGrey,
                                   ),
                                   errorWidget: (context, url, error) => Container(
-                                    color: AppColor.bgWhite,
+                                    color: AppColor.imageBgGrey,
                                   ),
                                 ),
                               ))
@@ -547,7 +550,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                           bottom: 0,
                           child: Container(
                             decoration: BoxDecoration(
-                                shape: BoxShape.circle, border: Border.all(width: 3, color: AppColor.white)),
+                                shape: BoxShape.circle, border: Border.all(width: 3, color: AppColor.layoutBgGrey)),
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 height: 20,
@@ -555,10 +558,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                                 imageUrl: avatarList[1],
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
-                                  color: AppColor.bgWhite,
+                                  color: AppColor.imageBgGrey,
                                 ),
                                 errorWidget: (context, url, error) => Container(
-                                  color: AppColor.bgWhite,
+                                  color: AppColor.imageBgGrey,
                                 ),
                               ),
                             ),
@@ -574,7 +577,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             Expanded(
               child: Text(
                 _groupList[index].modifiedName ?? _groupList[index].name,
-                style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+                style: TextStyle(color: AppColor.white, fontSize: 16),
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
@@ -586,7 +589,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               18,
-              color: AppColor.textHint,
+              color: AppColor.white,
             ),
           ],
         ),

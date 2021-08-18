@@ -648,7 +648,7 @@ class MessageState extends State<MessagePage>
         : Container(
             height: 69,
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            color: conversation.isTop == 1 ? AppColor.bgWhite : AppColor.white,
+            color: conversation.isTop == 1 ? AppColor.layoutBgGrey : AppColor.mainBlack,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
