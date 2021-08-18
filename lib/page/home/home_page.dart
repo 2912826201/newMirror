@@ -545,7 +545,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               Spacer(),
               Container(
                   width: 140,
-                  color: AppColor.white,
+                  // color: AppColor.white,
                   child: Custom.TabBar(
                     controller: controller,
                     tabs: [

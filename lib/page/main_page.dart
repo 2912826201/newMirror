@@ -80,7 +80,6 @@ class MainPageState extends XCState {
     return Scaffold(
         backgroundColor: AppColor.mainYellow,
         // bottomNavigationBar:
-
         body: Stack(
           children: [
             Container(

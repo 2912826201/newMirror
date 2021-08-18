@@ -62,7 +62,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
     return Container(
         key: widget.offsetKey,
         height: 48,
-        color: AppColor.white,
+        // color: AppColor.white,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

@@ -68,7 +68,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
     return Container(
       height: 62,
       width: ScreenUtil.instance.screenWidthDp,
-      color: AppColor.white,
+      // color: AppColor.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
