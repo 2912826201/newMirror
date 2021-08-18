@@ -683,7 +683,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                             },
                             separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                               width: 4,
-                              color: const Color(0xFFFFFFFF),
+                              color: AppColor.mainYellow,
                             ),
                             itemCount: imageCount,
                           ),
