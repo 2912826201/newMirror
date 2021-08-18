@@ -14,7 +14,7 @@ Future openMoreBottomSheet({
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.layoutBgGrey,
       // 圆角
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -85,14 +85,14 @@ class BottomopupState extends State<BottomPopup> {
     var cancelContainer = Container(
         height: itemHeight + 12 + bottomPadding,
         decoration: const BoxDecoration(
-          color: AppColor.white, // 底色
+          color: AppColor.layoutBgGrey, // 底色
         ),
         child: Column(
           children: [
             // 取消上面的分割块
             Container(
               height: 8,
-              color: AppColor.bgWhite,
+              color: AppColor.mainBlack,
             ),
             Container(
               height: 50,
@@ -109,7 +109,7 @@ class BottomopupState extends State<BottomPopup> {
                 child: Center(
                   child: const Text(
                     "取消",
-                    style: TextStyle(color: AppColor.black, fontSize: 17),
+                    style: TextStyle(color: AppColor.white, fontSize: 17),
                   ),
                 ),
               ),
@@ -149,7 +149,7 @@ class BottomopupState extends State<BottomPopup> {
     var contentText = Text(
       text,
       style: const TextStyle(
-          fontWeight: FontWeight.normal, decoration: TextDecoration.none, color: Color(0xFF333333), fontSize: 18),
+          fontWeight: FontWeight.normal, decoration: TextDecoration.none, color: AppColor.white, fontSize: 17),
     );
 
     var decoration;
@@ -168,7 +168,7 @@ class BottomopupState extends State<BottomPopup> {
     // 除开取只有一个时
     if (listLength == 1) {
       decoration = const BoxDecoration(
-        color: AppColor.white, // 底色
+        color: AppColor.layoutBgGrey, // 底色
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
@@ -178,13 +178,13 @@ class BottomopupState extends State<BottomPopup> {
       // 除开取消的最后一个
       if (index == listLength - 1) {
         decoration = const BoxDecoration(
-          border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-          color: AppColor.white, // 底色
+          border: Border(top: BorderSide(width: 0.5, color:AppColor.mainBlack)),
+          color: AppColor.layoutBgGrey, // 底色
         );
       } else if (index >= 1) {
         decoration = const BoxDecoration(
-          color: AppColor.white, // 底色
-          border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+          color: AppColor.layoutBgGrey, // 底色
+          border: Border(top: BorderSide(width: 0.5, color: AppColor.mainBlack)),
         );
       }
     }
