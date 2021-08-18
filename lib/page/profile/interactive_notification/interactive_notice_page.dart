@@ -353,7 +353,11 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   List<TextSpan> _atText(BuildContext context) {
     var textSpanList = <TextSpan>[];
     if ((atUserList != null && atUserList.length > 0)) {
-      textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment, atUsers: atUserList));
+      try{
+        textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment, atUsers: atUserList));
+      }catch(e){
+        print('------------------------------$e');
+      }
     } else {
       textSpanList.add(TextSpan(
         text: comment,
