@@ -56,7 +56,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
         offstage: !isShow,
         child: GestureDetector(
           child: Container(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withOpacity(0.1),
             height: double.infinity,
             width: double.infinity,
             alignment: Alignment.bottomCenter,
@@ -102,7 +102,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
-              color: AppColor.white,
+              color: AppColor.layoutBgGrey,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6)),
             ),
             child: listViewUi(),
@@ -143,7 +143,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
   //每一个item
   Widget item(ChatGroupUserModel groupUserModel, int index) {
     return Material(
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         child: new InkWell(
           child: Container(
             height: 48,
@@ -151,16 +151,16 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                getUserImageWidget(groupUserModel.avatarUri,groupUserModel.uid.toString(), 36, 36),
+                getUserImageWidget(groupUserModel.avatarUri, groupUserModel.uid.toString(), 36, 36),
                 SizedBox(width: 12),
                 Text(
                   groupUserModel.groupNickName,
-                  style: AppStyle.textRegular16,
+                  style: AppStyle.whiteRegular16,
                 )
               ],
             ),
           ),
-          splashColor: AppColor.textHint,
+          splashColor: AppColor.layoutBgGrey.withOpacity(0.8),
           onTap: () {
             if (widget.onItemClickListener != null) {
               widget.onItemClickListener(groupUserModel, index);

@@ -73,7 +73,7 @@ class _AlertMsgState extends State<AlertMsg> {
     colorArray.clear();
 
     if (widget.recallNotificationMessage != null) {
-      colorArray.add(AppColor.textSecondary);
+      colorArray.add(AppColor.textWhite60);
       colorArray.add(AppColor.mainBlue);
 
       //撤回消息
@@ -117,16 +117,16 @@ class _AlertMsgState extends State<AlertMsg> {
       textArray.clear();
     } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
       //时间提示
-      colorArray.add(AppColor.textSecondary);
-      colorArray.add(AppColor.textSecondary);
+      colorArray.add(AppColor.textWhite60);
+      colorArray.add(AppColor.textWhite60);
 
       textArray.add(DateUtil.formatMessageAlertTime(widget.map["data"]));
       isChangColorArray.add(false);
     } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT) {
       //文字提示
 
-      colorArray.add(AppColor.textSecondary);
-      colorArray.add(AppColor.textSecondary);
+      colorArray.add(AppColor.textWhite60);
+      colorArray.add(AppColor.textWhite60);
 
       textArray.add(widget.map["data"]);
       isChangColorArray.add(false);
@@ -186,8 +186,8 @@ class _AlertMsgState extends State<AlertMsg> {
 
   //修改群名
   void updateGroupName(Map<String, dynamic> mapGroupModel, BuildContext context) {
-    colorArray.add(AppColor.textSecondary);
-    colorArray.add(AppColor.textPrimary1);
+    colorArray.add(AppColor.textWhite60);
+    colorArray.add(AppColor.white);
 
     if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
       textArray.add("你 ");
@@ -206,8 +206,8 @@ class _AlertMsgState extends State<AlertMsg> {
 
   //判断是加入群聊还是退出群聊
   void getGroupText(Map<String, dynamic> mapGroupModel, BuildContext context) {
-    colorArray.add(AppColor.textSecondary);
-    colorArray.add(AppColor.textPrimary1);
+    colorArray.add(AppColor.textWhite60);
+    colorArray.add(AppColor.white);
 
     int userCount = 0;
 
@@ -313,8 +313,8 @@ class _AlertMsgState extends State<AlertMsg> {
 
   //扫码进入群聊
   void getGroupEntryByQRCode(Map<String, dynamic> mapGroupModel, BuildContext context) {
-    colorArray.add(AppColor.textSecondary);
-    colorArray.add(AppColor.textPrimary1);
+    colorArray.add(AppColor.textWhite60);
+    colorArray.add(AppColor.white);
 
     List<dynamic> users = mapGroupModel["users"];
     if (users == null || users.length < 1) {
@@ -363,7 +363,7 @@ class _AlertMsgState extends State<AlertMsg> {
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+          style: TextStyle(fontSize: 14, color: AppColor.textWhite40),
           children: getMessage(),
         ),
       ),

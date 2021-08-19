@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
 import 'package:mirror/config/runtime_properties.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -278,15 +279,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       handleStatusBarTap: _animateToIndex,
       body: MessageInputBody(
         onTap: () => _messageInputBodyClick(),
-        decoration: BoxDecoration(color: AppColor.bgWhite),
+        decoration: BoxDecoration(color: AppColor.mainBlack),
         child: Column(children: [
+          //关注条
           topAttentionUiWidget,
+          //消息内容
           Expanded(
             child: SizedBox(
               child: Stack(
                 fit: StackFit.expand,
                 children: [
+                  //消息内容
                   getChatDetailsBody(),
+                  //是否消失@列表
                   (conversation.type != GROUP_TYPE)
                       ? Container()
                       : ChatAtUserList(
@@ -298,7 +303,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
               ),
             ),
           ),
+          //消息输入框
           if (conversation.getType() != RCConversationType.System) getMessageInputBar(),
+          //底部表情面板
           if (conversation.getType() != RCConversationType.System)
             ChatBottomSettingBox(
               key: bottomSettingChildKey,
@@ -432,7 +439,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //输入框bar内的edit
   Widget _editWidget() {
-    return ConstrainedBox(
+    return Container(
+      padding: const EdgeInsets.only(top: 6, bottom: 8),
       constraints: BoxConstraints(
         maxHeight: 80.0,
         minHeight: 16.0,
@@ -449,12 +457,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         maxLines: null,
         enableInteractiveSelection: true,
         // 光标颜色
-        cursorColor: Color.fromRGBO(253, 137, 140, 1),
+        cursorColor: AppColor.textWhite60,
         scrollPadding: EdgeInsets.all(0),
-        style: TextStyle(
-          fontSize: 16,
-          color: AppColor.textPrimary1,
-        ),
+        style: AppStyle.whiteRegular14,
         //内容改变的回调
         onChanged: _changTextLen,
         textInputAction: TextInputAction.send,
@@ -478,10 +483,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           // 提示文本
           hintText: "说点什么吧...",
           // 提示文本样式
-          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+          hintStyle: AppStyle.text1Regular14,
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
-          contentPadding: EdgeInsets.only(top: 6, bottom: 4, left: 16, right: 16),
+          contentPadding: EdgeInsets.only(left: 16, right: 16),
         ),
 
         rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),

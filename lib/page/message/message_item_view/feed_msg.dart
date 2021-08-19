@@ -130,7 +130,7 @@ class FeedMsg extends StatelessWidget {
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -180,7 +180,7 @@ class FeedMsg extends StatelessWidget {
       height: _getFeedHeight(),
       margin: const EdgeInsets.only(top: 2),
       decoration: BoxDecoration(
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         borderRadius: BorderRadius.circular(3),
       ),
       child: Column(
@@ -222,10 +222,10 @@ class FeedMsg extends StatelessWidget {
                   imageUrl: showUrl == null ? "" : showUrl,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.imageBgGrey,
                   ),
                   errorWidget: (context, url, error) => Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.imageBgGrey,
                   ),
                 ),
               ),
@@ -313,13 +313,13 @@ class FeedMsg extends StatelessWidget {
                       children: [
                         Container(
                           child: Text(homeFeedMode.name ?? "",
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textMedium14),
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.whiteMedium14),
                           constraints: BoxConstraints(
                             maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),
                         ),
                         Container(
-                          child: Text(" 的动态", style: AppStyle.textMedium14),
+                          child: Text(" 的动态", style: AppStyle.whiteMedium14),
                         )
                       ],
                     ),
@@ -335,7 +335,7 @@ class FeedMsg extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     child: Text(homeFeedMode.content,
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.textRegular16),
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.whiteRegular16),
                   ),
                 ),
               ),

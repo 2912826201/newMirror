@@ -41,12 +41,16 @@ class AppColor {
   //文字辅色2 注意该颜色为有透明度的颜色
   static const textWhite40 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.4);
 
+//文字辅色2 注意该颜色为有透明度的颜色
+  static const textWhite85 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.85);
+
 
 
   //=====================================下面是旧的颜色 需要逐步替换掉==========================================
 
   //N3 背景
   static const bgBlack = Color.fromRGBO(0x16, 0x16, 0x16, 1.0);
+  static const bgTestBlack = Color.fromRGBO(0x29, 0x29, 0x29, 1.0);
 
   //N2 背景及分割线
   static const bgWhite = Color.fromRGBO(0xF3, 0xF3, 0xF3, 1.0);

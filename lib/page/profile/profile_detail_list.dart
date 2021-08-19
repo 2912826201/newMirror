@@ -205,7 +205,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     super.build(context);
     Widget child = Container(
       width: ScreenUtil.instance.screenWidthDp,
-      color: AppColor.white,
+      color: AppColor.mainBlack,
 
       ///刷新控件
       child: ScrollConfiguration(

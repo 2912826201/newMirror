@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/string_util.dart';
@@ -65,10 +67,11 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
         child: ComMomButton(
           text: '发送',
           height: 32,
-          style: TextStyle(color: Colors.white),
+          color: AppColor.mainBlack,
+          style: AppStyle.whiteRegular12,
           width: 50.0,
           margin: EdgeInsets.only(left: 6, right: 16),
-          radius: 4.0,
+          radius: 16.0,
           onTap: () {
             if (widget.onTap != null) {
               widget.onTap();
@@ -85,6 +88,7 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
               widget.moreTap();
             }
           },
+          iconColor: AppColor.textWhite40,
           iconSize: 24,
           buttonWidth: 36,
           buttonHeight: 36,

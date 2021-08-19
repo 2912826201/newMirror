@@ -118,7 +118,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
     return Scaffold(
       appBar: null,
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       body: Listener(
         // onNotification:notificationListener,
         onPointerDown: (PointerDownEvent event) {
@@ -173,18 +173,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             children: [
               if (AppConfig.needShowTraining)
                 _secondRecordData("训练记录", context.watch<ProfileNotifier>().trainingSeconds,
-                    AppIcon.getAppIcon(AppIcon.profile_record, 18), weightBg),
+                    AppIcon.getAppIcon(AppIcon.profile_record, 18), weightBg,"训练记录"),
               if (AppConfig.needShowTraining)
                 SizedBox(
                   width: 16,
                 ),
               _secondRecordData("体重记录", context.watch<ProfileNotifier>().weight,
-                  AppIcon.getAppIcon(AppIcon.profile_weight, 18), weightBg),
+                  AppIcon.getAppIcon(AppIcon.profile_weight, 18), weightBg,"当前体重"),
               SizedBox(
                 width: 16,
               ),
               _secondRecordData("健身相册", context.watch<ProfileNotifier>().albumNum,
-                  AppIcon.getAppIcon(AppIcon.profile_gallery, 18), photoAlbumBg),
+                  AppIcon.getAppIcon(AppIcon.profile_gallery, 18), photoAlbumBg,"相册数目"),
             ],
           ),
         ),
@@ -192,15 +192,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           height: 36,
         ),
         if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_scan, 24), "扫一扫"),
-        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24), "关于"),
-        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24), "意见反馈"),
-        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_setting, 24), "设置"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_scan, 24,color: AppColor.white), "扫一扫"),
+        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24,color: AppColor.white), "关于"),
+        if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24,color: AppColor.white), "意见反馈"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_setting, 24,color: AppColor.white), "设置"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
-        if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "测试"),
+        if (AppConfig.env == Env.DEV) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24,color: AppColor.white), "测试"),
 
         StreamBuilder<double>(
             initialData: 0,
@@ -219,37 +219,48 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  Widget _secondRecordData(String title, num number, Widget icons, String bgUrl) {
+  Widget _secondRecordData(String title, num number, Widget icons, String bgUrl,String unit) {
     double boxWidth;
     boxWidth = (width - 16 * 3) / 2;
     if (AppConfig.needShowTraining) boxWidth = (width - 16 * 4) / 3;
     return InkWell(
+      highlightColor: AppColor.transparent,
+      splashColor: AppColor.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "$title",
-            style: AppStyle.textMedium14,
+            style: AppStyle.whiteMedium14,
           ),
           SizedBox(
             height: 7.5,
           ),
-          Stack(
+            Stack(
             children: [
               Container(
                 height: (width - 65) / 3,
                 width: boxWidth,
-                child: Image.asset(
+                decoration: BoxDecoration(
+                    color: AppColor.bgTestBlack,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    border: Border.all(width: 0)
+                ),
+               /*Image.asset(
                   bgUrl,
                   fit: BoxFit.cover,
                   height: (width - 65) / 3,
                   width: boxWidth,
-                ),
+                )*/
               ),
               Container(
                 height: (width - 65) / 3,
                 width: boxWidth,
-                padding: AppConfig.needShowTraining ? EdgeInsets.all(0) : EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    border: Border.all(width: 0)
+                ),
+                padding: EdgeInsets.only(left: 16,right: 16,top: 16),
                 child: Column(
                   crossAxisAlignment: AppConfig.needShowTraining ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                   children: [
@@ -259,19 +270,23 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       ),
                     AppConfig.needShowTraining
                         ? icons
-                        : Text(
-                            number != 0 && number != null ? "$number" : "--",
-                            style: AppStyle.textRegular14,
-                          ),
+                        : Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                    Text(
+                         number != 0 && number != null ? "$number" : "--",
+                          style: AppStyle.whiteRegular40,),
+                      if(title=="体重记录") Text("kg",style: AppStyle.whiteMedium14,)
+                    ],),
                     SizedBox(
-                      height: AppConfig.needShowTraining ? 6.5 : 31,
+                      height: AppConfig.needShowTraining ? 6.5 : 7.5,
                     ),
                     AppConfig.needShowTraining
                         ? Text(
                             number != 0 && number != null ? "$number" : "--",
-                            style: AppStyle.textRegular14,
+                            style: AppStyle.whiteMedium14,
                           )
-                        : icons,
+                        : Text(unit,style: AppStyle.text1Regular12,)
                   ],
                 ),
               )
@@ -305,7 +320,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         initialData: 0,
         stream: topStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-          return AnimatedContainer(
+        /*  return AnimatedContainer(
             duration: Duration(milliseconds: getAnimateOffset(snapshot)),
             curve: Curves.linear,
             height: gaussianBlurHeight + 72 + snapshot.data,
@@ -344,8 +359,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                             width: width,
                             height: gaussianBlurHeight + snapshot.data,
                             color: AppColor.white.withOpacity(0.6),
-                          ))),
-                  AnimatedContainer(
+                          ))),*/
+                return  AnimatedContainer(
                       duration: Duration(milliseconds: getAnimateOffset(snapshot)),
                       curve: Curves.linear,
                       height: gaussianBlurHeight + 72 + snapshot.data,
@@ -355,9 +370,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         clipBehavior: Clip.hardEdge,
                         // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
                         decoration: BoxDecoration(),
-                        child: BackdropFilter(
+                        child: /*BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-                          child: Column(
+                          child:*/ Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               SizedBox(
@@ -376,12 +391,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                               _userFollowRow(),
                             ],
                           ),
-                        ),
-                      ))
-                ],
+                        /*),*/
+                      ));
+               /* ],
               ),
             ),
-          );
+          );*/
         });
   }
 
@@ -401,7 +416,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               ),
               Text(
                 text,
-                style: AppStyle.textRegular16,
+                style: AppStyle.whiteRegular16,
               ),
               Spacer(),
               text == "关于" && haveNewVersion
@@ -426,7 +441,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_18,
                 18,
-                color: AppColor.textHint,
+                color: AppColor.textWhite60,
               ),
             ],
           ),
@@ -441,6 +456,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   //头像昵称
   Widget _getUserImage() {
     return InkWell(
+      highlightColor: AppColor.transparent,
+      splashColor: AppColor.transparent,
       onTap: () {
         jumpToUserProfilePage(context, context.read<ProfileNotifier>().profile.uid,
             avatarUrl: context.read<ProfileNotifier>().profile.avatarUri,
@@ -460,7 +477,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               Expanded(
                 child: Text(
                   context.watch<ProfileNotifier>().profile.nickName ?? "",
-                  style: AppStyle.textMedium18,
+                  style: AppStyle.whiteMedium18,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -507,15 +524,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这是头像+
   Widget _imgAvatar() {
-    return Container(
+    return ClipOval(
+        child:Container(
       width: userAvatarHeight,
       height: userAvatarHeight,
-      child: Stack(
-        children: [
-          Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColor.white,width:2),
+        color: AppColor.white
+      ),
+      child: Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
             print("头像地址:$avatar");
             return ClipOval(
-              child: CachedNetworkImage(
+              child:  CachedNetworkImage(
                 useOldImageOnUrlChange: true,
                 height: userAvatarHeight,
                 width: userAvatarHeight,
@@ -529,14 +549,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 errorWidget: (context, url, error) => Container(
                   color: AppColor.bgWhite,
                 ),
-              ),
-            );
+              ),);
           }, selector: (context, notifier) {
             return notifier.profile.avatarUri;
           }),
-        ],
-      ),
-    );
+        ));
   }
 
   ///这里是关注粉丝动态
@@ -560,7 +577,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   width: text == "粉丝" ? fansCountSize.width + 6 : null,
                   child: Text(
                     number,
-                    style: AppStyle.textMedium18,
+                    style: AppStyle.whiteMedium18,
                   ),
                 ),
                 Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
@@ -584,7 +601,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             ),
             Text(
               text,
-              style: AppStyle.textRegular12,
+              style: AppStyle.text1Regular12,
             ),
           ],
         ),

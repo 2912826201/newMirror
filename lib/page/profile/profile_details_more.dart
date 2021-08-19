@@ -46,26 +46,26 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
         Navigator.pop(this.context);
       },
     ),
-        body: Container(height: height, width: width, color: AppColor.white, child: _columnLayOut()));
+        body: Container(height: height, width: width, color: AppColor.mainBlack,padding:const EdgeInsets.only(left: 16, right: 16), child: _columnLayOut()));
   }
 
   Widget _columnLayOut() {
     return Column(
       children: [
-        Container(
+       /* Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite.withOpacity(0.65),
-        ),
-        !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
+          color: AppColor.dividerWhite24.withOpacity(0.65),
+        ),*/
+        /*!context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? Container(
                 width: width,
                 height: 12,
-                color: AppColor.bgWhite.withOpacity(0.65),
+                color: AppColor.dividerWhite24.withOpacity(0.65),
               )
-            : Container(),
+            : Container(),*/
         InkWell(
-          child: _itemSelect( AppStyle.textRegular16, "举报"),
+          child: _itemSelect( AppStyle.whiteRegular16, "举报"),
           onTap: () {
             onClickListener("举报");
           },
@@ -74,7 +74,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
           padding: const EdgeInsets.only(left: 16, right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite.withOpacity(0.65),
+          color: AppColor.dividerWhite24,
         ),
         InkWell(
           onTap: () {
@@ -84,14 +84,14 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
               onClickListener("拉黑");
             }
           },
-          child: _itemSelect(AppStyle.textRegular16, context.watch<UserInteractiveNotifier>().value
+          child: _itemSelect(AppStyle.whiteRegular16, context.watch<UserInteractiveNotifier>().value
               .profileUiChangeModel[widget.userId].inMyBlack ? "取消拉黑" : "拉黑"),
         ),
         !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
             ? Container(
                 width: width,
-                height: 12,
-                color: AppColor.bgWhite.withOpacity(0.65),
+                height: 0.5,
+                color: AppColor.dividerWhite24,
               )
             : Container(),
         !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow
@@ -99,15 +99,15 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
                 onTap: () {
                  onClickListener("取消关注");
                 },
-                child: _itemSelect( AppStyle.redRegular16, "取消关注"),
+                child: Container(margin:EdgeInsets.only(top: 12),child: _itemSelect( AppStyle.redRegular16, "取消关注"),),
               )
             : Container(),
-        Container(
+       /* Container(
           padding: EdgeInsets.only(left: 16, right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite.withOpacity(0.65),
-        ),
+          color: AppColor.dividerWhite24.withOpacity(0.65),
+        ),*/
       ],
     );
   }
@@ -142,7 +142,6 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
     return Container(
       height: 48,
       width: width,
-      padding:const EdgeInsets.only(left: 16, right: 16),
       alignment: Alignment.centerLeft,
       child: Text(
         text,

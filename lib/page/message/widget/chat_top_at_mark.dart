@@ -45,7 +45,7 @@ class ChatTopAtMarkState extends State<ChatTopAtMark> {
         height: 44,
         width: 114,
         decoration: BoxDecoration(
-          color: AppColor.white,
+          color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(22), bottomLeft: Radius.circular(22)),
         ),
         child: Row(

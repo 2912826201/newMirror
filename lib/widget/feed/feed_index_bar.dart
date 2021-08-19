@@ -66,7 +66,7 @@ class _IndexBarState extends State<IndexBar> {
 //    2、右侧bar显示全部字母
     _index_word.addAll(INDEX_WORDS);
     for (var i = 0; i < _index_word.length; i++) {
-      _index_color.add(AppColor.textSecondary);
+      _index_color.add(AppColor.textWhite40);
     }
   }
 
