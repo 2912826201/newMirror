@@ -298,8 +298,9 @@ class ClickTitleAndImageBtn extends StatelessWidget {
   }
 }
 
-//标准的红色按钮
-class CustomRedButton extends StatefulWidget {
+//FIXME 暂时替换了颜色 可能还需要调整
+//标准的黄色按钮
+class CustomYellowButton extends StatefulWidget {
   //正常状态
   static const int buttonStateNormal = 0;
 
@@ -312,7 +313,7 @@ class CustomRedButton extends StatefulWidget {
   //禁用状态
   static const int buttonStateInvalid = 3;
 
-  CustomRedButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = false}) : super(key: key);
+  CustomYellowButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = false}) : super(key: key);
 
   final String text;
   final int buttonState;
@@ -320,10 +321,10 @@ class CustomRedButton extends StatefulWidget {
   final bool isDarkBackground;
 
   @override
-  _CustomRedButtonState createState() => _CustomRedButtonState();
+  _CustomYellowButtonState createState() => _CustomYellowButtonState();
 }
 
-class _CustomRedButtonState extends State<CustomRedButton> {
+class _CustomYellowButtonState extends State<CustomYellowButton> {
   bool isPressed = false;
 
   @override
@@ -333,33 +334,33 @@ class _CustomRedButtonState extends State<CustomRedButton> {
       child: Container(
         alignment: Alignment.center,
         height: 28,
-        width: widget.buttonState == CustomRedButton.buttonStateLoading ? 82 : 60,
+        width: widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
         decoration: BoxDecoration(
-            color: widget.buttonState == CustomRedButton.buttonStateNormal
+            color: widget.buttonState == CustomYellowButton.buttonStateNormal
                 ? isPressed
                     ? AppColor.mainYellow.withOpacity(0.56)
                     : AppColor.mainYellow
-                : widget.buttonState == CustomRedButton.buttonStateDisable
+                : widget.buttonState == CustomYellowButton.buttonStateDisable
                     ? widget.isDarkBackground
                         ? AppColor.mainYellow.withOpacity(0.24)
                         : AppColor.mainYellow.withOpacity(0.16)
-                    : widget.buttonState == CustomRedButton.buttonStateLoading
+                    : widget.buttonState == CustomYellowButton.buttonStateLoading
                         ? AppColor.mainYellow
                         : AppColor.textHint,
             borderRadius: BorderRadius.circular(14)),
         child: Row(
           children: [
             Spacer(),
-            widget.buttonState == CustomRedButton.buttonStateLoading
+            widget.buttonState == CustomYellowButton.buttonStateLoading
                 ? Container(
                     height: 17,
                     width: 17,
                     child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
+                        valueColor: AlwaysStoppedAnimation(AppColor.white),
                         backgroundColor: AppColor.transparent,
                         strokeWidth: 1.5))
                 : Container(),
-            widget.buttonState == CustomRedButton.buttonStateLoading
+            widget.buttonState == CustomYellowButton.buttonStateLoading
                 ? SizedBox(
                     width: 4.5,
                   )
@@ -368,15 +369,15 @@ class _CustomRedButtonState extends State<CustomRedButton> {
               widget.text,
               style: TextStyle(
                   fontSize: 14,
-                  color: widget.buttonState == CustomRedButton.buttonStateNormal
+                  color: widget.buttonState == CustomYellowButton.buttonStateNormal
                       ? isPressed
                           ? AppColor.mainBlack.withOpacity(0.56)
                           : AppColor.mainBlack
-                      : widget.buttonState == CustomRedButton.buttonStateDisable
+                      : widget.buttonState == CustomYellowButton.buttonStateDisable
                           ? widget.isDarkBackground
                               ? AppColor.mainBlack.withOpacity(0.24)
                               : AppColor.mainBlack.withOpacity(0.16)
-                          : widget.buttonState == CustomRedButton.buttonStateLoading
+                          : widget.buttonState == CustomYellowButton.buttonStateLoading
                               ? AppColor.mainBlack
                               : AppColor.mainBlack),
             ),
@@ -385,28 +386,28 @@ class _CustomRedButtonState extends State<CustomRedButton> {
         ),
       ),
       onTapDown: (details) {
-        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
           setState(() {
             isPressed = true;
           });
         }
       },
       onTapUp: (details) {
-        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
           setState(() {
             isPressed = false;
           });
         }
       },
       onTapCancel: () {
-        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
           setState(() {
             isPressed = false;
           });
         }
       },
       onTap: () {
-        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
           widget.onTap();
         }
       },

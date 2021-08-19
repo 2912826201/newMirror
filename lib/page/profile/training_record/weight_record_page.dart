@@ -50,6 +50,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   //判断该显示什么ui
   Widget getBodyUi() {
     return Container(
+      color: AppColor.mainBlack,
       child: Stack(
         children: [
           ClipRRect(
@@ -73,13 +74,13 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           Positioned(
             child: GestureDetector(
               child: Container(
-                color: AppColor.textPrimary2,
+                color: AppColor.layoutBgGrey,
                 height: 48,
                 width: MediaQuery.of(context).size.width,
                 alignment: Alignment.center,
                 child: Text(
                   "记录体重",
-                  style: TextStyle(fontSize: 16, color: AppColor.white),
+                  style: AppStyle.whiteRegular16,
                 ),
               ),
               onTap: showAppDialogSaveWeight,
@@ -89,9 +90,12 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           Positioned(
             child: GestureDetector(
               child: Container(
-                color: AppColor.textPrimary2,
+                color: AppColor.layoutBgGrey,
                 height: ScreenUtil.instance.bottomBarHeight,
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 alignment: Alignment.center,
               ),
               onTap: showAppDialogSaveWeight,
@@ -158,19 +162,22 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               children: [
                 Text(
                   date,
-                  style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                  style: AppStyle.text1Regular14,
                 ),
                 Text(
                   "${weightDataModel.recordList[index].weight} kg",
-                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.w500),
+                  style: AppStyle.whiteMedium18,
                 ),
               ],
             ),
           ),
           Container(
             height: 1,
-            width: MediaQuery.of(context).size.width,
-            color: AppColor.bgWhite,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            color: AppColor.transparent,
           ),
         ],
       ),
@@ -186,7 +193,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.centerLeft,
           child:
-              Text("体重记录", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.w500)),
+          Text("体重记录", style: AppStyle.whiteRegular16),
         ),
       ),
     );
@@ -196,7 +203,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     return SliverToBoxAdapter(
       child: Container(
         height: height,
-        color: AppColor.bgWhite,
+        color: AppColor.transparent,
       ),
     );
   }
@@ -213,11 +220,11 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                 SizedBox(
                   width: 16,
                 ),
-                Text("目标体重", style: AppStyle.textMedium16),
+                Text("目标体重", style: AppStyle.whiteRegular16),
                 Expanded(child: SizedBox()),
                 Text(
                   getTargetWeight() < 1 ? "未设置" : getTargetWeight().toString() + "kg",
-                  style: AppStyle.textSecondaryRegular16,
+                  style: AppStyle.text1Regular16,
                 ),
                 SizedBox(
                   width: 17,
@@ -229,7 +236,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                   child: AppIcon.getAppIcon(
                     AppIcon.arrow_right_16,
                     16,
-                    color: AppColor.textHint,
+                    color: AppColor.textWhite40,
                   ),
                 ),
                 SizedBox(
@@ -329,16 +336,17 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     controller: _numberController,
+                    style: AppStyle.whiteRegular18,
                     inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
                       // hintText: userWeight > 0.0 ? userWeight.toString() : "",
                       hintText: "",
-                      labelStyle: TextStyle(color: Color(0x99000000)),
+                      labelStyle: TextStyle(color: AppColor.dividerWhite24),
                       hintMaxLines: 1,
                       // 主要添加以下代码
                       enabledBorder: new UnderlineInputBorder(
                         // 不是焦点的时候颜色
-                        borderSide: BorderSide(color: Color(0x19000000)),
+                        borderSide: BorderSide(color: AppColor.dividerWhite24),
                       ),
                     ),
                   ),
@@ -347,7 +355,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: AppStyle.textSecondaryRegular16,
+                style: AppStyle.text1Regular16,
               ),
             ],
           ),
@@ -390,14 +398,15 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     controller: _numberController,
+                    style: AppStyle.whiteRegular18,
                     inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Color(0x99000000)),
+                      labelStyle: TextStyle(color: AppColor.dividerWhite24),
                       hintMaxLines: 1,
                       // 主要添加以下代码
                       enabledBorder: new UnderlineInputBorder(
                         // 不是焦点的时候颜色
-                        borderSide: BorderSide(color: Color(0x19000000)),
+                        borderSide: BorderSide(color: AppColor.dividerWhite24),
                       ),
                     ),
                   ),
@@ -406,7 +415,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
               SizedBox(width: 4),
               Text(
                 "KG",
-                style: AppStyle.textSecondaryRegular16,
+                style: AppStyle.text1Regular16,
               ),
             ],
           ),

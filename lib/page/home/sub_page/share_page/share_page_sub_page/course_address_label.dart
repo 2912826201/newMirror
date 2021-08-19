@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -98,9 +99,9 @@ class CourseAddressLabel extends StatelessWidget {
       margin: EdgeInsets.only(left: index != 0 ? 12 : 0),
       padding: const EdgeInsets.only(top: 3.5, bottom: 3.5),
       width: getBgWidth(),
-      decoration: const BoxDecoration(
+      decoration:  BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(12)),
-        color: Color.fromRGBO(242, 242, 242, 1),
+        color:AppColor.white.withOpacity(0.1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -109,7 +110,7 @@ class CourseAddressLabel extends StatelessWidget {
             margin: const EdgeInsets.only(left: 8),
             child: tags[index].type == feed_tag_type_location
                 ?
-            AppIcon.getAppIcon(AppIcon.tag_location, 16)
+            AppIcon.getAppIcon(AppIcon.tag_location, 16,color: AppColor.white)
                 : tags[index].type == feed_tag_type_course
                     ? AppIcon.getAppIcon(AppIcon.tag_course_black, 16)
                     : Container(
@@ -120,7 +121,7 @@ class CourseAddressLabel extends StatelessWidget {
             width: getTextWidth(),
             child: Text(
               interceptText(tags[index].text),
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12,color: AppColor.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

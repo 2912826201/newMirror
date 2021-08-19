@@ -676,14 +676,14 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                                 width: getDotsSize(snapshot.data, index).width,
                                 decoration: BoxDecoration(
                                     color: snapshot.data == index
-                                        ? AppColor.black
-                                        : AppColor.textPrimary1.withOpacity(0.12),
+                                        ? AppColor.bgWhite
+                                        : AppColor.layoutBgGrey,
                                     shape: BoxShape.circle),
                               );
                             },
                             separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                               width: 4,
-                              color: const Color(0xFFFFFFFF),
+                              color: AppColor.mainBlack,
                             ),
                             itemCount: imageCount,
                           ),

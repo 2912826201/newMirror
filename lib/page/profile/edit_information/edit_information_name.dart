@@ -89,11 +89,10 @@ class _EditInformationNameState extends State<EditInformationName> {
         titleString: widget.title ?? "编辑昵称",
         actions: [
           Container(
-            padding:
-                const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+            child: CustomYellowButton(
               "确定",
-              CustomRedButton.buttonStateNormal,
+              CustomYellowButton.buttonStateNormal,
               () {
                 _commentFocus.unfocus();
                 if (_editText.isEmpty) {

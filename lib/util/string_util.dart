@@ -655,7 +655,7 @@ class StringUtil {
           },
         style: TextStyle(
           fontSize: 14,
-          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
+          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.white,
         ),
       ));
     }

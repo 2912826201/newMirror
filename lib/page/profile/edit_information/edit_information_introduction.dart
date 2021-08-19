@@ -86,9 +86,9 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             Container(
               padding:
                   const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-              child: CustomRedButton(
+              child: CustomYellowButton(
                 "确定",
-                CustomRedButton.buttonStateNormal,
+                CustomYellowButton.buttonStateNormal,
                 () {
                   _commentFocus.unfocus();
                   if (editText.length == 0) {

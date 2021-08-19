@@ -520,7 +520,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               ),
               CustomAppBarIconButton(
                   svgName: AppIcon.nav_camera,
-                  iconColor: AppColor.black,
+                  iconColor: AppColor.white,
                   onTap: () {
                     print("${FluroRouter.appRouter.hashCode}");
                     if (postprogressModel != null && postprogressModel.postFeedModel != null) {
@@ -561,12 +561,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                       fontSize: 17.5,
                       fontWeight: FontWeight.w600,
                     ),
-                    labelColor: Colors.black,
+                    labelColor: AppColor.white,
                     unselectedLabelStyle: const TextStyle(fontSize: 15.5),
                     indicator: const RoundUnderlineTabIndicator(
                       borderSide: const BorderSide(
                         width: 3,
-                        color: Color.fromRGBO(253, 137, 140, 1),
+                        color: AppColor.white,
+                        // Color.fromRGBO(253, 137, 140, 1),
                       ),
                       insets: EdgeInsets.only(bottom: -6),
                       wantWidth: 16,
@@ -582,7 +583,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
               Spacer(),
               CustomAppBarIconButton(
                   svgName: AppIcon.nav_search,
-                  iconColor: AppColor.black,
+                  iconColor: AppColor.white,
                   onTap: () {
                     AppRouter.navigateSearchPage(context);
                   }),

@@ -64,7 +64,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
         height: widget.isUnderline ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
         decoration: BoxDecoration(
-          // color: AppColor.white,
+          color: AppColor.mainBlack,
           border: Border(top: BorderSide(width: widget.isUnderline ? 0.5 : 0.000000001, color: Color(0xffe5e5e5))),
         ),
         // child: Center(
@@ -118,10 +118,10 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 alignment: const Alignment(-1, 0),
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(14)),
-                  color: AppColor.bgWhite.withOpacity(0.65),
+                  color: AppColor.white.withOpacity(0.1),
                 ),
                 child: Text(widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~",
-                    style: const TextStyle(fontSize: 14, color: AppColor.textHint)),
+                    style: const TextStyle(fontSize: 14, color: AppColor.textWhite60)),
               ),
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {

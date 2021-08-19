@@ -31,9 +31,9 @@ class CommentLayout extends StatelessWidget {
           ..onTap = () {
             jumpToUserProfilePage(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
-        style: AppStyle.textMedium13,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.white),
       ));
-      textSpanList.add(TextSpan(text: " 回复 ", style: AppStyle.textPrimary3Regular13));
+      textSpanList.add(TextSpan(text: " 回复 ", style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.white)));
 
       textSpanList.add(TextSpan(
         text: "${value.replyName}  ",
@@ -41,11 +41,11 @@ class CommentLayout extends StatelessWidget {
           ..onTap = () {
             jumpToUserProfilePage(context, value.replyId,avatarUrl:value.avatarUrl,userName:value.name);
           },
-        style: AppStyle.textMedium13,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.white),
       ));
       textSpanList.add(TextSpan(
         text: "${value.content}",
-        style: AppStyle.textPrimary3Regular13,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
       ));
     } else {
       textSpanList.add(TextSpan(
@@ -54,11 +54,11 @@ class CommentLayout extends StatelessWidget {
           ..onTap = () {
             jumpToUserProfilePage(context, value.uid,avatarUrl:value.avatarUrl,userName:value.name);
           },
-        style: AppStyle.textMedium13,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.white),
       ));
       textSpanList.add(TextSpan(
         text: " ${value.content}",
-        style: AppStyle.textPrimary3Regular13,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
       ));
     }
     return textSpanList;
@@ -87,7 +87,7 @@ class CommentLayout extends StatelessWidget {
                           AppRouter.navigateToLoginPage(context);
                         }
                       },
-                      child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textSecondaryRegular12),
+                      child: Text("共${StringUtil.getNumber(commentCount)}条评论", style:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
                     );
                   }, selector: (context, notifier) {
                     return notifier.value.feedMap[model.id].commentCount;

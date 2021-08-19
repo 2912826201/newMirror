@@ -50,9 +50,9 @@ class _feedBackPage extends State<FeedBackPage> {
           Container(
             padding:
                 const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
+            child: CustomYellowButton(
               "提交",
-              CustomRedButton.buttonStateNormal,
+              CustomYellowButton.buttonStateNormal,
               () {
                 FocusScope.of(context).requestFocus(FocusNode());
                 _uploadImage();
@@ -104,7 +104,7 @@ class _feedBackPage extends State<FeedBackPage> {
                             },
                             child: Container(
                               height: numTextSize.height,
-                              width: numTextSize.width,
+                              width: numTextSize.width+10,
                               child: Text("322292818",style:longClick?AppStyle.whiteRegular14: AppStyle
                                   .textSecondaryRegular14,) ,
                               color: longClick ? AppColor.mainBlue : AppColor.white,
@@ -121,16 +121,6 @@ class _feedBackPage extends State<FeedBackPage> {
               ),
             ),
 
-            /*  SelectableText(
-              "意见反馈QQ群: 322292818",
-              style: AppStyle.textSecondaryRegular14,
-              onSelectionChanged: (TextSelection selection, SelectionChangedCause cause) {
-                print('-----------------------------------$cause------');
-                if(cause == SelectionChangedCause.toolBar){
-                  ToastShow.show(msg: "已复制到剪切板", context: context);
-                }
-              },
-            ),*/
             SizedBox(
               height: 25.5,
             ),

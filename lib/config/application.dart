@@ -112,6 +112,7 @@ class Application {
   // 发布中临时插入的动态Id
   // static final int insertFeedId = -2;
 
+  static bool dialogClose = true;
   //新版本的信息
   static VersionModel versionModel;
 
@@ -184,11 +185,13 @@ class Application {
         navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
         //TODO 这个弹窗待定
         if (isKicked) {
+          dialogClose = false;
           Future.delayed(Duration(seconds: 1)).then((value) {
             showAppDialog(navigatorKey.currentState.overlay.context,
                 title: "你被踢下线了",
                 info: "可能在其他设备登录",
                 confirm: AppDialogButton("我知道了", () {
+                  dialogClose = true;
                   return true;
                 }));
           });

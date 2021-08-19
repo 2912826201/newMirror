@@ -135,7 +135,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "动态详情页",
           leadingOnTap: () {
@@ -239,7 +239,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                                         builder: (context, totalCount, child) {
                                                   return Text(
                                                     "共${StringUtil.getNumber(totalCount)}条评论",
-                                                    style: AppStyle.textRegular16,
+                                                    style: AppStyle.whiteRegular16,
                                                   );
                                                 }, selector: (context, notifier) {
                                                   return notifier.value.feedMap[feedModel.id].totalCount;

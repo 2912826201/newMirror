@@ -340,10 +340,10 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           child: Offstage(
         offstage: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].laudCount) == null,
         child: //用Selector的方式监听数据
-        Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
+            Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
             "${StringUtil.getNumber(laudCount)}次赞",
-            style: const TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12, color: AppColor.white),
           );
         }, selector: (context, notifier) {
           return notifier.value.feedMap[widget.model.id].laudCount;
@@ -371,6 +371,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                         : AppIcon.getAppIcon(
                             AppIcon.like_24,
                             24,
+                            color: AppColor.white,
                             containerHeight: 24,
                             containerWidth: 24,
                           );
@@ -395,6 +396,12 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     ? AppIcon.like_red_24
                     : AppIcon.like_24,
                 iconSize: 24,
+                iconColor: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                        null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                    ? AppColor.mainRed : AppColor.white ,
                 onTap: () {
                   setUpLuad();
                 },
@@ -403,6 +410,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           margin: const EdgeInsets.only(left: 16),
           child: AppIconButton(
             svgName: AppIcon.comment_feed,
+            iconColor: AppColor.white,
             iconSize: 24,
             onTap: () {
               openFeedCommentBottomSheet(
@@ -421,6 +429,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           child: AppIconButton(
             svgName: AppIcon.share_feed,
             iconSize: 24,
+            iconColor: AppColor.white,
             onTap: () {
               if (!context.read<TokenNotifier>().isLoggedIn) {
                 openShareBottomSheet(
