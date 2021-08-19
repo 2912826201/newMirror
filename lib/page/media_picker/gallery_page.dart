@@ -892,11 +892,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
       actions: [
         Container(
           padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-          child: CustomRedButton(
+          child: CustomYellowButton(
             "下一步",
             context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty && value.currentEntity == null)
-                ? CustomRedButton.buttonStateDisable
-                : CustomRedButton.buttonStateNormal,
+                ? CustomYellowButton.buttonStateDisable
+                : CustomYellowButton.buttonStateNormal,
             () async {
               int time = DateTime.now().millisecondsSinceEpoch;
               if (time - _commitTimeStamp < _commitInterval) {

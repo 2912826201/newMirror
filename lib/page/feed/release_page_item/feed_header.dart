@@ -80,7 +80,7 @@ class FeedHeader extends StatelessWidget {
       Map<String, dynamic> textModel = await feedTextScan(text: inputText);
       if (!textModel["state"]) {
         ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
-        streamController.sink.add(CustomRedButton.buttonStateNormal);
+        streamController.sink.add(CustomYellowButton.buttonStateNormal);
         return;
       }
     }
@@ -173,14 +173,14 @@ class FeedHeader extends StatelessWidget {
           GestureDetector(
             onTap: () {},
             child: StreamBuilder<int>(
-                initialData: CustomRedButton.buttonStateNormal,
+                initialData: CustomYellowButton.buttonStateNormal,
                 stream: streamController.stream,
                 builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
-                  return CustomRedButton(
+                  return CustomYellowButton(
                     "发布",
                     snapshot.data,
                     () {
-                      streamController.sink.add(CustomRedButton.buttonStateLoading);
+                      streamController.sink.add(CustomYellowButton.buttonStateLoading);
                       // 读取输入框最新的值去掉后空格换行
                       // NOTE 不去前后空格换行的原因是高亮文本索引的原因后面的方法处理。
                       var inputText = controller.text;

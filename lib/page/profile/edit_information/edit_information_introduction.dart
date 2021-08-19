@@ -74,8 +74,9 @@ class _IntroductionState extends State<EditInformationIntroduction> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
-          backgroundColor: AppColor.white,
+          backgroundColor: AppColor.mainBlack,
           leadingOnTap: () {
             _commentFocus.unfocus();
             Navigator.pop(context, widget.introduction);
@@ -85,9 +86,9 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             Container(
               padding:
                   const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-              child: CustomRedButton(
+              child: CustomYellowButton(
                 "确定",
-                CustomRedButton.buttonStateNormal,
+                CustomYellowButton.buttonStateNormal,
                 () {
                   _commentFocus.unfocus();
                   if (editText.length == 0) {
@@ -105,16 +106,10 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             ),
           ]),
       body: Container(
-        color: AppColor.white,
         height: height - ScreenUtil.instance.statusBarHeight,
         width: width,
         child: Column(
           children: [
-            Container(
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite.withOpacity(0.65),
-            ),
             SizedBox(
               height: 21,
             ),
@@ -130,10 +125,10 @@ class _IntroductionState extends State<EditInformationIntroduction> {
     return Container(
       height: 148,
       width: width,
+      color: AppColor.layoutBgGrey,
       margin: EdgeInsets.only(left: 16, right: 16),
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)), border: Border.all(width: 0.5, color: AppColor.bgWhite)),
+
       child: Column(
         children: [
           TextField(
@@ -141,14 +136,14 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             autofocus: true,
             maxLength: 30,
             maxLines: 5,
-            cursorColor: AppColor.black,
-            style: AppStyle.textRegular16,
+            cursorColor: AppColor.white,
+            style: AppStyle.whiteRegular14,
             //初始化值，设置光标始终在最后
             controller: controller,
             decoration: InputDecoration(
               counterText: '',
               hintText: "有意思的简介会吸引更多关注~",
-              hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+              hintStyle: AppStyle.text1Regular14,
               border: InputBorder.none,
             ),
             inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 30,needFilter: true)],
@@ -157,7 +152,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             alignment: Alignment.bottomRight,
             child: Text(
               "$textLength/30",
-              style: AppStyle.textHintRegular12,
+              style: AppStyle.text1Regular14,
             ),
           )
         ],

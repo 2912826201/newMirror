@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/shared_image_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -70,11 +71,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   if (snapshot.data.afterImage && snapshot.data.beforeImage) {
                     Loading.hideLoading(context);
                   }
-                  return CustomRedButton(
+                  return CustomYellowButton(
                     "完成",
                     snapshot.data.afterImage && snapshot.data.beforeImage
-                        ? CustomRedButton.buttonStateNormal
-                        : CustomRedButton.buttonStateInvalid,
+                        ? CustomYellowButton.buttonStateNormal
+                        : CustomYellowButton.buttonStateInvalid,
                     () async {
                       //因为获取图像数据需要时间，所以可能在快速点击时执行多次此方法，获取多次图像弹出多个分享弹窗。根据_isBusy变量状态控制
                       if (_isBusy) {
@@ -108,13 +109,13 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
           ),
         ],
       ),
+      backgroundColor: AppColor.mainBlack,
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     return Container(
-      color: AppColor.white,
       child: Column(
         children: [
           SizedBox(
@@ -148,7 +149,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   child: AppIcon.getAppIcon(
                     AppIcon.layout_vertical,
                     24,
-                    color: _orientation == Axis.vertical ? AppColor.textPrimary2 : AppColor.textSecondary,
+                    color: _orientation == Axis.vertical ? AppColor.white : AppColor.textWhite60,
                   ),
                 ),
                 SizedBox(
@@ -168,7 +169,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   child: AppIcon.getAppIcon(
                     AppIcon.layout_horizontal,
                     24,
-                    color: _orientation == Axis.horizontal ? AppColor.textPrimary2 : AppColor.textSecondary,
+                    color: _orientation == Axis.horizontal ? AppColor.white : AppColor.textWhite60,
                   ),
                 ),
               ],
@@ -316,7 +317,7 @@ Widget _buildDateLabel(int beforeOrAfter, String dateTime) {
     mainAxisSize: MainAxisSize.min,
     children: [
       //TODO 要做空心字体
-      Text(day, style: TextStyle(color: AppColor.white, fontSize: 32, fontWeight: FontWeight.w500)),
+      Text(day, style: AppStyle.whiteMedium32),
       SizedBox(
         width: 3,
       ),
@@ -326,11 +327,11 @@ Widget _buildDateLabel(int beforeOrAfter, String dateTime) {
         children: [
           Text(
             beforeOrAfter == 0 ? "Before" : "After",
-            style: TextStyle(color: AppColor.white, fontSize: 13),
+            style: AppStyle.whiteRegular13,
           ),
           Text(
             month,
-            style: TextStyle(color: AppColor.white, fontSize: 11),
+            style: AppStyle.whiteRegular11,
           ),
         ],
       )

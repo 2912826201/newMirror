@@ -14,22 +14,15 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'bottom_sheet.dart';
 
-Future openTimePickerBottomSheet(
-    {@required BuildContext context,
-    @required DateTime firstTime,
-    lastTime,
-    initTime,
-    @required String timeFormat,
-    @required Function(DateTime) onConfirm}) async {
+Future openTimePickerBottomSheet({@required BuildContext context,
+  @required DateTime firstTime,
+  lastTime,
+  initTime,
+  @required String timeFormat,
+  @required Function(DateTime) onConfirm}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
-      ),
       builder: (BuildContext context) {
         return TimePickerBottomSheet(
           firstTime: firstTime,
@@ -69,9 +62,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: 259.5 + ScreenUtil.instance.bottomBarHeight,
-      decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      color: AppColor.layoutBgGrey,
       child: Column(
         children: [
           _topChoseTitle(),
@@ -95,9 +86,6 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
       height: 44,
       width: ScreenUtil.instance.screenWidthDp,
       padding: EdgeInsets.only(left: 16, right: 16),
-      decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -105,7 +93,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Text('取消', style: AppStyle.textHintRegular16),
+            child: Text('取消', style: AppStyle.text1Regular17),
           ),
           Spacer(),
           InkWell(
@@ -113,7 +101,7 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
                 widget.onConfirm(choseTime);
                 Navigator.pop(context);
               },
-              child: Text('确定', style: AppStyle.redRegular16)),
+              child: Text('确定', style: AppStyle.redRegular17)),
         ],
       ),
     );
@@ -202,7 +190,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero, () {
       _initDateResources();
     });
   }
@@ -275,29 +263,38 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
           fontSize: widget.pickerTheme.itemTextStyle.fontSize ?? sizeByFormat(widget.dateFormat));
       pickers.add(pickerColumn);
     });
+    pickers.insert(2, Container(width: 0.5, height: double.infinity, margin: EdgeInsets.only(bottom: 9), child:Column
+      (
+      children: [
+        Expanded(child:Container(width: 0.5,color: AppColor.mainBlack,),flex: 3,),
+        Spacer(flex: 1,),
+        Expanded(child:Container(width: 0.5,color: AppColor.mainBlack,),flex: 1,),
+      ],
+    ),));
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: pickers);
   }
 
-  Widget _renderDatePickerColumnComponent(
-      {FixedExtentScrollController scrollCtrl,
-      List<int> valueRange,
-      String format,
-      ValueChanged<int> valueChanged,
-      double fontSize}) {
+  Widget _renderDatePickerColumnComponent({FixedExtentScrollController scrollCtrl,
+    List<int> valueRange,
+    String format,
+    ValueChanged<int> valueChanged,
+    double fontSize}) {
     return Expanded(
       flex: 1,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 7, vertical: 18),
-        decoration: BoxDecoration(color: widget.pickerTheme.backgroundColor),
+        decoration: BoxDecoration(color: AppColor.layoutBgGrey),
         child: CupertinoPicker(
-          backgroundColor: widget.pickerTheme.backgroundColor,
+          // useMagnifier: true,
+          backgroundColor: AppColor.layoutBgGrey,
           scrollController: scrollCtrl,
           squeeze: 0.95,
           diameterRatio: 1.5,
           itemExtent: 42,
           onSelectedItemChanged: valueChanged,
           looping: widget.looping,
-          selectionOverlay: Container(
+          selectionOverlay: null,
+          /*selectionOverlay: Container(
             padding: EdgeInsets.only(left: 15,right: 15),
             child: Column(
               children: [
@@ -306,10 +303,10 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
                 Container(height: 0.5,color: AppColor.bgWhite,),
               ],
             ),
-          ),
+          ),*/
           children: List<Widget>.generate(
             valueRange.last - valueRange.first + 1,
-            (index) {
+                (index) {
               return _renderDatePickerItemComponent(
                 valueRange.first + index,
                 format,
@@ -337,8 +334,8 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
       child: AutoSizeText(
         DateTimeFormatter.formatDateTime(value, format, widget.locale, weekday),
         maxLines: 1,
-        style: AppStyle.textAddressText,
-        //widget.pickerTheme.itemTextStyle ?? DATETIME_PICKER_ITEM_TEXT_STYLE,
+        style: AppStyle.whiteRegular17,
+        // widget.pickerTheme.itemTextStyle ?? DATETIME_PICKER_ITEM_TEXT_STYLE,
       ),
     );
   }
@@ -459,7 +456,8 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
 
   /// calculate the range of month
   List<int> _calcMonthRange() {
-    int minMonth = 1, maxMonth = 12;
+    int minMonth = 1,
+        maxMonth = 12;
     int minYear = _minDateTime.year;
     int maxYear = _maxDateTime.year;
     if (minYear == _currYear) {
@@ -475,7 +473,8 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
 
   /// calculate the range of day
   List<int> _calcDayRange({currMonth}) {
-    int minDay = 1, maxDay = _calcDayCountOfMonth();
+    int minDay = 1,
+        maxDay = _calcDayCountOfMonth();
     int minYear = _minDateTime.year;
     int maxYear = _maxDateTime.year;
     int minMonth = _minDateTime.month;

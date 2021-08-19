@@ -72,9 +72,9 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
           actions: [
             Container(
               padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-              child: CustomRedButton(
+              child: CustomYellowButton(
                 "继续",
-                CustomRedButton.buttonStateNormal,
+                CustomYellowButton.buttonStateNormal,
                 () async {
                   MediaFileModel model = MediaFileModel();
                   model.type = mediaTypeKeyVideo;

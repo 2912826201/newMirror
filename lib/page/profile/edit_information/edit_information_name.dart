@@ -10,6 +10,7 @@ import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.da
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
+
 ///编辑昵称
 class EditInformationName extends StatefulWidget {
   String userName;
@@ -18,7 +19,7 @@ class EditInformationName extends StatefulWidget {
   EditInformationName({this.userName, this.title});
 
   @override
-  _EditInformationNameState createState()=>_EditInformationNameState();
+  _EditInformationNameState createState() => _EditInformationNameState();
 }
 
 class _EditInformationNameState extends State<EditInformationName> {
@@ -36,7 +37,7 @@ class _EditInformationNameState extends State<EditInformationName> {
   void initState() {
     super.initState();
     if (widget.userName != null) {
-      _editText =StringUtil.maxLength(widget.userName,15,isOmit: false);
+      _editText = StringUtil.maxLength(widget.userName, 15, isOmit: false);
       controller.text = _editText;
       textLength = _editText.length;
       _reciprocal += beforeLength - textLength;
@@ -55,6 +56,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     controller.addListener(() {
       if (lastInput != controller.completeText) {
         lastInput = controller.completeText;
+
         ///通知onChanged
         setState(() {
           _editText = lastInput;
@@ -77,26 +79,26 @@ class _EditInformationNameState extends State<EditInformationName> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         leadingOnTap: () {
           _commentFocus.unfocus();
           Navigator.pop(context);
         },
-        titleString: widget.title??"编辑昵称",
+        titleString: widget.title ?? "编辑昵称",
         actions: [
           Container(
             padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
+            child: CustomYellowButton(
               "确定",
-              CustomRedButton.buttonStateNormal,
+              CustomYellowButton.buttonStateNormal,
               () {
                 _commentFocus.unfocus();
                 if (_editText.isEmpty) {
                   return;
                 }
-                Navigator.pop(this.context,_editText);
+                Navigator.pop(this.context, _editText);
               },
             ),
           ),
@@ -107,21 +109,10 @@ class _EditInformationNameState extends State<EditInformationName> {
         width: width,
         child: Column(
           children: [
-            Container(
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite.withOpacity(0.65),
-            ),
             SizedBox(
               height: 17,
             ),
             Container(width: width, margin: EdgeInsets.only(top: 29), child: _inputWidget(width)),
-            Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite.withOpacity(0.65),
-            ),
             SizedBox(
               height: 12,
             ),
@@ -132,7 +123,6 @@ class _EditInformationNameState extends State<EditInformationName> {
     );
   }
 
-
   //底部提示字数文字
   Widget _bottomText(double width) {
     return Container(
@@ -142,12 +132,12 @@ class _EditInformationNameState extends State<EditInformationName> {
         children: [
           Text(
             "0-15个字符，起个好听的名字吧~",
-            style: AppStyle.textPrimary3Regular14,
+            style: AppStyle.text1Regular14,
           ),
-        Spacer(),
+          Spacer(),
           Text(
             "$_reciprocal",
-            style: AppStyle.textPrimary3Regular14,
+            style: AppStyle.text1Regular14,
           )
         ],
       ),
@@ -161,17 +151,15 @@ class _EditInformationNameState extends State<EditInformationName> {
       maxLines: 1,
       focusNode: _commentFocus,
       controller: controller,
-      cursorColor: AppColor.black,
-      style: AppStyle.textRegular16,
+      cursorColor: AppColor.textWhite60,
+      style: AppStyle.whiteRegular16,
       decoration: InputDecoration(
-        counterText: '',
-        hintText: "戳这里输入${widget.title==null?"昵称":widget.title.contains("群聊")?"名称":"昵称"}",
-        hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
-        border: InputBorder.none,
-      ),
-      inputFormatters: [
-        ExpressionTeamDeleteFormatter(maxLength: 15,needFilter: true)
-         ],
+          counterText: '',
+          hintText: "戳这里输入${widget.title == null ? "昵称" : widget.title.contains("群聊") ? "名称" : "昵称"}",
+          hintStyle: AppStyle.text1Regular14,
+          border: InputBorder.none,
+         ),
+      inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 15, needFilter: true)],
     );
     return Container(padding: EdgeInsets.only(left: 16, right: 16), child: putFiled);
   }

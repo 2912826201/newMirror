@@ -7,6 +7,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/util/file_util.dart';
@@ -73,19 +74,19 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
           actions: [
             CustomAppBarIconButton(
                 svgName: AppIcon.nav_more,
-                iconColor: AppColor.black,
+                iconColor: AppColor.white,
                 onTap: () {
                   _showMorePopup(context, _imageList[_currentIndex]);
                 }),
           ],
         ),
+        backgroundColor: AppColor.mainBlack,
         body: _buildBody(),
       );
   }
 
   Widget _buildBody() {
     return Container(
-      color: AppColor.white,
       child: Swiper(
         controller: _controller,
         onIndexChanged: (index) {
@@ -110,7 +111,10 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
           imageUrl: _imageList[index].url,
           fit: BoxFit.contain,
           placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
+            color: AppColor.imageBgGrey,
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: AppColor.imageBgGrey,
           ),
         ),
       ),
@@ -135,7 +139,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
       ),
       height: 158 + ScreenUtil.instance.bottomBarHeight,
       child: Column(
@@ -152,7 +156,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
               alignment: Alignment.center,
               child: Text(
                 "保存本地",
-                style: TextStyle(color: AppColor.black, fontSize: 17),
+                style: AppStyle.whiteRegular17,
               ),
             ),
           ),
@@ -177,12 +181,12 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
               alignment: Alignment.center,
               child: Text(
                 "删除",
-                style: TextStyle(color: AppColor.black, fontSize: 17),
+                style: AppStyle.whiteRegular17,
               ),
             ),
           ),
           Container(
-            color: AppColor.bgWhite,
+            color: AppColor.mainBlack,
             width: ScreenUtil.instance.screenWidthDp,
             height: 8,
           ),
@@ -197,7 +201,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
               alignment: Alignment.center,
               child: Text(
                 "取消",
-                style: TextStyle(color: AppColor.black, fontSize: 17),
+                style: AppStyle.whiteRegular17,
               ),
             ),
           ),

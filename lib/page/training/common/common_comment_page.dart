@@ -241,7 +241,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     print("111111111111111111111111111111111");
     widgetArray.add(_getCommentItemUi());
     return Container(
-      color: AppColor.white,
+      // color: AppColor.,
       child: Column(
         children: widgetArray,
       ),
