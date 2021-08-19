@@ -65,7 +65,6 @@ class AppStyle {
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.white);
-  static const whiteRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
 
    static const whiteRegular40 = TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: AppColor.white);
   //纯黑色
