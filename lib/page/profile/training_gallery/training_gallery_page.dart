@@ -13,7 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide Scaffold;
 import 'package:intl/intl.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/list_model.dart';
@@ -106,7 +105,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   _initAppBar() {
     _selectionModeAppBar = CustomAppBar(
       titleString: "健身相册",
-      leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, () {
+      leading: CustomAppBarTextButton("取消", AppColor.white, () {
         context.read<UserInteractiveNotifier>().changeShowImageFrame(false);
       }),
     );
@@ -115,7 +114,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       actions: [
         CustomAppBarIconButton(
             svgName: AppIcon.nav_camera,
-            iconColor: AppColor.black,
+            iconColor: AppColor.white,
             onTap: () {
               AppRouter.navigateToMediaPickerPage(
                   context, 1, typeImage, false, startPageGallery, false, _handleMediaResult);
@@ -129,6 +128,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     return Scaffold(
       appBar: context.watch<UserInteractiveNotifier>().value.showImageFrame ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
+      backgroundColor: AppColor.mainBlack,
       handleStatusBarTap: () {
         itemScrollController.scrollTo(index: 0, duration: Duration(milliseconds: 300));
       },
@@ -138,7 +138,6 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildBody() {
     if (_dataList.isEmpty) {
       return Container(
-        color: AppColor.white,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +154,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               ),
               Text(
                 "还没有照片",
-                style: AppStyle.textSecondaryRegular14,
+                style: AppStyle.text1Regular14,
               )
             ],
           ),
@@ -163,7 +162,6 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       );
     } else {
       return Container(
-        color: AppColor.white,
         child: Column(
           children: [
             Expanded(
@@ -188,12 +186,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     return Container(
       height: 48,
       width: ScreenUtil.instance.screenWidthDp,
-      color: AppColor.white,
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Text(
         model.month,
-        style: AppStyle.textMedium18,
+        style: AppStyle.whiteMedium18,
       ),
     );
   }
@@ -213,6 +210,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             width: 44,
             child: Text(
               model.day,
+              style: AppStyle.text1Medium16,
             ),
           ),
           Expanded(
@@ -319,7 +317,10 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               imageUrl: imageModel.url,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
+                color: AppColor.imageBgGrey,
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: AppColor.imageBgGrey,
               ),
             ),
           ),
@@ -327,7 +328,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               ? Container(
                   padding: const EdgeInsets.all(6),
                   alignment: Alignment.bottomRight,
-                  color: AppColor.textPrimary2.withOpacity(0.35),
+                  color: AppColor.imageBgGrey.withOpacity(0.35),
                   child: AppIcon.getAppIcon(AppIcon.selection_selected, 24),
                 )
               : Container()
@@ -459,7 +460,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       return Container(
         padding: EdgeInsets.fromLTRB(16, 0, 16, ScreenUtil.instance.bottomBarHeight),
         height: 145 + ScreenUtil.instance.bottomBarHeight,
-        color: AppColor.textPrimary2,
+        color: AppColor.layoutBgGrey,
         child: Column(
           children: [
             SizedBox(
@@ -469,7 +470,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                 children: [
                   Text(
                     "已选择${_selectedImageList.length}/$_imageMaxSelection张照片",
-                    style: TextStyle(color: AppColor.white.withOpacity(0.65), fontSize: 14),
+                    style: AppStyle.text1Regular14,
                   ),
                   Spacer(),
                   GestureDetector(
@@ -490,8 +491,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                     child: Text(
                       "继续",
                       style: _selectedImageList.length == _imageMaxSelection
-                          ? TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 14)
-                          : TextStyle(color: AppColor.white.withOpacity(0.85 * 0.24), fontSize: 14),
+                          ? AppStyle.whiteRegular14
+                          : AppStyle.text1Regular14,
                     ),
                   )
                 ],
@@ -520,14 +521,17 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                     imageUrl: _selectedImageList[0].url,
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => Container(
-                                      color: AppColor.bgWhite,
+                                      color: AppColor.imageBgGrey,
+                                    ),
+                                    errorWidget: (context, url, error) => Container(
+                                      color: AppColor.imageBgGrey,
                                     ),
                                   ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(6),
                                   alignment: Alignment.bottomRight,
-                                  color: AppColor.textPrimary2.withOpacity(0.35),
+                                  color: AppColor.imageBgGrey.withOpacity(0.35),
                                   child: AppIcon.getAppIcon(AppIcon.selection_remove, 24),
                                 )
                               ],
@@ -556,14 +560,17 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                                     imageUrl: _selectedImageList[1].url,
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => Container(
-                                      color: AppColor.bgWhite,
+                                      color: AppColor.imageBgGrey,
+                                    ),
+                                    errorWidget: (context, url, error) => Container(
+                                      color: AppColor.imageBgGrey,
                                     ),
                                   ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(6),
                                   alignment: Alignment.bottomRight,
-                                  color: AppColor.textPrimary2.withOpacity(0.35),
+                                  color: AppColor.imageBgGrey.withOpacity(0.35),
                                   child: AppIcon.getAppIcon(AppIcon.selection_remove, 24),
                                 )
                               ],
@@ -589,7 +596,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         child: Container(
           padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
           height: 48 + ScreenUtil.instance.bottomBarHeight,
-          color: AppColor.textPrimary2,
+          color: AppColor.layoutBgGrey,
           alignment: Alignment.center,
           child: Text(
             "制作对比图",
