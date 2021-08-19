@@ -337,14 +337,14 @@ class _CustomRedButtonState extends State<CustomRedButton> {
         decoration: BoxDecoration(
             color: widget.buttonState == CustomRedButton.buttonStateNormal
                 ? isPressed
-                    ? AppColor.mainRed.withOpacity(0.56)
-                    : AppColor.mainRed
+                    ? AppColor.mainYellow.withOpacity(0.56)
+                    : AppColor.mainYellow
                 : widget.buttonState == CustomRedButton.buttonStateDisable
                     ? widget.isDarkBackground
-                        ? AppColor.mainRed.withOpacity(0.24)
-                        : AppColor.mainRed.withOpacity(0.16)
+                        ? AppColor.mainYellow.withOpacity(0.24)
+                        : AppColor.mainYellow.withOpacity(0.16)
                     : widget.buttonState == CustomRedButton.buttonStateLoading
-                        ? AppColor.mainRed
+                        ? AppColor.mainYellow
                         : AppColor.textHint,
             borderRadius: BorderRadius.circular(14)),
         child: Row(
@@ -355,7 +355,7 @@ class _CustomRedButtonState extends State<CustomRedButton> {
                     height: 17,
                     width: 17,
                     child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColor.white),
+                        valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
                         backgroundColor: AppColor.transparent,
                         strokeWidth: 1.5))
                 : Container(),
@@ -370,15 +370,15 @@ class _CustomRedButtonState extends State<CustomRedButton> {
                   fontSize: 14,
                   color: widget.buttonState == CustomRedButton.buttonStateNormal
                       ? isPressed
-                          ? AppColor.white.withOpacity(0.56)
-                          : AppColor.white
+                          ? AppColor.mainBlack.withOpacity(0.56)
+                          : AppColor.mainBlack
                       : widget.buttonState == CustomRedButton.buttonStateDisable
                           ? widget.isDarkBackground
-                              ? AppColor.white.withOpacity(0.24)
-                              : AppColor.white.withOpacity(0.16)
+                              ? AppColor.mainBlack.withOpacity(0.24)
+                              : AppColor.mainBlack.withOpacity(0.16)
                           : widget.buttonState == CustomRedButton.buttonStateLoading
-                              ? AppColor.white
-                              : AppColor.white),
+                              ? AppColor.mainBlack
+                              : AppColor.mainBlack),
             ),
             Spacer()
           ],

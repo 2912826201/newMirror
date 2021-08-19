@@ -122,7 +122,7 @@ class _EditInformationState extends State<EditInformation> {
     print('textHeight==============================$textHeight');
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: AppColor.white,
+          backgroundColor: AppColor.mainBlack,
           leadingOnTap: () {
             Navigator.pop(context);
           },
@@ -132,7 +132,7 @@ class _EditInformationState extends State<EditInformation> {
               padding:
                   const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
-                "确定",
+                "保存",
                 buttonState,
                 () {
                   setState(() {
@@ -155,16 +155,11 @@ class _EditInformationState extends State<EditInformation> {
         body: Stack(
           children: [
             Container(
-              color: AppColor.white,
+              color: AppColor.mainBlack,
               height: height - ScreenUtil.instance.statusBarHeight,
               width: width,
               child: Column(
                 children: [
-                  Container(
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
                   Container(
                       margin: EdgeInsets.only(top: 16),
                       width: 71,
@@ -220,12 +215,6 @@ class _EditInformationState extends State<EditInformation> {
                     },
                     child: _rowChose("昵称", userName),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
                   InkWell(
                     onTap: () {
                       List<String> list = ["男", "女"];
@@ -246,12 +235,7 @@ class _EditInformationState extends State<EditInformation> {
                     },
                     child: _rowChose("性别", userSexText),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
+
                   InkWell(
                     onTap: () {
                       openTimePickerBottomSheet(
@@ -267,12 +251,7 @@ class _EditInformationState extends State<EditInformation> {
                     },
                     child: _rowChose("生日", userBirthday),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
+
                   InkWell(
                     child: _rowChose("地区", provinceCity),
                     onTap: () {
@@ -288,12 +267,6 @@ class _EditInformationState extends State<EditInformation> {
                           });
                     },
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
                   InkWell(
                     child: _rowChose("简介", _introduction),
                     onTap: () {
@@ -308,12 +281,6 @@ class _EditInformationState extends State<EditInformation> {
                         setState(() {});
                       });
                     },
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
                   ),
                 ],
               ),
@@ -346,7 +313,7 @@ class _EditInformationState extends State<EditInformation> {
             alignment: title == "简介" ? Alignment.topLeft : Alignment.centerLeft,
             child: Text(
               title,
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
           ),
           SizedBox(
@@ -358,7 +325,7 @@ class _EditInformationState extends State<EditInformation> {
             width: width * 0.67,
             child: Text(
               textContent != null ? textContent : "去编辑",
-              style: AppStyle.textRegular16,
+              style: title == "昵称"?AppStyle.whiteRegular16:AppStyle.text1Regular16,
             ),
           ),
           Spacer(),
@@ -367,7 +334,7 @@ class _EditInformationState extends State<EditInformation> {
             child: AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               18,
-              color: AppColor.textHint,
+              color: AppColor.textWhite60,
             ),
           )
         ],
@@ -402,14 +369,14 @@ class _EditInformationState extends State<EditInformation> {
                 bottom: 0,
                 right: 0,
                 child: Container(
-                  width: 20,
-                  height: 20,
+                  width: 23,
+                  height: 23,
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                    child: AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
+                    child: AppIcon.getAppIcon(AppIcon.edit_pen, 23, color: AppColor.white),
                   ),
                 ))
           ],

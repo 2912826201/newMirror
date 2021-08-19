@@ -154,7 +154,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
 
               // 文本文案
               Offstage(
-                offstage: widget.model.content.length == 0,
+                offstage: widget.model.content==null||widget.model.content.isEmpty,
                 child: Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,

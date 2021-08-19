@@ -28,6 +28,10 @@ class AppStyle {
   // Regular文字辅色1-白色60%
   static const text1Regular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+
 
   // Regular文字辅色2-白色40%
   static const text2Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite40);
@@ -35,6 +39,7 @@ class AppStyle {
 
   //红色
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
@@ -50,12 +55,13 @@ class AppStyle {
   static const whiteMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const whiteRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular14 =
   TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
-
+  static const whiteRegular40 = TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: AppColor.white);
   //纯黑色
   static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
-
+  static  const whiteMedium85 = TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: AppColor.textWhite85);
   //=================================下面是旧的样式===============================================
 
   // Regular textSecondary 辅助字体灰色

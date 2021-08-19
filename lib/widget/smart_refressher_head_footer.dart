@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SmartRefresherHeadFooter {
@@ -22,7 +23,7 @@ class SmartRefresherHeadFooter {
               SizedBox(height: 20),
               // CupertinoActivityIndicator(),
               Lottie.asset(
-                'assets/lottie/loading_refresh_black.json',
+                'assets/lottie/loading_refresh_red.json',
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
@@ -37,13 +38,13 @@ class SmartRefresherHeadFooter {
             children: [
               // CupertinoActivityIndicator(),
               Lottie.asset(
-                'assets/lottie/loading_refresh_black.json',
+                'assets/lottie/loading_refresh_red.json',
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
               ),
               SizedBox(height: 6),
-              Text("释放刷新"),
+              Text("释放刷新",style: AppStyle.text1Regular12,),
             ],
           ),
         ),

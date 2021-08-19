@@ -283,6 +283,7 @@ class HeadViewState extends State<HeadView> {
     print("动态头部build");
     return Container(
         height: 62,
+        color: AppColor.mainBlack,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

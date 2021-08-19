@@ -20,12 +20,6 @@ Future openaddressPickerBottomSheet(
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
-      ),
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: AddressPicker(
@@ -109,9 +103,7 @@ class _AddressPickerState extends State<AddressPicker> {
     return Container(
       height: 259.5 + ScreenUtil.instance.bottomBarHeight,
       width: width,
-      decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      color: AppColor.layoutBgGrey,
       child: Column(
         children: [
           Container(
@@ -122,7 +114,7 @@ class _AddressPickerState extends State<AddressPicker> {
                 InkWell(
                   child: Text(
                     "取消",
-                    style: AppStyle.textHintRegular16,
+                    style: AppStyle.whiteRegular17,
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -161,16 +153,11 @@ class _AddressPickerState extends State<AddressPicker> {
                   },
                   child: Text(
                     "确定",
-                    style: AppStyle.redRegular16,
+                    style: AppStyle.redRegular17,
                   ),
                 )
               ],
             ),
-          ),
-          Container(
-            width: ScreenUtil.instance.screenWidthDp,
-            height: 0.5,
-            color: AppColor.bgWhite,
           ),
           Expanded(
               child: Padding(
@@ -198,30 +185,20 @@ class _AddressPickerState extends State<AddressPicker> {
 
   Widget _addressList(FixedExtentScrollController controller, List textContext, int type) {
     return CupertinoPicker(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.layoutBgGrey,
       scrollController: controller,
       squeeze: 0.95,
-      selectionOverlay:Container(
-        padding: EdgeInsets.only(left: 15,right: 15),
-        child: Column(
-          children: [
-            Container(height: 0.5,color: AppColor.bgWhite,),
-            Spacer(),
-            Container(height: 0.5,color: AppColor.bgWhite,),
-          ],
-        ),
-      ),
       diameterRatio: 1.5,
       itemExtent: 42,
       //循环
       looping: false,
+      selectionOverlay: null,
       children: List<Widget>.generate(
         textContext.length,
         (index) {
           return Container(
-            color: AppColor.white,
             child: Center(
-              child: Text("${textContext[index]}", style: AppStyle.textAddressText),
+              child: Text("${textContext[index]}", style: AppStyle.whiteRegular17),
             ),
           );
         },

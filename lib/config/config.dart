@@ -51,7 +51,7 @@ class AppConfig {
 
   ///切换训练相关布局
   ///fixme 教练账号问题需要解决
-  static bool needShowTraining = true;
+  static bool needShowTraining = false;
 
   //是否启用刷新检测
   static bool checkLayoutRefresh = false;

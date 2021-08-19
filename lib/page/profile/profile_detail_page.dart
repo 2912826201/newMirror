@@ -290,6 +290,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         16 +
         5;
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       body: Container(
           height: height,
           width: width,
@@ -337,7 +338,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(
-              child: profileDetailData(userDetailBoardHeight),
+              child: _mineDetailsData(userDetailBoardHeight),
             ),
           ];
         },
@@ -346,19 +347,16 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         body: Column(
           children: [
             isMselfId
-                ? FrameSeparateWidget(
-                    index: -1,
-                    child: Container(
-                      color: AppColor.white,
+                ?  Container(
+                      color: AppColor.mainBlack,
                       padding: EdgeInsets.only(left: width / 4, right: width / 4),
                       child: Custom.TabBar(
                         unselectedLabelStyle:
-                            TextStyle(fontSize: 15.5, fontWeight: FontWeight.w400, color: AppColor.textHint),
+                            AppStyle.text1Regular16,
                         unselectedLabelColor: AppColor.textSecondary,
                         labelStyle:
-                            TextStyle(fontSize: 17.5, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
-                        labelColor: AppColor.black,
-                        indicatorColor: AppColor.black,
+                            AppStyle.whiteMedium16,
+                        labelColor: AppColor.white,
                         controller: _mController,
                         onDoubleTap: (index) async {
                           print(
@@ -381,13 +379,13 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                         indicator: RoundUnderlineTabIndicator(
                             insets: EdgeInsets.only(bottom: 0),
                             wantWidth: 20,
-                            borderSide: BorderSide(width: 2, color: AppColor.black)),
+                            borderSide: BorderSide(width: 2, color: AppColor.white)),
                         tabs: <Widget>[
                           Tab(text: '动态'),
                           Tab(text: '喜欢'),
                         ],
                       ),
-                    ))
+                    )
                 : Container(),
             Expanded(
                 child: userStatus != 1
@@ -451,7 +449,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         stream: appBarOpacityStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return Container(
-            color: AppColor.white.withOpacity(snapshot.data),
+            color: AppColor.mainBlack.withOpacity(snapshot.data),
             height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
             width: width,
             padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
@@ -464,7 +462,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                     alignment: Alignment.centerLeft,
                     child: CustomAppBarIconButton(
                       svgName: AppIcon.nav_return,
-                      iconColor: AppColor.black,
+                      iconColor: AppColor.white,
                       onTap: () {
                         Navigator.pop(this.context,
                             context.read<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow);
@@ -482,7 +480,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 18,
-                            color: AppColor.black.withOpacity(snapshot.data)),
+                            color: AppColor.white.withOpacity(snapshot.data)),
                       ),
                     ),
                   ),
@@ -492,7 +490,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                     children: [
                       CustomAppBarIconButton(
                         svgName: AppIcon.nav_share,
-                        iconColor: AppColor.black,
+                        iconColor: AppColor.white,
                         onTap: () {
                           openShareBottomSheet(
                               context: context,
@@ -504,7 +502,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                       !isMselfId
                           ? CustomAppBarIconButton(
                               svgName: AppIcon.nav_more,
-                              iconColor: AppColor.black,
+                              iconColor: AppColor.white,
                               onTap: () {
                                 AppRouter.navigateToProfileDetailMore(
                                     context, widget.userId, (result) => _getFollowCount(id: widget.userId));
@@ -607,12 +605,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                   ///昵称
                   Text(
                     _textName ?? "  ",
-                    style: AppStyle.textMedium18,
+                    style: AppStyle.whiteMedium85,
                   ),
                   Spacer(),
 
                   ///id
-                  Text("ID: ${widget.userId}"),
+                  Text("ID: ${widget.userId}",style: AppStyle.text1Regular12,),
                 ],
               ),
             ),
@@ -624,7 +622,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
-              child: Text(_signature ?? " ", softWrap: true, style: AppStyle.textRegular14),
+              child: Text(_signature ?? " ", softWrap: true, style: AppStyle.text1Regular12),
             ),
             SizedBox(
               height: 14,
@@ -670,11 +668,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               );
             }),
             Spacer(),
-            Container(
-              color: AppColor.bgWhite.withOpacity(0.65),
-              height: 12,
-              width: width,
-            )
           ],
         ));
   }
@@ -711,25 +704,21 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             width: 72,
             decoration: BoxDecoration(
                 color: !isMselfId
-                    ? notifier.value.profileUiChangeModel[widget.userId].isFollow
-                        ? AppColor.mainRed
-                        : AppColor.transparent
+                    ? AppColor.mainYellow
                     : AppColor.transparent,
                 borderRadius: BorderRadius.all(Radius.circular(14)),
                 border: Border.all(
                     width: 0.5,
                     color: isMselfId
                         ? AppColor.black
-                        : !notifier.value.profileUiChangeModel[widget.userId].isFollow
-                            ? AppColor.black
-                            : AppColor.transparent)),
+                        :  AppColor.transparent)),
 
             ///判断是我的页面还是别人的页面
             child: isMselfId
                 ? Center(
                     child: Text(
                       "编辑资料",
-                      style: AppStyle.textRegular12,
+                      style: AppStyle.text1Regular12,
                     ),
                   )
                 : _buttonLayoutSelect(notifier),
@@ -826,14 +815,14 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       children: [
         Text(
           number,
-          style: AppStyle.textMedium18,
+          style: AppStyle.whiteMedium85,
         ),
         SizedBox(
           height: 2.5,
         ),
         Text(
           text,
-          style: AppStyle.textSecondaryRegular12,
+          style: AppStyle.text1Regular12,
         )
       ],
     ));
