@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
@@ -37,42 +38,33 @@ class _VoiceDialogState extends State<VoiceDialog> {
             children: [
               Positioned(
                 bottom: 100,
-                child: Opacity(
-                  opacity: 0.7,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColor.textPrimary1,
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          width: 60,
-                          height: 60,
-                          child: context.watch<VoiceAlertData>().imageIconWidget,
-                        ),
-                        Text(
-                          context.watch<VoiceAlertData>().showDataTime,
-                          style: TextStyle(
-                            fontStyle: FontStyle.normal,
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          context.watch<VoiceAlertData>().alertText,
-                          style: TextStyle(
-                            fontStyle: FontStyle.normal,
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColor.layoutBgGrey,
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        width: 60,
+                        height: 60,
+                        child: context.watch<VoiceAlertData>().imageIconWidget,
+                      ),
+                      Text(
+                        context.watch<VoiceAlertData>().showDataTime,
+                        style: AppStyle.whiteRegular14,
+                      ),
+                      Text(
+                        context.watch<VoiceAlertData>().alertText,
+                        style: context.watch<VoiceAlertData>().alertText.contains("松开")
+                            ? AppStyle.redRegular14
+                            : AppStyle.whiteRegular14,
+                      ),
+                    ],
                   ),
                 ),
               )

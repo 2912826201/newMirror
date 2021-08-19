@@ -5,7 +5,7 @@ import 'package:mirror/constant/color.dart';
 class MessageInputBody extends StatelessWidget {
   MessageInputBody({
     this.child,
-    this.color = AppColor.bgWhite,
+    this.color = AppColor.mainBlack,
     this.decoration,
     this.onTap,
   });

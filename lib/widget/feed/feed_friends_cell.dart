@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -38,6 +39,7 @@ class FriendsCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
+        color: AppColor.mainBlack,
         child: _buildUi(context),
       ),
       onTap: () {
@@ -65,7 +67,7 @@ class FriendsCell extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 16),
         height: groupTitle != null ? 28.5 : 0,
-        color: AppColor.bgWhite,
+        color: AppColor.mainBlack,
         child: groupTitle != null
             ? Text(
                 groupTitle,
@@ -78,11 +80,11 @@ class FriendsCell extends StatelessWidget {
 
   //item-ui
   Widget itemUi(BuildContext context) {
-    if (isShowSingleChoice && groupTitle == "群成员") {
+    if (isShowSingleChoice && groupTitle == "群主") {
       return Opacity(
         opacity: 0.2,
         child: Container(
-          color: Colors.white,
+          color: AppColor.mainBlack,
           height: 48,
           margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0),
           padding: EdgeInsets.only(left: 16, right: 16),
@@ -100,7 +102,7 @@ class FriendsCell extends StatelessWidget {
       );
     } else {
       return Container(
-        color: Colors.white,
+        color: AppColor.mainBlack,
         height: 48,
         margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0),
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -222,7 +224,7 @@ class FriendsCell extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 16 - 16 - 24 - 14.5 - 38 - 12 - 10,
       child: Text(
         name,
-        style: const TextStyle(fontSize: 15, color: AppColor.textPrimary3),
+        style: AppStyle.whiteRegular15,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

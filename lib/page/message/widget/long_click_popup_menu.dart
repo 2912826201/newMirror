@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'triangle_painter.dart';
 
@@ -19,7 +20,7 @@ class LongClickPopupMenu extends StatefulWidget {
     this.pressType = PressType.longPress,
     this.isCanLongClick = true,
     this.pageMaxChildCount = 5,
-    this.backgroundColor = AppColor.textPrimary1,
+    this.backgroundColor = AppColor.layoutBgGrey,
     this.contentWidth = 180,
     this.contentHeight = 0,
     this.leftAndRightWidth = 112,
@@ -400,7 +401,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                         ],
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppColor.textPrimary1,
+                                        color: widget.backgroundColor,
                                         borderRadius: BorderRadius.circular(3),
                                       ),
                                     )),
@@ -456,7 +457,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
             child: Center(
               child: Text(
                 widget.actions[_curPage * widget._pageMaxChildCount + index],
-                style: TextStyle(color: Colors.white, fontSize: 14),
+                style: AppStyle.whiteRegular14,
               ),
             ),
           ),
@@ -464,7 +465,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
       },
       separatorBuilder: (BuildContext context, int index) {
         return Container(
-          width: 1,
+          width: 0.5,
+          color: AppColor.mainBlack.withOpacity(0.2),
           height: menuHeight,
         );
       },

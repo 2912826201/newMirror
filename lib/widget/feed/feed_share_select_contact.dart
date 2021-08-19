@@ -5,6 +5,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
@@ -136,9 +137,11 @@ class _FriendsPageState extends State<FriendsPage> {
   Widget build(BuildContext context) {
     print("type:${widget.type}");
     return Scaffold(
-      appBar: getAppBar(),
-      body: getBodyUi(),
-    );
+        appBar: getAppBar(),
+        body: Container(
+          color: AppColor.mainBlack,
+          child: getBodyUi(),
+        ));
   }
 
   Widget getBodyUi() {
@@ -237,8 +240,8 @@ class _FriendsPageState extends State<FriendsPage> {
               alignment: Alignment.center,
               color: AppColor.transparent,
               child: const Text(
-                "移除群成员",
-                style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+                "移除群聊",
+                style: TextStyle(fontSize: 14, color: AppColor.white),
               ),
             ),
             onTap: () {
@@ -291,8 +294,8 @@ class _FriendsPageState extends State<FriendsPage> {
   Widget _getTopItemSearch() {
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
+      decoration: BoxDecoration(color: AppColor.textWhite40, borderRadius: BorderRadius.circular(4)),
       height: 32,
-      color: AppColor.bgWhite.withOpacity(0.65),
       width: ScreenUtil.instance.screenWidthDp,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -300,12 +303,13 @@ class _FriendsPageState extends State<FriendsPage> {
           const SizedBox(
             width: 9,
           ),
-          AppIcon.getAppIcon(AppIcon.input_search, 24),
+          AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
           Expanded(
             child: Container(
               height: 32,
               alignment: Alignment.center,
               child: TextField(
+                style: AppStyle.whiteRegular16,
                 textInputAction: TextInputAction.search,
                 // focusNode: FocusNode(),
                 controller: textController,
@@ -321,7 +325,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     isCollapsed: true,
                     contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                     hintText: '搜索用户',
-                    hintStyle: TextStyle(color: AppColor.textSecondary),
+                    hintStyle: TextStyle(color: AppColor.textWhite60),
                     border: InputBorder.none),
               ),
             ),
@@ -346,7 +350,7 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     }
     return Container(
-        color: AppColor.bgWhite,
+        color: AppColor.mainBlack,
         margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
         child: SmartRefresher(
           enablePullUp: false,
@@ -485,7 +489,7 @@ class _FriendsPageState extends State<FriendsPage> {
       if (widget.type == 1 || widget.type == 2) {
         imageUrl = userModel.avatarUri ?? imageUrl;
       }
-      friendData.indexLetter = "群成员";
+      friendData.indexLetter = "群主";
       friendData.imageUrl = imageUrl;
       noSortlistDatas.add(friendData);
     } else if (!mobile.hasMatch(pinyinString)) {

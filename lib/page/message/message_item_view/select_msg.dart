@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/widget/long_click_popup_menu.dart';
 import '../util/message_item_height_util.dart';
@@ -178,7 +179,7 @@ class SelectMsg extends StatelessWidget {
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -216,9 +217,9 @@ class SelectMsg extends StatelessWidget {
 
   //文字的框架
   Widget textContentBox(BuildContext context) {
-    String stateImg = "assets/png/message_bubble_arrow_white.png";
+    String stateImg = "assets/png/message_bubble_arrow_black_1.png";
     if (isMyself) {
-      stateImg = "assets/png/message_bubble_arrow_black.png";
+      stateImg = "assets/png/message_bubble_arrow_yellow.png";
     }
     return Container(
       margin: isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
@@ -235,7 +236,7 @@ class SelectMsg extends StatelessWidget {
             ),
           ),
           Container(
-              margin: isMyself ? const EdgeInsets.only(right: 7.0) : const EdgeInsets.only(left: 7.0),
+              margin: isMyself ? const EdgeInsets.only(right: 5.0) : const EdgeInsets.only(left: 5.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(

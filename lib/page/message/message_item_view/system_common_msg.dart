@@ -133,7 +133,7 @@ class SystemCommonMsg extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -187,7 +187,7 @@ class SystemCommonMsg extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(3.0),
         child: Container(
-          color: AppColor.white,
+          color: AppColor.layoutBgGrey,
           child: Column(
             children: _getSystemCommonList(context),
           ),
@@ -232,7 +232,7 @@ class SystemCommonMsg extends StatelessWidget {
           }
         },
         child: Container(
-          color: AppColor.bgWhite,
+          color: AppColor.layoutBgGrey,
           child: CachedNetworkImage(
             width: 200.0,
             height: 100.0,
@@ -241,11 +241,11 @@ class SystemCommonMsg extends StatelessWidget {
             fit: BoxFit.cover,
             fadeInDuration: Duration(milliseconds: 0),
             placeholder: (context, url) => Container(
-              color: AppColor.colorebebf5,
+              color: AppColor.imageBgGrey,
               child: Image.asset("assets/png/preload_png.png", width: 78, height: 34),
             ),
             errorWidget: (context, url, error) => Container(
-              color: AppColor.color343434,
+              color: AppColor.imageBgGrey,
               child: Image.asset(
                 "assets/png/image_error.png",
                 width: 80,
@@ -267,7 +267,7 @@ class SystemCommonMsg extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       child: Text(
         text ?? subModel.text,
-        style: AppStyle.textPrimary2Medium12,
+        style: AppStyle.whiteRegular15,
         maxLines: textMaxLine,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.left,
@@ -283,17 +283,17 @@ class SystemCommonMsg extends StatelessWidget {
       padding: const EdgeInsets.only(left: 12,right: 12),
       child: Container(
         decoration: BoxDecoration(
-            border: Border(top: BorderSide(width: 0.5, color: AppColor.textHint.withOpacity(0.25)))
+            border: Border(top: BorderSide(width: 0.5, color: AppColor.dividerWhite24))
         ),
         padding: const EdgeInsets.only(top: 6,bottom: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(subModel.linkText??"查看更多",style: AppStyle.textSecondaryRegular10),
+            Text(subModel.linkText ?? "查看更多", style: AppStyle.text1Regular10),
             AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               12,
-              color: AppColor.textHint,
+              color: AppColor.textWhite60,
             ),
           ],
         ),
