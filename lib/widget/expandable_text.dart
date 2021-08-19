@@ -55,7 +55,7 @@ class _ExpandableTextState extends State<ExpandableText> {
         text: model.content,
         style: const TextStyle(
           fontSize: 14,
-          color: AppColor.textPrimary1,
+          color: AppColor.white,
         ),
       ));
     }
@@ -106,7 +106,7 @@ class _ExpandableTextState extends State<ExpandableText> {
               child: Container(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(expand ? '收起' : '展开',
-                    style: TextStyle(fontSize: style != null ? style.fontSize : null, color: AppColor.textSecondary)),
+                    style: TextStyle(fontSize: style != null ? style.fontSize : null, color: AppColor.textWhite60)),
               ),
             ),
           ],

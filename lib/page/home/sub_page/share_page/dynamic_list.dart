@@ -154,7 +154,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
 
               // 文本文案
               Offstage(
-                offstage: widget.model.content.length == 0,
+                offstage: widget.model.content == null || widget.model.content.length == 0,
                 child: Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,
@@ -164,7 +164,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     topicId: widget.topicId,
                     model: widget.model,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                    style: const TextStyle(fontSize: 14, color: AppColor.white),
                   ),
                 ),
               ),

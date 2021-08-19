@@ -225,23 +225,23 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 获取背景颜色
   Color getBackgroundColor() {
     Color color;
-    if (model.backgroundColorId != null && Application.topicBackgroundConfig.isNotEmpty) {
-      Application.topicBackgroundConfig.forEach((element) {
-        if (model.backgroundColorId == element.id) {
-          color = ColorsUtil.hexToColor("#${element.backgroundColor}");
-          return;
-        }
-      });
-    } else {
-      color = AppColor.bgBlack;
-    }
+    // if (model.backgroundColorId != null && Application.topicBackgroundConfig.isNotEmpty) {
+    //   Application.topicBackgroundConfig.forEach((element) {
+    //     if (model.backgroundColorId == element.id) {
+    //       color = ColorsUtil.hexToColor("#${element.backgroundColor}");
+    //       return;
+    //     }
+    //   });
+    // } else {
+      color = AppColor.mainBlack;
+    // }
     return color;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         resizeToAvoidBottomInset: false,
         body: model != null
             ? Stack(
@@ -311,12 +311,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               decoration: const BoxDecoration(
                                                   // 圆角
                                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                                  color: AppColor.white),
+                                                  color: AppColor.white
+                                              ),
                                               child: Container(
                                                   decoration: BoxDecoration(
                                                       // 圆角
                                                       borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                                      color: AppColor.white),
+                                                      color: AppColor.white
+                                                  ),
                                                   clipBehavior: Clip.antiAlias,
                                                   child: model.avatarUrl != null ?
                                                   CachedNetworkImage(
@@ -363,7 +365,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                                 width: ScreenUtil.instance.width * (168 / ScreenUtil.instance.width),
                                                 child: Text(
                                                   "#${model.name}",
-                                                  style: AppStyle.textMedium16,
+                                                  style: AppStyle.whiteMedium16,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -433,7 +435,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         Container(
                           padding: EdgeInsets.only(
                               left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
-                          color: AppColor.white,
+                          // color: AppColor.white,
                           child: Custom.TabBar(
                             //
                             // labelColor: Colors.black,
@@ -445,7 +447,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             labelStyle: const TextStyle(
                               fontSize: 16,
                             ),
-                            labelColor: Colors.black,
+                            labelColor: AppColor.bgWhite,
                             unselectedLabelColor: AppColor.textHint,
                             unselectedLabelStyle: const TextStyle(fontSize: 16),
                             onDoubleTap: (index) {
@@ -465,7 +467,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             indicator: const RoundUnderlineTabIndicator(
                               borderSide: BorderSide(
                                 width: 2,
-                                color: AppColor.bgBlack,
+                                color: AppColor.bgWhite,
                               ),
                               insets: EdgeInsets.only(bottom: 0),
                               wantWidth: 20,
@@ -573,7 +575,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         stream: appBarStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<TopicUiChangeModel> snapshot) {
           return Container(
-            color: AppColor.white.withOpacity(snapshot.data.opacity),
+            color: AppColor.mainBlack.withOpacity(snapshot.data.opacity),
             height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
             width: ScreenUtil.instance.width,
             padding: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
@@ -583,9 +585,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 children: [
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_return,
-                    iconColor: snapshot.data.opacity != 0.0
-                        ? AppColor.black.withOpacity(snapshot.data.opacity)
-                        : AppColor.white,
+                    iconColor:
+                    // snapshot.data.opacity != 0.0
+                    //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
+                    //     :
+                    AppColor.white,
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -598,7 +602,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
-                        color: AppColor.black.withOpacity(snapshot.data.opacity)),
+                        color: AppColor.bgWhite.withOpacity(snapshot.data.opacity)),
                   ),
                   Spacer(),
                   snapshot.data.canOnclick
@@ -610,9 +614,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                       : Container(),
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_share,
-                    iconColor: snapshot.data.opacity != 0.0
-                        ? AppColor.black.withOpacity(snapshot.data.opacity)
-                        : AppColor.white,
+                    iconColor:
+                    // snapshot.data.opacity != 0.0
+                    //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
+                    //     :
+                    AppColor.white,
                     onTap: () {
                       openShareBottomSheet(
                           context: context,
@@ -700,7 +706,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             width: 72,
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
-                border: Border.all(width: 1, color: AppColor.bgBlack)),
+                color: AppColor.mainYellow
+                // border: Border.all(width: 1, color: AppColor.bgBlack)
+            ),
             child: Stack(
               children: [
                 StreamBuilder<double>(

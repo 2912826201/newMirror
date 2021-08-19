@@ -78,7 +78,8 @@ class MainPageState extends XCState {
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
     return Scaffold(
-        backgroundColor: AppColor.mainYellow,
+        backgroundColor: AppColor.mainBlack,
+        resizeToAvoidBottomInset:false,
         // bottomNavigationBar:
         body: Stack(
           children: [

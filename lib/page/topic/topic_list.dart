@@ -193,7 +193,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     super.build(context);
     // return
     final child = Container(
-        color: AppColor.white,
+        // color: AppColor.white,
         child: MediaQuery.removePadding(
             removeTop: true,
             context: context,

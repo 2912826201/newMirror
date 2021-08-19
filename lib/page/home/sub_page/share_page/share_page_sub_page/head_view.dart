@@ -182,8 +182,10 @@ class HeadViewState extends State<HeadView> {
             height: 28,
             width: 64,
             decoration: BoxDecoration(
-              border: new Border.all(color: AppColor.textPrimary1, width: 1),
-              borderRadius: BorderRadius.circular((14.0)),
+              color: AppColor.mainYellow,
+              // border: new Border.all(color: AppColor.textPrimary1, width: 1),
+              borderRadius: BorderRadius.circular((14.0)
+              ),
             ),
             child: Center(
               child: Row(
@@ -221,7 +223,8 @@ class HeadViewState extends State<HeadView> {
               height: 28,
               width: 64,
               decoration: BoxDecoration(
-                border: new Border.all(color: AppColor.textPrimary1, width: 1),
+                // border: new Border.all(color: AppColor.textPrimary1, width: 1),
+                color: AppColor.mainYellow,
                 borderRadius: BorderRadius.circular((14.0)),
               ),
               child: Center(
@@ -411,7 +414,7 @@ class HeadViewState extends State<HeadView> {
                                   : isMySelf
                                       ? context.watch<ProfileNotifier>().profile.nickName
                                       : widget.model.name ?? "空名字",
-                              style: TextStyle(fontSize: 15),
+                              style: TextStyle(fontSize: 15,color: AppColor.bgWhite),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -422,7 +425,7 @@ class HeadViewState extends State<HeadView> {
                               child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColor.textSecondary,
+                                    color: AppColor.textWhite60,
                                   )),
                             )
                           ],
@@ -436,6 +439,7 @@ class HeadViewState extends State<HeadView> {
             AppIconButton(
               svgName: AppIcon.more_feed,
               iconSize: 24,
+              iconColor: AppColor.bgWhite,
               onTap: () {
                 print("点击更多按钮了");
                 // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
