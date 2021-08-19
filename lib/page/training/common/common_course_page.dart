@@ -651,9 +651,9 @@ Widget getCourseTopEdit(Function editClick) {
             alignment: Alignment(-1, 0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(14)),
-              color: AppColor.bgWhite.withOpacity(0.65),
+              color: AppColor.bgWhite.withOpacity(0.1),
             ),
-            child: Text("说点什么吧", style: TextStyle(fontSize: 14, color: AppColor.textHint)),
+            child: Text("说点什么吧", style: TextStyle(fontSize: 14, color: AppColor.textWhite60)),
           ),
           onTap: editClick,
         ),

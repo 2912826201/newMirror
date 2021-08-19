@@ -204,8 +204,6 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    //白色
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: ChangeNotifierProvider(

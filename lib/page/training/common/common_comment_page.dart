@@ -429,9 +429,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         child: IntrinsicHeight(
           child: AnimatedPhysicalModel(
             shape: BoxShape.rectangle,
-            color: value.itemChose ? AppColor.bgWhite : AppColor.white,
+            color: value.itemChose ? AppColor.white.withOpacity(0.1) : AppColor.mainBlack,
             elevation: 0,
-            shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
+            shadowColor: !value.itemChose ? AppColor.white.withOpacity(0.1) : AppColor.mainBlack,
             duration: Duration(seconds: 1),
             child: Container(
               padding: EdgeInsets.only(left: isSubComment ? 70 : 16, right: 0, top: 8, bottom: 8),
@@ -471,14 +471,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                                         child: Text(
                                           //todo 刚发的评论日期会出现比现在获取的日期大0.3毫秒--原因未知
                                           DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(value.createTime)),
-                                          style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                          style: TextStyle(fontSize: 12, color: AppColor.textWhite40),
                                         ),
                                       ),
                                       SizedBox(width: 12),
                                       Container(
                                         child: Text(
                                           "回复",
-                                          style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                          style: TextStyle(fontSize: 12, color: AppColor.textWhite40),
                                         ),
                                       ),
                                       SizedBox(
@@ -506,7 +506,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             ),
                             Text(
                               IntegerUtil.formatIntegerEn(value.laudCount),
-                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                              style: TextStyle(fontSize: 12, color: AppColor.textWhite40),
                             ),
                           ],
                         ),
@@ -669,14 +669,14 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           ..onTap = () {
             jumpToUserProfilePage(context, value.uid, avatarUrl: value.avatarUrl, userName: value.name);
           },
-        style: AppStyle.textMedium15));
+        style: AppStyle.whiteMedium15));
     if (isSubComment) {
       if (value.replyId != null && value.replyId > 0) {
         textSpanList.add(TextSpan(
           text: "回复 ",
           style: TextStyle(
             fontSize: 14,
-            color: AppColor.textPrimary1,
+            color: AppColor.textWhite60,
           ),
         ));
 
@@ -686,7 +686,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             ..onTap = () {
               jumpToUserProfilePage(context, value.replyId, avatarUrl: value.avatarUrl, userName: value.replyName);
             },
-          style: AppStyle.textMedium15,
+          style: AppStyle.whiteMedium15,
         ));
       }
     }
@@ -697,7 +697,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         text: value.content,
         style: TextStyle(
           fontSize: 14,
-          color: AppColor.textPrimary1,
+          color: AppColor.textWhite60,
         ),
       ));
     }
@@ -747,7 +747,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           },
         style: TextStyle(
           fontSize: 14,
-          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
+          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textWhite60,
         ),
       ));
     }

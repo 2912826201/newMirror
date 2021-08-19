@@ -14,7 +14,7 @@ Future openFeedCommentBottomSheet({
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       context: context,
       // 圆角
       shape: RoundedRectangleBorder(
