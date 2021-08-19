@@ -189,7 +189,7 @@ Dio _getDioGetInstance() {
 void _setHeaders(int authType, Dio dio) {
   //TODO 渠道号暂时写死
   dio.options.headers["aimy-drivers"] =
-      "{\"os\":${CheckPhoneSystemUtil.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":${AppConfig.channelCode}}";
+      "{\"os\":${CheckPhoneSystemUtil.platform},\"clientVersion\":  \"${AppConfig.version}\",\"channel\":${AppConfig.channelCode}}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;
   switch (authType) {
