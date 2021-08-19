@@ -50,9 +50,9 @@ class _feedBackPage extends State<FeedBackPage> {
           Container(
             padding:
                 const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
+            child: CustomYellowButton(
               "提交",
-              CustomRedButton.buttonStateNormal,
+              CustomYellowButton.buttonStateNormal,
               () {
                 FocusScope.of(context).requestFocus(FocusNode());
                 _uploadImage();

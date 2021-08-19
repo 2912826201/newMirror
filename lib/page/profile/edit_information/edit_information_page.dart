@@ -56,7 +56,7 @@ class _EditInformationState extends State<EditInformation> {
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;
   double textHeight = 0;
-  int buttonState = CustomRedButton.buttonStateNormal;
+  int buttonState = CustomYellowButton.buttonStateNormal;
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
   String cityCode;
@@ -131,19 +131,19 @@ class _EditInformationState extends State<EditInformation> {
             Container(
               padding:
                   const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-              child: CustomRedButton(
+              child: CustomYellowButton(
                 "确定",
                 buttonState,
                 () {
                   setState(() {
-                    buttonState = CustomRedButton.buttonStateLoading;
+                    buttonState = CustomYellowButton.buttonStateLoading;
                   });
                   if (userName != null && avataruri != null) {
                     /* Loading.showLoading(context);*/
                     _upDataUserInfo();
                   } else {
                     setState(() {
-                      buttonState = CustomRedButton.buttonStateNormal;
+                      buttonState = CustomYellowButton.buttonStateNormal;
                     });
                     Toast.show("头像和昵称不能为空!", context);
                   }
@@ -318,7 +318,7 @@ class _EditInformationState extends State<EditInformation> {
                 ],
               ),
             ),
-            buttonState == CustomRedButton.buttonStateLoading
+            buttonState == CustomYellowButton.buttonStateLoading
                 ? Container(
                     height: ScreenUtil.instance.height,
                     child: InkWell(
@@ -438,7 +438,7 @@ class _EditInformationState extends State<EditInformation> {
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
       setState(() {
-        buttonState = CustomRedButton.buttonStateNormal;
+        buttonState = CustomYellowButton.buttonStateNormal;
       });
       Toast.show(
         "资料修改失败",

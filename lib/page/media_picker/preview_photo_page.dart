@@ -57,9 +57,9 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
           actions: [
             Container(
               padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-              child: CustomRedButton(
+              child: CustomYellowButton(
                 "继续",
-                CustomRedButton.buttonStateNormal,
+                CustomYellowButton.buttonStateNormal,
                 () async {
                   MediaFileModel model = MediaFileModel();
                   model.croppedImage = await _getImage();

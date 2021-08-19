@@ -88,9 +88,9 @@ class _EditInformationNameState extends State<EditInformationName> {
         actions: [
           Container(
             padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
-            child: CustomRedButton(
+            child: CustomYellowButton(
               "确定",
-              CustomRedButton.buttonStateNormal,
+              CustomYellowButton.buttonStateNormal,
               () {
                 _commentFocus.unfocus();
                 if (_editText.isEmpty) {

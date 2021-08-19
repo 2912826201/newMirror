@@ -71,11 +71,11 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
                   if (snapshot.data.afterImage && snapshot.data.beforeImage) {
                     Loading.hideLoading(context);
                   }
-                  return CustomRedButton(
+                  return CustomYellowButton(
                     "完成",
                     snapshot.data.afterImage && snapshot.data.beforeImage
-                        ? CustomRedButton.buttonStateNormal
-                        : CustomRedButton.buttonStateInvalid,
+                        ? CustomYellowButton.buttonStateNormal
+                        : CustomYellowButton.buttonStateInvalid,
                     () async {
                       //因为获取图像数据需要时间，所以可能在快速点击时执行多次此方法，获取多次图像弹出多个分享弹窗。根据_isBusy变量状态控制
                       if (_isBusy) {
