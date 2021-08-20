@@ -895,7 +895,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
           child: CustomYellowButton(
             "下一步",
             context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty && value.currentEntity == null)
-                ? CustomYellowButton.buttonStateDisable
+                ? CustomYellowButton.buttonStateInvalid
                 : CustomYellowButton.buttonStateNormal,
             () async {
               int time = DateTime.now().millisecondsSinceEpoch;
@@ -1043,7 +1043,6 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                 Navigator.pop(context, true);
               }
             },
-            isDarkBackground: true,
           ),
         )
       ],
