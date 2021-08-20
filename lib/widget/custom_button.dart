@@ -341,12 +341,10 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
                     ? AppColor.mainYellow.withOpacity(0.6)
                     : AppColor.mainYellow
                 : widget.buttonState == CustomYellowButton.buttonStateDisabled
-                    ? widget.isDarkBackground
-                        ? AppColor.disabledYellow
-                        : AppColor.disabledYellow
+                    ? AppColor.disabledYellow
                     : widget.buttonState == CustomYellowButton.buttonStateLoading
                         ? AppColor.mainYellow
-                        : AppColor.mainYellow.withOpacity(0.2),
+                        : AppColor.mainYellow.withOpacity(0.4),
             borderRadius: BorderRadius.circular(14)),
         child: Row(
           children: [
@@ -356,7 +354,7 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
                     height: 17,
                     width: 17,
                     child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColor.white),
+                        valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
                         backgroundColor: AppColor.transparent,
                         strokeWidth: 1.5))
                 : Container(),
@@ -371,15 +369,13 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
                   fontSize: 14,
                   color: widget.buttonState == CustomYellowButton.buttonStateNormal
                       ? isPressed
-                          ? AppColor.mainBlack.withOpacity(0.56)
+                          ? AppColor.mainBlack.withOpacity(0.6)
                           : AppColor.mainBlack
                       : widget.buttonState == CustomYellowButton.buttonStateDisabled
-                          ? widget.isDarkBackground
-                              ? AppColor.mainBlack.withOpacity(0.24)
-                              : AppColor.mainBlack.withOpacity(0.16)
+                          ? AppColor.mainBlack
                           : widget.buttonState == CustomYellowButton.buttonStateLoading
                               ? AppColor.mainBlack
-                              : AppColor.mainBlack),
+                              : AppColor.mainBlack.withOpacity(0.4)),
             ),
             Spacer()
           ],
