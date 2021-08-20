@@ -34,15 +34,14 @@ class _BodyTypeState extends State<BodyTypePage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
       body: Container(
         height: height,
         width: width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
           children: [
             SizedBox(
               height: 42,
@@ -52,7 +51,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 padding: EdgeInsets.only(left: 41),
                 child: Text(
               "你现在的体型是？",
-              style: AppStyle.textMedium23,
+              style: AppStyle.whiteMedium23,
             ),),
             SizedBox(
               height: 12,
@@ -62,7 +61,7 @@ class _BodyTypeState extends State<BodyTypePage> {
           padding: EdgeInsets.only(left: 41),
           child:Text(
               "我们将以此为你推荐训练计划,让你一试身手。",
-              style: AppStyle.textRegular14,
+              style: AppStyle.text1Regular14,
             )),
             SizedBox(
               height: 42,
@@ -74,10 +73,10 @@ class _BodyTypeState extends State<BodyTypePage> {
             Center(
               child: Text(
                 "${choseType.name}",
-                style: AppStyle.textRegular16,
+                style: AppStyle.text1Regular16,
               ),
             ),
-            Spacer(),
+            SizedBox(height: 44,),
             Container(
               width: width,
               padding: EdgeInsets.only(left: 41, right: 41),
@@ -86,9 +85,9 @@ class _BodyTypeState extends State<BodyTypePage> {
                 height: 44.0,
                 width: width,
                 circular: 3.0,
-                textColor: AppColor.white,
+                textColor: AppColor.mainBlack,
                 fontSize: 16,
-                backColor: AppColor.bgBlack,
+                backColor: AppColor.mainYellow,
                 color: AppColor.transparent,
                 onTap: () {
                   Application.fitnessEntryModel.bodyType = choseType.id;
@@ -108,7 +107,6 @@ class _BodyTypeState extends State<BodyTypePage> {
                 },
               ),
             ),
-            Spacer()
           ],
         ),
       ),
@@ -130,7 +128,7 @@ class _BodyTypeState extends State<BodyTypePage> {
           },
           itemBuilder: (context, index) {
             return Container(
-              color: AppColor.black,
+              color: AppColor.white,
               height: 284,
               width: 160,
               padding: EdgeInsets.only(left: 16.5, right: 16.5, top: 35, bottom: 35),

@@ -191,7 +191,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         SizedBox(
           height: 36,
         ),
-        if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "我的课程"),
+        if (AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24,color: AppColor.white), "我的课程"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_scan, 24,color: AppColor.white), "扫一扫"),
         if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24,color: AppColor.white), "关于"),
         if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24,color: AppColor.white), "意见反馈"),
@@ -275,7 +275,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       children: [
                     Text(
                          number != 0 && number != null ? "$number" : "--",
-                          style: AppStyle.whiteRegular40,),
+                          style: AppStyle.whiteBold40,),
                       if(title=="体重记录") Text("kg",style: AppStyle.whiteMedium14,)
                     ],),
                     SizedBox(
@@ -544,10 +544,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 imageUrl: avatar != null ? FileUtil.getMediumImage(avatar) : " ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
               ),);
           }, selector: (context, notifier) {
@@ -654,11 +654,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
+        AppRouter.navigateToLoginSucess(context);
         /*jumpChatPageSystem(context);*/
         // showToast("这个flutter告诉android要展示的内容");
         // AppRouter.navigateToVipPage(context, VipState.EXPIRED,openOrNot: true);
         // AppSettings.openDisplaySettings(asAnotherTask: true);
-        AppRouter.navigateToTestPage(context);
+        // AppRouter.navigateToTestPage(context);
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);

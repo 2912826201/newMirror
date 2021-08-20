@@ -91,9 +91,9 @@ class _PerfectUserState extends State<PerfectUserPage> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
 
-        value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
+        value: SystemUiOverlayStyle.light, //黑色是dark 白色是light
         child: Scaffold(
-          backgroundColor: AppColor.white,
+          backgroundColor: AppColor.mainBlack,
           resizeToAvoidBottomInset: false,
           appBar: null,
           body: Container(
@@ -138,6 +138,8 @@ class _PerfectUserState extends State<PerfectUserPage> {
       width: 90,
       height: 90,
       child: InkWell(
+        highlightColor: AppColor.transparent,
+        splashColor: AppColor.transparent,
         onTap: () {
           AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
             SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
@@ -186,7 +188,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
                           fit: BoxFit.cover,
                         )
                       : Container(
-                          color: AppColor.black,
+                          color: AppColor.imageBgGrey,
                         )),
             ),
             Positioned(
@@ -206,14 +208,16 @@ class _PerfectUserState extends State<PerfectUserPage> {
       maxLength: maxTextLength,
       controller: controller,
       showCursor: true,
-      cursorColor: AppColor.black,
+      style: AppStyle.whiteRegular16,
+      cursorColor: AppColor.white,
       decoration: InputDecoration(
           hintText: _hintText,
           counterText: "",
-          hintStyle: AppStyle.textHintRegular16,
+          hintStyle: AppStyle.text1Regular16,
           suffixText: "$textLength/$maxTextLength",
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
+          suffixStyle: AppStyle.text1Regular14,
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24))),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24)))),
       inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: maxTextLength, needFilter: true)],
     );
   }
@@ -239,7 +243,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
           height: 44,
           padding: EdgeInsets.only(left: 41, right: 41),
           decoration: BoxDecoration(
-            color: fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
+            color: fileList.isNotEmpty && username != "" ?AppColor.mainYellow:AppColor.mainYellow.withOpacity(0.4),
             borderRadius: BorderRadius.all(Radius.circular(3)),
           ),
           child: Row(
@@ -251,8 +255,8 @@ class _PerfectUserState extends State<PerfectUserPage> {
                       height: 17,
                       width: 17,
                       child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(AppColor.black),
-                          backgroundColor: AppColor.white,
+                          valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
+                          backgroundColor: AppColor.mainBlack.withOpacity(0.16),
                           strokeWidth: 1.5))
                   : Container(),
               SizedBox(
@@ -260,9 +264,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
               ),
               Text(
                 "完成",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary),
+                style:AppStyle.textRegular16,
               ),
               Spacer()
             ],

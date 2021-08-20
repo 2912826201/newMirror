@@ -31,7 +31,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
@@ -39,7 +39,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
         width: width,
         height: height,
         padding: EdgeInsets.only(left: 41,right: 41),
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
               height: 42,
@@ -49,7 +49,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "你的目标是？",
-                    style: AppStyle.textMedium23,
+                    style: AppStyle.whiteMedium23,
                   ),
                 ),
 
@@ -61,17 +61,16 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "我们将以此为你推荐训练计划,让你一试身手。",
-                  style: AppStyle.textRegular14,
+                  style: AppStyle.text1Regular14,
                 ),
               ),
             SizedBox(
               height: 42,
             ),
-           Expanded(child: ListView.builder(
-                    itemCount: targetList.length,
-                    itemBuilder: (context, index) {
-                      return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快速减掉赘肉，击退小肚腩", index);
-                    })),
+            Column(
+              children: List.generate(targetList.length, (index){
+                  return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快速减掉赘肉，击退小肚腩", index);
+              }),)
           ],
         ),
       ),
@@ -99,7 +98,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
       },
       child:Container(
         height: 78,
-      color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
+      color: beforIndex == index ? AppColor.white.withOpacity(0.1) : AppColor.transparent,
         width: width,
         padding: EdgeInsets.only(left: 7, right: 7,top: 12,bottom: 12),
         child:Row(
@@ -108,7 +107,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
             Container(
               child: Text(
                 "${index + 1}",
-                style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
+                style: beforIndex == index ? AppStyle.whiteMedium29 : AppStyle.text1Medium29,
               ),
             ),
             SizedBox(
@@ -120,12 +119,12 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                 Spacer(),
                 Text(
                   title,
-                  style: beforIndex == index ? AppStyle.textMedium21 : AppStyle.textPrimary3Medium21,
+                  style: beforIndex == index ? AppStyle.whiteMedium21 : AppStyle.text1Medium21,
                 ),
                 Spacer(),
                 Text(
                   introduction,
-                  style: AppStyle.textSecondaryRegular12,
+                  style: AppStyle.text2Regular12,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -137,6 +136,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
               child: AppIcon.getAppIcon(
                 AppIcon.arrow_right_12,
                 12,
+                color: AppColor.textWhite40,
                 containerWidth: 22,
                 containerHeight: 22,
               ),

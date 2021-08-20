@@ -171,7 +171,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           leadingOnTap: () {
             Navigator.pop(context);

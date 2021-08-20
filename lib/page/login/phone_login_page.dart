@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -22,28 +23,21 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //本页面的一些常量及文本
   String _titleOfSendTextBtn;
 
-  final _conspicousGreeting = "Hello";
+  final _conspicousGreeting = "Hello~";
   final _stringOfSubtitle = "此刻开始分享你的健身生活和经验吧~";
   final _placeholderOfInputField = "请输入你的手机号";
   final _sendingTitle = "发送中";
-  final _sendSmsInitialtitle = "发送验证码";
+  final _sendSmsInitialtitle = "获取验证码";
   final _resendTitle = "重新发送";
 
   //
   //"高亮"时的按钮颜色
-  final _sendSmsHighLightedColor = Color.fromRGBO(17, 17, 17, 1);
+  final _sendSmsHighLightedColor = AppColor.mainYellow;
 
   //默认的按钮的颜色
-  final _sendSmsOriginColor = Color.fromRGBO(235, 235, 235, 1);
+  final _sendSmsOriginColor = AppColor.mainYellow.withOpacity(0.4);
 
   /////////////////////////////
-  //默认的标题颜色
-  final _sendSmsOriginTitleColor = Color.fromRGBO(153, 153, 153, 1);
-
-  //"高亮"时的标题颜色
-  final _sendSmsHighLightedTitleColor = Colors.white;
-  var _smsBtnTitleColor;
-
   var _smsBtnColor;
   var _textField;
 
@@ -58,7 +52,6 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   void initState() {
     super.initState();
     _titleOfSendTextBtn = _sendSmsInitialtitle;
-    _smsBtnTitleColor = _sendSmsOriginTitleColor;
     _smsBtnColor = _sendSmsOriginColor;
     //对输入框的文本进行监听
     inputController.addListener(() {
@@ -74,7 +67,6 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   _recoverUi() {
     setState(() {
       _smsBtnColor = _sendSmsOriginColor;
-      _smsBtnTitleColor = _sendSmsOriginTitleColor;
     });
   }
 
@@ -92,24 +84,25 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   _everythingReady() {
     setState(() {
       _smsBtnColor = _sendSmsHighLightedColor;
-      _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
       body: InkWell(
+        highlightColor: AppColor.transparent,
+        splashColor: AppColor.transparent,
         onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: Container(
           padding: EdgeInsets.only(top: 40),
-          color: Colors.white,
           child: Container(
             margin: const EdgeInsets.only(top: 42.5),
             //整体居中
@@ -189,11 +182,11 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   Widget _sloganArea() {
     var hellotext = Text(
       _conspicousGreeting,
-      style: TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
+      style:AppStyle.whiteMedium23,
     );
     var subtext = Text(
       _stringOfSubtitle,
-      style: TextStyle(color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none),
+      style:AppStyle.text1Regular14,
     );
     var area1 = Container(
       child: hellotext,
@@ -220,25 +213,26 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   }
 
   Widget _inputFields() {
-    var palceholderTextStyle = TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16);
     //输入框的样式
     var inputFieldDecoration = InputDecoration(
       counterText: "",
       // 不显示计数文字
       hintText: _placeholderOfInputField,
-      hintStyle: palceholderTextStyle,
+      hintStyle: AppStyle.text1Regular16,
       isDense: true,
       focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
+        borderSide: BorderSide(color: AppColor.white.withOpacity(0.24), width: 0.5),
       ),
-      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
+      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24))),
     );
     if (_textField == null) {
       _textField = TextField(
         maxLength: 11,
+        cursorColor: AppColor.white,
         controller: inputController,
         keyboardType: TextInputType.phone,
         autofocus: true,
+        style: AppStyle.whiteRegular16,
         decoration: inputFieldDecoration,
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
       );
@@ -257,6 +251,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
                     child: AppIconButton(
                       svgName: AppIcon.clear_circle_grey,
                       iconSize: 16,
+                      bgColor: AppColor.mainBlack,
                       onTap: _clearAllText,
                     ),
                   ),
@@ -301,8 +296,8 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
                       height: 17,
                       width: 17,
                       child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(AppColor.black),
-                          backgroundColor: AppColor.white,
+                          valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
+                          backgroundColor: AppColor.mainBlack.withOpacity(0.16),
                           strokeWidth: 1.5))
                   : Container(),
               SizedBox(
@@ -310,7 +305,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
               ),
               Text(
                 _titleOfSendTextBtn,
-                style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+               style: AppStyle.textRegular16,
               ),
               Spacer()
             ],
