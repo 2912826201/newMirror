@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../custom_appbar.dart';
+import '../custom_button.dart';
 import '../icon.dart';
 import '../smart_refressher_head_footer.dart';
 import 'feed_friends_cell.dart';
@@ -251,7 +252,8 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         Visibility(
-          visible: widget.type == 2 || (widget.type == 3 && followListModel.list.length > 0),
+          visible: widget.type == 2,
+          // visible: widget.type == 2 || (widget.type == 3 && followListModel.list.length > 0),
           child: GestureDetector(
             child: Container(
               padding: const EdgeInsets.only(right: 8, left: 8),
@@ -286,6 +288,34 @@ class _FriendsPageState extends State<FriendsPage> {
             },
           ),
         ),
+        Visibility(
+          visible: (widget.type == 3 && followListModel.list.length > 0),
+          child: Container(
+            padding:
+                const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
+            child: CustomYellowButton(
+              "完成",
+              CustomYellowButton.buttonStateNormal,
+              () {
+                String uids = "";
+
+                if (selectUserUsIdList == null || selectUserUsIdList.length < 1) {
+                  ToastShow.show(msg: "没有选中的用户", context: context);
+                  return;
+                } else {
+                  for (int i = 0; i < selectUserUsIdList.length; i++) {
+                    if (i == selectUserUsIdList.length - 1) {
+                      uids += selectUserUsIdList[i].toString();
+                    } else {
+                      uids += selectUserUsIdList[i].toString() + ",";
+                    }
+                  }
+                }
+                addUserGroup(uids);
+              },
+            ),
+          ),
+        )
       ],
     );
   }

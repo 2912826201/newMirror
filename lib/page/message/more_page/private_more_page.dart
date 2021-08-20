@@ -157,7 +157,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       height: 0.3,
-      color: AppColor.dividerWhite24,
+      color: AppColor.dividerWhite8,
     );
   }
 

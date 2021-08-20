@@ -466,7 +466,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
       separatorBuilder: (BuildContext context, int index) {
         return Container(
           width: 0.5,
-          color: AppColor.mainBlack.withOpacity(0.2),
+          color: AppColor.white.withOpacity(0.08),
           height: menuHeight,
         );
       },

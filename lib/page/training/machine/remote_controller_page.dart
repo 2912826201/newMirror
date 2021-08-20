@@ -742,6 +742,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                       top: 0,
                       child: AppIconButton(
                         svgName: AppIcon.nav_close,
+                        iconColor: AppColor.white,
                         iconSize: 18,
                         onTap: () {
                           Navigator.pop(context);

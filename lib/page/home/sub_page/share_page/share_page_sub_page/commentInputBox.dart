@@ -65,7 +65,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
         width: ScreenUtil.instance.width,
         decoration: BoxDecoration(
           color: AppColor.mainBlack,
-          border: Border(top: BorderSide(width: widget.isUnderline ? 0.5 : 0.000000001, color: AppColor.dividerWhite24)),
+          border: Border(top: BorderSide(width: widget.isUnderline ? 0.5 : 0.000000001, color: AppColor.dividerWhite8)),
         ),
         // child: Center(
         child: Row(

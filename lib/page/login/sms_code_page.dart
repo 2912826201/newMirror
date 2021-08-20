@@ -140,7 +140,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(
           svgName: AppIcon.nav_close,
-          iconColor: AppColor.black,
+          iconColor: AppColor.white,
           onTap: () {
             Navigator.pop(context);
           },
