@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -77,34 +78,36 @@ class MainPageState extends XCState {
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
-    return Scaffold(
-        backgroundColor: AppColor.mainBlack,
-        resizeToAvoidBottomInset:false,
-        // bottomNavigationBar:
-        body: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight + 48),
-              child: PageView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  return pages[index];
-                },
-                itemCount: 4,
-                controller: pageController,
-                // itemBuilder: SliverChildBuilderDelegate((BuildContext context, int index) {
-                //   return pages[index];
-                // }, childCount: 4),
-                // 提前预加载当前pageView的下一个视图
-                allowImplicitScrolling: true,
-                physics: NeverScrollableScrollPhysics(), // 禁止滑动
-              ),
-            ),
-            Positioned(
-                bottom: ScreenUtil.instance.bottomBarHeight,
-                child: IFTabBar(
-                  tabBarClickListener: (index) {
-                    print('----------index-------$index');
-                    /*  int nowIndex = index;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light, //黑色是dark 白色是light
+        child: Scaffold(
+            backgroundColor: AppColor.mainBlack,
+            resizeToAvoidBottomInset: false,
+            // bottomNavigationBar:
+            body: Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight + 48),
+                  child: PageView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      return pages[index];
+                    },
+                    itemCount: 4,
+                    controller: pageController,
+                    // itemBuilder: SliverChildBuilderDelegate((BuildContext context, int index) {
+                    //   return pages[index];
+                    // }, childCount: 4),
+                    // 提前预加载当前pageView的下一个视图
+                    allowImplicitScrolling: true,
+                    physics: NeverScrollableScrollPhysics(), // 禁止滑动
+                  ),
+                ),
+                Positioned(
+                    bottom: ScreenUtil.instance.bottomBarHeight,
+                    child: IFTabBar(
+                      tabBarClickListener: (index) {
+                        print('----------index-------$index');
+                        /*  int nowIndex = index;
             if(!AppConfig.needShowTraining){
               if(index==2&&currentIndex<2){
                 nowIndex = nowIndex-1;
@@ -113,48 +116,48 @@ class MainPageState extends XCState {
                 nowIndex = nowIndex+1;
               }
             }*/
-                    if (currentIndex == index) {
-                      print("范慧慧");
-                      return;
-                    }
-                    currentIndex = index;
-                    pageController.jumpToPage(index);
-                    print("跳转111111");
-                    if (_unReadFeedCount == 0) {
-                      _getUnReadFeedCount();
-                    }
-                    if (Application.appContext.read<UserInteractiveNotifier>().value.fansUnreadCount == 0) {
-                      _getUnReadFansCount();
-                    }
-                    Future.delayed(Duration.zero, () {
-                      getUnReads();
-                    });
-                    switch (index) {
-                      case 0:
-                        break;
-                      case 1:
-                        EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
-                        break;
-                      case 2:
-                        break;
-                      case 3:
-                        _getFollowCount();
-                        break;
-                    }
-                  },
-                  onDoubleTap: (index) {
-                    if (homePageKey.currentState != null && currentIndex == 0) {
-                      homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
-                    }
-                    pageController.jumpToPage(index);
-                    currentIndex = index;
-                    if (_unReadFeedCount == 0) {
-                      _getUnReadFeedCount();
-                    }
-                    Future.delayed(Duration.zero, () {
-                      getUnReads();
-                    });
-                    /* print("双击index：：${index} currentIndex:::$currentIndex");
+                        if (currentIndex == index) {
+                          print("范慧慧");
+                          return;
+                        }
+                        currentIndex = index;
+                        pageController.jumpToPage(index);
+                        print("跳转111111");
+                        if (_unReadFeedCount == 0) {
+                          _getUnReadFeedCount();
+                        }
+                        if (Application.appContext.read<UserInteractiveNotifier>().value.fansUnreadCount == 0) {
+                          _getUnReadFansCount();
+                        }
+                        Future.delayed(Duration.zero, () {
+                          getUnReads();
+                        });
+                        switch (index) {
+                          case 0:
+                            break;
+                          case 1:
+                            EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                            break;
+                          case 2:
+                            break;
+                          case 3:
+                            _getFollowCount();
+                            break;
+                        }
+                      },
+                      onDoubleTap: (index) {
+                        if (homePageKey.currentState != null && currentIndex == 0) {
+                          homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
+                        }
+                        pageController.jumpToPage(index);
+                        currentIndex = index;
+                        if (_unReadFeedCount == 0) {
+                          _getUnReadFeedCount();
+                        }
+                        Future.delayed(Duration.zero, () {
+                          getUnReads();
+                        });
+                        /* print("双击index：：${index} currentIndex:::$currentIndex");
             if (homePageKey.currentState != null && currentIndex == 0) {
               homePageKey.currentState.subpageRefresh(isBottomNavigationBar: true);
             }
@@ -171,16 +174,16 @@ class MainPageState extends XCState {
               }
 
             }*/
-                  },
-                )),
-            Positioned(
-                bottom: 0,
-                child: Container(
-                  width: ScreenUtil.instance.width,
-                  height: ScreenUtil.instance.bottomBarHeight,
-                  color: AppColor.mainBlack,
-                )),
-          ],
-        ));
+                      },
+                    )),
+                Positioned(
+                    bottom: 0,
+                    child: Container(
+                      width: ScreenUtil.instance.width,
+                      height: ScreenUtil.instance.bottomBarHeight,
+                      color: AppColor.mainBlack,
+                    )),
+              ],
+            )));
   }
 }
