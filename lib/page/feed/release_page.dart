@@ -217,7 +217,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
           String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
           return Scaffold(
             // backgroundColor: AppColor.mainRed,
-            // resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               brightness: Brightness.dark,
               backgroundColor: AppColor.mainBlack,

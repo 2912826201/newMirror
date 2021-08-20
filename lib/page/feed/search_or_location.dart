@@ -70,6 +70,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
     //flutter定位只能获取到经纬度信息
     // currentAddressInfo = await AmapLocation.fetch();
     // 调用周边
+    if(widget.currentAddressInfo == null) {
+      widget.currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+    }
     aroundHttp();
   }
 
