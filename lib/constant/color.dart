@@ -33,7 +33,7 @@ class AppColor {
   static const imageBgGrey = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
 
   //分割线 注意该颜色为有透明度的颜色
-  static const dividerWhite24 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.08);
+  static const dividerWhite8 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.08);
 
   //文字辅色1 注意该颜色为有透明度的颜色
   static const textWhite60 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.6);

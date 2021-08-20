@@ -159,7 +159,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
                 SliverToBoxAdapter(
                   child: Container(
                     height: 0.2,
-                    color: AppColor.dividerWhite24,
+                    color: AppColor.dividerWhite8,
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -192,7 +192,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
-          top: BorderSide(color: AppColor.dividerWhite24, width: 1),
+          top: BorderSide(color: AppColor.dividerWhite8, width: 1),
         ),
       ),
       padding: const EdgeInsets.only(left: 10, right: 10),

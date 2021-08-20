@@ -160,7 +160,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
           Container(
             height: 48,
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(width: 0.5, color:AppColor.dividerWhite24)),
+              border: Border(bottom: BorderSide(width: 0.5, color:AppColor.dividerWhite8)),
             ),
             child: Stack(
               overflow: Overflow.clip,

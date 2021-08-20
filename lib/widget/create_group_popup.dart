@@ -393,7 +393,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           height: 0.5,
-          color: AppColor.dividerWhite24,
+          color: AppColor.dividerWhite8,
         ),
         Expanded(
           child: Container(

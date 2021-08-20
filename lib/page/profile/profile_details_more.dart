@@ -74,7 +74,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
           padding: const EdgeInsets.only(left: 16, right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.dividerWhite24,
+          color: AppColor.dividerWhite8,
         ),
         InkWell(
           onTap: () {
@@ -91,7 +91,7 @@ class _DetailsMoreState extends State<ProfileDetailsMore> {
             ? Container(
                 width: width,
                 height: 0.5,
-                color: AppColor.dividerWhite24,
+                color: AppColor.dividerWhite8,
               )
             : Container(),
         !context.watch<UserInteractiveNotifier>().value.profileUiChangeModel[widget.userId].isFollow

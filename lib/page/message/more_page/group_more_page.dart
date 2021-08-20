@@ -279,7 +279,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //间隔线
-  Widget getContainer({double height, double horizontal, Color color = AppColor.dividerWhite24}) {
+  Widget getContainer({double height, double horizontal, Color color = AppColor.dividerWhite8}) {
     return SliverToBoxAdapter(
       child: Container(
         width: MediaQuery

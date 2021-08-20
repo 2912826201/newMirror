@@ -238,7 +238,7 @@ class _AppDialog extends StatelessWidget {
     if (cancelButton != null || confirmButton != null) {
       _viewList.add(Container(
         height: _dividerWidth,
-        color: AppColor.dividerWhite24,
+        color: AppColor.dividerWhite8,
       ));
 
       List<Widget> rowList = [];
@@ -248,7 +248,7 @@ class _AppDialog extends StatelessWidget {
           rowList.add(Container(
             width: _dividerWidth,
             height: _buttonHeight,
-            color: AppColor.dividerWhite24,
+            color: AppColor.dividerWhite8,
           ));
         }
       }
