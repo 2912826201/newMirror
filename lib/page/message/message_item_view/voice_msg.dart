@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
@@ -160,7 +161,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                   : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 widget.name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -205,9 +206,9 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
   //获取动态框
   Widget _getVoiceUi(BuildContext context) {
-    String stateImg = "assets/png/message_bubble_arrow_white.png";
+    String stateImg = "assets/png/message_bubble_arrow_black_1.png";
     if (widget.isMyself) {
-      stateImg = "assets/png/message_bubble_arrow_black.png";
+      stateImg = "assets/png/message_bubble_arrow_yellow.png";
     }
     return Container(
       margin: widget.isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
@@ -224,31 +225,33 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
             ),
           ),
           Container(
-              margin: widget.isMyself ? const EdgeInsets.only(right: 7.0) : const EdgeInsets.only(left: 7.0),
+              margin: widget.isMyself ? const EdgeInsets.only(right: 5.0) : const EdgeInsets.only(left: 5.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(
                     borderRadius: BorderRadius.all(Radius.circular(6)),
-                    color: widget.isMyself ? AppColor.textPrimary2 : AppColor.white,
+                    color: widget.isMyself ? AppColor.mainYellow : AppColor.layoutBgGrey,
                     child: new InkWell(
                       child: _getShowTextBox(),
-                      splashColor: widget.isMyself ? AppColor.textPrimary1 : AppColor.textHint,
+                      splashColor: widget.isMyself
+                          ? AppColor.mainYellow.withOpacity(0.5)
+                          : AppColor.layoutBgGrey.withOpacity(0.5),
                       onTap: () {
                         if (ClickUtil.isFastClick(time: 300)) {
                           return;
                         }
-                        String filePathMd5=_getUrlMd5String();
-                        if(context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String:filePathMd5)){
+                        String filePathMd5 = _getUrlMd5String();
+                        if (context.read<VoiceSettingNotifier>().getIsPlaying(idMd5String: filePathMd5)) {
                           context
                               .read<VoiceSettingNotifier>()
                               .judgePlayModel(urlString, urlFilePathString, context, filePathMd5);
-                        }else {
+                        } else {
                           context
                               .read<VoiceSettingNotifier>()
                               .judgePlayModel(urlString, urlFilePathString, context, urlMd5String);
                         }
-                        Map<String, dynamic> map =Map();
-                        map["urlMd5String"]=urlMd5String;
+                        Map<String, dynamic> map = Map();
+                        map["urlMd5String"] = urlMd5String;
                         map["filePathMd5"]=filePathMd5;
                         widget.voidMessageClickCallBack(
                             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
@@ -282,8 +285,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
         width: 12,
       ),
       Text(
-        widget.chatVoiceModel.longTime.toString(),
-        style: TextStyle(color: widget.isMyself ? AppColor.white : AppColor.textPrimary1, fontSize: 16),
+        widget.chatVoiceModel.longTime.toString() + "\"",
+        style: TextStyle(color: widget.isMyself ? AppColor.mainBlack : AppColor.white, fontSize: 16),
       ),
       Expanded(child: SizedBox()),
     ];
@@ -394,7 +397,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: widget.isMyself ? AppColor.white : AppColor.textPrimary1,
+        color: widget.isMyself ? AppColor.mainBlack : AppColor.white,
         borderRadius: BorderRadius.circular(width / 2),
       ),
     );

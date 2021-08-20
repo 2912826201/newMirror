@@ -45,7 +45,7 @@ class ChatPageUtil {
   //获取appbar
   Widget getAppBar(ConversationDto conversation, Function() _topMoreBtnClick) {
     Widget action =
-        CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick);
+        CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: _topMoreBtnClick);
     String chatName;
     if (conversation.name == null || conversation.name.trim().length < 1) {
       chatName = conversation.conversationId;
@@ -95,8 +95,11 @@ class ChatPageUtil {
         child: Container(
           height: 48,
           padding: const EdgeInsets.only(right: 16),
-          width: MediaQuery.of(context).size.width,
-          color: AppColor.textSecondary.withOpacity(0.1),
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          color: AppColor.layoutBgGrey.withOpacity(0.5),
           child: Row(
             children: [
               GestureDetector(
@@ -104,7 +107,7 @@ class ChatPageUtil {
                   height: 48,
                   width: 48,
                   color: AppColor.transparent,
-                  child: AppIcon.getAppIcon(AppIcon.close_18, 16, color: AppColor.textHint),
+                  child: AppIcon.getAppIcon(AppIcon.close_18, 16, color: AppColor.textWhite60),
                 ),
                 onTap: () {
                   if (_showTopAttentionUi != null) {
@@ -115,10 +118,10 @@ class ChatPageUtil {
               Expanded(
                   child: SizedBox(
                       child: Text(
-                "点击关注,及时看到对方动态",
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                        "点击关注,及时看到对方动态",
+                        style: TextStyle(color: AppColor.white, fontSize: 16),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
               ))),
               GestureDetector(
                 child: Container(
@@ -126,14 +129,14 @@ class ChatPageUtil {
                   height: 24,
                   decoration: BoxDecoration(
                     color: AppColor.transparent,
-                    border: Border.all(width: 1, color: AppColor.textPrimary1),
+                    border: Border.all(width: 1, color: AppColor.white),
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.textPrimary1),
-                      Text("关注", style: AppStyle.textMedium14),
+                      AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
+                      Text("关注", style: AppStyle.whiteMedium12),
                       SizedBox(width: 2),
                     ],
                   ),

@@ -131,7 +131,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -189,7 +189,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       height: 180 + 68.5,
       margin: const EdgeInsets.only(top: 2),
       decoration: BoxDecoration(
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         borderRadius: BorderRadius.circular(3),
       ),
       child: Column(
@@ -212,13 +212,13 @@ class LiveVideoCourseMsg extends StatelessWidget {
       imageUrl = liveVideoModel.coursewareDto?.previewVideoUrl;
     }
     return Container(
-      width: double.infinity,
+      color: AppColor.layoutBgGrey,
       height: 180,
       child: Stack(
         children: [
           Hero(
             child: Container(
-              color: AppColor.white,
+              color: AppColor.layoutBgGrey,
               child: ClipRRect(
                 borderRadius: BorderRadius.only(topRight: Radius.circular(3), topLeft: Radius.circular(3)),
                 child: CachedNetworkImage(
@@ -227,10 +227,10 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   imageUrl: imageUrl == null ? "" : FileUtil.getLargeImage(imageUrl),
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.imageBgGrey,
                   ),
                   errorWidget: (context, url, error) => Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.imageBgGrey,
                   ),
                 ),
               ),
@@ -282,7 +282,10 @@ class LiveVideoCourseMsg extends StatelessWidget {
               child: Row(
                 children: [
                   AppIcon.getAppIcon(AppIcon.tag_course_white, 16,
-                      containerHeight: 20, containerWidth: 20, bgColor: AppColor.textPrimary2, isCircle: true),
+                      containerHeight: 20,
+                      containerWidth: 20,
+                      bgColor: AppColor.textWhite40,
+                      isCircle: true),
                   SizedBox(
                     width: 4,
                   ),
@@ -291,7 +294,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
                     width: 120.0,
                     child: Text(
                       liveVideoModel.title ?? "",
-                      style: AppStyle.textMedium14,
+                      style: AppStyle.whiteMedium14,
                       maxLines: 1,
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,
@@ -303,7 +306,10 @@ class LiveVideoCourseMsg extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            child: Text(name??"" + "·${((liveVideoModel.times ?? 0) ~/ 60000)}分钟"),
+            child: Text(
+              "$name·${(liveVideoModel.times == null ? 0 : liveVideoModel.times) ~/ 60000}分钟",
+              style: AppStyle.text1Regular12,
+            ),
           ),
         ],
       ),

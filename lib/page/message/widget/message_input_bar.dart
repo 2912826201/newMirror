@@ -79,9 +79,9 @@ class MessageInputBarState extends State<MessageInputBar> {
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
-          color: AppColor.white,
+          color: AppColor.layoutBgGrey,
           border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
+            top: BorderSide(color: AppColor.layoutBgGrey, width: 0.2),
           ),
         ),
         // padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
@@ -105,6 +105,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                               widget.voiceOnTap();
                             }
                           },
+                          iconColor: AppColor.textWhite40,
                           iconSize: 24,
                           buttonWidth: 36,
                           buttonHeight: 36,
@@ -121,15 +122,14 @@ class MessageInputBarState extends State<MessageInputBar> {
                         maxHeight: 5 * 16.0,
                       ),
                       margin: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                          color: AppColor.bgWhite.withOpacity(0.65), borderRadius: BorderRadius.circular(16.0)),
+                      decoration: BoxDecoration(color: AppColor.mainBlack, borderRadius: BorderRadius.circular(16.0)),
                       child: StreamBuilder(
                         stream: streamVoiceWidget.stream,
                         builder: (context, snapshot) {
                           return Stack(
                             children: [
-                              Visibility(visible: isVoice,child: ChatVoice(voiceFile: widget.voiceFile)),
-                              Visibility(visible: !isVoice,child: widget.edit),
+                              Visibility(visible: isVoice, child: ChatVoice(voiceFile: widget.voiceFile)),
+                              Visibility(visible: !isVoice, child: widget.edit),
                             ],
                           );
                           // return isVoice ? ChatVoice(voiceFile: widget.voiceFile) : widget.edit;
@@ -150,6 +150,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                           iconSize: 24,
                           buttonWidth: 36,
                           buttonHeight: 36,
+                          iconColor: AppColor.textWhite40,
                           svgName: isEmojio ? AppIcon.input_keyboard : AppIcon.input_emotion,
                         );
                       },

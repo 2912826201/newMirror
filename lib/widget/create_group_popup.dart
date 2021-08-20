@@ -393,7 +393,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           height: 0.5,
-          color: AppColor.dividerWhite24,
+          color: AppColor.dividerWhite8,
         ),
         Expanded(
           child: Container(
@@ -408,11 +408,11 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             height: 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(3)),
-              color: _selectedUidList.length > 0 ? AppColor.mainYellow : AppColor.mainYellow.withOpacity(0.6),
+              color: _selectedUidList.length > 0 ? AppColor.mainYellow : AppColor.mainYellow.withOpacity(0.4),
             ),
             child: Text(
               _selectedUidList.length > 1 ? "发起群聊(${_selectedUidList.length})" : "发起聊天",
-              style: TextStyle(color: AppColor.mainBlack, fontSize: 16),
+              style: AppStyle.textRegular16,
             ),
           ),
         ),

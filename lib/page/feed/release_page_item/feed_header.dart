@@ -153,6 +153,7 @@ class FeedHeader extends StatelessWidget {
         children: [
           CustomAppBarIconButton(
             svgName: AppIcon.nav_close,
+            iconColor: AppColor.white,
             onTap: () {
               showAppDialog(
                 context,

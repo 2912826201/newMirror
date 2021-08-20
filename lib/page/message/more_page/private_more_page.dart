@@ -58,12 +58,16 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         titleString: widget.name,
       ),
       body: Container(
-        color: AppColor.white,
+        color: AppColor.mainBlack,
         child: Column(
           children: [
             Offstage(
               offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
               child: item(1, disturbTheNews, "消息免打扰"),
+            ),
+            Offstage(
+              offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
+              child: getContainer(),
             ),
             item(2, topChat, "置顶聊天"),
             Offstage(
@@ -74,10 +78,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
               offstage: widget.chatType != PRIVATE_TYPE,
               child: item(3, topChat, isBlackList ? "解除拉黑" : "拉黑", isCupertinoSwitchShow: false),
             ),
-            Offstage(
-              offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
-              child: getContainer(),
-            ),
           ],
         ),
       ),
@@ -87,10 +87,10 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //点击事件的box
   Widget item(int type, bool isOpen, String title, {bool isCupertinoSwitchShow = true}) {
     return Material(
-      color: AppColor.white,
+      color: AppColor.transparent,
       child: new InkWell(
         child: _switchRow(type, isOpen, title, isCupertinoSwitchShow),
-        splashColor: AppColor.textHint,
+        splashColor: AppColor.textWhite40,
         onTap: () {
           if (mounted) {
             setState(() {
@@ -119,7 +119,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
           children: [
             Text(
               title,
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
             Expanded(child: SizedBox()),
             Offstage(
@@ -127,7 +127,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
               child: Transform.scale(
                 scale: 0.75,
                 child: CupertinoSwitch(
-                  activeColor: AppColor.mainRed,
+                  activeColor: AppColor.mainYellow,
+                  trackColor: AppColor.textWhite40,
                   value: isOpen,
                   onChanged: (bool value) {
                     if (type == 1) {
@@ -156,7 +157,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       height: 0.3,
-      color: AppColor.textHint,
+      color: AppColor.dividerWhite8,
     );
   }
 

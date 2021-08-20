@@ -381,7 +381,7 @@ class MyPainter extends CustomPainter {
     bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.dividerWhite24 // 画笔颜色
+      ..color = AppColor.dividerWhite8 // 画笔颜色
       ..style = PaintingStyle.fill;
 
     pointPaint = Paint() // 创建一个画笔并配置其属性
@@ -757,13 +757,13 @@ class MyPainterBenchMarkLine extends CustomPainter {
     benchmarkLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.dividerWhite24 // 画笔颜色
+      ..color = AppColor.dividerWhite8 // 画笔颜色
       ..style = PaintingStyle.fill;
 
     bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
-      ..color = AppColor.dividerWhite24 // 画笔颜色
+      ..color = AppColor.dividerWhite8 // 画笔颜色
       ..style = PaintingStyle.fill;
   }
 

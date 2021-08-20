@@ -31,6 +31,7 @@ class AppStyle {
   static const text1Regular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
 
   static const text1Medium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textWhite60);
   static const text1Medium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textWhite60);
@@ -41,6 +42,7 @@ class AppStyle {
 
   //红色
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
@@ -67,6 +69,7 @@ class AppStyle {
   static const whiteMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const whiteMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteBold40 = TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: AppColor.white);
   static const whiteBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.white);
 

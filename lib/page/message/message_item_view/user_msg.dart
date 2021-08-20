@@ -124,7 +124,7 @@ class UserMsg extends StatelessWidget {
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),
@@ -170,7 +170,7 @@ class UserMsg extends StatelessWidget {
       height: 150,
       margin: const EdgeInsets.only(top: 2),
       decoration: BoxDecoration(
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         borderRadius: BorderRadius.circular(3),
       ),
       child: Column(
@@ -228,7 +228,7 @@ class UserMsg extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 13.5,
-                color: AppColor.white,
+                color: AppColor.layoutBgGrey,
               ),
             ],
           ),
@@ -258,7 +258,7 @@ class UserMsg extends StatelessWidget {
             children: [
               Text(
                 userModel.nickName != null ? userModel.nickName : "",
-                style: AppStyle.textPrimary2Medium15,
+                style: AppStyle.whiteMedium15,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -267,7 +267,7 @@ class UserMsg extends StatelessWidget {
               ),
               Text(
                 userModel.description != null ? userModel.description : "",
-                style: AppStyle.textSecondaryRegular13,
+                style: AppStyle.text1Regular13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

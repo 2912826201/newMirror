@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -155,7 +156,7 @@ class ImgVideoMsg extends StatelessWidget {
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
               ),
             ),
           ),

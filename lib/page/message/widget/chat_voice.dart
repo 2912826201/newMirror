@@ -6,6 +6,7 @@ import 'package:flutter_audio_recorder2/flutter_audio_recorder2.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/click_util.dart';
@@ -361,7 +362,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         decoration: textShow == "按住说话" ? noSelectBoxUiStyle : selectBoxUiStyle,
         child: Text(
           textShow,
-          style: TextStyle(fontSize: 14, color: AppColor.white),
+          style: AppStyle.whiteRegular14,
         ),
       ),
     );

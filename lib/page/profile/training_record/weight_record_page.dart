@@ -341,12 +341,12 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     decoration: InputDecoration(
                       // hintText: userWeight > 0.0 ? userWeight.toString() : "",
                       hintText: "",
-                      labelStyle: TextStyle(color: AppColor.dividerWhite24),
+                      labelStyle: TextStyle(color: AppColor.dividerWhite8),
                       hintMaxLines: 1,
                       // 主要添加以下代码
                       enabledBorder: new UnderlineInputBorder(
                         // 不是焦点的时候颜色
-                        borderSide: BorderSide(color: AppColor.dividerWhite24),
+                        borderSide: BorderSide(color: AppColor.dividerWhite8),
                       ),
                     ),
                   ),
@@ -401,12 +401,12 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     style: AppStyle.whiteRegular18,
                     inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: AppColor.dividerWhite24),
+                      labelStyle: TextStyle(color: AppColor.dividerWhite8),
                       hintMaxLines: 1,
                       // 主要添加以下代码
                       enabledBorder: new UnderlineInputBorder(
                         // 不是焦点的时候颜色
-                        borderSide: BorderSide(color: AppColor.dividerWhite24),
+                        borderSide: BorderSide(color: AppColor.dividerWhite8),
                       ),
                     ),
                   ),

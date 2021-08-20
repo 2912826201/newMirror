@@ -87,7 +87,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   //获取主体
   Widget getBodyUi() {
     return Container(
-      color: AppColor.white,
+      color: AppColor.mainBlack,
       child: CustomScrollView(
         physics: BouncingScrollPhysics(),
         slivers: [
@@ -110,15 +110,19 @@ class GroupMorePageState extends State<GroupMorePage> {
           ),
           getContainer(),
           getListItem(text: "群聊名称", subtitle: groupName ?? "未命名"),
+          getContainer(),
           getListItem(text: "群聊二维码", isRightIcon: true),
-          getContainer(height: 12, horizontal: 0),
+          getContainer(),
+          getContainer(height: 12, horizontal: 0, color: AppColor.mainBlack),
           getListItem(text: "群昵称", subtitle: groupMeName == "还未取名" ? getGroupMeName() : groupMeName),
           getContainer(),
           getListItem(text: "消息免打扰", isOpen: disturbTheNews, index: 1),
-          getListItem(text: "置顶聊天", isOpen: topChat, index: 2),
-          getContainer(height: 12, horizontal: 0),
-          getListItem(text: "删除并退出", textColor: AppColor.mainRed),
           getContainer(),
+          getListItem(text: "置顶聊天", isOpen: topChat, index: 2),
+          getContainer(),
+          getContainer(height: 12, horizontal: 0, color: AppColor.mainBlack),
+          getListItem(text: "删除并退出", textColor: AppColor.mainRed),
+          // getContainer(),
           SliverToBoxAdapter(
             child: Container(
               height: ScreenUtil.instance.bottomBarHeight,
@@ -202,9 +206,9 @@ class GroupMorePageState extends State<GroupMorePage> {
               children: [
                 Text(
                   "查看更多群成员",
-                  style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
+                  style: AppStyle.text1Regular12,
                 ),
-                AppIcon.getAppIcon(AppIcon.arrow_right_12, 12, color: AppColor.textSecondary),
+                AppIcon.getAppIcon(AppIcon.arrow_right_12, 12, color: AppColor.textWhite60),
               ],
             ),
             onTap: seeMoreGroupUser,
@@ -223,10 +227,10 @@ class GroupMorePageState extends State<GroupMorePage> {
     return SliverToBoxAdapter(
         // child: getItemList(text,subtitle,isOpen,isRightIcon,textColor),
         child: Material(
-            color: AppColor.white,
+            color: AppColor.transparent,
             child: new InkWell(
               child: getItemList(text, subtitle, isOpen, isRightIcon, textColor, index),
-              splashColor: AppColor.textHint,
+              splashColor: AppColor.textWhite40,
               onTap: () {
                 onClickItemList(title: text, subtitle: subtitle, isOpen: isOpen, index: index);
               },
@@ -242,25 +246,25 @@ class GroupMorePageState extends State<GroupMorePage> {
       padding: isOpen == null ? padding2 : padding1,
       child: Row(
         children: [
-          Text(text,
-              style: TextStyle(fontSize: 16, color: textColor ?? AppColor.textPrimary1, fontWeight: FontWeight.w500)),
+          Text(text, style: TextStyle(fontSize: 16, color: textColor ?? AppColor.white, fontWeight: FontWeight.w400)),
           Expanded(child: SizedBox()),
           subtitle != null
               ? Text(
                   StringUtil.maxLength(subtitle, 15),
-                  style: AppStyle.textSecondaryMedium14,
+                  style: AppStyle.text1Regular14,
                 )
               : Container(),
           subtitle != null ? SizedBox(width: 12) : Container(),
           isRightIcon != null || subtitle != null
-              ? AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textSecondary)
+              ? AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite60)
               : Container(),
           isOpen != null
               ? Container(
                   child: Transform.scale(
                     scale: 0.75,
                     child: CupertinoSwitch(
-                      activeColor: AppColor.mainRed,
+                      activeColor: AppColor.mainYellow,
+                      trackColor: AppColor.textWhite40,
                       value: isOpen,
                       onChanged: (bool value) {
                         onClickItemList(title: text, isOpen: isOpen, index: index);
@@ -275,13 +279,16 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //间隔线
-  Widget getContainer({double height, double horizontal}) {
+  Widget getContainer({double height, double horizontal, Color color = AppColor.dividerWhite8}) {
     return SliverToBoxAdapter(
       child: Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         margin: EdgeInsets.symmetric(horizontal: horizontal ?? 16),
         height: height ?? 0.5,
-        color: AppColor.bgWhite,
+        color: color,
       ),
     );
   }
@@ -315,7 +322,7 @@ class GroupMorePageState extends State<GroupMorePage> {
               child: Text(
                 userName,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular12,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

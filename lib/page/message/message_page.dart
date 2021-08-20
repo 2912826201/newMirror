@@ -627,7 +627,7 @@ class MessageState extends State<MessagePage>
                       ),
                       Container(
                         height: 0.5,
-                        color: AppColor.dividerWhite24,
+                        color: AppColor.dividerWhite8,
                       )
                     ],
                   ),
@@ -714,7 +714,7 @@ class MessageState extends State<MessagePage>
                       ),
                       Container(
                         height: 0.5,
-                        color: AppColor.dividerWhite24,
+                        color: AppColor.dividerWhite8,
                       )
                     ],
                   ),

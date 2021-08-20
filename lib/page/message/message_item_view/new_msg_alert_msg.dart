@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class NewMsgAlertMsg extends StatelessWidget {
@@ -18,7 +19,7 @@ class NewMsgAlertMsg extends StatelessWidget {
                 color: AppColor.textSecondary,
               ),
               SizedBox(width: 6),
-              Text("以下为最新消息", style: TextStyle(fontSize: 10, color: AppColor.textSecondary)),
+              Text("以下为最新消息", style: AppStyle.text1Regular12),
               SizedBox(width: 6),
               Container(
                 height: 1,

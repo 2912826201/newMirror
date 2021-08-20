@@ -1,5 +1,6 @@
 // 底部评论抽屉
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
@@ -159,7 +160,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
           Container(
             height: 48,
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+              border: Border(bottom: BorderSide(width: 0.5, color:AppColor.dividerWhite8)),
             ),
             child: Stack(
               overflow: Overflow.clip,
@@ -173,7 +174,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                   child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
                     return Text(
                       "共${StringUtil.getNumber(totalCount)}条评论",
-                      style: AppStyle.textPrimary2Medium14,
+                      style: AppStyle.whiteMedium14,
                     );
                   }, selector: (context, notifier) {
                     return notifier.value.feedMap[feedId].commentCount;
@@ -191,6 +192,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                   child: AppIconButton(
                     svgName: AppIcon.close_18,
                     iconSize: 18,
+                    iconColor: AppColor.white,
                     buttonHeight: 36,
                     buttonWidth: 36,
                     onTap: () {

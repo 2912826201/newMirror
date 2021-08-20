@@ -97,7 +97,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
         children: [
           Container(
             height: emojiState ? 0.0 : MediaQuery.of(context).padding.bottom,
-            color: AppColor.white,
+            color: AppColor.layoutBgGrey,
           ),
           Stack(
             children: [
@@ -120,7 +120,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       child: Container(
         height: height,
         width: double.infinity,
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         child: emojiState ? emojiList(keyboardHeight) : Container(),
       ),
     );
@@ -136,7 +136,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       child: Container(
         height: height,
         width: double.infinity,
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
       ),
     );
   }
@@ -159,7 +159,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
                 SliverToBoxAdapter(
                   child: Container(
                     height: 0.2,
-                    color: Colors.grey,
+                    color: AppColor.dividerWhite8,
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -174,7 +174,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
                         .of(context)
                         .padding
                         .bottom,
-                    color: Colors.white,
+                    color: AppColor.layoutBgGrey,
                   ),
                 ),
               ],
@@ -192,7 +192,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
-          top: BorderSide(color: AppColor.bgWhite, width: 1),
+          top: BorderSide(color: AppColor.dividerWhite8, width: 1),
         ),
       ),
       padding: const EdgeInsets.only(left: 10, right: 10),
@@ -214,6 +214,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             svgName: AppIcon.message_delete,
             buttonWidth: 44,
             buttonHeight: 44,
+            iconColor: AppColor.textWhite60,
             onTap: () {
               if (widget.deleteEditText != null) {
                 widget.deleteEditText();
@@ -226,6 +227,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
               svgName: !isShowCanIcon
                   ? AppIcon.message_cant_send
                   : AppIcon.message_send,
+              iconColor: isShowCanIcon ? AppColor.white : AppColor.textWhite40,
               buttonWidth: 44,
               buttonHeight: 44,
               onTap: () {
@@ -264,8 +266,9 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
       fontSize: 24,
     );
     return Material(
-        color: Colors.white,
+        color: AppColor.layoutBgGrey,
         child: new InkWell(
+          splashColor: AppColor.white.withOpacity(0.1),
           child: Container(
             alignment: Alignment.center,
             child: Text(
@@ -274,8 +277,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
             ),
           ),
           onTap: () {
-
-            if(!widget.focusNode.hasFocus){
+            if (!widget.focusNode.hasFocus) {
               FocusScope.of(context).requestFocus(widget.focusNode);
               return;
             }

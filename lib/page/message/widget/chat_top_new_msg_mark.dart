@@ -48,7 +48,7 @@ class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
         height: 44,
         padding: EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: AppColor.white,
+          color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(22), bottomLeft: Radius.circular(22)),
         ),
         child: Row(
