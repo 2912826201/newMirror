@@ -53,7 +53,7 @@ class AttentionUserState extends State<AttentionUser> {
                   children: [
                     const Text(
                       "为你推荐",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white),
                     ),
                     const Spacer(),
                     Container(
@@ -65,10 +65,10 @@ class AttentionUserState extends State<AttentionUser> {
                                 margin: const EdgeInsets.only(right: 4),
                                 child: const Text(
                                   "查看全部",
-                                  style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+                                  style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
                                 ),
                               ),
-                              AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
+                              AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textWhite40),
                             ],
                           ),
                         )),
@@ -350,11 +350,11 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
           width: 151,
           decoration: BoxDecoration(
             //背景
-            color: Colors.white,
+            color: AppColor.layoutBgGrey,
             //设置四周圆角 角度
             borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             //设置四周边框
-            border: new Border.all(width: 0.5, color: AppColor.bgWhite),
+            border: new Border.all(width: 0.5, color: AppColor.layoutBgGrey),
           ),
           child: Stack(
             children: [
@@ -365,7 +365,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                   iconSize: 18,
                   buttonWidth: 30,
                   buttonHeight: 30,
-                  iconColor: AppColor.textHint,
+                  iconColor: AppColor.textWhite60,
                   onTap: () {
                     setState(() {
                       _opacity = 0;
@@ -390,7 +390,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                       margin: const EdgeInsets.only(top: 8),
                       child: Text(
                         "金卡卡西${widget.str}",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white),
                       ),
                     ),
                     Container(
@@ -400,14 +400,14 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                         "夕柚和其他2位用户关注了",
                         maxLines: 2,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
+                        style: TextStyle(fontSize: 13, color: AppColor.textWhite60),
                       ),
                     ),
                     Container(
                       width: 119,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: isToggle ? AppColor.textHint : Colors.black,
+                        color: isToggle ? AppColor.textHint : AppColor.mainYellow,
                         borderRadius: const BorderRadius.all(Radius.circular(16)),
                       ),
                       child: GestureDetector(
@@ -422,8 +422,8 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               isToggle
-                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16)
-                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16),
+                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16,color:AppColor.black )
+                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16,color:AppColor.black),
                               const SizedBox(
                                 width: 4,
                               ),
@@ -432,7 +432,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                                   isToggle ? "已关注" : "关注",
                                   style: const TextStyle(
                                     fontSize: 14,
-                                    color: AppColor.white,
+                                    color: AppColor.black,
                                   ),
                                 ),
                               ),

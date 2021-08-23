@@ -372,7 +372,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
             ),
             const Text(
               "登录账号后查看你关注的精彩内容",
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
             ),
             GestureDetector(
               onTap: () async {
@@ -381,12 +381,12 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
               child: Container(
                 width: 293,
                 height: 44,
-                color: Colors.black,
+                color: AppColor.mainYellow,
                 margin: const EdgeInsets.only(top: 32),
                 child: const Center(
                   child: const Text(
                     "登录",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: AppColor.black),
                   ),
                 ),
               ),

@@ -312,14 +312,15 @@ class CustomYellowButton extends StatefulWidget {
   //不可用状态
   static const int buttonStateInvalid = 3;
 
-  CustomYellowButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = true})
+  CustomYellowButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = true,this.width,this.height})
       : super(key: key);
 
   final String text;
   final int buttonState;
   final Function() onTap;
   final bool isDarkBackground; //原本用来区分背景来改变按钮颜色，新需求目前用不到了
-
+  final double width;
+  final double height;
   @override
   _CustomYellowButtonState createState() => _CustomYellowButtonState();
 }
@@ -333,8 +334,8 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
       behavior: HitTestBehavior.opaque,
       child: Container(
         alignment: Alignment.center,
-        height: 28,
-        width: widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
+        height: widget.height != null ? widget.height : 28,
+        width:widget.width != null ? widget.width : widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
         decoration: BoxDecoration(
             color: widget.buttonState == CustomYellowButton.buttonStateNormal
                 ? isPressed

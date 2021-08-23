@@ -24,7 +24,6 @@ import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
-
 class HeadView extends StatefulWidget {
   HomeFeedModel model;
 
@@ -109,7 +108,7 @@ class HeadViewState extends State<HeadView> {
     if (isCancel) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
-        if (!widget.isShowConcern&&widget.removeFollowChanged!=null) {
+        if (!widget.isShowConcern && widget.removeFollowChanged != null) {
           widget.removeFollowChanged(widget.model);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
@@ -140,6 +139,7 @@ class HeadViewState extends State<HeadView> {
       }
     }
   }
+
   // 请求关注话题
   requestFollowTopic() async {
     Map<String, dynamic> map = await followTopic(topicId: widget.model.topics.first.id);
@@ -156,11 +156,12 @@ class HeadViewState extends State<HeadView> {
         opacity = 0;
         setState(() {});
       });
-        context.read<UserInteractiveNotifier>().removeListId(widget.model.topics.first.id, isAdd: false);
+      context.read<UserInteractiveNotifier>().removeListId(widget.model.topics.first.id, isAdd: false);
     } else {
       ToastShow.show(msg: "关注失败", context: context);
     }
   }
+
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
@@ -184,8 +185,7 @@ class HeadViewState extends State<HeadView> {
             decoration: BoxDecoration(
               color: AppColor.mainYellow,
               // border: new Border.all(color: AppColor.textPrimary1, width: 1),
-              borderRadius: BorderRadius.circular((14.0)
-              ),
+              borderRadius: BorderRadius.circular((14.0)),
             ),
             child: Center(
               child: Row(
@@ -194,7 +194,7 @@ class HeadViewState extends State<HeadView> {
                   const Spacer(),
                   const Icon(
                     Icons.add,
-                    color: AppColor.textPrimary1,
+                    color: AppColor.black,
                     size: 16,
                   ),
                   const SizedBox(
@@ -205,7 +205,7 @@ class HeadViewState extends State<HeadView> {
                       "关注",
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColor.textPrimary1,
+                        color: AppColor.black,
                       ),
                     ),
                   ),
@@ -252,9 +252,9 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.pageName == "recommendPage" &&
+    if (widget.pageName == "recommendPage" &&
         widget.model.recommendSourceDto != null &&
-        widget.model.recommendSourceDto.type == 1){
+        widget.model.recommendSourceDto.type == 1) {
       print('------------------动态头像---------${widget.model.topics.first.img}');
     }
 
@@ -276,8 +276,9 @@ class HeadViewState extends State<HeadView> {
             .add("删除");
       }
     } else {
-      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
-          isFollow: widget.model.isFollow == 0 || widget.model.isFollow == 2);
+      context
+          .read<UserInteractiveNotifier>()
+          .setFirstModel(widget.model.pushId, isFollow: widget.model.isFollow == 0 || widget.model.isFollow == 2);
     }
   }
 
@@ -313,7 +314,7 @@ class HeadViewState extends State<HeadView> {
                                   widget.model.recommendSourceDto != null &&
                                   widget.model.recommendSourceDto.type == 1
                               ? Stack(
-                                  clipBehavior: Clip.none,
+                                  // clipBehavior: Clip.none,
                                   children: [
                                     ClipOval(
                                         child: CachedNetworkImage(
@@ -342,31 +343,31 @@ class HeadViewState extends State<HeadView> {
                                       },
                                     )),
                                     Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child:ClipOval(
+                                        bottom: 2,
+                                        right: 2,
+                                        child: ClipOval(
                                           child: Container(
-                                            height: 12,
-                                            width: 12,
+                                            height: 10,
+                                            width: 10,
                                             color: AppColor.white,
                                           ),
-                                        ) ),
+                                        )),
                                     Positioned(
                                       bottom: 0,
                                       right: 0,
                                       child: AppIcon.getAppIcon(
                                         AppIcon.topic,
-                                        15,
+                                        16,
                                         color: AppColor.mainRed,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 )
                               : ClipOval(
                                   // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
                                   child: widget.model.avatarUrl != null
                                       ? CachedNetworkImage(
-                                    width: 38,
+                                          width: 38,
                                           height: 38,
 
                                           useOldImageOnUrlChange: true,
@@ -415,7 +416,7 @@ class HeadViewState extends State<HeadView> {
                                   : isMySelf
                                       ? context.watch<ProfileNotifier>().profile.nickName
                                       : widget.model.name ?? "空名字",
-                              style: TextStyle(fontSize: 15,color: AppColor.bgWhite),
+                              style: TextStyle(fontSize: 15, color: AppColor.bgWhite),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
