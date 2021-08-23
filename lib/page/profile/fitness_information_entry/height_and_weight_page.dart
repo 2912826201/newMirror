@@ -27,104 +27,108 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return WillPopScope(
-      onWillPop: () async {
-      Navigator.pop(context);
-      return false;
-    },
-    child: Scaffold(
-      backgroundColor: AppColor.white,
-      // resizeToAvoidBottomInset: false,
-      appBar: CustomAppBar(
-        hasDivider: false,
-        leading: Container(),
-      ),
-      body: /*InkWell(
+        onWillPop: () async {
+          Navigator.pop(context);
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: AppColor.mainBlack,
+          // resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(
+            hasDivider: false,
+            leading: Container(),
+          ),
+          body:
+              /*InkWell(
         highlightColor: AppColor.white,
         onTap: (){
           FocusScope.of(context).requestFocus(blankNode);
         },
-        child:*/ Container(
-        height: height,
-        width: width,
-        padding: EdgeInsets.only(left: 41,right: 41),
-        child: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          children: [
-            SizedBox(
-              height: 42,
-            ),
+        child:*/
               Container(
-                width: width,
+            height: height,
+            width: width,
+            padding: EdgeInsets.only(left: 41, right: 41),
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              children: [
+                SizedBox(
+                  height: 42,
+                ),
+                Container(
+                  width: width,
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "你的身高体重是",
-                    style: AppStyle.textMedium23,
+                    style: AppStyle.whiteMedium23,
                   ),
                 ),
-            SizedBox(
-              height: 12,
-            ),
-             Container(
-                width: width,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "我们将以此为你推荐训练计划,让你一试身手。",
-                  style: AppStyle.textRegular14,
+                SizedBox(
+                  height: 12,
                 ),
-              ),
-            SizedBox(
-              height: 42,
-            ),
-            _heightAndWeightItem("身高", "CM", width),
-            SizedBox(
-              height: 42,
-            ),
-            _heightAndWeightItem("体重", "KG", width),
-            SizedBox(
-              height: 62,
-            ),
-            Container(
-              width: width,
-              child: ClickLineBtn(
-                title: "下一步",
-                height: 44.0,
-                width: width,
-                circular: 3.0,
-                textColor:heights.bitLength<2||weight.bitLength<2?AppColor.textSecondary:AppColor.white,
-                fontSize: 16,
-                backColor:heights.bitLength<2||weight.bitLength<2?AppColor.bgWhite:AppColor.bgBlack,
-                color: AppColor.transparent,
-                onTap: () {
-                  FocusScope.of(context).requestFocus(blankNode);
-                  if(heights.bitLength<2||weight.bitLength<2){
-                    ToastShow.show(msg: "请输入正确的身高体重", context: context);
-                  }else{
-                    print('=height=======$heights===weight==========$weight');
-                    Application.fitnessEntryModel.height = heights;
-                    Application.fitnessEntryModel.weight = weight;
-                    if(Application.videoTagModel!=null){
-                      if(Application.videoTagModel.bodyType!=null){
-                        AppRouter.navigateToBodyTypePage(context);
-                      }else if(Application.videoTagModel.target!=null){
-                        AppRouter.navigateToFitnessTargetPage(context);
-                      }else if(Application.videoTagModel.level!=null){
-                        AppRouter.navigateToFitnessLevelPage(context);
-                      }else if(Application.videoTagModel.part!=null){
-                        AppRouter.navigateToFitnessPartPage(context);
-                      }else{
-                        AppRouter.navigateToTrainSeveralPage(context);
+                Container(
+                  width: width,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "我们将以此为你推荐训练计划,让你一试身手。",
+                    style: AppStyle.text1Regular14,
+                  ),
+                ),
+                SizedBox(
+                  height: 42,
+                ),
+                _heightAndWeightItem("身高", "CM", width),
+                SizedBox(
+                  height: 42,
+                ),
+                _heightAndWeightItem("体重", "KG", width),
+                SizedBox(
+                  height: 62,
+                ),
+                Container(
+                  width: width,
+                  child: ClickLineBtn(
+                    title: "下一步",
+                    height: 44.0,
+                    width: width,
+                    circular: 3.0,
+                    textColor: AppColor.mainBlack,
+                    fontSize: 16,
+                    backColor: heights.bitLength < 2 || weight.bitLength < 2
+                        ? AppColor.mainYellow.withOpacity(0.4)
+                        : AppColor.mainYellow,
+                    color: AppColor.transparent,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(blankNode);
+                      if (heights.bitLength < 2 || weight.bitLength < 2) {
+                        ToastShow.show(msg: "请输入正确的身高体重", context: context);
+                      } else {
+                        print('=height=======$heights===weight==========$weight');
+                        Application.fitnessEntryModel.height = heights;
+                        Application.fitnessEntryModel.weight = weight;
+                        if (Application.videoTagModel != null) {
+                          if (Application.videoTagModel.bodyType != null) {
+                            AppRouter.navigateToBodyTypePage(context);
+                          } else if (Application.videoTagModel.target != null) {
+                            AppRouter.navigateToFitnessTargetPage(context);
+                          } else if (Application.videoTagModel.level != null) {
+                            AppRouter.navigateToFitnessLevelPage(context);
+                          } else if (Application.videoTagModel.part != null) {
+                            AppRouter.navigateToFitnessPartPage(context);
+                          } else {
+                            AppRouter.navigateToTrainSeveralPage(context);
+                          }
+                        } else {
+                          AppRouter.navigateToTrainSeveralPage(context);
+                        }
                       }
-                    }else{
-                      AppRouter.navigateToTrainSeveralPage(context);
-                    }
-                  }
-                },
-              ),
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      )/*,)*/,
-    ));
+          ) /*,)*/,
+        ));
   }
 
   _heightAndWeightItem(String title, String unit, double width) {
@@ -140,30 +144,30 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
               children: [
                 Text(
                   title,
-                  style: AppStyle.textMedium18,
+                  style: AppStyle.whiteMedium18,
                 ),
                 Container(
                   height: 44,
                   child: TextField(
-                    style: AppStyle.blackBold21,
+                    style: AppStyle.whiteBold21,
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.phone,
-                    cursorColor: AppColor.black,
+                    cursorColor: AppColor.white,
                     decoration: InputDecoration(
-                        enabledBorder:
-                            UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
-                        focusedBorder:
-                            UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
-                    inputFormatters: [PrecisionLimitFormatter(2),FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24))),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24)))),
+                    inputFormatters: [PrecisionLimitFormatter(2), FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
                     onChanged: (value) {
                       print('-------------$value');
                       if (title == "身高") {
                         setState(() {
-                          heights = value.isNotEmpty?int.parse(value):0;
+                          heights = value.isNotEmpty ? int.parse(value) : 0;
                         });
                       } else {
                         setState(() {
-                          weight = value.isNotEmpty?int.parse(value):0;
+                          weight = value.isNotEmpty ? int.parse(value) : 0;
                         });
                       }
                     },
@@ -177,7 +181,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
             alignment: Alignment.bottomLeft,
             child: Text(
               unit,
-              style: AppStyle.textHintRegular16,
+              style: AppStyle.text1Regular16,
             ),
           )),
         ],

@@ -91,7 +91,6 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
 
                   Navigator.pop(context, true);
                 },
-                isDarkBackground: true,
               ),
             ),
           ],

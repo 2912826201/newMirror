@@ -31,7 +31,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
@@ -40,7 +40,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
         height: height,
         padding: EdgeInsets.only(
             left: 41, right: 41),
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
               height: 42,
@@ -50,7 +50,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
               alignment: Alignment.bottomLeft,
               child: Text(
                 "选择适合你的难度",
-                style: AppStyle.textMedium23,
+                style: AppStyle.whiteMedium23,
               ),
             ),
             SizedBox(
@@ -61,19 +61,17 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 "我们将以此为你推荐训练计划,让你一试身手。",
-                style: AppStyle.textRegular14,
+                style: AppStyle.text1Regular14,
               ),
             ),
             SizedBox(
               height: 42,
             ),
-            Expanded(
-                child: ListView.builder(
-              itemCount: levelList.length,
-              itemBuilder: (context, index) {
+            Column(
+              children: List.generate( levelList.length, (index){
                 return _levelItem(levelList[index].ename, levelList[index].name, "从零开始，通过适应性训练，为塑造肌肉线条打好基础", index);
-              },
-            )),
+              }),
+            ),
           ],
         ),
       ),
@@ -101,7 +99,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
       },
       child: Container(
         height: 95,
-        color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
+        color: beforIndex == index ? AppColor.white.withOpacity(0.1) : AppColor.transparent,
         padding: EdgeInsets.only(left: 7, right: 7),
         child: Row(
           children: [
@@ -114,14 +112,14 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
                     children: [
                       Text(
                         level,
-                        style: beforIndex != index ? AppStyle.textPrimary3Medium23 : AppStyle.textMedium23,
+                        style: beforIndex != index ? AppStyle.text1Medium29 : AppStyle.whiteMedium29,
                       ),
                       SizedBox(
                         width: 7.5,
                       ),
                       Text(
                         leveltext,
-                        style: beforIndex != index ? AppStyle.textPrimary3Medium16 : AppStyle.textMedium16,
+                        style: beforIndex != index ? AppStyle.text1Medium21 : AppStyle.whiteMedium21,
                       )
                     ],
                   ),
@@ -132,7 +130,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
                     width: ScreenUtil.instance.screenWidthDp-82-12-67,
                     child: Text(
                       introduction,
-                      style: AppStyle.textHintRegular12,
+                      style: AppStyle.text2Regular12,
                       maxLines: 2,
                       overflow: TextOverflow.clip,
                     ),
@@ -146,6 +144,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
               child: AppIcon.getAppIcon(
                 AppIcon.arrow_right_12,
                 12,
+                color: AppColor.textWhite40,
                 containerWidth: 22,
                 containerHeight: 22,
               ),

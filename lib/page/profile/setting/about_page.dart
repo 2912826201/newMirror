@@ -40,7 +40,7 @@ class _AboutPageState extends State<AboutPage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "关于iFitness",
       ),
@@ -53,7 +53,6 @@ class _AboutPageState extends State<AboutPage> {
             Container(
               height: 148,
               width: width,
-              color: AppColor.bgWhite,
               child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,7 +120,7 @@ class _AboutPageState extends State<AboutPage> {
             Center(
               child: Text(
                 "Copyright@2019 iFitness.All rights Reserved",
-                style: AppStyle.textSecondaryRegular13,
+                style: AppStyle.text1Regular13,
               ),
             )
           ],
@@ -141,7 +140,7 @@ class _AboutPageState extends State<AboutPage> {
           children: [
             Text(
               text,
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
             Spacer(),
             text == "版本更新" && haveNewVersion
@@ -166,7 +165,7 @@ class _AboutPageState extends State<AboutPage> {
             AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               18,
-              color: AppColor.textHint,
+              color: AppColor.textWhite60,
             ),
           ],
         ),

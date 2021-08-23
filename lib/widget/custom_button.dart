@@ -298,28 +298,29 @@ class ClickTitleAndImageBtn extends StatelessWidget {
   }
 }
 
-//FIXME 暂时替换了颜色 可能还需要调整
 //标准的黄色按钮
 class CustomYellowButton extends StatefulWidget {
   //正常状态
   static const int buttonStateNormal = 0;
 
-  //不可用状态
-  static const int buttonStateDisable = 1;
+  //禁用状态
+  static const int buttonStateDisabled = 1;
 
   //忙碌状态
   static const int buttonStateLoading = 2;
 
-  //禁用状态
+  //不可用状态
   static const int buttonStateInvalid = 3;
 
-  CustomYellowButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = false}) : super(key: key);
+  CustomYellowButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = true,this.width,this.height})
+      : super(key: key);
 
   final String text;
   final int buttonState;
   final Function() onTap;
-  final bool isDarkBackground;
-
+  final bool isDarkBackground; //原本用来区分背景来改变按钮颜色，新需求目前用不到了
+  final double width;
+  final double height;
   @override
   _CustomYellowButtonState createState() => _CustomYellowButtonState();
 }
@@ -333,20 +334,18 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
       behavior: HitTestBehavior.opaque,
       child: Container(
         alignment: Alignment.center,
-        height: 28,
-        width: widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
+        height: widget.height != null ? widget.height : 28,
+        width:widget.width != null ? widget.width : widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
         decoration: BoxDecoration(
             color: widget.buttonState == CustomYellowButton.buttonStateNormal
                 ? isPressed
-                    ? AppColor.mainYellow.withOpacity(0.56)
+                    ? AppColor.mainYellow.withOpacity(0.6)
                     : AppColor.mainYellow
-                : widget.buttonState == CustomYellowButton.buttonStateDisable
-                    ? widget.isDarkBackground
-                        ? AppColor.mainYellow.withOpacity(0.24)
-                        : AppColor.mainYellow.withOpacity(0.16)
+                : widget.buttonState == CustomYellowButton.buttonStateDisabled
+                    ? AppColor.disabledYellow
                     : widget.buttonState == CustomYellowButton.buttonStateLoading
                         ? AppColor.mainYellow
-                        : AppColor.textHint,
+                        : AppColor.mainYellow.withOpacity(0.4),
             borderRadius: BorderRadius.circular(14)),
         child: Row(
           children: [
@@ -356,7 +355,7 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
                     height: 17,
                     width: 17,
                     child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColor.white),
+                        valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
                         backgroundColor: AppColor.transparent,
                         strokeWidth: 1.5))
                 : Container(),
@@ -371,15 +370,13 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
                   fontSize: 14,
                   color: widget.buttonState == CustomYellowButton.buttonStateNormal
                       ? isPressed
-                          ? AppColor.mainBlack.withOpacity(0.56)
+                          ? AppColor.mainBlack.withOpacity(0.6)
                           : AppColor.mainBlack
-                      : widget.buttonState == CustomYellowButton.buttonStateDisable
-                          ? widget.isDarkBackground
-                              ? AppColor.mainBlack.withOpacity(0.24)
-                              : AppColor.mainBlack.withOpacity(0.16)
+                      : widget.buttonState == CustomYellowButton.buttonStateDisabled
+                          ? AppColor.mainBlack
                           : widget.buttonState == CustomYellowButton.buttonStateLoading
                               ? AppColor.mainBlack
-                              : AppColor.mainBlack),
+                              : AppColor.mainBlack.withOpacity(0.4)),
             ),
             Spacer()
           ],
@@ -557,7 +554,7 @@ class _FollowButtonState extends State<FollowButton> {
                   : widget.isMyList
                       ? "回粉"
                       : "关注",
-              style: TextStyle(color: AppColor.white, fontSize: 11)),
+              style: AppStyle.textRegular12),
         ],
       );
     }
@@ -585,7 +582,7 @@ class _FollowButtonState extends State<FollowButton> {
             height: 24,
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
-              color: AppColor.textPrimary1,
+              color: AppColor.mainYellow,
               borderRadius: BorderRadius.all(Radius.circular(14)),
             ),
             child: Center(
@@ -648,7 +645,7 @@ class _SelectButtonState extends State<SelectButton> {
     return Transform.scale(
         scale: 0.8,
         child: CupertinoSwitch(
-          activeColor: AppColor.mainRed,
+          activeColor: AppColor.mainYellow,
           value: widget.selectOrNot,
           onChanged: widget.canOnClick
               ? (value) {

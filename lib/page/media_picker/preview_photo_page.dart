@@ -77,7 +77,6 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
 
                   Navigator.pop(context, true);
                 },
-                isDarkBackground: true,
               ),
             ),
           ],

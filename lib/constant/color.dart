@@ -20,6 +20,9 @@ class AppColor {
   //N0 白色
   static const white = Color.fromRGBO(0xFF, 0xFF, 0xFF, 1.0);
 
+
+  static const textFieldwhite10 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.1);
+
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
 
@@ -32,8 +35,11 @@ class AppColor {
   //图片背景
   static const imageBgGrey = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
 
+  //禁用状态的黄
+  static const disabledYellow = Color.fromRGBO(0xA3, 0x9D, 0x7C, 1.0);
+
   //分割线 注意该颜色为有透明度的颜色
-  static const dividerWhite24 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.08);
+  static const dividerWhite8 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.08);
 
   //文字辅色1 注意该颜色为有透明度的颜色
   static const textWhite60 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.6);
@@ -41,8 +47,7 @@ class AppColor {
   //文字辅色2 注意该颜色为有透明度的颜色
   static const textWhite40 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.4);
 
-//文字辅色2 注意该颜色为有透明度的颜色
-  static const textWhite85 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.85);
+
 
 
 

@@ -21,6 +21,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/colors_util.dart';
@@ -171,6 +172,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     if (model != null) {
       if (model.isFollow == 1) followOrNot = true;
     }
+    print('------requestTopicInfo-------requestTopicInfo------------${model.toString()}');
     topicDtoModelList.add(model);
     setState(() {});
   }
@@ -431,7 +433,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
                         return Key(index);
                       },
-                      body: Column(children: <Widget>[
+                      body: model.dataState==2?Column(children: <Widget>[
                         Container(
                           padding: EdgeInsets.only(
                               left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
@@ -458,8 +460,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   occlusionLayerStreamController.sink.add(true);
                                   // 回到顶部
                                   subpageRefresh();
-                                }
-                                ;
+                                };
                               } else {
                                 _tabController.animateTo(index);
                               }
@@ -497,14 +498,37 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             ),
                           ],
                         ))
-                      ])),
+                      ]):Container(
+                          padding: EdgeInsets.only(top: 12),
+                          color: AppColor.mainBlack,
+                          child: Column(
+                            children: [
+                              Center(
+                                child: Container(
+                                  width: 224,
+                                  height: 224,
+                                  child: Image.asset(DefaultImage.error),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              Center(
+                                child: Text(
+                                  "该账号封禁中·",
+                                  style: AppStyle.whiteRegular14,
+                                ),
+                              )
+                            ],
+                          ))),
                   Positioned(top: 0, child: appBar()),
-                  Positioned(
+                  model.dataState==2
+                      ?Positioned(
                     bottom: ScreenUtil.instance.bottomBarHeight + 28,
                     left: (ScreenUtil.instance.width - 127) / 2,
                     right: (ScreenUtil.instance.width - 127) / 2,
                     child: _gotoRelease(),
-                  ),
+                  ):Container(),
                   Positioned(
                       top: 0,
                       child: StreamBuilder<bool>(
@@ -696,6 +720,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           }
           beforOnClickOver = false;
           if (model.isFollow == 0) {
+            if(model.dataState!=2){
+              ToastShow.show(msg: "该账号已封禁", context: context);
+              return;}
             requestFollowTopic();
           } else {
             requestCancelFollowTopic();

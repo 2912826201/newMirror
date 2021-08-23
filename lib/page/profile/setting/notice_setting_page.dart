@@ -141,7 +141,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "通知设置",
         ),
@@ -163,11 +163,6 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                       },
                       child: _getNotice(snapshot.data),
                     ),
-                    Container(
-                      height: 0.5,
-                      color: AppColor.bgWhite,
-                      width: width,
-                    ),
                     SizedBox(
                       height: 12,
                     ),
@@ -178,7 +173,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "私信通知",
-                          style: AppStyle.textSecondaryRegular14,
+                          style: AppStyle.text1Regular14,
                         ),
                       ),
                     ),
@@ -216,12 +211,12 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
             children: [
               Text(
                 "接收推送通知",
-                style: AppStyle.textRegular16,
+                style: AppStyle.whiteRegular16,
               ),
               Spacer(),
               Text(
                 notifile.permisionIsOpen ? "已开启" : "未开启",
-                style: AppStyle.textHintRegular16,
+                style: AppStyle.text1Regular16,
               ),
               SizedBox(
                 width: 12,
@@ -229,7 +224,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
               AppIcon.getAppIcon(
                 AppIcon.arrow_right_18,
                 18,
-                color: AppColor.black,
+                color: AppColor.textWhite60,
               ),
             ],
           ),
@@ -270,7 +265,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
             children: [
               Text(
                 title,
-                style: AppStyle.textRegular16,
+                style: AppStyle.whiteRegular16,
               ),
               Spacer(),
               SelectButton(

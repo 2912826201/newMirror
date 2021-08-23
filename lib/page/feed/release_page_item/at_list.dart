@@ -350,7 +350,7 @@ class AtListState extends State<AtList> {
                           Text(
                             list[index].nickName,
                             // followList[index].nickName,
-                            style: AppStyle.textRegular16,
+                            style: AppStyle.whiteRegular16,
                           )
                         ],
                       ),

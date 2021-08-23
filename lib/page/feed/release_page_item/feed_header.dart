@@ -146,13 +146,17 @@ class FeedHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     //TODO 应改用CustomAppBar
     return Container(
-      width: ScreenUtil.instance.screenWidthDp,
+      width: ScreenUtil.instance.width,
       height: 44,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const SizedBox(
+            width: 8,
+          ),
           CustomAppBarIconButton(
             svgName: AppIcon.nav_close,
+            iconColor: AppColor.white,
             onTap: () {
               showAppDialog(
                 context,
@@ -201,7 +205,7 @@ class FeedHeader extends StatelessWidget {
                 }),
           ),
           const SizedBox(
-            width: 8,
+            width: 16,
           ),
         ],
       ),

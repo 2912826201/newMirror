@@ -501,7 +501,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     double height = ScreenUtil.instance.height;
     print('这是从个人主页传过来的type================================${widget.type}');
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: isMySelf
               ? widget.type == 1
@@ -531,19 +531,19 @@ class _QueryFollowState extends State<QueryFollowList> {
                         Container(
                           height: 32,
                           width: width,
-                          color: AppColor.bgWhite,
+                          color: AppColor.textFieldwhite10,
                           padding: EdgeInsets.only(left: 12),
                           child: Center(
                             child: Row(
                               children: [
-                                AppIcon.getAppIcon(AppIcon.input_search, 21),
+                                AppIcon.getAppIcon(AppIcon.input_search, 21,color: AppColor.white),
                                 SizedBox(
                                   width: 12,
                                 ),
                                 Expanded(
                                   child: TextField(
                                     cursorColor: AppColor.black,
-                                    style: AppStyle.textRegular16,
+                                    style: AppStyle.whiteRegular16,
                                     controller: controller,
                                     maxLines: 1,
                                     inputFormatters: [ExpressionTeamDeleteFormatter()],
@@ -555,7 +555,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                           : widget.type == 2
                                               ? "搜索用户"
                                               : "搜索",
-                                      hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+                                      hintStyle: AppStyle.text1Regular16,
                                       border: InputBorder.none,
                                     ),
                                   ),
@@ -774,16 +774,20 @@ class _QueryFollowState extends State<QueryFollowList> {
       width: width,
       child: Row(
         children: [
-          AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38),
+          ClipOval(child: Container(
+            height: 38,
+            width: 38,
+           color: AppColor.imageBgGrey,
+            child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38,color: AppColor.white) ,),),
           SizedBox(
             width: 12,
           ),
           Text(
             isMySelf ? "这里是我关注的所有话题" : "这里是TA关注的所有话题",
-            style: AppStyle.textMedium15,
+            style: AppStyle.whiteRegular15,
           ),
           Spacer(),
-          AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textHint),
+          AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite60),
         ],
       ),
     );
@@ -883,7 +887,8 @@ class _FollowItemState extends State<QueryFollowItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           InkWell(
-            highlightColor: AppColor.white,
+            highlightColor: AppColor.transparent,
+              splashColor: AppColor.transparent,
               onTap: () async {
                 if (widget.type == 1 || widget.type == 2) {
                   jumpToUserProfilePage(context, uid, avatarUrl: avatarUrl, userName: userName, callback: (result) {
@@ -907,7 +912,11 @@ class _FollowItemState extends State<QueryFollowItem> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: widget.type == 3
-                        ? AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38)
+                        ? ClipOval(child: Container(
+                      height: 38,
+                      width: 38,
+                      color: AppColor.imageBgGrey,
+                      child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 38, containerWidth: 38,color: AppColor.white) ,),)
                         : ClipOval(
                             child: CachedNetworkImage(
                               height: 38,
@@ -936,7 +945,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             userName,
-                            style: AppStyle.textMedium15,
+                            style: AppStyle.whiteRegular15,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -947,7 +956,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   description,
-                                  style: AppStyle.textSecondaryRegular12,
+                                  style: AppStyle.text1Regular12,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),

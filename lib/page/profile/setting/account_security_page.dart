@@ -44,7 +44,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "账号与安全",
       ),
@@ -60,7 +60,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             Container(
                 height: 44,
                 width: width,
-                color: AppColor.bgWhite,
+                color: AppColor.mainBlack,
                 padding: EdgeInsets.only(top: 12, left: 16),
                 child: Container(
                   height: 32,
@@ -76,23 +76,8 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
               height: 16,
             ),
             _itemRow("QQ", qQNumber??"去绑定"),
-            Container(
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite,
-            ),
             _itemRow("微信绑定", weChatNumber?? "去绑定"),
-            Container(
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite,
-            ),
             _itemRow("微博绑定", weiboNumber ??"去绑定"),
-            Container(
-              width: width,
-              height: 0.5,
-              color: AppColor.bgWhite,
-            ),
             isIos
                 ? Column(
                     children: [
@@ -121,12 +106,12 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
           children: [
             Text(
               title,
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
             Spacer(),
             Text(
               content,
-              style: content == "去绑定" ? AppStyle.textSecondaryRegular16 : AppStyle.textRegular16,
+              style: content == "去绑定" ? AppStyle.text1Regular16 : AppStyle.whiteRegular16,
             ),
             SizedBox(
               width: 12,
@@ -134,7 +119,7 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
             AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               18,
-              color: AppColor.textHint,
+              color: AppColor.textWhite60,
             ),
           ],
         ),

@@ -13,6 +13,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -72,19 +73,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
   final double certificateBtnHeight = 44;
 
   //"高亮"时的按钮颜色
-  final _sendSmsHighLightedColor = AppColor.textPrimary1;
+  final _sendSmsHighLightedColor = AppColor.mainYellow;
 
-  //"高亮"时的标题颜色
-  final _sendSmsHighLightedTitleColor = AppColor.white;
-  var _smsBtnTitleColor;
   var _smsBtnColor;
 
   //默认的按钮的颜色
-  final _sendSmsOriginColor = AppColor.textPrimary1.withOpacity(0.06);
-
-  //默认的标题颜色
-  final _sendSmsOriginTitleColor = AppColor.textSecondary;
-  bool _sendSmsValid = false;
+  final _sendSmsOriginColor = AppColor.mainYellow.withOpacity(0.4);
   bool logining = false;
   bool isSent;
 
@@ -93,7 +87,6 @@ class _SmsCodePageState extends State<SmsCodePage> {
     isSent = widget.isSent;
     //进行记录手机号
     RuntimeProperties.sendSmsPhoneNum = widget.phoneNumber;
-    _smsBtnTitleColor = _sendSmsOriginTitleColor;
     _smsBtnColor = _sendSmsOriginColor;
     super.initState();
     //对输入框的文本进行监听
@@ -110,17 +103,14 @@ class _SmsCodePageState extends State<SmsCodePage> {
   _recoverUi() {
     setState(() {
       _smsBtnColor = _sendSmsOriginColor;
-      _smsBtnTitleColor = _sendSmsOriginTitleColor;
     });
   }
 
   //一切就绪之后
   _everythingReady() {
-    _sendSmsValid = true;
     setState(() {
       print("ready to send sms text");
       _smsBtnColor = _sendSmsHighLightedColor;
-      _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
     });
   }
 
@@ -136,11 +126,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(
           svgName: AppIcon.nav_close,
-          iconColor: AppColor.black,
+          iconColor: AppColor.white,
           onTap: () {
             Navigator.pop(context);
           },
@@ -149,8 +140,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
       ),
       body: Container(
         padding: EdgeInsets.only(top: 40),
-        color: Colors.white,
         child: InkWell(
+          highlightColor: AppColor.transparent,
+          splashColor: AppColor.transparent,
           onTap: () {
             FocusScope.of(context).unfocus();
           },
@@ -187,12 +179,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
   Widget _statementArea() {
     var mainTitle = Text(
       "输入验证码",
-      style: TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
+      style: AppStyle.whiteMedium23,
     );
     String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{4}'), "****", 3);
     var subTitle = Text(
       "短信验证码已发送至 +86 " + phoneNumber,
-      style: TextStyle(color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none),
+      style: AppStyle.text1Regular14,
     );
     var area1 = Container(
       child: mainTitle,
@@ -216,12 +208,14 @@ class _SmsCodePageState extends State<SmsCodePage> {
       controller: inputController,
       keyboardType: TextInputType.number,
       showCursor: true,
+      cursorColor: AppColor.white,
+      style: AppStyle.whiteRegular16,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d+'))],
       decoration: InputDecoration(
           counterText: "",
           //不显示字数计数文字
           hintText: _textFieldPlaceholder,
-          hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16),
+          hintStyle: AppStyle.text1Regular16,
           suffixIcon: SmsCounterWidget(
             seconds: 60,
             requestTask: _smsSendApi,
@@ -230,9 +224,10 @@ class _SmsCodePageState extends State<SmsCodePage> {
           suffixIconConstraints: BoxConstraints(minWidth: 70, maxHeight: 24.5),
           isDense: true,
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
+            borderSide: BorderSide(color: AppColor.white.withOpacity(0.24), width: 0.5),
           ),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
+          enabledBorder:
+              UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.white.withOpacity(0.24)))),
     );
     return Container(
         child: putfield,
@@ -288,8 +283,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
                     height: 17,
                     width: 17,
                     child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(AppColor.black),
-                        backgroundColor: AppColor.white,
+                        valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
+                        backgroundColor: AppColor.mainBlack.withOpacity(0.16),
                         strokeWidth: 1.5))
                 : Container(),
             SizedBox(
@@ -297,7 +292,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
             ),
             Text(
               _titleOfSendTextBtn,
-              style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+              style: AppStyle.textRegular16,
             ),
             Spacer()
           ],
@@ -343,11 +338,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
               return true;
             }),
             title: "您的账号被封禁",
-            info: "尊敬的用户您好，您的账号由于违反平台规定被封禁。\n" +
-                "封禁时间为“${responseModel.message}”。\n" +
-                "若您对此有疑问，可加入QQ群322292818进行咨询。");
-      }else{
-        ToastShow.show(msg:responseModel.message, context: context);
+            info: "尊敬的用户您好，您的账号由于违反平台规定被封禁。\n" + "封禁时间为“${responseModel.message}”。\n" + "若您对此有疑问，可加入QQ群322292818进行咨询。");
+      } else {
+        ToastShow.show(msg: responseModel.message, context: context);
       }
     } else {
       ToastShow.show(msg: "登录失败！", context: context);
@@ -464,12 +457,11 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   ///初始状态常量
   final _resendText = Text(
     "重新获取",
-    style: TextStyle(color: Color.fromRGBO(17, 17, 17, 1), fontSize: 13, decoration: TextDecoration.none),
+    style: AppStyle.text1Regular13,
   );
 
   final BoxDecoration _initialBorderStyle = BoxDecoration(
-      borderRadius: BorderRadius.all(Radius.circular(3)),
-      border: Border.all(width: 1, color: Color.fromRGBO(17, 17, 17, 1)));
+      borderRadius: BorderRadius.all(Radius.circular(3)), border: Border.all(width: 1, color: AppColor.textWhite60));
   final _resendWidth = 70.0;
   final _resendHeight = 24.5;
   final _countingWidth = 40.0;
@@ -477,8 +469,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
 
   ///、、、、、、、、、、、、激活状态的常量
   final BoxDecoration _activatingBorderStyle = BoxDecoration(
-      borderRadius: BorderRadius.all(Radius.circular(3)),
-      border: Border.all(width: 1, color: Color.fromRGBO(204, 204, 204, 1)));
+      borderRadius: BorderRadius.all(Radius.circular(3)), border: Border.all(width: 1, color: AppColor.textWhite60));
 
   ///************************************
   ///是否已经发送了短信,初始即开始计时
@@ -494,7 +485,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   Text _countText() {
     return Text(
       '${_getTimeGap()}s',
-      style: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 13, decoration: TextDecoration.none),
+      style: AppStyle.text1Regular13,
     );
   }
 

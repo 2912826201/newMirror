@@ -283,7 +283,7 @@ class SystemCommonMsg extends StatelessWidget {
       padding: const EdgeInsets.only(left: 12,right: 12),
       child: Container(
         decoration: BoxDecoration(
-            border: Border(top: BorderSide(width: 0.5, color: AppColor.dividerWhite24))
+            border: Border(top: BorderSide(width: 0.5, color: AppColor.dividerWhite8))
         ),
         padding: const EdgeInsets.only(top: 6,bottom: 12),
         child: Row(

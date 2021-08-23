@@ -605,7 +605,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                   ///昵称
                   Text(
                     _textName ?? "  ",
-                    style: AppStyle.whiteMedium85,
+                    style: AppStyle.whiteMedium18,
                   ),
                   Spacer(),
 
@@ -798,11 +798,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           imageUrl: _avatar ?? " ",
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: AppColor.bgWhite,
+            color: AppColor.imageBgGrey,
           ),
-          /*errorWidget:(context, url, e) {
-            return Container(color: AppColor.bgWhite,);
-          },*/
+          errorWidget:(context, url, e) {
+            return Container(color: AppColor.imageBgGrey,);
+          },
         ),
       ),
     ));
@@ -815,7 +815,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       children: [
         Text(
           number,
-          style: AppStyle.whiteMedium85,
+          style: AppStyle.whiteMedium18,
         ),
         SizedBox(
           height: 2.5,

@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                   EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight, left: CustomAppBar.appBarHorizontalPadding),
               child: CustomAppBarIconButton(
                 svgName: AppIcon.nav_close,
-                iconColor: AppColor.black,
+                iconColor: AppColor.white,
                 onTap: () {
                   Navigator.pop(context);
                 },
