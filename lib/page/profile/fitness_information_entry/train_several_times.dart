@@ -96,7 +96,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         textColor: selected ? AppColor.mainBlack : AppColor.white,
         fontSize: 18,
         backColor: selected ? AppColor.mainYellow : AppColor.transparent,
-        color: selected ? AppColor.transparent : AppColor.dividerWhite24,
+        color: selected ? AppColor.transparent : AppColor.dividerWhite8,
         onTap: () {
           Loading.showLoading(context,infoText: "正在录入健身信息");
           setState(() {
