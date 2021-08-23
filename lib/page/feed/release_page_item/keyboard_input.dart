@@ -319,7 +319,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         maxLines: null,
         style: TextStyle(
           fontSize: 16,
-          color: AppColor.textPrimary1,
+          color: AppColor.white,
         ),
         // 光标颜色
         cursorColor: const Color.fromRGBO(253, 137, 140, 1),
@@ -330,7 +330,7 @@ class KeyboardInputState extends State<KeyboardInput> {
           // 提示文本
           hintText: "分享此刻...",
           // 提示文本样式
-          hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+          hintStyle: TextStyle(fontSize: 16, color: AppColor.textWhite60),
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
           contentPadding: EdgeInsets.only(top: 14, left: 16, right: 16),

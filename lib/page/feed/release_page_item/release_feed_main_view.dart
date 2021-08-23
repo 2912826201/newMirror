@@ -107,7 +107,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           children: [
             context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
                 ? AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.mainBlue)
-                : AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.black),
+                : AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
             const SizedBox(
               width: 12,
             ),
@@ -119,13 +119,13 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                     fontSize: 16,
                     color: context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
                         ? AppColor.mainBlue
-                        : AppColor.textPrimary1),
+                        : AppColor.white),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const Spacer(),
-            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18),
+            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18,color: AppColor.textWhite40),
           ],
         ),
       ),
@@ -201,10 +201,10 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
           alignment: const Alignment(0, 0),
           decoration: BoxDecoration(
-              color: AppColor.textHint.withOpacity(0.24), borderRadius: const BorderRadius.all(Radius.circular(3))),
+              color: AppColor.white.withOpacity(0.1), borderRadius: const BorderRadius.all(Radius.circular(3))),
           child: Text(
             addressText(address, index),
-            style: const TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12,color: AppColor.white),
           ),
         ));
   }
@@ -333,11 +333,11 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
           width: 86,
           height: 86,
           decoration: const BoxDecoration(
-            color: AppColor.bgWhite,
+            color: AppColor.layoutBgGrey,
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
           child: Center(
-            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
+            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13,color: AppColor.white),
           ),
         ),
       );
