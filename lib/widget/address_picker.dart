@@ -20,6 +20,12 @@ Future openaddressPickerBottomSheet(
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: AddressPicker(
@@ -101,9 +107,13 @@ class _AddressPickerState extends State<AddressPicker> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Container(
+      decoration: BoxDecoration(
+        color: AppColor.layoutBgGrey,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
+      ),
       height: 259.5 + ScreenUtil.instance.bottomBarHeight,
       width: width,
-      color: AppColor.layoutBgGrey,
+
       child: Column(
         children: [
           Container(

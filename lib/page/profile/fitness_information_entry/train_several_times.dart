@@ -31,14 +31,14 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
       body: Container(
         width: width,
         height: height,
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
               height: 42,
@@ -49,7 +49,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
                 padding: EdgeInsets.only(left: 41),
                 child:  Text(
                     "你每周训练几次",
-                    style: AppStyle.textMedium23,
+                    style: AppStyle.whiteMedium23,
                   ),
               ),
             ),
@@ -62,7 +62,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
                 padding: EdgeInsets.only(left: 41),
                 child: Text(
                   "我们将以此为你推荐训练计划，让你一试身手。",
-                  style: AppStyle.textRegular14,
+                  style: AppStyle.text1Regular14,
                 ),
               ),
             ),
@@ -93,10 +93,10 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
         height: 44.0,
         width: ScreenUtil.instance.screenWidthDp,
         circular: 3.0,
-        textColor: selected ? AppColor.white : AppColor.textPrimary1,
+        textColor: selected ? AppColor.mainBlack : AppColor.white,
         fontSize: 18,
-        backColor: selected ? AppColor.bgBlack : AppColor.transparent,
-        color: selected ? AppColor.transparent : AppColor.textHint,
+        backColor: selected ? AppColor.mainYellow : AppColor.transparent,
+        color: selected ? AppColor.transparent : AppColor.dividerWhite24,
         onTap: () {
           Loading.showLoading(context,infoText: "正在录入健身信息");
           setState(() {

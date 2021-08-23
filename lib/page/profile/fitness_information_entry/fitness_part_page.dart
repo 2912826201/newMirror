@@ -35,7 +35,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         hasDivider: false,
       ),
@@ -43,7 +43,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
         padding: EdgeInsets.only(left: 31,right: 31),
         width: width,
         height: height,
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
               height: 42,
@@ -52,7 +52,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "有重要想要训练的部位吗？",
-                    style: AppStyle.textMedium23,
+                    style: AppStyle.whiteMedium23,
                   ),
                 ),
             SizedBox(
@@ -63,7 +63,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
                 alignment: Alignment.bottomLeft,
                 child: Text(
                   "可选全身或1-2个重点部位",
-                  style: AppStyle.textRegular14,
+                  style: AppStyle.text1Regular14,
                 ),
             ),
             SizedBox(
@@ -87,9 +87,9 @@ class _FitnessPartState extends State<FitnessPartPage> {
                 height: 44.0,
                 width: width,
                 circular: 3.0,
-                textColor: AppColor.white,
+                textColor: AppColor.mainBlack,
                 fontSize: 16,
-                backColor: AppColor.bgBlack,
+                backColor: choselist.isEmpty?AppColor.mainYellow.withOpacity(0.4):AppColor.mainYellow,
                 color: AppColor.transparent,
                 onTap: () {
                   if (choselist.isEmpty) {
@@ -122,10 +122,10 @@ class _FitnessPartState extends State<FitnessPartPage> {
                 height: 44.0,
                 width: 88,
                 circular: 3.0,
-                textColor: choselist.indexOf(index) != -1 ? AppColor.white : AppColor.textHint,
+                textColor: choselist.indexOf(index) != -1 ? AppColor.mainBlack : AppColor.textWhite60,
                 fontSize: 16,
-                backColor: choselist.indexOf(index) != -1 ? AppColor.bgBlack : AppColor.transparent,
-                color: choselist.indexOf(index) != -1 ? AppColor.transparent : AppColor.textHint,
+                backColor: choselist.indexOf(index) != -1 ? AppColor.mainYellow : AppColor.transparent,
+                color: choselist.indexOf(index) != -1 ? AppColor.transparent : AppColor.white.withOpacity(0.24),
                 onTap: () {
                   if (partList[index].name=="全身") {
                     setState(() {

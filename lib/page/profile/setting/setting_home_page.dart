@@ -58,7 +58,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-        backgroundColor: AppColor.white,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "设置",
         ),
@@ -84,7 +84,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
               ),
               Container(
                 height: 12,
-                color: AppColor.bgWhite,
+                color: AppColor.mainBlack,
                 width: width,
               ),
               InkWell(
@@ -136,7 +136,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
               ),
               Container(
                 height: 12,
-                color: AppColor.bgWhite,
+                color: AppColor.mainBlack,
                 width: width,
               ),
               _signOutRow(width)
@@ -182,7 +182,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
         children: [
           Text(
             text,
-            style: AppStyle.textRegular16,
+            style: AppStyle.whiteRegular16,
           ),
           Spacer(),
           text == "关于" && haveNewVersion
@@ -211,7 +211,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
             child: AppIcon.getAppIcon(
               AppIcon.arrow_right_18,
               18,
-              color: AppColor.textHint,
+              color: AppColor.textWhite60,
             ),
           )
         ],

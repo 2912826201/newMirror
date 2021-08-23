@@ -20,6 +20,9 @@ class AppColor {
   //N0 白色
   static const white = Color.fromRGBO(0xFF, 0xFF, 0xFF, 1.0);
 
+
+  static const textFieldwhite10 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.1);
+
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
 
@@ -44,8 +47,7 @@ class AppColor {
   //文字辅色2 注意该颜色为有透明度的颜色
   static const textWhite40 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.4);
 
-//文字辅色2 注意该颜色为有透明度的颜色
-  static const textWhite85 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.85);
+
 
 
 

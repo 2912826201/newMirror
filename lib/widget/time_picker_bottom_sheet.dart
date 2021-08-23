@@ -23,6 +23,12 @@ Future openTimePickerBottomSheet({@required BuildContext context,
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
       builder: (BuildContext context) {
         return TimePickerBottomSheet(
           firstTime: firstTime,
@@ -62,7 +68,10 @@ class _TimePickerBottomSheetState extends State<TimePickerBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: 259.5 + ScreenUtil.instance.bottomBarHeight,
-      color: AppColor.layoutBgGrey,
+      decoration: BoxDecoration(
+          color: AppColor.layoutBgGrey,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
+      ),
       child: Column(
         children: [
           _topChoseTitle(),

@@ -53,7 +53,7 @@ class _BlackListState extends State<BlackListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "黑名单",
       ),
@@ -128,7 +128,7 @@ class _BlackListState extends State<BlackListPage> {
                 imageUrl: blackList[index].avatarUri != null ? FileUtil.getSmallImage(blackList[index].avatarUri) : " ",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
               ),
             ),
@@ -139,7 +139,7 @@ class _BlackListState extends State<BlackListPage> {
           Center(
             child: Text(
               blackList[index].nickName,
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
           ),
           Spacer(),
@@ -153,12 +153,12 @@ class _BlackListState extends State<BlackListPage> {
               height: 24,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
-                border: Border.all(width: 0.5, color: AppColor.mainRed),
+                color: AppColor.mainYellow
               ),
               child: Center(
                 child: Text(
                   "移除",
-                  style: TextStyle(fontSize: 12, color: AppColor.mainRed),
+                  style: AppStyle.textRegular12,
                 ),
               ),
             ),

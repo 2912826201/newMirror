@@ -42,7 +42,7 @@ class _feedBackPage extends State<FeedBackPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.white,
+      backgroundColor: AppColor.mainBlack,
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         titleString: "意见反馈",
@@ -65,9 +65,9 @@ class _feedBackPage extends State<FeedBackPage> {
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
-        color: AppColor.white,
         child:InkWell(
           highlightColor: AppColor.transparent,
+          splashColor: AppColor.transparent,
           onTap: (){
             longClick = false;
             setState(() {
@@ -88,14 +88,14 @@ class _feedBackPage extends State<FeedBackPage> {
                       ),
                       Text(
                         "你的意见和建议,是对我们最大的支持",
-                        style: AppStyle.textRegular16,
+                        style: AppStyle.whiteRegular16,
                       ),
                       SizedBox(
                         height: 13.5,
                       ),
                       Row(
                         children: [
-                          Text("意见反馈QQ群: ",style: AppStyle.textSecondaryRegular14,),
+                          Text("意见反馈QQ群: ",style: AppStyle.text1Regular14,),
                           InkWell(
                             onLongPress: (){
                               longClick = true;
@@ -106,8 +106,8 @@ class _feedBackPage extends State<FeedBackPage> {
                               height: numTextSize.height,
                               width: numTextSize.width+10,
                               child: Text("322292818",style:longClick?AppStyle.whiteRegular14: AppStyle
-                                  .textSecondaryRegular14,) ,
-                              color: longClick ? AppColor.mainBlue : AppColor.white,
+                                  .text1Regular14,) ,
+                              color: longClick ? AppColor.textFieldwhite10 : AppColor.mainBlack,
                             ),)
                         ],
                       ),
@@ -150,9 +150,9 @@ class _feedBackPage extends State<FeedBackPage> {
               Container(
                 height: 30,
                 width: 60,
-                child: Center(child: Text("复制",style: AppStyle.whiteMedium14,),),
+                child: Center(child: Text("复制",style: AppStyle.textRegular14,),),
                 decoration: BoxDecoration(
-                    color: AppColor.black,
+                    color: AppColor.white,
                     borderRadius:BorderRadius.all(Radius.circular(8))
                 ),
               ),
@@ -166,7 +166,7 @@ class _feedBackPage extends State<FeedBackPage> {
                         child:Container(
                           height: 10,
                           width: 10,
-                          color: AppColor.black,
+                          color: AppColor.white,
                         )),) )
             ],) ,),),
     );
@@ -178,17 +178,17 @@ class _feedBackPage extends State<FeedBackPage> {
       width: width,
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)), border: Border.all(width: 0.5, color: AppColor.bgWhite)),
+          borderRadius: BorderRadius.all(Radius.circular(8)),color: AppColor.layoutBgGrey),
       child: TextField(
-        cursorColor: AppColor.black,
-        style: AppStyle.textRegular16,
+        cursorColor: AppColor.white,
+        style: AppStyle.whiteRegular16,
         maxLines: null,
         maxLength: 500,
         decoration: InputDecoration(
           isDense: true,
           counterText: '',
           hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
-          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+          hintStyle: AppStyle.text2Regular12,
           border: InputBorder.none,
         ),
         inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
@@ -211,7 +211,7 @@ class _feedBackPage extends State<FeedBackPage> {
           scrollDirection: Axis.horizontal,
           separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                 width: 10.0,
-                color: Color(0xFFFFFFFF),
+                color: AppColor.mainBlack,
               ),
           itemBuilder: (context, index) {
             if (index != fileList.length) {
@@ -264,11 +264,11 @@ class _feedBackPage extends State<FeedBackPage> {
         width: 86,
         height: 86,
         decoration: BoxDecoration(
-          color: AppColor.bgWhite,
+          color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.all(Radius.circular(3.0)),
         ),
         child: Center(
-          child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
+          child: AppIcon.getAppIcon(AppIcon.add_gallery, 13,color: AppColor.white),
         ),
       ),
     );

@@ -553,7 +553,7 @@ class _FollowButtonState extends State<FollowButton> {
                   : widget.isMyList
                       ? "回粉"
                       : "关注",
-              style: TextStyle(color: AppColor.white, fontSize: 11)),
+              style: AppStyle.textRegular12),
         ],
       );
     }
@@ -581,7 +581,7 @@ class _FollowButtonState extends State<FollowButton> {
             height: 24,
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
-              color: AppColor.textPrimary1,
+              color: AppColor.mainYellow,
               borderRadius: BorderRadius.all(Radius.circular(14)),
             ),
             child: Center(
@@ -644,7 +644,7 @@ class _SelectButtonState extends State<SelectButton> {
     return Transform.scale(
         scale: 0.8,
         child: CupertinoSwitch(
-          activeColor: AppColor.mainRed,
+          activeColor: AppColor.mainYellow,
           value: widget.selectOrNot,
           onChanged: widget.canOnClick
               ? (value) {

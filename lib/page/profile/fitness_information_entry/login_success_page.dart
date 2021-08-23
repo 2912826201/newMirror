@@ -70,12 +70,12 @@ class _LoginSucessState extends State<LoginSucessPage> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: AppColor.white,
+          backgroundColor: AppColor.mainBlack,
           appBar: CustomAppBar(
             hasDivider: false,
             leading: Container(),
             actions: [
-              CustomAppBarTextButton("跳过", AppColor.textPrimary2, () {
+              CustomAppBarTextButton("跳过", AppColor.textWhite60, () {
                 AppRouter.popToBeforeLogin(context);
               }),
             ],
@@ -84,30 +84,31 @@ class _LoginSucessState extends State<LoginSucessPage> {
             height: height,
             width: width,
             padding: EdgeInsets.only(left: 41, right: 41),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
               children: [
                 SizedBox(
                   height: 148,
                 ),
-                ClipOval(
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ClipOval(
                   child: CachedNetworkImage(
                     height: 60,
                     width: 60,
                     imageUrl: FileUtil.getSmallImage(context.watch<ProfileNotifier>().profile.avatarUri),
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.imageBgGrey,
                     ),
                   ),
-                ),
+                ),),
                 SizedBox(
                   height: 9,
                 ),
                 Text(
                   "欢迎回来$username, 登录成功!",
                   maxLines: 1,
-                  style: AppStyle.textMedium23,
+                  style: AppStyle.whiteMedium23,
                 ),
                 SizedBox(
                   height: 12,
@@ -115,7 +116,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
                 Text(
                   "为了确保让你获得出色的体验,我们需要对你做出进一步的了解。",
                   maxLines: 2,
-                  style: AppStyle.textPrimary3Regular14,
+                  style: AppStyle.text1Regular14,
                 ),
                 SizedBox(
                   height: 28,
@@ -125,9 +126,9 @@ class _LoginSucessState extends State<LoginSucessPage> {
                   height: 44.0,
                   width: width,
                   circular: 3.0,
-                  textColor: AppColor.white,
+                  textColor: AppColor.mainBlack,
                   fontSize: 16,
-                  backColor: AppColor.bgBlack,
+                  backColor: AppColor.mainYellow,
                   color: AppColor.transparent,
                   onTap: () {
                     AppRouter.navigateToHeightAndWeigetPage(context);
