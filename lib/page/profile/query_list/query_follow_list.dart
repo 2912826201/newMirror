@@ -532,7 +532,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                         Container(
                           height: 32,
                           width: width,
-                          color: AppColor.textFieldwhite10,
+                          color: AppColor.white.withOpacity(0.1),
                           padding: EdgeInsets.only(left: 12),
                           child: Center(
                             child: Row(

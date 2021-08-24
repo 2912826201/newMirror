@@ -322,7 +322,7 @@ class KeyboardInputState extends State<KeyboardInput> {
           color: AppColor.white,
         ),
         // 光标颜色
-        cursorColor: const Color.fromRGBO(253, 137, 140, 1),
+        cursorColor: AppColor.white,
         // 装饰器修改外观
         decoration: const InputDecoration(
           // 去除下滑线

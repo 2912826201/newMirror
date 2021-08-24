@@ -272,6 +272,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
   bool _slideEnd = false;
   bool _sizeEnd = false;
   var _opacity = 1.0;
+
   Size _size;
   AnimationController _slideController;
   AnimationController _sizeController;
@@ -281,10 +282,17 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
   Animation<double> _sizeAnimation;
   Animation<double> _opacityAnimation;
   static final _opacityTween = new Tween<double>(begin: 0.1, end: 1.0);
+  bool isToggle = false;
+  Color buttonCollor;
 
   @override
   void initState() {
     super.initState();
+    if(isToggle) {
+      buttonCollor = AppColor.mainYellow.withOpacity(0.6);
+    } else {
+      buttonCollor = AppColor.mainYellow;
+    }
     initSlideAnimation();
     initSizeAnimation();
     WidgetsBinding.instance.addPostFrameCallback(onAfterRender);
@@ -321,10 +329,25 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
     // _size = context.size;
   }
 
-  bool isToggle = false;
 
   toggleutton() {
     isToggle = !isToggle;
+    followButtonColor();
+  }
+
+  followButtonColor({bool isTapDown = false,bool isTapCancel = false,bool isTapUp = false}) {
+    if( !isTapCancel || !isTapUp) {
+      if (isTapDown) {
+        buttonCollor = AppColor.mainYellow.withOpacity(0.4);
+        setState(() {});
+        return;
+      }
+    }
+    if (isToggle) {
+      buttonCollor = AppColor.mainYellow.withOpacity(0.6);
+    } else if (!isToggle) {
+      buttonCollor = AppColor.mainYellow;
+    }
     setState(() {});
   }
 
@@ -407,13 +430,22 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                       width: 119,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: isToggle ? AppColor.textHint : AppColor.mainYellow,
+                        color: buttonCollor,
                         borderRadius: const BorderRadius.all(Radius.circular(16)),
                       ),
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
                           toggleutton();
+                        },
+                        onTapDown: (TapDownDetails details) {
+                          followButtonColor(isTapDown: true);
+                        },
+                        onTapUp: (TapUpDetails details) {
+                          followButtonColor(isTapUp: true);
+                        },
+                        onTapCancel: () {
+                          followButtonColor(isTapCancel: true);
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -422,8 +454,8 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               isToggle
-                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16,color:AppColor.black )
-                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16,color:AppColor.black),
+                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16, color: AppColor.black)
+                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.black),
                               const SizedBox(
                                 width: 4,
                               ),

@@ -112,7 +112,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
         physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: AppColor.black,
+        color: AppColor.mainBlack,
         child: SizedBox(
           height: 48,
           child: Flex(
@@ -241,7 +241,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
                       width: 16,
                       height: 3,
                       decoration: BoxDecoration(
-                        color: AppColor.mainRed,
+                        color: AppColor.mainYellow,
                         borderRadius: BorderRadius.circular(1.5),
                       ))
                   : Container(),

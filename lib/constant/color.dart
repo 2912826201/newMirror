@@ -20,9 +20,6 @@ class AppColor {
   //N0 白色
   static const white = Color.fromRGBO(0xFF, 0xFF, 0xFF, 1.0);
 
-
-  static const textFieldwhite10 = Color.fromRGBO(0xFF, 0xFF, 0xFF, 0.1);
-
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
 
@@ -34,6 +31,9 @@ class AppColor {
 
   //图片背景
   static const imageBgGrey = Color.fromRGBO(0x34, 0x34, 0x34, 1.0);
+
+  //吐司底色
+  static const toastBgGrey = Color.fromRGBO(0x30, 0x30, 0x30, 1.0);
 
   //禁用状态的黄
   static const disabledYellow = Color.fromRGBO(0xA3, 0x9D, 0x7C, 1.0);

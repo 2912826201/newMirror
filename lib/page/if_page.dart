@@ -115,7 +115,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                 // default Text
                 Text(
                   testText,
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: AppColor.white),
                 ),
                 // rich text list
                 richTexts: [

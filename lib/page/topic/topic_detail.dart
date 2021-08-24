@@ -468,7 +468,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             indicator: const RoundUnderlineTabIndicator(
                               borderSide: BorderSide(
                                 width: 2,
-                                color: AppColor.bgWhite,
+                                color: AppColor.mainYellow,
                               ),
                               insets: EdgeInsets.only(bottom: 0),
                               wantWidth: 20,

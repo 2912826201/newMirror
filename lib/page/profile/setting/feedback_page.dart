@@ -107,7 +107,7 @@ class _feedBackPage extends State<FeedBackPage> {
                               width: numTextSize.width+10,
                               child: Text("322292818",style:longClick?AppStyle.whiteRegular14: AppStyle
                                   .text1Regular14,) ,
-                              color: longClick ? AppColor.textFieldwhite10 : AppColor.mainBlack,
+                              color: longClick ? AppColor.white.withOpacity(0.1) : AppColor.mainBlack,
                             ),)
                         ],
                       ),
