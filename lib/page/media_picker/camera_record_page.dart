@@ -9,6 +9,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -131,8 +132,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
   Widget build(BuildContext context) {
     return checkFullPermissions()
         ? Scaffold(
+            backgroundColor: AppColor.mainBlack,
             appBar: CustomAppBar(
-              backgroundColor: AppColor.black,
+              backgroundColor: AppColor.mainBlack,
               brightness: Brightness.dark,
               hasLeading: widget.publishMode == 2 ? false : true,
               leading: CustomAppBarIconButton(
@@ -232,7 +234,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                       Expanded(
                         child: Container(
                           alignment: Alignment.center,
-                          color: AppColor.black,
+                          color: AppColor.mainBlack,
                           child: _currentMode == 0
                               ? GestureDetector(
                                   onTap: () async {
@@ -305,7 +307,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                           _isRecording
                                               ? "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(_milliDuration))}"
                                               : " ",
-                                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 10),
+                                          style: AppStyle.text1Regular10,
                                         ),
                                       ],
                                     ),
@@ -369,9 +371,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
           )
         : Scaffold(
             // 无权限时的布局
-            backgroundColor: AppColor.bgBlack,
+            backgroundColor: AppColor.mainBlack,
             appBar: CustomAppBar(
-              backgroundColor: AppColor.black,
+              backgroundColor: AppColor.mainBlack,
               brightness: Brightness.dark,
               hasLeading: widget.publishMode == 2 ? false : true,
               leading: CustomAppBarIconButton(
@@ -392,7 +394,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                       children: [
                         Text(
                           "打开权限才可以拍摄",
-                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 18),
+                          style: AppStyle.whiteRegular18,
                         ),
                         SizedBox(
                           height: 12,
@@ -433,11 +435,11 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                       onCameraSelected(Application.cameras[_cameraIndex]);
                                     }
                                   }
-                                } else if(status.isPermanentlyDenied){
+                                } else if (status.isPermanentlyDenied) {
                                   //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
                                   //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
                                   //时长较长说明是用户手动选择的永久拒绝 不做处理
-                                  if(responseTime - requestTime < permissionCheckDuration){
+                                  if (responseTime - requestTime < permissionCheckDuration) {
                                     AppSettings.openAppSettings();
                                   }
                                 }
@@ -447,9 +449,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                           child: Text(
                             _permissionCameraGranted ? "相机访问权限已启用" : "启用相机访问权限",
                             style: TextStyle(
-                                color: _permissionCameraGranted
-                                    ? AppColor.white.withOpacity(0.35)
-                                    : AppColor.mainRed.withOpacity(0.85),
+                                color: _permissionCameraGranted ? AppColor.textWhite60 : AppColor.mainRed,
                                 fontSize: 14),
                           ),
                         ),
@@ -494,11 +494,11 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                             onCameraSelected(Application.cameras[_cameraIndex]);
                                           }
                                         }
-                                      } else if(status.isPermanentlyDenied){
+                                      } else if (status.isPermanentlyDenied) {
                                         //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
                                         //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
                                         //时长较长说明是用户手动选择的永久拒绝 不做处理
-                                        if(responseTime - requestTime < permissionCheckDuration){
+                                        if (responseTime - requestTime < permissionCheckDuration) {
                                           AppSettings.openAppSettings();
                                         }
                                       }
@@ -508,9 +508,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                 child: Text(
                                   _permissionMicrophoneGranted ? "麦克风访问权限已启用" : "启用麦克风访问权限",
                                   style: TextStyle(
-                                      color: _permissionMicrophoneGranted
-                                          ? AppColor.white.withOpacity(0.35)
-                                          : AppColor.mainRed.withOpacity(0.85),
+                                      color: _permissionMicrophoneGranted ? AppColor.textWhite60 : AppColor.mainRed,
                                       fontSize: 14),
                                 ),
                               ),

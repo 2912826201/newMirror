@@ -316,6 +316,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                   height: 32,
                   alignment: Alignment.center,
                   child: TextField(
+                    style: AppStyle.whiteRegular16,
                     controller: _inputController,
                     focusNode: _focusNode,
                     textInputAction: TextInputAction.search,
@@ -323,7 +324,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                         hintText: '搜索用户',
-                        hintStyle: AppStyle.whiteRegular16,
+                        hintStyle: AppStyle.text1Regular16,
                         border: InputBorder.none),
                     inputFormatters: [
                       // WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
