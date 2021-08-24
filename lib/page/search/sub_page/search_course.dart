@@ -204,9 +204,9 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
             ),
             const Text(
               "你的放大镜陨落星辰了",
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
             ),
-            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+            const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
           ],
         ),
       );

@@ -234,9 +234,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
             ),
             const Text(
               "你的放大镜陨落星辰了",
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
             ),
-            const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+            const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
           ],
         ),
       );
@@ -270,12 +270,12 @@ class SearchTopiciItem extends StatelessWidget {
             // SizedBox(height: 6),
             Text(
               "#${model.name}",
-              style: AppStyle.textRegular16,
+              style: AppStyle.whiteRegular16,
             ),
             const SizedBox(height: 2),
             Text(
               "${StringUtil.getNumber(model.feedCount)}篇动态",
-              style: AppStyle.textHintRegular12,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
             ),
             // SizedBox(height: 6),
           ],

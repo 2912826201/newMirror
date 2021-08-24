@@ -251,8 +251,8 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   ),
                   margin: const EdgeInsets.only(bottom: 16),
                 ),
-                const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
-                const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
+                const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
                 const Spacer(),
               ],
             ));
@@ -348,7 +348,7 @@ class _SearchState extends State<SearchUserItem> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               widget.model.nickName != null ? widget.model.nickName : " ",
-                              style: AppStyle.textMedium15,
+                              style: AppStyle.whiteRegular15,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -360,7 +360,7 @@ class _SearchState extends State<SearchUserItem> {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     widget.model.description,
-                                    style: AppStyle.textSecondaryRegular12,
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),

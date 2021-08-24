@@ -117,6 +117,8 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             child: TextField(
                               controller: searchController,
                               textInputAction: TextInputAction.search,
+                              // 光标颜色
+                              cursorColor: AppColor.white,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: AppColor.white,

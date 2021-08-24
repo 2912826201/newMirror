@@ -920,7 +920,7 @@ Widget buildVideoCourseItemRightDataUi(CourseModel value, int imageHeight, bool 
             width: double.infinity,
             child: Text(
               value.title ?? "",
-              style: AppStyle.textPrimary2Medium15,
+              style: AppStyle.whiteMedium15,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -936,24 +936,24 @@ Widget buildVideoCourseItemRightDataUi(CourseModel value, int imageHeight, bool 
                   Positioned(
                     child: RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: value.levelDto?.ename, style: AppStyle.textPrimary2Medium12),
+                        TextSpan(text: value.levelDto?.ename, style: AppStyle.whiteMedium12),
                         // ignore: null_aware_before_operator
                         TextSpan(
                             // ignore: null_aware_before_operator
                             text: value.levelDto?.name + " · ",
-                            style: AppStyle.textSecondaryRegular12),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
                         TextSpan(
                             text:
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
-                            style: AppStyle.textPrimary2Medium12),
+                            style: AppStyle.whiteMedium12),
                         TextSpan(
                             text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ",
-                            style: AppStyle.textSecondaryRegular12),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
-                            style: AppStyle.textPrimary2Medium12),
-                        TextSpan(text: "千卡", style: AppStyle.textSecondaryRegular12),
+                            style: AppStyle.whiteMedium12),
+                        TextSpan(text: "千卡", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
                       ]),
                     ),
                     top: 0,
@@ -962,7 +962,7 @@ Widget buildVideoCourseItemRightDataUi(CourseModel value, int imageHeight, bool 
                   Positioned(
                     child: Text(
                       isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.practiceAmount) + "人练过",
-                      style: AppStyle.textPrimary2Regular12,
+                      style: AppStyle.whiteMedium12,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

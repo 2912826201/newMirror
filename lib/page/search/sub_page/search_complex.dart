@@ -316,9 +316,9 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                     ),
                     const Text(
                       "你的放大镜陨落星辰了",
-                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                      style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
                     ),
-                    const Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+                    const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
                   ],
                 ),
               )
@@ -611,7 +611,7 @@ class ItemTitleState extends State<ItemTitle> with SingleTickerProviderStateMixi
         children: [
           Text(
             widget.title,
-            style: AppStyle.textMedium15,
+            style: AppStyle.whiteMedium15,
           ),
           const Spacer(),
           GestureDetector(
@@ -622,9 +622,10 @@ class ItemTitleState extends State<ItemTitle> with SingleTickerProviderStateMixi
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text("更多", style: AppStyle.textSecondaryRegular13),
+                const Text("更多",
+                    style:  const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
                 const SizedBox(width: 6),
-                AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
+                AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textWhite60),
               ],
             ),
           )

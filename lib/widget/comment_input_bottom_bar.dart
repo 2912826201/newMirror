@@ -729,7 +729,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   maxLines: null,
                                   enableInteractiveSelection: true,
                                   // 光标颜色
-                                  cursorColor: Color.fromRGBO(253, 137, 140, 1),
+                                  cursorColor: AppColor.white,
                                   readOnly: context.watch<CommentEnterNotifier>().emojiState,
                                   showCursor: true,
                                   scrollPadding: EdgeInsets.all(0),
