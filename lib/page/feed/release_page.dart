@@ -204,9 +204,11 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
-      child: ChangeNotifierProvider(
+    return
+      // AnnotatedRegion<SystemUiOverlayStyle>(
+      // value: SystemUiOverlayStyle.dark,
+      // child:
+      ChangeNotifierProvider(
         create: (_) => ReleaseFeedInputNotifier(
           inputText: "",
           rules: topicRule == null ? [] : [topicRule],
@@ -216,11 +218,12 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         builder: (context, _) {
           String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
           return Scaffold(
-            // backgroundColor: AppColor.mainRed,
+            backgroundColor: AppColor.mainBlack,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               brightness: Brightness.dark,
               backgroundColor: AppColor.mainBlack,
+              titleSpacing: 0,
               automaticallyImplyLeading: false,
               title: // 头部布局
                   FeedHeader(
@@ -230,7 +233,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               ), //注意
             ),
             body: Container(
-              color: AppColor.white,
+              // color: AppColor.white,
               child: Column(
                 children: [
                   // // 状态栏颜色
@@ -263,7 +266,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
             ),
           );
         },
-      ),
+      // ),
     );
   }
 }

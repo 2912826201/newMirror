@@ -22,6 +22,7 @@ import 'package:mirror/widget/text_span_field/range_style.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:provider/provider.dart';
 
+import 'custom_button.dart';
 import 'dialog.dart';
 import 'input_formatter/release_feed_input_formatter.dart';
 import 'icon.dart';
@@ -514,7 +515,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                 bottom:
                     context.watch<CommentEnterNotifier>().emojiState ? 0.0 : MediaQuery.of(context).viewInsets.bottom),
             decoration: BoxDecoration(
-              color: AppColor.white,
+              color: AppColor.layoutBgGrey,
               borderRadius: BorderRadius.only(
                 topLeft:
                     context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
@@ -528,8 +529,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                   offstage: context.watch<CommentEnterNotifier>().keyWord != "@",
                   child: Container(
                     height: 232,
-                    decoration:
-                        const BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
+                    decoration: const BoxDecoration(
+                        border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8))),
                     child: ListView.builder(
                         itemCount: followList.length + 1,
                         controller: _scrollController,
@@ -676,7 +677,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     const SizedBox(width: 12),
                                     Text(
                                       followList[index].nickName,
-                                      style: AppStyle.textRegular16,
+                                      style: AppStyle.whiteRegular16,
                                     )
                                   ],
                                 ),
@@ -705,7 +706,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                           margin: const EdgeInsets.only(left: 16, right: 16),
                           decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            color: AppColor.bgWhite.withOpacity(0.65),
+                            color: AppColor.mainBlack,
                           ),
                           child: Stack(
                             children: [
@@ -734,7 +735,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   scrollPadding: EdgeInsets.all(0),
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: AppColor.textPrimary1,
+                                    color: AppColor.white,
                                     // fontFamily: "STHeitiSCMedium",
                                   ),
                                   //内容改变的回调
@@ -778,7 +779,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     // 提示文本
                                     hintText: hintText,
                                     // 提示文本样式
-                                    hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+                                    hintStyle: TextStyle(fontSize: 14, color: AppColor.textWhite60),
                                     // 设置为true,contentPadding才会生效，TextField会有默认高度。
                                     isCollapsed: true,
                                     contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
@@ -842,6 +843,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       },
                                       iconSize: 24,
                                       svgName: AppIcon.input_at,
+                                      iconColor: AppColor.textWhite60,
                                     ),
                                   )),
                               Positioned(
@@ -860,6 +862,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   },
                                   iconSize: 24,
                                   svgName: AppIcon.input_emotion,
+                                  iconColor: AppColor.textWhite60,
                                 ),
                               ),
                             ],
@@ -871,9 +874,36 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               right: 16,
                               bottom: 2,
                               child: Offstage(
-                                offstage: Platform.isIOS,
-                                child: GestureDetector(
-                                    onTap: () {
+                                  offstage: Platform.isIOS,
+                                  // child: GestureDetector(
+                                  // onTap: () {
+                                  //   if (_textEditingController.text.trim().length == 0) {
+                                  //     showAppDialog(context,
+                                  //         title: "提示",
+                                  //         info: "字数不能为空",
+                                  //         confirm: AppDialogButton("我知道了", () {
+                                  //           return true;
+                                  //         }));
+                                  //   } else {
+                                  //     voidCallback(
+                                  //       _textEditingController.text,
+                                  //       rules,
+                                  //     );
+                                  //     Navigator.of(context).pop();
+                                  //   }
+                                  // voidCallback(
+                                  //   _textEditingController.text,
+                                  //   rules,
+                                  // );
+                                  // Navigator.of(context).pop(1);
+                                  // },
+                                  // child: IgnorePointer(
+                                  //     // 监听输入框的值==""使外层点击不生效。非""手势生效。
+                                  //     ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                                  child: CustomYellowButton(
+                                    "发送",
+                                    context.watch<CommentEnterNotifier>().textFieldStr != "" ? 0 : 3,
+                                    () {
                                       if (_textEditingController.text.trim().length == 0) {
                                         showAppDialog(context,
                                             title: "提示",
@@ -888,34 +918,29 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                         );
                                         Navigator.of(context).pop();
                                       }
-                                      // voidCallback(
-                                      //   _textEditingController.text,
-                                      //   rules,
-                                      // );
-                                      // Navigator.of(context).pop(1);
                                     },
-                                    child: IgnorePointer(
-                                      // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                                      ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
-                                      child: Container(
-                                          // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
-                                          height: 32,
-                                          width: 52,
-                                          decoration: BoxDecoration(
-                                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                                            // 监听输入框的值动态改变样式
-                                            color: context.watch<CommentEnterNotifier>().textFieldStr != ""
-                                                ? AppColor.textPrimary1
-                                                : AppColor.textSecondary,
-                                          ),
-                                          child: Center(
-                                            child: const Text(
-                                              "发送",
-                                              style: TextStyle(color: AppColor.white, fontSize: 14),
-                                            ),
-                                          )),
-                                    )),
-                              )),
+                                    width: 52,
+                                    height: 32,
+                                  )
+                                  // Container(
+                                  //     // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                                  //     height: 32,
+                                  //     width: 52,
+                                  //     decoration: BoxDecoration(
+                                  //       borderRadius: const BorderRadius.all(Radius.circular(16)),
+                                  //       // 监听输入框的值动态改变样式
+                                  //       color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                  //           ? AppColor.mainYellow
+                                  //           : AppColor.textSecondary,
+                                  //     ),
+                                  //     child: Center(
+                                  //       child: const Text(
+                                  //         "发送",
+                                  //         style: TextStyle(color: AppColor.black, fontSize: 14),
+                                  //       ),
+                                  //     )),
+                                  // )),
+                                  )),
                         )
                       ],
                     )),
@@ -941,7 +966,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 //键盘与表情的框
   Widget bottomSettingBox() {
     return Container(
-      color: AppColor.white,
+      color: AppColor.layoutBgGrey,
       child: Stack(
         children: [
           emoji(),
@@ -957,9 +982,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       height: emojiHeight,
       width: ScreenUtil.instance.width,
       decoration: const BoxDecoration(
-        color: AppColor.white,
         border: Border(
-          top: BorderSide(color: Colors.grey, width: 0.2),
+          top: BorderSide(color: AppColor.dividerWhite8, width: 0.2),
         ),
       ),
       child: emojiList(),
@@ -976,7 +1000,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       return GestureDetector(
         child: Container(
           width: double.infinity,
-          color: AppColor.transparent,
+          // color: AppColor.transparent,
           child: Column(
             children: [
               Expanded(
@@ -1013,7 +1037,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       fontSize: 24,
     );
     return Material(
-        color: Colors.white,
+        color: AppColor.layoutBgGrey,
         child: new InkWell(
           child: Container(
             alignment: Alignment.center,

@@ -23,7 +23,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-import 'package:mirror/widget/create_group_popup.dart';
+import 'package:mirror/page/popup/create_group_popup.dart';
 import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:notification_permissions/notification_permissions.dart';

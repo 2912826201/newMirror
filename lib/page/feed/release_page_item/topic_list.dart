@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -303,13 +304,13 @@ class TopicListState extends State<TopicList> {
                               height: 6,
                             ),
                             Text(list[index].name,
-                                style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                style: AppStyle.whiteRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
                             const SizedBox(
                               height: 2,
                             ),
                             Text(
                               list[index].id != -1 ? "${StringUtil.getNumber(list[index].feedCount)}篇动态" : "创建新话题",
-                              style: AppStyle.textSecondaryRegular12,
+                              style:TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
                             ),
                             const SizedBox(
                               height: 4,

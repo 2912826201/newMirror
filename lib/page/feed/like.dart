@@ -74,12 +74,12 @@ class LikeState extends State<Like> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "赞",
         ),
         body: laudListModel.length > 0
             ? Container(
-                decoration: const BoxDecoration(color: Colors.white),
                 child: Column(
                   children: [
                     Expanded(
@@ -246,7 +246,7 @@ class LikeListViewItem extends StatelessWidget {
                         "${model.nickName}",
                         // '用户昵称显示',
                         style: const TextStyle(
-                          color: AppColor.textPrimary1,
+                          color: AppColor.white,
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
                         ),
@@ -285,7 +285,7 @@ class LikeListViewItem extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                color: AppColor.textSecondary,
+                                color: AppColor.textWhite60,
                                 fontSize: 12,
                               ),
                             ),

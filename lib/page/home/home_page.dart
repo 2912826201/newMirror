@@ -566,7 +566,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                     indicator: const RoundUnderlineTabIndicator(
                       borderSide: const BorderSide(
                         width: 3,
-                        color: AppColor.white,
+                        color: AppColor.mainYellow,
                         // Color.fromRGBO(253, 137, 140, 1),
                       ),
                       insets: EdgeInsets.only(bottom: -6),

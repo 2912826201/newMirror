@@ -102,6 +102,7 @@ class _createMapScreenState extends State<createMapScreen> {
     );
     return Scaffold(
         resizeToAvoidBottomInset: false,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "查看地图",
         ),
@@ -202,7 +203,7 @@ class _createMapScreenState extends State<createMapScreen> {
                                     widget.keyWords,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppStyle.textRegular16,
+                                    style: AppStyle.whiteRegular16,
                                   ),
                                 ),
                                 const SizedBox(
@@ -213,7 +214,7 @@ class _createMapScreenState extends State<createMapScreen> {
                                     child: Text(formatted_address,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: AppStyle.textSecondaryRegular13))
+                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60)))
                               ],
                             ),
                           ),

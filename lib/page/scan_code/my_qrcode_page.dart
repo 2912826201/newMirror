@@ -100,15 +100,17 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
         return RepaintBoundary(
           key: rootWidgetKey,
           child: Container(
+              color: AppColor.mainBlack,
               height: ScreenUtil.instance.height,
               width: ScreenUtil.instance.screenWidthDp,
               child: Stack(
                 children: [
                   //背景图
                   Container(
-                      height: ScreenUtil.instance.height,
-                      width: ScreenUtil.instance.screenWidthDp,
-                      color: AppColor.bgWhite,),
+                    height: ScreenUtil.instance.height,
+                    width: ScreenUtil.instance.screenWidthDp,
+                    color: AppColor.mainBlack,
+                  ),
                   Positioned(
                       left: (ScreenUtil.instance.screenWidthDp - ScreenUtil.instance.screenWidthDp * 0.8) / 2,
                       top: ScreenUtil.instance.height * 0.17,
@@ -155,7 +157,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
         width: ScreenUtil.instance.screenWidthDp * 0.8,
         height: ScreenUtil.instance.height * 0.49,
         decoration: BoxDecoration(
-          color: AppColor.white,
+          color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Column(
@@ -166,12 +168,12 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
             ),
             Text(
               data.nickName,
-              style: AppStyle.textMedium18,
+              style: AppStyle.whiteMedium18,
             ),
             Spacer(),
             Text(
               "已加入iF APP${_getUserCreateTime(data)}",
-              style: AppStyle.textPrimary3Regular14,
+              style: AppStyle.text1Regular14,
             ),
             Spacer(),
             QrImage(
@@ -182,7 +184,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
               version: QrVersions.auto,
             ),
             Spacer(),
-            Text("扫一扫二维码,加我好友吧。"),
+            Text("扫一扫二维码,加我好友吧。", style: TextStyle(color: AppColor.textWhite60),),
             Spacer(),
           ],
         ));

@@ -70,7 +70,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
     //flutter定位只能获取到经纬度信息
     // currentAddressInfo = await AmapLocation.fetch();
     // 调用周边
-    if(widget.currentAddressInfo == null) {
+    if (widget.currentAddressInfo == null) {
       widget.currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
     }
     aroundHttp();
@@ -80,6 +80,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "所在位置",
       ),
@@ -89,7 +90,6 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
             //搜索框
             Container(
               margin: const EdgeInsets.only(top: 6),
-              color: AppColor.white,
               height: 44.0,
               width: ScreenUtil.instance.screenWidthDp,
               child: Row(
@@ -100,7 +100,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                     height: 32,
                     width: ScreenUtil.instance.screenWidthDp - 32,
                     decoration: BoxDecoration(
-                      color: AppColor.bgWhite.withOpacity(0.65),
+                      color: AppColor.white.withOpacity(0.1),
                       borderRadius: new BorderRadius.all(new Radius.circular(3.0)),
                     ),
                     child: Row(
@@ -109,7 +109,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                         const SizedBox(
                           width: 9,
                         ),
-                        AppIcon.getAppIcon(AppIcon.input_search, 24),
+                        AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
                         Expanded(
                           child: Container(
                             height: 32,
@@ -117,11 +117,15 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             child: TextField(
                               controller: searchController,
                               textInputAction: TextInputAction.search,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColor.white,
+                              ),
                               decoration: const InputDecoration(
                                   isCollapsed: true,
                                   contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                                   hintText: '搜索附近的位置',
-                                  hintStyle: TextStyle(color: AppColor.textHint, fontSize: 16),
+                                  hintStyle: TextStyle(color: AppColor.textWhite60, fontSize: 16),
                                   border: InputBorder.none),
                             ),
                           ),
@@ -221,7 +225,6 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                     : Container())
           ],
         ),
-        color: Colors.white,
       ),
     );
   }
@@ -405,7 +408,7 @@ class LocationItem extends StatelessWidget {
       width: ScreenUtil.instance.width,
       height: 69,
       margin: const EdgeInsets.only(left: 16, right: 16),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.bgWhite, width: 0.5))),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.dividerWhite8, width: 0.5))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -435,18 +438,18 @@ class LocationItem extends StatelessWidget {
     if (poi.id == Application.cityId || index == 0) {
       return Container(
         alignment: const Alignment(-1, 0),
-        child: Text(poi.name, style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
+        child: Text(poi.name, style: index == 0 ? AppStyle.redRegular16 : AppStyle.whiteRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
       );
     } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(poi.name, style: AppStyle.textRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(poi.name, style:AppStyle.whiteRegular16, maxLines: 1, overflow: TextOverflow.ellipsis),
           const Spacer(),
           Text(
             poi.pname + poi.cityname + poi.adname + poi.address.toString(),
-            style: AppStyle.textSecondaryRegular13,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

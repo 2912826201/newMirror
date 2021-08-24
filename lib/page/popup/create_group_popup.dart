@@ -13,13 +13,13 @@ import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
-import '../page/message/util/message_chat_page_manager.dart';
+import '../message/util/message_chat_page_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
-import 'Input_method_rules/pin_yin_text_edit_controller.dart';
+import '../../widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 
 /// create_group_popup
 /// Created by yangjiayi on 2021/1/8.
@@ -285,10 +285,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
 
   Widget _buildHeader(BuildContext context, int index) {
     return Container(
+      color: AppColor.layoutBgGrey,
       padding: const EdgeInsets.fromLTRB(22, 0, 16, 0),
       alignment: Alignment.centerLeft,
       width: ScreenUtil.instance.screenWidth,
-      color: AppColor.transparent,
       height: 28,
       child: Text(
         _friendList[index].getSuspensionTag(),
