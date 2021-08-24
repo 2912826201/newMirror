@@ -48,7 +48,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: AppColor.black,
+          backgroundColor: AppColor.mainBlack,
           brightness: Brightness.dark,
           leading: CustomAppBarIconButton(
             svgName: AppIcon.nav_close,
@@ -111,7 +111,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
             Expanded(
                 child: Container(
               alignment: Alignment.center,
-              color: AppColor.black,
+              color: AppColor.mainBlack,
             ))
           ],
         ));

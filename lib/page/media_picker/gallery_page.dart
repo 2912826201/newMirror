@@ -313,7 +313,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
               children: [
                 // 背景
                 Container(
-                  color: AppColor.bgBlack,
+                  color: AppColor.mainBlack,
                 ),
                 // 列表
                 ScrollConfiguration(
@@ -326,7 +326,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     Positioned(
                         top: context.watch<PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
                         child: Container(
-                          color: AppColor.black,
+                          color: AppColor.mainBlack,
                           width: _previewMaxHeight,
                           height: _previewMaxHeight,
                           child: Builder(
@@ -432,9 +432,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
           )
         : Scaffold(
             // 无权限时的布局
-            backgroundColor: AppColor.bgBlack,
+            backgroundColor: AppColor.mainBlack,
             appBar: CustomAppBar(
-              backgroundColor: AppColor.black,
+              backgroundColor: AppColor.mainBlack,
               brightness: Brightness.dark,
               hasLeading: widget.publishMode == 2 ? false : true,
               leading: CustomAppBarIconButton(
@@ -453,11 +453,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                       children: [
                         Text(
                           "请授权iFitness照片权限",
-                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                          style: AppStyle.whiteRegular16,
                         ),
                         Text(
                           "便于您进行照片编辑和图片保存",
-                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                          style: AppStyle.whiteRegular16,
                         ),
                         SizedBox(
                           height: 24,
@@ -495,11 +495,11 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                 //iOS有只给部分照片权限的情况
                                 _permissionGranted = true;
                                 _fetchGalleryData(true);
-                              } else if(status.isPermanentlyDenied){
+                              } else if (status.isPermanentlyDenied) {
                                 //在Android的一些情况 永久拒绝是无法直接通过status判断而是request弹不出弹窗判断的
                                 //判断返回权限结果的用时 如果时长很短 说明是立刻得出的结果需要跳转系统设置页
                                 //时长较长说明是用户手动选择的永久拒绝 不做处理
-                                if(responseTime - requestTime < permissionCheckDuration){
+                                if (responseTime - requestTime < permissionCheckDuration) {
                                   AppSettings.openAppSettings();
                                 }
                               }
@@ -709,7 +709,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     : entity.type == AssetType.image
                         ? ""
                         : "",
-                style: TextStyle(color: AppColor.white, fontSize: 9),
+                style: AppStyle.whiteRegular9,
               ),
             ),
             Positioned(
@@ -740,7 +740,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                 )
                               : Text(
                                   "${notifier.selectedMap[entity.id].order + widget.startCount}",
-                                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                                  style: AppStyle.whiteRegular16,
                                 ),
                         )
                       : Container(
@@ -832,7 +832,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   // 构建标题栏
   Widget _buildAppBar() {
     return CustomAppBar(
-      backgroundColor: AppColor.black,
+      backgroundColor: AppColor.mainBlack,
       brightness: Brightness.dark,
       hasLeading: widget.publishMode == 2 ? false : true,
       leading: context.select((SelectedMapNotifier value) => value.isAlbumListShow)
@@ -1052,7 +1052,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   //构建选相册目录列表
   Widget _buildAlbumList() {
     return Container(
-      color: AppColor.bgBlack,
+      color: AppColor.mainBlack,
       child: ListView.builder(
           itemCount: _albums.length,
           itemBuilder: (context, index) {
@@ -1132,10 +1132,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                         children: [
                           Text(
                             "${_albums[index].name}",
-                            style: TextStyle(
-                              color: AppColor.white,
-                              fontSize: 13,
-                            ),
+                            style: AppStyle.whiteRegular13,
                             maxLines: 1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
@@ -1143,11 +1140,10 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                           SizedBox(
                             height: 2,
                           ),
-                          Text("${_albums[index].assetCount}",
-                              style: TextStyle(
-                                color: AppColor.white.withOpacity(0.35),
-                                fontSize: 12,
-                              )),
+                          Text(
+                            "${_albums[index].assetCount}",
+                            style: AppStyle.text1Regular12,
+                          ),
                         ],
                       ),
                     ),
@@ -1623,7 +1619,7 @@ class VideoPreviewState extends State<VideoPreviewArea> {
                 alignment: Alignment.center,
                 width: widget.previewWidth,
                 height: widget.previewWidth,
-                color: AppColor.black,
+                color: AppColor.mainBlack,
                 child: ScrollConfiguration(
                   behavior: NoBlueEffectBehavior(),
                   child: NotificationListener<ScrollNotification>(
