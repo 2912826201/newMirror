@@ -14,7 +14,7 @@ class SmartRefresherHeadFooter {
     }
     return _headFooter;
   }
-
+  TextStyle textStyle =  TextStyle(color: AppColor.textWhite60, fontSize: 16);
   getHeader() {
     return WaterDropHeader(
         refresh: Container(
@@ -70,7 +70,7 @@ class SmartRefresherHeadFooter {
               CustomPaint(
                 painter: VerticalText(
                   text: "继续滑动查看更多",
-                  textStyle: TextStyle(color: AppColor.textHint, fontSize: 13, letterSpacing: 4, wordSpacing: 4),
+                  textStyle: TextStyle(color: AppColor.textWhite60, fontSize: 13, letterSpacing: 4, wordSpacing: 4),
                   width: 20,
                   height: 190,
                 ),
@@ -100,7 +100,7 @@ class SmartRefresherHeadFooter {
       builder: (BuildContext context, LoadStatus mode) {
         Widget body;
         if (mode == LoadStatus.idle) {
-          body = isShowAddMore ? Text("上拉加载更多") : Text("");
+          body = isShowAddMore ? Text("上拉加载更多",style: textStyle,) : Text("");
         } else if (mode == LoadStatus.loading) {
           body = Lottie.asset(
             'assets/lottie/loading_refresh_black.json',
@@ -114,11 +114,11 @@ class SmartRefresherHeadFooter {
           //   child: CircularProgressIndicator(),
           // );
         } else if (mode == LoadStatus.failed) {
-          body = isShowAddMore ? Text("上拉加载更多") : Text("");
+          body = isShowAddMore ? Text("上拉加载更多",style: textStyle,) : Text("");
         } else if (mode == LoadStatus.canLoading) {
-          body = Text("上拉加载更多");
+          body = Text("上拉加载更多",style: textStyle,);
         } else if (mode == LoadStatus.noMore) {
-          body = isShowNoMore ? Text("没有更多数据了") : Text("");
+          body = isShowNoMore ? Text("没有更多数据了",style: textStyle,) : Text("");
         } else {
           body = Text("");
         }
