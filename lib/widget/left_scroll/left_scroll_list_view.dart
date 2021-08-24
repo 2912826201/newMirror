@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/text_util.dart';
 
 import 'cupertino_left_scroll.dart';
@@ -57,7 +58,7 @@ class _LeftScrollListViewState extends State<LeftScrollListView> {
   }
 
   Widget getItem(BuildContext context) {
-    TextStyle textStyle = TextStyle(fontSize: 16, color: AppColor.white);
+    TextStyle textStyle = AppStyle.whiteRegular16;
     return CupertinoLeftScroll(
       key: Key(widget.itemKey),
       closeTag: LeftScrollCloseTag(widget.itemTag),

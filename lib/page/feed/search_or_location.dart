@@ -124,7 +124,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                                   isCollapsed: true,
                                   contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                                   hintText: '搜索附近的位置',
-                                  hintStyle: TextStyle(color: AppColor.textWhite60, fontSize: 16),
+                                  hintStyle: AppStyle.text1Regular16,
                                   border: InputBorder.none),
                             ),
                           ),
@@ -448,7 +448,7 @@ class LocationItem extends StatelessWidget {
           const Spacer(),
           Text(
             poi.pname + poi.cityname + poi.adname + poi.address.toString(),
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
+            style: AppStyle.text1Regular13,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

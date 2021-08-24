@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
@@ -115,13 +116,13 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                 // default Text
                 Text(
                   testText,
-                  style: TextStyle(color: AppColor.white),
+                  style: AppStyle.whiteRegular16,
                 ),
                 // rich text list
                 richTexts: [
                   BaseRichText(
                     "《使用条款》",
-                    style: TextStyle(color: AppColor.mainBlue),
+                    style: AppStyle.blueRegular16,
                     onTap: () => {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return ProtocolWebView(
@@ -132,7 +133,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
                   ),
                   BaseRichText(
                     "《隐私协议》",
-                    style: TextStyle(color: AppColor.mainBlue),
+                    style: AppStyle.blueRegular16,
                     onTap: () => {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return ProtocolWebView(

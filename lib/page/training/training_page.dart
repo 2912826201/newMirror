@@ -425,15 +425,14 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                     ),
                                     Text(
                                       "${_parseLiveTime(_liveList.first.startTime)} - ${_parseLiveTime(_liveList.first.endTime)}",
-                                      style:
-                                          TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
+                                      style: AppStyle.whiteRegular12,
                                     )
                                   ],
                                 ),
                                 Spacer(),
                                 Text(
                                   "${_liveList.first.coursewareDto.name}",
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white),
+                                  style: AppStyle.whiteRegular16,
                                 ),
                                 SizedBox(
                                   height: 8,
@@ -609,7 +608,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: TextStyle(color: AppColor.white, fontSize: 14),
+              style: AppStyle.whiteRegular14,
             )),
             SizedBox(
               width: 12,
