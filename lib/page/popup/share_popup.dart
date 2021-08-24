@@ -164,7 +164,7 @@ class _SharePopupState extends State<_SharePopup> {
   Widget _buildFriendItem(BuildContext context, int index) {
     return GestureDetector(
       onTap: () {
-        if(ClickUtil.isFastClick()){
+        if (ClickUtil.isFastClick()) {
           return;
         }
         print("点击了人名");
@@ -235,7 +235,7 @@ class _SharePopupState extends State<_SharePopup> {
               SizedBox(
                 width: 9,
               ),
-              AppIcon.getAppIcon(AppIcon.input_search, 24),
+              AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.white),
               Expanded(
                 child: Container(
                   height: 32,
@@ -248,7 +248,7 @@ class _SharePopupState extends State<_SharePopup> {
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                         hintText: '搜索用户',
-                        hintStyle: AppStyle.whiteRegular16,
+                        hintStyle: AppStyle.text1Regular16,
                         border: InputBorder.none),
                     inputFormatters: [
                       // WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
@@ -303,7 +303,7 @@ class _SharePopupState extends State<_SharePopup> {
                 ),
                 Text(
                   "已加入的群聊",
-                  style: AppStyle.textRegular16,
+                  style: AppStyle.whiteRegular16,
                 ),
                 Spacer(),
                 AppIcon.getAppIcon(
@@ -407,7 +407,7 @@ class _SharePopupState extends State<_SharePopup> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          if(ClickUtil.isFastClick()){
+          if (ClickUtil.isFastClick()) {
             return;
           }
           print("点击了群名");

@@ -333,7 +333,11 @@ class _FriendsPageState extends State<FriendsPage> {
           const SizedBox(
             width: 9,
           ),
-          AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
+          AppIcon.getAppIcon(
+            AppIcon.input_search,
+            24,
+            color: AppColor.white,
+          ),
           Expanded(
             child: Container(
               height: 32,
@@ -355,7 +359,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     isCollapsed: true,
                     contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                     hintText: '搜索用户',
-                    hintStyle: TextStyle(color: AppColor.textWhite60),
+                    hintStyle: AppStyle.text1Regular16,
                     border: InputBorder.none),
               ),
             ),
@@ -577,7 +581,6 @@ class _FriendsPageState extends State<FriendsPage> {
       _onRefresh();
     }
   }
-
 
   //获取所有的群聊
   void getAllGroupList() async {

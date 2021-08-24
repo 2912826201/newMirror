@@ -119,10 +119,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                               textInputAction: TextInputAction.search,
                               // 光标颜色
                               cursorColor: AppColor.white,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColor.white,
-                              ),
+                              style: AppStyle.whiteRegular16,
                               decoration: const InputDecoration(
                                   isCollapsed: true,
                                   contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),

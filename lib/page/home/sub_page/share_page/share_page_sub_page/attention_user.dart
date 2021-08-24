@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/test/verification_codeInput_demo_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -53,7 +54,7 @@ class AttentionUserState extends State<AttentionUser> {
                   children: [
                     const Text(
                       "为你推荐",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white),
+                      style: AppStyle.whiteMedium18,
                     ),
                     const Spacer(),
                     Container(
@@ -65,7 +66,7 @@ class AttentionUserState extends State<AttentionUser> {
                                 margin: const EdgeInsets.only(right: 4),
                                 child: const Text(
                                   "查看全部",
-                                  style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+                                  style: AppStyle.text1Regular14,
                                 ),
                               ),
                               AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textWhite40),
@@ -288,7 +289,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    if(isToggle) {
+    if (isToggle) {
       buttonCollor = AppColor.mainYellow.withOpacity(0.6);
     } else {
       buttonCollor = AppColor.mainYellow;
@@ -329,14 +330,13 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
     // _size = context.size;
   }
 
-
   toggleutton() {
     isToggle = !isToggle;
     followButtonColor();
   }
 
-  followButtonColor({bool isTapDown = false,bool isTapCancel = false,bool isTapUp = false}) {
-    if( !isTapCancel || !isTapUp) {
+  followButtonColor({bool isTapDown = false, bool isTapCancel = false, bool isTapUp = false}) {
+    if (!isTapCancel || !isTapUp) {
       if (isTapDown) {
         buttonCollor = AppColor.mainYellow.withOpacity(0.4);
         setState(() {});
@@ -413,7 +413,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                       margin: const EdgeInsets.only(top: 8),
                       child: Text(
                         "金卡卡西${widget.str}",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white),
+                        style: AppStyle.whiteMedium15,
                       ),
                     ),
                     Container(
@@ -423,7 +423,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                         "夕柚和其他2位用户关注了",
                         maxLines: 2,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: AppColor.textWhite60),
+                        style: AppStyle.text1Regular13,
                       ),
                     ),
                     Container(
@@ -462,10 +462,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                               Container(
                                 child: Text(
                                   isToggle ? "已关注" : "关注",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColor.black,
-                                  ),
+                                  style: AppStyle.textRegular14,
                                 ),
                               ),
                             ],

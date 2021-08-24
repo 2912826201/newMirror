@@ -4,10 +4,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 
 import 'dimens.dart';
-
 
 /// Created by box on 2020/3/14.
 ///
@@ -62,7 +61,7 @@ class _PrimitiveNavigationBarState extends State<PrimitiveNavigationBar> {
     Widget middle = widget.middle;
     if (middle != null) {
       middle = DefaultTextStyle(
-        style: TextStyle(color: AppColor.white,fontSize: 15),
+        style: AppStyle.whiteRegular15,
         // CupertinoTheme.of(context).textTheme.navTitleTextStyle,
         child: Semantics(header: true, child: middle),
       );

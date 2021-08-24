@@ -226,7 +226,7 @@ class _AppDialog extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 confirm.text,
-                style: TextStyle(color: AppColor.mainRed, fontSize: 18),
+                style: AppStyle.redRegular18,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -285,7 +285,7 @@ class _AppDialog extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 element.text,
-                style: TextStyle(color: AppColor.mainBlue, fontSize: 18),
+                style: AppStyle.blueRegular18,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

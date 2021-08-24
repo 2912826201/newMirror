@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -115,11 +116,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
               child: Text(
                 context.watch<ReleaseFeedInputNotifier>().seletedAddressText,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
-                        ? AppColor.mainBlue
-                        : AppColor.white),
+                style: context.watch<ReleaseFeedInputNotifier>().seletedAddressText != "你在哪儿"
+                    ? AppStyle.blueRegular16
+                    : AppStyle.whiteRegular16,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -204,7 +203,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               color: AppColor.white.withOpacity(0.1), borderRadius: const BorderRadius.all(Radius.circular(3))),
           child: Text(
             addressText(address, index),
-            style: const TextStyle(fontSize: 12,color: AppColor.white),
+            style: AppStyle.whiteRegular12,
           ),
         ));
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import '../bottom_sheet.dart';
 
@@ -109,7 +110,7 @@ class BottomopupState extends State<BottomPopup> {
                 child: Center(
                   child: const Text(
                     "取消",
-                    style: TextStyle(color: AppColor.white, fontSize: 17),
+                    style: AppStyle.whiteRegular17,
                   ),
                 ),
               ),

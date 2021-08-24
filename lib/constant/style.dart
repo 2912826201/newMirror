@@ -41,15 +41,21 @@ class AppStyle {
   static const text2Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite40);
 
   //红色
+  static const redRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.mainRed);
-  static const redRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
   static const redMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.mainRed);
   static const redMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
   static const redMedium13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+
+  //蓝色
+  static const blueRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.mainBlue);
+  static const blueRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainBlue);
+  static const blueRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.mainBlue);
 
   //纯白色
   static const whiteRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.white);

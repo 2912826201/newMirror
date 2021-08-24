@@ -8,6 +8,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -504,7 +505,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                                 color: AppColor.textPrimary1.withOpacity(0.5)),
                             child: Text(
                               "${snapshot.data + 1}/${imageCount}",
-                              style: TextStyle(color: AppColor.white, fontSize: 12),
+                              style: AppStyle.whiteRegular12,
                             ),
                           );
                         })),
@@ -600,7 +601,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                           color: AppColor.textPrimary1.withOpacity(0.5)),
                       child: Text(
                         "${snapshot.data + 1}/${imageCount}",
-                        style: const TextStyle(color: AppColor.white, fontSize: 12),
+                        style: AppStyle.whiteRegular12,
                       ),
                     );
                   })),

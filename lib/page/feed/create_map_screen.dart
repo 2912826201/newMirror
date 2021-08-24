@@ -41,7 +41,11 @@ class _createMapScreenState extends State<createMapScreen> {
   // 查询定位信息
   aroundHttp() async {
     BitmapDescriptor bitmapDescriptorSelf = BitmapDescriptor.fromIconPath("assets/png/pin_map.png");
-    Marker marker = Marker(position: LatLng(widget.latitude, widget.longitude),infoWindowEnable: false,icon: bitmapDescriptorSelf,);
+    Marker marker = Marker(
+      position: LatLng(widget.latitude, widget.longitude),
+      infoWindowEnable: false,
+      icon: bitmapDescriptorSelf,
+    );
     markerSet.add(marker);
     // 获取权限状态
     // pin_map_self.png
@@ -55,14 +59,15 @@ class _createMapScreenState extends State<createMapScreen> {
       BitmapDescriptor bitmapDescriptor = BitmapDescriptor.fromIconPath("assets/png/pin_map_self.png");
       // ImageConfiguration configuration = ImageConfiguration(size: Size(32.0,32.0));
       // BitmapDescriptor bitmapDescriptor = await BitmapDescriptor.fromAssetImage(configuration,"assets/png/pin_map_self.png",);
-      print("currentAddressInfo.latitude:::::${currentAddressInfo.latitude} currentAddressInfo.longitude:::::${currentAddressInfo.longitude}");
+      print(
+          "currentAddressInfo.latitude:::::${currentAddressInfo.latitude} currentAddressInfo.longitude:::::${currentAddressInfo.longitude}");
       Marker marker = Marker(
           position: LatLng(currentAddressInfo.latitude, currentAddressInfo.longitude),
           // icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
-        icon: bitmapDescriptor,
+          icon: bitmapDescriptor,
           infoWindow: InfoWindow(title: "我的位置")
           // "assets/png/2.0x/course_favorite.png"
-      );
+          );
       markerSet.add(marker);
       print("currentAddressInfo ::::${currentAddressInfo.toJson()}");
       // markers.add(MarkerOption(
@@ -211,10 +216,12 @@ class _createMapScreenState extends State<createMapScreen> {
                                 ),
                                 Container(
                                     margin: const EdgeInsets.only(left: 16, right: 16),
-                                    child: Text(formatted_address,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60)))
+                                    child: Text(
+                                      formatted_address,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppStyle.text1Regular13,
+                                    ))
                               ],
                             ),
                           ),

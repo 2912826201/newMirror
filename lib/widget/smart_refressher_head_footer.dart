@@ -14,7 +14,7 @@ class SmartRefresherHeadFooter {
     }
     return _headFooter;
   }
-  TextStyle textStyle =  TextStyle(color: AppColor.textWhite60, fontSize: 16);
+  TextStyle textStyle =  AppStyle.text1Regular16;
   getHeader() {
     return WaterDropHeader(
         refresh: Container(
