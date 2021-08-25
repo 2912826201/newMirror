@@ -836,6 +836,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                         context
                                             .read<CommentEnterNotifier>()
                                             .changeCallback(_textEditingController.text);
+                                        context.read<CommentEnterNotifier>().setAtSearchStr("");
                                       },
                                       iconSize: 24,
                                       svgName: AppIcon.input_at,
