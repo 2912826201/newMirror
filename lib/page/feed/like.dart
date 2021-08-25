@@ -6,6 +6,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -208,7 +209,7 @@ class LikeListViewItem extends StatelessWidget {
                 width: Application.slideColorizeAnimatedText
                     ? getTextSize(
                             model.nickName,
-                            TextStyle(
+                            const TextStyle(
                               fontSize: 15,
                             ),
                             1)
@@ -245,11 +246,7 @@ class LikeListViewItem extends StatelessWidget {
                     : Text(
                         "${model.nickName}",
                         // '用户昵称显示',
-                        style: const TextStyle(
-                          color: AppColor.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppStyle.whiteRegular15,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -284,10 +281,7 @@ class LikeListViewItem extends StatelessWidget {
                               "${model.description}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: AppColor.textWhite60,
-                                fontSize: 12,
-                              ),
+                              style: AppStyle.text1Regular12,
                             ),
                     )
                   : Container(),
