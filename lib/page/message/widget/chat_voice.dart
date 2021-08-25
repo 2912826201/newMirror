@@ -42,11 +42,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   String textShow = "按住说话";
   var selectBoxUiStyle = BoxDecoration(
     borderRadius: BorderRadius.circular(16),
-    color: AppColor.textPrimary1.withOpacity(0.5),
+    color: AppColor.mainBlack.withOpacity(0.5),
   );
   var noSelectBoxUiStyle = BoxDecoration(
     borderRadius: BorderRadius.circular(16),
-    color: AppColor.textPrimary1,
+    color: AppColor.mainBlack,
   );
   String toastShow = "手指上滑,取消发送";
 

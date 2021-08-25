@@ -108,13 +108,13 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             fit: BoxFit.cover,
             placeholder: (context, url) {
               return Container(
-                color: AppColor.color343434,
+                color: AppColor.imageBgGrey,
               );
             },
             errorWidget: (context, url, error) {
               print("offsetY：#$offsetY");
               return Container(
-                color: AppColor.color343434,
+                color: AppColor.imageBgGrey,
                 padding: EdgeInsets.only(top: (containerSize.height - ScreenUtil.instance.width * 0.53) / 2.0),
                 child: getImageAsset("assets/png/image_error.png"),
               );

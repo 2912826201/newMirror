@@ -222,7 +222,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                               text: feedModel.content,
                                               model: feedModel,
                                               maxLines: 2,
-                                              style: const TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                                              style: const TextStyle(fontSize: 14, color: AppColor.textWhite60),
                                             ),
                                           ),
                                         ),

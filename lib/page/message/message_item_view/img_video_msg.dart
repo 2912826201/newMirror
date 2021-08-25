@@ -360,7 +360,7 @@ class ImgVideoMsg extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: AppColor.color343434,
+      color: AppColor.imageBgGrey,
       child: getImageAsset("assets/png/image_error.png",
           width: min(80, min(height, width)), height: min(80, min(height, width))),
     );
@@ -378,7 +378,7 @@ class ImgVideoMsg extends StatelessWidget {
           return getImageShowImage(isPlaceholder: true);
         } else {
           return Container(
-            color: AppColor.colorebebf5,
+            color: AppColor.textWhite60,
             child: Image.asset("assets/png/preload_png.png", width: width * 0.39, height: width * 0.39 * 0.43),
           );
         }
@@ -437,8 +437,8 @@ class ImgVideoMsg extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColor.textPrimary1.withOpacity(0),
-                AppColor.textPrimary1.withOpacity(0.35),
+                AppColor.mainBlack.withOpacity(0),
+                AppColor.mainBlack.withOpacity(0.45),
               ],
             ),
           )),

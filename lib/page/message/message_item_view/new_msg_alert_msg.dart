@@ -16,7 +16,7 @@ class NewMsgAlertMsg extends StatelessWidget {
               Container(
                 height: 1,
                 width: 32,
-                color: AppColor.textSecondary,
+                color: AppColor.textWhite40,
               ),
               SizedBox(width: 6),
               Text("以下为最新消息", style: AppStyle.text1Regular12),
@@ -24,7 +24,7 @@ class NewMsgAlertMsg extends StatelessWidget {
               Container(
                 height: 1,
                 width: 32,
-                color: AppColor.textSecondary,
+                color: AppColor.textWhite40,
               ),
             ],
           ),

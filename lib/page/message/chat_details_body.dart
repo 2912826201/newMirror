@@ -300,7 +300,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
       _animationController = AnimationController(duration: Duration(seconds: 2), vsync:this);
       _animation = DecorationTween(
           begin: BoxDecoration(
-            color: AppColor.textHint.withOpacity(0.2),
+            color: AppColor.textWhite40,
             // gradient: const LinearGradient(
             //   begin: Alignment.centerLeft,
             //   end: Alignment.centerRight,

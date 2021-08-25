@@ -62,7 +62,7 @@ class ChatSystemBottomBar extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
-                splashColor: AppColor.textHint,
+                splashColor: AppColor.textWhite40,
                 onTap: () {
                   voidMessageClickCallBack(content: text, contentType: ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR);
                 },

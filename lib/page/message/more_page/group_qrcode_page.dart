@@ -152,10 +152,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.textWhite60,
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.textWhite60,
                     ),
                   ),
                 )
@@ -176,10 +176,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                             imageUrl: avatarList.first,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.textWhite60,
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.textWhite60,
                             ),
                           ),
                         ),
@@ -201,10 +201,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                         imageUrl: avatarList[1],
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.textWhite60,
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.textWhite60,
                         ),
                       ),
                     ),

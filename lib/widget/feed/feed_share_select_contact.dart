@@ -172,7 +172,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   child: Image.asset("assets/png/default_no_data.png", fit: BoxFit.cover),
                 ),
                 SizedBox(height: 16),
-                Text("没有可以邀请的好友了", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
+                Text("没有可以邀请的好友了", style: TextStyle(fontSize: 14, color: AppColor.textWhite60)),
               ],
             ),
           ),
@@ -209,7 +209,7 @@ class _FriendsPageState extends State<FriendsPage> {
           child: UnconstrainedBox(
             child: const Text(
               "已加入群聊",
-              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+              style: TextStyle(fontSize: 16, color: AppColor.mainBlack),
             ),
           ),
         ),

@@ -254,7 +254,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     },
                     errorWidget: (context, url, e) {
                       return Container(
-                        color: AppColor.color343434,
+                        color: AppColor.imageBgGrey,
                         alignment: Alignment.center,
                         child: getImageAsset("assets/png/image_error.png"),
                       );
