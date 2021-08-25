@@ -25,6 +25,7 @@ import 'package:mirror/page/test/echarts_test/echarts_test.dart';
 import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
+import 'package:mirror/page/test/serial_popup_test.dart';
 import 'package:mirror/page/test/tag_cloud/tag_cloud_page.dart';
 import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
@@ -267,6 +268,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
                 },
                 child: Text("Fluro跳转融云测试页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  openSerialPopupBottom(context: context);
+                },
+                // openSerialPopupBottom
+                child: Text("连续弹窗测试"),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
