@@ -101,6 +101,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
       body: RepaintBoundary(
         key: rootWidgetKey,
         child: Container(
+          color: AppColor.mainBlack,
           height: ScreenUtil.instance.height,
           width: ScreenUtil.instance.screenWidthDp,
           child: Stack(
@@ -110,7 +111,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
               Container(
                 height: ScreenUtil.instance.height,
                 width: ScreenUtil.instance.screenWidthDp,
-                color: AppColor.bgWhite,
+                color: AppColor.mainBlack,
               ),
               Positioned(
                 child: UnconstrainedBox(
@@ -221,7 +222,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
       width: MediaQuery.of(context).size.width - (37.5 * 2),
       margin: const EdgeInsets.only(left: 37.5, right: 37.5, bottom: 50),
       decoration: BoxDecoration(
-        color: AppColor.white,
+        color: AppColor.layoutBgGrey,
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: ClipRRect(
@@ -236,7 +237,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
               padding: const EdgeInsets.only(left: 24, right: 24),
               child: Text(
                 widget.name,
-                style: AppStyle.textMedium18,
+                style: AppStyle.whiteMedium18,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -250,7 +251,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
               version: QrVersions.auto,
             ),
             SizedBox(height: 16),
-            Text("此二维码${DateUtil.formatSecondToDay(expirationTime)}内有效"),
+            Text(
+              "此二维码${DateUtil.formatSecondToDay(expirationTime)}内有效",
+              style: TextStyle(color: AppColor.textWhite60),
+            ),
             SizedBox(height: 24),
           ],
         ),
