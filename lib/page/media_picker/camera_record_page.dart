@@ -448,9 +448,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                           },
                           child: Text(
                             _permissionCameraGranted ? "相机访问权限已启用" : "启用相机访问权限",
-                            style: TextStyle(
-                                color: _permissionCameraGranted ? AppColor.textWhite60 : AppColor.mainRed,
-                                fontSize: 14),
+                            style: _permissionCameraGranted ? AppStyle.text1Regular14 : AppStyle.redRegular14,
                           ),
                         ),
                         SizedBox(

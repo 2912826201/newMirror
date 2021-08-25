@@ -226,7 +226,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   _getFansList() async {
     if (listPage > 1 && hasNext == 0) {
       print('===========================接口退回');
-      _refreshController.loadComplete();
+      _refreshController.loadNoData();
       return;
     }
     print('====================粉丝页请求接口');
@@ -274,8 +274,9 @@ class _QueryFollowState extends State<QueryFollowList> {
           model.list.forEach((element) {
             buddyList.add(element);
           });
-        } else {
           _refreshController.loadComplete();
+        } else{
+          _refreshController.loadNoData();
         }
       } else {
         _refreshController.loadFailed();
@@ -531,7 +532,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                         Container(
                           height: 32,
                           width: width,
-                          color: AppColor.textFieldwhite10,
+                          color: AppColor.white.withOpacity(0.1),
                           padding: EdgeInsets.only(left: 12),
                           child: Center(
                             child: Row(

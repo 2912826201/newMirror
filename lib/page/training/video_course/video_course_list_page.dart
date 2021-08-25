@@ -460,7 +460,7 @@ class VideoCourseListPageState extends XCState {
                 child: Center(
                   child: Text(
                     "重置",
-                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),
+                    style: AppStyle.redRegular16,
                   ),
                 ),
               ),
@@ -511,7 +511,7 @@ class VideoCourseListPageState extends XCState {
                 child: Center(
                   child: Text(
                     "确定",
-                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),
+                    style: AppStyle.redRegular16,
                   ),
                 ),
               ),
@@ -625,7 +625,7 @@ class VideoCourseListPageState extends XCState {
     var decorationItem =
         const BoxDecoration(color: AppColor.bgWhite, borderRadius: BorderRadius.all(Radius.circular(14)));
     var styleItem = const TextStyle(fontSize: 14, color: AppColor.textPrimary2);
-    var selectStyleItem = const TextStyle(fontSize: 14, color: AppColor.mainRed);
+    var selectStyleItem = AppStyle.redRegular14;
     var selectDecorationItem = BoxDecoration(
         color: AppColor.mainRed.withOpacity(0.06),
         borderRadius: BorderRadius.all(Radius.circular(14)),
@@ -939,21 +939,26 @@ Widget buildVideoCourseItemRightDataUi(CourseModel value, int imageHeight, bool 
                         TextSpan(text: value.levelDto?.ename, style: AppStyle.whiteMedium12),
                         // ignore: null_aware_before_operator
                         TextSpan(
-                            // ignore: null_aware_before_operator
-                            text: value.levelDto?.name + " · ",
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
+                          // ignore: null_aware_before_operator
+                          text: value.levelDto?.name + " · ",
+                          style: AppStyle.text1Regular12,
+                        ),
                         TextSpan(
                             text:
                                 ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
                                     .toString(),
                             style: AppStyle.whiteMedium12),
                         TextSpan(
-                            text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ",
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
+                          text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ",
+                          style: AppStyle.text1Regular12,
+                        ),
                         TextSpan(
                             text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
                             style: AppStyle.whiteMedium12),
-                        TextSpan(text: "千卡", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
+                        TextSpan(
+                          text: "千卡",
+                          style: AppStyle.text1Regular12,
+                        ),
                       ]),
                     ),
                     top: 0,

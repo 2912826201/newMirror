@@ -240,7 +240,7 @@ class FeedSharePopups extends StatelessWidget {
               child: Center(
                 child: Text(
                   "取消",
-                  style: TextStyle(fontSize: 17, color: AppColor.white),
+                  style: AppStyle.whiteRegular17,
                 ),
               ),
             ),

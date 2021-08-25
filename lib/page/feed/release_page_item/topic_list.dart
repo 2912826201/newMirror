@@ -94,7 +94,7 @@ class TopicListState extends State<TopicList> {
       print("返回不请求数据");
       return;
     }
-    DataResponseModel model = await getUserRecommendTopic(size: 20,token: token);
+    DataResponseModel model = await getUserRecommendTopic(size: 20, token: token);
     if (model != null) {
       if (dataPage == 1) {
         if (model != null && model.list.isNotEmpty) {
@@ -110,7 +110,7 @@ class TopicListState extends State<TopicList> {
       }
       hasNext = model.hasNext;
     }
-    if(mounted&&context!=null) {
+    if (mounted && context != null) {
       // 存入话题显示数据
       context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
       // 搜索时会替换话题显示数据，备份一份数据
@@ -136,8 +136,8 @@ class TopicListState extends State<TopicList> {
       print("返回不请求搜索数据");
       return;
     }
-    DataResponseModel model =
-        await searchTopic(key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore,token: token);
+    DataResponseModel model = await searchTopic(
+        key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore, token: token);
     if (model != null) {
       if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastScore != null) {
         if (model.list.isNotEmpty) {
@@ -155,12 +155,10 @@ class TopicListState extends State<TopicList> {
       context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
       context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     }
-    if(mounted) {
+    if (mounted) {
       setState(() {});
       // 把在输入框回调内的第一页数据插入
-      searchList.insertAll(0, context
-          .read<ReleaseFeedInputNotifier>()
-          .topicList);
+      searchList.insertAll(0, context.read<ReleaseFeedInputNotifier>().topicList);
       context.read<ReleaseFeedInputNotifier>().setTopicList(searchList);
     }
   }
@@ -310,7 +308,7 @@ class TopicListState extends State<TopicList> {
                             ),
                             Text(
                               list[index].id != -1 ? "${StringUtil.getNumber(list[index].feedCount)}篇动态" : "创建新话题",
-                              style:TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
+                              style: AppStyle.text1Regular12,
                             ),
                             const SizedBox(
                               height: 4,

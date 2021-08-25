@@ -5,6 +5,7 @@ import 'package:keframe/frame_separate_widget.dart';
 import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -372,7 +373,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
             ),
             const Text(
               "登录账号后查看你关注的精彩内容",
-              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+              style: AppStyle.text1Regular14,
             ),
             GestureDetector(
               onTap: () async {
@@ -386,7 +387,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
                 child: const Center(
                   child: const Text(
                     "登录",
-                    style: TextStyle(color: AppColor.black),
+                    style: AppStyle.textRegular16,
                   ),
                 ),
               ),

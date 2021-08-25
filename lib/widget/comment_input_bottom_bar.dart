@@ -342,7 +342,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       result.add(
         RangeStyle(
           range: TextRange(start: rule.startIndex, end: rule.endIndex),
-          style: TextStyle(color: AppColor.mainBlue),
+          style: AppStyle.blueRegular16,
         ),
       );
     }
@@ -733,11 +733,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   readOnly: context.watch<CommentEnterNotifier>().emojiState,
                                   showCursor: true,
                                   scrollPadding: EdgeInsets.all(0),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColor.white,
-                                    // fontFamily: "STHeitiSCMedium",
-                                  ),
+                                  style: AppStyle.whiteRegular16,
                                   //内容改变的回调
                                   onChanged: (text) {
                                     // 存入最新的值
@@ -779,7 +775,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     // 提示文本
                                     hintText: hintText,
                                     // 提示文本样式
-                                    hintStyle: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+                                    hintStyle: AppStyle.text1Regular14,
                                     // 设置为true,contentPadding才会生效，TextField会有默认高度。
                                     isCollapsed: true,
                                     contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),

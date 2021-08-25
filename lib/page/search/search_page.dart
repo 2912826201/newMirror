@@ -153,10 +153,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                       }
                     },
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.white,
-                    ),
+                    style: AppStyle.whiteRegular16,
                     // onChanged: (text) {
                     //
                     // },

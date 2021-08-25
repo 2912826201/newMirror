@@ -254,7 +254,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                             : Container(
                                 height: height,
                                 width: width,
-                                color: AppColor.white,
+                                color: AppColor.mainBlack,
                               )))/*)*/);
   }
 }
@@ -361,9 +361,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     } else {
       textSpanList.add(TextSpan(
         text: comment,
-        style: AppStyle.textRegular14,
+        style: AppStyle.whiteRegular13,
       ));
     }
+    textSpanList.insert(0, TextSpan(text:commentState,style: AppStyle.whiteMedium14));
     return textSpanList;
   }
 
@@ -408,11 +409,14 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       textHeight = testSize.height;
     }
     print('-----------------------textHeight---$textHeight');
-    return Container(
+    return InkWell(
+        onTap: () {
+          _jumpToDetailPage(context);
+        },
+        child:   Container(
       key: widget.globalKey != null ? widget.globalKey : null,
       width: ScreenUtil.instance.screenWidthDp,
       height: 59.5 + textHeight + 16,
-      color: AppColor.white,
       padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +439,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                         imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.imageBgGrey,
                         ),
                       ),
                     ),
@@ -448,8 +452,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                               width: 10,
                               decoration: BoxDecoration(
                                   color: AppColor.mainRed,
-                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
-                                  border: Border.all(width: 0.5, color: AppColor.white)),
+                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),),
                             ),
                           )
                         : Container()
@@ -459,11 +462,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           SizedBox(
             width: 11,
           ),
-          InkWell(
-            onTap: () {
-              _jumpToDetailPage(context);
-            },
-            child: Container(
+           Container(
               alignment: Alignment.centerLeft,
               width: contentWidth,
               child: Column(
@@ -473,7 +472,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     "$senderName",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppStyle.textMedium15,
+                    style: AppStyle.whiteRegular15,
                   ),
                   SizedBox(
                     height: 8,
@@ -482,29 +481,24 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       ? RichText(text: TextSpan(children: _atText(context)))
                       : Text(
                           "该评论已删除",
-                          style: AppStyle.textHintRegular13,
+                          style: AppStyle.whiteRegular13,
                         ),
                   SizedBox(
                     height: 7,
                   ),
                   Text(
                     DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime)),
-                    style: AppStyle.textHintRegular12,
+                    style: AppStyle.text2Regular12,
                   )
                 ],
               ),
             ),
-          ),
+
           SizedBox(
             width: 16,
           ),
           !feedIsDelete&&coverImage!=null
-              ? InkWell(
-                  onTap: () {
-                    print('========================点击了${widget.msgModel.refId}');
-                    _jumpToDetailPage(context);
-                  },
-                  child: Container(
+              ?  Container(
                     alignment: Alignment.topRight,
                     child: ClipRect(
                       child: CachedNetworkImage(
@@ -513,12 +507,11 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                         imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : "",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.imageBgGrey,
                         ),
                       ),
                     ),
-                  ),
-                )
+                  )
               : InkWell(
                   onTap: () {
                     Toast.show("该内容已删除", context);
@@ -528,18 +521,18 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     height: 38,
                     width: 38,
                     alignment: Alignment.topRight,
-                    color: AppColor.bgWhite,
+                    color: AppColor.textWhite40,
                     child: Center(
                       child: Text(
                         "已删除",
-                        style: AppStyle.textHintRegular10,
+                        style: AppStyle.whiteRegular11,
                       ),
                     ),
                   ),
                 )
         ],
       ),
-    );
+    ) );
   }
 
   //跳转判断

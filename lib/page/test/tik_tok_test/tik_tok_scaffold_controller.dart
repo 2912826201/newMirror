@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:mirror/constant/style.dart';
 
 const double scrollSpeed = 300;
 
@@ -396,9 +397,7 @@ class _MiddlePage extends StatelessWidget {
             child: Center(
               child: const Text(
                 "下拉刷新内容",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+                style: AppStyle.whiteRegular16,
               ),
             ),
           ),

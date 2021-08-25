@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 /**
  * description
  *
@@ -32,8 +33,8 @@ class Toast {
   static void show(String msg, BuildContext context,
       {int duration = 1,
         int gravity = 0,
-        Color backgroundColor = const Color(0xAA000000),
-        Color textColor = Colors.white,
+        Color backgroundColor = AppColor.toastBgGrey,
+        Color textColor = AppColor.white,
         double backgroundRadius = 20,
         Border border}) {
     ToastView.dismiss();

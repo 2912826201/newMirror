@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -164,7 +165,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     topicId: widget.topicId,
                     model: widget.model,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 14, color: AppColor.white),
+                    style: AppStyle.whiteRegular14,
                   ),
                 ),
               ),

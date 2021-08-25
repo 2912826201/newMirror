@@ -543,7 +543,7 @@ class _FollowButtonState extends State<FollowButton> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           widget.buttonType == FollowButtonType.COACH
-              ? Text("+", style: TextStyle(color: AppColor.white, fontSize: 15))
+              ? Text("+", style: AppStyle.whiteRegular15)
               : Container(),
           widget.buttonType == FollowButtonType.COACH ? SizedBox(width: 5) : Container(),
           Text(

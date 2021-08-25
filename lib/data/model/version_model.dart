@@ -51,7 +51,6 @@ class VersionModel {
     map["updateTime"] = updateTime;
     map["versionCreator"] = versionCreator;
     map["versionFileCreator"] = versionFileCreator;
-
     return map;
   }
 }

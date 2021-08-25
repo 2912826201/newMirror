@@ -136,6 +136,8 @@ class HeadViewState extends State<HeadView> {
         } else {
           ToastShow.show(msg: "关注失败,请重试", context: context);
         }
+      }else{
+        ToastShow.show(msg: "关注失败,请重试", context: context);
       }
     }
   }

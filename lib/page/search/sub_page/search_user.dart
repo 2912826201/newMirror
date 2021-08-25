@@ -203,6 +203,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     super.build(context);
     return !noData
         ? Container(
+          color:AppColor.mainBlack ,
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: ScrollConfiguration(
                 behavior: OverScrollBehavior(),
@@ -239,6 +240,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         : Container(
             height: ScreenUtil.instance.height,
             width: ScreenUtil.instance.screenWidthDp,
+            color: AppColor.mainBlack,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -251,8 +253,8 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                   ),
                   margin: const EdgeInsets.only(bottom: 16),
                 ),
-                const Text("你的放大镜陨落星辰了", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
-                const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
+                const Text("你的放大镜陨落星辰了", style: AppStyle.text1Regular14),
+                const Text("换一个试一试", style: AppStyle.text1Regular14),
                 const Spacer(),
               ],
             ));
@@ -299,6 +301,7 @@ class _SearchState extends State<SearchUserItem> {
       key: widget.globalKey != null ? widget.globalKey : null,
       height: 58,
       padding: const EdgeInsets.only(top: 5, bottom: 5),
+      color: AppColor.mainBlack,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -324,11 +327,11 @@ class _SearchState extends State<SearchUserItem> {
                         imageUrl: widget.model.avatarUri != null ? FileUtil.getSmallImage(widget.model.avatarUri) : " ",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.imageBgGrey,
                         ),
                         errorWidget: (context, url, e) {
                           return Container(
-                            color: AppColor.bgWhite,
+                            color: AppColor.imageBgGrey,
                           );
                         },
                       ),
@@ -360,7 +363,7 @@ class _SearchState extends State<SearchUserItem> {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     widget.model.description,
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
+                                    style: AppStyle.text1Regular12,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),

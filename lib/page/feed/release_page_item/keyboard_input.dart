@@ -8,6 +8,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -296,7 +297,7 @@ class KeyboardInputState extends State<KeyboardInput> {
       result.add(
         RangeStyle(
           range: TextRange(start: rule.startIndex, end: rule.endIndex),
-          style: TextStyle(color: AppColor.mainBlue),
+          style: AppStyle.blueRegular16,
         ),
       );
     }
@@ -317,10 +318,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         keyboardType: TextInputType.multiline,
         // 不限制行数
         maxLines: null,
-        style: TextStyle(
-          fontSize: 16,
-          color: AppColor.white,
-        ),
+        style: AppStyle.whiteRegular16,
         // 光标颜色
         cursorColor: AppColor.white,
         // 装饰器修改外观
@@ -330,7 +328,7 @@ class KeyboardInputState extends State<KeyboardInput> {
           // 提示文本
           hintText: "分享此刻...",
           // 提示文本样式
-          hintStyle: TextStyle(fontSize: 16, color: AppColor.textWhite60),
+          hintStyle: AppStyle.text1Regular16,
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
           contentPadding: EdgeInsets.only(top: 14, left: 16, right: 16),

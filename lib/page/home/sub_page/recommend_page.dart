@@ -11,6 +11,7 @@ import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/machine_model.dart';
@@ -542,10 +543,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         liveVideoModel[index].coachDto.nickName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color:
-                                liveVideoModel[index].coachDto.isLiving == 0 ? AppColor.textWhite60 : AppColor.white),
+                        style: liveVideoModel[index].coachDto.isLiving == 0
+                            ? AppStyle.text1Regular14
+                            : AppStyle.whiteRegular14,
                       ),
                     ),
                   )
