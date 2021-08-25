@@ -654,12 +654,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         AppRouter.navigateToSettingHomePage(context);
         break;
       case "测试":
-        AppRouter.navigateToLoginSucess(context);
+        // AppRouter.navigateToLoginSucess(context);
         /*jumpChatPageSystem(context);*/
         // showToast("这个flutter告诉android要展示的内容");
         // AppRouter.navigateToVipPage(context, VipState.EXPIRED,openOrNot: true);
         // AppSettings.openDisplaySettings(asAnotherTask: true);
-        // AppRouter.navigateToTestPage(context);
+        AppRouter.navigateToTestPage(context);
         break;
       case "融云":
         AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
