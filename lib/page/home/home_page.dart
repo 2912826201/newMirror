@@ -13,6 +13,7 @@ import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/jump_app_page_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -675,13 +676,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     // });
   }
 
-  _jumpPage(int pageIndex) {
+  _jumpPage(int jumpAppPageModel) {
     int pagePosition = -1;
-    switch (pageIndex) {
-      case 1: //关注页
+    switch (jumpAppPageModel) {
+      case JumpAppPageModel.AttentionPage: //关注页
         pagePosition = 0;
         break;
-      case 2: //推荐页
+      case JumpAppPageModel.RecommendPage: //推荐页
         pagePosition = 1;
         break;
       default:

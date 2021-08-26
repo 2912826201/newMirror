@@ -454,8 +454,8 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               isToggle
-                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16, color: AppColor.black)
-                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.black),
+                                  ? AppIcon.getAppIcon(AppIcon.check_follow, 16, color: AppColor.mainBlack)
+                                  : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.mainBlack),
                               const SizedBox(
                                 width: 4,
                               ),

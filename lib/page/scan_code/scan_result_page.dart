@@ -83,7 +83,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
                   : widget.resultModel.type == ScanCodeResultType.CODE_INVALID
                       ? "无效的二维码"
                       : "",
-          style: AppStyle.textRegular16,
+          style: AppStyle.text1Regular16,
         ),
         SizedBox(
           height: 36,
@@ -118,7 +118,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
             height: 86,
             imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
             placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.imageBgGrey,
             ),
           ),
         ),
@@ -134,7 +134,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         ),
         Text(
           "将登陆IF终端,请确认是否本人操作",
-          style: AppStyle.textMedium16,
+          style: AppStyle.text1Regular16,
         ),
         SizedBox(
           height: 63,
@@ -165,10 +165,10 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         height: 44.0,
         width: ScreenUtil.instance.screenWidthDp,
         circular: 3.0,
-        textColor: color == null ? AppColor.white : AppColor.textPrimary1,
+        textColor: color == null ? AppColor.mainBlack : AppColor.white,
         fontSize: 16,
-        backColor: color == null ? AppColor.bgBlack : color,
-        color: color == null ? AppColor.transparent : AppColor.bgBlack,
+        backColor: color == null ? AppColor.mainYellow : color,
+        color: color == null ? AppColor.transparent : AppColor.mainYellow,
         onTap: onTap,
       ),
     );

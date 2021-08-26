@@ -5,6 +5,7 @@ import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
+import 'package:mirror/data/model/jump_app_page_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
@@ -56,9 +57,11 @@ class _IFTabBarState extends State<IFTabBar> {
   double selectedButtonHeight = 32;
   double selectedButtonWidth = 90;
 
-  //边距
-  double iconMargin = AppConfig.needShowTraining ? 32 : 50;
-  double selectedButtonMargin = AppConfig.needShowTraining ? 16 : 18;
+  //边距 原版屏蔽训练页要4页变3页 现在有活动页补上所以距离不变
+  // double iconMargin = AppConfig.needShowTraining ? 32 : 50;
+  // double selectedButtonMargin = AppConfig.needShowTraining ? 16 : 18;
+  double iconMargin = 32;
+  double selectedButtonMargin = 16;
 
   //选中后按钮图标和字的间距
   double selectedButtonSpace = 8;
@@ -211,29 +214,21 @@ class _IFTabBarState extends State<IFTabBar> {
     streamController.sink.add(0);
   }
 
-  // // app界面id
-  // class PageType {
-  // static const int AttentionPage = 1;//关注页
-  // static const int RecommendPage = 2;//推荐页
-  // static const int TrainingPage= 3;//训练页
-  // static const int MessagePage = 4;//消息页
-  // static const int ProfilePage = 5;//我的页面
-  // }
-
-  _jumpPage(int pageIndex) {
+  _jumpPage(int jumpAppPageModel) {
     int pagePosition = -1;
-    switch (pageIndex) {
-      case 1: //关注页
-      case 2: //推荐页
+    switch (jumpAppPageModel) {
+      case JumpAppPageModel.AttentionPage: //关注页
+      case JumpAppPageModel.RecommendPage: //推荐页
         pagePosition = 0;
         break;
-      case 3: //训练页
+      case JumpAppPageModel.TrainingPage: //训练页
+      case JumpAppPageModel.ActivityPage: //活动页
         pagePosition = 1;
         break;
-      case 4: //消息页
+      case JumpAppPageModel.MessagePage: //消息页
         pagePosition = 2;
         break;
-      case 5: //我的页面
+      case JumpAppPageModel.ProfilePage: //我的页面
         pagePosition = 3;
         break;
       default:
@@ -358,7 +353,18 @@ class _IFTabBarState extends State<IFTabBar> {
                     height: tabBarHeight,
                   ),
                 )
-              : Container(),
+              // : Container(),
+              : InkWell(
+                  highlightColor: AppColor.transparent,
+                  radius: 0,
+                  onTap: () {
+                    _onClickListener(1);
+                  },
+                  child: Container(
+                    width: getItemClickWidth(snapshot.data)[1],
+                    height: tabBarHeight,
+                  ),
+                ),
           InkWell(
             highlightColor: AppColor.transparent,
             radius: 0,
@@ -371,15 +377,16 @@ class _IFTabBarState extends State<IFTabBar> {
             ),
           ),
           InkWell(
-              highlightColor: AppColor.transparent,
-              radius: 0,
-              onTap: () {
-                _onClickListener(3);
-              },
-              child: Container(
-                width: getItemClickWidth(snapshot.data)[3],
-                height: tabBarHeight,
-              )),
+            highlightColor: AppColor.transparent,
+            radius: 0,
+            onTap: () {
+              _onClickListener(3);
+            },
+            child: Container(
+              width: getItemClickWidth(snapshot.data)[3],
+              height: tabBarHeight,
+            ),
+          ),
         ],
       ),
     );
@@ -461,7 +468,21 @@ class _IFTabBarState extends State<IFTabBar> {
                     ),
                   ),
                 )
-              : Container(),
+              // : Container(),
+              : AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: EdgeInsets.only(left: getLeftMarginIcon2(snapshot.data)),
+                  child: Container(
+                    height: tabBarHeight,
+                    width: 80,
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      child: snapshot.data == 1 ? selectedIcons[1] : normalIcons[1],
+                    ),
+                  ),
+                ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             margin: EdgeInsets.only(left: getLeftMarginIcon3(snapshot.data)),
@@ -558,7 +579,15 @@ class _IFTabBarState extends State<IFTabBar> {
                     child: const Text("训练", style: tabBarTextStyle),
                   ),
                 )
-              : Container(),
+              // : Container(),
+              : AnimatedOpacity(
+                  opacity: snapshot.data == 1 ? 1 : 0,
+                  duration: const Duration(milliseconds: 150),
+                  child: Container(
+                    margin: EdgeInsets.only(left: leftMarginText2),
+                    child: const Text("活动", style: tabBarTextStyle),
+                  ),
+                ),
           AnimatedOpacity(
             opacity: snapshot.data == 2 ? 1 : 0,
             duration: const Duration(milliseconds: 150),
@@ -662,7 +691,7 @@ class _IFTabBarState extends State<IFTabBar> {
   calculateLeftMargin(int index) {
     //根据所选按钮的index计算各位置
     //是否有训练按钮是两套方案 无法通过数据微调套用公式 所以完全分开写
-    if (AppConfig.needShowTraining) {
+    // if (AppConfig.needShowTraining) {
       switch (index) {
         case 0: //首页
           leftMarginSelectedButton = selectedButtonMargin;
@@ -671,7 +700,7 @@ class _IFTabBarState extends State<IFTabBar> {
           leftMarginIcon3 = leftMarginIcon2 + iconSize + innerPaddingBig;
           leftMarginIcon4 = leftMarginIcon3 + iconSize + innerPaddingBig;
           break;
-        case 1: //训练
+        case 1: //训练 活动
           leftMarginIcon1 = iconMargin;
           leftMarginSelectedButton = leftMarginIcon1 + iconSize + innerPaddingSmall;
           leftMarginIcon2 = leftMarginSelectedButton + selectedButtonPadding;
@@ -693,40 +722,40 @@ class _IFTabBarState extends State<IFTabBar> {
           leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
           break;
       }
-    } else {
-      //训练按钮的数据写成和首页一样
-      switch (index) {
-        case 0: //首页
-          leftMarginSelectedButton = selectedButtonMargin;
-          leftMarginIcon1 = leftMarginSelectedButton + selectedButtonPadding;
-          leftMarginIcon2 = leftMarginIcon1;
-          leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
-          leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
-          break;
-        case 1: //训练 没有训练按钮所以不做重新计算
-          break;
-        case 2: //消息
-          leftMarginIcon1 = iconMargin;
-          leftMarginIcon2 = leftMarginIcon1;
-          leftMarginSelectedButton = (ScreenUtil.instance.screenWidthDp - selectedButtonWidth) / 2;
-          leftMarginIcon3 = leftMarginSelectedButton + selectedButtonPadding;
-          leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
-          break;
-        case 3: //我的
-          leftMarginIcon1 = iconMargin;
-          leftMarginIcon2 = leftMarginIcon1;
-          leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
-          leftMarginSelectedButton = ScreenUtil.instance.screenWidthDp - selectedButtonMargin - selectedButtonWidth;
-          leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
-          break;
-      }
-    }
+    // } else {
+    //   //训练按钮的数据写成和首页一样
+    //   switch (index) {
+    //     case 0: //首页
+    //       leftMarginSelectedButton = selectedButtonMargin;
+    //       leftMarginIcon1 = leftMarginSelectedButton + selectedButtonPadding;
+    //       leftMarginIcon2 = leftMarginIcon1;
+    //       leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
+    //       leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
+    //       break;
+    //     case 1: //训练 没有训练按钮所以不做重新计算
+    //       break;
+    //     case 2: //消息
+    //       leftMarginIcon1 = iconMargin;
+    //       leftMarginIcon2 = leftMarginIcon1;
+    //       leftMarginSelectedButton = (ScreenUtil.instance.screenWidthDp - selectedButtonWidth) / 2;
+    //       leftMarginIcon3 = leftMarginSelectedButton + selectedButtonPadding;
+    //       leftMarginIcon4 = ScreenUtil.instance.screenWidthDp - iconMargin - iconSize;
+    //       break;
+    //     case 3: //我的
+    //       leftMarginIcon1 = iconMargin;
+    //       leftMarginIcon2 = leftMarginIcon1;
+    //       leftMarginIcon3 = (ScreenUtil.instance.screenWidthDp - iconSize) / 2;
+    //       leftMarginSelectedButton = ScreenUtil.instance.screenWidthDp - selectedButtonMargin - selectedButtonWidth;
+    //       leftMarginIcon4 = leftMarginSelectedButton + selectedButtonPadding;
+    //       break;
+    //   }
+    // }
   }
 
   //计算响应点击事件的宽度
   calculateOnClickWidth(int index) {
     //是否有训练按钮是两套方案 无法通过数据微调套用公式 所以完全分开写
-    if (AppConfig.needShowTraining) {
+    // if (AppConfig.needShowTraining) {
       switch (index) {
         case 0: //首页
           onClickWidth1 = selectedButtonWidth + selectedButtonMargin;
@@ -753,12 +782,12 @@ class _IFTabBarState extends State<IFTabBar> {
           onClickWidth4 = selectedButtonWidth + selectedButtonMargin;
           break;
       }
-    } else {
-      //全都是屏幕宽的1/3
-      onClickWidth1 = ScreenUtil.instance.screenWidthDp / 3;
-      onClickWidth2 = onClickWidth1;
-      onClickWidth3 = onClickWidth1;
-      onClickWidth4 = onClickWidth1;
-    }
+    // } else {
+    //   //全都是屏幕宽的1/3
+    //   onClickWidth1 = ScreenUtil.instance.screenWidthDp / 3;
+    //   onClickWidth2 = onClickWidth1;
+    //   onClickWidth3 = onClickWidth1;
+    //   onClickWidth4 = onClickWidth1;
+    // }
   }
 }

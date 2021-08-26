@@ -137,7 +137,7 @@ class HeadViewState extends State<HeadView> {
         } else {
           ToastShow.show(msg: "关注失败,请重试", context: context);
         }
-      }else{
+      } else {
         ToastShow.show(msg: "关注失败,请重试", context: context);
       }
     }
@@ -197,7 +197,7 @@ class HeadViewState extends State<HeadView> {
                   const Spacer(),
                   const Icon(
                     Icons.add,
-                    color: AppColor.black,
+                    color: AppColor.mainBlack,
                     size: 16,
                   ),
                   const SizedBox(
@@ -424,11 +424,10 @@ class HeadViewState extends State<HeadView> {
                             // ),
                             Container(
                               padding: const EdgeInsets.only(top: 2),
-                              child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColor.textWhite60,
-                                  )),
+                              child: Text(
+                                "${DateUtil.generateFormatDate(widget.model.createTime, false)}",
+                                style: AppStyle.text1Regular12,
+                              ),
                             )
                           ],
                         )),

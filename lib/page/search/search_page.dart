@@ -162,7 +162,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                         contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                         hintText: '搜索用户、话题、${AppConfig.needShowTraining ? "课程、" : ""}动态',
                         // 提示文本样式
-                        hintStyle: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+                        hintStyle: AppStyle.text1Regular14,
                         border: InputBorder.none),
                     inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                     // inputFormatters: [
@@ -410,7 +410,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> with TickerProviderS
                 child: Center(
                     child: Text(
                   searchHistoryList[index].word,
-                  style: TextStyle(fontSize: 12, color: AppColor.white),
+                  style: AppStyle.whiteRegular12,
                 )),
               ),
             );

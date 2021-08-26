@@ -5,10 +5,12 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/activity/activity_page.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
@@ -44,7 +46,7 @@ class MainPageState extends XCState {
 
   List pages = [
     HomePage(key: homePageKey),
-    TrainingPage(),
+    AppConfig.needShowTraining ? TrainingPage() : ActivityPage(),
     MessagePage(),
     ProfilePage(),
   ];

@@ -46,9 +46,14 @@ class JumpAppPageUtil {
     _jumpAppPage(JumpAppPageModel.ProfilePage);
   }
 
+  //跳转活动页面
+  jumpActivityPage() {
+    _jumpAppPage(JumpAppPageModel.ActivityPage);
+  }
+
   //跳转指定界面
   jumpPageType(int type) {
-    if (type > 0 && type < 6) {
+    if (type > 0 && type <= JumpAppPageModel.PageSize) {
       _jumpAppPage(type);
     }
   }
@@ -56,15 +61,15 @@ class JumpAppPageUtil {
   ///[JumpAppPageModel]
   void _jumpAppPage(int type) {
     switch (type) {
-      case 1:
+      case JumpAppPageModel.AttentionPage:
         //关注页
         print("跳转界面-app界面-关注页");
         break;
-      case 2:
+      case JumpAppPageModel.RecommendPage:
         //推荐页
         print("跳转界面-app界面-推荐页");
         break;
-      case 3:
+      case JumpAppPageModel.TrainingPage:
         //训练页
         print("跳转界面-app界面-训练页");
         if (!AppConfig.needShowTraining) {
@@ -72,7 +77,7 @@ class JumpAppPageUtil {
           return;
         }
         break;
-      case 4:
+      case JumpAppPageModel.MessagePage:
         //消息页
         print("跳转界面-app界面-消息页");
         if (!(_context.read<TokenNotifier>().isLoggedIn)) {
@@ -80,7 +85,7 @@ class JumpAppPageUtil {
           return;
         }
         break;
-      case 5:
+      case JumpAppPageModel.ProfilePage:
         //我的页面
         print("跳转界面-app界面-我的页面");
         if (!(_context.read<TokenNotifier>().isLoggedIn)) {
@@ -88,11 +93,19 @@ class JumpAppPageUtil {
           return;
         }
         break;
+      case JumpAppPageModel.ActivityPage:
+        //活动页
+        print("跳转界面-app界面-活动页");
+        if (AppConfig.needShowTraining) {
+          print("没有关闭训练模式");
+          return;
+        }
+        break;
       default:
         print("跳转界面-app界面-未知界面");
         return;
     }
-    if (type > 0 && type < 6) {
+    if (type > 0 && type <= JumpAppPageModel.PageSize) {
       Navigator.of(_context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
       EventBus.getDefault().post(msg: type, registerName: MAIN_PAGE_JUMP_PAGE);
     }

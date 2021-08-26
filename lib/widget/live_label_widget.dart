@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 
 class LiveLabelWidget extends StatelessWidget {
@@ -46,11 +47,7 @@ class LiveLabelWidget extends StatelessWidget {
             margin: EdgeInsets.only(top: CheckPhoneSystemUtil.init().isAndroid() ? 1 : 0),
             child: Text(
               "LIVE",
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: AppColor.white,
-              ),
+              style: AppStyle.whiteMedium10,
             ),
           ),
           SizedBox(

@@ -105,16 +105,20 @@ class VideoExposureLayer extends ContainerLayer {
   void _scheduleUpdate() {
     final isFirstUpdate = _updated.isEmpty;
     _updated[key] = this;
-
-    final updateInterval = VideoExposureDetectorController.instance.updateInterval;
+    print(isFirstUpdate);
+    // print(_updated);
+    final updateInterval =VideoExposureDetectorController.instance.updateInterval ;
+    print("0000000");
     if (updateInterval == Duration.zero) {
-      // Even with [Duration.zero], we still want to defer callbacks to the end
-      // of the frame so that they're processed from a consistent state.  This
-      // also ensures that they don't mutate the widget tree while we're in the
-      // middle of a frame.
+      print("111111111");
+    // 即使使用 [Duration.zero]，我们仍然希望将回调推迟到最后
+    // 帧，以便从一致的状态处理它们。 这个
+    // 还确保当我们在
+    // 帧的中间。
       if (isFirstUpdate) {
-        // We're about to render a frame, so a post-frame callback is guaranteed
-        // to fire and will give us the better immediacy than `scheduleTask<T>`.
+        print("2222222222");
+        // 我们将要渲染一个帧，所以保证了帧后回调
+        // 触发并将给我们比 `scheduleTask<T>` 更好的即时性。
         SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
           _processCallbacks();
         });
@@ -122,8 +126,20 @@ class VideoExposureLayer extends ContainerLayer {
     } else if (_timer == null) {
       // We use a normal [Timer] instead of a [RestartableTimer] so that changes
       // to the update duration will be picked up automatically.
+      /// 创建一个新的计时器。
+      ///
+      /// 在给定的 [duration] 之后调用 [callback] 函数。
+      ///
+        print("333333333");
       _timer = Timer(updateInterval, _handleTimer);
     } else {
+      // 返回计时器是否仍处于活动状态。
+      ///
+      /// 如果回调尚未执行，则非周期性计时器处于活动状态，
+      /// 并且计时器还没有被取消。
+      ///
+      /// 如果它没有被取消，一个周期性的计时器是活动的。
+       print("444444444");
       assert(_timer.isActive);
     }
   }
@@ -133,12 +149,12 @@ class VideoExposureLayer extends ContainerLayer {
   static void _handleTimer() {
     _timer = null;
 
-    // Ensure that work is done between frames so that calculations are
-    // performed from a consistent state.  We use `scheduleTask<T>` here instead
-    // of `addPostFrameCallback` or `scheduleFrameCallback` so that work will
-    // be done even if a new frame isn't scheduled and without unnecessarily
-    // scheduling a new frame.
-    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.touch);
+    // 确保工作在帧之间完成，以便计算
+    // 从一致状态执行。 我们在这里使用 `scheduleTask<T>` 代替
+    // 的`addPostFrameCallback` 或`scheduleFrameCallback` 以便工作
+    // 即使没有安排新的帧也没有不必要地完成
+    // 调度一个新的帧。
+    SchedulerBinding.instance.scheduleTask<void>(_processCallbacks, Priority.animation); /// idle当没有动画运行时，在所有其他任务之后运行的任务。 touch即使在用户与设备交互时也要运行的任务。animation 即使在动画运行时也要运行的任务。
   }
 
   /// See [VisibilityDetectorController.notifyNow].
@@ -165,14 +181,21 @@ class VideoExposureLayer extends ContainerLayer {
   /// instances.
   static void _processCallbacks() {
     for (final layer in _updated.values) {
+      //  此节点是否位于根附加到某物的树中。
+      //    ///
+      //    /// 这在调用 [attach] 期间变为 true。
+      //    ///
+      //    /// 在调用 [detach] 期间这会变为 false。
+      print("第一层");
       if (!layer.attached) {
+        print("第二层");
         layer._fireCallback(VideoVisibilityInfo(key: layer.key, size: _lastVisibility[layer.key]?.size));
         continue;
       }
 
       final widgetBounds = layer._computeWidgetBounds();
       _lastBounds[layer.key] = widgetBounds;
-
+      print("第三层");
       final info =
           VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
       layer._fireCallback(info);
@@ -180,30 +203,62 @@ class VideoExposureLayer extends ContainerLayer {
     // _updated.clear();
   }
 
+  static void a () {
+    for (final layer in _updated.values) {
+      //  此节点是否位于根附加到某物的树中。
+      //    ///
+      //    /// 这在调用 [attach] 期间变为 true。
+      //    ///
+      //    /// 在调用 [detach] 期间这会变为 false。
+      print("第一层");
+      if (!layer.attached) {
+        print("第二层");
+        layer._fireCallback(VideoVisibilityInfo(key: layer.key, size: _lastVisibility[layer.key]?.size));
+        continue;
+      }
+
+      final widgetBounds = layer._computeWidgetBounds();
+      _lastBounds[layer.key] = widgetBounds;
+      print("第三层");
+      final info =
+      VideoVisibilityInfo.fromRects(key: layer.key, widgetBounds: widgetBounds, clipRect: layer._computeClipRect());
+      if(  info != null) {
+        layer._b(info);
+      }
+    }
+  }
+  void _b (VideoVisibilityInfo info) {
+    onExposureChanged(info);
+  }
   /// Invokes the visibility callback if [VisibilityInfo] hasn't meaningfully
   /// changed since the last time we invoked it.
   void _fireCallback(VideoVisibilityInfo info) {
     assert(info != null);
-
+    print("第四层");
     final oldInfo = _lastVisibility[key];
     final visible = !info.visibleBounds.isEmpty;
 
     if (oldInfo == null) {
+      print("第五层");
       if (!visible) {
+        print("第六层");
         return;
       }
     } else if (info.matchesVisibility(oldInfo)) {
+      print("第七层");
       return;
     }
 
     if (visible) {
+      print("第8层");
       _lastVisibility[key] = info;
     } else {
       // Track only visible items so that the maps don't grow unbounded.
       _lastVisibility.remove(key);
       _lastBounds.remove(key);
+      print("第9层");
     }
-
+     print("曝光回调了::::::");
     onExposureChanged(info);
   }
 
