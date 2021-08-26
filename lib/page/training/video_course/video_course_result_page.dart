@@ -80,7 +80,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             }),
         titleWidget: Text(
           "训练结束",
-          style: TextStyle(color: AppColor.white, fontSize: 16),
+          style: AppStyle.whiteRegular16,
         ),
       ),
       body: Column(children: [
@@ -134,7 +134,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                 ),
                 Text(
                   "炫耀一下吧",
-                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                  style: AppStyle.whiteRegular16,
                 )
               ],
             ),
@@ -173,7 +173,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             alignment: Alignment.centerLeft,
             child: Text(
               "恭喜你，${Application.profile.nickName}\n第${result.no}次完成\n${course.title}",
-              style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
+              style: AppStyle.whiteMedium18,
             ),
           ),
           Positioned(

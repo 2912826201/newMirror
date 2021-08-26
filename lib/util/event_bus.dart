@@ -258,6 +258,8 @@ const String VIDEO_COURSE_RESULT = "video_course_result";
 const String EVENTBUS_TOPICDETAIL_DELETE_FEED = "eventbustopicdetaildeletefeed";
 // 删除视频动态
 const String EVENTBUS_VIDEO_DELETE_FEED = "eventbus_video_delete_feed";
+// 删除动态视频自动播放
+const String EVENTBUS_DELETE_FEED_VIDEO_PLAY = "eventbus_delete_feed_video_play";
 //话题详情双击tabbar
  String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
  // 搜索页删除动态

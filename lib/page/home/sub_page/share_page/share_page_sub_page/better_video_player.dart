@@ -68,10 +68,19 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     _calculateSize();
     EventBus.getDefault().registerSingleParameter(_deletedVideooController, EVENTBUS_VIDEO_VIEW,
         registerName: EVENTBUS_VIDEO_DELETE_FEED);
+    EventBus.getDefault().registerSingleParameter(_deletedFeedVideoPlay, EVENTBUS_VIDEO_VIEW,
+        registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
   }
   _deletedVideooController(int id) {
     if(widget.feedModel.id == id) {
       deletedControllerContrastValue();
+    }
+
+  }
+  _deletedFeedVideoPlay(int id) {
+    if (mounted) {
+      print("重新开始加子");
+      controller.play();
     }
   }
   init() async {
@@ -79,6 +88,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     // if (mounted) {
     //   setState(() {});
     // }
+    print("初始化");
     eventListener = (BetterPlayerEvent event) {
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
@@ -108,13 +118,13 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             fit: BoxFit.cover,
             placeholder: (context, url) {
               return Container(
-                color: AppColor.color343434,
+                color: AppColor.imageBgGrey,
               );
             },
             errorWidget: (context, url, error) {
               print("offsetY：#$offsetY");
               return Container(
-                color: AppColor.color343434,
+                color: AppColor.imageBgGrey,
                 padding: EdgeInsets.only(top: (containerSize.height - ScreenUtil.instance.width * 0.53) / 2.0),
                 child: getImageAsset("assets/png/image_error.png"),
               );

@@ -247,8 +247,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColor.textPrimary1.withOpacity(0.35),
-                    AppColor.textPrimary1.withOpacity(0),
+                    AppColor.mainBlack.withOpacity(0.45),
+                    AppColor.mainBlack.withOpacity(0),
                   ],
                 ),
               ),

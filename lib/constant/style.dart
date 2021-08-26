@@ -54,6 +54,7 @@ class AppStyle {
   static const blueRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.mainBlue);
 
   //纯白色
+  static const whiteRegular23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
@@ -73,11 +74,9 @@ class AppStyle {
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const whiteMedium10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteBold40 = TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: AppColor.white);
   static const whiteBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.white);
-
-  //纯黑色
-  static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
 
   //=================================下面是旧的样式===============================================
 

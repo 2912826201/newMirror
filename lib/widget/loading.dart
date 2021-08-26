@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/util/screen_util.dart';
 
@@ -24,17 +23,19 @@ class Loading {
           context: context,
           // barrierColor: Colors.white, // 背景色
           // barrierLabel: '',
-          barrierDismissible: false, // 是否能通过点击空白处关闭
-          transitionDuration: const Duration(milliseconds: 300), // 动画时长
+          barrierDismissible: false,
+          // 是否能通过点击空白处关闭
+          transitionDuration: const Duration(milliseconds: 300),
+          // 动画时长
           useRootNavigator: false,
           pageBuilder: (BuildContext context, Animation animation, Animation secondaryAnimation) {
-            return  WillPopScope(
-                onWillPop: () async => false, //用来屏蔽安卓返回键关弹窗
+            return WillPopScope(
+              onWillPop: () async => false, //用来屏蔽安卓返回键关弹窗
               child: StreamBuilder<bool>(
-                initialData: true,
-                stream: streamController.stream,
-                builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
-                  return Container(
+                  initialData: true,
+                  stream: streamController.stream,
+                  builder: (BuildContext stramContext, AsyncSnapshot<bool> snapshot) {
+                    return Container(
                       width: ScreenUtil.instance.screenWidthDp,
                       height: ScreenUtil.instance.height,
                       color: AppColor.white.withOpacity(0.24),
@@ -49,7 +50,7 @@ class Loading {
                                   width: 100,
                                   height: 100,
                                   decoration: BoxDecoration(
-                                    color: AppColor.bgBlack,
+                                    color: AppColor.layoutBgGrey,
                                     borderRadius: BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: snapshot.data
@@ -74,7 +75,7 @@ class Loading {
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500,
-                                            color: AppColor.textPrimary1,
+                                            color: AppColor.white,
                                             decoration: TextDecoration.none),
                                       )
                                     : infoText != null
@@ -83,7 +84,7 @@ class Loading {
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w500,
-                                                color: AppColor.textPrimary1,
+                                                color: AppColor.white,
                                                 decoration: TextDecoration.none),
                                           )
                                         : Container()
@@ -99,7 +100,7 @@ class Loading {
                               child: Center(
                                 child: CustomAppBarIconButton(
                                   svgName: AppIcon.nav_return,
-                                  iconColor: AppColor.black,
+                                  iconColor: AppColor.white,
                                   onTap: () {
                                     streamController.onCancel;
                                     streamController.close();
@@ -111,8 +112,10 @@ class Loading {
                             ),
                           ),
                         ],
-                      ));
-                }));
+                      ),
+                    );
+                  }),
+            );
           }).then((value) {
         isShow = false;
       });

@@ -418,7 +418,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                           print("需要恢复裁剪区域高度");
                         },
                         child: Container(
-                          color: AppColor.textPrimary1.withOpacity(
+                          color: AppColor.mainBlack.withOpacity(
                               (_previewMaxHeight - context.watch<PreviewHeightNotifier>().previewHeight) /
                                   _previewMaxHeight),
                           width: _previewMaxHeight,

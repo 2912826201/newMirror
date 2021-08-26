@@ -7,6 +7,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -136,7 +137,7 @@ class HeadViewState extends State<HeadView> {
         } else {
           ToastShow.show(msg: "关注失败,请重试", context: context);
         }
-      }else{
+      } else {
         ToastShow.show(msg: "关注失败,请重试", context: context);
       }
     }
@@ -196,7 +197,7 @@ class HeadViewState extends State<HeadView> {
                   const Spacer(),
                   const Icon(
                     Icons.add,
-                    color: AppColor.black,
+                    color: AppColor.mainBlack,
                     size: 16,
                   ),
                   const SizedBox(
@@ -205,10 +206,7 @@ class HeadViewState extends State<HeadView> {
                   Container(
                     child: const Text(
                       "关注",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColor.black,
-                      ),
+                      style: AppStyle.textRegular12,
                     ),
                   ),
                   const Spacer(),
@@ -426,11 +424,10 @@ class HeadViewState extends State<HeadView> {
                             // ),
                             Container(
                               padding: const EdgeInsets.only(top: 2),
-                              child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColor.textWhite60,
-                                  )),
+                              child: Text(
+                                "${DateUtil.generateFormatDate(widget.model.createTime, false)}",
+                                style: AppStyle.text1Regular12,
+                              ),
                             )
                           ],
                         )),

@@ -38,6 +38,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
 import 'package:mirror/widget/volume_popup.dart';
@@ -687,9 +688,10 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   child: Text("用户协议和隐私政策")),
               RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return ListviewItemPage();
-                    }));
+                    Loading.showLoading(context, infoText: "测试");
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    //   return ListviewItemPage();
+                    // }));
                   },
                   child: Text("测试listview增加item")),
             ],

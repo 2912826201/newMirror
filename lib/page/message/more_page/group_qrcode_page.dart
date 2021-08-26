@@ -85,7 +85,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
         actions: [
           CustomAppBarIconButton(
               svgName: AppIcon.nav_share,
-              iconColor: AppColor.black,
+              iconColor: AppColor.white,
               onTap: () {
                 model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
                 model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
@@ -152,10 +152,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.textWhite60,
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.textWhite60,
                     ),
                   ),
                 )
@@ -176,10 +176,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                             imageUrl: avatarList.first,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.textWhite60,
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.textWhite60,
                             ),
                           ),
                         ),
@@ -201,10 +201,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                         imageUrl: avatarList[1],
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.textWhite60,
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.textWhite60,
                         ),
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:keframe/frame_separate_widget.dart';
 import 'package:keframe/size_cache_widget.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -21,7 +22,9 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/size_transition_view.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_layer.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
+import 'package:mirror/widget/video_exposure/video_exposure_layer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -50,7 +53,6 @@ class AttentionPage extends StatefulWidget {
 GlobalKey<AttentionPageState> attentionKey = GlobalKey();
 
 class AttentionPageState extends State<AttentionPage> with TickerProviderStateMixin {
-
   var status = Status.loggedIn;
 
   //关注未读数
@@ -418,7 +420,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       ;
     }
     return SizeCacheWidget(
-      // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
+        // 粗略估计一屏上列表项的最大数量如3个，将 SizeCacheWidget 的 estimateCount 设置为 3*2。快速滚动场景构建响应更快，并且内存更稳定
         estimateCount: 6,
         child: SmartRefresher(
             enablePullUp: status == Status.concern ? true : false,
@@ -477,6 +479,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
                                 key: Key('attention_page_$id'),
                                 child: pageDisplay(index, feedModel),
                                 onExposure: (visibilityInfo) {
+                                  print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                                   // 如果没有显示
                                   if (attentionIdList[index] != -1 &&
                                       context
@@ -548,11 +551,18 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
       isShowConcern: false,
       pageName: DynamicPageType.attentionPage,
       // 可选参数 子Item的个数
-      // key: GlobalObjectKey("attention$index"),
       deleteFeedChanged: (id) {
+        // "attention$index";
         // 动画删除item
         if (animationMap.containsKey(id)) {
           animationMap[id].forward().then((value) {
+            // 当前索引
+            int currentInt;
+            attentionModelList.forEach((v) {
+              if (v.id == id) {
+                currentInt = attentionModelList.indexOf(v);
+              }
+            });
             attentionModelList.removeWhere((element) {
               return element.id == id;
             });
@@ -569,17 +579,25 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
               });
             }
             if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
-              if(context.read<FeedMapNotifier>().value.feedMap[id].videos.length != 0) {
+              if (context.read<FeedMapNotifier>().value.feedMap[id].videos.length != 0) {
                 // 删除视频动态的控制器
-                EventBus.getDefault().post(msg:id, registerName: EVENTBUS_VIDEO_DELETE_FEED);
+                EventBus.getDefault().post(msg: id, registerName: EVENTBUS_VIDEO_DELETE_FEED);
               }
               context.read<FeedMapNotifier>().deleteFeed(id);
             }
+            VideoExposureLayer.forget(Key('${attentionModelList[currentInt].createTime}_key'));
+            ExposureDetectorController.instance.forget(Key('attention_page_$id'));
             // NODE 删除了控制器后要手动触发一下列表的滑动触发曝光元素
-            Future.delayed(Duration(milliseconds: 100), () {
-              print("列表滑动");
-              PrimaryScrollController.of(context).animateTo(100, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
-            });
+            if (currentInt + 1 != attentionModelList.length && attentionModelList[currentInt].videos.length > 0) {
+              Future.delayed(Duration(milliseconds: 100), () {
+                VideoExposureLayer.forget(Key('${attentionModelList[currentInt+1].createTime}_key'));
+                ExposureDetectorController.instance.forget(Key('attention_page_${attentionModelList[currentInt+1].id}'));
+                VideoExposureLayer.a();
+                Future.delayed(Duration(milliseconds: 300), () {
+                  EventBus.getDefault().post(msg: id, registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
+                });
+              });
+            }
           });
         }
         print(attentionIdList.toString());

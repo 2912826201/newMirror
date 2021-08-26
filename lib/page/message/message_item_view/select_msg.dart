@@ -241,10 +241,10 @@ class SelectMsg extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(6)),
                 child: Material(
                     borderRadius: BorderRadius.all(Radius.circular(6)),
-                    color: isMyself ? AppColor.textPrimary2 : AppColor.white,
+                    color: isMyself ? AppColor.mainBlack : AppColor.white,
                     child: new InkWell(
                       child: getRichTextBox(context),
-                      splashColor: isMyself ? AppColor.textPrimary1 : AppColor.textHint,
+                      splashColor: isMyself ? AppColor.mainBlack : AppColor.textWhite60,
                       onTap: () {},
                     )),
               )),
@@ -261,7 +261,7 @@ class SelectMsg extends StatelessWidget {
       padding: const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
       child: Text(
         text,
-        style: TextStyle(color: !isMyself ? AppColor.textPrimary2 : AppColor.white, fontSize: 15),
+        style: TextStyle(color: !isMyself ? AppColor.mainBlack : AppColor.white, fontSize: 15),
       ),
     );
   }

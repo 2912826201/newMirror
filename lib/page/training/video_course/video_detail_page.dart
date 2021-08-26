@@ -517,7 +517,7 @@ class VideoDetailPageState extends XCState {
             width: double.infinity,
             height: 40,
             child: Center(
-              child: Text(text, style: const TextStyle(color: AppColor.white, fontSize: 16)),
+              child: Text(text, style: AppStyle.whiteRegular16),
             ),
           ),
         ],
@@ -819,7 +819,7 @@ class VideoDetailPageState extends XCState {
     //todo 判断用户是不是vip缺少开通vip的回调
     bool isVip = context.read<TokenNotifier>().isLoggedIn ? Application.profile.isVip == 1 : false;
 
-    TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
+    TextStyle textStyle = AppStyle.whiteRegular16;
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
     EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
     EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);

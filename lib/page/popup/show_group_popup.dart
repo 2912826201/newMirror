@@ -208,7 +208,7 @@ class _SharePopupState extends State<_SharePopup> {
             Expanded(
               child: Text(
                 _groupList[index].modifiedName ?? _groupList[index].name,
-                style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+                style: AppStyle.textRegular16,
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
