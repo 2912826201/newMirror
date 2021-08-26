@@ -560,8 +560,8 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColor.textPrimary1.withOpacity(0.35),
-                  AppColor.textPrimary1.withOpacity(0.001),
+                  AppColor.mainBlack.withOpacity(0.45),
+                  AppColor.mainBlack.withOpacity(0.001),
                 ],
               ),
             ),
@@ -574,8 +574,8 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColor.textPrimary1.withOpacity(0.001),
-                  AppColor.textPrimary1.withOpacity(0.35),
+                  AppColor.mainBlack.withOpacity(0.001),
+                  AppColor.mainBlack.withOpacity(0.45),
                 ],
               ),
             ),
@@ -602,7 +602,7 @@ class _DemoVideoItem2State extends State<DemoVideoItem2> {
             return Container(
               width: ScreenUtil.instance.width,
               height: ScreenUtil.instance.height,
-              color: AppColor.color343434,
+              color: AppColor.imageBgGrey,
               alignment: Alignment.center,
               child: getImageAsset("assets/png/image_error.png"),
             );

@@ -717,12 +717,21 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     for (int i = 0; i < atUsers.length; i++) {
       int index = atUsers[i].index - subLen;
       int end = atUsers[i].len - subLen;
-      if (index < content.length && index >= 0 ) {
+      if (end <= index) {
+        continue;
+      }
+      if (index < content.length && index >= 0) {
         String firstString = content.substring(0, index);
-        if(end > content.length) {
+        if (end > content.length) {
           end = content.length;
         }
-        String secondString = content.substring(index, end);
+        String secondString = "";
+        try {
+          secondString = content.substring(index, end);
+        } catch (e) {
+          print("content:$content,$index,$end,:$e,$i,${content.length}");
+          print("${atUsers.toString()}");
+        }
         String threeString = content.substring(end, content.length);
         contentArray.add(firstString);
         contentArray.add(secondString);

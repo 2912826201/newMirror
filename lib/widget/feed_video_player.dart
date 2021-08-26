@@ -138,11 +138,11 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
                 height: videoSize.height,
                 placeholder: (context, url) {
                   return Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.textWhite60,
                   );
                 },
                 errorWidget: (context, url, error) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.textWhite60,
                 ),
               ),
         controlsConfiguration: BetterPlayerControlsConfiguration(

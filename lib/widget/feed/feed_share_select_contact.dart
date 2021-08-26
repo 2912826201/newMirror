@@ -172,7 +172,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   child: Image.asset("assets/png/default_no_data.png", fit: BoxFit.cover),
                 ),
                 SizedBox(height: 16),
-                Text("没有可以邀请的好友了", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
+                Text("没有可以邀请的好友了", style: AppStyle.text1Regular14),
               ],
             ),
           ),
@@ -209,7 +209,7 @@ class _FriendsPageState extends State<FriendsPage> {
           child: UnconstrainedBox(
             child: const Text(
               "已加入群聊",
-              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+              style: AppStyle.textRegular16,
             ),
           ),
         ),
@@ -242,7 +242,7 @@ class _FriendsPageState extends State<FriendsPage> {
               color: AppColor.transparent,
               child: const Text(
                 "移除群聊",
-                style: TextStyle(fontSize: 14, color: AppColor.white),
+                style: AppStyle.whiteRegular14,
               ),
             ),
             onTap: () {
@@ -261,7 +261,7 @@ class _FriendsPageState extends State<FriendsPage> {
               color: AppColor.transparent,
               child: Text(
                 widget.type == 2 ? "确认移除" : "确认添加",
-                style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+                style: AppStyle.redRegular14,
               ),
             ),
             onTap: () {
