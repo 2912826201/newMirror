@@ -87,8 +87,7 @@ class CommentLayout extends StatelessWidget {
                           AppRouter.navigateToLoginPage(context);
                         }
                       },
-                      child: Text("共${StringUtil.getNumber(commentCount)}条评论",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60)),
+                      child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.text1Regular12),
                     );
                   }, selector: (context, notifier) {
                     return notifier.value.feedMap[model.id].commentCount;

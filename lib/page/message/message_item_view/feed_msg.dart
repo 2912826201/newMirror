@@ -266,7 +266,7 @@ class FeedMsg extends StatelessWidget {
                   child: Container(
                     child: Text(
                       DateUtil.formatSecondToStringNumShowMinute(ms),
-                      style: TextStyle(fontSize: 11, color: AppColor.white),
+                      style: AppStyle.whiteRegular11,
                     ),
                   ),
                 ),

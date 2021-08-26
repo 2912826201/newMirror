@@ -557,7 +557,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                       alignment: Alignment(-1, 1),
                       child: CustomAppBarIconButton(
                         svgName: AppIcon.nav_return,
-                        iconColor: AppColor.bgBlack,
+                        iconColor: AppColor.white,
                         onTap: () {
                           Navigator.pop(context);
                         },

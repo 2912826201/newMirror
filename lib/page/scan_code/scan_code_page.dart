@@ -10,6 +10,7 @@ import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/widget/triangle_path.dart';
 import '../message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
@@ -117,7 +118,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
           Navigator.pop(context);
         },
         actions: [
-          CustomAppBarTextButton("相册", AppColor.textPrimary2, () {
+          CustomAppBarTextButton("相册", AppColor.white, () {
             _getImagePicker();
           }),
         ],
@@ -234,18 +235,18 @@ class _ScanCodePageState extends State<ScanCodePage> {
 
   Widget _whiteSmallRow() {
     return Container(
-      width: 26,
+    /*  width: 26,
       height: 4,
-      color: AppColor.white,
+      color: AppColor.textWhite60,*/
     );
   }
 
-  Widget _whiteSmallCloumn() {
+  Widget _whiteSmallCloumn(int type) {
     return Container(
-      width: 4,
-      height: 26,
-      color: AppColor.white,
-    );
+      child: CustomPaint(
+    size: Size(24,24),
+      painter: ScanWeaponPainter(type),
+    ),);
   }
 
   Widget _animationContainer() {
@@ -254,14 +255,10 @@ class _ScanCodePageState extends State<ScanCodePage> {
         height: 250,
         child: Stack(
           children: [
-            Positioned(top: 0, left: 0, child: _whiteSmallRow()),
-            Positioned(top: 0, left: 0, child: _whiteSmallCloumn()),
-            Positioned(top: 0, right: 0, child: _whiteSmallRow()),
-            Positioned(top: 0, right: 0, child: _whiteSmallCloumn()),
-            Positioned(bottom: 0, left: 0, child: _whiteSmallRow()),
-            Positioned(bottom: 0, left: 0, child: _whiteSmallCloumn()),
-            Positioned(bottom: 0, right: 0, child: _whiteSmallRow()),
-            Positioned(bottom: 0, right: 0, child: _whiteSmallCloumn()),
+            Positioned(top: 2, left: 2, child: _whiteSmallCloumn(1)),
+            Positioned(top: 2, right: 2, child: _whiteSmallCloumn(2)),
+            Positioned(bottom: 2, left: 2, child: _whiteSmallCloumn(3)),
+            Positioned(bottom: 2, right: 2, child: _whiteSmallCloumn(4)),
             StreamBuilder<double>(
                 initialData: 0,
                 stream: streamController.stream,
@@ -276,7 +273,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                     child: Container(
                       width: 250,
                       height: 2,
-                      color: AppColor.white,
+                      color: AppColor.textWhite60,
                     ),
                   );
                 })

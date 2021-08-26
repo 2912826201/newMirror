@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -204,9 +205,9 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
             ),
             const Text(
               "你的放大镜陨落星辰了",
-              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+              style: AppStyle.text1Regular14,
             ),
-            const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
+            const Text("换一个试一试", style: AppStyle.text1Regular14),
           ],
         ),
       );

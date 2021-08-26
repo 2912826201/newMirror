@@ -86,14 +86,10 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
                    SizedBox(height: 2,),
                    Opacity(
                      opacity:context.watch<VipMoveNotifier>().choseIndex==index?1:0,
-                     child: ClipPath(
-                       clipper: TrianglePath(),
-                       child: Container(
-                         height: 7,
-                         width: 13,
-                         color: AppColor.white,
-                       ),
-                     ),),
+                     child: CustomPaint(
+                         size: Size(13,7),
+                         painter: TrianglePath(false,AppColor.white),
+                       ),),
 
                  ],
                ),),

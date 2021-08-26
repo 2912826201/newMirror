@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 
 import 'interactionl_widget.dart';
 
@@ -42,7 +43,11 @@ class _FullScreenPageState extends State<FullScreenPage> {
   }
 
   Widget middleWidget() {
-    return Center(child: Text('裸眼3D效果',style: TextStyle(fontSize: 24,color: AppColor.white),));
+    return Center(
+        child: Text(
+      '裸眼3D效果',
+      style: AppStyle.whiteRegular24,
+    ));
   }
 
   Image getImage(String s) {

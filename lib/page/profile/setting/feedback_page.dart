@@ -134,6 +134,8 @@ class _feedBackPage extends State<FeedBackPage> {
 
   Widget _bubble(){
     return InkWell(
+      highlightColor: AppColor.transparent,
+      splashColor: AppColor.transparent,
       onTap: (){
         setState(() {
           longClick = false;
@@ -159,15 +161,10 @@ class _feedBackPage extends State<FeedBackPage> {
               Positioned(
                   top: 29,
                   left: 25,
-                  child:RotatedBox(
-                    quarterTurns:2,
-                    child: ClipPath(
-                        clipper: TrianglePath(),
-                        child:Container(
-                          height: 10,
-                          width: 10,
-                          color: AppColor.white,
-                        )),) )
+                  child:CustomPaint(
+                    size: Size(5,8),
+                    painter: TrianglePath(true,AppColor.white),
+                  ) )
             ],) ,),),
     );
   }
@@ -256,6 +253,8 @@ class _feedBackPage extends State<FeedBackPage> {
 
   Widget _addImageItem() {
     return InkWell(
+      highlightColor: AppColor.transparent,
+      splashColor: AppColor.transparent,
       onTap: () {
         _getImage();
       },

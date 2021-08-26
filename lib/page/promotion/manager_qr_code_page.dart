@@ -67,12 +67,12 @@ class _ManagerQRCodePageState extends State<ManagerQRCodePage> {
                     Text(
                       "欢迎参加训练营",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 28,color: AppColor.textPrimary1),
+                      style: TextStyle(fontSize: 28, color: AppColor.textWhite60),
                     ),
                     Text(
                       "点击复制:复制成功发送给导师,由导师分配群聊",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 10,color: AppColor.textPrimary3),
+                      style: TextStyle(fontSize: 10, color: AppColor.textWhite40),
                     ),
                   ],
                 ),
@@ -95,7 +95,7 @@ class _ManagerQRCodePageState extends State<ManagerQRCodePage> {
               child: Text(
                 "老师名字：$name",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20,color: AppColor.textPrimary1),
+                style: TextStyle(fontSize: 20, color: AppColor.white),
               ),
             ),
             SizedBox(height: 60),
