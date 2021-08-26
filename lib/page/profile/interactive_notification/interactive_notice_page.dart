@@ -184,9 +184,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         ),
         body: ScrollConfiguration(
             behavior: OverScrollBehavior(),
-            child: /*SizeCacheWidget(
-              estimateCount: 20,
-                child:*/ SmartRefresher(
+            child: SmartRefresher(
                     controller: controller,
                     enablePullUp: true,
                     enablePullDown: true,
@@ -255,7 +253,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                                 height: height,
                                 width: width,
                                 color: AppColor.mainBlack,
-                              )))/*)*/);
+                              ))));
   }
 }
 
