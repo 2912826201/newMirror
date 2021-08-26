@@ -63,7 +63,7 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
         children: [
           FijkView(
             player: player,
-            color: AppColor.bgBlack,
+            color: AppColor.mainBlack,
             fit: FijkFit.cover,
             fsFit: FijkFit.cover,
           ),
@@ -88,7 +88,7 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
             top: 8 + ScreenUtil.instance.statusBarHeight,
             child: Text(
               "$_currentPlayingIndex",
-              style: TextStyle(color: AppColor.white, backgroundColor: AppColor.bgBlack),
+              style: TextStyle(color: AppColor.white, backgroundColor: AppColor.mainBlack),
             ),
           ),
           Positioned(

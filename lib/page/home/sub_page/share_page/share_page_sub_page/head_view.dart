@@ -237,7 +237,7 @@ class HeadViewState extends State<HeadView> {
                         opacity: snapshot.data,
                         child: Text(
                           "已关注",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                          style: AppStyle.textRegular12,
                         ),
                       );
                     }),
@@ -440,7 +440,7 @@ class HeadViewState extends State<HeadView> {
             AppIconButton(
               svgName: AppIcon.more_feed,
               iconSize: 24,
-              iconColor: AppColor.bgWhite,
+              iconColor: AppColor.white,
               onTap: () {
                 print("点击更多按钮了");
                 // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&

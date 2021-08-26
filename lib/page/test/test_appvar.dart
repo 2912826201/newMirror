@@ -130,7 +130,7 @@ class _StickyDemoState extends State<StickyDemo> with SingleTickerProviderStateM
                       image: DecorationImage(image: NetworkImage(widget.model.avatarUrl.coverUrl), fit: BoxFit.cover),
                     ),
                     child: Container(
-                      color: AppColor.bgBlack.withOpacity(0.7),
+                      color: AppColor.mainBlack.withOpacity(0.7),
                     ),
                   ),
                   Positioned(

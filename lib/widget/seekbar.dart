@@ -6,21 +6,21 @@ import 'package:mirror/constant/color.dart';
 /// Created by yangjiayi on 2021/1/4.
 
 class AppSeekBar extends StatelessWidget {
-  AppSeekBar(this.max,
-      this.min,
-      this.value,
-      this.disabled,
-      this.onDragging,
-      this.onDragCompleted,
-      {Key key,
-        this.activeTrackBarColor=AppColor.textPrimary2,
-        this.inactiveTrackBarColor=AppColor.bgWhite,
-        this.activeDisabledTrackBarColor=AppColor.textHint,
-        this.inactiveDisabledTrackBarColor=AppColor.bgWhite,
-        this.handler1Color=AppColor.textHint,
-        this.handler2Color=AppColor.textPrimary2,
-      })
-      : super(key: key);
+  AppSeekBar(
+    this.max,
+    this.min,
+    this.value,
+    this.disabled,
+    this.onDragging,
+    this.onDragCompleted, {
+    Key key,
+    this.activeTrackBarColor = AppColor.imageBgGrey,
+    this.inactiveTrackBarColor = AppColor.bgWhite,
+    this.activeDisabledTrackBarColor = AppColor.textHint,
+    this.inactiveDisabledTrackBarColor = AppColor.bgWhite,
+    this.handler1Color = AppColor.textHint,
+    this.handler2Color = AppColor.imageBgGrey,
+  }) : super(key: key);
 
   final double max;
   final double min;

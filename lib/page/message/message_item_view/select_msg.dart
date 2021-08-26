@@ -116,7 +116,7 @@ class SelectMsg extends StatelessWidget {
               padding: const EdgeInsets.all(13),
               child: Text(
                 selectList[i] * 20,
-                style: TextStyle(fontSize: 13, color: AppColor.black),
+                style: AppStyle.textRegular13,
               ),
             ),
             splashColor: i % 2 != 0 ? AppColor.white : AppColor.bgWhite,

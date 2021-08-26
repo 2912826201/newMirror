@@ -51,7 +51,7 @@ class _EditInformationState extends State<EditInformation> {
   Uint8List imageData;
   List<File> fileList = [];
   int textSize = 20;
-  Color textColor = AppColor.black;
+  Color textColor = AppColor.mainBlack;
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;

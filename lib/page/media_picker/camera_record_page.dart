@@ -179,7 +179,7 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                               bottom: 16,
                               child: AppIconButton(
                                 isCircle: true,
-                                bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                                bgColor: AppColor.imageBgGrey.withOpacity(0.65),
                                 buttonHeight: 32,
                                 buttonWidth: 32,
                                 iconSize: 24,

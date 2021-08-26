@@ -165,10 +165,10 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         height: 44.0,
         width: ScreenUtil.instance.screenWidthDp,
         circular: 3.0,
-        textColor: color == null ? AppColor.white : AppColor.textPrimary1,
+        textColor: color == null ? AppColor.white : AppColor.mainBlack,
         fontSize: 16,
-        backColor: color == null ? AppColor.bgBlack : color,
-        color: color == null ? AppColor.transparent : AppColor.bgBlack,
+        backColor: color == null ? AppColor.mainBlack : color,
+        color: color == null ? AppColor.transparent : AppColor.mainBlack,
         onTap: onTap,
       ),
     );

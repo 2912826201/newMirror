@@ -117,7 +117,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
           Navigator.pop(context);
         },
         actions: [
-          CustomAppBarTextButton("相册", AppColor.textPrimary2, () {
+          CustomAppBarTextButton("相册", AppColor.white, () {
             _getImagePicker();
           }),
         ],

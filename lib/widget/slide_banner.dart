@@ -502,7 +502,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                             padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                                color: AppColor.textPrimary1.withOpacity(0.5)),
+                                color: AppColor.mainBlack.withOpacity(0.5)),
                             child: Text(
                               "${snapshot.data + 1}/${imageCount}",
                               style: AppStyle.whiteRegular12,
@@ -598,7 +598,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                       padding: const EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(12)),
-                          color: AppColor.textPrimary1.withOpacity(0.5)),
+                          color: AppColor.mainBlack.withOpacity(0.5)),
                       child: Text(
                         "${snapshot.data + 1}/${imageCount}",
                         style: AppStyle.whiteRegular12,

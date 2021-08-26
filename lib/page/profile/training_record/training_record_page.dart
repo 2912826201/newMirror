@@ -233,7 +233,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   Positioned(
                     child: CustomAppBarIconButton(
                         svgName: AppIcon.nav_return,
-                        iconColor: AppColor.black,
+                        iconColor: AppColor.white,
                         onTap: () {
                           Navigator.pop(context);
                         }),
