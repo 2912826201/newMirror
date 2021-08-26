@@ -437,7 +437,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         Container(
                           padding: EdgeInsets.only(
                               left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
-                          // color: AppColor.white,
+                          color: AppColor.mainBlack,
                           child: Custom.TabBar(
                             //
                             // labelColor: Colors.black,
@@ -750,10 +750,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add, size: 16, color: AppColor.black),
+                            Icon(Icons.add, size: 16, color: AppColor.mainBlack),
                             Text("关注",
                                 style:
-                                    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1))
+                                    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.mainBlack))
                           ],
                         )),
                         onEnd: () {
@@ -775,7 +775,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         child: Center(
                           child: Text("已关注",
                               style:
-                                  TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1)),
+                                  TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.mainBlack)),
                         ),
                         onEnd: () {
                           if (model.isFollow == 0) {

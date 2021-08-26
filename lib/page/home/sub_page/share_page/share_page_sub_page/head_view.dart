@@ -237,7 +237,7 @@ class HeadViewState extends State<HeadView> {
                         opacity: snapshot.data,
                         child: Text(
                           "已关注",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.mainBlack),
                         ),
                       );
                     }),
