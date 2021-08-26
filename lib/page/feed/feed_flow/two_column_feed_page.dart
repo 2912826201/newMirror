@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -107,7 +108,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
           ),
           Text(
             "这里空空如也，去推荐看看吧",
-            style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+            style: AppStyle.text1Regular14,
           ),
         ],
       ),
@@ -224,7 +225,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
             padding: const EdgeInsets.only(left: 8, right: 8, top: 6),
             child: Text(
               homeFeedModel.content,
-              style: TextStyle(fontSize: 13, color: AppColor.textPrimary1),
+              style: AppStyle.text1Regular13,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -267,7 +268,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
               SizedBox(width: 5),
               Text(
                 IntegerUtil.formatIntegerEn(homeFeedModel.laudCount),
-                style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
+                style: AppStyle.text1Regular13,
               ),
             ],
           ),

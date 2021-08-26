@@ -172,7 +172,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   softWrap: false,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 15),
+                  style: AppStyle.text1Regular15,
                 ),
                 SizedBox(
                   height: 3,
@@ -182,7 +182,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   softWrap: false,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: AppColor.white.withOpacity(0.35), fontSize: 12),
+                  style: AppStyle.text2Regular12,
                 ),
               ],
             ),
@@ -245,7 +245,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   children: [
                     Text(
                       "${widget.result.synthesisScore}",
-                      style: TextStyle(color: AppColor.white, fontSize: 23),
+                      style: AppStyle.whiteRegular23,
                     )
                   ],
                 ),
@@ -262,7 +262,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                     ),
                     Text(
                       "动作匹配得分",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                      style: AppStyle.whiteRegular12,
                     )
                   ],
                 ),
@@ -282,14 +282,14 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   children: [
                     Text(
                       "${IntegerUtil.formationCalorie(widget.result.calorie, isHaveCompany: false)}",
-                      style: TextStyle(color: AppColor.white, fontSize: 23),
+                      style: AppStyle.whiteRegular23,
                     ),
                     SizedBox(
                       width: 2,
                     ),
                     Text(
                       "千卡",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                      style: AppStyle.whiteRegular12,
                     ),
                   ],
                 ),
@@ -306,7 +306,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                     ),
                     Text(
                       "累计消耗热量",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                      style: AppStyle.whiteRegular12,
                     )
                   ],
                 ),
@@ -326,14 +326,14 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   children: [
                     Text(
                       "${widget.result.mseconds ~/ 60000}",
-                      style: TextStyle(color: AppColor.white, fontSize: 23),
+                      style: AppStyle.whiteRegular23,
                     ),
                     SizedBox(
                       width: 2,
                     ),
                     Text(
                       "分钟",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                      style: AppStyle.whiteRegular12,
                     ),
                   ],
                 ),
@@ -350,7 +350,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                     ),
                     Text(
                       "训练时长",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                      style: AppStyle.whiteRegular12,
                     )
                   ],
                 ),

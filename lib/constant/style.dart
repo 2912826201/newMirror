@@ -24,9 +24,11 @@ class AppStyle {
   // Regular文字辅色1-白色60%
   static const text1Regular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
+  static const text1Regular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
   static const text1Regular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textWhite60);
 
   static const text1Medium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textWhite60);
@@ -34,7 +36,9 @@ class AppStyle {
   static const text1Medium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textWhite60);
 
   // Regular文字辅色2-白色40%
+  static const text2Regular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textWhite40);
   static const text2Regular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite40);
+  static const text2Regular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textWhite40);
 
   //红色
   static const redRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.mainRed);
@@ -54,6 +58,8 @@ class AppStyle {
   static const blueRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.mainBlue);
 
   //纯白色
+  static const whiteRegular24 = TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const whiteRegular23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular17 = TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);

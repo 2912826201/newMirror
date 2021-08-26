@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -787,7 +788,7 @@ class _VideoControlState extends State<VideoControl> {
                       },
                     ),
                     SizedBox(width: 14),
-                    Text(progressString, style: TextStyle(fontSize: 12, color: AppColor.white)),
+                    Text(progressString, style: AppStyle.whiteRegular12),
                     SizedBox(width: 8),
                     Expanded(
                       child: AppSeekBar(
@@ -799,14 +800,14 @@ class _VideoControlState extends State<VideoControl> {
                         _onDragCompleted,
                         activeDisabledTrackBarColor: AppColor.white.withOpacity(0.5),
                         inactiveDisabledTrackBarColor: AppColor.white,
-                        inactiveTrackBarColor:AppColor.white.withOpacity(0.5),
-                        activeTrackBarColor:AppColor.white,
+                        inactiveTrackBarColor: AppColor.white.withOpacity(0.5),
+                        activeTrackBarColor: AppColor.white,
                         handler1Color: AppColor.white,
                         handler2Color: AppColor.white,
                       ),
                     ),
                     SizedBox(width: 8),
-                    Text(durationString, style: TextStyle(fontSize: 12, color: AppColor.white)),
+                    Text(durationString, style: AppStyle.whiteRegular12),
                     SizedBox(width: 16),
                   ],
                 ),

@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' hide CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/activity_indicator_widget.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -40,6 +41,10 @@ Widget getMessageState(int status,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       child: CupertinoActivityIndicator(
         radius: 10,
+        kActiveTickColor: CupertinoDynamicColor.withBrightness(
+          color: AppColor.textWhite60,
+          darkColor: AppColor.white,
+        ),
       ),
     );
   } else if (status == RCSentStatus.Failed) {

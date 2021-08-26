@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/widget/icon.dart';
 
 class ChatTopAtMark extends StatefulWidget {
@@ -68,7 +69,7 @@ class ChatTopAtMarkState extends State<ChatTopAtMark> {
             ),
             Text(
               "有人@你",
-              style: TextStyle(fontSize: 14, color: AppColor.mainBlue),
+              style: AppStyle.blueRegular14,
             ),
           ],
         ),

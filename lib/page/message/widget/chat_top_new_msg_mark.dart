@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 
 class ChatTopNewMsgMark extends StatefulWidget {
   final Function() onNewMsgClickListener;
@@ -59,7 +60,7 @@ class ChatTopNewMsgMarkState extends State<ChatTopNewMsgMark> {
             ),
             Text(
               "$unreadCount条新消息",
-              style: TextStyle(fontSize: 14, color: AppColor.mainBlue),
+              style: AppStyle.blueRegular14,
             ),
           ],
         ),

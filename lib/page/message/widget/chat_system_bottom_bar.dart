@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 
 import 'currency_msg.dart';
@@ -57,7 +58,7 @@ class ChatSystemBottomBar extends StatelessWidget {
                   child: Center(
                     child: Text(
                       text,
-                      style: TextStyle(fontSize: 14, color: AppColor.black),
+                      style: AppStyle.textRegular14,
                     ),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
