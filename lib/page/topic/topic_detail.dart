@@ -438,7 +438,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                               Container(
                                 padding: EdgeInsets.only(
                                     left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
-                                // color: AppColor.white,
+                                color: AppColor.mainBlack,
                                 child: Custom.TabBar(
                                   //
                                   // labelColor: Colors.black,

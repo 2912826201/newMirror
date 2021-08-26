@@ -119,9 +119,9 @@ class ChatPageUtil {
                   child: SizedBox(
                       child: Text(
                         "点击关注,及时看到对方动态",
-                        style: TextStyle(color: AppColor.white, fontSize: 16),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                style: AppStyle.whiteRegular16,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ))),
               GestureDetector(
                 child: Container(

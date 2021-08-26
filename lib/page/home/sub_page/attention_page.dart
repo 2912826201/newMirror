@@ -527,7 +527,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
               ),
               const Text(
                 "这里空空如也，去推荐看看吧",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular14,
               ),
             ],
           ),

@@ -1,48 +1,98 @@
 
-
-import 'package:flutter/cupertino.dart';
-//配合ClipPath实现三角形
-class TrianglePath extends CustomClipper<Path>{
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.moveTo(size.width/2, 0);
-    path.lineTo(0, size.height);
-    path.lineTo(size.width, size.height);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return true;
-  }
-}
-class TrianglePainter extends CustomPainter {
+import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
+//三角形
+class TrianglePath extends CustomPainter {
+  bool isDown;
   Color color;
-  Paint _paint;
-  Path _path;
-  double angle;
 
-  TrianglePainter(this.color) {
-    _paint = Paint()
-      ..strokeWidth = 1.0
-      ..color = color
-      ..isAntiAlias = true;
-
-    _path = Path();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  TrianglePath(this.isDown, this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final baseX = size.width * 0.5;
-    final baseY = size.height * 0.5;
-    //三角形
-    _path.moveTo(baseX - 0.86 * baseX, 0.5 * baseY);
-    _path.lineTo(baseX, 1.5 * baseY);
-    _path.lineTo(baseX + 0.86 * baseX, 0.5 * baseY);
-    canvas.drawPath(_path, _paint);
+    Paint _paint = Paint()
+      ..color = color
+      ..strokeCap = StrokeCap.square
+      ..isAntiAlias = true
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+    if (isDown) {
+      canvas.drawPath(Path()
+          ..moveTo(size.width / 2, size.height)
+          ..lineTo(0, 0)
+          ..lineTo(size.width, 0)
+          ..close()
+          , _paint);
+    } else {
+      canvas.drawPath(
+          Path()
+            ..moveTo(size.width / 2, 0)
+            ..lineTo(0, size.height)
+            ..lineTo(size.width, size.height)
+            ..close(),
+          _paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+//扫码矩形边角
+class ScanWeaponPainter extends CustomPainter {
+  int type;
+
+  ScanWeaponPainter(this.type);
+
+  Paint _paint = Paint()
+    ..color = AppColor.textWhite60
+    ..strokeCap = StrokeCap.square
+    ..isAntiAlias = true
+    ..strokeWidth = 4
+    ..style = PaintingStyle.stroke;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    switch (type) {
+      case 1:
+        canvas.drawPath(
+            Path()
+              ..moveTo(0, size.height)
+              ..lineTo(0, 0)
+              ..lineTo(size.height, 0),
+            _paint);
+        break;
+      case 2:
+        canvas.drawPath(
+            Path()
+              ..moveTo(0,0)
+              ..lineTo(size.height, 0)
+              ..lineTo(size.height, size.height),
+            _paint);
+        break;
+      case 3:
+        canvas.drawPath(
+            Path()
+              ..moveTo(0, 0)
+              ..lineTo(0, size.height)
+              ..lineTo(size.height, size.height),
+            _paint);
+        break;
+      case 4:
+        canvas.drawPath(
+            Path()
+              ..moveTo(size.height, 0)
+              ..lineTo(size.height, size.height)
+              ..lineTo(0, size.height),
+            _paint);
+        break;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }

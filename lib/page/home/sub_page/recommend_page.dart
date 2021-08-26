@@ -403,7 +403,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                     ),
                                     const Text(
                                       "这里空空如也，去关注看看吧",
-                                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                      style: AppStyle.text1Regular14,
                                     ),
                                   ],
                                 ),
@@ -571,7 +571,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   bool isFutureDelayed = false;
 
   //判断是不是显示活动的dialog
-  //todo 新用户登录展示活动的入口---活动入口好吃
+  //todo 新用户登录展示活动的入口---活动入口
   //todo 用户今天第一次登录展示活动的入口
   _isMachineModelInGame() {
     if (!this.isFutureDelayed) {

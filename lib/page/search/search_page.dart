@@ -806,6 +806,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
         Container(
           height: 48,
           width: ScreenUtil.instance.width,
+          color: AppColor.mainBlack,
           child: Custom.TabBar(
             controller: controller,
             tabs: tabList,

@@ -172,7 +172,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   softWrap: false,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 15),
+                  style: AppStyle.text1Regular15,
                 ),
                 SizedBox(
                   height: 3,
@@ -182,7 +182,7 @@ class _VideoCourseResultShareState extends State<_VideoCourseResultSharePage> {
                   softWrap: false,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: AppColor.white.withOpacity(0.35), fontSize: 12),
+                  style: AppStyle.text2Regular12,
                 ),
               ],
             ),

@@ -89,12 +89,16 @@ class _LeftScrollListViewState extends State<LeftScrollListView> {
         ),
       ],
       onOpen: () {
-        context.read<SelectPositionNotifier>().set(-1);
-        setState(() {});
+        try {
+          context.read<SelectPositionNotifier>().set(-1);
+          setState(() {});
+        } catch (e) {}
       },
       onClose: () {
-        context.read<SelectPositionNotifier>().set(-1);
-        setState(() {});
+        try {
+          context.read<SelectPositionNotifier>().set(-1);
+          setState(() {});
+        } catch (e) {}
       },
       onTap: widget.onTap,
     );

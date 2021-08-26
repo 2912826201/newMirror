@@ -269,6 +269,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   }
 
   List<double> getValueList() {
+    if (pageSize >= valueList.length) {
+      pageSize = valueList.length;
+    }
     List<double> valueArray = <double>[];
     for (int i = 0; i < pageSize; i++) {
       valueArray.insert(0, valueList[i]);
@@ -277,6 +280,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   }
 
   List<String> getXValueList() {
+    if (pageSize >= xValue.length) {
+      pageSize = xValue.length;
+    }
     List<String> valueArray = <String>[];
     for (int i = 0; i < pageSize; i++) {
       valueArray.insert(0, xValue[i]);
@@ -317,6 +323,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   //获取y轴的最大值
   double getYMaxValue() {
     double maxValue = 0;
+    if (pageSize >= valueList.length) {
+      pageSize = valueList.length;
+    }
 
     for (int i = 0; i < pageSize; i++) {
       double n = valueList[i];

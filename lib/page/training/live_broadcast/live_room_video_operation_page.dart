@@ -8,6 +8,7 @@ import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
@@ -288,7 +289,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             ),
           ),
           SizedBox(width: 6),
-          Text("一起运动", style: TextStyle(fontSize: 10, color: AppColor.white.withOpacity(0.85))),
+          Text("一起运动", style: AppStyle.text1Regular10),
           SizedBox(width: 16),
         ],
       ),
@@ -324,7 +325,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.coachName, style: TextStyle(fontSize: 11, color: AppColor.white.withOpacity(0.85))),
+                Text(widget.coachName, style: AppStyle.text1Regular11),
                 onlineMenNumberText,
               ],
             ),
@@ -363,7 +364,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       child: Column(
         children: [
           timeText,
-          Text("训练时长", style: TextStyle(fontSize: 10, color: AppColor.white.withOpacity(0.35))),
+          Text("训练时长", style: AppStyle.text2Regular10),
         ],
       ),
     );
@@ -845,7 +846,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           color: AppColor.bgWhite.withOpacity(0.06),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Text("说点什么吧...", style: TextStyle(color: AppColor.white.withOpacity(0.35), fontSize: 14)),
+        child: Text("说点什么吧...", style: AppStyle.text2Regular14),
       ),
       onTap: () {
         if (ClickUtil.isFastClick()) {
