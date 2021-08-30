@@ -47,40 +47,21 @@ class _ActivityState extends State<ActivityPage> {
 
   // 获取定位权限
   locationPermissions() async {
-    // 获取权限状态
+    // 获取定位权限
     permissions = await Permission.locationWhenInUse.status;
-    switch (permissions) {
-      // 用户拒绝访问请求的功能
-      case PermissionStatus.denied:
-        return 0;
-      // 用户授予了对所请求功能的访问权限
-      case PermissionStatus.granted:
-        //flutter定位只能获取到经纬度信息
-        print("flutter定位只能获取到经纬度信息");
+    // 已经获取了定位权限
+    if (permissions.isGranted) {
+      print("flutter定位只能获取到经纬度信息");
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
+      reverseGeocoding();
+    } else {
+      // 请求定位权限
+      permissions = await Permission.locationWhenInUse.request();
+      if (permissions.isGranted) {
         currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
-        print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
         reverseGeocoding();
-        return 1;
-
-      ///操作系统拒绝访问请求的功能。 用户无法更改
-      ///此应用程序的状态，可能是由于活动限制（例如父母身份）
-      ///控制就位。
-      /// *仅在iOS上受支持。*
-      case PermissionStatus.restricted:
-        return 2;
-
-      ///部分许可 ios14
-      case PermissionStatus.limited:
-        return 3;
-
-      ///用户拒绝访问请求的功能，并选择从不
-      ///再次显示对此权限的请求。 用户仍然可以更改
-      ///设置中的权限状态。
-      /// *仅在Android上受支持。
-      case PermissionStatus.permanentlyDenied:
-        return 4;
-      default:
-        throw UnimplementedError();
+      }
     }
   }
 
@@ -91,6 +72,7 @@ class _ActivityState extends State<ActivityPage> {
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       location_address = locationInformationEntity.regeocode.cityDetails.city;
+      setState(() {});
       print(location_address);
     } else {
       // 请求失败
@@ -242,17 +224,15 @@ class _ActivityState extends State<ActivityPage> {
                   }))
         ],
       ),
-      floatingActionButton:  new Builder(builder: (BuildContext context) {
+      floatingActionButton: new Builder(builder: (BuildContext context) {
         return new FloatingActionButton(
           child: const Icon(Icons.add),
-          tooltip: "Hello",
           foregroundColor: AppColor.white,
           backgroundColor: AppColor.mainBlack,
           heroTag: null,
           elevation: 7.0,
           highlightElevation: 14.0,
-          onPressed: () {
-          },
+          onPressed: () {},
           mini: false,
           shape: new CircleBorder(),
           isExtended: false,
@@ -274,13 +254,11 @@ class _ActivityListItem extends State<ActivityListItem> {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.hardEdge,
-      color:AppColor.layoutBgGrey,
+      color: AppColor.layoutBgGrey,
       child: Container(
         width: ScreenUtil.instance.width,
         height: 90,
-        child: Row(
-
-        ),
+        child: Row(),
       ),
     );
   }
