@@ -19,7 +19,6 @@ class RenderExposureDetector extends RenderProxyBox {
   /// See [RenderObject.alwaysNeedsCompositing].
   @override
   bool get alwaysNeedsCompositing => (_onExposure != null);
-
   /// See [VisibilityDetector.onVisibilityChanged].
   ExposureCallback get onExposure => _onExposure;
 
@@ -44,6 +43,7 @@ class RenderExposureDetector extends RenderProxyBox {
       paintOffset: offset,
       onExposureChanged: _onExposure,
     );
+
     final layer = visibilityDetectorLayer;
     context.pushLayer(layer, super.paint, offset);
   }

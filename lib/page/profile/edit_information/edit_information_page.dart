@@ -376,7 +376,7 @@ class _EditInformationState extends State<EditInformation> {
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                    child: AppIcon.getAppIcon(AppIcon.edit_pen, 23, color: AppColor.white),
+                    child: Image.asset("assets/png/edit_pen.png",width: 23,height: 23,),
                   ),
                 ))
           ],

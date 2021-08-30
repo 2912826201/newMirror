@@ -87,33 +87,32 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
     }, cancelToken: cancelToken, dio: dio).then((value) {
       if (value != null && value.filePath != null) {
         print('-----------------下载完成4${value.filePath}');
+        canOnClick = true;
         Future.delayed(Duration.zero, () async {
           _installApk(value.filePath);
         });
       }
-    }).catchError((e) {});
+    }).catchError((e) {
+      canOnClick = true;
+      print('versionDownLoad(ERROR)================$e');
+    });
   }
 
   _installApk(String path) async {
       print('===========================path$path');
       if (path != null) {
-        print('------------------下载完成5');
         Map<Permission, PermissionStatus> statuses = await [
           Permission.storage,
         ].request();
         if (statuses.isNotEmpty) {
-          print('--------------------下载完成6');
           File(path).stat().then((value) => print('========文件信息---------------$value'));
           if (strong) {
-            print('--------------------下载完成7');
             setState(() {
               progressText = "去安装";
             });
           } else {
-            print('--------------------下载完成8');
             Navigator.pop(context);
           }
-          print('--------------------下载完成9');
           OpenFile.open(path).then((value) {
             print('=======================${value.message}');
           });
@@ -128,16 +127,17 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       child: Container(
         width: ScreenUtil.instance.screenWidthDp * 0.69,
         height: 353,
+        color: AppColor.layoutBgGrey,
         child: Column(
           children: [
             Container(
-              height: ScreenUtil.instance.height * 0.15,
-              color: AppColor.bgVip1,
+              height: 123,
+              color: AppColor.imageBgGrey,
             ),
             Spacer(),
             Text(
               "发现新版本",
-              style: AppStyle.textMedium16,
+              style: AppStyle.whiteMedium16,
             ),
             Spacer(),
             Container(
@@ -147,16 +147,20 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
               child: SingleChildScrollView(
                   child: Text(
                 content,
-                style: AppStyle.textMedium15,
+                style: AppStyle.text1Regular15,
               )),
             ),
             Spacer(),
             InkWell(
               onTap: () async {
+                if(!canOnClick){
+                  return;
+                }
                 if (progressText == "立即更新") {
                   if (Platform.isIOS) {
-                    LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
+                    LaunchReview.launch(writeReview: false, iOSAppId: AppConfig.iosAppId);
                   } else {
+                    canOnClick  = false;
                     _updateProgress();
                   }
                 } else if (progressText == "去安装") {
@@ -177,13 +181,13 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                     Container(
                       width: 180,
                       height: 32,
-                      color: AppColor.bgWhite,
+                      color: AppColor.white.withOpacity(0.1),
                     ),
                     Container(
                       width: progressWidth * 180,
                       height: 32,
                       decoration:
-                          BoxDecoration(color: AppColor.black, borderRadius: BorderRadius.all(Radius.circular(16))),
+                          BoxDecoration(color: AppColor.mainYellow, borderRadius: BorderRadius.all(Radius.circular(16))),
                     ),
                     Container(
                       width: 180,
@@ -191,7 +195,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                       child: Center(
                         child: Text(
                           progressText,
-                          style: AppStyle.whiteMedium15,
+                          style: AppStyle.textRegular15,
                         ),
                       ),
                     ),
@@ -210,7 +214,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
                     },
                     child: Text(
                       "下次再说",
-                      style: AppStyle.textHintRegular14,
+                      style: AppStyle.text2Regular14,
                     ),
                   )
                 : Container(),

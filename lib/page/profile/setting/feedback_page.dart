@@ -21,7 +21,7 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/loading.dart';
-import 'package:mirror/widget/triangle_path.dart';
+import 'package:mirror/widget/Clip_util.dart';
 
 ///意见反馈
 class FeedBackPage extends StatefulWidget {

@@ -552,7 +552,13 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   children: [
                     RaisedButton(
                       onPressed: () {
-                        _getNewVersion(context);
+                        // _getNewVersion(context);
+                        showVersionDialog(
+                            barrierDismissible: false,
+                            content: "这是描述\n该版本修复了。。。。\n解决了。。。\n解决了。。。\n解决了。。。\n解决了。。。\n解决了。。。",
+                            strong: false,
+                            context: context,
+                            url: url);
                       },
                       child: Text("获取最新版本"),
                     ),

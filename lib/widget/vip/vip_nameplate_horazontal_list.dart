@@ -7,7 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/triangle_path.dart';
+import 'package:mirror/widget/Clip_util.dart';
 import 'package:provider/provider.dart';
 
 import '../overscroll_behavior.dart';

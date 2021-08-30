@@ -49,7 +49,6 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
         titleString: "账号与安全",
       ),
       body: Container(
-        width: width,
         height: height,
         child: Column(
           children: [

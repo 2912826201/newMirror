@@ -268,7 +268,7 @@ Future _initApp() async {
   getNewVersion().then((value) {
     if (value != null && AppConfig.version != value.version) {
       Application.versionModel = value;
-      Application.haveOrNotNewVersion = true;
+      Application.haveNewVersion = true;
     }
   });
   // todo 获取背景图配置表

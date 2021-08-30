@@ -24,15 +24,18 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/dialog_image.dart';
 import 'package:mirror/widget/live_label_widget.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
+import 'package:open_file/open_file.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -156,16 +159,41 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   }
 
   void _versionDialog() {
-    if (Application.versionModel != null && Application.haveOrNotNewVersion) {
+    if (Application.versionModel != null && Application.haveNewVersion) {
       if (Application.versionModel.isForceUpdate != 1) {
-        Application.haveOrNotNewVersion = false;
+        Application.haveNewVersion = false;
       }
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        showVersionDialog(
-            context: context,
-            strong: Application.versionModel.isForceUpdate == 1,
-            url: Application.versionModel.url,
-            content: Application.versionModel.description);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        if (CheckPhoneSystemUtil.init().isAndroid()) {
+          String oldPath = await FileUtil().getDownloadedPath(Application.versionModel.url);
+          if(oldPath!=null){
+            showAppDialog(
+              context,
+              title: "检测到新版本安装包，是否安装？",
+              cancel: AppDialogButton("不安装", () {
+                return true;
+              }),
+              confirm: AppDialogButton("安装", () {
+                OpenFile.open(oldPath).then((value) {
+                  print('=======================${value.message}');
+                });
+                return true;
+              }),
+            );
+          }else{
+            showVersionDialog(
+                context: context,
+                strong: Application.versionModel.isForceUpdate == 1,
+                url: Application.versionModel.url,
+                content: Application.versionModel.description);
+          }
+        }else{
+          showVersionDialog(
+              context: context,
+              strong: Application.versionModel.isForceUpdate == 1,
+              url: Application.versionModel.url,
+              content: Application.versionModel.description);
+        }
       });
     }
   }
@@ -613,7 +641,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       if (AppRouter.isHaveNewUserPromotionPage()) {
         isShowNewUserDialog = false;
       }
-      if (isShowNewUserDialog && Application.haveOrNotNewVersion) {
+      if (isShowNewUserDialog && Application.haveNewVersion) {
         RuntimeProperties.isShowNewUserDialog = false;
         this.isShowNewUserDialog = true;
         showImageDialog(context, onClickListener: () {
