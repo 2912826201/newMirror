@@ -7,7 +7,9 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,13 +17,12 @@ import 'package:permission_handler/permission_handler.dart';
 /// activity_page
 /// Created by yangjiayi on 2021/8/25.
 
-class ActivityPage extends StatefulWidget  {
-
+class ActivityPage extends StatefulWidget {
   @override
   _ActivityState createState() => _ActivityState();
 }
 
-class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMixin {
+class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   @override
   bool get wantKeepAlive => true; //必须重写
   // 权限
@@ -43,9 +44,23 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   ];
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     locationPermissions();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  ///监听用户回到app
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      backToBack();
+    }
   }
 
   // 获取定位权限
@@ -82,6 +97,17 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     }
   }
 
+  // 前台回到后台
+  backToBack() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
+      //flutter定位只能获取到经纬度信息
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      // 调用周边
+      locationPermissions();
+    }
+  }
+
   // 请求活动接口数据
   requestActivity() async {}
 
@@ -102,25 +128,20 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 头部View
   Widget headView() {
     return Container(
-      width: ScreenUtil.instance.width - 32,
+      width: 70,
       height: 44,
-      margin: EdgeInsets.only(left: 16),
+      margin: EdgeInsets.only(left: 8),
+      alignment: Alignment.center,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            "推荐",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white),
-          ),
-          SizedBox(
-            width: 8,
-          ),
           Icon(
             Icons.location_on_rounded,
             color: AppColor.white,
             size: 16,
           ),
           SizedBox(
-            width: 4,
+            width: 3,
           ),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -133,29 +154,91 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               }
             },
             child: Container(
-              padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2, right: 4),
-              decoration: BoxDecoration(border: Border.all(color: AppColor.dividerWhite8),borderRadius: new BorderRadius.all(new Radius.circular(16.0)),),
               child: Text(
                 location_address ?? "北京",
-                style: AppStyle.whiteRegular14,
-              ),
-            ),
-          ),
-          const Spacer(),
-          MenuButton(
-            itemBackgroundColor: AppColor.mainBlack,
-            menuButtonBackgroundColor: AppColor.mainBlack,
-            child: normalChildButton(),
-            items: keys,
-            itemBuilder: (String value) => Container(
-              height: 30,
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(left: 8),
-              child: Text(
-                value,
                 style: AppStyle.whiteRegular12,
               ),
             ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          AppIcon.getAppIcon(
+            AppIcon.arrow_right_18,
+            12,
+            color: AppColor.textWhite60,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 菜单打开的按钮
+  Widget normalChildButton() {
+    return SizedBox(
+        width: 64,
+        height: 22,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColor.mainBlack,
+            border: Border.all(color: AppColor.transparent),
+          ),
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 8,
+              ),
+              Text(selectedKey ?? "筛选", style: AppStyle.whiteRegular12, overflow: TextOverflow.ellipsis),
+              const Spacer(),
+              RotatedBox(
+                quarterTurns: 1,
+                child: AppIcon.getAppIcon(
+                  AppIcon.arrow_right_18,
+                  16,
+                  color: AppColor.textWhite60,
+                ),
+              ),
+              SizedBox(
+                width: 2,
+              )
+            ],
+          ),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        titleString: "活动",
+        leading: headView(),
+        actions: [
+          MenuButton(
+            menuButtonBackgroundColor: AppColor.mainBlack,
+            itemBackgroundColor: AppColor.mainBlack,
+            child: normalChildButton(),
+            topDivider: false,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColor.dividerWhite8),
+              borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
+            ),
+            divider: Container(),
+            items: keys,
+            itemBuilder: (String value) => Container(
+                color: AppColor.layoutBgGrey,
+                height: 22,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      value,
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.white),
+                    ),
+                  ],
+                )),
             toggledChild: Container(
               child: normalChildButton(),
             ),
@@ -168,66 +251,21 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
             //   print(isToggle);
             // },
           ),
-          SizedBox(
-            width: 16,
-          )
         ],
       ),
-    );
-  }
-
-  // 菜单打开的按钮
-  Widget normalChildButton() {
-    return SizedBox(
-        width: 78,
-        height: 30,
-        child: Container(
-          margin: const EdgeInsets.only(left: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(selectedKey ?? "筛选",
-                  style: selectedKey != null
-                      ? AppStyle.whiteRegular12
-                      : TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
-                  overflow: TextOverflow.ellipsis),
-              RotatedBox(
-                quarterTurns: 1,
-                child: AppIcon.getAppIcon(
-                  AppIcon.arrow_right_18,
-                  18,
-                  color: AppColor.textWhite60,
-                ),
-              ),
-            ],
-          ),
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        hasLeading: false,
-        titleString: "活动",
-      ),
-      body: Column(
-        children: [
-          headView(),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: 10,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return ActivityListItem();
-                  }))
-        ],
-      ),
+      body: ListView.builder(
+          itemCount: 10,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return ActivityListItem(
+              index: index,
+            );
+          }),
       floatingActionButton: new Builder(builder: (BuildContext context) {
         return new FloatingActionButton(
           child: const Icon(Icons.add),
-          foregroundColor: AppColor.white,
-          backgroundColor: AppColor.mainBlack,
+          foregroundColor: AppColor.mainBlack,
+          backgroundColor: AppColor.white,
           heroTag: null,
           elevation: 7.0,
           highlightElevation: 14.0,
@@ -237,27 +275,142 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           isExtended: false,
         );
       }),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       backgroundColor: AppColor.mainBlack,
     );
   }
 }
 
 class ActivityListItem extends StatefulWidget {
+  int index;
+
+  ActivityListItem({this.index});
+
   @override
   _ActivityListItem createState() => _ActivityListItem();
 }
 
 class _ActivityListItem extends State<ActivityListItem> {
+  String serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
+  String activityTitle = "";
+  String activityTitle1 = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    interceptText();
+  }
+
+  // 截取文本
+  interceptText() {
+    // 剩余宽度
+    double remainingWidth = ScreenUtil.instance.width * 0.49 - 56;
+    // 文本总宽度
+    double totalTextWidth = 0.0;
+    for (int i = 0; i < serverReturnsTitle.length; i++) {
+      // 文本宽度
+      double textWidth = getTextSize(serverReturnsTitle[i], AppStyle.whiteMedium17, 1).width;
+      totalTextWidth += textWidth;
+      if (totalTextWidth > remainingWidth) {
+        activityTitle1 += serverReturnsTitle[i];
+      } else {
+        activityTitle += serverReturnsTitle[i];
+      }
+    }
+    setState(() {});
+  }
+
+  // 标题横向布局
+  titleHorizontalLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 50,
+          child: CustomYellowButton(
+            "准备中",
+            0,
+            () {},
+            width: 50,
+            height: 18,
+          ),
+        ),
+        SizedBox(
+          width: 6,
+        ),
+        Container(
+          width: ScreenUtil.instance.width * 0.49 - 56,
+          child: Text(
+            activityTitle,
+            style: AppStyle.whiteMedium17,
+            maxLines: 1,
+          ),
+        )
+      ],
+    );
+  }
+
+// 标题纵向布局
+  titleVerticalLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        titleHorizontalLayout(),
+        Text(
+          activityTitle1,
+          style: AppStyle.whiteMedium17,
+          maxLines: 1,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.hardEdge,
       color: AppColor.layoutBgGrey,
+      margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
       child: Container(
-        width: ScreenUtil.instance.width,
-        height: 90,
-        child: Row(),
+        width: ScreenUtil.instance.width - 32,
+        height: 140,
+        child: Row(
+          children: [
+            // 右边布局
+            Container(
+              margin: EdgeInsets.only(left: 12, top: 13.5, bottom: 13.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 活动标题布局
+                  Container(
+                      width: ScreenUtil.instance.width * 0.49,
+                      child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout()),
+                  // 地址布局
+                  Container(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Text(
+                      "天府三街福年广场",
+                      style: AppStyle.text1Regular12,
+                    ),
+                  ),
+                  // 时间布局
+                  Container(
+                    padding: EdgeInsets.only(top: 2),
+                    child: Text(
+                      "18:30 8月18日 周六",
+                      style: AppStyle.text1Regular12,
+                    ),
+                  ),
+                  // 底部布局
+
+                ],
+              ),
+            ),
+            // 头像布局
+
+          ],
+        ),
       ),
     );
   }
