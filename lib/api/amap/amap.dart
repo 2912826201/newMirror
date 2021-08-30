@@ -71,6 +71,7 @@ Future<PeripheralInformationEntity> reverseGeographyHttp(double longitude, doubl
       .catchError((e) {
     print(e);
   });
+  print("逆地理编码：：：${resp.data}");
   PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
   return baseBean;
 }

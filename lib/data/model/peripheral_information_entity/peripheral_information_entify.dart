@@ -270,10 +270,39 @@ class PeripheralInformationPoisPhoto {
 class PeripheralInformationRegeocode {
   // addressComponent;
   String formatted_address;
-  PeripheralInformationRegeocode({this.formatted_address});
+  CityDetails cityDetails;
+  PeripheralInformationRegeocode({this.formatted_address,this.cityDetails});
   PeripheralInformationRegeocode.fromJson(Map<String, dynamic> json) {
     if (json['formatted_address'] != null) {
       formatted_address = json['formatted_address'];
+    }
+    if(json['addressComponent'] != null) {
+      cityDetails = CityDetails.fromJson(json['addressComponent']);
+    }
+  }
+}
+class CityDetails {
+  // 省
+  String province;
+  // 市
+  String city;
+  // 区
+  String district;
+  // 街道
+  String township;
+  CityDetails({this.city,this.province,this.district,this.township});
+  CityDetails.fromJson(Map<String, dynamic> json) {
+    if (json['province'] != null) {
+      province = json['province'];
+    }
+    if (json['city'] != null) {
+      city = json['city'].replaceAll("市","");
+    }
+    if (json['district'] != null) {
+      district = json['district'];
+    }
+    if (json['township'] != null) {
+      township = json['township'];
     }
   }
 }
