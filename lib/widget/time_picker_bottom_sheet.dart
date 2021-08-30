@@ -272,14 +272,14 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
           fontSize: widget.pickerTheme.itemTextStyle.fontSize ?? sizeByFormat(widget.dateFormat));
       pickers.add(pickerColumn);
     });
-    pickers.insert(2, Container(width: 0.5, height: double.infinity, margin: EdgeInsets.only(bottom: 9), child:Column
+   /* pickers.insert(2, Container(width: 0.5, height: double.infinity, margin: EdgeInsets.only(bottom: 9), child:Column
       (
       children: [
         Expanded(child:Container(width: 0.5,color: AppColor.mainBlack,),flex: 3,),
         Spacer(flex: 1,),
         Expanded(child:Container(width: 0.5,color: AppColor.mainBlack,),flex: 1,),
       ],
-    ),));
+    ),));*/
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: pickers);
   }
 

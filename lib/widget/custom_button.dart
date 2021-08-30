@@ -411,6 +411,122 @@ class _CustomYellowButtonState extends State<CustomYellowButton> {
     );
   }
 }
+//标准的黄色按钮
+class CustomColorButton extends StatefulWidget {
+  //正常状态
+  static const int buttonStateNormal = 0;
+
+  //禁用状态
+  static const int buttonStateDisabled = 1;
+
+  //忙碌状态
+  static const int buttonStateLoading = 2;
+
+  //不可用状态
+  static const int buttonStateInvalid = 3;
+
+  CustomColorButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = true,this.width,this
+      .height,this.backColor = AppColor.mainYellow,this.textcolor = AppColor.mainBlack})
+      : super(key: key);
+
+  final String text;
+  final int buttonState;
+  final Function() onTap;
+  final bool isDarkBackground; //原本用来区分背景来改变按钮颜色，新需求目前用不到了
+  final double width;
+  final double height;
+  Color backColor;
+  Color textcolor;
+  @override
+  _CustomColorButtonState createState() => _CustomColorButtonState();
+}
+
+class _CustomColorButtonState extends State<CustomColorButton> {
+  bool isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        alignment: Alignment.center,
+        height: widget.height != null ? widget.height : 28,
+        width:widget.width != null ? widget.width : widget.buttonState == CustomYellowButton.buttonStateLoading ? 82 : 60,
+        decoration: BoxDecoration(
+            color: widget.buttonState == CustomYellowButton.buttonStateNormal
+                ? isPressed
+                ? widget.backColor.withOpacity(0.6)
+                : widget.backColor
+                : widget.buttonState == CustomYellowButton.buttonStateDisabled
+                ? widget.backColor.withOpacity(0.4)
+                : widget.buttonState == CustomYellowButton.buttonStateLoading
+                ? widget.backColor
+                : widget.backColor.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(14)),
+        child: Row(
+          children: [
+            Spacer(),
+            widget.buttonState == CustomYellowButton.buttonStateLoading
+                ? Container(
+                height: 17,
+                width: 17,
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(AppColor.mainBlack),
+                    backgroundColor: AppColor.transparent,
+                    strokeWidth: 1.5))
+                : Container(),
+            widget.buttonState == CustomYellowButton.buttonStateLoading
+                ? SizedBox(
+              width: 4.5,
+            )
+                : Container(),
+            Text(
+              widget.text,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: widget.buttonState == CustomYellowButton.buttonStateNormal
+                      ? isPressed
+                      ? widget.textcolor.withOpacity(0.6)
+                      : widget.textcolor
+                      : widget.buttonState == CustomYellowButton.buttonStateDisabled
+                      ? widget.textcolor
+                      : widget.buttonState == CustomYellowButton.buttonStateLoading
+                      ? widget.textcolor
+                      : widget.textcolor.withOpacity(0.4)),
+            ),
+            Spacer()
+          ],
+        ),
+      ),
+      onTapDown: (details) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
+          setState(() {
+            isPressed = true;
+          });
+        }
+      },
+      onTapUp: (details) {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
+          setState(() {
+            isPressed = false;
+          });
+        }
+      },
+      onTapCancel: () {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
+          setState(() {
+            isPressed = false;
+          });
+        }
+      },
+      onTap: () {
+        if (widget.buttonState == CustomYellowButton.buttonStateNormal) {
+          widget.onTap();
+        }
+      },
+    );
+  }
+}
 
 enum FollowButtonType { FANS, FOLLOW, SERCH, COACH }
 

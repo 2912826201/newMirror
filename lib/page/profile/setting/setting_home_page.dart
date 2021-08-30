@@ -20,9 +20,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 ///设置主页
 class SettingHomePage extends StatefulWidget {
-  PanelController pcController;
 
-  SettingHomePage({this.pcController});
+  SettingHomePage();
 
   @override
   State<StatefulWidget> createState() {
