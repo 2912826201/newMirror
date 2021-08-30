@@ -57,9 +57,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   //   主控制器
   // ScrollController _scrollController = new ScrollController();
 
-  // 图标颜色
-  Color iconColor = AppColor.bgWhite;
-
   // 头部滑动距离
   double headSlideHeight;
 
@@ -235,7 +232,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     //     }
     //   });
     // } else {
-      color = AppColor.mainBlack;
+    color = AppColor.mainBlack;
     // }
     return color;
   }
@@ -285,65 +282,65 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       ),
                                 // 头像
                                 Positioned(
-                                    left: 14,
-                                    bottom: model.description != null
-                                        ? (getTextSize(model.description, AppStyle.textRegular14, 10,
-                                                    ScreenUtil.instance.width - 32)
-                                                .height +
-                                            25 +
-                                            13)
-                                        : 13,
-                                    child: Hero(
-                                        tag: model.id.toString(),
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                HeroDialogRoute<void>(builder: (BuildContext context) {
-                                                  return InteractiveviewerGallery(
-                                                      sources: topicDtoModelList,
-                                                      initIndex: 0,
-                                                      itemBuilder: itemBuilder);
-                                                }),
-                                              );
-                                            },
-                                            child: Container(
-                                              width: 69,
-                                              height: 69,
-                                              padding: const EdgeInsets.all(2),
-                                              decoration: const BoxDecoration(
-                                                  // 圆角
-                                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                                  color: AppColor.white
-                                              ),
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      // 圆角
-                                                      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                                      color: AppColor.white
+                                  left: 14,
+                                  bottom: model.description != null
+                                      ? (getTextSize(model.description, AppStyle.textRegular14, 10,
+                                                  ScreenUtil.instance.width - 32)
+                                              .height +
+                                          25 +
+                                          13)
+                                      : 13,
+                                  child: Hero(
+                                    tag: model.id.toString(),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          HeroDialogRoute<void>(builder: (BuildContext context) {
+                                            return InteractiveviewerGallery(
+                                                sources: topicDtoModelList, initIndex: 0, itemBuilder: itemBuilder);
+                                          }),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 69,
+                                        height: 69,
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: const BoxDecoration(
+                                            // 圆角
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            color: AppColor.white),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              // 圆角
+                                              borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                                              color: AppColor.white),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: model.avatarUrl != null
+                                              ? CachedNetworkImage(
+                                                  // 指定缓存宽高
+                                                  memCacheWidth: 150,
+                                                  memCacheHeight: 150,
+                                                  imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
+                                                      ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
+                                                      : "",
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) => Container(
+                                                    color: AppColor.imageBgGrey,
                                                   ),
-                                                  clipBehavior: Clip.antiAlias,
-                                                  child: model.avatarUrl != null ?
-                                                  CachedNetworkImage(
-                                                    // 指定缓存宽高
-                                                    memCacheWidth: 150,
-                                                    memCacheHeight: 150,
-                                                    imageUrl:
-                                                        model.avatarUrl != null && model.avatarUrl.coverUrl != null
-                                                            ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
-                                                            : "",
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (context, url) => Container(
-                                                      color: AppColor.bgWhite,
-                                                    ),
-                                                    errorWidget: (context, url, e) {
-                                                      return Container(
-                                                        color: AppColor.bgWhite,
-                                                      );
-                                                    },
-                                                  ) : Image.asset(
-                                                    "assets/png/topic_cover.png",
-                                                  ),),
-                                            )))),
+                                                  errorWidget: (context, url, e) {
+                                                    return Container(
+                                                      color: AppColor.imageBgGrey,
+                                                    );
+                                                  },
+                                                )
+                                              : Image.asset(
+                                                  "assets/png/topic_cover.png",
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 // 话题内容
                                 Positioned(
                                     bottom: model.description != null
@@ -375,7 +372,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               ),
                                               Text(
                                                 "${StringUtil.getNumber(model.feedCount)}条动态",
-                                                style: AppStyle.textPrimary3Regular12,
+                                                style: AppStyle.text1Regular12,
                                               )
                                             ],
                                           ),
@@ -433,102 +430,106 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
                         return Key(index);
                       },
-                      body: model.dataState==2?Column(children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(
-                              left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
-                          // color: AppColor.white,
-                          child: Custom.TabBar(
-                            //
-                            // labelColor: Colors.black,
-                            controller: _tabController,
-                            // labelStyle: const TextStyle(fontSize: 16),
-                            // unselectedLabelColor: AppColor.textHint,
+                      body: model.dataState == 2
+                          ? Column(children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(
+                                    left: ScreenUtil.instance.width * 0.32, right: ScreenUtil.instance.width * 0.32),
+                                color: AppColor.mainBlack,
+                                child: Custom.TabBar(
+                                  //
+                                  // labelColor: Colors.black,
+                                  controller: _tabController,
+                                  // labelStyle: const TextStyle(fontSize: 16),
+                                  // unselectedLabelColor: AppColor.textHint,
 
-                            indicatorSize: Custom.TabBarIndicatorSize.label,
-                            labelStyle: const TextStyle(
-                              fontSize: 16,
-                            ),
-                            labelColor: AppColor.bgWhite,
-                            unselectedLabelColor: AppColor.textHint,
-                            unselectedLabelStyle: const TextStyle(fontSize: 16),
-                            onDoubleTap: (index) {
-                              if (_tabController.index == index) {
-                                // print(_key.currentState.innerController);
-                                if (PrimaryScrollController.of(context).offset != 0 &&
-                                    PrimaryScrollController.of(context).offset > (headSlideHeight - 0.5)) {
-                                  occlusionLayerStreamController.sink.add(true);
-                                  // 回到顶部
-                                  subpageRefresh();
-                                };
-                              } else {
-                                _tabController.animateTo(index);
-                              }
-                            },
-                            indicator: const RoundUnderlineTabIndicator(
-                              borderSide: BorderSide(
-                                width: 2,
-                                color: AppColor.mainYellow,
-                              ),
-                              insets: EdgeInsets.only(bottom: 0),
-                              wantWidth: 20,
-                            ),
-                            tabs: <Widget>[
-                              const Tab(text: '推荐'),
-                              const Tab(text: '最新'),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                            child: TabBarView(
-                          controller: _tabController,
-                          physics: ClampingScrollPhysics(),
-                          children: <Widget>[
-                            // 推荐话题
-                            TopicList(
-                              topicId: model.id,
-                              type: 5,
-                              tabKey: Key('Tab${model.id}0'),
-                            ),
-                            // 最新话题
-                            TopicList(
-                              topicId: model.id,
-                              type: 4,
-                              tabKey: Key('Tab${model.id}1'),
-                            ),
-                          ],
-                        ))
-                      ]):Container(
-                          padding: EdgeInsets.only(top: 12),
-                          color: AppColor.mainBlack,
-                          child: Column(
-                            children: [
-                              Center(
-                                child: Container(
-                                  width: 224,
-                                  height: 224,
-                                  child: Image.asset(DefaultImage.error),
+                                  indicatorSize: Custom.TabBarIndicatorSize.label,
+                                  labelStyle: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  labelColor: AppColor.white,
+                                  unselectedLabelColor: AppColor.textWhite60,
+                                  unselectedLabelStyle: const TextStyle(fontSize: 16),
+                                  onDoubleTap: (index) {
+                                    if (_tabController.index == index) {
+                                      // print(_key.currentState.innerController);
+                                      if (PrimaryScrollController.of(context).offset != 0 &&
+                                          PrimaryScrollController.of(context).offset > (headSlideHeight - 0.5)) {
+                                        occlusionLayerStreamController.sink.add(true);
+                                        // 回到顶部
+                                        subpageRefresh();
+                                      }
+                                      ;
+                                    } else {
+                                      _tabController.animateTo(index);
+                                    }
+                                  },
+                                  indicator: const RoundUnderlineTabIndicator(
+                                    borderSide: BorderSide(
+                                      width: 2,
+                                      color: AppColor.mainYellow,
+                                    ),
+                                    insets: EdgeInsets.only(bottom: 0),
+                                    wantWidth: 20,
+                                  ),
+                                  tabs: <Widget>[
+                                    const Tab(text: '推荐'),
+                                    const Tab(text: '最新'),
+                                  ],
                                 ),
                               ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              Center(
-                                child: Text(
-                                  "该账号封禁中·",
-                                  style: AppStyle.whiteRegular14,
-                                ),
-                              )
-                            ],
-                          ))),
+                              Expanded(
+                                  child: TabBarView(
+                                controller: _tabController,
+                                physics: ClampingScrollPhysics(),
+                                children: <Widget>[
+                                  // 推荐话题
+                                  TopicList(
+                                    topicId: model.id,
+                                    type: 5,
+                                    tabKey: Key('Tab${model.id}0'),
+                                  ),
+                                  // 最新话题
+                                  TopicList(
+                                    topicId: model.id,
+                                    type: 4,
+                                    tabKey: Key('Tab${model.id}1'),
+                                  ),
+                                ],
+                              ))
+                            ])
+                          : Container(
+                              padding: EdgeInsets.only(top: 12),
+                              color: AppColor.mainBlack,
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      width: 224,
+                                      height: 224,
+                                      child: Image.asset(DefaultImage.error),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      "该账号封禁中·",
+                                      style: AppStyle.text1Regular14,
+                                    ),
+                                  )
+                                ],
+                              ))),
                   Positioned(top: 0, child: appBar()),
-                  model.dataState==2
-                      ?Positioned(
-                    bottom: ScreenUtil.instance.bottomBarHeight + 28,
-                    left: (ScreenUtil.instance.width - 127) / 2,
-                    right: (ScreenUtil.instance.width - 127) / 2,
-                    child: _gotoRelease(),
-                  ):Container(),
+                  model.dataState == 2
+                      ? Positioned(
+                          bottom: ScreenUtil.instance.bottomBarHeight + 28,
+                          left: (ScreenUtil.instance.width - 127) / 2,
+                          right: (ScreenUtil.instance.width - 127) / 2,
+                          child: _gotoRelease(),
+                        )
+                      : Container(),
                   Positioned(
                       top: 0,
                       child: StreamBuilder<bool>(
@@ -584,11 +585,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     TopicDtoModel topicDtoModel = topicDtoModelList[index];
 
     DemoSourceEntity sourceEntity = DemoSourceEntity(
-      topicDtoModel.id.toString(),
-      " image",
-      topicDtoModel.avatarUrl?.coverUrl ,
-      isTopicNoCover:  topicDtoModel.avatarUrl == null
-    );
+        topicDtoModel.id.toString(), " image", topicDtoModel.avatarUrl?.coverUrl,
+        isTopicNoCover: topicDtoModel.avatarUrl == null);
     print("____sourceEntity:${sourceEntity.toString()}");
     return DemoImageItem(sourceEntity, isFocus, index, setFocus);
   }
@@ -610,10 +608,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_return,
                     iconColor:
-                    // snapshot.data.opacity != 0.0
-                    //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
-                    //     :
-                    AppColor.white,
+                        // snapshot.data.opacity != 0.0
+                        //     ? AppColor.white.withOpacity(snapshot.data.opacity)
+                        //     :
+                        AppColor.white,
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -626,7 +624,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
-                        color: AppColor.bgWhite.withOpacity(snapshot.data.opacity)),
+                        color: AppColor.white.withOpacity(snapshot.data.opacity)),
                   ),
                   Spacer(),
                   snapshot.data.canOnclick
@@ -639,10 +637,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                   CustomAppBarIconButton(
                     svgName: AppIcon.nav_share,
                     iconColor:
-                    // snapshot.data.opacity != 0.0
-                    //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
-                    //     :
-                    AppColor.white,
+                        // snapshot.data.opacity != 0.0
+                        //     ? AppColor.white.withOpacity(snapshot.data.opacity)
+                        //     :
+                        AppColor.white,
                     onTap: () {
                       openShareBottomSheet(
                           context: context,
@@ -676,7 +674,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         width: 127,
         height: 43,
         decoration: const BoxDecoration(
-          color: AppColor.textPrimary2,
+          color: AppColor.imageBgGrey,
           borderRadius: BorderRadius.all(Radius.circular(24)),
         ),
         padding: const EdgeInsets.only(left: 12, right: 12),
@@ -720,9 +718,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           }
           beforOnClickOver = false;
           if (model.isFollow == 0) {
-            if(model.dataState!=2){
+            if (model.dataState != 2) {
               ToastShow.show(msg: "该账号已封禁", context: context);
-              return;}
+              return;
+            }
             requestFollowTopic();
           } else {
             requestCancelFollowTopic();
@@ -731,11 +730,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         child: Container(
             height: 28,
             width: 72,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
-                color: AppColor.mainYellow
-                // border: Border.all(width: 1, color: AppColor.bgBlack)
-            ),
+            decoration:
+                BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(15)), color: AppColor.mainYellow
+                    // border: Border.all(width: 1, color: AppColor.bgBlack)
+                    ),
             child: Stack(
               children: [
                 StreamBuilder<double>(
@@ -750,10 +748,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add, size: 16, color: AppColor.black),
-                            Text("关注",
-                                style:
-                                    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1))
+                            Icon(Icons.add, size: 16, color: AppColor.mainBlack),
+                            Text(
+                              "关注",
+                              style: AppStyle.textMedium12,
+                            )
                           ],
                         )),
                         onEnd: () {
@@ -773,9 +772,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         opacity: snapshot.data,
                         duration: Duration(milliseconds: 400),
                         child: Center(
-                          child: Text("已关注",
-                              style:
-                                  TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1)),
+                          child: Text(
+                            "已关注",
+                            style: AppStyle.textMedium12,
+                          ),
                         ),
                         onEnd: () {
                           if (model.isFollow == 0) {
@@ -792,9 +792,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add, size: 16, color: AppColor.black),
+                      Icon(Icons.add, size: 16, color: AppColor.mainBlack),
                       Text("关注",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1))
+                          style: AppStyle.textMedium12,)
                     ],
                   )
                 : Center(

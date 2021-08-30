@@ -90,7 +90,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     }
   }
 
-  TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+  TextStyle style = AppStyle.textRegular12;
 
   @override
   Widget build(BuildContext context) {

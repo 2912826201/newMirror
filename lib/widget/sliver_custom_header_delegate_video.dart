@@ -136,21 +136,22 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
         children: <Widget>[
           //背景图
           Container(
-              child: Hero(
-            child: CachedNetworkImage(
-              height: double.infinity,
-              width: double.infinity,
-              imageUrl: this.coverImgUrl == null ? "" : FileUtil.getImageSlim(this.coverImgUrl),
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: AppColor.bgWhite,
+            child: Hero(
+              child: CachedNetworkImage(
+                height: double.infinity,
+                width: double.infinity,
+                imageUrl: this.coverImgUrl == null ? "" : FileUtil.getImageSlim(this.coverImgUrl),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.imageBgGrey,
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: AppColor.imageBgGrey,
+                ),
               ),
-              errorWidget: (context, url, error) => Container(
-                color: AppColor.bgWhite,
-              ),
+              tag: heroTag,
             ),
-            tag: heroTag,
-          )),
+          ),
           //文字背景色
           Positioned(
             left: 0,

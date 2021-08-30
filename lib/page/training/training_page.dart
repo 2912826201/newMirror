@@ -195,7 +195,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
         child: Container(
           height: _screenWidth * 140 / 375,
           width: ScreenUtil.instance.width,
-          color: AppColor.bgBlack,
+          color: AppColor.mainBlack,
           child: Image.asset(
             "assets/png/new_user_event_banner.png",
             fit: BoxFit.cover,
@@ -404,10 +404,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                             fit: BoxFit.cover,
                             fadeInDuration: Duration(milliseconds: 0),
                             placeholder: (context, url) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.imageBgGrey,
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColor.bgWhite,
+                              color: AppColor.imageBgGrey,
                             ),
                           ),
                           Container(
@@ -528,7 +528,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ),
           Text(
             "还没有课程，去添加课程吧",
-            style: AppStyle.textSecondaryRegular14,
+            style: AppStyle.text1Regular14,
           ),
           SizedBox(
             height: 16,

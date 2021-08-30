@@ -384,31 +384,32 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     }
     return Container(
-        color: AppColor.mainBlack,
-        margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
-        child: SmartRefresher(
-          enablePullUp: false,
-          enablePullDown: false,
-          footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
-          header: SmartRefresherHeadFooter.init().getHeader(),
-          controller: _refreshController,
-          onLoading: _onLoading,
-          onRefresh: _onRefresh,
-          child: ListView.builder(
-              physics: ClampingScrollPhysics(),
-              controller: _scrollController,
-              itemCount: _listUserDataList.length,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              itemBuilder: (context, index) {
-                int noBottomIndex = 0;
-                if (index < _listUserDataList.length - 1 &&
-                    _listUserDataList[index + 1].indexLetter != _listUserDataList[index].indexLetter) {
-                  noBottomIndex = index + 1;
-                }
-                return itemForRow(context, index, noBottomIndex, _listUserDataList[index],
-                    index == 0 ? null : _listUserDataList[index - 1]);
-              }),
-        ));
+      color: AppColor.mainBlack,
+      margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
+      child: SmartRefresher(
+        enablePullUp: false,
+        enablePullDown: false,
+        footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
+        header: SmartRefresherHeadFooter.init().getHeader(),
+        controller: _refreshController,
+        onLoading: _onLoading,
+        onRefresh: _onRefresh,
+        child: ListView.builder(
+            physics: ClampingScrollPhysics(),
+            controller: _scrollController,
+            itemCount: _listUserDataList.length,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            itemBuilder: (context, index) {
+              int noBottomIndex = 0;
+              if (index < _listUserDataList.length - 1 &&
+                  _listUserDataList[index + 1].indexLetter != _listUserDataList[index].indexLetter) {
+                noBottomIndex = index + 1;
+              }
+              return itemForRow(context, index, noBottomIndex, _listUserDataList[index],
+                  index == 0 ? null : _listUserDataList[index - 1]);
+            }),
+      ),
+    );
   }
 
   //每一个item

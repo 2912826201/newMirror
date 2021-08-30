@@ -7,6 +7,7 @@ import 'package:mirror/api/api.dart';
 
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -322,7 +323,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                       ),
                                       const Text(
                                         "这里空空如也，去推荐看看吧",
-                                        style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                        style: AppStyle.text1Regular14,
                                       ),
                                     ],
                                   ),

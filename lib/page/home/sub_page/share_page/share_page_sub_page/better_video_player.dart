@@ -60,6 +60,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
   BetterPlayerConfiguration configuration;
   Function(BetterPlayerEvent) eventListener;
   int firstTapTimep;
+
   @override
   void initState() {
     super.initState();
@@ -71,18 +72,20 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     EventBus.getDefault().registerSingleParameter(_deletedFeedVideoPlay, EVENTBUS_VIDEO_VIEW,
         registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
   }
+
   _deletedVideooController(int id) {
-    if(widget.feedModel.id == id) {
+    if (widget.feedModel.id == id) {
       deletedControllerContrastValue();
     }
-
   }
+
   _deletedFeedVideoPlay(int id) {
     if (mounted) {
       print("重新开始加子");
       controller.play();
     }
   }
+
   init() async {
     dataSource = BetterPlayerDataSource.network(widget.feedModel.videos.first.url);
     // if (mounted) {
@@ -92,11 +95,11 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     eventListener = (BetterPlayerEvent event) {
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.initialized:
-         if(AppPrefs.getVideoSoundSwitch()) {
-           controller?.setVolume(1.0);
-         } else {
-           controller?.setVolume(0);
-         }
+          if (AppPrefs.getVideoSoundSwitch()) {
+            controller?.setVolume(1.0);
+          } else {
+            controller?.setVolume(0);
+          }
           break;
         default:
           // ToastShow.show(msg: "初始化失败", context: context);
@@ -134,7 +137,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
         ));
 
     controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
-    if( AppPrefs.getVideoSoundSwitch()) {
+    if (AppPrefs.getVideoSoundSwitch()) {
       controller?.setVolume(1.0);
     } else {
       controller?.setVolume(0);
@@ -176,12 +179,15 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     streamHeight.close();
     super.dispose();
   }
+
   // 移除控制器标识
-  deletedControllerContrastValue(){
-   Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
-   Application.feedVideoControllerLists.removeWhere((v) => v == controller);
-   Application.feedVideoTimeList.removeWhere((element) => element ==  DateUtil.generateFormatDate(widget.feedModel.createTime, false));
+  deletedControllerContrastValue() {
+    Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
+    Application.feedVideoControllerLists.removeWhere((v) => v == controller);
+    Application.feedVideoTimeList
+        .removeWhere((element) => element == DateUtil.generateFormatDate(widget.feedModel.createTime, false));
   }
+
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -219,12 +225,12 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             if (controller == null) {
               await init();
             }
-            if(controller != null && !Application.feedVideoControllerList.contains(controller.hashCode)) {
+            if (controller != null && !Application.feedVideoControllerList.contains(controller.hashCode)) {
               Application.feedVideoControllerList.add(controller.hashCode);
               Application.feedVideoControllerLists.add(controller);
               Application.feedVideoTimeList.add(DateUtil.generateFormatDate(widget.feedModel.createTime, false));
             }
-            if(Application.feedVideoControllerList.first == controller.hashCode) {
+            if (Application.feedVideoControllerList.first == controller.hashCode) {
               controller.play();
               print("视频时长：：：${widget.durationString}");
               print("查看时间更直观：：：：${DateUtil.generateFormatDate(widget.feedModel.createTime, false)}");
@@ -242,7 +248,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             Application.feedVideoControllerList.forEach((element) {
               print(element);
             });
-            if(Application.feedVideoControllerLists.length == 1){
+            if (Application.feedVideoControllerLists.length == 1) {
               Application.feedVideoControllerLists.first.play();
             }
             print('当前控制器：：：${controller.hashCode}');
@@ -261,22 +267,23 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
                 width: containerSize.width,
                 child: Stack(children: [
                   Positioned(
-                      left: offsetX,
-                      top: offsetY,
-                      child: CachedNetworkImage(
-                        imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
-                        width: videoSize.width,
-                        height: videoSize.height,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) {
-                          return Container(
-                            color: AppColor.bgWhite,
-                          );
-                        },
-                        errorWidget: (context, url, error) => Container(
-                          color: AppColor.bgWhite,
-                        ),
-                      )),
+                    left: offsetX,
+                    top: offsetY,
+                    child: CachedNetworkImage(
+                      imageUrl: FileUtil.getVideoFirstPhoto(widget.feedModel.videos.first.url),
+                      width: videoSize.width,
+                      height: videoSize.height,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) {
+                        return Container(
+                          color: AppColor.imageBgGrey,
+                        );
+                      },
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColor.imageBgGrey,
+                      ),
+                    ),
+                  ),
                   Positioned(
                       bottom: 0,
                       child: Container(

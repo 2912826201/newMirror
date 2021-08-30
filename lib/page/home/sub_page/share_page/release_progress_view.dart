@@ -176,12 +176,12 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
       return const Text(
         "正在发布",
-        style: AppStyle.textSecondaryRegular14,
+        style: AppStyle.text1Regular14,
       );
     } else if (plannedSpeed >= 1) {
       return const Text(
         "完成",
-        style: AppStyle.textSecondaryRegular14,
+        style: AppStyle.text1Regular14,
       );
     } else if (plannedSpeed == -1) {
       return Container(
@@ -192,11 +192,11 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
           children: [
             const Text(
               "发布失败",
-              style: AppStyle.textMedium14,
+              style: AppStyle.whiteMedium14,
             ),
             const Text(
               "我们会在网络信号改善时重试",
-              style: AppStyle.textSecondaryRegular11,
+              style: AppStyle.text1Regular11,
             )
           ],
         ),

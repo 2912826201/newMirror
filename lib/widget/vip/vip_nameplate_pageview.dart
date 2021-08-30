@@ -102,7 +102,7 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
             imageUrl: imageList[index],
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.imageBgGrey,
             ),
           ),
         ),

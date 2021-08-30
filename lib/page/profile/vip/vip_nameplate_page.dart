@@ -110,7 +110,7 @@ class _VipNamePlateState extends State<VipNamePlatePage> {
                 alignment: Alignment.centerLeft,
                 child: CustomAppBarIconButton(
                   svgName: AppIcon.nav_return,
-                  iconColor: AppColor.black,
+                  iconColor: AppColor.mainBlack,
                   onTap: () {
                     Navigator.pop(context);
                   },

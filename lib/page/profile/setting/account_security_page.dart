@@ -67,28 +67,16 @@ class _AccouontSecurityState extends State<AccountSecurityPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "其他方式登录",
-                    style: AppStyle.textSecondaryMedium14,
+                    style: AppStyle.text1Regular14,
                   ),
                 )),
-
             SizedBox(
               height: 16,
             ),
-            _itemRow("QQ", qQNumber??"去绑定"),
-            _itemRow("微信绑定", weChatNumber?? "去绑定"),
-            _itemRow("微博绑定", weiboNumber ??"去绑定"),
-            isIos
-                ? Column(
-                    children: [
-                      _itemRow("Apple ID", appleId??"去绑定"),
-                      Container(
-                        width: width,
-                        height: 0.5,
-                        color: AppColor.bgWhite,
-                      ),
-                    ],
-                  )
-                : Container()
+            _itemRow("QQ", qQNumber ?? "去绑定"),
+            _itemRow("微信绑定", weChatNumber ?? "去绑定"),
+            _itemRow("微博绑定", weiboNumber ?? "去绑定"),
+            isIos ? _itemRow("Apple ID", appleId ?? "去绑定") : Container(),
           ],
         ),
       ),

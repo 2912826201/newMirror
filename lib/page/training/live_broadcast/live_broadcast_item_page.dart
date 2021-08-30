@@ -468,10 +468,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
           ),
           Text(
             string + "暂无直播课程，去看看其他的吧~",
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColor.textSecondary,
-            ),
+            style: AppStyle.text1Regular14,
           ),
           SizedBox(
             height: 100,

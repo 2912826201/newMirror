@@ -234,9 +234,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
             ),
             const Text(
               "你的放大镜陨落星辰了",
-              style: TextStyle(fontSize: 14, color: AppColor.textWhite60),
+              style: AppStyle.text1Regular14,
             ),
-            const Text("换一个试一试", style: TextStyle(color: AppColor.textWhite60, fontSize: 14)),
+            const Text("换一个试一试", style: AppStyle.text1Regular14),
           ],
         ),
       );

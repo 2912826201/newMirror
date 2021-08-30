@@ -27,7 +27,7 @@ Widget getNoCompleteTitle(BuildContext context, String text) {
       children: <Widget>[
         CustomAppBarIconButton(
           svgName: AppIcon.nav_return,
-          iconColor: AppColor.black,
+          iconColor: AppColor.mainBlack,
           onTap: () => Navigator.pop(context),
         ),
         Text(
@@ -40,7 +40,7 @@ Widget getNoCompleteTitle(BuildContext context, String text) {
         ),
         CustomAppBarIconButton(
           svgName: AppIcon.nav_share,
-          iconColor: AppColor.black,
+          iconColor: AppColor.mainBlack,
           onTap: () {
             ToastShow.show(msg: "当前数据没有加载完毕！", context: context);
           },
@@ -678,7 +678,7 @@ Widget getCommentNoData() {
         ),
         Text(
           "偷偷逆袭中，还没有人来冒泡呢",
-          style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+          style: AppStyle.text1Regular14,
         )
       ],
     ),

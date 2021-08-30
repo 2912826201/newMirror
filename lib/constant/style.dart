@@ -95,12 +95,7 @@ class AppStyle {
   static const textSecondaryRegular11 =
       TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
 
-  // Medium textSecondary 辅助字体灰色
-  static const textSecondaryMedium14 =
-      TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textSecondary);
-
   // textHint 提示字体灰色
-  static const textHintRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
@@ -108,8 +103,6 @@ class AppStyle {
   // Regular primary3灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
-  static const textPrimary3Regular12 =
-      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
   // Medium primary2 黑色
   static const textPrimary2Medium23 =

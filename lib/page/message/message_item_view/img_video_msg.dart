@@ -352,7 +352,7 @@ class ImgVideoMsg extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: AppColor.bgWhite,
+      color: AppColor.imageBgGrey,
     );
   }
 

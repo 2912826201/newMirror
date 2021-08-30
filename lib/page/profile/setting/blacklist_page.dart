@@ -93,7 +93,7 @@ class _BlackListState extends State<BlackListPage> {
                   ),
                   Text(
                     "暂无内容",
-                    style: AppStyle.textHintRegular12,
+                    style: AppStyle.text1Regular14,
                   ),
                   Spacer(),
                 ],

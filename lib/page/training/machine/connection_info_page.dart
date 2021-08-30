@@ -193,7 +193,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                     height: 44,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(3)),
-                      color: AppColor.textPrimary2,
+                      color: AppColor.imageBgGrey,
                     ),
                     child: Text(
                       "断开连接",

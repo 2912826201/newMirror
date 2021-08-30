@@ -430,7 +430,7 @@ class _SliverListDemoPageState extends State<SliverListDemoPage> with SingleTick
                     indicator: const RoundUnderlineTabIndicator(
                       borderSide: BorderSide(
                         width: 2,
-                        color: AppColor.bgBlack,
+                        color: AppColor.mainBlack,
                       ),
                       insets: EdgeInsets.only(bottom: 0),
                       wantWidth: 20,

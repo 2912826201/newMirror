@@ -138,7 +138,7 @@ class UserAvatarImageUtil{
           height: math.max(height,36),
           width:  math.max(width,36),
           decoration: BoxDecoration(
-            color: AppColor.textPrimary2,
+            color: AppColor.imageBgGrey,
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
@@ -167,7 +167,7 @@ class UserAvatarImageUtil{
             alignment: Alignment.center,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColor.textPrimary2,
+                color: AppColor.imageBgGrey,
                 shape: BoxShape.circle,
               ),
               height: 15,
@@ -216,7 +216,7 @@ class UserAvatarImageUtil{
             alignment: Alignment.center,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColor.textPrimary2,
+                color: AppColor.imageBgGrey,
                 shape: BoxShape.circle,
               ),
               height: 15,

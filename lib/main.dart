@@ -55,7 +55,6 @@ import 'data/model/feed/feed_flow_data_notifier.dart';
 import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'generated/l10n.dart';
-import 'page/message/util/chat_message_profile_util.dart';
 import 'data/model/message/chat_voice_setting.dart';
 import 'data/model/message/group_user_model.dart';
 import 'data/model/message/no_prompt_uid_model.dart';
@@ -431,6 +430,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("Main_________________________________build");
+    // fps检测器配置
     kFpsInfoMaxSize = 3600;
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       overlayState = Application.navigatorKey.currentState.overlay;
@@ -474,6 +474,7 @@ class MyAppState extends State<MyApp> {
         print('supportedLocales: $supportedLocales');
       },
 
+      // fps检测器
       builder: (ctx, child) => CustomWidgetInspector(
         child: child,
       ),

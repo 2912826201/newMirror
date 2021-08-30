@@ -75,7 +75,7 @@ class LikeState extends State<Like> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.mainBlack,
+        backgroundColor: AppColor.mainBlack,
         appBar: CustomAppBar(
           titleString: "赞",
         ),
@@ -179,26 +179,27 @@ class LikeListViewItem extends StatelessWidget {
               height: 38,
               width: 38,
               child: ClipOval(
-                  child: CachedNetworkImage(
-                /// imageUrl的淡入动画的持续时间。
-                // fadeInDuration: Duration(milliseconds: 0),
-                imageUrl: FileUtil.getSmallImage(model.avatarUrl) ?? "",
-                fit: BoxFit.cover,
-                // 调整磁盘缓存中图像大小
-                // maxHeightDiskCache: 150,
-                // maxWidthDiskCache: 150,
-                // 指定缓存宽高
-                memCacheWidth: 150,
-                memCacheHeight: 150,
-                placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                child: CachedNetworkImage(
+                  /// imageUrl的淡入动画的持续时间。
+                  // fadeInDuration: Duration(milliseconds: 0),
+                  imageUrl: FileUtil.getSmallImage(model.avatarUrl) ?? "",
+                  fit: BoxFit.cover,
+                  // 调整磁盘缓存中图像大小
+                  // maxHeightDiskCache: 150,
+                  // maxWidthDiskCache: 150,
+                  // 指定缓存宽高
+                  memCacheWidth: 150,
+                  memCacheHeight: 150,
+                  placeholder: (context, url) => Container(
+                    color: AppColor.imageBgGrey,
+                  ),
+                  errorWidget: (context, url, e) {
+                    return Container(
+                      color: AppColor.imageBgGrey,
+                    );
+                  },
                 ),
-                errorWidget: (context, url, e) {
-                  return Container(
-                    color: AppColor.bgWhite,
-                  );
-                },
-              )),
+              ),
             ),
           ),
           Column(
@@ -208,12 +209,13 @@ class LikeListViewItem extends StatelessWidget {
               Container(
                 width: Application.slideColorizeAnimatedText
                     ? getTextSize(
-                            model.nickName,
-                            const TextStyle(
-                              fontSize: 15,
-                            ),
-                            1)
-                        .width + 32
+                                model.nickName,
+                                const TextStyle(
+                                  fontSize: 15,
+                                ),
+                                1)
+                            .width +
+                        32
                     : ScreenUtil.instance.width - 32.0 - 38.0 - 16.0 - 4.0,
                 height: 18,
                 child: Application.slideColorizeAnimatedText

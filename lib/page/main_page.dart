@@ -100,7 +100,7 @@ class MainPageState extends XCState {
                     //   return pages[index];
                     // }, childCount: 4),
                     // 提前预加载当前pageView的下一个视图
-                    allowImplicitScrolling: true,
+                    // allowImplicitScrolling: true,
                     physics: NeverScrollableScrollPhysics(), // 禁止滑动
                   ),
                 ),
