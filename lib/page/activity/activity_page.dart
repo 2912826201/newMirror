@@ -15,17 +15,20 @@ import 'package:permission_handler/permission_handler.dart';
 /// activity_page
 /// Created by yangjiayi on 2021/8/25.
 
-class ActivityPage extends StatefulWidget {
+class ActivityPage extends StatefulWidget  {
+
   @override
   _ActivityState createState() => _ActivityState();
 }
 
-class _ActivityState extends State<ActivityPage> {
+class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true; //必须重写
   // 权限
   PermissionStatus permissions;
   Location currentAddressInfo; //当前位置的信息
   // 定位地址
-  String location_address = "北京";
+  String location_address;
 
   // 菜单Key
   String selectedKey;
@@ -131,11 +134,9 @@ class _ActivityState extends State<ActivityPage> {
             },
             child: Container(
               padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2, right: 4),
-              decoration: BoxDecoration(border: Border.all(color: AppColor.white)
-                  // borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
-                  ),
+              decoration: BoxDecoration(border: Border.all(color: AppColor.dividerWhite8),borderRadius: new BorderRadius.all(new Radius.circular(16.0)),),
               child: Text(
-                location_address,
+                location_address ?? "北京",
                 style: AppStyle.whiteRegular14,
               ),
             ),
@@ -149,7 +150,6 @@ class _ActivityState extends State<ActivityPage> {
             itemBuilder: (String value) => Container(
               height: 30,
               alignment: Alignment.centerLeft,
-              // padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16),
               margin: const EdgeInsets.only(left: 8),
               child: Text(
                 value,
@@ -164,9 +164,9 @@ class _ActivityState extends State<ActivityPage> {
                 selectedKey = value;
               });
             },
-            onMenuButtonToggle: (bool isToggle) {
-              print(isToggle);
-            },
+            // onMenuButtonToggle: (bool isToggle) {
+            //   print(isToggle);
+            // },
           ),
           SizedBox(
             width: 16,
@@ -186,12 +186,11 @@ class _ActivityState extends State<ActivityPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Flexible(
-                  child: Text(selectedKey ?? "筛选",
-                      style: selectedKey != null
-                          ? AppStyle.whiteRegular12
-                          : TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
-                      overflow: TextOverflow.ellipsis)),
+              Text(selectedKey ?? "筛选",
+                  style: selectedKey != null
+                      ? AppStyle.whiteRegular12
+                      : TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textWhite60),
+                  overflow: TextOverflow.ellipsis),
               RotatedBox(
                 quarterTurns: 1,
                 child: AppIcon.getAppIcon(
