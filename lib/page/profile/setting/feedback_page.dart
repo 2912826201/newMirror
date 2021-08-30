@@ -37,8 +37,8 @@ class _feedBackPage extends State<FeedBackPage> {
   double width = ScreenUtil.instance.screenWidthDp;
   double height = ScreenUtil.instance.height;
   bool longClick = false;
-  Size numTextSize = getTextSize("322292818", AppStyle.textSecondaryRegular14, 1);
-  Size textSize = getTextSize("意见反馈QQ群: ", AppStyle.textSecondaryRegular14, 1);
+  Size numTextSize = getTextSize("322292818", AppStyle.text1Regular14, 1);
+  Size textSize = getTextSize("意见反馈QQ群: ", AppStyle.text1Regular14, 1);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

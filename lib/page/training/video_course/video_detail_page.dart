@@ -1161,11 +1161,11 @@ class VideoDetailPageState extends XCState {
     if (v.comments != null && v.comments.length != 0) {
       itemHeight += 8;
       itemHeight += 6;
-      itemHeight += getTextSize("共0条评论", AppStyle.textHintRegular12, 1).height;
-      itemHeight += getTextSize("第一条评论", AppStyle.textHintRegular13, 1).height;
+      itemHeight += getTextSize("共0条评论", AppStyle.text1Regular12, 1).height;
+      itemHeight += getTextSize("第一条评论", AppStyle.text1Regular13, 1).height;
       if (v.comments.length > 1) {
         itemHeight += 8;
-        itemHeight += getTextSize("第二条评论", AppStyle.textHintRegular13, 1).height;
+        itemHeight += getTextSize("第二条评论", AppStyle.text1Regular13, 1).height;
       }
     }
 

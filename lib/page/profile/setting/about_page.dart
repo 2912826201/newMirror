@@ -77,7 +77,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                     Text(
                       "${AppConfig.version}-${AppConfig.buildNumber}",
-                      style: AppStyle.textHintRegular12,
+                      style: AppStyle.text1Regular12,
                     ),
                     Spacer(),
                   ],

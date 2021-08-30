@@ -639,7 +639,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                               ),
                                               Text(
                                                 hintText,
-                                                style: AppStyle.textPrimary3Regular14,
+                                                style: AppStyle.text1Regular14,
                                               )
                                             ],
                                           ),
@@ -755,7 +755,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                       Center(
                                         child: Text(
                                           hintText,
-                                          style: AppStyle.textHintRegular14,
+                                          style: AppStyle.text1Regular14,
                                         ),
                                       ),
                                     ],

@@ -189,7 +189,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "互动通知",
-                          style: AppStyle.textSecondaryRegular14,
+                          style: AppStyle.text1Regular14,
                         ),
                       ),
                     ),

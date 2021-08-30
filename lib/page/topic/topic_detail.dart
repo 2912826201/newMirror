@@ -372,7 +372,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               ),
                                               Text(
                                                 "${StringUtil.getNumber(model.feedCount)}条动态",
-                                                style: AppStyle.textPrimary3Regular12,
+                                                style: AppStyle.text1Regular12,
                                               )
                                             ],
                                           ),

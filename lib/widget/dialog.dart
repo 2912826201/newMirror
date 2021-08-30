@@ -155,7 +155,7 @@ class _AppDialog extends StatelessWidget {
             : const EdgeInsets.fromLTRB(_outerPadding, _innerPaddingTitleInfo, _outerPadding, 0),
         child: Text(
           info,
-          style: AppStyle.textSecondaryRegular16,
+          style: AppStyle.text1Regular16,
         ),
       ));
     }

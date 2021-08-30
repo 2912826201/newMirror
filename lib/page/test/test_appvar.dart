@@ -234,7 +234,7 @@ class _StickyDemoState extends State<StickyDemo> with SingleTickerProviderStateM
                                 ),
                                 Text(
                                   "${StringUtil.getNumber(widget.model.feedCount)}条动态",
-                                  style: AppStyle.textPrimary3Regular12,
+                                  style: AppStyle.text1Regular12,
                                 )
                               ],
                             ),
