@@ -220,7 +220,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
               visible: isLiveRoomController() && liveRoomId != null,
               child: CustomAppBarIconButton(
                   svgName: AppIcon.nav_danmaku,
-                  iconColor: AppColor.black,
+                  iconColor: AppColor.white,
                   onTap: () {
                     openInputBottomSheet(
                       buildContext: this.context,
@@ -232,7 +232,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             ),
             CustomAppBarIconButton(
                 svgName: AppIcon.nav_settings,
-                iconColor: AppColor.black,
+                iconColor: AppColor.white,
                 onTap: () {
                   AppRouter.navigateToMachineSetting(context);
                 }),

@@ -171,7 +171,7 @@ class _LiveRoomVideoPageState extends XCState {
             child: FijkView(
               panelBuilder: fijkPanel2Builder(snapShot: true),
               player: player,
-              color: AppColor.bgBlack,
+              color: AppColor.mainBlack,
               fit: FijkFit.cover,
               fsFit: FijkFit.cover,
             ),

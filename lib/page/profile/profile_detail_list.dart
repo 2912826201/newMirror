@@ -250,7 +250,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               Center(
                 child: Text(
                   hintText,
-                  style: AppStyle.textPrimary3Regular14,
+                  style: AppStyle.text1Regular14,
                 ),
               )
             ],

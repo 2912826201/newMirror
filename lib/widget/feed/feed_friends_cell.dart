@@ -71,7 +71,7 @@ class FriendsCell extends StatelessWidget {
         child: groupTitle != null
             ? Text(
                 groupTitle,
-                style: const TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+                style: AppStyle.whiteRegular14,
               )
             : null,
       ),
@@ -154,10 +154,10 @@ class FriendsCell extends StatelessWidget {
                     maxHeightDiskCache: 150,
                     maxWidthDiskCache: 150,
                     placeholder: (context, url) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.imageBgGrey,
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.imageBgGrey,
                     ),
                   ),
                 )
@@ -175,10 +175,10 @@ class FriendsCell extends StatelessWidget {
                           imageUrl: FileUtil.getSmallImage(avatarList.first) ?? "",
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
-                            color: AppColor.bgWhite,
+                            color: AppColor.imageBgGrey,
                           ),
                           errorWidget: (context, url, error) => Container(
-                            color: AppColor.bgWhite,
+                            color: AppColor.imageBgGrey,
                           ),
                         ),
                       ))
@@ -201,10 +201,10 @@ class FriendsCell extends StatelessWidget {
                         imageUrl: FileUtil.getSmallImage(avatarList[1]) ?? "",
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.imageBgGrey,
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColor.bgWhite,
+                          color: AppColor.imageBgGrey,
                         ),
                       ),
                     ),

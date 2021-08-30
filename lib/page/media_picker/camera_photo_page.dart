@@ -55,7 +55,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        backgroundColor: AppColor.black,
+        backgroundColor: AppColor.mainBlack,
         brightness: Brightness.dark,
         hasLeading: widget.publishMode == 2 ? false : true,
       ),
@@ -93,7 +93,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                           bottom: 16,
                           child: AppIconButton(
                             isCircle: true,
-                            bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                            bgColor: AppColor.imageBgGrey.withOpacity(0.65),
                             buttonHeight: 32,
                             buttonWidth: 32,
                             iconSize: 24,
@@ -119,53 +119,54 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                       ],
                     )),
                 Expanded(
-                    child: Container(
-                  alignment: Alignment.center,
-                  color: AppColor.black,
-                  child: GestureDetector(
-                    onTap: () async {
-                      print("拍照！");
-                      String filePath = await takePhoto();
-                      print("保存照片：$filePath");
-                      if (filePath != null) {
-                        AppRouter.navigateToPreviewPhotoPage(context, filePath, (result) {
-                          if (result != null) {
-                            if (widget.publishMode == 1) {
-                              Navigator.pop(context, result);
-                              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
-                            } else if (widget.publishMode == 2) {
-                              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
-                              if (Application.ifPageController != null) {
-                                Application.ifPageController.index = Application.ifPageController.length - 1;
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: AppColor.mainBlack,
+                    child: GestureDetector(
+                      onTap: () async {
+                        print("拍照！");
+                        String filePath = await takePhoto();
+                        print("保存照片：$filePath");
+                        if (filePath != null) {
+                          AppRouter.navigateToPreviewPhotoPage(context, filePath, (result) {
+                            if (result != null) {
+                              if (widget.publishMode == 1) {
+                                Navigator.pop(context, result);
+                                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                              } else if (widget.publishMode == 2) {
+                                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                                if (Application.ifPageController != null) {
+                                  Application.ifPageController.index = Application.ifPageController.length - 1;
+                                }
+                                //FIXME 需要关了摄像头
+                              } else {
+                                Navigator.pop(context, result);
                               }
-                              //FIXME 需要关了摄像头
-                            } else {
-                              Navigator.pop(context, result);
                             }
-                          }
-                        }, fixedWidth: widget.fixedWidth, fixedHeight: widget.fixedHeight);
-                      }
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      width: 66,
-                      height: 66,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColor.white, width: 4),
-                      ),
+                          }, fixedWidth: widget.fixedWidth, fixedHeight: widget.fixedHeight);
+                        }
+                      },
+                      behavior: HitTestBehavior.opaque,
                       child: Container(
-                        width: 49,
-                        height: 49,
+                        width: 66,
+                        height: 66,
+                        alignment: Alignment.center,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColor.white,
+                          border: Border.all(color: AppColor.white, width: 4),
+                        ),
+                        child: Container(
+                          width: 49,
+                          height: 49,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColor.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ))
+                ),
               ],
             ),
     );

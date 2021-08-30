@@ -639,7 +639,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                               ),
                                               Text(
                                                 hintText,
-                                                style: AppStyle.textPrimary3Regular14,
+                                                style: AppStyle.text1Regular14,
                                               )
                                             ],
                                           ),
@@ -755,7 +755,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                       Center(
                                         child: Text(
                                           hintText,
-                                          style: AppStyle.textHintRegular14,
+                                          style: AppStyle.text1Regular14,
                                         ),
                                       ),
                                     ],
@@ -927,7 +927,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                               imageUrl: avatarUrl != null ? FileUtil.getSmallImage(avatarUrl) : " ",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
-                                color: AppColor.bgWhite,
+                                color: AppColor.imageBgGrey,
                               ),
                             ),
                           ),

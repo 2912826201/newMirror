@@ -317,11 +317,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
             imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
-              color: AppColor.bgWhite,
+              color: AppColor.imageBgGrey,
             ),
             errorWidget: (context, url, e) {
               return Container(
-                color: AppColor.bgWhite,
+                color: AppColor.imageBgGrey,
               );
             },
           ) ??

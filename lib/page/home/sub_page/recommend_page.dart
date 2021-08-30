@@ -481,28 +481,29 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                   decoration: new BoxDecoration(
                                       color: AppColor.white, borderRadius: BorderRadius.circular((25))),
                                   child: Center(
-                                      child: ClipOval(
-                                    child: CachedNetworkImage(
-                                      height: 47,
-                                      width: 47,
-                                      useOldImageOnUrlChange: true,
-                                      imageUrl: liveVideoModel[index].coachDto.avatarUri != null
-                                          ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
-                                          : "",
-                                      fit: BoxFit.cover,
-                                      // 调整磁盘缓存中图像大小
-                                      maxHeightDiskCache: 150,
-                                      maxWidthDiskCache: 150,
-                                      placeholder: (context, url) => Container(
-                                        color: AppColor.bgWhite,
+                                    child: ClipOval(
+                                      child: CachedNetworkImage(
+                                        height: 47,
+                                        width: 47,
+                                        useOldImageOnUrlChange: true,
+                                        imageUrl: liveVideoModel[index].coachDto.avatarUri != null
+                                            ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
+                                            : "",
+                                        fit: BoxFit.cover,
+                                        // 调整磁盘缓存中图像大小
+                                        maxHeightDiskCache: 150,
+                                        maxWidthDiskCache: 150,
+                                        placeholder: (context, url) => Container(
+                                          color: AppColor.imageBgGrey,
+                                        ),
+                                        errorWidget: (context, url, e) {
+                                          return Container(
+                                            color: AppColor.imageBgGrey,
+                                          );
+                                        },
                                       ),
-                                      errorWidget: (context, url, e) {
-                                        return Container(
-                                          color: AppColor.bgWhite,
-                                        );
-                                      },
                                     ),
-                                  )),
+                                  ),
                                 ),
                               ),
                             ),
@@ -513,27 +514,28 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                           height: 53,
                           width: 53,
                           child: Center(
-                              child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 47,
-                              width: 47,
-                              imageUrl: liveVideoModel[index].coachDto.avatarUri != null
-                                  ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
-                                  : "",
-                              fit: BoxFit.cover,
-                              // 调整磁盘缓存中图像大小
-                              maxHeightDiskCache: 150,
-                              maxWidthDiskCache: 150,
-                              placeholder: (context, url) => Container(
-                                color: AppColor.bgWhite,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                height: 47,
+                                width: 47,
+                                imageUrl: liveVideoModel[index].coachDto.avatarUri != null
+                                    ? FileUtil.getSmallImage(liveVideoModel[index].coachDto.avatarUri)
+                                    : "",
+                                fit: BoxFit.cover,
+                                // 调整磁盘缓存中图像大小
+                                maxHeightDiskCache: 150,
+                                maxWidthDiskCache: 150,
+                                placeholder: (context, url) => Container(
+                                  color: AppColor.imageBgGrey,
+                                ),
+                                errorWidget: (context, url, e) {
+                                  return Container(
+                                    color: AppColor.imageBgGrey,
+                                  );
+                                },
                               ),
-                              errorWidget: (context, url, e) {
-                                return Container(
-                                  color: AppColor.bgWhite,
-                                );
-                              },
                             ),
-                          )),
+                          ),
                         ),
                   Container(
                     margin: EdgeInsets.only(top: 8),

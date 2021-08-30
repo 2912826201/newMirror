@@ -155,7 +155,7 @@ class _AppDialog extends StatelessWidget {
             : const EdgeInsets.fromLTRB(_outerPadding, _innerPaddingTitleInfo, _outerPadding, 0),
         child: Text(
           info,
-          style: AppStyle.textSecondaryRegular16,
+          style: AppStyle.text1Regular16,
         ),
       ));
     }
@@ -268,7 +268,7 @@ class _AppDialog extends StatelessWidget {
       buttonList.forEach((element) {
         _viewList.add(Container(
           height: _dividerWidth,
-          color: AppColor.textHint,
+          color: AppColor.dividerWhite8,
         ));
 
         _viewList.add(GestureDetector(

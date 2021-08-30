@@ -533,7 +533,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                 ),
               ),
               Container(
-                color: AppColor.textHint,
+                color: AppColor.mainBlack,
                 child: Text(
                   "12345:67890",
                   style: TextStyle(fontSize: 32, fontFamily: "BebasNeue", fontWeight: FontWeight.w500),

@@ -401,7 +401,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                         left: 12,
                         child: AppIconButton(
                           isCircle: true,
-                          bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                          bgColor: AppColor.imageBgGrey.withOpacity(0.65),
                           onTap: _changeCurrentRatio,
                           iconSize: 24,
                           svgName: AppIcon.gallery_fullsize,
@@ -634,7 +634,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
       return Container(
         height: _itemSize,
         width: _itemSize,
-        color: AppColor.textPrimary2,
+        color: AppColor.imageBgGrey,
         child: FutureBuilder(
           future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
           builder: (context, snapshot) {
@@ -651,7 +651,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
       return Container(
         height: _itemSize,
         width: _itemSize,
-        color: AppColor.textPrimary2,
+        color: AppColor.imageBgGrey,
         child: Builder(builder: (context) => _buildGridItemCell(context, entity)),
       );
     }
@@ -764,7 +764,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                         (notifier.selectedType == AssetType.image ? widget.maxImageAmount : widget.maxVideoAmount) &&
                     !notifier.selectedMap.containsKey(entity.id))
             ? Container(
-                color: AppColor.textPrimary2.withOpacity(0.45),
+                color: AppColor.imageBgGrey.withOpacity(0.45),
               )
             : Container(),
       ],
@@ -1080,7 +1080,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     Container(
                         height: 93,
                         width: 93,
-                        color: AppColor.textPrimary2,
+                        color: AppColor.imageBgGrey,
                         //先拿第一个文件
                         child: FutureBuilder(
                           future: _albums[index].getAssetListRange(start: 0, end: 1),

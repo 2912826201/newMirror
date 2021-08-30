@@ -37,7 +37,7 @@ class _LiveRoomState extends State<LiveRoomPage> {
         children: [
           FijkView(
             player: player,
-            color: AppColor.bgBlack,
+            color: AppColor.mainBlack,
             fit: FijkFit.cover,
             fsFit: FijkFit.cover,
             cover: AssetImage("images/test.png"),

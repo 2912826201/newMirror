@@ -7,6 +7,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -407,7 +408,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         children: [
           Image.asset("assets/png/default_no_data.png", width: 224, height: 224, fit: BoxFit.cover),
           SizedBox(height: 16),
-          Text("您还没有下载过任何视频", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
+          Text("您还没有下载过任何视频", style: AppStyle.text1Regular14),
         ],
       ),
     );

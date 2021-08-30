@@ -70,7 +70,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        backgroundColor: AppColor.bgBlack,
+        backgroundColor: AppColor.mainBlack,
         brightness: Brightness.dark,
         leading: CustomAppBarIconButton(
             svgName: AppIcon.nav_close,

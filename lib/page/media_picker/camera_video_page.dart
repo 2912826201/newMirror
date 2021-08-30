@@ -67,7 +67,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        backgroundColor: AppColor.black,
+        backgroundColor: AppColor.mainBlack,
         brightness: Brightness.dark,
         hasLeading: widget.publishMode == 2 ? false : true,
       ),
@@ -106,7 +106,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                         bottom: 16,
                         child: AppIconButton(
                           isCircle: true,
-                          bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                          bgColor: AppColor.imageBgGrey.withOpacity(0.65),
                           buttonHeight: 32,
                           buttonWidth: 32,
                           iconSize: 24,
@@ -157,7 +157,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,
-                    color: AppColor.black,
+                    color: AppColor.mainBlack,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
