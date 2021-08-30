@@ -8,7 +8,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/triangle_path.dart';
+import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/vip/vip_nameplate_horazontal_list.dart';
 import 'package:mirror/widget/vip/vip_nameplate_pageview.dart';
 import 'package:provider/provider.dart';

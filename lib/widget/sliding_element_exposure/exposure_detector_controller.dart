@@ -18,6 +18,7 @@ class ExposureDetectorController {
   // list 元素曝光的比例
   double exposureFraction = 0.5;
 
+
   // 存储显示过的list元素key值
   LruList<Key> _filterKeyList = LruList(maxLength: 1000);
 

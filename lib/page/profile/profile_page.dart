@@ -28,6 +28,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/Clip_util.dart';
 import 'package:provider/provider.dart';
 
 class DefaultImage {
@@ -525,7 +526,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这是头像+
   Widget _imgAvatar() {
     return ClipOval(
-        child:Container(
+      child:Container(
       width: userAvatarHeight,
       height: userAvatarHeight,
       decoration: BoxDecoration(
@@ -553,7 +554,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           }, selector: (context, notifier) {
             return notifier.profile.avatarUri;
           }),
-        ));
+        ) ,);
   }
 
   ///这里是关注粉丝动态

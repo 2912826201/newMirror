@@ -24,6 +24,7 @@ class _AppDialog extends StatelessWidget {
       this.onClickListener,this.onExitListener})
       : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     return Container(

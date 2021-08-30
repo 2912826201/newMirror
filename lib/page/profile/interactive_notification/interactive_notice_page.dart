@@ -185,75 +185,69 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         body: ScrollConfiguration(
             behavior: OverScrollBehavior(),
             child: SmartRefresher(
-                    controller: controller,
-                    enablePullUp: true,
-                    enablePullDown: true,
-                    footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
-                    header: SmartRefresherHeadFooter.init().getHeader(),
-                    onRefresh: _onRefresh,
-                    onLoading: () {
-                      if (msgList.isNotEmpty) {
-                        setState(() {
-                          try{
-                            showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
-                          }catch(e){
-                            print(' onLoading:erorr::::::$e');
-                          }
-                        });
+                controller: controller,
+                enablePullUp: true,
+                enablePullDown: true,
+                footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: showNoMore),
+                header: SmartRefresherHeadFooter.init().getHeader(),
+                onRefresh: _onRefresh,
+                onLoading: () {
+                  if (msgList.isNotEmpty) {
+                    setState(() {
+                      try {
+                        showNoMore = IntegerUtil.showNoMore(globalKey, lastItemToTop: true);
+                      } catch (e) {
+                        print(' onLoading:erorr::::::$e');
                       }
-                      _onLoading();
-                    },
-                    child: msgList != null && msgList.isNotEmpty
-                        ? ListView.builder(
-                            controller: PrimaryScrollController.of(context),
-                            shrinkWrap: true,
-                            //解决无限高度问题
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: msgList.length,
-                            itemBuilder: (context, index) {
-                              return /*FrameSeparateWidget(
-                                index: index,
-                                placeHolder: Container(
-                                  height: 85,
-                                  width: width,
-                                  color: AppColor.white,
+                    });
+                  }
+                  _onLoading();
+                },
+                child: msgList != null && msgList.isNotEmpty
+                    ? ListView.builder(
+                        controller: PrimaryScrollController.of(context),
+                        shrinkWrap: true,
+                        //解决无限高度问题
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: msgList.length,
+                        itemBuilder: (context, index) {
+                          return InteractiveNoticeItem(
+                            type: widget.type,
+                            msgModel: msgList[index],
+                            index: index,
+                            globalKey: index == msgList.length - 1 ? globalKey : null,
+                          ) /*,
+                              )*/
+                              ;
+                        })
+                    : fristRequestIsOver
+                        ? Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: height * 0.22,
                                 ),
-                                child:*/InteractiveNoticeItem(
-                                  type: widget.type,
-                                  msgModel: msgList[index],
-                                  index: index,
-                                  globalKey: index == msgList.length - 1 ? globalKey : null,
-                                )/*,
-                              )*/;
-                            })
-                        : fristRequestIsOver
-                            ? Center(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: height * 0.22,
-                                    ),
-                                    Container(
-                                      width: 285,
-                                      height: 285,
-                                      child: Image.asset(defaultImage),
-                                    ),
-                                    SizedBox(
-                                      height: 16,
-                                    ),
-                                    Text(
-                                      hintText,
-                                      style: AppStyle.text1Regular14,
-                                    )
-                                  ],
+                                Container(
+                                  width: 285,
+                                  height: 285,
+                                  child: Image.asset(defaultImage),
                                 ),
-                              )
-                            : Container(
-                                height: height,
-                                width: width,
-                                color: AppColor.mainBlack,
-                              ))));
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  hintText,
+                                  style: AppStyle.textPrimary3Regular14,
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(
+                            height: height,
+                            width: width,
+                            color: AppColor.mainBlack,
+                          ))));
   }
 }
 
@@ -351,9 +345,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   List<TextSpan> _atText(BuildContext context) {
     var textSpanList = <TextSpan>[];
     if ((atUserList != null && atUserList.length > 0)) {
-      try{
+      try {
         textSpanList.addAll(StringUtil.setHighlightTextSpan(context, comment, atUsers: atUserList));
-      }catch(e){
+      } catch (e) {
         print('------------------------------$e');
       }
     } else {
@@ -362,7 +356,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         style: AppStyle.whiteRegular13,
       ));
     }
-    textSpanList.insert(0, TextSpan(text:commentState,style: AppStyle.whiteMedium14));
+    textSpanList.insert(0, TextSpan(text: commentState, style: AppStyle.whiteMedium14));
     return textSpanList;
   }
 
@@ -374,11 +368,11 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     contentWidth = ScreenUtil.instance.screenWidthDp - (avatarWidth + imageWidth + 32 + 27);
     Future.delayed(Duration.zero, () {
       if (widget.msgModel.refData != null) {
+        var refData = CommentDtoModel.fromJson(widget.msgModel.refData);
         if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
           getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
-        } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
-          getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
-              CommentDtoModel.fromJson(widget.msgModel.refData).type);
+        } else if (widget.msgModel.refType == 2 && refData != null) {
+          getCommentFristPage(refData.targetId, refData.type);
         }
       }
     });
@@ -400,137 +394,134 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
 
       ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth("$commentState$comment", AppStyle.textRegular14, contentWidth);
-      textHeight = testSize.height;
+      textHeight = calculateTextWidth("$commentState$comment", AppStyle.textRegular14, contentWidth).height;
     } else {
-      TextPainter testSize = calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth);
-      textHeight = testSize.height;
+      textHeight = calculateTextWidth("$comment", AppStyle.textRegular14, contentWidth).height;
     }
     print('-----------------------textHeight---$textHeight');
     return InkWell(
         onTap: () {
           _jumpToDetailPage(context);
         },
-        child:   Container(
-      key: widget.globalKey != null ? widget.globalKey : null,
-      width: ScreenUtil.instance.screenWidthDp,
-      height: 59.5 + textHeight + 16,
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () {
-              jumpToUserProfilePage(context, widget.msgModel.senderId,
-                  avatarUrl: widget.msgModel.senderAvatarUrl, userName: widget.msgModel.senderName);
-            },
-            child: Container(
-                alignment: Alignment.topLeft,
-                child: Stack(
-                  children: [
-                    ClipOval(
-                      child: CachedNetworkImage(
-                        height: avatarWidth,
-                        width: avatarWidth,
-                        memCacheWidth: 150,
-                        memCacheHeight: 150,
-                        imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: AppColor.imageBgGrey,
-                        ),
-                      ),
-                    ),
-                    widget.msgModel.isRead == 0
-                        ? Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              height: 10,
-                              width: 10,
-                              decoration: BoxDecoration(
-                                  color: AppColor.mainRed,
-                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),),
+        child: Container(
+          key: widget.globalKey != null ? widget.globalKey : null,
+          width: ScreenUtil.instance.screenWidthDp,
+          height: 59.5 + textHeight + 16,
+          padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () {
+                  jumpToUserProfilePage(context, widget.msgModel.senderId,
+                      avatarUrl: widget.msgModel.senderAvatarUrl, userName: widget.msgModel.senderName);
+                },
+                child: Container(
+                    alignment: Alignment.topLeft,
+                    child: Stack(
+                      children: [
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            height: avatarWidth,
+                            width: avatarWidth,
+                            memCacheWidth: 150,
+                            memCacheHeight: 150,
+                            imageUrl: senderAvatarUrl != null ? FileUtil.getSmallImage(senderAvatarUrl) : " ",
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: AppColor.imageBgGrey,
                             ),
-                          )
-                        : Container()
-                  ],
-                )),
-          ),
-          SizedBox(
-            width: 11,
-          ),
-           Container(
-              alignment: Alignment.centerLeft,
-              width: contentWidth,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "$senderName",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppStyle.whiteRegular15,
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  !commentIsDelete
-                      ? RichText(text: TextSpan(children: _atText(context)))
-                      : Text(
-                          "该评论已删除",
-                          style: AppStyle.whiteRegular13,
+                          ),
                         ),
-                  SizedBox(
-                    height: 7,
-                  ),
-                  Text(
-                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime)),
-                    style: AppStyle.text2Regular12,
-                  )
-                ],
+                        widget.msgModel.isRead == 0
+                            ? Positioned(
+                                top: 0,
+                                left: 0,
+                                child: Container(
+                                  height: 10,
+                                  width: 10,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.mainRed,
+                                    borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                                  ),
+                                ),
+                              )
+                            : Container()
+                      ],
+                    )),
               ),
-            ),
-
-          SizedBox(
-            width: 16,
-          ),
-          !feedIsDelete&&coverImage!=null
-              ?  Container(
-                    alignment: Alignment.topRight,
-                    child: ClipRect(
-                      child: CachedNetworkImage(
-                        height: imageWidth,
-                        width: imageWidth,
-                        imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : "",
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: AppColor.imageBgGrey,
+              SizedBox(
+                width: 11,
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                width: contentWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$senderName",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppStyle.whiteRegular15,
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    !commentIsDelete
+                        ? RichText(text: TextSpan(children: _atText(context)))
+                        : Text(
+                            "该评论已删除",
+                            style: AppStyle.whiteRegular13,
+                          ),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    Text(
+                      DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime)),
+                      style: AppStyle.text2Regular12,
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 16,
+              ),
+              !feedIsDelete && coverImage != null
+                  ? Container(
+                      alignment: Alignment.topRight,
+                      child: ClipRect(
+                        child: CachedNetworkImage(
+                          height: imageWidth,
+                          width: imageWidth,
+                          imageUrl: coverImage != null ? FileUtil.getSmallImage(coverImage) : "",
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColor.imageBgGrey,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-              : InkWell(
-                  onTap: () {
-                    Toast.show("该内容已删除", context);
-                  },
-
-                  child: Container(
-                    height: 38,
-                    width: 38,
-                    alignment: Alignment.topRight,
-                    color: AppColor.textWhite40,
-                    child: Center(
-                      child: Text(
-                        "已删除",
-                        style: AppStyle.whiteRegular11,
+                    )
+                  : InkWell(
+                      onTap: () {
+                        Toast.show("该内容已删除", context);
+                      },
+                      child: Container(
+                        height: 38,
+                        width: 38,
+                        alignment: Alignment.topRight,
+                        color: AppColor.textWhite40,
+                        child: Center(
+                          child: Text(
+                            "已删除",
+                            style: AppStyle.whiteRegular11,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                )
-        ],
-      ),
-    ) );
+                    )
+            ],
+          ),
+        ));
   }
 
   //跳转判断
@@ -575,11 +566,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else if (widget.msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
         AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
             isHaveStartTime: false, commentDtoModel: widget.msgModel.commentData, isInteractiveIn: true);
-      } else {
-        if (liveVideoModel != null && liveVideoModel.id != null) {
-          AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
-              commentDtoModel: widget.msgModel.commentData, isInteractive: true);
-        }
+      } else if (liveVideoModel != null && liveVideoModel.id != null) {
+        AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
+            commentDtoModel: widget.msgModel.commentData, isInteractive: true);
       }
       widget.msgModel.isRead = 1;
       setState(() {});

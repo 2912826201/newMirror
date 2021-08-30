@@ -12,7 +12,7 @@ Future<VersionModel> getNewVersion()async{
   if(responseModel.isSuccess){
     print('==============================版本接口请求成功');
     if(responseModel.data!=null){
-    model = VersionModel.fromJson(responseModel.data);
+      model = VersionModel.fromJson(responseModel.data);
     }
     return model;
   }else{

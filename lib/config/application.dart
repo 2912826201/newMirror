@@ -117,7 +117,7 @@ class Application {
   static VersionModel versionModel;
 
   //是否存在新版本
-  static bool haveOrNotNewVersion = false;
+  static bool haveNewVersion = false;
 
   //发布失败动态key
   static String postFailurekey = "postFailureFeed";
