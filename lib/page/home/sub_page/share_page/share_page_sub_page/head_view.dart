@@ -334,11 +334,11 @@ class HeadViewState extends State<HeadView> {
                                       memCacheWidth: 150,
                                       memCacheHeight: 150,
                                       placeholder: (context, url) => Container(
-                                        color: AppColor.bgWhite,
+                                        color: AppColor.imageBgGrey,
                                       ),
                                       errorWidget: (context, url, e) {
                                         return Container(
-                                          color: AppColor.bgWhite,
+                                          color: AppColor.imageBgGrey,
                                         );
                                       },
                                     )),
@@ -385,18 +385,18 @@ class HeadViewState extends State<HeadView> {
                                           memCacheWidth: 150,
                                           memCacheHeight: 150,
                                           placeholder: (context, url) => Container(
-                                            color: AppColor.bgWhite,
+                                            color: AppColor.imageBgGrey,
                                           ),
                                           errorWidget: (context, url, e) {
                                             return Container(
-                                              color: AppColor.bgWhite,
+                                              color: AppColor.imageBgGrey,
                                             );
                                           },
                                         )
                                       // NetworkImage(
                                       //         isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
                                       : Container(
-                                          color: AppColor.bgWhite,
+                                          color: AppColor.imageBgGrey,
                                         ),
                                 ),
                         ),
@@ -416,7 +416,7 @@ class HeadViewState extends State<HeadView> {
                                   : isMySelf
                                       ? context.watch<ProfileNotifier>().profile.nickName
                                       : widget.model.name ?? "空名字",
-                              style: TextStyle(fontSize: 15, color: AppColor.bgWhite),
+                              style: AppStyle.whiteMedium15,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),

@@ -75,11 +75,11 @@ class _TagCloudPageState extends State<TagCloudPage> {
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>
                     Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.imageBgGrey,
                     ),
                 errorWidget: (context, url, error) =>
                     Container(
-                      color: AppColor.bgWhite,
+                      color: AppColor.imageBgGrey,
                     ),
               ),
             ),

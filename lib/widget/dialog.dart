@@ -268,7 +268,7 @@ class _AppDialog extends StatelessWidget {
       buttonList.forEach((element) {
         _viewList.add(Container(
           height: _dividerWidth,
-          color: AppColor.textHint,
+          color: AppColor.dividerWhite8,
         ));
 
         _viewList.add(GestureDetector(

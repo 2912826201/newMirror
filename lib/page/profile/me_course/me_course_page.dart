@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -162,7 +163,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
           children: [
             Image.asset("assets/png/default_no_data.png", width: 224, height: 224, fit: BoxFit.cover),
             SizedBox(height: 16),
-            Text("您还没有收藏过任何课程呢，快去添加吧！", style: TextStyle(fontSize: 14, color: AppColor.textSecondary)),
+            Text("您还没有收藏过任何课程呢，快去添加吧！", style: AppStyle.text1Regular14),
           ],
         ),
       ),

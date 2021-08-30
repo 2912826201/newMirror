@@ -57,9 +57,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   //   主控制器
   // ScrollController _scrollController = new ScrollController();
 
-  // 图标颜色
-  Color iconColor = AppColor.bgWhite;
-
   // 头部滑动距离
   double headSlideHeight;
 
@@ -285,65 +282,65 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       ),
                                 // 头像
                                 Positioned(
-                                    left: 14,
-                                    bottom: model.description != null
-                                        ? (getTextSize(model.description, AppStyle.textRegular14, 10,
-                                                    ScreenUtil.instance.width - 32)
-                                                .height +
-                                            25 +
-                                            13)
-                                        : 13,
-                                    child: Hero(
-                                        tag: model.id.toString(),
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                HeroDialogRoute<void>(builder: (BuildContext context) {
-                                                  return InteractiveviewerGallery(
-                                                      sources: topicDtoModelList,
-                                                      initIndex: 0,
-                                                      itemBuilder: itemBuilder);
-                                                }),
-                                              );
-                                            },
-                                            child: Container(
-                                              width: 69,
-                                              height: 69,
-                                              padding: const EdgeInsets.all(2),
-                                              decoration: const BoxDecoration(
-                                                  // 圆角
-                                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                                  color: AppColor.white),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    // 圆角
-                                                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                                    color: AppColor.white),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: model.avatarUrl != null
-                                                    ? CachedNetworkImage(
-                                                        // 指定缓存宽高
-                                                        memCacheWidth: 150,
-                                                        memCacheHeight: 150,
-                                                        imageUrl:
-                                                            model.avatarUrl != null && model.avatarUrl.coverUrl != null
-                                                                ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
-                                                                : "",
-                                                        fit: BoxFit.cover,
-                                                        placeholder: (context, url) => Container(
-                                                          color: AppColor.bgWhite,
-                                                        ),
-                                                        errorWidget: (context, url, e) {
-                                                          return Container(
-                                                            color: AppColor.bgWhite,
-                                                          );
-                                                        },
-                                                      )
-                                                    : Image.asset(
-                                                        "assets/png/topic_cover.png",
-                                                      ),
-                                              ),
-                                            )))),
+                                  left: 14,
+                                  bottom: model.description != null
+                                      ? (getTextSize(model.description, AppStyle.textRegular14, 10,
+                                                  ScreenUtil.instance.width - 32)
+                                              .height +
+                                          25 +
+                                          13)
+                                      : 13,
+                                  child: Hero(
+                                    tag: model.id.toString(),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          HeroDialogRoute<void>(builder: (BuildContext context) {
+                                            return InteractiveviewerGallery(
+                                                sources: topicDtoModelList, initIndex: 0, itemBuilder: itemBuilder);
+                                          }),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 69,
+                                        height: 69,
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: const BoxDecoration(
+                                            // 圆角
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            color: AppColor.white),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              // 圆角
+                                              borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                                              color: AppColor.white),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: model.avatarUrl != null
+                                              ? CachedNetworkImage(
+                                                  // 指定缓存宽高
+                                                  memCacheWidth: 150,
+                                                  memCacheHeight: 150,
+                                                  imageUrl: model.avatarUrl != null && model.avatarUrl.coverUrl != null
+                                                      ? FileUtil.getSmallImage(model.avatarUrl.coverUrl)
+                                                      : "",
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) => Container(
+                                                    color: AppColor.imageBgGrey,
+                                                  ),
+                                                  errorWidget: (context, url, e) {
+                                                    return Container(
+                                                      color: AppColor.imageBgGrey,
+                                                    );
+                                                  },
+                                                )
+                                              : Image.asset(
+                                                  "assets/png/topic_cover.png",
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 // 话题内容
                                 Positioned(
                                     bottom: model.description != null
@@ -450,8 +447,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   labelStyle: const TextStyle(
                                     fontSize: 16,
                                   ),
-                                  labelColor: AppColor.bgWhite,
-                                  unselectedLabelColor: AppColor.textHint,
+                                  labelColor: AppColor.white,
+                                  unselectedLabelColor: AppColor.textWhite60,
                                   unselectedLabelStyle: const TextStyle(fontSize: 16),
                                   onDoubleTap: (index) {
                                     if (_tabController.index == index) {
@@ -519,7 +516,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   Center(
                                     child: Text(
                                       "该账号封禁中·",
-                                      style: AppStyle.whiteRegular14,
+                                      style: AppStyle.text1Regular14,
                                     ),
                                   )
                                 ],
@@ -612,7 +609,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     svgName: AppIcon.nav_return,
                     iconColor:
                         // snapshot.data.opacity != 0.0
-                        //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
+                        //     ? AppColor.white.withOpacity(snapshot.data.opacity)
                         //     :
                         AppColor.white,
                     onTap: () {
@@ -627,7 +624,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
-                        color: AppColor.bgWhite.withOpacity(snapshot.data.opacity)),
+                        color: AppColor.white.withOpacity(snapshot.data.opacity)),
                   ),
                   Spacer(),
                   snapshot.data.canOnclick
@@ -641,7 +638,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     svgName: AppIcon.nav_share,
                     iconColor:
                         // snapshot.data.opacity != 0.0
-                        //     ? AppColor.bgWhite.withOpacity(snapshot.data.opacity)
+                        //     ? AppColor.white.withOpacity(snapshot.data.opacity)
                         //     :
                         AppColor.white,
                     onTap: () {

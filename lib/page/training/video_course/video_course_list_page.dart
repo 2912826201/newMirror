@@ -325,7 +325,7 @@ class VideoCourseListPageState extends XCState {
               ),
               Text(
                 "暂无符合条件的课程",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                style: AppStyle.text1Regular14,
               )
             ],
           ),
@@ -896,10 +896,10 @@ Widget buildVideoCourseItemLeftImageUi(CourseModel value, Object heroTag) {
         imageUrl: imageUrl == null ? "" : FileUtil.getMediumImage(imageUrl),
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
-          color: AppColor.bgWhite,
+          color: AppColor.imageBgGrey,
         ),
         errorWidget: (context, url, error) => Container(
-          color: AppColor.bgWhite,
+          color: AppColor.imageBgGrey,
         ),
       ),
       tag: heroTag,

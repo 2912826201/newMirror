@@ -279,7 +279,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                     SizedBox(height: 16,),
                     const Text(
                       "该动态已删除或失效",
-                      style: AppStyle.textHintRegular16,
+                      style: AppStyle.text1Regular14,
                     ),
                     const Spacer()
                   ],

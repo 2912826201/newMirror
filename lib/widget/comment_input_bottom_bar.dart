@@ -651,29 +651,30 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ClipOval(
-                                        child: CachedNetworkImage(
-                                      width: 38,
-                                      height: 38,
+                                      child: CachedNetworkImage(
+                                        width: 38,
+                                        height: 38,
 
-                                      /// imageUrl的淡入动画的持续时间。
-                                      // fadeInDuration: Duration(milliseconds: 0),
-                                      imageUrl: FileUtil.getSmallImage(followList[index].avatarUri) ?? "",
-                                      fit: BoxFit.cover,
-                                      // 调整磁盘缓存中图像大小
-                                      // maxHeightDiskCache: 150,
-                                      // maxWidthDiskCache: 150,
-                                      // 指定缓存宽高
-                                      memCacheWidth: 150,
-                                      memCacheHeight: 150,
-                                      placeholder: (context, url) => Container(
-                                        color: AppColor.bgWhite,
+                                        /// imageUrl的淡入动画的持续时间。
+                                        // fadeInDuration: Duration(milliseconds: 0),
+                                        imageUrl: FileUtil.getSmallImage(followList[index].avatarUri) ?? "",
+                                        fit: BoxFit.cover,
+                                        // 调整磁盘缓存中图像大小
+                                        // maxHeightDiskCache: 150,
+                                        // maxWidthDiskCache: 150,
+                                        // 指定缓存宽高
+                                        memCacheWidth: 150,
+                                        memCacheHeight: 150,
+                                        placeholder: (context, url) => Container(
+                                          color: AppColor.imageBgGrey,
+                                        ),
+                                        errorWidget: (context, url, e) {
+                                          return Container(
+                                            color: AppColor.imageBgGrey,
+                                          );
+                                        },
                                       ),
-                                      errorWidget: (context, url, e) {
-                                        return Container(
-                                          color: AppColor.bgWhite,
-                                        );
-                                      },
-                                    )),
+                                    ),
                                     const SizedBox(width: 12),
                                     Text(
                                       followList[index].nickName,

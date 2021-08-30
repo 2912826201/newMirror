@@ -927,7 +927,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                               imageUrl: avatarUrl != null ? FileUtil.getSmallImage(avatarUrl) : " ",
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
-                                color: AppColor.bgWhite,
+                                color: AppColor.imageBgGrey,
                               ),
                             ),
                           ),

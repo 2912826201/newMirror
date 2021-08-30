@@ -427,7 +427,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                             Center(
                               child: Text(
                                 "该账号封禁中·",
-                                style: AppStyle.textPrimary3Regular14,
+                                style: AppStyle.text1Regular14,
                               ),
                             )
                           ],
@@ -544,7 +544,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 imageUrl: _avatar != null ? _avatar : "",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: AppColor.bgWhite,
+                  color: AppColor.imageBgGrey,
                 ),
                 /* errorWidget: (context, url, e) {
                 return Image.asset(

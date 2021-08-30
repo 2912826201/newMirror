@@ -171,11 +171,11 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       //              height: height,
       //              fit: BoxFit.cover,
       //              placeholder: (context, url) => Container(
-      //                color: AppColor.bgWhite,
+      //                color: AppColor.imageBgGrey,
       //              ),
       //              errorWidget: (context, url, e) {
       //                return Container(
-      //                  color: AppColor.bgWhite,
+      //                  color: AppColor.imageBgGrey,
       //                );
       //              },
       //            ),
@@ -213,12 +213,12 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                         : "",
                     placeholder: (context, url) {
                       return Container(
-                        color: AppColor.bgWhite,
+                        color: AppColor.imageBgGrey,
                       );
                     },
                     errorWidget: (context, url, e) {
                       return Container(
-                        color: AppColor.bgWhite,
+                        color: AppColor.imageBgGrey,
                       );
                     },
                   );
@@ -229,7 +229,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                 },
                 errorWidget: (context, url, e) {
                   return Container(
-                    color: AppColor.bgWhite,
+                    color: AppColor.imageBgGrey,
                   );
                 },
               ))
@@ -249,7 +249,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                         fit: BoxFit.cover,
                       );
                       // return Container(
-                      //   color: AppColor.bgWhite,
+                      //   color: AppColor.imageBgGrey,
                       // );
                     },
                     errorWidget: (context, url, e) {
@@ -316,7 +316,6 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
       return (ScreenUtil.instance.width / imageWidth) * height;
     }
   }
-
 
   // 点赞
   setUpLuad() async {
@@ -463,12 +462,12 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                             : "",
                         placeholder: (context, url) {
                           return Container(
-                            color: AppColor.bgWhite,
+                            color: AppColor.imageBgGrey,
                           );
                         },
                         errorWidget: (context, url, e) {
                           return Container(
-                            color: AppColor.bgWhite,
+                            color: AppColor.imageBgGrey,
                           );
                         },
                       );
@@ -479,7 +478,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                     },
                     errorWidget: (context, url, e) {
                       return Container(
-                        color: AppColor.bgWhite,
+                        color: AppColor.imageBgGrey,
                       );
                     },
                   )),
@@ -568,7 +567,7 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
                   cycleRolling: false,
                   autoRolling: false,
                   onPageChanged: (index) async {
-                   await autoPlay(index);
+                    await autoPlay(index);
                     if (index > 1) {
                       if (index < imageCount - 3) {
                         scrollController.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
@@ -653,43 +652,43 @@ class _SlideBannerState extends State<SlideBanner> with WidgetsBindingObserver {
             // )
           ),
           Offstage(
-              offstage: imageCount == 1,
-              child: StreamBuilder<int>(
-                  // 监听Stream，每次值改变的时候，更新Text中的内容
-                  stream: pagingIndicatorStreamController.stream, //数据流
-                  initialData: zindex, //初始值
-                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                    return Container(
-                        padding: const EdgeInsets.only(left: 2, right: 2),
-                        width: getDotsWidth(snapshot.data),
-                        height: 10,
-                        margin: const EdgeInsets.only(top: 5),
-                        child: ScrollConfiguration(
-                          behavior: OverScrollBehavior(),
-                          child: ListView.separated(
-                            physics: NeverScrollableScrollPhysics(),
-                            controller: scrollController,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return AnimatedContainer(
-                                duration: Duration(milliseconds: 250),
-                                height: getDotsSize(snapshot.data, index).height,
-                                width: getDotsSize(snapshot.data, index).width,
-                                decoration: BoxDecoration(
-                                    color: snapshot.data == index
-                                        ? AppColor.bgWhite
-                                        : AppColor.layoutBgGrey,
-                                    shape: BoxShape.circle),
-                              );
-                            },
-                            separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                              width: 4,
-                              color: AppColor.mainBlack,
-                            ),
-                            itemCount: imageCount,
-                          ),
-                        ));
-                  }))
+            offstage: imageCount == 1,
+            child: StreamBuilder<int>(
+                // 监听Stream，每次值改变的时候，更新Text中的内容
+                stream: pagingIndicatorStreamController.stream, //数据流
+                initialData: zindex, //初始值
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  return Container(
+                    padding: const EdgeInsets.only(left: 2, right: 2),
+                    width: getDotsWidth(snapshot.data),
+                    height: 10,
+                    margin: const EdgeInsets.only(top: 5),
+                    child: ScrollConfiguration(
+                      behavior: OverScrollBehavior(),
+                      child: ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return AnimatedContainer(
+                            duration: Duration(milliseconds: 250),
+                            height: getDotsSize(snapshot.data, index).height,
+                            width: getDotsSize(snapshot.data, index).width,
+                            decoration: BoxDecoration(
+                                color: snapshot.data == index ? AppColor.white : AppColor.textWhite40,
+                                shape: BoxShape.circle),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) => VerticalDivider(
+                          width: 4,
+                          color: AppColor.mainBlack,
+                        ),
+                        itemCount: imageCount,
+                      ),
+                    ),
+                  );
+                }),
+          ),
         ],
       ),
     );

@@ -361,7 +361,7 @@ class _EditInformationState extends State<EditInformation> {
                       imageUrl: FileUtil.getMediumImage(avataruri),
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
-                        color: AppColor.bgWhite,
+                        color: AppColor.imageBgGrey,
                       ),
                     ),
             ),

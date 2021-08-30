@@ -678,7 +678,7 @@ Widget getCommentNoData() {
         ),
         Text(
           "偷偷逆袭中，还没有人来冒泡呢",
-          style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+          style: AppStyle.text1Regular14,
         )
       ],
     ),
