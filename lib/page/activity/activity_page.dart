@@ -408,7 +408,12 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
             ),
             // 头像布局
-
+            // http://devpic.aimymusic.com/ifcms/ca4d089cc7e57ac75666187ae40fe2bb.jpeg
+             ClipPath(
+               clipper: ShapeBorderClipper(
+                 // shape: ClipImageLeftCorner(),
+               ),
+             )
           ],
         ),
       ),
