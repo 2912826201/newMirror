@@ -96,3 +96,39 @@ class ScanWeaponPainter extends CustomPainter {
     return true;
   }
 }
+
+//裁剪左上角工具
+class ClipImageLeftCorner extends ShapeBorder {
+  @override
+
+  EdgeInsetsGeometry get dimensions => null;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection textDirection}) {
+    return null;
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
+      var width = rect.width;
+      var height = rect.height;
+      var leftTop = rect.width/3;
+      var path = Path();
+      path.moveTo(width, 0);
+      path.lineTo(leftTop, 0);
+      path.lineTo(0, height);
+      path.lineTo(width, height);
+      path.fillType = PathFillType.evenOdd;
+      return path;
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection textDirection}) {
+  }
+
+  @override
+  ShapeBorder scale(double t) {
+    return null;
+  }
+
+}

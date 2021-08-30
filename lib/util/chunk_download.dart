@@ -8,6 +8,7 @@ import 'package:mirror/data/model/upload/chunk_download_model.dart';
 ///分段下载,断点续传，使用缓存管理下载不同下载任务
 ///creat by 2021/4/1 kang
 class ChunkDownLaod {
+
   static Future<Response> downloadWithChunks(url, savePath,
       //-----------------------------------需要取消下载可传cancelToken
       // -----------需要其他自定义配置dio-------是否需要分段下载needChunkDownLoad

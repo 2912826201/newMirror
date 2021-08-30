@@ -54,7 +54,6 @@ class StringUtil {
       if(context!=null) {
         AppRouter.navigateWebViewPage(context, url);
       }
-      // await launch(url);
     } else {
       throw 'Could not launch $url';
     }

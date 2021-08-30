@@ -48,7 +48,8 @@ class AppConfig {
   //在App启动时需要被重新赋值
   static String version = "0.0.1";
   static String buildNumber = "1";
-
+  //fixme 需要App上线Id用于直接跳转商店下载App
+  static String iosAppId = "585027354";
   ///切换训练相关布局
   ///fixme 教练账号问题需要解决
   static bool needShowTraining = false;

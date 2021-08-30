@@ -58,7 +58,6 @@ class AppIcon {
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
-  static const String edit_pen = "assets/svg/edit_user_pen.svg";
   static const String add_circle_white = "assets/svg/add_circle_white.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String delete = "assets/svg/delete.svg";
