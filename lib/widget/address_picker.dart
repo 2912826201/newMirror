@@ -16,10 +16,12 @@ Future openaddressPickerBottomSheet(
     {@required BuildContext context,
     @required LinkedHashMap<int, RegionDto> provinceMap,
     @required Map<int, List<RegionDto>> cityMap,
-    @required Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm}) async {
+    @required Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm,
+    double bottomSheetHeight}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      backgroundColor: AppColor.layoutBgGrey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
@@ -32,6 +34,7 @@ Future openaddressPickerBottomSheet(
             provinceMap: provinceMap,
             cityMap: cityMap,
             onConfirm: onConfirm,
+            bottomSheetHeight: bottomSheetHeight,
           ),
         );
       });
@@ -41,8 +44,9 @@ class AddressPicker extends StatefulWidget {
   LinkedHashMap<int, RegionDto> provinceMap;
   Map<int, List<RegionDto>> cityMap;
   Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm;
+  double bottomSheetHeight;
 
-  AddressPicker({this.provinceMap, this.cityMap, this.onConfirm});
+  AddressPicker({this.provinceMap, this.cityMap, this.onConfirm, this.bottomSheetHeight});
 
   @override
   State<StatefulWidget> createState() {
@@ -60,8 +64,6 @@ class _AddressPickerState extends State<AddressPicker> {
   List<RegionDto> provinceDtoList = [];
   List<int> provinceIdList = [];
   List<RegionDto> cityDtoList = [];
-
-
 
   ///从map取值
   _getAddressData() {
@@ -108,12 +110,10 @@ class _AddressPickerState extends State<AddressPicker> {
     double height = ScreenUtil.instance.height;
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.layoutBgGrey,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
-      ),
-      height: 259.5 + ScreenUtil.instance.bottomBarHeight,
+          color: AppColor.layoutBgGrey,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      height: widget.bottomSheetHeight != null ? widget.bottomSheetHeight : 259.5 + ScreenUtil.instance.bottomBarHeight,
       width: width,
-
       child: Column(
         children: [
           Container(
@@ -141,24 +141,20 @@ class _AddressPickerState extends State<AddressPicker> {
                         provinceNameList[leftfixedExtentController.selectedItem]) {
                       provinceCity = cityNameList[rightfixedExtentController.selectedItem];
                     } else {
-                      provinceCity =provinceNameList[leftfixedExtentController.selectedItem]
-                          +" "+cityNameList[rightfixedExtentController.selectedItem];
+                      provinceCity = provinceNameList[leftfixedExtentController.selectedItem] +
+                          " " +
+                          cityNameList[rightfixedExtentController.selectedItem];
                     }
                     if (widget.cityMap[provinceIdList[leftfixedExtentController.selectedItem]] == null) {
                       cityCode = provinceDtoList[leftfixedExtentController.selectedItem].regionCode;
                       longitude = provinceDtoList[leftfixedExtentController.selectedItem].longitude;
                       latitude = provinceDtoList[leftfixedExtentController.selectedItem].latitude;
                     } else {
-                      cityCode =  cityDtoList[rightfixedExtentController.selectedItem].regionCode;
+                      cityCode = cityDtoList[rightfixedExtentController.selectedItem].regionCode;
                       longitude = cityDtoList[rightfixedExtentController.selectedItem].longitude;
-                      latitude =cityDtoList[rightfixedExtentController.selectedItem].latitude;
+                      latitude = cityDtoList[rightfixedExtentController.selectedItem].latitude;
                     }
-                    widget.onConfirm(
-                      provinceCity,
-                      cityCode,
-                      longitude,
-                      latitude
-                    );
+                    widget.onConfirm(provinceCity, cityCode, longitude, latitude);
                     Navigator.pop(context);
                   },
                   child: Text(
@@ -235,4 +231,3 @@ class _AddressPickerState extends State<AddressPicker> {
     );
   }
 }
-

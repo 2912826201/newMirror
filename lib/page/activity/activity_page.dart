@@ -1,16 +1,21 @@
+import 'dart:collection';
+
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/amap/amap.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Clip_util.dart';
+import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -45,6 +50,8 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     '活动中',
     '已结束',
   ];
+  LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
+  Map<int, List<RegionDto>> cityMap = Application.cityMap;
 
   @override
   void dispose() {
@@ -132,17 +139,17 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 头部View
   Widget headView() {
     return Container(
-      width: 70,
+      // width: 70,
       height: 44,
       margin: EdgeInsets.only(left: 8),
       alignment: Alignment.center,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.location_on_rounded,
+          AppIcon.getAppIcon(
+            AppIcon.tag_location,
+            16,
             color: AppColor.white,
-            size: 16,
           ),
           SizedBox(
             width: 3,
@@ -155,6 +162,16 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                 _locationFailPopUps();
               } else {
                 // 地址选择下拉列表
+                openaddressPickerBottomSheet(
+                    context: context,
+                    provinceMap: provinceMap,
+                    cityMap: cityMap,
+                    bottomSheetHeight: ScreenUtil.instance.height * 0.46,
+                    onConfirm: (provinceCity, cityCode, longitude, latitude) {
+                      List<String> provinceCityList = provinceCity.split(" ");
+                      location_address = provinceCityList.last;
+                      setState(() {});
+                    });
               }
             },
             child: Container(
@@ -244,7 +261,11 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               border: Border.all(color: AppColor.dividerWhite8),
               borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
             ),
-            divider: Container(),
+            divider: const Divider(
+              height: 0.5,
+              color: AppColor.dividerWhite8,
+            ),
+            // Container(),
             items: keys,
             itemBuilder: (String value) => Container(
                 color: AppColor.layoutBgGrey,
@@ -257,7 +278,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                     ),
                     Text(
                       value,
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.white),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
                     ),
                   ],
                 )),
@@ -325,8 +346,7 @@ class ActivityListItem extends StatefulWidget {
 }
 
 class _ActivityListItem extends State<ActivityListItem> {
-  String serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
-  // String serverReturnsTitle = "一起踢球吧！";
+  String serverReturnsTitle;
   String activityTitle = "";
   String activityTitle1 = "";
   double tagWidth;
@@ -346,6 +366,11 @@ class _ActivityListItem extends State<ActivityListItem> {
       tagWidth = 62.0;
     } else if (widget.tag == "进行中") {
       tagWidth = 59.0;
+    }
+    if (widget.index % 2 == 0) {
+      serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
+    } else {
+      serverReturnsTitle = "一起踢球吧！";
     }
     // 剩余宽度
     double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
@@ -552,21 +577,22 @@ class _ActivityListItem extends State<ActivityListItem> {
                                     context, "http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg", index))),
                       ),
                       SizedBox(
-                        width: 6,
+                        width: 8,
                       ),
                       Text(
                         "6/6",
-                        style: AppStyle.text1Regular10,
+                        style: AppStyle.text1Regular12,
                       ),
                       SizedBox(
-                        width: 6,
+                        width: 4,
                       ),
                       Container(
-                        width: 41,
+                        width: 57,
+                        height: 23,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             border: Border.all(color: AppColor.mainYellow, width: 0.5),
-                            borderRadius: BorderRadius.all(Radius.circular(7))),
+                            borderRadius: BorderRadius.all(Radius.circular(12))),
                         child: Text(
                           "热门",
                           style: AppStyle.whiteRegular10,
