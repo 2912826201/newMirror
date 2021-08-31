@@ -291,18 +291,18 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           }),
       floatingActionButton: new Builder(builder: (BuildContext context) {
         return new FloatingActionButton(
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add,size: 25,),
           foregroundColor: AppColor.mainBlack,
           backgroundColor: AppColor.white,
-          heroTag: null,
+          // heroTag: null,
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
             // 跳转创建活动
           },
-          mini: false,
-          shape: new CircleBorder(),
-          isExtended: false,
+          mini: true,
+          // shape: new CircleBorder(),
+          // isExtended: false,
         );
       }),
       backgroundColor: AppColor.mainBlack,
