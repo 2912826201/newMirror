@@ -161,6 +161,8 @@ dependencies:
   fps_monitor: ^2.0.0
   #lottie动画
   lottie: ^1.0.1
+  #popup_window
+  popup_window: ^1.1.2
 
 
   #测试跳转指定item

@@ -129,6 +129,9 @@ class AppRouter {
   // 内部webview
   static String pathWebViewPage = "/webViewPage";
 
+  // 创建活动界面
+  static String pathCreateActivityPage = "/activity_page/createActivityPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -220,6 +223,7 @@ class AppRouter {
     router.define(pathWebViewPage, handler: handlerWebViewPage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
+    router.define(pathCreateActivityPage, handler: handlerCreateActivityPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -1013,5 +1017,12 @@ class AppRouter {
       }
     } catch (e) {}
     return false;
+  }
+
+
+  //去创建活动界面
+  static void navigateCreateActivityPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathCreateActivityPage, map);
   }
 }

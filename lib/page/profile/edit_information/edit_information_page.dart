@@ -259,6 +259,7 @@ class _EditInformationState extends State<EditInformation> {
                           context: context,
                           provinceMap: provinceMap,
                           cityMap: cityMap,
+                          initCityCode: cityCode,
                           onConfirm: (provinceCity, cityCode, longitude, latitude) {
                             this.provinceCity = provinceCity;
                             this.cityCode = cityCode;
