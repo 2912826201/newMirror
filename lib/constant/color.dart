@@ -14,6 +14,9 @@ class AppColor {
   //辅色蓝
   static const mainBlue = Color.fromRGBO(0x4C, 0xA5, 0xFF, 1.0);
 
+  // 辅色绿
+  static const mainGreen = Color.fromRGBO(0x00, 0xD3, 0xA2, 1.0);
+
   //背景、文字黑
   static const mainBlack = Color.fromRGBO(0x14, 0x14, 0x14, 1.0);
 
