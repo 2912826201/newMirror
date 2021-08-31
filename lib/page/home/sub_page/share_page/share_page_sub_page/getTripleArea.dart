@@ -304,28 +304,30 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
   // 横排头像默认值
   roundedAvatar(BuildContext context, String url, {double radius = 10.5}) {
     return ClipOval(
-      child: CachedNetworkImage(
-            height: 21,
-            width: 21,
-            // 调整磁盘缓存中图像大小
-            // maxHeightDiskCache: 150,
-            // maxWidthDiskCache: 150,
-            // 指定缓存宽高
-            useOldImageOnUrlChange: true,
-            memCacheWidth: 150,
-            memCacheHeight: 150,
-            imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
+      child: Container(
+        width: 21,
+        height: 21,
+        color: AppColor.white,
+        alignment: Alignment.center,
+        child: ClipOval(
+            child: CachedNetworkImage(
+          height: 19,
+          width: 19,
+          useOldImageOnUrlChange: true,
+          memCacheWidth: 150,
+          memCacheHeight: 150,
+          imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: AppColor.imageBgGrey,
+          ),
+          errorWidget: (context, url, e) {
+            return Container(
               color: AppColor.imageBgGrey,
-            ),
-            errorWidget: (context, url, e) {
-              return Container(
-                color: AppColor.imageBgGrey,
-              );
-            },
-          ) ??
-          AssetImage("images/test/yxlm9.jpeg"),
+            );
+          },
+        )),
+      ),
     );
   }
 
@@ -397,11 +399,12 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
                     : AppIcon.like_24,
                 iconSize: 24,
                 iconColor: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
-                        null &&
-                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
-                    ? AppColor.mainRed : AppColor.white ,
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) !=
+                            null &&
+                        context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                    ? AppColor.mainRed
+                    : AppColor.white,
                 onTap: () {
                   setUpLuad();
                 },

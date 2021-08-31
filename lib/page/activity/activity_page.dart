@@ -1,13 +1,16 @@
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -206,6 +209,24 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ));
   }
 
+  activityTag(int index) {
+    String tag;
+    if (index == 0) {
+      tag = "准备中";
+    } else if (index == 1) {
+      tag = "召集中";
+    } else if (index == 2) {
+      tag = "邀请你";
+    } else if (index == 3) {
+      tag = "进行中";
+    } else if (index == 4) {
+      tag = "召集满";
+    } else if (index == 5) {
+      tag = "活动结束";
+    }
+    return tag;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -254,10 +275,17 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ],
       ),
       body: ListView.builder(
-          itemCount: 10,
+          itemCount: 20,
           shrinkWrap: true,
           itemBuilder: (context, index) {
+            String tag;
+            if (index > 5) {
+              tag = activityTag(index % 6);
+            } else {
+              tag = activityTag(index);
+            }
             return ActivityListItem(
+              tag: tag,
               index: index,
             );
           }),
@@ -269,7 +297,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           heroTag: null,
           elevation: 7.0,
           highlightElevation: 14.0,
-          onPressed: () {},
+          onPressed: () {
+            // 跳转创建活动
+          },
           mini: false,
           shape: new CircleBorder(),
           isExtended: false,
@@ -282,8 +312,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
 class ActivityListItem extends StatefulWidget {
   int index;
+  String tag;
 
-  ActivityListItem({this.index});
+  ActivityListItem({this.index, this.tag});
 
   @override
   _ActivityListItem createState() => _ActivityListItem();
@@ -293,6 +324,7 @@ class _ActivityListItem extends State<ActivityListItem> {
   String serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
   String activityTitle = "";
   String activityTitle1 = "";
+  double tagWidth;
 
   @override
   void initState() {
@@ -303,8 +335,15 @@ class _ActivityListItem extends State<ActivityListItem> {
 
   // 截取文本
   interceptText() {
+    if (widget.tag == "召集满" || widget.tag == "召集中" || widget.tag == "准备中" || widget.tag == "邀请你") {
+      tagWidth = 56.0;
+    } else if (widget.tag == "活动结束") {
+      tagWidth = 62.0;
+    } else if (widget.tag == "进行中") {
+      tagWidth = 59.0;
+    }
     // 剩余宽度
-    double remainingWidth = ScreenUtil.instance.width * 0.49 - 56;
+    double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
     // 文本总宽度
     double totalTextWidth = 0.0;
     for (int i = 0; i < serverReturnsTitle.length; i++) {
@@ -325,21 +364,12 @@ class _ActivityListItem extends State<ActivityListItem> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 50,
-          child: CustomYellowButton(
-            "准备中",
-            0,
-            () {},
-            width: 50,
-            height: 18,
-          ),
-        ),
+        filterTags(widget.tag),
         SizedBox(
           width: 6,
         ),
         Container(
-          width: ScreenUtil.instance.width * 0.49 - 56,
+          width: ScreenUtil.instance.width * 0.49 - tagWidth,
           child: Text(
             activityTitle,
             style: AppStyle.whiteMedium17,
@@ -365,6 +395,95 @@ class _ActivityListItem extends State<ActivityListItem> {
     );
   }
 
+  // 筛选标签
+  filterTags(String tag) {
+    Widget cotainer;
+    if (tag == "召集满" || tag == "召集中" || tag == "准备中" || tag == "邀请你") {
+      cotainer = Container(
+        width: 50,
+        height: 18,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: tag == "召集满" || tag == "准备中" ? AppColor.mainBlue : AppColor.mainGreen,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Text(
+          tag,
+          style: AppStyle.whiteRegular10,
+        ),
+      );
+    } else if (tag == "活动结束") {
+      cotainer = Container(
+        width: 55,
+        height: 18,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColor.textWhite60,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Text(
+          tag,
+          style: AppStyle.whiteRegular10,
+        ),
+      );
+    } else if (tag == "进行中") {
+      cotainer = Container(
+        width: 53,
+        height: 21,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColor.layoutBgGrey,
+          border: Border.all(color: AppColor.mainYellow, width: 0.5),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Container(
+          width: 50,
+          height: 18,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColor.mainYellow,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Text(tag, style: TextStyle(fontSize: 10, color: AppColor.mainBlack)),
+        ),
+      );
+    }
+    return cotainer;
+  }
+
+  //  横排活动参与头像
+  // http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg
+  roundedAvatar(BuildContext context, String url, int index, {double radius = 10.5}) {
+    return Positioned(
+        left: index * 10.0,
+        child: ClipOval(
+          child: Container(
+            width: 21,
+            height: 21,
+            color: AppColor.white,
+            alignment: Alignment.center,
+            child: ClipOval(
+                child: CachedNetworkImage(
+              height: 19,
+              width: 19,
+              useOldImageOnUrlChange: true,
+              memCacheWidth: 150,
+              memCacheHeight: 150,
+              imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: AppColor.imageBgGrey,
+              ),
+              errorWidget: (context, url, e) {
+                return Container(
+                  color: AppColor.imageBgGrey,
+                );
+              },
+            )),
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -372,7 +491,7 @@ class _ActivityListItem extends State<ActivityListItem> {
       color: AppColor.layoutBgGrey,
       margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
       child: Container(
-        width: ScreenUtil.instance.width - 32,
+        // width: ScreenUtil.instance.width - 32,
         height: 140,
         child: Row(
           children: [
@@ -402,18 +521,78 @@ class _ActivityListItem extends State<ActivityListItem> {
                       style: AppStyle.text1Regular12,
                     ),
                   ),
+                  const Spacer(),
                   // 底部布局
-
+                  Container(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 21,
+                        child: Stack(clipBehavior: Clip.none, alignment: const FractionalOffset(0, 0.5), children:
+                        List.generate(
+                            6,
+                                (index) => roundedAvatar(
+                                context, "http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg", index))
+                        ),
+                      ),
+                      SizedBox(
+                        width: 6,
+                      ),
+                      Text(
+                        "6/6",
+                        style: AppStyle.text1Regular10,
+                      ),
+                      SizedBox(
+                        width: 6,
+                      ),
+                      Container(
+                        width: 41,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: AppColor.mainYellow, width: 0.5),
+                            borderRadius: BorderRadius.all(Radius.circular(7))),
+                        child: Text(
+                          "热门",
+                          style: AppStyle.whiteRegular10,
+                        ),
+                      )
+                    ],
+                  ))
                 ],
               ),
             ),
+            Spacer(),
             // 头像布局
-            // http://devpic.aimymusic.com/ifcms/ca4d089cc7e57ac75666187ae40fe2bb.jpeg
-             ClipPath(
-               clipper: ShapeBorderClipper(
-                 // shape: ClipImageLeftCorner(),
-               ),
-             )
+            ClipPath(
+              clipper: ShapeBorderClipper(
+                shape: ClipImageLeftCorner(),
+              ),
+              child: CachedNetworkImage(
+                /// imageUrl的淡入动画的持续时间。
+                width: 121,
+                height: 121,
+                fadeInDuration: Duration(milliseconds: 0),
+                fit: BoxFit.cover,
+                useOldImageOnUrlChange: true,
+                imageUrl: "http://devpic.aimymusic.com/ifcms/ca4d089cc7e57ac75666187ae40fe2bb.jpeg",
+                placeholder: (context, url) {
+                  return Container(
+                    color: AppColor.imageBgGrey,
+                  );
+                },
+                errorWidget: (context, url, e) {
+                  return Container(
+                    color: AppColor.imageBgGrey,
+                  );
+                },
+              ),
+            ),
+            SizedBox(
+              width: 9.5,
+            )
           ],
         ),
       ),
