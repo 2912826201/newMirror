@@ -144,7 +144,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     }
     Application.feedVideoControllerList.add(controller.hashCode);
     Application.feedVideoControllerLists.add(controller);
-    Application.feedVideoTimeList.add(DateUtil.generateFormatDate(widget.feedModel.createTime, false));
+    Application.feedVideoTimeList.add(DateUtil.getGenerateFormatDate(widget.feedModel.createTime, false));
     if (mounted) {
       setState(() {});
     }
@@ -185,7 +185,7 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     Application.feedVideoControllerList.removeWhere((v) => v == controller.hashCode);
     Application.feedVideoControllerLists.removeWhere((v) => v == controller);
     Application.feedVideoTimeList
-        .removeWhere((element) => element == DateUtil.generateFormatDate(widget.feedModel.createTime, false));
+        .removeWhere((element) => element == DateUtil.getGenerateFormatDate(widget.feedModel.createTime, false));
   }
 
   // 点赞
@@ -228,12 +228,12 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
             if (controller != null && !Application.feedVideoControllerList.contains(controller.hashCode)) {
               Application.feedVideoControllerList.add(controller.hashCode);
               Application.feedVideoControllerLists.add(controller);
-              Application.feedVideoTimeList.add(DateUtil.generateFormatDate(widget.feedModel.createTime, false));
+              Application.feedVideoTimeList.add(DateUtil.getGenerateFormatDate(widget.feedModel.createTime, false));
             }
             if (Application.feedVideoControllerList.first == controller.hashCode) {
               controller.play();
               print("视频时长：：：${widget.durationString}");
-              print("查看时间更直观：：：：${DateUtil.generateFormatDate(widget.feedModel.createTime, false)}");
+              print("查看时间更直观：：：：${DateUtil.getGenerateFormatDate(widget.feedModel.createTime, false)}");
             }
             Application.feedVideoControllerList.forEach((element) {
               print(element);
