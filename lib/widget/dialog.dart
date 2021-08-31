@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -27,6 +25,7 @@ class _AppDialog extends StatelessWidget {
   final String circleImageUrl;
   final String topImageUrl;
   final Widget customizeWidget;
+  final Color confirmColor;
 
   //是不是透明
   final bool isTransparentBack;
@@ -43,7 +42,8 @@ class _AppDialog extends StatelessWidget {
       this.circleImageUrl,
       this.customizeWidget,
       this.isTransparentBack = false,
-      this.topImageUrl})
+      this.topImageUrl,
+      this.confirmColor})
       : super(key: key);
 
   @override
@@ -226,7 +226,9 @@ class _AppDialog extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 confirm.text,
-                style: AppStyle.redRegular18,
+                style: confirmColor != null
+                    ? TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: confirmColor)
+                    : AppStyle.redRegular18,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -333,7 +335,8 @@ showAppDialog(BuildContext context,
     String circleImageUrl,
     String topImageUrl,
     bool isTransparentBack = false,
-    bool barrierDismissible = true}) {
+    bool barrierDismissible = true,
+    Color confirmColor}) {
   showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -345,6 +348,7 @@ showAppDialog(BuildContext context,
               elevation: isTransparentBack ? 0 : null,
               child: _AppDialog(
                   confirm: confirm,
+                  confirmColor: confirmColor,
                   cancel: cancel,
                   buttonList: buttonList,
                   title: title,
@@ -356,4 +360,3 @@ showAppDialog(BuildContext context,
             ));
       });
 }
-

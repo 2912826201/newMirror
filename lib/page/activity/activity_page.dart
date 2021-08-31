@@ -119,6 +119,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     return showAppDialog(context,
         title: "位置信息",
         info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
+        confirmColor: AppColor.white,
         cancel: AppDialogButton("返回", () {
           return true;
         }),
