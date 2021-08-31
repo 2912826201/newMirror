@@ -33,6 +33,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/util/badger_util.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/jpush_analyze_code_util.dart';
 import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:mirror/widget/my_widgets_binding_observer.dart';
@@ -168,6 +169,9 @@ Future _initApp() async {
       permissionStatus = await NotificationPermissions.requestNotificationPermissions();
     }
   }
+  DateTime dateTime = DateUtil.getDateTimeByMs(1630382381246);
+  print('--DateTime---DateTime-${dateTime.month}----${dateTime.hour}----${dateTime.minute}----${dateTime.second}');
+
   //初始化SharedPreferences
   AppPrefs.init();
   //初始化数据库

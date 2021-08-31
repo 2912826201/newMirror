@@ -425,7 +425,7 @@ class HeadViewState extends State<HeadView> {
                             Container(
                               padding: const EdgeInsets.only(top: 2),
                               child: Text(
-                                "${DateUtil.generateFormatDate(widget.model.createTime, false)}",
+                                DateUtil.getGenerateFormatDate(widget.model.createTime, false),
                                 style: AppStyle.text1Regular12,
                               ),
                             )
