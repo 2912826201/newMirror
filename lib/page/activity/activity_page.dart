@@ -11,6 +11,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -324,6 +325,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           highlightElevation: 14.0,
           onPressed: () {
             // 跳转创建活动
+            AppRouter.navigateCreateActivityPage(context);
           },
           mini: true,
           // shape: new CircleBorder(),
