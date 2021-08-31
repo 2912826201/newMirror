@@ -602,4 +602,15 @@ class DateUtil {
     }
     return format;
   }
+  //活动界面时间显示规则实现
+  static String activityTimeToString(int timeTemp){
+      String timeString = "";
+      DateTime dateTime = getDateTimeByMs(timeTemp);
+      timeString = formatTimeString(dateTime);
+      timeString += " ";
+      timeString += formatDateNoYearString(dateTime);
+      timeString += " ";
+      timeString += "周${getStringWeekDayStartZero(dateTime.weekday)}";
+    return timeString;
+  }
 }
