@@ -95,6 +95,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   @override
   void initState() {
+
     followStreamController = StreamController.broadcast();
     notFollowStreamController = StreamController.broadcast();
 
