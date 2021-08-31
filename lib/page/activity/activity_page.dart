@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:amap_location_muka/amap_location_muka.dart';
@@ -36,11 +37,12 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 权限
   PermissionStatus permissions;
   Location currentAddressInfo; //当前位置的信息
-  // 定位地址
-  String location_address;
 
-  // 菜单Key
-  String selectedKey;
+  // 定位地址
+  StreamController<String> streamAddress = StreamController<String>();
+
+  //  选择菜单值
+  String selectedKey = "筛选";
 
   // 菜单
   List<String> keys = <String>[
@@ -99,9 +101,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         await reverseGeographyHttp(currentAddressInfo.longitude, currentAddressInfo.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
-      location_address = locationInformationEntity.regeocode.cityDetails.city;
-      setState(() {});
-      print(location_address);
+      streamAddress.sink.add(locationInformationEntity.regeocode.cityDetails.city);
     } else {
       // 请求失败
     }
@@ -139,7 +139,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 头部View
   Widget headView() {
     return Container(
-      // width: 70,
       height: 44,
       margin: EdgeInsets.only(left: 8),
       alignment: Alignment.center,
@@ -169,17 +168,20 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                     bottomSheetHeight: ScreenUtil.instance.height * 0.46,
                     onConfirm: (provinceCity, cityCode, longitude, latitude) {
                       List<String> provinceCityList = provinceCity.split(" ");
-                      location_address = provinceCityList.last;
-                      setState(() {});
+                      streamAddress.sink.add(provinceCityList.last);
                     });
               }
             },
             child: Container(
-              child: Text(
-                location_address ?? "北京",
-                style: AppStyle.whiteRegular12,
-              ),
-            ),
+                child: StreamBuilder<String>(
+                    initialData: "北京",
+                    stream: streamAddress.stream,
+                    builder: (BuildContext stramContext, AsyncSnapshot<String> snapshot) {
+                      return Text(
+                        snapshot.data,
+                        style: AppStyle.whiteRegular12,
+                      );
+                    })),
           ),
           SizedBox(
             width: 5,
@@ -209,7 +211,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               SizedBox(
                 width: 8,
               ),
-              Text(selectedKey ?? "筛选", style: AppStyle.whiteRegular12, overflow: TextOverflow.ellipsis),
+              Text(selectedKey, style: AppStyle.whiteRegular12, overflow: TextOverflow.ellipsis),
               const Spacer(),
               RotatedBox(
                 quarterTurns: 1,
@@ -286,9 +288,8 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               child: normalChildButton(),
             ),
             onItemSelected: (String value) {
-              setState(() {
-                selectedKey = value;
-              });
+              selectedKey = value;
+              setState(() {});
             },
             // onMenuButtonToggle: (bool isToggle) {
             //   print(isToggle);
@@ -319,15 +320,12 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           ),
           foregroundColor: AppColor.mainBlack,
           backgroundColor: AppColor.white,
-          // heroTag: null,
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
             // 跳转创建活动
           },
           mini: true,
-          // shape: new CircleBorder(),
-          // isExtended: false,
         );
       }),
       backgroundColor: AppColor.mainBlack,
@@ -482,7 +480,6 @@ class _ActivityListItem extends State<ActivityListItem> {
   }
 
   //  横排活动参与头像
-  // http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg
   roundedAvatar(BuildContext context, String url, int index, {double radius = 10.5}) {
     return Positioned(
         left: index * 10.0,
@@ -521,7 +518,6 @@ class _ActivityListItem extends State<ActivityListItem> {
       color: AppColor.layoutBgGrey,
       margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
       child: Container(
-        // width: ScreenUtil.instance.width - 32,
         height: 140,
         child: Row(
           children: [
