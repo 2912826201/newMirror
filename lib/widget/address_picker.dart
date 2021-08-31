@@ -18,7 +18,7 @@ Future openaddressPickerBottomSheet(
     @required Map<int, List<RegionDto>> cityMap,
     @required Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm,
     double bottomSheetHeight,
-    String initCityCode}) async {
+    String initCityCode = ""}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,

@@ -159,10 +159,12 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                     context: context,
                     provinceMap: provinceMap,
                     cityMap: cityMap,
+                    initCityCode: citycode,
                     bottomSheetHeight: ScreenUtil.instance.height * 0.46,
                     onConfirm: (provinceCity, cityCode, longitude, latitude) {
                       List<String> provinceCityList = provinceCity.split(" ");
                       streamAddress.sink.add(provinceCityList.last);
+                      citycode = cityCode;
                     });
               }
             },
@@ -518,7 +520,7 @@ class _ActivityListItem extends State<ActivityListItem> {
           children: [
             // 右边布局
             Container(
-              margin: EdgeInsets.only(left: 12, top: 13.5, bottom: 13.5),
+              margin: EdgeInsets.only(left: 12, top: 13.5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -549,7 +551,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                       style: AppStyle.text1Regular12,
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 8,),
                   // 底部布局
                   Container(
                       child: Row(
@@ -621,7 +623,7 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
             ),
             SizedBox(
-              width: 9.5,
+              width: 10,
             )
           ],
         ),
