@@ -17,7 +17,8 @@ Future openaddressPickerBottomSheet(
     @required LinkedHashMap<int, RegionDto> provinceMap,
     @required Map<int, List<RegionDto>> cityMap,
     @required Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm,
-    double bottomSheetHeight}) async {
+    double bottomSheetHeight,
+    String initCityCode}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -35,6 +36,7 @@ Future openaddressPickerBottomSheet(
             cityMap: cityMap,
             onConfirm: onConfirm,
             bottomSheetHeight: bottomSheetHeight,
+            initCityCode: initCityCode,
           ),
         );
       });
@@ -45,8 +47,9 @@ class AddressPicker extends StatefulWidget {
   Map<int, List<RegionDto>> cityMap;
   Function(String provinceCity, String cityCode, double longitude, double latitude) onConfirm;
   double bottomSheetHeight;
+  String initCityCode;
 
-  AddressPicker({this.provinceMap, this.cityMap, this.onConfirm, this.bottomSheetHeight});
+  AddressPicker({this.provinceMap, this.cityMap, this.onConfirm, this.bottomSheetHeight, this.initCityCode});
 
   @override
   State<StatefulWidget> createState() {
@@ -55,8 +58,9 @@ class AddressPicker extends StatefulWidget {
 }
 
 class _AddressPickerState extends State<AddressPicker> {
-  FixedExtentScrollController leftfixedExtentController = FixedExtentScrollController(initialItem: 0);
-  FixedExtentScrollController rightfixedExtentController = FixedExtentScrollController(initialItem: 0);
+  FixedExtentScrollController leftfixedExtentController;
+  FixedExtentScrollController rightfixedExtentController;
+
   bool isFirst = true;
   bool cityChange = false;
   List<String> provinceNameList = [];
@@ -64,44 +68,51 @@ class _AddressPickerState extends State<AddressPicker> {
   List<RegionDto> provinceDtoList = [];
   List<int> provinceIdList = [];
   List<RegionDto> cityDtoList = [];
+  int provinceInitIndex = 0;
+  int cityInitIndex = 0;
 
   ///从map取值
   _getAddressData() {
     widget.provinceMap.forEach((provincekey, provinceDto) {
+      print('--provincekey$provincekey------provinceDto------------provinceDto-${provinceDto.toMap()}');
       provinceNameList.add(provinceDto.regionName);
       provinceIdList.add(provinceDto.id);
       provinceDtoList.add(provinceDto);
+      if (widget.cityMap[provinceDto.id] != null) {
+        for (int i = 0; i < widget.cityMap[provinceDto.id].length; i++) {
+          if (widget.cityMap[provinceDto.id][i].regionCode == widget.initCityCode) {
+            provinceInitIndex = provinceIdList.indexOf(provinceDto.id);
+            continue;
+          }
+        }
+      }else if(provinceDto.regionCode==widget.initCityCode){
+        provinceInitIndex = provinceIdList.indexOf(provinceDto.id);
+      }
     });
-    if (isFirst) {
-      cityNameList.clear();
-      cityDtoList.clear();
-      if (widget.cityMap[provinceIdList[leftfixedExtentController.initialItem]] == null) {
-        cityDtoList.add(widget.provinceMap[provinceIdList[leftfixedExtentController.initialItem]]);
-        cityNameList.add(widget.provinceMap[provinceIdList[leftfixedExtentController.initialItem]].regionName);
-      } else {
-        widget.cityMap[provinceIdList[leftfixedExtentController.initialItem]].forEach((element) {
-          cityDtoList.add(element);
-          cityNameList.add(element.regionName);
-        });
+    leftfixedExtentController = FixedExtentScrollController(initialItem: provinceInitIndex);
+    cityNameList.clear();
+    cityDtoList.clear();
+    if (widget.cityMap[provinceIdList[leftfixedExtentController.initialItem]] == null) {
+      cityDtoList.add(widget.provinceMap[provinceIdList[leftfixedExtentController.initialItem]]);
+      cityNameList.add(widget.provinceMap[provinceIdList[leftfixedExtentController.initialItem]].regionName);
+    } else {
+      for (int i = 0; i < widget.cityMap[provinceIdList[leftfixedExtentController.initialItem]].length; i++) {
+        var element = widget.cityMap[provinceIdList[leftfixedExtentController.initialItem]][i];
+        print('-----cityDtoList------------cityDtoList-${element.toMap()}');
+        cityDtoList.add(element);
+        cityNameList.add(element.regionName);
+        if (element.regionCode == widget.initCityCode) {
+          cityInitIndex = i;
+        }
       }
     }
-  }
-
-  ///因为controller的index有两种，初始化和滚动后，判断是否滚动了，没有则用默认，否则用选中
-  _extentControllerAddListener() {
-    leftfixedExtentController.addListener(() {
-      isFirst = false;
-    });
-    rightfixedExtentController.addListener(() {
-      isFirst = false;
-    });
+    rightfixedExtentController = FixedExtentScrollController(initialItem: cityInitIndex);
   }
 
   @override
   void initState() {
-    super.initState();
-    _extentControllerAddListener();
     _getAddressData();
+    super.initState();
   }
 
   @override
