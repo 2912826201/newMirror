@@ -36,7 +36,7 @@ class DateUtil {
 
    往年的显示 年-月-⽇ 如 16-5-21 12:12
    */
-  static String generateFormatDate(int timeInterval, bool showText) {
+  static String getGenerateFormatDate(int timeInterval, bool showText) {
     var result = "";
     if (timeInterval == 0) {
       return result;
@@ -45,69 +45,37 @@ class DateUtil {
     // 当前时间戳
     var currentDate = DateTime.now();
     // 传入时间戳转DateTime
-    var date = new DateTime.fromMillisecondsSinceEpoch(time);
+    var date = getDateTimeByMs(time);
     // 当传入时间大于当前时间时的容错处理
     if (DateUtil.compareNowDate(date)) {
       date = currentDate;
-    };
-    String year = date.year.toString();
-    String month = date.month.toString();
-    // if (date.month <= 9) {
-    //   month = "0" + month;
-    // }
-    String day = date.day.toString();
-    // if (date.day <= 9) {
-    //   day = "0" + day;
-    // }
-    String hour = date.hour.toString();
-    // if (date.hour <= 9) {
-    //   hour = "0" + hour;
-    // }
-    String minute = date.minute.toString();
-    // if (date.minute <= 9) {
-    //   minute = "0" + minute;
-    // }
-    if (currentDate.year - date.year > 0) {
-      result = year +
-          "${showText ? "年" : "-"}" +
-          month +
-          "${showText ? "月" : "-"}" +
-          day +
-          "${showText ? "日" : ""}" +
-          " " +
-          hour +
-          ":" +
-          minute;
-    } else if (currentDate.year - date.year == 0 && currentDate.month - date.month > 0) {
-      result = month + "${showText ? "月" : "-"}" + day + "${showText ? "日" : ""}" + " " + hour + ":" + minute;
-    } else if (currentDate.year - date.year == 0 &&
-        currentDate.month - date.month == 0 &&
-        currentDate.day - date.day > 0) {
-      print(currentDate.day - date.day);
-      // 昨天
-      if (currentDate.day - date.day == 1) {
-        result = "昨天" + " " + hour + ":" + minute;
-      }
-      //前天及之前
-      if (currentDate.day - date.day >= 2) {
-        result = month + "${showText ? "月" : "-"}" + day + "${showText ? "月" : ""}" + " " + hour + ":" + minute;
-      }
-    } else if (currentDate.year - date.year == 0 &&
-        currentDate.month - date.month == 0 &&
-        currentDate.day - date.day == 0 &&
-        currentDate.hour - date.hour > 0) {
-      result = "${currentDate.hour - date.hour}小时前";
-    } else if (currentDate.year - date.year == 0 &&
-        currentDate.month - date.month == 0 &&
-        currentDate.day - date.day == 0 &&
-        currentDate.hour - date.hour == 0) {
-      if (currentDate.minute - date.minute > 1) {
-        result = "${currentDate.minute - date.minute}分钟前";
-      } else {
-        result = "刚刚";
-      }
     }
-    return result;
+    String alertString = "";
+    String yearFull = "yyyy-MM-dd";
+    String hourFull = "H:mm";
+    String monthFull = "M-d";
+    if (showText) {
+      yearFull = "yyyy年MM月dd日";
+      hourFull = "HH时mm分";
+      monthFull = "MM月dd日";
+    }
+    if (isBefor(date)) {
+      alertString += "刚刚";
+    }else if(twoDateTimeMinutes(date, new DateTime.now()) < 60){
+      alertString += "${twoDateTimeMinutes(date, new DateTime.now())}分钟前";
+    } else if(twoDateTimeHours(date, new DateTime.now())<24){
+      alertString += "${twoDateTimeHours(date, new DateTime.now())}小时前";
+    }else if (isYesterday(date)) {
+      alertString += "昨天";
+      alertString += " ${formatDateV(date, format: hourFull)}";
+    } else if (isToYear(date)) {
+      alertString += formatDateV(date, format: monthFull);
+      alertString += " ${formatDateV(date, format: hourFull)}";
+    }else{
+      alertString += formatDateV(date, format: yearFull);
+      alertString += " ${formatDateV(date, format: hourFull)}";
+    }
+    return alertString;
   }
 
   //将秒数转换为天数
@@ -230,6 +198,8 @@ class DateUtil {
   static String formatMessageAlertTime(String millisecondsSinceEpoch) {
     DateTime dateTime = getDateTimeByMs(int.parse(millisecondsSinceEpoch));
     String alertString = "";
+    String yearFull = "yyyy-M-d";
+    String hourFull = "H:mm";
     if (isToday(dateTime)) {
       alertString += "";
     } else if (isYesterday(dateTime)) {
@@ -239,9 +209,9 @@ class DateUtil {
     } else if (judgeDateTimeIsInScanDay(dateTime, 7)) {
       alertString += "星期${getStringWeekDayStartZero(dateTime.weekday - 1)}";
     } else {
-      alertString += formatDateV(dateTime, format: "yyyy-M-d");
+      alertString += formatDateV(dateTime, format: yearFull);
     }
-    alertString += " ${formatDateV(dateTime, format: "H:mm")}";
+    alertString += " ${formatDateV(dateTime, format: hourFull)}";
     return alertString;
   }
 
@@ -450,7 +420,9 @@ class DateUtil {
 
   ///获取当前时间的毫秒级
   static int getNowDateMs() {
-    return DateTime.now().millisecondsSinceEpoch;
+    return DateTime
+        .now()
+        .millisecondsSinceEpoch;
   }
 
   /// 返回这个日期是周几
@@ -543,6 +515,15 @@ class DateUtil {
     return aDateEqualBDate(old, now);
   }
 
+  ///是否是刚刚
+  static bool isBefor(DateTime old) {
+    if (old == null) return false;
+    if (twoDateTimeMinutes(old, new DateTime.now()) < 1) {
+      return true;
+    }
+    return false;
+  }
+
   /// 是否是昨天.
   static bool isYesterday(DateTime old) {
     if (old == null) return false;
@@ -602,15 +583,16 @@ class DateUtil {
     }
     return format;
   }
+
   //活动界面时间显示规则实现
-  static String activityTimeToString(int timeTemp){
-      String timeString = "";
-      DateTime dateTime = getDateTimeByMs(timeTemp);
-      timeString = formatTimeString(dateTime);
-      timeString += " ";
-      timeString += formatDateNoYearString(dateTime);
-      timeString += " ";
-      timeString += "周${getStringWeekDayStartZero(dateTime.weekday)}";
+  static String activityTimeToString(int timeTemp) {
+    String timeString = "";
+    DateTime dateTime = getDateTimeByMs(timeTemp);
+    timeString = formatTimeString(dateTime);
+    timeString += " ";
+    timeString += formatDateNoYearString(dateTime);
+    timeString += " ";
+    timeString += "周${getStringWeekDayStartZero(dateTime.weekday)}";
     return timeString;
   }
 }
