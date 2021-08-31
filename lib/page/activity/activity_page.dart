@@ -18,7 +18,6 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -40,6 +39,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   // 定位地址
   StreamController<String> streamAddress = StreamController<String>();
+
+  // 城市 编码
+  String citycode;
 
   //  选择菜单值
   String selectedKey = "筛选";
@@ -69,9 +71,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   }
 
   ///监听用户回到app
+  /// // 前台回到后台
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      backToBack();
+      locationPermissions();
     }
   }
 
@@ -101,20 +104,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         await reverseGeographyHttp(currentAddressInfo.longitude, currentAddressInfo.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
+      citycode = locationInformationEntity.regeocode.cityDetails.citycode;
       streamAddress.sink.add(locationInformationEntity.regeocode.cityDetails.city);
     } else {
       // 请求失败
-    }
-  }
-
-  // 前台回到后台
-  backToBack() async {
-    var status = await Permission.locationWhenInUse.status;
-    if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
-      //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
-      // 调用周边
-      locationPermissions();
     }
   }
 

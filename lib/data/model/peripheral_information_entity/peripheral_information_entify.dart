@@ -10,34 +10,32 @@ class PeripheralInformationEntity {
   PeripheralInformationEntity({this.suggestion, this.count, this.infocode, this.pois, this.status, this.info});
 
   PeripheralInformationEntity.fromJson(Map<String, dynamic> json) {
-
-    if(json['suggestion'] != null){
-      if(json['suggestion'] is PeripheralInformationSuggestion){
-        suggestion=json['suggestion'];
-      }else{
-        suggestion=PeripheralInformationSuggestion.fromJson(json['suggestion']);
+    if (json['suggestion'] != null) {
+      if (json['suggestion'] is PeripheralInformationSuggestion) {
+        suggestion = json['suggestion'];
+      } else {
+        suggestion = PeripheralInformationSuggestion.fromJson(json['suggestion']);
       }
-    }else{
-      suggestion =null;
+    } else {
+      suggestion = null;
     }
     count = json['count'];
     infocode = json['infocode'];
     if (json['pois'] != null) {
       pois = new List<PeripheralInformationPoi>();
       (json['pois'] as List).forEach((v) {
-        if(v is PeripheralInformationPoi){
+        if (v is PeripheralInformationPoi) {
           pois.add(v);
-        }else{
+        } else {
           pois.add(new PeripheralInformationPoi.fromJson(v));
         }
-
       });
     }
     if (json['regeocode'] != null) {
-      if(json['regeocode'] is PeripheralInformationRegeocode){
-        regeocode=json['regeocode'];
-      }else{
-        regeocode =  PeripheralInformationRegeocode.fromJson(json['regeocode']);
+      if (json['regeocode'] is PeripheralInformationRegeocode) {
+        regeocode = json['regeocode'];
+      } else {
+        regeocode = PeripheralInformationRegeocode.fromJson(json['regeocode']);
       }
     }
     status = json['status'];
@@ -112,26 +110,26 @@ class PeripheralInformationPoi {
 
   PeripheralInformationPoi(
       {this.parent,
-        this.address,
-        this.distance,
-        this.bizExt,
-        this.pname,
-        this.importance,
-        this.bizType,
-        this.cityname,
-        this.citycode,
-        this.type,
-        this.photos,
-        this.typecode,
-        this.shopinfo,
-        this.poiweight,
-        this.childtype,
-        this.adname,
-        this.name,
-        this.location,
-        this.tel,
-        this.shopid,
-        this.id});
+      this.address,
+      this.distance,
+      this.bizExt,
+      this.pname,
+      this.importance,
+      this.bizType,
+      this.cityname,
+      this.citycode,
+      this.type,
+      this.photos,
+      this.typecode,
+      this.shopinfo,
+      this.poiweight,
+      this.childtype,
+      this.adname,
+      this.name,
+      this.location,
+      this.tel,
+      this.shopid,
+      this.id});
 
   PeripheralInformationPoi.fromJson(Map<String, dynamic> json) {
     if (json['parent'] != null) {
@@ -142,15 +140,14 @@ class PeripheralInformationPoi {
       distance = new List<Null>();
     }
 
-
-    if(json['biz_ext'] != null){
-      if(json['biz_ext'] is PeripheralInformationPoisBizExt){
-        bizExt=json['biz_ext'];
-      }else{
-        bizExt=PeripheralInformationPoisBizExt.fromJson(json['biz_ext']);
+    if (json['biz_ext'] != null) {
+      if (json['biz_ext'] is PeripheralInformationPoisBizExt) {
+        bizExt = json['biz_ext'];
+      } else {
+        bizExt = PeripheralInformationPoisBizExt.fromJson(json['biz_ext']);
       }
-    }else{
-      bizExt =null;
+    } else {
+      bizExt = null;
     }
 
     pname = json['pname'];
@@ -209,6 +206,7 @@ class PeripheralInformationPoi {
     data['id'] = this.id;
     return data;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -271,38 +269,52 @@ class PeripheralInformationRegeocode {
   // addressComponent;
   String formatted_address;
   CityDetails cityDetails;
-  PeripheralInformationRegeocode({this.formatted_address,this.cityDetails});
+
+  PeripheralInformationRegeocode({this.formatted_address, this.cityDetails});
+
   PeripheralInformationRegeocode.fromJson(Map<String, dynamic> json) {
     if (json['formatted_address'] != null) {
       formatted_address = json['formatted_address'];
     }
-    if(json['addressComponent'] != null) {
+    if (json['addressComponent'] != null) {
       cityDetails = CityDetails.fromJson(json['addressComponent']);
     }
   }
 }
+
 class CityDetails {
   // 省
   String province;
+
   // 市
   String city;
+
   // 区
   String district;
+
   // 街道
   String township;
-  CityDetails({this.city,this.province,this.district,this.township});
+
+  // 城市编码
+  String citycode;
+
+  CityDetails({this.city, this.province, this.district, this.township, this.citycode});
+
   CityDetails.fromJson(Map<String, dynamic> json) {
     if (json['province'] != null) {
       province = json['province'];
     }
     if (json['city'] != null) {
-      city = json['city'].replaceAll("市","");
+      city = json['city'].replaceAll("市", "");
     }
     if (json['district'] != null) {
       district = json['district'];
     }
     if (json['township'] != null) {
       township = json['township'];
+    }
+    if (json['citycode'] != null) {
+      citycode = json['citycode'];
     }
   }
 }

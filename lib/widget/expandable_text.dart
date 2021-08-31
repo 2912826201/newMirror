@@ -64,9 +64,6 @@ class _ExpandableTextState extends State<ExpandableText> {
   }
 
   RichTexts() {
-    if (model.content == null) {
-      return;
-    }
     // 存在@和话题
     if ((model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) ||
         (model.topics.isNotEmpty && model.topics.last.len <= model.content.length)) {
@@ -87,38 +84,41 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, size) {
-      final span = TextSpan(text: text ?? '', style: style);
+    return model.content == null
+        ? Container()
+        : LayoutBuilder(builder: (context, size) {
+            final span = TextSpan(text: text ?? '', style: style);
 
-      ///创建一个用于绘制给定文本的文本绘制器。
-      final tp = TextPainter(text: span, maxLines: maxLines, textDirection: TextDirection.ltr);
+            ///创建一个用于绘制给定文本的文本绘制器。
+            final tp = TextPainter(text: span, maxLines: maxLines, textDirection: TextDirection.ltr);
 
-      ///计算用于绘制文本的字形的视觉位置。文本将以接近其最大固有宽度的宽度进行布局
-      tp.layout(maxWidth: size.maxWidth);
-      // 调用系统方法是否超过最大行数
-      if (tp.didExceedMaxLines) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            RichTexts(),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                setState(() {
-                  expand = !expand;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(expand ? '收起' : '展开',
-                    style: TextStyle(fontSize: style != null ? style.fontSize : null, color: AppColor.textWhite60)),
-              ),
-            ),
-          ],
-        );
-      } else {
-        return RichTexts();
-      }
-    });
+            ///计算用于绘制文本的字形的视觉位置。文本将以接近其最大固有宽度的宽度进行布局
+            tp.layout(maxWidth: size.maxWidth);
+            // 调用系统方法是否超过最大行数
+            if (tp.didExceedMaxLines) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  RichTexts(),
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      setState(() {
+                        expand = !expand;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(expand ? '收起' : '展开',
+                          style:
+                              TextStyle(fontSize: style != null ? style.fontSize : null, color: AppColor.textWhite60)),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return RichTexts();
+            }
+          });
   }
 }
