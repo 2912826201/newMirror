@@ -292,7 +292,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           }),
       floatingActionButton: new Builder(builder: (BuildContext context) {
         return new FloatingActionButton(
-          child: const Icon(Icons.add,size: 25,),
+          child: const Icon(
+            Icons.add,
+            size: 25,
+          ),
           foregroundColor: AppColor.mainBlack,
           backgroundColor: AppColor.white,
           // heroTag: null,
@@ -323,6 +326,7 @@ class ActivityListItem extends StatefulWidget {
 
 class _ActivityListItem extends State<ActivityListItem> {
   String serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
+  // String serverReturnsTitle = "一起踢球吧！";
   String activityTitle = "";
   String activityTitle1 = "";
   double tagWidth;
@@ -501,11 +505,18 @@ class _ActivityListItem extends State<ActivityListItem> {
               margin: EdgeInsets.only(left: 12, top: 13.5, bottom: 13.5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // 活动标题布局
                   Container(
-                      width: ScreenUtil.instance.width * 0.49,
-                      child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout()),
+                    constraints: BoxConstraints(
+                      minHeight: 47.0,
+                      maxWidth: ScreenUtil.instance.width * 0.49,
+                    ),
+                    alignment: Alignment.topLeft,
+                    child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout(),
+                  ),
+
                   // 地址布局
                   Container(
                     padding: EdgeInsets.only(top: 6),
@@ -532,12 +543,13 @@ class _ActivityListItem extends State<ActivityListItem> {
                       Container(
                         width: 72,
                         height: 21,
-                        child: Stack(clipBehavior: Clip.none, alignment: const FractionalOffset(0, 0.5), children:
-                        List.generate(
-                            6,
+                        child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: const FractionalOffset(0, 0.5),
+                            children: List.generate(
+                                6,
                                 (index) => roundedAvatar(
-                                context, "http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg", index))
-                        ),
+                                    context, "http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg", index))),
                       ),
                       SizedBox(
                         width: 6,
