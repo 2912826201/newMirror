@@ -24,11 +24,11 @@ class CourseAddressLabel extends StatelessWidget {
     // 文本最大宽度
     double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去两边间距16，图片 16，文本和图片间距3.
     // 获取文本宽度
-    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1,textMaxWidth).width;
+    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1, textMaxWidth).width;
     // 获取背景边框宽度
     double BgWidth = textWidth + 16 + 16 + 3;
     // 课程地址所占的最大长度
-    double courseAddressMaxWidth = screenWidth - 32 - 12 - 35 - 35;// 减去二变间距32，二个item间距32，二个item内的二边间距图片大小图片文本间距总和35
+    double courseAddressMaxWidth = screenWidth - 32 - 12 - 35 - 35; // 减去二变间距32，二个item间距32，二个item内的二边间距图片大小图片文本间距总和35
     // 此是第一个标签的长度
     if (index == 0) {
       // 文字宽度超长
@@ -40,14 +40,16 @@ class CourseAddressLabel extends StatelessWidget {
     } else {
       // 地址位置
       // 课程文字长度大于了UI规定的最大长度时，地址显示剩余的4分之一长度
-      if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width >= textMaxWidth) {
+      if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1, textMaxWidth).width >= textMaxWidth) {
         return (screenWidth - 32 - 12) * 0.25;
       } else {
         // 课程文字长度加地址长度 大于了课程地址所占的最大长度时
-        if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width + textWidth >
+        if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1, textMaxWidth).width + textWidth >
             courseAddressMaxWidth) {
           // 可使用的剩下最大宽度
-          return (screenWidth - 32 - 12) - getTextSize(tags[0].text, TextStyle(fontSize: 12), 1,textMaxWidth).width - 35;
+          return (screenWidth - 32 - 12) -
+              getTextSize(tags[0].text, TextStyle(fontSize: 12), 1, textMaxWidth).width -
+              35;
         } else {
           return BgWidth;
         }
@@ -99,9 +101,9 @@ class CourseAddressLabel extends StatelessWidget {
       margin: EdgeInsets.only(left: index != 0 ? 12 : 0),
       padding: const EdgeInsets.only(top: 3.5, bottom: 3.5),
       width: getBgWidth(),
-      decoration:  BoxDecoration(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(12)),
-        color:AppColor.white.withOpacity(0.1),
+        color: AppColor.white.withOpacity(0.1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -109,19 +111,20 @@ class CourseAddressLabel extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(left: 8),
             child: tags[index].type == feed_tag_type_location
-                ?
-            AppIcon.getAppIcon(AppIcon.tag_location, 16,color: AppColor.white)
+                ? AppIcon.getAppIcon(AppIcon.tag_location, 16, color: AppColor.white)
                 : tags[index].type == feed_tag_type_course
                     ? AppIcon.getAppIcon(AppIcon.tag_course_black, 16)
                     : Container(
                         width: 16,
+                        height: 16,
+                        color: AppColor.mainRed,
                       ),
           ),
           Container(
             width: getTextWidth(),
             child: Text(
               interceptText(tags[index].text),
-              style: const TextStyle(fontSize: 12,color: AppColor.white),
+              style: const TextStyle(fontSize: 12, color: AppColor.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

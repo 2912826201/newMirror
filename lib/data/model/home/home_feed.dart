@@ -45,6 +45,7 @@ class HomeFeedModel {
   List<CommentDtoModel> hotComment = [];
   String address;
   RecommendSourceDto recommendSourceDto; //区分动态样式普通还是话题
+  SimpleActivityDto simpleActivityDto; // 活动标签
   // 添加字段
   int totalCount = -1;
   bool isShowInputBox = true;
@@ -78,6 +79,7 @@ class HomeFeedModel {
     this.isShowInputBox,
     this.selectedMediaFiles,
     this.recommendSourceDto,
+    this.simpleActivityDto
   });
 
   /*// 转换model
@@ -194,16 +196,23 @@ class HomeFeedModel {
       });
     }
     if (json["courseDto"] != null) {
-      if(json["courseDto"] is CourseModel){
+      if (json["courseDto"] is CourseModel) {
         courseDto = json["courseDto"];
-      }else{
+      } else {
         courseDto = CourseModel.fromJson(json["courseDto"]);
       }
     }
-    if(json["recommendSourceDto"] != null){
-      if(json["recommendSourceDto"] is RecommendSourceDto){
+    if (json["simpleActivityDto"] != null) {
+      if (json["simpleActivityDto"] is SimpleActivityDto) {
+        simpleActivityDto = json["simpleActivityDto"];
+      } else {
+        simpleActivityDto = SimpleActivityDto.fromJson(json["simpleActivityDto"]);
+      }
+    }
+    if (json["recommendSourceDto"] != null) {
+      if (json["recommendSourceDto"] is RecommendSourceDto) {
         recommendSourceDto = json["recommendSourceDto"];
-      }else{
+      } else {
         recommendSourceDto = RecommendSourceDto.fromJson(json["recommendSourceDto"]);
       }
     }
@@ -246,6 +255,7 @@ class HomeFeedModel {
     map['isShowInputBox'] = isShowInputBox;
     map['selectedMediaFiles'] = selectedMediaFiles;
     map['recommendSourceDto'] = recommendSourceDto;
+    map['simpleActivityDto'] = simpleActivityDto;
     return map;
   }
 
@@ -399,6 +409,7 @@ class TopicDtoModel {
   String description;
   TopicPicModel avatarUrl;
   String img;
+
   TopicDtoModel(
       {this.id,
       this.uid,
@@ -819,6 +830,37 @@ class RecommendSourceDto {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["type"] = type;
+    return map;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class SimpleActivityDto {
+  int id;
+  String title;
+  String pic;
+
+  SimpleActivityDto({
+    this.id,
+    this.title,
+    this.pic
+  });
+
+  SimpleActivityDto.fromJson(Map<String, dynamic> json) {
+    id = json["id"];
+    title = json["title"];
+    pic = json["pic"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["id"] = id;
+    map["title"] = title;
+    map["pic"] = pic;
     return map;
   }
 

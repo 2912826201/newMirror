@@ -92,12 +92,12 @@ class _WeekPopWindown extends State<WeekPopWindow> {
               children: [
                 Text(
                   title,
-                  style: AppStyle.whiteRegular12,
+                  style: choseIndex == index?AppStyle.whiteRegular12:AppStyle.text1Regular12,
                 ),
                 Spacer(),
                 Text(
                   week,
-                  style: AppStyle.whiteRegular12,
+                  style: choseIndex == index?AppStyle.whiteRegular12:AppStyle.text1Regular12,
                 ),
               ],
             )),
@@ -118,7 +118,8 @@ class _WeekPopWindown extends State<WeekPopWindow> {
         children: [
           Text(
             _timeTitle,
-            style: AppStyle.whiteRegular12,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white,decoration:
+            TextDecoration.none),
           ),
           SizedBox(
             height: 12,
