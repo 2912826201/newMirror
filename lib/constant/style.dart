@@ -94,8 +94,6 @@ class AppStyle {
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryRegular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
-  static const textSecondaryRegular11 =
-      TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
 
   // textHint 提示字体灰色
   static const textHintRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textHint);

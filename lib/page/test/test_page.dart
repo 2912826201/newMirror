@@ -12,6 +12,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/data/model/training/course_model.dart';
@@ -31,6 +32,7 @@ import 'package:mirror/page/test/tik_tok_test/tik_tok_home.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -42,8 +44,10 @@ import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
 import 'package:mirror/widget/volume_popup.dart';
+import 'package:mirror/widget/week_pop_window.dart';
 import 'package:move_to_background/move_to_background.dart';
 import 'package:open_file/open_file.dart';
+import 'package:popup_window/popup_window.dart';
 import 'package:provider/provider.dart';
 import '../message/util/message_chat_page_manager.dart';
 import '../training/video_course/video_course_play_page2.dart';
@@ -72,6 +76,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
   String TestText =
       "交通指引成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交站:广都上街华阳大道口、广都中街华阳大道口、输气大厦、广都上街、南阳盛世、华阳地税所、广都上街华阳大道口、华阳大道广都中街口、华阳大道广都中街口、华阳大道广都中街、广都上街、南阳盛世、丽都街东、广都中街、正东中街、华阳大市场。成都天府新区华天兴能燃气有限责任公司华阳客服中心附近的公交车:815路、829路、T102路环线、517路、T101路、华阳4A路、501路、801路、813路、825B路、823路、825A路、826路、821路、827路、828路、843路、T103路、华阳2A路、T106路、815A路、华阳5路、807路等。打车去成都天府新区华天兴能燃气有限责任公司华阳客服中心多少钱：成都市出租车的起步价是8.0元、起步距离2.0公里、 每公里1.9元、无燃油附加费 ，请参考。自驾去成都天府新区华天兴能燃气有限责任公司华阳客服中心怎么走：请输入您的出发点，帮您智能规划驾车线路。";
+  DateTime choseDateTime = DateTime.now();
 
   @override
   void initState() {
@@ -112,6 +117,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("测试用页面，可随意添加组件"),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -204,7 +210,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                             fontSize: 15,
                           ),
                           child: AnimatedTextKit(
-                            repeatForever:true,
+                            repeatForever: true,
                             pause: Duration(milliseconds: 100),
                             animatedTexts: [
                               ColorizeAnimatedText(
@@ -700,10 +706,68 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     // }));
                   },
                   child: Text("测试listview增加item")),
+              _showSelectJoinTimePopupWindow(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _showSelectJoinTimePopupWindow() {
+    return PopupWindowButton(
+      offset: Offset(0, 24),
+      buttonBuilder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.mainBlack, width: 0.5),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 6),
+          width: 104,
+          height: 24,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Text(DateUtil.formatDateNoYearString(choseDateTime), style: AppStyle.textRegular15),
+              Spacer(),
+              RotatedBox(
+                quarterTurns: 1,
+                child: AppIcon.getAppIcon(
+                  AppIcon.arrow_right_18,
+                  16,
+                  color: AppColor.textWhite60,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      windowBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SizeTransition(
+              sizeFactor: animation,
+              child: Container(
+                child: WeekPopWindow(
+                  initDateTime: choseDateTime,
+                  onTapChoseCallBack: (dateTime) {
+                    choseDateTime = dateTime;
+                    setState(() {
+                    });
+                  },
+                ),
+                width: ScreenUtil.instance.width,
+                padding: EdgeInsets.only(right: 16),
+              )),
+        );
+      },
+      onWindowShow: () {
+        print('PopupWindowButton window show');
+      },
+      onWindowDismiss: () {
+        print('PopupWindowButton window dismiss');
+      },
     );
   }
 
