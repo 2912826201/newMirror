@@ -10,7 +10,9 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/auth_data.dart';
+import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -39,8 +41,10 @@ class CreateActivityPage extends StatefulWidget {
 class _CreateActivityPageState extends StateKeyboard {
   //活动类型
   StreamController<int> activityTypeStream = StreamController<int>();
-  Map<String, List<String>> activityTypeMap = Map();
   int selectActivityType = 0;
+
+  //活动名称-Controller
+  TextEditingController activityTitleController = TextEditingController();
 
   //选择参加权限
   String selectedPermissionsKey;
@@ -58,6 +62,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动说明
   FocusNode activityIllustrateFocusNode = FocusNode();
+  TextEditingController activityIllustrateController = TextEditingController();
 
   GlobalKey inputBoxKey = GlobalKey();
   GlobalKey scrollKey = GlobalKey();
@@ -68,6 +73,8 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动时间
   DateTime activityDateTime = DateTime.now();
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now().add(Duration(hours: 1));
   StreamController<DateTime> activityTimeStream = StreamController<DateTime>();
 
   //活动图片
@@ -151,7 +158,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
             //活动名称
             _getTitleWidget("输入活动名称"),
-            _getEditWidget("输入内容"),
+            _getEditWidget("输入内容", activityTitleController),
 
             //活动时间
             _getTitleWidget("活动时间"),
@@ -273,15 +280,20 @@ class _CreateActivityPageState extends StateKeyboard {
               ),
               Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
               Spacer(),
-              Container(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: data.data ? AppColor.mainYellow : AppColor.textWhite40,
-                  borderRadius: BorderRadius.circular(4),
+              GestureDetector(
+                child: Container(
+                  height: 40,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: data.data ? AppColor.mainYellow : AppColor.textWhite40,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Text("发布活动", style: data.data ? AppStyle.textRegular15 : AppStyle.text1Regular15),
                 ),
-                alignment: Alignment.centerLeft,
-                child: Text("发布活动", style: data.data ? AppStyle.textRegular15 : AppStyle.text1Regular15),
+                onTap: () {
+                  _createActivity();
+                },
               ),
             ],
           ),
@@ -391,7 +403,8 @@ class _CreateActivityPageState extends StateKeyboard {
                 border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
               ),
               padding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
-              child: Text("18:30~19:30", style: AppStyle.text1Regular12),
+              child: Text("${DateUtil.formatTimeString(startTime)}~"
+                  "${DateUtil.formatTimeString(endTime)}", style: AppStyle.text1Regular12),
             ),
           ],
         ),
@@ -429,6 +442,7 @@ class _CreateActivityPageState extends StateKeyboard {
             }
           }
         },
+        controller: activityIllustrateController,
         cursorColor: AppColor.white,
         style: AppStyle.whiteRegular16,
         maxLines: null,
@@ -670,9 +684,15 @@ class _CreateActivityPageState extends StateKeyboard {
       stream: activityTypeStream.stream,
       builder: (context, data) {
         var widgetArray = <Widget>[];
-        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / activityTypeMap.length;
+        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData
+            .init()
+            .activityTypeList
+            .length;
         int index = 0;
-        activityTypeMap.forEach((key, value) {
+        ActivityTypeData
+            .init()
+            .activityTypeMap
+            .forEach((key, value) {
           widgetArray.add(_getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index));
           index++;
         });
@@ -717,7 +737,7 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //edit 输入框
-  Widget _getEditWidget(String hitString) {
+  Widget _getEditWidget(String hitString, TextEditingController controller) {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16),
       padding: EdgeInsets.only(bottom: 10),
@@ -730,7 +750,7 @@ class _CreateActivityPageState extends StateKeyboard {
         keyboardType: TextInputType.multiline,
         //不限制行数
         maxLines: 1,
-
+        controller: controller,
         enableInteractiveSelection: true,
         // 光标颜色
         cursorColor: AppColor.textWhite60,
@@ -801,12 +821,6 @@ class _CreateActivityPageState extends StateKeyboard {
 
 
   _initData() {
-    activityTypeMap["篮球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["足球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["羽毛球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["乒乓球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["网球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["跑步"] = [AppIcon.input_gallery, AppIcon.message_emotion];
     selectedPermissionsKey = AuthData.init().getDefaultString();
     equipmentKey = EquipmentData.init().getDefaultString();
 
@@ -975,8 +989,43 @@ class _CreateActivityPageState extends StateKeyboard {
 
 
   //创建活动
-  _createActivity() {
+  _createActivity() async {
+    if (!isReadInformation) {
+      ToastShow.show(msg: "请阅读活动说明", context: context);
+      return;
+    }
 
+    // if(activityTitleController.text==null||activityTitleController.text.length<1){
+    //   ToastShow.show(msg: "请检查参数", context: context);
+    //   return;
+    // }
+
+    ActivityModel model = await createActivity(
+        title: "篮球活动222111",
+        type: selectActivityType,
+        count: joinNumber,
+        startTime: startTime.millisecondsSinceEpoch,
+        endTime: endTime.millisecondsSinceEpoch,
+        cityCode: "208",
+        address: "天府三街地铁站d口",
+        longitude: "104.068705",
+        latitude: "30.546983",
+        equipment: EquipmentData.init().getIndex(equipmentKey),
+        auth: AuthData.init().getIndex(selectedPermissionsKey),
+        pic: "http://devpic.aimymusic.com/ifapp/1004213/6yOkv43JnLeWKxIx73VoIw=
+        description
+        :
+        "
+        这是异常业余篮球赛，没脾气的不要来
+        ",
+        uids: "1008051"
+    );
+
+    if (model != null) {
+      print("model:${model.toJson().toString()}");
+    } else {
+      print("没有成功");
+    }
   }
 
 
