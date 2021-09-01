@@ -209,7 +209,7 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              margin: const EdgeInsets.only(left: 11),
+              margin: const EdgeInsets.only(left: 12),
               height: 32,
               width: ScreenUtil.instance.width - 32,
               decoration: BoxDecoration(
