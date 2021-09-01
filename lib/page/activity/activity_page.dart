@@ -23,6 +23,7 @@ import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/surrounding_information.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'activity_flow.dart';
@@ -348,6 +349,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
+            // openSurroundingInformationBottomSheet(context:context);
             // 跳转创建活动
             AppRouter.navigateCreateActivityPage(context);
           },

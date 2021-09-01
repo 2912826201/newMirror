@@ -124,7 +124,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               ),
             ),
             const Spacer(),
-            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18,color: AppColor.textWhite40),
+            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
           ],
         ),
       ),
@@ -147,10 +147,10 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
 
   // 子页面回调
   childrenACallBack(PeripheralInformationPoi poi) {
-    if(poi == null) {
+    if (poi == null) {
       return;
     }
-    if ( poi.name != "不显示所在位置") {
+    if (poi.name != "不显示所在位置") {
       isShowList = false;
       if (poi != null) {
         context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;
@@ -230,6 +230,31 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                 selectedMediaFiles: widget.selectedMediaFiles,
               )
             : Container(),
+        Container(
+          margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+          height: 48,
+          width: ScreenUtil.instance.width,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
+              const SizedBox(
+                width: 12,
+              ),
+              Container(
+                width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
+                child: Text(
+                  "活动名",
+                  style: AppStyle.whiteRegular16,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const Spacer(),
+              AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
+            ],
+          ),
+        ),
         seletedAddress(context),
         widget.pois.isNotEmpty ? Offstage(offstage: isShowList == false, child: recommendAddress()) : Container()
       ],
@@ -336,7 +361,7 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
           child: Center(
-            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13,color: AppColor.white),
+            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13, color: AppColor.white),
           ),
         ),
       );
@@ -457,8 +482,7 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
                     animationMap[fileModel.croppedImage.hashCode].forward().then((value) {
                       animationMap.removeWhere((key, value) => key == fileModel.croppedImage.hashCode);
                       widget.selectedMediaFiles.list.removeWhere((element) => element == fileModel);
-                      setState(() {
-                      });
+                      setState(() {});
                     });
                   }
                 }
