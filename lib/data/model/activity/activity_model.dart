@@ -11,8 +11,8 @@ class ActivityModel {
   String address;
   double longitude;
   double latitude;
-  String equipment;
-  String auth;
+  int equipment;
+  int auth;
   String pic;
   String description;
   int startTime;
@@ -37,7 +37,6 @@ class ActivityModel {
     description = json['description'];
     startTime = json['startTime'];
     endTime = json['endTime'];
-    members = json['members'];
     if (json["members"] != null) {
       members = [];
       json["members"].forEach((v) {

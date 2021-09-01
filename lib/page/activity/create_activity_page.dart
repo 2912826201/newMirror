@@ -10,13 +10,17 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/auth_data.dart';
+import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -40,8 +44,10 @@ class CreateActivityPage extends StatefulWidget {
 class _CreateActivityPageState extends StateKeyboard {
   //活动类型
   StreamController<int> activityTypeStream = StreamController<int>();
-  Map<String, List<String>> activityTypeMap = Map();
   int selectActivityType = 0;
+
+  //活动名称-Controller
+  TextEditingController activityTitleController = TextEditingController();
 
   //选择参加权限
   String selectedPermissionsKey;
@@ -59,6 +65,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动说明
   FocusNode activityIllustrateFocusNode = FocusNode();
+  TextEditingController activityIllustrateController = TextEditingController();
 
   GlobalKey inputBoxKey = GlobalKey();
   GlobalKey scrollKey = GlobalKey();
@@ -69,7 +76,16 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动时间
   DateTime activityDateTime = DateTime.now();
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now().add(Duration(hours: 1));
   StreamController<DateTime> activityTimeStream = StreamController<DateTime>();
+
+  //活动地址
+  String provinceCity = "";
+  String cityCode;
+  String longitude;
+  String latitude;
+  StreamController<String> provinceCityStream = StreamController<String>();
 
   //活动图片
   List<File> activityImageFileList = [];
@@ -102,6 +118,7 @@ class _CreateActivityPageState extends StateKeyboard {
     equipmentStream.close();
     joinPermissionsStream.close();
     readInformationStream.close();
+    provinceCityStream.close();
   }
 
   @override
@@ -152,7 +169,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
             //活动名称
             _getTitleWidget("输入活动名称"),
-            _getEditWidget("输入内容"),
+            _getEditWidget("输入内容", activityTitleController),
 
             //活动时间
             _getTitleWidget("活动时间"),
@@ -161,9 +178,17 @@ class _CreateActivityPageState extends StateKeyboard {
 
             //活动地址
             _getTitleWidget("活动地点"),
-            _getSubtitleWidget("输入地址", onTap: () {
-              locationPermissions();
-            }),
+            StreamBuilder<String>(
+              initialData: "输入地址",
+              stream: provinceCityStream.stream,
+              builder: (context, data) {
+                return _getSubtitleWidget(data.data, onTap: () {
+                  locationPermissions();
+                });
+              },
+            ),
+
+
             _getSizedBox(height: 8),
 
             //修改参见人数
@@ -235,6 +260,7 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
+
   //获取创建活动的布局
   Widget _getCreateActivityBox() {
     return StreamBuilder(
@@ -269,15 +295,20 @@ class _CreateActivityPageState extends StateKeyboard {
               ),
               Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
               Spacer(),
-              Container(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: data.data ? AppColor.mainYellow : AppColor.textWhite40,
-                  borderRadius: BorderRadius.circular(4),
+              GestureDetector(
+                child: Container(
+                  height: 40,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: data.data ? AppColor.mainYellow : AppColor.textWhite40,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Text("发布活动", style: data.data ? AppStyle.textRegular15 : AppStyle.text1Regular15),
                 ),
-                alignment: Alignment.centerLeft,
-                child: Text("发布活动", style: data.data ? AppStyle.textRegular15 : AppStyle.text1Regular15),
+                onTap: () {
+                  _createActivity();
+                },
               ),
             ],
           ),
@@ -285,6 +316,7 @@ class _CreateActivityPageState extends StateKeyboard {
       },
     );
   }
+
 
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
@@ -380,7 +412,8 @@ class _CreateActivityPageState extends StateKeyboard {
                 border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
               ),
               padding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
-              child: Text("18:30~19:30", style: AppStyle.text1Regular12),
+              child: Text("${DateUtil.formatTimeString(startTime)}~"
+                  "${DateUtil.formatTimeString(endTime)}", style: AppStyle.text1Regular12),
             ),
           ],
         ),
@@ -418,6 +451,7 @@ class _CreateActivityPageState extends StateKeyboard {
             }
           }
         },
+        controller: activityIllustrateController,
         cursorColor: AppColor.white,
         style: AppStyle.whiteRegular16,
         maxLines: null,
@@ -657,9 +691,9 @@ class _CreateActivityPageState extends StateKeyboard {
       stream: activityTypeStream.stream,
       builder: (context, data) {
         var widgetArray = <Widget>[];
-        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / activityTypeMap.length;
+        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData.init().activityTypeList.length;
         int index = 0;
-        activityTypeMap.forEach((key, value) {
+        ActivityTypeData.init().activityTypeMap.forEach((key, value) {
           widgetArray.add(_getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index));
           index++;
         });
@@ -702,7 +736,7 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //edit 输入框
-  Widget _getEditWidget(String hitString) {
+  Widget _getEditWidget(String hitString, TextEditingController controller) {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16),
       padding: EdgeInsets.only(bottom: 10),
@@ -714,7 +748,7 @@ class _CreateActivityPageState extends StateKeyboard {
         keyboardType: TextInputType.multiline,
         //不限制行数
         maxLines: 1,
-
+        controller: controller,
         enableInteractiveSelection: true,
         // 光标颜色
         cursorColor: AppColor.textWhite60,
@@ -784,12 +818,6 @@ class _CreateActivityPageState extends StateKeyboard {
   /// ----------start-----
 
   _initData() {
-    activityTypeMap["篮球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["足球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["羽毛球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["乒乓球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["网球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["跑步"] = [AppIcon.input_gallery, AppIcon.message_emotion];
     selectedPermissionsKey = AuthData.init().getDefaultString();
     equipmentKey = EquipmentData.init().getDefaultString();
 
@@ -802,13 +830,13 @@ class _CreateActivityPageState extends StateKeyboard {
     if (recommendUserList != null && recommendUserList.length > 0) {
       recommendUserStream.sink.add(recommendUserList);
     } else {
-      recommendUserList = [];
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserStream.sink.add(recommendUserList);
+      // recommendUserList = [];
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserStream.sink.add(recommendUserList);
     }
   }
 
@@ -879,6 +907,7 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
+
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
@@ -902,6 +931,7 @@ class _CreateActivityPageState extends StateKeyboard {
       });
     });
   }
+
 
   void getStoragePermision() async {
     var permissionStatus = await Permission.storage.status;
@@ -947,6 +977,11 @@ class _CreateActivityPageState extends StateKeyboard {
           context: context,
           onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
             // provinceCity 选择地址名  cityCode 城市码，
+            this.provinceCity = provinceCity;
+            this.cityCode = cityCode;
+            this.longitude = longitude.toString();
+            this.latitude = latitude.toString();
+            provinceCityStream.sink.add(provinceCity);
           });
     } else {
       print("嘻嘻嘻嘻嘻");
@@ -958,6 +993,11 @@ class _CreateActivityPageState extends StateKeyboard {
             context: context,
             onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
               // provinceCity 选择地址名  cityCode 城市码，
+              this.provinceCity = provinceCity;
+              this.cityCode = cityCode;
+              this.longitude = longitude.toString();
+              this.latitude = latitude.toString();
+              provinceCityStream.sink.add(provinceCity);
             });
       } else {
         _locationFailPopUps();
@@ -992,6 +1032,79 @@ class _CreateActivityPageState extends StateKeyboard {
     // TODO: implement startChangeKeyBoardHeight
   }
 
+
   //创建活动
-  _createActivity() {}
+  _createActivity() async {
+    if (!isReadInformation) {
+      ToastShow.show(msg: "请阅读活动说明", context: context);
+      return;
+    }
+
+    if (activityTitleController.text == null || activityTitleController.text.length < 1 ||
+        cityCode == null || activityImageFileList.length < 1) {
+      ToastShow.show(msg: "请检查参数", context: context);
+      return;
+    }
+
+
+    ToastShow.show(msg: "正在创建活动请稍等", context: context);
+
+    ActivityModel model = await createActivity(
+      title: activityTitleController.text,
+      type: selectActivityType,
+      count: joinNumber,
+      startTime: startTime.millisecondsSinceEpoch,
+      endTime: endTime.millisecondsSinceEpoch,
+      cityCode: cityCode,
+      address: provinceCity,
+      longitude: longitude,
+      latitude: latitude,
+      equipment: EquipmentData.init().getIndex(equipmentKey),
+      auth: AuthData.init().getIndex(selectedPermissionsKey),
+      pic: await onPostImageFile(),
+      description: activityIllustrateController.text,
+      uids: _getRecommendUserString(),
+    );
+
+    if (model != null) {
+      print("model:${model.toJson().toString()}");
+      ToastShow.show(msg: "创建成功", context: context);
+    } else {
+      ToastShow.show(msg: "创建失败", context: context);
+    }
+  }
+
+  Future<String> onPostImageFile() async {
+    UploadResults results = await FileUtil().uploadPics(activityImageFileList, (percent) {});
+    List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
+    for (int i = 0; i < results.resultMap.length; i++) {
+      UploadResultModel model = results.resultMap.values.elementAt(i);
+      uploadResultModelList.add(model);
+      print("第${i + 1}个上传文件");
+      print(model.isSuccess);
+      print(model.error);
+      print(model.filePath);
+      print(model.url);
+    }
+    return uploadResultModelList[0].url;
+  }
+
+  //获取推荐好友的id
+  String _getRecommendUserString() {
+    if (recommendUserList.length < 1) {
+      return "";
+    } else {
+      String uids = "";
+      for (int i = 0; i < recommendUserList.length; i++) {
+        if (i == recommendUserList.length - 1) {
+          uids += recommendUserList[i].uid.toString();
+        } else {
+          uids += recommendUserList[i].uid.toString() + ",";
+        }
+      }
+      return uids;
+    }
+  }
+
+
 }

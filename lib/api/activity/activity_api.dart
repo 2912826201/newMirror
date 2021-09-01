@@ -42,7 +42,7 @@ Future<ActivityModel> createActivity({
   params["description"] = description;
   params["uids"] = uids;
 
-  BaseResponseModel responseModel = await requestApi(GETRECOMMENDUSERLIST, params);
+  BaseResponseModel responseModel = await requestApi(CREATEACTIVITY, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return ActivityModel.fromJson(responseModel.data);
   } else {
