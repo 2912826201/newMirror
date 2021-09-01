@@ -66,7 +66,8 @@ class AppStyle {
   static const whiteRegular15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.white);
-  static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white,
+      decoration: TextDecoration.none);
   static const whiteRegular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular9 = TextStyle(fontSize: 9, fontWeight: FontWeight.w400, color: AppColor.white);
