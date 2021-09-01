@@ -25,6 +25,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
+import 'package:mirror/widget/surrounding_information.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:mirror/widget/week_pop_window.dart';
@@ -161,7 +162,7 @@ class _CreateActivityPageState extends StateKeyboard {
             //活动地址
             _getTitleWidget("活动地点"),
             _getSubtitleWidget("输入地址", onTap: () {
-              print("点击了输入地址");
+              locationPermissions();
             }),
             _getSizedBox(height: 8),
 
@@ -176,9 +177,7 @@ class _CreateActivityPageState extends StateKeyboard {
               initialData: selectedPermissionsKey,
               stream: joinPermissionsStream.stream,
               builder: (context, data) {
-                return _getMenuUi(selectedPermissionsKey, AuthData
-                    .init()
-                    .authList, (value) {
+                return _getMenuUi(selectedPermissionsKey, AuthData.init().authList, (value) {
                   selectedPermissionsKey = value;
                   joinPermissionsStream.sink.add(selectedPermissionsKey);
                 });
@@ -191,9 +190,7 @@ class _CreateActivityPageState extends StateKeyboard {
               initialData: equipmentKey,
               stream: equipmentStream.stream,
               builder: (context, data) {
-                return _getMenuUi(equipmentKey, EquipmentData
-                    .init()
-                    .equipmentList, (value) {
+                return _getMenuUi(equipmentKey, EquipmentData.init().equipmentList, (value) {
                   equipmentKey = value;
                   equipmentStream.sink.add(equipmentKey);
                 });
@@ -237,7 +234,6 @@ class _CreateActivityPageState extends StateKeyboard {
       ),
     );
   }
-
 
   //获取创建活动的布局
   Widget _getCreateActivityBox() {
@@ -290,7 +286,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
     return StreamBuilder<List<UserModel>>(
@@ -312,8 +307,7 @@ class _CreateActivityPageState extends StateKeyboard {
                     child: ListView.separated(
                         itemCount: snapshot.data.length,
                         scrollDirection: Axis.horizontal,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            VerticalDivider(
+                        separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                               width: 6.0,
                               color: AppColor.mainBlack,
                             ),
@@ -344,11 +338,8 @@ class _CreateActivityPageState extends StateKeyboard {
                                         border: Border.all(color: AppColor.white, width: 1),
                                         borderRadius: BorderRadius.circular(50.0 / 2),
                                       ),
-                                      child: UserAvatarImageUtil.init()
-                                          .getUserImageWidget(
-                                          snapshot.data[index].avatarUri,
-                                          snapshot.data[index].uid.toString(),
-                                          45),
+                                      child: UserAvatarImageUtil.init().getUserImageWidget(
+                                          snapshot.data[index].avatarUri, snapshot.data[index].uid.toString(), 45),
                                     ),
                                     SizedBox(height: 2),
                                     Text("一起活动过", style: AppStyle.whiteRegular12),
@@ -363,10 +354,8 @@ class _CreateActivityPageState extends StateKeyboard {
               ),
             );
           }
-        }
-    );
+        });
   }
-
 
   //选择时间的ui
   Widget _getActivityTimeUi() {
@@ -413,9 +402,9 @@ class _CreateActivityPageState extends StateKeyboard {
           RenderBox renderBox = inputBoxKey.currentContext.findRenderObject();
           var offset = renderBox.localToGlobal(Offset.zero);
 
-          double value = (offset.dy + 110.0) - (ScreenUtil.instance.height -
-              (Application.keyboardHeightIfPage > 0 ?
-              Application.keyboardHeightIfPage : 200));
+          double value = (offset.dy + 110.0) -
+              (ScreenUtil.instance.height -
+                  (Application.keyboardHeightIfPage > 0 ? Application.keyboardHeightIfPage : 200));
 
           double widgetHeight = scrollKey.currentContext.size.height;
 
@@ -460,8 +449,7 @@ class _CreateActivityPageState extends StateKeyboard {
           child: ListView.separated(
               itemCount: data.data.length < activityImageFileListCount ? data.data.length + 1 : data.data.length,
               scrollDirection: Axis.horizontal,
-              separatorBuilder: (BuildContext context, int index) =>
-                  VerticalDivider(
+              separatorBuilder: (BuildContext context, int index) => VerticalDivider(
                     width: 10.0,
                     color: AppColor.mainBlack,
                   ),
@@ -476,7 +464,6 @@ class _CreateActivityPageState extends StateKeyboard {
       },
     );
   }
-
 
   Widget _item(int index, File file) {
     return Container(
@@ -508,7 +495,6 @@ class _CreateActivityPageState extends StateKeyboard {
       ),
     );
   }
-
 
   Widget _addImageItem() {
     return GestureDetector(
@@ -556,7 +542,8 @@ class _CreateActivityPageState extends StateKeyboard {
           height: 28.0 + (value == itemList[0] ? 12 : 0) + (value == itemList[itemList.length - 1] ? 12 : 0),
           color: AppColor.imageBgGrey,
           alignment: Alignment.centerLeft,
-          padding: EdgeInsets.only(left: 6,
+          padding: EdgeInsets.only(
+            left: 6,
             top: (value == itemList[0] ? 12 : 0),
             bottom: (value == itemList[itemList.length - 1] ? 12 : 0),
           ),
@@ -705,9 +692,7 @@ class _CreateActivityPageState extends StateKeyboard {
         margin: EdgeInsets.only(left: 16, right: 16),
         padding: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8)),
-            color: AppColor.transparent
-        ),
+            border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8)), color: AppColor.transparent),
         width: double.infinity,
         alignment: Alignment.centerLeft,
         child: Text(title ?? "", style: AppStyle.text1Regular14),
@@ -724,8 +709,7 @@ class _CreateActivityPageState extends StateKeyboard {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8)),
       ),
-      child:
-      TextSpanField(
+      child: TextSpanField(
         // 多行展示
         keyboardType: TextInputType.multiline,
         //不限制行数
@@ -798,7 +782,6 @@ class _CreateActivityPageState extends StateKeyboard {
   ///-----------获取数据-----
   ///
   /// ----------start-----
-
 
   _initData() {
     activityTypeMap["篮球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
@@ -896,36 +879,29 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
       ToastShow.show(msg: "最多只能选择$activityImageFileListCount张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(
-        context,
-        activityImageFileListCount - activityImageFileList.length,
-        typeImage,
-        false,
-        startPageGallery,
-        false,
-            (result) {
-          SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
-          if (!result || files == null) {
-            print('===============================值为空退回');
-            return;
-          }
-          RuntimeProperties.selectedMediaFiles = null;
-          List<MediaFileModel> model = files.list;
-          model.forEach((element) async {
-            if (element.file != null) {
-              activityImageFileList.add(element.file);
-              activityImageStream.sink.add(activityImageFileList);
-            }
-          });
-        });
+        context, activityImageFileListCount - activityImageFileList.length, typeImage, false, startPageGallery, false,
+        (result) {
+      SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
+      if (!result || files == null) {
+        print('===============================值为空退回');
+        return;
+      }
+      RuntimeProperties.selectedMediaFiles = null;
+      List<MediaFileModel> model = files.list;
+      model.forEach((element) async {
+        if (element.file != null) {
+          activityImageFileList.add(element.file);
+          activityImageStream.sink.add(activityImageFileList);
+        }
+      });
+    });
   }
-
 
   void getStoragePermision() async {
     var permissionStatus = await Permission.storage.status;
@@ -948,7 +924,7 @@ class _CreateActivityPageState extends StateKeyboard {
                 }),
                 confirm: AppDialogButton(
                   "去设置",
-                      () {
+                  () {
                     AppSettings.openAppSettings();
                     return true;
                   },
@@ -960,6 +936,49 @@ class _CreateActivityPageState extends StateKeyboard {
     }
   }
 
+  // 获取定位权限
+  locationPermissions() async {
+    // 获取定位权限
+    PermissionStatus permissions = await Permission.locationWhenInUse.status;
+    print("下次寻问permissions：：：：$permissions");
+    // 已经获取了定位权限
+    if (permissions.isGranted) {
+      openSurroundingInformationBottomSheet(
+          context: context,
+          onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+            // provinceCity 选择地址名  cityCode 城市码，
+          });
+    } else {
+      print("嘻嘻嘻嘻嘻");
+      // 请求定位权限
+      permissions = await Permission.locationWhenInUse.request();
+      print("permissions::::$permissions");
+      if (permissions.isGranted) {
+        openSurroundingInformationBottomSheet(
+            context: context,
+            onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+              // provinceCity 选择地址名  cityCode 城市码，
+            });
+      } else {
+        _locationFailPopUps();
+      }
+    }
+  }
+
+  // 定位失败弹窗
+  _locationFailPopUps() {
+    return showAppDialog(context,
+        title: "位置信息",
+        info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
+        confirmColor: AppColor.white,
+        cancel: AppDialogButton("返回", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去设置", () {
+          AppSettings.openLocationSettings();
+          return true;
+        }));
+  }
 
   @override
   void endChangeKeyBoardHeight(bool isOpenKeyboard) {
@@ -973,11 +992,6 @@ class _CreateActivityPageState extends StateKeyboard {
     // TODO: implement startChangeKeyBoardHeight
   }
 
-
   //创建活动
-  _createActivity() {
-
-  }
-
-
+  _createActivity() {}
 }
