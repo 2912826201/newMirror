@@ -163,6 +163,8 @@ dependencies:
   lottie: ^1.0.1
   #popup_window
   popup_window: ^1.1.2
+  #测试关闭键盘
+  keyboard_service: ^2.0.0
 
 
   #测试跳转指定item
