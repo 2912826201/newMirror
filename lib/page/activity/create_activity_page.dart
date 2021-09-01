@@ -684,15 +684,9 @@ class _CreateActivityPageState extends StateKeyboard {
       stream: activityTypeStream.stream,
       builder: (context, data) {
         var widgetArray = <Widget>[];
-        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData
-            .init()
-            .activityTypeList
-            .length;
+        double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData.init().activityTypeList.length;
         int index = 0;
-        ActivityTypeData
-            .init()
-            .activityTypeMap
-            .forEach((key, value) {
+        ActivityTypeData.init().activityTypeMap.forEach((key, value) {
           widgetArray.add(_getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index));
           index++;
         });
@@ -1012,12 +1006,8 @@ class _CreateActivityPageState extends StateKeyboard {
         latitude: "30.546983",
         equipment: EquipmentData.init().getIndex(equipmentKey),
         auth: AuthData.init().getIndex(selectedPermissionsKey),
-        pic: "http://devpic.aimymusic.com/ifapp/1004213/6yOkv43JnLeWKxIx73VoIw=
-        description
-        :
-        "
-        这是异常业余篮球赛，没脾气的不要来
-        ",
+        pic: "http://devpic.aimymusic.com/ifapp/1004213/6yOkv43JnLeWKxIx73VoIw==.png",
+        description: "这是异常业余篮球赛，没脾气的不要来",
         uids: "1008051"
     );
 
