@@ -552,12 +552,12 @@ class _ActivityListItem extends State<ActivityListItem> {
         color: AppColor.layoutBgGrey,
         margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
         child: Container(
-          height: 140,
+          margin: EdgeInsets.only(top: 12,bottom: 9),
           child: Row(
             children: [
               // 右边布局
               Container(
-                margin: EdgeInsets.only(left: 12, top: 13.5),
+                margin: EdgeInsets.only(left: 12,),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,

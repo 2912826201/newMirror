@@ -12,9 +12,11 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+typedef SeletedAddress = void Function(String provinceCity, String cityCode, double longitude, double latitude);
 
 Future openSurroundingInformationBottomSheet({
   @required BuildContext context,
+  SeletedAddress onSeletedAddress,
   double bottomSheetHeight,
 }) async {
   await showModalBottomSheet(
@@ -29,13 +31,17 @@ Future openSurroundingInformationBottomSheet({
       ),
       builder: (BuildContext context) {
         return SizedBox(
-          height: ScreenUtil.instance.height * 0.7,
-          child: SurroundingInformationPage(),
+          height: bottomSheetHeight != null ? bottomSheetHeight : ScreenUtil.instance.height * 0.7,
+          child: SurroundingInformationPage(
+            onSeletedAddress: onSeletedAddress,
+          ),
         );
       });
 }
 
 class SurroundingInformationPage extends StatefulWidget {
+  SeletedAddress onSeletedAddress;
+  SurroundingInformationPage({this.onSeletedAddress});
   @override
   _SurroundingInformationPageState createState() => _SurroundingInformationPageState();
 }
@@ -262,12 +268,23 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
                             : pois.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                               onTap: () {
+                                if (searchController.text != null && searchController.text.isNotEmpty) {
+                                  widget.onSeletedAddress(
+                                      searchPois[index].name,
+                                      searchPois[index].citycode,
+                                      double.parse(searchPois[index].location.split(",")[0]),
+                                      double.parse(searchPois[index].location.split(",")[1]));
+                                } else {
+                                  widget.onSeletedAddress(
+                                      pois[index].name,
+                                      pois[index].citycode,
+                                      double.parse(pois[index].location.split(",")[0]),
+                                      double.parse(pois[index].location.split(",")[1]));
+                                }
                                 Navigator.pop(
                                   context,
-                                  searchController.text != null && searchController.text.isNotEmpty
-                                      ? searchPois[index]
-                                      : pois[index],
                                 );
                               },
                               child: SurroundingLocationItem(
