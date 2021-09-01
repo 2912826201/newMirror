@@ -31,7 +31,7 @@ Future openSurroundingInformationBottomSheet({
       ),
       builder: (BuildContext context) {
         return SizedBox(
-          height: bottomSheetHeight != null ? bottomSheetHeight : ScreenUtil.instance.height * 0.7,
+          height: bottomSheetHeight != null ? bottomSheetHeight : ScreenUtil.instance.height * 0.75,
           child: SurroundingInformationPage(
             onSeletedAddress: onSeletedAddress,
           ),
@@ -325,7 +325,7 @@ class SurroundingLocationItem extends StatelessWidget {
     return Container(
       width: ScreenUtil.instance.width,
       height: 44,
-      padding: EdgeInsets.only(bottom: 8),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.dividerWhite8, width: 0.5))),
       margin: EdgeInsets.only(left: 12, right: 12),
       alignment: Alignment(-1, 0),
       child: Text(poi.name, style: AppStyle.whiteRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
