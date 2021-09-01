@@ -144,7 +144,10 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               GetTripleArea(model: widget.model, index: widget.index),
               // 课程信息和地址
               Offstage(
-                offstage: (widget.model.address == null && widget.model.courseDto == null),
+                offstage: (widget.model.address == null &&
+                    // widget.model.courseDto == null
+                    widget.model.simpleActivityDto == null
+                ),
                 child: Container(
                   // color: AppColor.white,
                   margin: const EdgeInsets.only(left: 16, right: 16),
@@ -237,12 +240,20 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   // 课程信息和地址
   Widget getCourseInfo(HomeFeedModel model, BuildContext context) {
     List<FeedTagModel> tags = [];
-    // 课程不为空转换model
-    if (model.courseDto != null) {
+    // // 课程不为空转换model
+    // if (model.courseDto != null) {
+    //   FeedTagModel tag = FeedTagModel();
+    //   tag.type = feed_tag_type_course;
+    //   tag.text = model.courseDto.title;
+    //   tag.courseId = model.courseDto.id;
+    //   tags.add(tag);
+    // }
+    // 活动不为空转换model
+    if(model.simpleActivityDto != null) {
       FeedTagModel tag = FeedTagModel();
-      tag.type = feed_tag_type_course;
-      tag.text = model.courseDto.title;
-      tag.courseId = model.courseDto.id;
+      tag.type = feed_tag_type_activity;
+      tag.text = model.simpleActivityDto.title;
+      tag.activityId = model.simpleActivityDto.id;
       tags.add(tag);
     }
     // 地址不为空转换model
@@ -271,6 +282,8 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                     tag.latitude,
                     tag.text,
                   );
+                  break;
+                case feed_tag_type_activity:
                   break;
                 default:
                   break;
