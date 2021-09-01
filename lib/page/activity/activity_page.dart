@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
@@ -19,7 +20,6 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -41,6 +41,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   // 定位地址
   StreamController<String> streamAddress = StreamController<String>();
+
+  // 城市 编码
+  String citycode;
 
   //  选择菜单值
   String selectedKey = "筛选";
@@ -70,25 +73,29 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   }
 
   ///监听用户回到app
+  /// // 前台回到后台
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      backToBack();
+      locationPermissions(isDidChangeAppLifecycle: true);
     }
   }
 
   // 获取定位权限
-  locationPermissions() async {
+  locationPermissions({bool isDidChangeAppLifecycle = false}) async {
     // 获取定位权限
     permissions = await Permission.locationWhenInUse.status;
+    print("下次寻问permissions：：：：$permissions");
     // 已经获取了定位权限
     if (permissions.isGranted) {
       print("flutter定位只能获取到经纬度信息");
       currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
       print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
       reverseGeocoding();
-    } else {
+    } else if (isDidChangeAppLifecycle == false) {
+      print("嘻嘻嘻嘻嘻");
       // 请求定位权限
       permissions = await Permission.locationWhenInUse.request();
+      print("permissions::::$permissions");
       if (permissions.isGranted) {
         currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
         reverseGeocoding();
@@ -102,20 +109,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         await reverseGeographyHttp(currentAddressInfo.longitude, currentAddressInfo.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
+      citycode = locationInformationEntity.regeocode.cityDetails.citycode;
       streamAddress.sink.add(locationInformationEntity.regeocode.cityDetails.city);
     } else {
       // 请求失败
-    }
-  }
-
-  // 前台回到后台
-  backToBack() async {
-    var status = await Permission.locationWhenInUse.status;
-    if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
-      //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
-      // 调用周边
-      locationPermissions();
     }
   }
 
@@ -139,41 +136,65 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   // 头部View
   Widget headView() {
-    return Container(
-      height: 44,
-      margin: EdgeInsets.only(left: 8),
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AppIcon.getAppIcon(
-            AppIcon.tag_location,
-            16,
-            color: AppColor.white,
-          ),
-          SizedBox(
-            width: 3,
-          ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              if (permissions != PermissionStatus.granted) {
-                // 弹窗
-                _locationFailPopUps();
-              } else {
-                // 地址选择下拉列表
-                openaddressPickerBottomSheet(
-                    context: context,
-                    provinceMap: provinceMap,
-                    cityMap: cityMap,
-                    bottomSheetHeight: ScreenUtil.instance.height * 0.46,
-                    onConfirm: (provinceCity, cityCode, longitude, latitude) {
-                      List<String> provinceCityList = provinceCity.split(" ");
-                      streamAddress.sink.add(provinceCityList.last);
-                    });
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          print("点击城市");
+          if (Platform.isAndroid) {
+            print("安卓拒绝好后$permissions");
+            if (permissions != PermissionStatus.granted ) {
+              print("1111111111111");
+              // 弹窗
+              _locationFailPopUps();
+            }
+          } else if (Platform.isIOS) {
+            if (permissions == PermissionStatus.denied) {
+              print("00000000");
+              // // 请求定位权限
+              permissions = await Permission.locationWhenInUse.request();
+              print("permissions::::$permissions");
+              if (permissions.isGranted) {
+                currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+                reverseGeocoding();
               }
-            },
-            child: Container(
+            } else if (permissions != PermissionStatus.granted) {
+              print("1111111111111");
+              // 弹窗
+              _locationFailPopUps();
+            }
+          }
+          if (permissions == PermissionStatus.granted) {
+            print("222222222");
+            // 地址选择下拉列表
+            openaddressPickerBottomSheet(
+                context: context,
+                provinceMap: provinceMap,
+                cityMap: cityMap,
+                initCityCode: citycode,
+                bottomSheetHeight: ScreenUtil.instance.height * 0.46,
+                onConfirm: (provinceCity, cityCode, longitude, latitude) {
+                  List<String> provinceCityList = provinceCity.split(" ");
+                  streamAddress.sink.add(provinceCityList.last);
+                  citycode = cityCode;
+                });
+          }
+        },
+        child: Container(
+          height: 44,
+          margin: EdgeInsets.only(left: 8),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppIcon.getAppIcon(
+                AppIcon.tag_location,
+                16,
+                color: AppColor.white,
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              Container(
                 child: StreamBuilder<String>(
                     initialData: "北京",
                     stream: streamAddress.stream,
@@ -182,19 +203,19 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                         snapshot.data,
                         style: AppStyle.whiteRegular12,
                       );
-                    })),
+                    }),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              AppIcon.getAppIcon(
+                AppIcon.arrow_right_18,
+                12,
+                color: AppColor.textWhite60,
+              ),
+            ],
           ),
-          SizedBox(
-            width: 5,
-          ),
-          AppIcon.getAppIcon(
-            AppIcon.arrow_right_18,
-            12,
-            color: AppColor.textWhite60,
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
   // 菜单打开的按钮
@@ -525,7 +546,7 @@ class _ActivityListItem extends State<ActivityListItem> {
           children: [
             // 右边布局
             Container(
-              margin: EdgeInsets.only(left: 12, top: 13.5, bottom: 13.5),
+              margin: EdgeInsets.only(left: 12, top: 13.5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -556,7 +577,9 @@ class _ActivityListItem extends State<ActivityListItem> {
                       style: AppStyle.text1Regular12,
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   // 底部布局
                   Container(
                       child: Row(
@@ -628,7 +651,7 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
             ),
             SizedBox(
-              width: 9.5,
+              width: 10,
             )
           ],
         ),
