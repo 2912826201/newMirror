@@ -10,14 +10,17 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/auth_data.dart';
 import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -77,6 +80,13 @@ class _CreateActivityPageState extends StateKeyboard {
   DateTime endTime = DateTime.now().add(Duration(hours: 1));
   StreamController<DateTime> activityTimeStream = StreamController<DateTime>();
 
+  //活动地址
+  String provinceCity = "";
+  String cityCode;
+  String longitude;
+  String latitude;
+  StreamController<String> provinceCityStream = StreamController<String>();
+
   //活动图片
   List<File> activityImageFileList = [];
   int activityImageFileListCount = 1;
@@ -108,6 +118,7 @@ class _CreateActivityPageState extends StateKeyboard {
     equipmentStream.close();
     joinPermissionsStream.close();
     readInformationStream.close();
+    provinceCityStream.close();
   }
 
   @override
@@ -167,9 +178,17 @@ class _CreateActivityPageState extends StateKeyboard {
 
             //活动地址
             _getTitleWidget("活动地点"),
-            _getSubtitleWidget("输入地址", onTap: () {
-              locationPermissions();
-            }),
+            StreamBuilder<String>(
+              initialData: "输入地址",
+              stream: provinceCityStream.stream,
+              builder: (context, data) {
+                return _getSubtitleWidget(data.data, onTap: () {
+                  locationPermissions();
+                });
+              },
+            ),
+
+
             _getSizedBox(height: 8),
 
             //修改参见人数
@@ -811,13 +830,13 @@ class _CreateActivityPageState extends StateKeyboard {
     if (recommendUserList != null && recommendUserList.length > 0) {
       recommendUserStream.sink.add(recommendUserList);
     } else {
-      recommendUserList = [];
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserList.add(Application.profile.toUserModel());
-      recommendUserStream.sink.add(recommendUserList);
+      // recommendUserList = [];
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserList.add(Application.profile.toUserModel());
+      // recommendUserStream.sink.add(recommendUserList);
     }
   }
 
@@ -958,6 +977,11 @@ class _CreateActivityPageState extends StateKeyboard {
           context: context,
           onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
             // provinceCity 选择地址名  cityCode 城市码，
+            this.provinceCity = provinceCity;
+            this.cityCode = cityCode;
+            this.longitude = longitude.toString();
+            this.latitude = latitude.toString();
+            provinceCityStream.sink.add(provinceCity);
           });
     } else {
       print("嘻嘻嘻嘻嘻");
@@ -969,6 +993,11 @@ class _CreateActivityPageState extends StateKeyboard {
             context: context,
             onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
               // provinceCity 选择地址名  cityCode 城市码，
+              this.provinceCity = provinceCity;
+              this.cityCode = cityCode;
+              this.longitude = longitude.toString();
+              this.latitude = latitude.toString();
+              provinceCityStream.sink.add(provinceCity);
             });
       } else {
         _locationFailPopUps();
@@ -1011,32 +1040,69 @@ class _CreateActivityPageState extends StateKeyboard {
       return;
     }
 
-    // if(activityTitleController.text==null||activityTitleController.text.length<1){
-    //   ToastShow.show(msg: "请检查参数", context: context);
-    //   return;
-    // }
+    if (activityTitleController.text == null || activityTitleController.text.length < 1 ||
+        cityCode == null || activityImageFileList.length < 1) {
+      ToastShow.show(msg: "请检查参数", context: context);
+      return;
+    }
+
+
+    ToastShow.show(msg: "正在创建活动请稍等", context: context);
 
     ActivityModel model = await createActivity(
-        title: "篮球活动222111",
-        type: selectActivityType,
-        count: joinNumber,
-        startTime: startTime.millisecondsSinceEpoch,
-        endTime: endTime.millisecondsSinceEpoch,
-        cityCode: "208",
-        address: "天府三街地铁站d口",
-        longitude: "104.068705",
-        latitude: "30.546983",
-        equipment: EquipmentData.init().getIndex(equipmentKey),
-        auth: AuthData.init().getIndex(selectedPermissionsKey),
-        pic: "http://devpic.aimymusic.com/ifapp/1004213/6yOkv43JnLeWKxIx73VoIw==.png",
-        description: "这是异常业余篮球赛，没脾气的不要来",
-        uids: "1008051"
+      title: activityTitleController.text,
+      type: selectActivityType,
+      count: joinNumber,
+      startTime: startTime.millisecondsSinceEpoch,
+      endTime: endTime.millisecondsSinceEpoch,
+      cityCode: cityCode,
+      address: provinceCity,
+      longitude: longitude,
+      latitude: latitude,
+      equipment: EquipmentData.init().getIndex(equipmentKey),
+      auth: AuthData.init().getIndex(selectedPermissionsKey),
+      pic: await onPostImageFile(),
+      description: activityIllustrateController.text,
+      uids: _getRecommendUserString(),
     );
 
     if (model != null) {
       print("model:${model.toJson().toString()}");
+      ToastShow.show(msg: "创建成功", context: context);
     } else {
-      print("没有成功");
+      ToastShow.show(msg: "创建失败", context: context);
+    }
+  }
+
+  Future<String> onPostImageFile() async {
+    UploadResults results = await FileUtil().uploadPics(activityImageFileList, (percent) {});
+    List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
+    for (int i = 0; i < results.resultMap.length; i++) {
+      UploadResultModel model = results.resultMap.values.elementAt(i);
+      uploadResultModelList.add(model);
+      print("第${i + 1}个上传文件");
+      print(model.isSuccess);
+      print(model.error);
+      print(model.filePath);
+      print(model.url);
+    }
+    return uploadResultModelList[0].url;
+  }
+
+  //获取推荐好友的id
+  String _getRecommendUserString() {
+    if (recommendUserList.length < 1) {
+      return "";
+    } else {
+      String uids = "";
+      for (int i = 0; i < recommendUserList.length; i++) {
+        if (i == recommendUserList.length - 1) {
+          uids += recommendUserList[i].uid.toString();
+        } else {
+          uids += recommendUserList[i].uid.toString() + ",";
+        }
+      }
+      return uids;
     }
   }
 
