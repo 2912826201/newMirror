@@ -471,7 +471,7 @@ class _CreateActivityPageState extends StateKeyboard {
       height: 104,
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 16),
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
       child: TextField(
         onTap: () {
@@ -480,7 +480,7 @@ class _CreateActivityPageState extends StateKeyboard {
         },
         controller: activityIllustrateController,
         cursorColor: AppColor.white,
-        style: AppStyle.whiteRegular16,
+        style: AppStyle.whiteRegular12,
         maxLines: null,
         maxLength: 500,
         focusNode: activityIllustrateFocusNode,
