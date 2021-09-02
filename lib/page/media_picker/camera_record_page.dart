@@ -10,6 +10,7 @@ import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -22,14 +23,14 @@ import 'package:permission_handler/permission_handler.dart';
 
 //相机拍照录视频二合一页
 class CameraRecordPage extends StatefulWidget {
-  CameraRecordPage({Key key, this.publishMode = 0, this.fixedWidth, this.fixedHeight, this.topicId, this.startMode = 0})
+  CameraRecordPage({Key key, this.publishMode = 0, this.fixedWidth, this.fixedHeight, this.topicId, this.activityModel,this.startMode = 0})
       : super(key: key);
 
   final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
   final int topicId;
-
+  final ActivityModel activityModel;
   final int startMode; //0-拍照 1-录视频
 
   _CameraRecordState _state;
@@ -252,9 +253,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
                                         if (result != null) {
                                           if (widget.publishMode == 1) {
                                             Navigator.pop(context, result);
-                                            AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                                            AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
                                           } else if (widget.publishMode == 2) {
-                                            AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                                            AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
                                             if (Application.ifPageController != null) {
                                               Application.ifPageController.index =
                                                   Application.ifPageController.length - 1;
@@ -711,9 +712,9 @@ class _CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObse
           if (result != null) {
             if (widget.publishMode == 1) {
               Navigator.pop(context, result);
-              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+              AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
             } else if (widget.publishMode == 2) {
-              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+              AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
               if (Application.ifPageController != null) {
                 Application.ifPageController.index = Application.ifPageController.length - 1;
               }

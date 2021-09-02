@@ -594,7 +594,7 @@ class DateUtil {
     timeString += " ";
     timeString += formatDateNoYearString(dateTime);
     timeString += " ";
-    timeString += "周${getStringWeekDayStartZero(dateTime.weekday)}";
+    timeString += "周${getStringWeekDayStartZero(dateTime.weekday - 1)}";
     return timeString;
   }
 }

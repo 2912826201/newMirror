@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
@@ -27,9 +28,10 @@ class FeedHeader extends StatelessWidget {
   TextEditingController controller;
   final int videoCourseId;
   final int liveCourseId;
+  final ActivityModel activityModel;
   StreamController<int> streamController = StreamController<int>();
 
-  FeedHeader({this.selectedMediaFiles, this.controller, this.videoCourseId, this.liveCourseId});
+  FeedHeader({this.selectedMediaFiles, this.controller, this.videoCourseId, this.liveCourseId,this.activityModel});
 
   // 发布动态
   pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
@@ -114,6 +116,9 @@ class FeedHeader extends StatelessWidget {
       longitude = poi.location.split(",")[0];
       latitude = poi.location.split(",")[1];
       cityCode = poi.citycode;
+    }
+    if(activityModel != null) {
+      feedModel.activityId = activityModel.id;
     }
     if (videoCourseId != null) {
       feedModel.videoCourseId = videoCourseId;

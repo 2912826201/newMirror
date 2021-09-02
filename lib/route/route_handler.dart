@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/course_model.dart';
@@ -123,6 +124,10 @@ var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List
 
 var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ActivityModel activityModel;
+  if(data["activityModel"] != null){
+    activityModel = ActivityModel.fromJson(data["activityModel"]);
+  }
   return MediaPickerPage(
     data["maxImageAmount"],
     data["mediaType"],
@@ -134,6 +139,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     fixedHeight: data["fixedHeight"],
     startCount: data["startCount"],
     topicId: data["topicId"],
+    activityModel: activityModel,
   );
 });
 
@@ -298,8 +304,13 @@ var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, M
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ActivityModel activityModel;
+  if(data["activityModel"] != null){
+    activityModel = ActivityModel.fromJson(data["activityModel"]);
+  }
   return ReleasePage(
     topicId: data["topicId"],
+    activityModel: activityModel,
     videoCourseId: data["videoCourseId"],
   );
 });
