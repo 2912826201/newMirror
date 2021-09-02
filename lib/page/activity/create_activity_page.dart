@@ -19,6 +19,7 @@ import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -1101,20 +1102,31 @@ class _CreateActivityPageState extends StateKeyboard {
     // TODO: implement startChangeKeyBoardHeight
   }
 
+  bool isCreateActivity = false;
 
   //创建活动
   _createActivity() async {
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
     if (!isReadInformation) {
       ToastShow.show(msg: "请阅读活动说明", context: context);
       return;
     }
 
-    if (activityTitleController.text == null || activityTitleController.text.length < 1 ||
-        cityCode == null || activityImageFileList.length < 1) {
+    if (activityTitleController.text == null ||
+        activityTitleController.text.length < 1 ||
+        cityCode == null ||
+        activityImageFileList.length < 1) {
       ToastShow.show(msg: "请检查参数", context: context);
       return;
     }
 
+    if (isCreateActivity) {
+      ToastShow.show(msg: "正在创建活动", context: context);
+      return;
+    }
+    isCreateActivity = true;
 
     ToastShow.show(msg: "正在创建活动请稍等", context: context);
 
@@ -1122,8 +1134,8 @@ class _CreateActivityPageState extends StateKeyboard {
       title: activityTitleController.text,
       type: selectActivityType,
       count: joinNumber,
-      startTime: startTime.millisecondsSinceEpoch,
-      endTime: endTime.millisecondsSinceEpoch,
+      startTime: getStartTime().millisecondsSinceEpoch,
+      endTime: getEndTime().millisecondsSinceEpoch,
       cityCode: cityCode,
       address: provinceCity,
       longitude: longitude,
@@ -1137,10 +1149,34 @@ class _CreateActivityPageState extends StateKeyboard {
 
     if (model != null) {
       print("model:${model.toJson().toString()}");
+      isCreateActivity = false;
       ToastShow.show(msg: "创建成功", context: context);
     } else {
+      isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);
     }
+  }
+
+  DateTime getStartTime() {
+    return DateTime(
+      activityDateTime.year,
+      activityDateTime.month,
+      activityDateTime.day,
+      startTime.hour,
+      startTime.minute,
+      startTime.second,
+    );
+  }
+
+  DateTime getEndTime() {
+    return DateTime(
+      activityDateTime.year,
+      activityDateTime.month,
+      activityDateTime.day,
+      endTime.hour,
+      endTime.minute,
+      endTime.second,
+    );
   }
 
   Future<String> onPostImageFile() async {

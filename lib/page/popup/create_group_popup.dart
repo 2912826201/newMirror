@@ -502,7 +502,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           Navigator.pop(context);
-          jumpGroupPage(context, _groupList[index].modifiedName ?? _groupList[index].name, _groupList[index].id);
+          jumpChatPageConversationDto(context, ConversationDto.fromGroupChat(_groupList[index]));
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

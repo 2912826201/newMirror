@@ -418,11 +418,13 @@ class DateUtil {
     return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
   }
 
+  static DateTime getDataTimeString(int year, int month, int day) {
+    //aDate.year == bDate.year && aDate.month == bDate.month && aDate.day == bDate.day;
+  }
+
   ///获取当前时间的毫秒级
   static int getNowDateMs() {
-    return DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    return DateTime.now().millisecondsSinceEpoch;
   }
 
   /// 返回这个日期是周几

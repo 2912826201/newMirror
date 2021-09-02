@@ -16,6 +16,7 @@ import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/page/activity/activity_detail_page.dart';
 import 'package:mirror/page/activity/create_activity_page.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
@@ -643,4 +644,10 @@ var handlerWebViewPage = Handler(handlerFunc: (BuildContext context, Map<String,
 var handlerCreateActivityPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return CreateActivityPage();
+});
+
+// 创建活动界面
+var handlerActivityDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ActivityDetailPage(activityId: data["activityId"]);
 });

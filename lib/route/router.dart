@@ -133,6 +133,9 @@ class AppRouter {
   // 创建活动界面
   static String pathCreateActivityPage = "/activity_page/createActivityPage";
 
+  //活动详情页
+  static String pathActivityDetailPage = "/activity_page/createActivityPage/activityDetailPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -225,6 +228,7 @@ class AppRouter {
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
     router.define(pathCreateActivityPage, handler: handlerCreateActivityPage);
+    router.define(pathActivityDetailPage, handler: handlerActivityDetailPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -708,7 +712,7 @@ class AppRouter {
     map["name"] = name;
     map["chatType"] = chatType;
     map["chatUserId"] = chatUserId;
-    _navigateToPage(context, pathChatPage, map, callback: callback);
+    _navigateToPage(context, pathPrivateMorePage, map, callback: callback);
   }
 
   static void navigateToNetworkLinkFailure({
@@ -1024,10 +1028,16 @@ class AppRouter {
     return false;
   }
 
-
   //去创建活动界面
   static void navigateCreateActivityPage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathCreateActivityPage, map);
+  }
+
+  //去创建活动界面
+  static void navigateActivityDetailPage(BuildContext context, int activityId) {
+    Map<String, dynamic> map = Map();
+    map['activityId'] = activityId;
+    _navigateToPage(context, pathActivityDetailPage, map);
   }
 }
