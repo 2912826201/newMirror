@@ -703,7 +703,7 @@ class AppRouter {
     map["name"] = name;
     map["chatType"] = chatType;
     map["chatUserId"] = chatUserId;
-    _navigateToPage(context, pathChatPage, map, callback: callback);
+    _navigateToPage(context, pathPrivateMorePage, map, callback: callback);
   }
 
   static void navigateToNetworkLinkFailure({

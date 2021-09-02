@@ -8,6 +8,8 @@ class GroupChatModel {
   int dataState;
   int createTime;
   int updateTime;
+  int type; //0普通群聊-1活动群聊
+  int targetId;
 
   GroupChatModel({this.id, this.name, this.coverUrl, this.creatorId, this.dataState, this.createTime, this.updateTime});
 
@@ -20,6 +22,8 @@ class GroupChatModel {
     this.dataState = json["dataState"];
     this.createTime = json["createTime"];
     this.updateTime = json["updateTime"];
+    this.type = json["type"] ?? 0;
+    this.targetId = json["targetId"];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +35,8 @@ class GroupChatModel {
     map["modifiedName"] = this.modifiedName;
     map["dataState"] = this.dataState;
     map["updateTime"] = this.updateTime;
-    map["createTime"] = this.createTime;
+    map["type"] = this.type;
+    map["targetId"] = this.targetId;
     return map;
   }
 }
