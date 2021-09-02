@@ -790,9 +790,12 @@ class _ActivityListItem extends State<ActivityListItem> {
                     // 地址布局
                     Container(
                       padding: EdgeInsets.only(top: 6),
+                      width: ScreenUtil.instance.width * 0.49,
                       child: Text(
                         widget.activityModel.address,
                         style: AppStyle.text1Regular12,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     // 时间布局
