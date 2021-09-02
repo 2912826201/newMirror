@@ -552,7 +552,7 @@ class _ActivityListItem extends State<ActivityListItem> {
         color: AppColor.layoutBgGrey,
         margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
         child: Container(
-          margin: EdgeInsets.only(top: 12,bottom: 9),
+          margin: EdgeInsets.only(top: 12,bottom: 12),
           child: Row(
             children: [
               // 右边布局
@@ -662,7 +662,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                 ),
               ),
               SizedBox(
-                width: 10,
+                width: 12,
               )
             ],
           ),
