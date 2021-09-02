@@ -657,7 +657,7 @@ class AppRouter {
       map["topicId"] = topicId;
     }
     if(activityModel != null) {
-      map["activityModel"] = activityModel.toString();
+      map["activityModel"] = activityModel.toJson();
     }
     if (videoCourseId != null) {
       map["videoCourseId"] = videoCourseId;
