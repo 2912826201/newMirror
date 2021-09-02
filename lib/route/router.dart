@@ -358,7 +358,7 @@ class AppRouter {
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
     map["topicId"] = topicId;
-    map["activityModel"] =  activityModel;
+    map["activityModel"] =  activityModel.toJson();
     _navigateToPage(context, pathMediaPicker, map, callback: callback, isFromBottom: true);
   }
 
@@ -657,7 +657,7 @@ class AppRouter {
       map["topicId"] = topicId;
     }
     if(activityModel != null) {
-      map["activityModel"] = activityModel;
+      map["activityModel"] = activityModel.toString();
     }
     if (videoCourseId != null) {
       map["videoCourseId"] = videoCourseId;

@@ -756,7 +756,7 @@ class _ActivityListItem extends State<ActivityListItem> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-          return ActivityFlow();
+          return ActivityFlow(activityModel: widget.activityModel,);
         }));
       },
       child: Card(
