@@ -149,6 +149,7 @@ class _CreateActivityPageState extends StateKeyboard {
           width: ScreenUtil.instance.width,
           child: getCustomScrollView(),
         ),
+        //发布活动按钮
         Positioned(
           child: _getCreateActivityBox(),
           bottom: 2,
@@ -325,7 +326,7 @@ class _CreateActivityPageState extends StateKeyboard {
                   padding: EdgeInsets.all(10),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: data.data ? AppColor.mainYellow : AppColor.white,
+                      color: data.data ? AppColor.mainRed : AppColor.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
