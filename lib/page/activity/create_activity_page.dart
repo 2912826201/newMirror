@@ -47,6 +47,7 @@ class _CreateActivityPageState extends StateKeyboard {
   int selectActivityType = 0;
 
   //活动名称-Controller
+  FocusNode titleFocusNode = FocusNode();
   TextEditingController activityTitleController = TextEditingController();
 
   //选择参加权限
@@ -148,6 +149,7 @@ class _CreateActivityPageState extends StateKeyboard {
           width: ScreenUtil.instance.width,
           child: getCustomScrollView(),
         ),
+        //发布活动按钮
         Positioned(
           child: _getCreateActivityBox(),
           bottom: 2,
@@ -169,7 +171,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
             //活动名称
             _getTitleWidget("输入活动名称"),
-            _getEditWidget("输入内容", activityTitleController),
+            _getEditWidget("输入内容", activityTitleController, titleFocusNode),
 
             //活动时间
             _getTitleWidget("活动时间"),
@@ -183,6 +185,7 @@ class _CreateActivityPageState extends StateKeyboard {
               stream: provinceCityStream.stream,
               builder: (context, data) {
                 return _getSubtitleWidget(data.data, onTap: () {
+                  _unfocus();
                   locationPermissions();
                 });
               },
@@ -202,10 +205,29 @@ class _CreateActivityPageState extends StateKeyboard {
               initialData: selectedPermissionsKey,
               stream: joinPermissionsStream.stream,
               builder: (context, data) {
-                return _getMenuUi(selectedPermissionsKey, AuthData.init().authList, (value) {
-                  selectedPermissionsKey = value;
-                  joinPermissionsStream.sink.add(selectedPermissionsKey);
-                });
+                return Container(
+                  child: Stack(
+                    children: [
+                      _getMenuUi(selectedPermissionsKey, AuthData.init().authList, (value) {
+                        selectedPermissionsKey = value;
+                        joinPermissionsStream.sink.add(selectedPermissionsKey);
+                      }),
+                      Visibility(
+                        visible: activityIllustrateFocusNode.hasFocus,
+                        child: GestureDetector(
+                          child: Container(
+                            height: 30,
+                            width: ScreenUtil.instance.width,
+                            color: Colors.transparent,
+                          ),
+                          onTap: () {
+                            _unfocus();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
 
@@ -215,10 +237,31 @@ class _CreateActivityPageState extends StateKeyboard {
               initialData: equipmentKey,
               stream: equipmentStream.stream,
               builder: (context, data) {
-                return _getMenuUi(equipmentKey, EquipmentData.init().equipmentList, (value) {
-                  equipmentKey = value;
-                  equipmentStream.sink.add(equipmentKey);
-                });
+                return Container(
+                  child: Stack(
+                    children: [
+                      _getMenuUi(equipmentKey, EquipmentData
+                          .init()
+                          .equipmentList, (value) {
+                        equipmentKey = value;
+                        equipmentStream.sink.add(equipmentKey);
+                      }),
+                      Visibility(
+                        visible: activityIllustrateFocusNode.hasFocus,
+                        child: GestureDetector(
+                          child: Container(
+                            height: 30,
+                            width: ScreenUtil.instance.width,
+                            color: Colors.transparent,
+                          ),
+                          onTap: () {
+                            _unfocus();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
             _getSizedBox(height: 24),
@@ -237,7 +280,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
                 //推荐好友
                 _getRecommendAFriendUi(),
-                _getSizedBox(height: 40),
+                _getSizedBox(height: 45),
               ],
             ),
 
@@ -283,7 +326,7 @@ class _CreateActivityPageState extends StateKeyboard {
                   padding: EdgeInsets.all(10),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: data.data ? AppColor.mainYellow : AppColor.white,
+                      color: data.data ? AppColor.mainRed : AppColor.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -428,32 +471,16 @@ class _CreateActivityPageState extends StateKeyboard {
       height: 104,
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 16),
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
       child: TextField(
         onTap: () {
-          RenderBox renderBox = inputBoxKey.currentContext.findRenderObject();
-          var offset = renderBox.localToGlobal(Offset.zero);
-
-          double value = (offset.dy + 110.0) -
-              (ScreenUtil.instance.height -
-                  (Application.keyboardHeightIfPage > 0 ? Application.keyboardHeightIfPage : 200));
-
-          double widgetHeight = scrollKey.currentContext.size.height;
-
-          print("value:$value");
-
-          if (value > 0) {
-            if (value < widgetHeight) {
-              bottomStreamWidget.sink.add(0.1);
-            } else {
-              bottomStreamWidget.sink.add(value);
-            }
-          }
+          equipmentStream.sink.add(equipmentKey);
+          joinPermissionsStream.sink.add(selectedPermissionsKey);
         },
         controller: activityIllustrateController,
         cursorColor: AppColor.white,
-        style: AppStyle.whiteRegular16,
+        style: AppStyle.whiteRegular12,
         maxLines: null,
         maxLength: 500,
         focusNode: activityIllustrateFocusNode,
@@ -572,20 +599,23 @@ class _CreateActivityPageState extends StateKeyboard {
           height: 0,
           color: AppColor.imageBgGrey,
         ),
-        itemBuilder: (String value) => Container(
-          height: 28.0 + (value == itemList[0] ? 12 : 0) + (value == itemList[itemList.length - 1] ? 12 : 0),
-          color: AppColor.imageBgGrey,
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.only(
-            left: 6,
-            top: (value == itemList[0] ? 12 : 0),
-            bottom: (value == itemList[itemList.length - 1] ? 12 : 0),
-          ),
-          child: Text(
-            value,
-            style: AppStyle.whiteRegular12,
-          ),
-        ),
+        itemBuilder: (String value) {
+          _unfocus();
+          return Container(
+            height: 28.0 + (value == itemList[0] ? 12 : 0) + (value == itemList[itemList.length - 1] ? 12 : 0),
+            color: AppColor.imageBgGrey,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(
+              left: 6,
+              top: (value == itemList[0] ? 12 : 0),
+              bottom: (value == itemList[itemList.length - 1] ? 12 : 0),
+            ),
+            child: Text(
+              value,
+              style: AppStyle.whiteRegular12,
+            ),
+          );
+        },
         toggledChild: Container(
           child: normalChildButton(selectedKey),
         ),
@@ -736,7 +766,7 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //edit 输入框
-  Widget _getEditWidget(String hitString, TextEditingController controller) {
+  Widget _getEditWidget(String hitString, TextEditingController controller, FocusNode focusNode) {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16),
       padding: EdgeInsets.only(bottom: 10),
@@ -748,6 +778,7 @@ class _CreateActivityPageState extends StateKeyboard {
         keyboardType: TextInputType.multiline,
         //不限制行数
         maxLines: 1,
+        focusNode: focusNode,
         controller: controller,
         enableInteractiveSelection: true,
         // 光标颜色
@@ -881,6 +912,7 @@ class _CreateActivityPageState extends StateKeyboard {
         );
       },
       windowBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        _unfocus();
         return FadeTransition(
           opacity: animation,
           child: SizeTransition(
@@ -908,14 +940,29 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
 
+  _unfocus() {
+    if (titleFocusNode.hasFocus) {
+      titleFocusNode.unfocus();
+    }
+    if (activityIllustrateFocusNode.hasFocus) {
+      activityIllustrateFocusNode.unfocus();
+    }
+  }
+
+
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
       ToastShow.show(msg: "最多只能选择$activityImageFileListCount张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(
-        context, activityImageFileListCount - activityImageFileList.length, typeImage, false, startPageGallery, false,
-        (result) {
+        context,
+        activityImageFileListCount - activityImageFileList.length,
+        typeImage,
+        false,
+        startPageGallery,
+        false,
+            (result) {
       SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -1024,6 +1071,28 @@ class _CreateActivityPageState extends StateKeyboard {
   void endChangeKeyBoardHeight(bool isOpenKeyboard) {
     if (!isOpenKeyboard) {
       bottomStreamWidget.sink.add(0.0);
+      equipmentStream.sink.add(equipmentKey);
+      joinPermissionsStream.sink.add(selectedPermissionsKey);
+    } else {
+      if (activityIllustrateFocusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          RenderBox renderBox = inputBoxKey.currentContext.findRenderObject();
+          var offset = renderBox.localToGlobal(Offset.zero);
+
+          double value = (offset.dy + 110.0) - (ScreenUtil.instance.height - Application.keyboardHeightIfPage);
+
+          double widgetHeight = scrollKey.currentContext.size.height;
+
+          if (value > 0) {
+            if (widgetHeight >= Application.keyboardHeightIfPage) {
+              scrollController.animateTo(scrollController.position.pixels + value,
+                  duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+            } else {
+              bottomStreamWidget.sink.add(value);
+            }
+          }
+        });
+      }
     }
   }
 
