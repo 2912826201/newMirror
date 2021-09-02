@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -27,7 +28,7 @@ int startPagePhoto = _photoIndex;
 
 class MediaPickerPage extends StatefulWidget {
   MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare,
-      {Key key, this.publishMode, this.fixedWidth, this.fixedHeight, this.startCount = 0, this.topicId})
+      {Key key, this.publishMode, this.fixedWidth, this.fixedHeight, this.startCount = 0, this.topicId,this.activityModel})
       : super(key: key);
 
   final int maxImageAmount;
@@ -40,6 +41,7 @@ class MediaPickerPage extends StatefulWidget {
   final int fixedHeight;
   final int startCount;
   final int topicId;
+  final ActivityModel activityModel;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -86,6 +88,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
           fixedWidth: widget.fixedWidth,
           startCount: widget.startCount,
           topicId: widget.topicId,
+          activityModel: widget.activityModel,
         ),
       ),
     );
@@ -95,6 +98,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
         fixedHeight: widget.fixedHeight,
         fixedWidth: widget.fixedWidth,
         topicId: widget.topicId,
+        activityModel: widget.activityModel,
         startMode: _recordMode,
       ),
     );
@@ -167,6 +171,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
             fixedHeight: widget.fixedHeight,
             fixedWidth: widget.fixedWidth,
             topicId: widget.topicId,
+            activityModel: widget.activityModel,
             startMode: _recordMode,
           ));
           _pageController.animateToPage(_selectedIndex, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
@@ -204,6 +209,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
             fixedHeight: widget.fixedHeight,
             fixedWidth: widget.fixedWidth,
             topicId: widget.topicId,
+            activityModel: widget.activityModel,
             startMode: _recordMode,
           ));
           _pageController.animateToPage(_photoIndex, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
 //获取推荐一起活动的用户列表
 const String GETRECOMMENDUSERLIST = "/appuser/web/activity/getRecommendUserList";
 //创建活动
 const String CREATEACTIVITY = "/appuser/web/activity/create";
-
+// 获取推荐活动列表
+const String GETRECOMMENDACTIVITY = "/appuser/web/activity/getRecommendActivity";
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -67,5 +69,35 @@ Future<List<UserModel>> getRecommendUserList({int size = 5}) async {
     return list;
   } else {
     return [];
+  }
+}
+//获取推荐活动列表
+Future<DataResponseModel> getRecommendActivity({int size = 20, double lastScore,int type,String cityCode,String longitude,String latitude}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  if(lastScore != null) {
+    params["lastScore"] = lastScore;
+  }
+  if(type != null) {
+    params["type"] = type;
+  }
+  if(cityCode != null) {
+    params["cityCode"] = cityCode;
+  }
+  if(longitude != null) {
+    params["longitude"] = longitude;
+  }
+  if(latitude != null) {
+    params["latitude"] = latitude;
+  }
+  BaseResponseModel responseModel = await requestApi(GETRECOMMENDACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
   }
 }

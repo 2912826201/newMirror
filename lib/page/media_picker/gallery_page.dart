@@ -11,6 +11,7 @@ import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
@@ -49,7 +50,8 @@ class GalleryPage extends StatefulWidget {
       this.fixedWidth,
       this.fixedHeight,
       this.startCount = 0,
-      this.topicId})
+      this.topicId,
+      this.activityModel})
       : super(key: key);
 
   final int maxImageAmount;
@@ -61,6 +63,7 @@ class GalleryPage extends StatefulWidget {
   final int fixedHeight;
   final int startCount;
   final int topicId;
+  final ActivityModel activityModel;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -1033,9 +1036,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
               if (widget.publishMode == 1) {
                 Navigator.pop(context, true);
-                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
               } else if (widget.publishMode == 2) {
-                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+                AppRouter.navigateToReleasePage(context, topicId: widget.topicId,activityModel: widget.activityModel);
                 if (Application.ifPageController != null) {
                   Application.ifPageController.index = Application.ifPageController.length - 1;
                 }

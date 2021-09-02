@@ -8,6 +8,7 @@ import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
@@ -315,7 +316,7 @@ class AppRouter {
   // startCount 之前已经选择了多少文件，显示计数要加上这个数
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, Function(dynamic result) callback,
-      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0, int topicId}) async {
+      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0, int topicId,ActivityModel activityModel}) async {
     //TODO 先做权限校验 这里先写起始页为相册页的
     if (startPage == startPageGallery) {
       PermissionStatus status;
@@ -357,6 +358,7 @@ class AppRouter {
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
     map["topicId"] = topicId;
+    map["activityModel"] =  activityModel;
     _navigateToPage(context, pathMediaPicker, map, callback: callback, isFromBottom: true);
   }
 
@@ -649,10 +651,13 @@ class AppRouter {
     _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
 
-  static void navigateToReleasePage(BuildContext context, {int topicId, int videoCourseId}) {
+  static void navigateToReleasePage(BuildContext context, {int topicId, ActivityModel activityModel,int videoCourseId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
       map["topicId"] = topicId;
+    }
+    if(activityModel != null) {
+      map["activityModel"] = activityModel;
     }
     if (videoCourseId != null) {
       map["videoCourseId"] = videoCourseId;

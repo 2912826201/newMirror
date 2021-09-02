@@ -133,6 +133,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     fixedHeight: data["fixedHeight"],
     startCount: data["startCount"],
     topicId: data["topicId"],
+    activityModel: data["activityModel"],
   );
 });
 
@@ -299,6 +300,7 @@ var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage(
     topicId: data["topicId"],
+    activityModel: data['activityModel'],
     videoCourseId: data["videoCourseId"],
   );
 });

@@ -59,6 +59,8 @@ class PostFeedModel {
   int liveCourseId;
   // 当前时间戳
   int currentTimestamp;
+  // 活动Id
+  int activityId;
 
   PostFeedModel(
       {this.selectedMediaFiles,
@@ -72,7 +74,8 @@ class PostFeedModel {
       this.latitude,
       this.longitude,
       this.videoCourseId,
-      this.liveCourseId});
+      this.liveCourseId,
+      this.activityId});
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -92,6 +95,7 @@ class PostFeedModel {
     map["currentTimestamp"] = currentTimestamp;
     map["videoCourseId"] = videoCourseId;
     map["liveCourseId"] = liveCourseId;
+    map["activityId"] = activityId;
     return map;
   }
 
@@ -131,6 +135,7 @@ class PostFeedModel {
     currentTimestamp = json["currentTimestamp"];
     videoCourseId = json["videoCourseId"];
     liveCourseId = json["liveCourseId"];
+    activityId = json["activityId"];
   }
 
   @override
