@@ -1134,8 +1134,8 @@ class _CreateActivityPageState extends StateKeyboard {
       title: activityTitleController.text,
       type: selectActivityType,
       count: joinNumber,
-      startTime: startTime.millisecondsSinceEpoch,
-      endTime: endTime.millisecondsSinceEpoch,
+      startTime: getStartTime().millisecondsSinceEpoch,
+      endTime: getEndTime().millisecondsSinceEpoch,
       cityCode: cityCode,
       address: provinceCity,
       longitude: longitude,
@@ -1155,6 +1155,28 @@ class _CreateActivityPageState extends StateKeyboard {
       isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);
     }
+  }
+
+  DateTime getStartTime() {
+    return DateTime(
+      activityDateTime.year,
+      activityDateTime.month,
+      activityDateTime.day,
+      startTime.hour,
+      startTime.minute,
+      startTime.second,
+    );
+  }
+
+  DateTime getEndTime() {
+    return DateTime(
+      activityDateTime.year,
+      activityDateTime.month,
+      activityDateTime.day,
+      endTime.hour,
+      endTime.minute,
+      endTime.second,
+    );
   }
 
   Future<String> onPostImageFile() async {

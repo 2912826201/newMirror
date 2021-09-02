@@ -2674,8 +2674,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       onItemClickListener: (index) async {
         if (list[index] == "进入活动") {
           if (conversation.activityId != null) {
-            //todo 进去活动详情页
-            ToastShow.show(msg: "进入活动详情页,暂时没做", context: context);
+            AppRouter.navigateActivityDetailPage(context, conversation.activityId);
           }
         } else if (list[index] == "置顶" || list[index] == "取消置顶") {
           setTopChatApi();

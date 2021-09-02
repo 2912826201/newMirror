@@ -8,6 +8,8 @@ import 'package:mirror/data/model/user_model.dart';
 const String GETRECOMMENDUSERLIST = "/appuser/web/activity/getRecommendUserList";
 //创建活动
 const String CREATEACTIVITY = "/appuser/web/activity/create";
+//获取活动详情
+const String GETACTIVITYDETAIL = "/appuser/web/activity/detail";
 
 //创建活动
 Future<ActivityModel> createActivity({
@@ -67,5 +69,17 @@ Future<List<UserModel>> getRecommendUserList({int size = 5}) async {
     return list;
   } else {
     return [];
+  }
+}
+
+//创建活动界面-获取推荐一起活动的用户列表
+Future<ActivityModel> getActivityDetailApi(int activityId) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  BaseResponseModel responseModel = await requestApi(GETACTIVITYDETAIL, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return ActivityModel.fromJson(responseModel.data);
+  } else {
+    return null;
   }
 }
