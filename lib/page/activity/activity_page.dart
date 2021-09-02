@@ -506,7 +506,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         ActivityModel model = activityList[index];
-                        model.title = model.title + "  测试一下长文本的效果如合伙人";
                         return ActivityListItem(
                           activityModel: model,
                           index: index,
