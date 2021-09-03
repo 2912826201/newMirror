@@ -22,6 +22,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -238,7 +239,11 @@ class _EditInformationState extends State<EditInformation> {
 
                   InkWell(
                     onTap: () {
-                      openTimePickerBottomSheet(
+                      openActivityTimePickerBottomSheet(context: context, firstTime: DateTime.now().add(Duration
+                        (days: 2)),onStartAndEndTimeChoseCallBack: (start,end){
+                        print('----------onStartAndEndTimeChoseCallBack----------------$start-----$end');
+                          });
+                      /* openTimePickerBottomSheet(
                           context: context,
                           firstTime: DateTime(1960),
                           lastTime: DateTime.now(),
@@ -247,7 +252,7 @@ class _EditInformationState extends State<EditInformation> {
                           onConfirm: (date) {
                             userBirthday = DateFormat("yyyy-MM-dd").format(date);
                             setState(() {});
-                          });
+                          });*/
                     },
                     child: _rowChose("生日", userBirthday),
                   ),
