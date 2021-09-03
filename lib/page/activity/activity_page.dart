@@ -31,6 +31,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/surrounding_information.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'activity_flow.dart';
 
@@ -442,9 +443,32 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     );
   }
 
+  // 加载页
+  loadShimmer() {
+    return Shimmer.fromColors(
+      child: ListView.builder(
+        itemBuilder: (context, index) => Card(
+          clipBehavior: Clip.hardEdge,
+          color: AppColor.layoutBgGrey,
+          margin: EdgeInsets.only(left: 16, right: 16, top: index == 0 ? 18 : 12),
+          child: Container(
+            margin: EdgeInsets.only(top: 12, bottom: 12),
+            height: 140,
+            width: ScreenUtil.instance.width,
+          ),
+        ),
+        itemCount: 20,
+      ),
+      baseColor:AppColor.layoutBgGrey.withOpacity(0.5),
+      highlightColor: AppColor.layoutBgGrey.withOpacity(0.1),
+      // enabled: _enabled,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "活动",
         leading: headView(),
@@ -493,21 +517,21 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           ),
         ],
       ),
-      body: SmartRefresher(
-          enablePullUp: true,
-          enablePullDown: true,
-          footer: SmartRefresherHeadFooter.init().getFooter(),
-          header: SmartRefresherHeadFooter.init().getHeader(),
-          controller: _refreshController,
-          onLoading: () {
-            requestActivity(isRefresh: false);
-          },
-          onRefresh: () {
-            requestActivity(isRefresh: true);
-          },
-          child: isShowDefaultMap == null
-              ? Container()
-              : isShowDefaultMap
+      body: isShowDefaultMap == null
+          ? loadShimmer()
+          : SmartRefresher(
+              enablePullUp: true,
+              enablePullDown: true,
+              footer: SmartRefresherHeadFooter.init().getFooter(),
+              header: SmartRefresherHeadFooter.init().getHeader(),
+              controller: _refreshController,
+              onLoading: () {
+                requestActivity(isRefresh: false);
+              },
+              onRefresh: () {
+                requestActivity(isRefresh: true);
+              },
+              child: isShowDefaultMap
                   ? defaultMap()
                   : ListView.builder(
                       itemCount: activityList.length,
@@ -537,7 +561,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           mini: true,
         );
       }),
-      backgroundColor: AppColor.mainBlack,
     );
   }
 }
