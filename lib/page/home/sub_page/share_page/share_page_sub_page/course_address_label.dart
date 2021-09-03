@@ -114,11 +114,12 @@ class CourseAddressLabel extends StatelessWidget {
                 ? AppIcon.getAppIcon(AppIcon.tag_location, 16, color: AppColor.white)
                 : tags[index].type == feed_tag_type_course
                     ? AppIcon.getAppIcon(AppIcon.tag_course_black, 16)
-                    : Container(
-                        width: 16,
-                        height: 16,
-                        color: AppColor.mainRed,
-                      ),
+                    : AppIcon.getAppIcon(AppIcon.if_training,16, color: AppColor.white)
+            // Container(
+            //             width: 16,
+            //             height: 16,
+            //             color: AppColor.mainRed,
+            //           ),
           ),
           Container(
             width: getTextWidth(),

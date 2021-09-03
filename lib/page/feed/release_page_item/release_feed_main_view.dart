@@ -242,7 +242,8 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
+                    AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white),
+                    // AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
                     const SizedBox(
                       width: 12,
                     ),
@@ -255,8 +256,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Spacer(),
-                    AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
+                    // const Spacer(),
+                    SizedBox(width: 18,),
+                    // AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
                   ],
                 ),
               )
