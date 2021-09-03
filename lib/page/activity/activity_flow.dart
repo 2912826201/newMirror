@@ -292,7 +292,7 @@ class _ActivityFlowState extends State<ActivityFlow> with TickerProviderStateMix
             margin: const EdgeInsets.only(bottom: 16),
           ),
           const Text(
-            "这里空空如也，去推荐看看吧",
+            "这里空空如也",
             style: AppStyle.text1Regular14,
           ),
         ],
