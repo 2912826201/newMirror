@@ -23,14 +23,16 @@ import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
-class DynamicPageType{
- static String attentionPage = "attentionPage";
- static String recommendPage = "recommendPage";
- static String profileDetailsPage = "profileDetailsPage";
- static String topicRecommend = "topicRecommend";
- static String searchComplex = "searchComplex";
- static String searchFeed = "searchFeed";
+
+class DynamicPageType {
+  static String attentionPage = "attentionPage";
+  static String recommendPage = "recommendPage";
+  static String profileDetailsPage = "profileDetailsPage";
+  static String topicRecommend = "topicRecommend";
+  static String searchComplex = "searchComplex";
+  static String searchFeed = "searchFeed";
 }
+
 class DynamicListLayout extends StatefulWidget {
   DynamicListLayout({
     Key key,
@@ -40,7 +42,7 @@ class DynamicListLayout extends StatefulWidget {
     this.pageName,
     this.deleteFeedChanged,
     this.isHero = false,
-    this.removeFollowChanged,
+    // this.removeFollowChanged,
     this.mineDetailId,
     this.topicId,
     this.isMySelf,
@@ -63,7 +65,7 @@ class DynamicListLayout extends StatefulWidget {
   ValueChanged<int> deleteFeedChanged;
 
   // 取消关注
-  ValueChanged<HomeFeedModel> removeFollowChanged;
+  // ValueChanged<HomeFeedModel> removeFollowChanged;
 
   // 是否显示关注按钮
   bool isShowConcern;
@@ -114,20 +116,21 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
             children: [
               // 头部头像时间
               HeadView(
-                  model: widget.model,
-                  isShowConcern: widget.isShowConcern,
-                  pageName: widget.pageName,
-                  mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
-                  deleteFeedChanged: (id) {
-                    if (widget.topicId != null) {
-                      // 话题详情页删除动态
-                      EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
-                    }
-                    widget.deleteFeedChanged(id);
-                  },
-                  removeFollowChanged: (m) {
-                    if(widget.pageName == DynamicPageType.attentionPage)widget.removeFollowChanged(m);
-                  }),
+                model: widget.model,
+                isShowConcern: widget.isShowConcern,
+                pageName: widget.pageName,
+                mineDetailId: widget.mineDetailId != null ? widget.mineDetailId : 0,
+                deleteFeedChanged: (id) {
+                  if (widget.topicId != null) {
+                    // 话题详情页删除动态
+                    EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
+                  }
+                  widget.deleteFeedChanged(id);
+                },
+                // removeFollowChanged: (m) {
+                //   if(widget.pageName == DynamicPageType.attentionPage)widget.removeFollowChanged(m);
+                // }
+              ),
               // 图片区域
               widget.model.picUrls.length > 0
                   ? SlideBanner(
@@ -146,8 +149,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
               Offstage(
                 offstage: (widget.model.address == null &&
                     // widget.model.courseDto == null
-                    widget.model.simpleActivityDto == null
-                ),
+                    widget.model.simpleActivityDto == null),
                 child: Container(
                   // color: AppColor.white,
                   margin: const EdgeInsets.only(left: 16, right: 16),
@@ -249,7 +251,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
     //   tags.add(tag);
     // }
     // 活动不为空转换model
-    if(model.simpleActivityDto != null) {
+    if (model.simpleActivityDto != null) {
       FeedTagModel tag = FeedTagModel();
       tag.type = feed_tag_type_activity;
       tag.text = model.simpleActivityDto.title;

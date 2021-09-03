@@ -173,14 +173,14 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                         ),
                                         // 头部布局
                                         HeadView(
-                                            isBlack: isBlack,
-                                            isShowConcern: true,
-                                            model: feedModel,
-                                            deleteFeedChanged: (id) {
-                                              isDispose = true;
-                                              deleteId = id;
-                                            },
-                                            removeFollowChanged: (m) {}),
+                                          isBlack: isBlack,
+                                          isShowConcern: true,
+                                          model: feedModel,
+                                          deleteFeedChanged: (id) {
+                                            isDispose = true;
+                                            deleteId = id;
+                                          },
+                                        ),
                                         // 图片区域
                                         feedModel.picUrls.isNotEmpty
                                             ? SlideBanner(
@@ -276,7 +276,9 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                       height: 224,
                       child: Image.asset(DefaultImage.nodata),
                     ),
-                    SizedBox(height: 16,),
+                    SizedBox(
+                      height: 16,
+                    ),
                     const Text(
                       "该动态已删除或失效",
                       style: AppStyle.text1Regular14,
