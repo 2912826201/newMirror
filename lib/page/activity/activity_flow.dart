@@ -14,6 +14,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/size_transition_view.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ class ActivityFlow extends StatefulWidget {
   ActivityModel activityModel;
 }
 
-class _ActivityFlowState extends State<ActivityFlow> {
+class _ActivityFlowState extends State<ActivityFlow> with TickerProviderStateMixin {
   // 是否有下一页
   int feedHasNext;
 
@@ -43,6 +45,7 @@ class _ActivityFlowState extends State<ActivityFlow> {
 
   // 是否显示缺省图
   bool isShowDefaultMap;
+  Map<int, AnimationController> animationMap = {};
 
   @override
   void initState() {
@@ -56,18 +59,22 @@ class _ActivityFlowState extends State<ActivityFlow> {
     if (isRefresh) {
       feedHasNext = null;
       feedLastTime = null;
-      activityList.clear();
     }
     if (feedHasNext != 0) {
       DataResponseModel model =
           await getPullList(type: 8, size: 20, targetId: widget.activityModel.id, lastTime: feedLastTime);
-
+      if (isRefresh) {
+        activityList.clear();
+        animationMap.clear();
+      }
       if (model != null) {
         feedLastTime = model.lastTime;
         feedHasNext = model.hasNext;
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             activityList.add(HomeFeedModel.fromJson(v));
+            animationMap[HomeFeedModel.fromJson(v).id] =
+                AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
           if (isRefresh) {
             _refreshController.refreshCompleted();
@@ -124,6 +131,26 @@ class _ActivityFlowState extends State<ActivityFlow> {
     }
   }
 
+  // 删除动态
+  _deleteFeedCallBack(int id) {
+    if (animationMap.containsKey(id)) {
+      animationMap[id].forward().then((value) {
+        activityList.removeWhere((v) => v.id == id);
+        if (mounted) {
+          setState(() {
+            animationMap.removeWhere((key, value) => key == id);
+          });
+        }
+        if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+          context.read<FeedMapNotifier>().deleteFeed(id);
+        }
+        if (activityList.length == 0) {
+          requestFeednIterface(isRefresh: true);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,49 +161,69 @@ class _ActivityFlowState extends State<ActivityFlow> {
       ),
       body: isShowDefaultMap == null
           ? Container()
-          : isShowDefaultMap == true
-              ? defaultMap()
-              : Stack(
-                  children: [
-                    Container(
+          : Stack(
+              children: [
+                isShowDefaultMap == true
+                    ? defaultMap()
+                    : Container(
                         child: SmartRefresher(
-                      enablePullUp: true,
-                      enablePullDown: true,
-                      footer: SmartRefresherHeadFooter.init().getFooter(),
-                      header: SmartRefresherHeadFooter.init().getHeader(),
-                      controller: _refreshController,
-                      onLoading: () {
-                        requestFeednIterface(isRefresh: false);
-                      },
-                      onRefresh: () {
-                        requestFeednIterface(isRefresh: true);
-                      },
-                      child: CustomScrollView(
-                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          slivers: [
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate((content, index) {
-                                return DynamicListLayout(
-                                  index: index,
-                                  pageName: "activityFlowPage",
-                                  isShowConcern: false,
-                                  isShowRecommendUser: false,
-                                  model: activityList[index],
-                                  deleteFeedChanged: (int id) {},
-                                );
-                              }, childCount: activityList.length),
-                            )
-                          ]),
-                    )),
-                    Positioned(
-                      bottom: ScreenUtil.instance.bottomBarHeight + 28,
-                      left: (ScreenUtil.instance.width - 127) / 2,
-                      right: (ScreenUtil.instance.width - 127) / 2,
-                      child: _gotoRelease(),
-                    )
-                  ],
-                ),
+                        enablePullUp: true,
+                        enablePullDown: true,
+                        footer: SmartRefresherHeadFooter.init().getFooter(),
+                        header: SmartRefresherHeadFooter.init().getHeader(),
+                        controller: _refreshController,
+                        onLoading: () {
+                          requestFeednIterface(isRefresh: false);
+                        },
+                        onRefresh: () {
+                          requestFeednIterface(isRefresh: true);
+                        },
+                        child: CustomScrollView(
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate((content, index) {
+                                  return SizeTransitionView(
+                                      id: activityList[index].id,
+                                      animationMap: animationMap,
+                                      child: ExposureDetector(
+                                        key: Key('activity_list_${activityList[index].id}'),
+                                        child: DynamicListLayout(
+                                          index: index,
+                                          pageName: "activityFlowPage",
+                                          isShowConcern: false,
+                                          isShowRecommendUser: false,
+                                          model: activityList[index],
+                                          deleteFeedChanged: (int id) {
+                                            _deleteFeedCallBack(id);
+                                          },
+                                        ),
+                                        onExposure: (visibilityInfo) {
+                                          // 如果没有显示
+                                          if (context
+                                              .read<FeedMapNotifier>()
+                                              .value
+                                              .feedMap[activityList[index].id]
+                                              .isShowInputBox) {
+                                            context.read<FeedMapNotifier>().showInputBox(activityList[index].id);
+                                            print(
+                                                '第${activityList.indexOf(activityList[index])} 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                          }
+                                        },
+                                      ));
+                                }, childCount: activityList.length),
+                              )
+                            ]),
+                      )),
+                Positioned(
+                  bottom: ScreenUtil.instance.bottomBarHeight + 28,
+                  left: (ScreenUtil.instance.width - 127) / 2,
+                  right: (ScreenUtil.instance.width - 127) / 2,
+                  child: _gotoRelease(),
+                )
+              ],
+            ),
     );
   }
 
