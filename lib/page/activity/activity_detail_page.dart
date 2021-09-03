@@ -6,12 +6,17 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'detail_item/detail_activity_feed_ui.dart';
 import 'detail_item/detail_start_time_ui.dart';
 
 class ActivityDetailPage extends StatefulWidget {
@@ -25,9 +30,21 @@ class ActivityDetailPage extends StatefulWidget {
 
 class _ActivityDetailPageState extends State<ActivityDetailPage> {
   ActivityModel activityModel;
-  LoadingStatus loadingStatus;
 
   _ActivityDetailPageState({this.activityModel});
+
+  LoadingStatus loadingStatus;
+
+  GlobalKey<CommonCommentPageState> childKey = GlobalKey();
+
+  //粘合剂控件滚动控制
+  ScrollController scrollController = ScrollController();
+
+  //上拉加载数据
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  CommentDtoModel fatherComment;
+  bool isInteractive = false;
+  CommentDtoModel commentDtoModel;
 
   @override
   void initState() {
@@ -101,35 +118,115 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
         ),
       );
     } else {
-      return _getDetailWidget();
+      return Container(
+        padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+        child: _getDetailWidget(),
+      );
     }
   }
 
   Widget _getDetailWidget() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          //顶部图片
-          _getTopImage(),
-          SizedBox(height: 12),
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //顶部图片
+              _getTopImage(),
+              SizedBox(height: 12),
 
-          //开始时间
-          DetailStartTimeUi(),
-          SizedBox(height: 21),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //开始时间
+                    DetailStartTimeUi(),
+                    SizedBox(height: 21),
 
-          //活动名称
-          Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
-          SizedBox(height: 10),
+                    //活动名称
+                    Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
+                    SizedBox(height: 10),
 
-          //活动名称
-          Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),
-          SizedBox(height: 12),
+                    //活动名称
+                    Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}",
+                        style: AppStyle.text1Regular14),
+                    SizedBox(height: 12),
 
-          //活动地址
-          Text("${activityModel.address}", style: AppStyle.text1Regular14),
-          SizedBox(height: 38),
-        ],
-      ),
+                    //活动地址
+                    Text("${activityModel.address}", style: AppStyle.text1Regular14),
+                    SizedBox(height: 38),
+
+                    //报名队员
+                    _getMembersUserUI(),
+
+                    //活动动态
+                    DetailActivityFeedUi(),
+                    SizedBox(height: 18),
+
+                    //活动说明
+                    SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        height: 104,
+                        decoration: BoxDecoration(
+                          color: AppColor.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding: EdgeInsets.only(top: 26, bottom: 18, right: 10, left: 10),
+                        child: Text(activityModel.description, style: AppStyle.text1Regular14),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+
+                    Text("讨论区", style: AppStyle.whiteRegular16),
+                    SizedBox(height: 130),
+
+                    _getCourseCommentUi(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          height: 40,
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppColor.mainBlack,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        Container(
+          height: 40,
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppColor.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            children: [
+              SizedBox(width: 12),
+              Text("活动还未开始，发点动态吧", style: AppStyle.text1Regular14),
+              Spacer(),
+              Container(
+                height: 40,
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: AppColor.mainYellow,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text("发布动态", style: AppStyle.textRegular15),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -140,72 +237,48 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       width: ScreenUtil.instance.width,
       imageUrl: activityModel.pic == null ? "" : FileUtil.getImageSlim(activityModel.pic),
       fit: BoxFit.cover,
-      placeholder: (context, url) => Container(
-        color: AppColor.imageBgGrey,
-      ),
-      errorWidget: (context, url, error) => Container(
-        color: AppColor.imageBgGrey,
+      placeholder: (context, url) =>
+          Container(
+            color: AppColor.imageBgGrey,
+          ),
+      errorWidget: (context, url, error) =>
+          Container(
+            color: AppColor.imageBgGrey,
+          ),
+    );
+  }
+
+  //报名队员的ui
+  Widget _getMembersUserUI() {
+    if (activityModel.members == null || activityModel.members.length < 1) {
+      return Container();
+    }
+    return DetailMemberUserUi(activityModel.members);
+  }
+
+
+  Widget _getCourseCommentUi() {
+    return Visibility(
+      visible: loadingStatus == LoadingStatus.STATUS_COMPLETED,
+      child: CommonCommentPage(
+        key: childKey,
+        scrollController: scrollController,
+        refreshController: _refreshController,
+        fatherComment: fatherComment,
+        targetId: activityModel.id,
+        targetType: 3,
+        pageCommentSize: 20,
+        pageSubCommentSize: 3,
+        isShowHotOrTime: true,
+        isInteractiveIn: isInteractive,
+        commentDtoModel: commentDtoModel,
+        isShowAt: false,
+        globalKeyList: [],
+        isVideoCoursePage: true,
       ),
     );
   }
 
-  Widget _getUserUI() {
-    if (activityModel.members == null || activityModel.members.length < 1) {
-      return Container();
-    }
-    return Container(
-      width: ScreenUtil.instance.width,
-      child: Column(
-        children: [
-          Container(
-            width: ScreenUtil.instance.width,
-            height: 45,
-            child: Row(
-              children: [
-                Text("报名队员", style: AppStyle.whiteRegular16),
-                Text("共${activityModel.members.length ?? 0}人", style: AppStyle.whiteRegular14),
-                Spacer(),
-                GestureDetector(
-                  child: Container(
-                    color: AppColor.mainYellow,
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
-                    child: Text("群聊", style: AppStyle.textRegular12),
-                  ),
-                  onTap: () {
-                    print("进入群聊");
-                  },
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 12, bottom: 16),
-            child: ListView.separated(
-                itemCount: activityModel.members.length,
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                      width: 6.0,
-                      color: AppColor.mainBlack,
-                    ),
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 47,
-                    height: 100.0 - 12.0 - 16.0,
-                    child: Column(
-                      children: [
-                        UserAvatarImageUtil.init().getUserImageWidget(
-                            activityModel.members[index].avatarUri, activityModel.members[index].uid.toString(), 45),
-                        SizedBox(height: 6),
-                        Text(activityModel.members[index].nickName, style: AppStyle.text1Regular12),
-                      ],
-                    ),
-                  );
-                }),
-          ),
-        ],
-      ),
-    );
-  }
 
   ///初始化数据
   _initData() async {

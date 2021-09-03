@@ -21,47 +21,29 @@ class _DetailStartTimeUiState extends State<DetailStartTimeUi> {
           child: Text("招募中", style: AppStyle.whiteRegular10),
         ),
         SizedBox(width: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColor.textWhite40,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Text("1", style: AppStyle.yellowRegular12),
-        ),
+        getBox("1", AppStyle.yellowRegular12),
+        getBox("天", AppStyle.whiteRegular11),
+        getBox("22", AppStyle.yellowRegular12),
+        getBox("时", AppStyle.whiteRegular11),
         SizedBox(width: 1),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColor.textWhite40,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Text("天", style: AppStyle.whiteRegular11),
-        ),
-        SizedBox(width: 1),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColor.textWhite40,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Text("22", style: AppStyle.yellowRegular12),
-        ),
-        SizedBox(width: 1),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColor.textWhite40,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Text("时", style: AppStyle.whiteRegular11),
-        ),
-        SizedBox(width: 1),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Text("开始", style: AppStyle.whiteRegular11),
-        ),
+        getBox("开始", AppStyle.whiteRegular11, null, false),
       ],
+    );
+  }
+
+  Widget getBox(String title, TextStyle textStyle, [double width = 18, bool isDecoration = true]) {
+    return Container(
+      margin: EdgeInsets.only(left: 1),
+      height: 18,
+      width: width,
+      decoration: isDecoration
+          ? BoxDecoration(
+              color: AppColor.textWhite40,
+              borderRadius: BorderRadius.circular(4),
+            )
+          : null,
+      alignment: Alignment.center,
+      child: Text(title, style: textStyle),
     );
   }
 }
