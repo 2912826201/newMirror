@@ -136,6 +136,9 @@ class AppRouter {
   //活动详情页
   static String pathActivityDetailPage = "/activity_page/createActivityPage/activityDetailPage";
 
+  // 活动动态页
+  static String pathActivityFeedPage = "/activity_page/activityFeedPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -229,6 +232,7 @@ class AppRouter {
     // router.define(test, handler: demoFunctionHandler);
     router.define(pathCreateActivityPage, handler: handlerCreateActivityPage);
     router.define(pathActivityDetailPage, handler: handlerActivityDetailPage);
+    router.define(pathActivityFeedPage, handler: handlerActivityFeedPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -320,7 +324,12 @@ class AppRouter {
   // startCount 之前已经选择了多少文件，显示计数要加上这个数
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, Function(dynamic result) callback,
-      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0, int topicId,ActivityModel activityModel}) async {
+      {int publishMode = 0,
+      int fixedWidth,
+      int fixedHeight,
+      int startCount = 0,
+      int topicId,
+      ActivityModel activityModel}) async {
     //TODO 先做权限校验 这里先写起始页为相册页的
     if (startPage == startPageGallery) {
       PermissionStatus status;
@@ -362,7 +371,9 @@ class AppRouter {
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
     map["topicId"] = topicId;
-    map["activityModel"] =  activityModel.toJson();
+    if (activityModel != null) {
+      map["activityModel"] = activityModel.toJson();
+    }
     _navigateToPage(context, pathMediaPicker, map, callback: callback, isFromBottom: true);
   }
 
@@ -511,10 +522,10 @@ class AppRouter {
     _navigateToPage(context, pathMyQrCodePage, {}, callback: callBack);
   }
 
-  static void navigateToProfileDetailMore(BuildContext context,int userId,Function(dynamic result) callBack) {
+  static void navigateToProfileDetailMore(BuildContext context, int userId, Function(dynamic result) callBack) {
     Map<String, dynamic> map = Map();
     map["userId"] = userId;
-    _navigateToPage(context, pathProfileDetailsMore, map,callback: callBack);
+    _navigateToPage(context, pathProfileDetailsMore, map, callback: callBack);
   }
 
   static void navigateToProfileFollowListPage(BuildContext context, int userId, int type) {
@@ -565,10 +576,10 @@ class AppRouter {
     _navigateToPage(context, pathSettingBlackList, map);
   }
 
-  static void navigateToSettingAbout(BuildContext context,VersionModel versionModel, bool haveNewVersion) {
+  static void navigateToSettingAbout(BuildContext context, VersionModel versionModel, bool haveNewVersion) {
     Map<String, dynamic> map = Map();
     map["haveNewVersion"] = haveNewVersion;
-    if(versionModel!=null){
+    if (versionModel != null) {
       map["versionModel"] = versionModel.toJson();
     }
     _navigateToPage(context, pathSettingAbout, map);
@@ -655,12 +666,13 @@ class AppRouter {
     _navigateToPage(context, pathProfileInteractiveNoticePage, map, callback: callBack);
   }
 
-  static void navigateToReleasePage(BuildContext context, {int topicId, ActivityModel activityModel,int videoCourseId}) {
+  static void navigateToReleasePage(BuildContext context,
+      {int topicId, ActivityModel activityModel, int videoCourseId}) {
     Map<String, dynamic> map = Map();
     if (topicId != null) {
       map["topicId"] = topicId;
     }
-    if(activityModel != null) {
+    if (activityModel != null) {
       map["activityModel"] = activityModel.toJson();
     }
     if (videoCourseId != null) {
@@ -953,12 +965,12 @@ class AppRouter {
   }
 
   // 所在位置页面
-  static void navigateSearchOrLocationPage(
-      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Location currentAddressInfo, Function(dynamic result) callback) {
+  static void navigateSearchOrLocationPage(BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress,
+      Location currentAddressInfo, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map['checkIndex'] = checkIndex;
     map['selectAddress'] = selectAddress.toJson();
-    if(currentAddressInfo != null) {
+    if (currentAddressInfo != null) {
       map['currentAddressInfo'] = currentAddressInfo.toJson();
     }
     _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
@@ -1039,5 +1051,14 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     map['activityId'] = activityId;
     _navigateToPage(context, pathActivityDetailPage, map);
+  }
+
+  // 所在位置页面
+  static void navigateActivityFeedPage(BuildContext context, ActivityModel activityModel) {
+    Map<String, dynamic> map = Map();
+    if (activityModel != null) {
+      map['activityModel'] = activityModel.toJson();
+    }
+    _navigateToPage(context, pathActivityFeedPage, map);
   }
 }

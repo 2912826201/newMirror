@@ -17,6 +17,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/activity/activity_detail_page.dart';
+import 'package:mirror/page/activity/activity_flow.dart';
 import 'package:mirror/page/activity/create_activity_page.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
@@ -125,7 +126,7 @@ var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List
 var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ActivityModel activityModel;
-  if(data["activityModel"] != null){
+  if (data["activityModel"] != null) {
     activityModel = ActivityModel.fromJson(data["activityModel"]);
   }
   return MediaPickerPage(
@@ -171,15 +172,14 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
 var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   UserModel userModel;
-  if(data["userModel"] != null){
-      userModel = UserModel.fromJson(data["userModel"]);
+  if (data["userModel"] != null) {
+    userModel = UserModel.fromJson(data["userModel"]);
   }
   return ProfileDetailPage(
-    userId: data["userId"],
-    userName: data["userName"] != null ? data["userName"] : null,
-    imageUrl: data["imageUrl"] != null ? data["imageUrl"] : null,
-    userModel:userModel
-  );
+      userId: data["userId"],
+      userName: data["userName"] != null ? data["userName"] : null,
+      imageUrl: data["imageUrl"] != null ? data["imageUrl"] : null,
+      userModel: userModel);
 });
 var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -190,7 +190,9 @@ var handlerProfileFollowList = Handler(handlerFunc: (BuildContext context, Map<S
 });
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ProfileDetailsMore(userId:data["userId"],);
+  return ProfileDetailsMore(
+    userId: data["userId"],
+  );
 });
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -234,7 +236,7 @@ var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   VersionModel versionModel;
-  if(data["versionModel"]!=null){
+  if (data["versionModel"] != null) {
     versionModel = VersionModel.fromJson(data["versionModel"]);
   }
   return AboutPage(
@@ -305,7 +307,7 @@ var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, M
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ActivityModel activityModel;
-  if(data["activityModel"] != null){
+  if (data["activityModel"] != null) {
     activityModel = ActivityModel.fromJson(data["activityModel"]);
   }
   return ReleasePage(
@@ -615,7 +617,7 @@ var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Ma
     checkIndex: data['checkIndex'],
     // 传入之前选择地址
     selectAddress: selectAddress,
-    currentAddressInfo:currentAddressInfo,
+    currentAddressInfo: currentAddressInfo,
   );
 });
 
@@ -650,4 +652,14 @@ var handlerCreateActivityPage = Handler(handlerFunc: (BuildContext context, Map<
 var handlerActivityDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ActivityDetailPage(activityId: data["activityId"]);
+});
+var handlerActivityFeedPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ActivityModel activityModel;
+  if (data['activityModel'] != null) {
+    activityModel = ActivityModel.fromJson(data['activityModel']);
+  }
+  return ActivityFlow(
+    activityModel: activityModel,
+  );
 });

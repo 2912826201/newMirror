@@ -232,6 +232,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               selectedMediaFiles: _selectedMediaFiles,
               controller: _controller,
               videoCourseId: widget.videoCourseId,
+              activityModel: widget.activityModel,
             ), //注意
           ),
           body: Container(

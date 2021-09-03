@@ -166,6 +166,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   // 请求活动接口数据
   requestActivity({bool isRefresh = false}) async {
+    print("isRefresh:::::$isRefresh");
     if (isRefresh) {
       activityHasNext = null;
       lastScore = null;
@@ -192,10 +193,17 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
             _refreshController.loadComplete();
           }
         }
+      } else {
+        if (isRefresh) {
+          _refreshController.refreshCompleted();
+          PrimaryScrollController.of(context).jumpTo(0);
+        } else {
+          _refreshController.loadFailed();
+        }
       }
     } else {
       if (isRefresh) {
-        _refreshController.refreshFailed();
+        _refreshController.refreshCompleted();
         PrimaryScrollController.of(context).jumpTo(0);
       } else {
         _refreshController.loadFailed();
@@ -544,7 +552,6 @@ class ActivityListItem extends StatefulWidget {
   _ActivityListItem createState() => _ActivityListItem();
 }
 
-
 class _ActivityListItem extends State<ActivityListItem> {
   String activityTitle = "";
   String activityTitle1 = "";
@@ -755,9 +762,8 @@ class _ActivityListItem extends State<ActivityListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-          return ActivityFlow(activityModel: widget.activityModel,);
-        }));
+        // AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+        AppRouter.navigateActivityFeedPage(context, widget.activityModel);
       },
       child: Card(
         clipBehavior: Clip.hardEdge,

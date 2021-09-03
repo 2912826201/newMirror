@@ -26,7 +26,8 @@ class ActivityFlow extends StatefulWidget {
 
   @override
   _ActivityFlowState createState() => _ActivityFlowState();
-   // 活动model
+
+  // 活动model
   ActivityModel activityModel;
 }
 
@@ -59,7 +60,7 @@ class _ActivityFlowState extends State<ActivityFlow> {
     }
     if (feedHasNext != 0) {
       DataResponseModel model =
-      await getPullList(type: 8, size: 20, targetId: widget.activityModel.id, lastTime: feedLastTime);
+          await getPullList(type: 8, size: 20, targetId: widget.activityModel.id, lastTime: feedLastTime);
 
       if (model != null) {
         feedLastTime = model.lastTime;
@@ -76,11 +77,7 @@ class _ActivityFlowState extends State<ActivityFlow> {
         }
         //筛选首页关注页话题动态
         List<HomeFeedModel> homeFollowModel = [];
-        context
-            .read<FeedMapNotifier>()
-            .value
-            .feedMap
-            .forEach((key, value) {
+        context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
           if (value.recommendSourceDto != null) {
             homeFollowModel.add(value);
           }
@@ -94,10 +91,16 @@ class _ActivityFlowState extends State<ActivityFlow> {
         });
         // 更新全局内没有的数据
         context.read<FeedMapNotifier>().updateFeedMap(activityList);
+      } else {
+        if (isRefresh) {
+          _refreshController.refreshCompleted();
+        } else {
+          _refreshController.loadFailed();
+        }
       }
     } else {
       if (isRefresh) {
-        _refreshController.refreshFailed();
+        _refreshController.refreshCompleted();
       } else {
         _refreshController.loadFailed();
       }
@@ -132,50 +135,49 @@ class _ActivityFlowState extends State<ActivityFlow> {
       body: isShowDefaultMap == null
           ? Container()
           : isShowDefaultMap == true
-          ? defaultMap()
-          : Stack(
-        children: [
-      Container(
-      child:
-      SmartRefresher(
-      enablePullUp: true,
-        enablePullDown: true,
-        footer: SmartRefresherHeadFooter.init().getFooter(),
-        header: SmartRefresherHeadFooter.init().getHeader(),
-        controller: _refreshController,
-        onLoading: () {
-          requestFeednIterface(isRefresh: false);
-        },
-        onRefresh: () {
-          requestFeednIterface(isRefresh: true);
-        },
-        child:
-        CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            physics: AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate((content, index) {
-                  return DynamicListLayout(
-                    index: index,
-                    pageName: "activityFlowPage",
-                    isShowConcern: false,
-                    isShowRecommendUser: false,
-                    model: activityList[index],
-                  );
-                }, childCount: activityList.length),
-              )
-            ]),
-        )
-      ),
-      Positioned(
-        bottom: ScreenUtil.instance.bottomBarHeight + 28,
-        left: (ScreenUtil.instance.width - 127) / 2,
-        right: (ScreenUtil.instance.width - 127) / 2,
-        child: _gotoRelease(),
-      )
-      ],
-    ),);
+              ? defaultMap()
+              : Stack(
+                  children: [
+                    Container(
+                        child: SmartRefresher(
+                      enablePullUp: true,
+                      enablePullDown: true,
+                      footer: SmartRefresherHeadFooter.init().getFooter(),
+                      header: SmartRefresherHeadFooter.init().getHeader(),
+                      controller: _refreshController,
+                      onLoading: () {
+                        requestFeednIterface(isRefresh: false);
+                      },
+                      onRefresh: () {
+                        requestFeednIterface(isRefresh: true);
+                      },
+                      child: CustomScrollView(
+                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate((content, index) {
+                                return DynamicListLayout(
+                                  index: index,
+                                  pageName: "activityFlowPage",
+                                  isShowConcern: false,
+                                  isShowRecommendUser: false,
+                                  model: activityList[index],
+                                  deleteFeedChanged: (int id) {},
+                                );
+                              }, childCount: activityList.length),
+                            )
+                          ]),
+                    )),
+                    Positioned(
+                      bottom: ScreenUtil.instance.bottomBarHeight + 28,
+                      left: (ScreenUtil.instance.width - 127) / 2,
+                      right: (ScreenUtil.instance.width - 127) / 2,
+                      child: _gotoRelease(),
+                    )
+                  ],
+                ),
+    );
   }
 
   // 发布按钮

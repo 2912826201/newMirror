@@ -25,13 +25,15 @@ import '../release_page.dart';
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatefulWidget {
-  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois, this.currentAddressInfo,this.activityModel});
+  ReleaseFeedMainView(
+      {this.permissions, this.selectedMediaFiles, this.pois, this.currentAddressInfo, this.activityModel});
 
   PermissionStatus permissions;
   SelectedMediaFiles selectedMediaFiles;
   List<PeripheralInformationPoi> pois;
   Location currentAddressInfo;
   ActivityModel activityModel;
+
   @override
   ReleaseFeedMainViewState createState() => ReleaseFeedMainViewState();
 }
@@ -232,34 +234,33 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               )
             : Container(),
         // 活动
-        Visibility(
-          visible: widget.activityModel != null,
-          child:Container(
-            margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
-            height: 48,
-            width: ScreenUtil.instance.width,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
-                const SizedBox(
-                  width: 12,
+        widget.activityModel != null
+            ? Container(
+                margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+                height: 48,
+                width: ScreenUtil.instance.width,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Container(
+                      width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
+                      child: Text(
+                        widget.activityModel.title,
+                        style: AppStyle.whiteRegular16,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Spacer(),
+                    AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
+                  ],
                 ),
-                Container(
-                  width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
-                  child: Text(
-                    widget.activityModel.title,
-                    style: AppStyle.whiteRegular16,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const Spacer(),
-                AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
-              ],
-            ),
-          ),
-        ),
+              )
+            : Container(),
         seletedAddress(context),
         widget.pois.isNotEmpty ? Offstage(offstage: isShowList == false, child: recommendAddress()) : Container()
       ],
