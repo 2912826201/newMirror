@@ -134,6 +134,11 @@ class MessageManager {
       if (dto.avatarUri == "" && exist.avatarUri != "") {
         dto.avatarUri = exist.avatarUri;
       }
+      //处理头像 新的没有值 旧的有值则用旧的
+      if (exist.groupType != null && exist.activityId != null) {
+        dto.groupType = exist.groupType;
+        dto.activityId = exist.activityId;
+      }
       result = await ConversationDBHelper().updateConversation(dto);
     } else {
       result = await ConversationDBHelper().insertConversation(dto);
@@ -147,7 +152,9 @@ class MessageManager {
       }
     }
     //FIXME 如果名字头像等信息缺失 需要去接口获取 最好支持批量 需要解决并发同时请求同一数据的问题
-    if (dto.name == "" || dto.avatarUri == "") {
+    if (dto.name == "" ||
+        dto.avatarUri == "" ||
+        (dto.type == GROUP_TYPE && (dto.activityId == null || dto.activityId == null))) {
       //根据私聊或者群聊类型取信息 异步
       switch (dto.type) {
         case PRIVATE_TYPE:
@@ -173,6 +180,8 @@ class MessageManager {
               GroupChatModel groupChatModel = list.first;
               dto.name = groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName;
               dto.avatarUri = groupChatModel.coverUrl;
+              dto.groupType = groupChatModel.type;
+              dto.activityId = groupChatModel.targetId;
               result = await ConversationDBHelper().updateConversation(dto);
               if (result) {
                 if (dto.isTop == 0) {

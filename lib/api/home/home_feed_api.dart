@@ -145,6 +145,7 @@ Future<Map> publishFeed({
   String topics,
   int videoCourseId,
   int liveCourseId,
+  int activityId,
 }) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
@@ -178,6 +179,9 @@ Future<Map> publishFeed({
   }
   if (liveCourseId != null) {
     params["liveCourseId"] = liveCourseId;
+  }
+  if (activityId != null) {
+    params["activityId"] = activityId;
   }
   BaseResponseModel responseModel = await requestApi(PUBLISHFEED, params);
   if (responseModel.isSuccess) {

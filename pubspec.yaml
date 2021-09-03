@@ -92,7 +92,7 @@ dependencies:
 #  flutter_sound_lite: '7.4.9+3'
   flutter_audio_recorder2: ^0.0.1
   #音频处理
-  audioplayers: ^0.19.0
+  audioplayers: ^0.19.1
   #md5
   crypto: ^3.0.1
   convert: ^3.0.0
@@ -163,6 +163,8 @@ dependencies:
   lottie: ^1.0.1
   #popup_window
   popup_window: ^1.1.2
+  #测试关闭键盘
+  keyboard_service: ^2.0.0
 
 
   #测试跳转指定item
@@ -185,6 +187,8 @@ dependencies:
   keframe: ^2.0.1
   # 菜单按钮
   menu_button: ^1.4.2+1
+  # 微光
+  shimmer: ^2.0.0
   # 自定义动效系列
   cube_transition: ^1.0.2
   like_button: ^2.0.2

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -24,12 +25,14 @@ import '../release_page.dart';
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatefulWidget {
-  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois, this.currentAddressInfo});
+  ReleaseFeedMainView(
+      {this.permissions, this.selectedMediaFiles, this.pois, this.currentAddressInfo, this.activityModel});
 
   PermissionStatus permissions;
   SelectedMediaFiles selectedMediaFiles;
   List<PeripheralInformationPoi> pois;
   Location currentAddressInfo;
+  ActivityModel activityModel;
 
   @override
   ReleaseFeedMainViewState createState() => ReleaseFeedMainViewState();
@@ -124,7 +127,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
               ),
             ),
             const Spacer(),
-            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18,color: AppColor.textWhite40),
+            AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
           ],
         ),
       ),
@@ -147,10 +150,10 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
 
   // 子页面回调
   childrenACallBack(PeripheralInformationPoi poi) {
-    if(poi == null) {
+    if (poi == null) {
       return;
     }
-    if ( poi.name != "不显示所在位置") {
+    if (poi.name != "不显示所在位置") {
       isShowList = false;
       if (poi != null) {
         context.read<ReleaseFeedInputNotifier>().seletedAddressText = poi.name;
@@ -228,6 +231,36 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         widget.selectedMediaFiles != null && widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
                 selectedMediaFiles: widget.selectedMediaFiles,
+              )
+            : Container(),
+        // 活动
+        widget.activityModel != null
+            ? Container(
+                margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+                height: 48,
+                width: ScreenUtil.instance.width,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white),
+                    // AppIcon.getAppIcon(AppIcon.location_feed, 24, color: AppColor.white),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Container(
+                      width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
+                      child: Text(
+                        widget.activityModel.title,
+                        style: AppStyle.whiteRegular16,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // const Spacer(),
+                    SizedBox(width: 18,),
+                    // AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
+                  ],
+                ),
               )
             : Container(),
         seletedAddress(context),
@@ -336,7 +369,7 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
           child: Center(
-            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13,color: AppColor.white),
+            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13, color: AppColor.white),
           ),
         ),
       );
@@ -457,8 +490,7 @@ class SeletedPhotoState extends State<SeletedPhoto> with TickerProviderStateMixi
                     animationMap[fileModel.croppedImage.hashCode].forward().then((value) {
                       animationMap.removeWhere((key, value) => key == fileModel.croppedImage.hashCode);
                       widget.selectedMediaFiles.list.removeWhere((element) => element == fileModel);
-                      setState(() {
-                      });
+                      setState(() {});
                     });
                   }
                 }

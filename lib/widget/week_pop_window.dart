@@ -31,7 +31,7 @@ class _WeekPopWindown extends State<WeekPopWindow> {
     //七天跨度，跨年显示两个年月时间戳，跨月前面显示年月后面显示月,当月内显示年月
     var sevenDayBefor = firstDateTime.add(Duration(days: 6));
     if (firstDateTime.year != sevenDayBefor.year) {
-      _timeTitle = "${firstDateTime.year}年${firstDateTime.month}月-${sevenDayBefor.year}${sevenDayBefor.month}月";
+      _timeTitle = "${firstDateTime.year}年${firstDateTime.month}月-${sevenDayBefor.year}年${sevenDayBefor.month}月";
     } else if (sevenDayBefor.month != firstDateTime.month) {
       _timeTitle = "${firstDateTime.year}年${firstDateTime.month}月-${sevenDayBefor.month}月";
     } else {

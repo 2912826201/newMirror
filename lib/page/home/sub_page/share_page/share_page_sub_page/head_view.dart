@@ -36,8 +36,8 @@ class HeadView extends StatefulWidget {
   int isBlack;
   String pageName;
 
-  // 取消关注
-  ValueChanged<HomeFeedModel> removeFollowChanged;
+  // // 取消关注
+  // ValueChanged<HomeFeedModel> removeFollowChanged;
   ValueChanged<bool> followChanged;
   int mineDetailId;
 
@@ -45,7 +45,7 @@ class HeadView extends StatefulWidget {
     this.model,
     this.isShowConcern,
     this.deleteFeedChanged,
-    this.removeFollowChanged,
+    // this.removeFollowChanged,
     this.isBlack,
     this.mineDetailId,
     this.pageName,
@@ -109,8 +109,8 @@ class HeadViewState extends State<HeadView> {
     if (isCancel) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
-        if (!widget.isShowConcern && widget.removeFollowChanged != null) {
-          widget.removeFollowChanged(widget.model);
+        if (!widget.isShowConcern) {
+          EventBus.getDefault().post(msg: widget.model, registerName: EVENTBUS_FEED_UNSUBSCRIBE);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, false);

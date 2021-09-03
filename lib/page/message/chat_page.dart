@@ -7,14 +7,18 @@ import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/widget/ScaffoldChatPage.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -221,6 +225,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   bool isAnimateToTopIng = false;
   int isAnimateToTopIngCount = 0;
 
+  //是否置顶群聊
+  bool topChat = false;
+
+  //免打扰
+  bool disturbTheNews = false;
+
   @override
   void initState() {
     super.initState();
@@ -259,6 +269,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     //自动发送消息
     _sendMessageAutomatically();
+
+    _getConversationNotificationStatus();
   }
 
   @override
@@ -1981,14 +1993,33 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
     // _animateToIndex();
     // Message msg = chatDataList[chatDataList.length - 2].msg;
     // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
     // MessageManager.atMesGroupModel.add(atMsg);
     // context.read<VoiceSettingNotifier>().stop();
+
+    print("conversation:${conversation.toMap().toString()}");
+
     _messageInputBodyClick();
-    judgeJumpPage(conversation.getType(), this.conversation.conversationId, conversation.type, context, getChatName(),
-        _morePageOnClick, _moreOnClickExitChatPage, conversation.id);
+    if (conversation.getType() == RCConversationType.Group && conversation.groupType == 1) {
+      //是活动群聊时展示功能按钮面板
+      _showBottomSetting();
+    } else {
+      //不是跳转更多界面
+      judgeJumpPage(
+          conversation.getType(),
+          this.conversation.conversationId,
+          conversation.type,
+          context,
+          getChatName(),
+          _morePageOnClick,
+          _moreOnClickExitChatPage,
+          conversation.id);
+    }
   }
 
   //更多的界面-里面进行了一些的点击事件
@@ -2601,6 +2632,139 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     if (isOpenKeyboard) {
       _emojiStateOld = false;
+    }
+  }
+
+
+  //获取消息是否免打扰和置顶
+  _getConversationNotificationStatus() {
+    //判断有没有置顶
+    topChat = conversation.isTop == 1;
+
+    //判断有没有免打扰
+    if (MessageManager.queryNoPromptUidList == null || MessageManager.queryNoPromptUidList.length < 1) {
+      disturbTheNews = false;
+    } else {
+      for (NoPromptUidModel noPromptUidModel in MessageManager.queryNoPromptUidList) {
+        if (noPromptUidModel.type == GROUP_TYPE &&
+            noPromptUidModel.targetId.toString() == this.conversation.conversationId) {
+          disturbTheNews = true;
+          break;
+        }
+      }
+    }
+  }
+
+  bool isShowBottomSetting = false;
+
+  //是活动群聊时展示功能按钮面板
+  _showBottomSetting() {
+    if (isShowBottomSetting) {
+      ToastShow.show(msg: "请稍等", context: context);
+      return;
+    }
+    List<String> list = [];
+    list.add("进入活动");
+    list.add(topChat ? "取消置顶" : "置顶");
+    list.add(disturbTheNews ? "取消免打扰" : "免打扰");
+    list.add("退出群聊");
+    openMoreBottomSheet(
+      context: context,
+      lists: list,
+      onItemClickListener: (index) async {
+        if (list[index] == "进入活动") {
+          if (conversation.activityId != null) {
+            AppRouter.navigateActivityDetailPage(context, conversation.activityId);
+          }
+        } else if (list[index] == "置顶" || list[index] == "取消置顶") {
+          setTopChatApi();
+        } else if (list[index] == "免打扰" || list[index] == "取消免打扰") {
+          setConversationNotificationStatus();
+        } else if (list[index] == "退出群聊") {
+          showAppDialog(context,
+              title: "退出群聊",
+              info: "你确定退出当前群聊吗?",
+              cancel: AppDialogButton("取消", () {
+                return true;
+              }),
+              confirm: AppDialogButton("确定", () {
+                exitGroupChatPr();
+                return true;
+              }));
+        }
+      },
+    );
+  }
+
+  //设置消息是否置顶
+  void setTopChatApi() async {
+    isShowBottomSetting = true;
+    topChat = !topChat;
+    Map<String, dynamic> map = await (topChat ? stickChat : cancelTopChat)
+      (targetId: int.parse(this.conversation.conversationId), type: 1);
+    if (map != null && map["state"] != null && map["state"]) {
+      TopChatModel topChatModel = new TopChatModel(type: 1,
+          chatId: int.parse(this.conversation.conversationId));
+      int index = TopChatModel.containsIndex(MessageManager.topChatModelList, topChatModel);
+      if (topChat) {
+        if (index < 0) {
+          MessageManager.topChatModelList.add(topChatModel);
+          conversation.isTop = 1;
+          context.read<ConversationNotifier>().insertTop(conversation);
+        }
+      } else {
+        if (index >= 0) {
+          MessageManager.topChatModelList.removeAt(index);
+          conversation.isTop = 0;
+          context.read<ConversationNotifier>().insertCommon(conversation);
+        }
+      }
+    } else {
+      topChat = !topChat;
+    }
+
+    isShowBottomSetting = false;
+  }
+
+
+  //设置消息免打扰
+  void setConversationNotificationStatus() async {
+    isShowBottomSetting = true;
+
+    disturbTheNews = !disturbTheNews;
+    //判断有没有免打扰
+    Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
+        targetId: int.parse(this.conversation.conversationId), type: GROUP_TYPE);
+    if (map != null && map["state"] != null && map["state"]) {
+      NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE,
+          targetId: int.parse(this.conversation.conversationId));
+      int index = NoPromptUidModel.containsIndex(MessageManager.queryNoPromptUidList, model);
+      if (disturbTheNews) {
+        if (index < 0) {
+          MessageManager.queryNoPromptUidList.add(model);
+        }
+      } else {
+        if (index >= 0) {
+          MessageManager.queryNoPromptUidList.remove(index);
+        }
+      }
+    } else {
+      disturbTheNews = !disturbTheNews;
+    }
+
+    isShowBottomSetting = false;
+  }
+
+
+  //退出按钮
+  void exitGroupChatPr() async {
+    Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(this.conversation.conversationId));
+    if (model != null && model["state"] != null && model["state"]) {
+      _moreOnClickExitChatPage();
+      GroupChatUserInformationDBHelper().removeGroupAllInformation(this.conversation.conversationId);
+      ToastShow.show(msg: "退出成功", context: context);
+    } else {
+      ToastShow.show(msg: "退出失败", context: context);
     }
   }
 }

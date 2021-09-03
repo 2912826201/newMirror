@@ -5,6 +5,7 @@ import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -50,8 +51,9 @@ followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
 class ReleasePage extends StatefulWidget {
   final int topicId;
   final int videoCourseId;
+  final ActivityModel activityModel;
 
-  ReleasePage({this.topicId, this.videoCourseId});
+  ReleasePage({this.topicId, this.videoCourseId, this.activityModel});
 
   @override
   ReleasePageState createState() => ReleasePageState();
@@ -205,67 +207,69 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
     return
-      // AnnotatedRegion<SystemUiOverlayStyle>(
-      // value: SystemUiOverlayStyle.dark,
-      // child:
-      ChangeNotifierProvider(
-        create: (_) => ReleaseFeedInputNotifier(
-          inputText: "",
-          rules: topicRule == null ? [] : [topicRule],
-          atSearchStr: "",
-          topicSearchStr: "",
-        ),
-        builder: (context, _) {
-          String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
-          return Scaffold(
+        // AnnotatedRegion<SystemUiOverlayStyle>(
+        // value: SystemUiOverlayStyle.dark,
+        // child:
+        ChangeNotifierProvider(
+      create: (_) => ReleaseFeedInputNotifier(
+        inputText: "",
+        rules: topicRule == null ? [] : [topicRule],
+        atSearchStr: "",
+        topicSearchStr: "",
+      ),
+      builder: (context, _) {
+        String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
+        return Scaffold(
+          backgroundColor: AppColor.mainBlack,
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            brightness: Brightness.dark,
             backgroundColor: AppColor.mainBlack,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              brightness: Brightness.dark,
-              backgroundColor: AppColor.mainBlack,
-              titleSpacing: 0,
-              automaticallyImplyLeading: false,
-              title: // 头部布局
-                  FeedHeader(
-                selectedMediaFiles: _selectedMediaFiles,
-                controller: _controller,
-                videoCourseId: widget.videoCourseId,
-              ), //注意
+            titleSpacing: 0,
+            automaticallyImplyLeading: false,
+            title: // 头部布局
+                FeedHeader(
+              selectedMediaFiles: _selectedMediaFiles,
+              controller: _controller,
+              videoCourseId: widget.videoCourseId,
+              activityModel: widget.activityModel,
+            ), //注意
+          ),
+          body: Container(
+            // color: AppColor.white,
+            child: Column(
+              children: [
+                // // 状态栏颜色
+                // Container(
+                //   height: ScreenUtil.instance.statusBarHeight,
+                //   width: ScreenUtil.instance.width,
+                //   color: AppColor.mainBlack,
+                // ),
+                // 输入框
+                KeyboardInput(controller: _controller),
+                // 中间主视图
+                str == "@"
+                    ? Expanded(
+                        child: Container(
+                            child: AtList(controller: _controller),
+                            margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
+                    : str == "#"
+                        ? Expanded(
+                            child: Container(
+                                child: TopicList(controller: _controller),
+                                margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
+                        : ReleaseFeedMainView(
+                            selectedMediaFiles: _selectedMediaFiles,
+                            permissions: permissions,
+                            pois: pois,
+                            currentAddressInfo: currentAddressInfo,
+                            activityModel: widget.activityModel,
+                          )
+              ],
             ),
-            body: Container(
-              // color: AppColor.white,
-              child: Column(
-                children: [
-                  // // 状态栏颜色
-                  // Container(
-                  //   height: ScreenUtil.instance.statusBarHeight,
-                  //   width: ScreenUtil.instance.width,
-                  //   color: AppColor.mainBlack,
-                  // ),
-                  // 输入框
-                  KeyboardInput(controller: _controller),
-                  // 中间主视图
-                  str == "@"
-                      ? Expanded(
-                          child: Container(
-                              child: AtList(controller: _controller),
-                              margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
-                      : str == "#"
-                          ? Expanded(
-                              child: Container(
-                                  child: TopicList(controller: _controller),
-                                  margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
-                          : ReleaseFeedMainView(
-                              selectedMediaFiles: _selectedMediaFiles,
-                              permissions: permissions,
-                              pois: pois,
-                              currentAddressInfo: currentAddressInfo,
-                            )
-                ],
-              ),
-            ),
-          );
-        },
+          ),
+        );
+      },
       // ),
     );
   }

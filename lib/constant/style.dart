@@ -85,6 +85,8 @@ class AppStyle {
   static const whiteBold40 = TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: AppColor.white);
   static const whiteBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.white);
 
+  static const yellowRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.mainYellow);
+
   //=================================下面是旧的样式===============================================
 
   // Regular textSecondary 辅助字体灰色

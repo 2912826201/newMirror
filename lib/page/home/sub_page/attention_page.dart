@@ -140,7 +140,9 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
     // 重新登录替换关注页布局
     EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
-
+    // 取消关注用户
+    EventBus.getDefault().registerSingleParameter(_removeFollowChanged, EVENTBUS_ATTENTION_PAGE,
+        registerName: EVENTBUS_FEED_UNSUBSCRIBE);
     // Build完成第一帧绘制完成回调
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("关注页Build完成第一帧绘制完成回调");
@@ -587,11 +589,12 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
             }
             VideoExposureLayer.forget(Key('${attentionModelList[currentInt].createTime}_key'));
             ExposureDetectorController.instance.forget(Key('attention_page_$id'));
-            // NODE 删除了控制器后要手动触发一下列表的滑动触发曝光元素
+            // NODE 删除了控视频控制器
             if (currentInt + 1 != attentionModelList.length && attentionModelList[currentInt].videos.length > 0) {
               Future.delayed(Duration(milliseconds: 100), () {
-                VideoExposureLayer.forget(Key('${attentionModelList[currentInt+1].createTime}_key'));
-                ExposureDetectorController.instance.forget(Key('attention_page_${attentionModelList[currentInt+1].id}'));
+                VideoExposureLayer.forget(Key('${attentionModelList[currentInt + 1].createTime}_key'));
+                ExposureDetectorController.instance
+                    .forget(Key('attention_page_${attentionModelList[currentInt + 1].id}'));
                 VideoExposureLayer.a();
                 Future.delayed(Duration(milliseconds: 300), () {
                   EventBus.getDefault().post(msg: id, registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
@@ -602,39 +605,41 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
         }
         print(attentionIdList.toString());
       },
-      removeFollowChanged: (model) {
-        int pushId = model.pushId;
-        Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().value.feedMap;
-
-        ///临时的空数组
-        List<int> themList = [];
-        List<HomeFeedModel> feedList = [];
-        feedMap.forEach((key, value) {
-          if (value.pushId == pushId) {
-            themList.add(key);
-            feedList.add(value);
-          }
-        });
-        print("themList:::${themList.toString()}");
-        print("attentionIdList:::${attentionIdList.toString()}");
-        if (arrayDate(attentionIdList, themList).length == 0) {
-          print("进入了11111");
-          dataPage = 1;
-          // attentionIdList.clear();
-          attentionModelList.clear();
-          lastTime = null;
-          getRecommendFeed(refreshOrLoading: true);
-        } else {
-          print("进入了222222");
-          setState(() {
-            attentionIdList = arrayDate(attentionIdList, themList);
-            // 去重
-            attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
-            // 更新全局监听
-            context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-          });
-        }
-      },
     );
+  }
+
+  // 取消关注用户
+  _removeFollowChanged(model) {
+    int pushId = model.pushId;
+    Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().value.feedMap;
+
+    ///临时的空数组
+    List<int> themList = [];
+    List<HomeFeedModel> feedList = [];
+    feedMap.forEach((key, value) {
+      if (value.pushId == pushId) {
+        themList.add(key);
+        feedList.add(value);
+      }
+    });
+    print("themList:::${themList.toString()}");
+    print("attentionIdList:::${attentionIdList.toString()}");
+    if (arrayDate(attentionIdList, themList).length == 0) {
+      print("进入了11111");
+      dataPage = 1;
+      // attentionIdList.clear();
+      attentionModelList.clear();
+      lastTime = null;
+      getRecommendFeed(refreshOrLoading: true);
+    } else {
+      print("进入了222222");
+      setState(() {
+        attentionIdList = arrayDate(attentionIdList, themList);
+        // 去重
+        attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
+        // 更新全局监听
+        context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+      });
+    }
   }
 }

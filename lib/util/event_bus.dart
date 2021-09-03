@@ -152,7 +152,7 @@ const String EVENTBUS_IF_TAB_BAR = "_IFTabBarState";
 // 关注页
 const String EVENTBUS_ATTENTION_PAGE = "AttentionPage";
 // 视频组件
-const String EVENTBUS_VIDEO_VIEW ="video_view";
+const String EVENTBUS_VIDEO_VIEW = "video_view";
 // 推荐页
 const String EVENTBUS_RECOMMEND_PAGE = "recommendpage";
 //聊天界面
@@ -261,8 +261,10 @@ const String EVENTBUS_VIDEO_DELETE_FEED = "eventbus_video_delete_feed";
 // 删除动态视频自动播放
 const String EVENTBUS_DELETE_FEED_VIDEO_PLAY = "eventbus_delete_feed_video_play";
 //话题详情双击tabbar
- String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
- // 搜索页删除动态
-String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
+const String EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR = "eventbustopicdetaildeletefeeddoubletaptabbar";
+// 搜索页删除动态
+const String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
 // 重新登录刷新个人主页及关注按钮
 const String AGAIN_LOGIN_REFREASH_USERPAGE = "again_login_refreash_userpage";
+//动态取消关注用户
+const String EVENTBUS_FEED_UNSUBSCRIBE = "eventbus_feed_unsubscribe";

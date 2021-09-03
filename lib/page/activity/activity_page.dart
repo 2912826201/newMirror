@@ -7,13 +7,18 @@ import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_button/menu_button.dart';
+import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/region_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -22,10 +27,28 @@ import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
+import 'package:mirror/widget/surrounding_information.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
+
+import 'activity_flow.dart';
 
 /// activity_page
 /// Created by yangjiayi on 2021/8/25.
+enum ActivityFilter {
+  //已参加
+  HaveParticipated,
+  // 召集中
+  Convene,
+  // 召集满
+  CalledFull,
+  //活动中
+  Active,
+  //已结束
+  over,
+}
 
 class ActivityPage extends StatefulWidget {
   @override
@@ -46,18 +69,29 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   String citycode;
 
   //  选择菜单值
-  String selectedKey = "筛选";
+  ActivityFilter selectedKey;
 
   // 菜单
-  List<String> keys = <String>[
-    '已参加',
-    '召集中',
-    '召集满',
-    '活动中',
-    '已结束',
+  List<ActivityFilter> keys = <ActivityFilter>[
+    ActivityFilter.HaveParticipated,
+    ActivityFilter.Convene,
+    ActivityFilter.CalledFull,
+    ActivityFilter.Active,
+    ActivityFilter.over,
   ];
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
+
+  List<ActivityModel> activityList = [];
+  double lastScore;
+  int activityHasNext;
+
+  // 经纬度
+  String longitude;
+  String latitude;
+  RefreshController _refreshController = RefreshController(); // 刷新控件控制器
+  // 是否显示缺省图
+  bool isShowDefaultMap;
 
   @override
   void dispose() {
@@ -69,6 +103,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     locationPermissions();
+
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -90,6 +125,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
       print("flutter定位只能获取到经纬度信息");
       currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
       print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
+      latitude = currentAddressInfo.latitude.toString();
+      longitude = currentAddressInfo.longitude.toString();
+      citycode = null;
+      requestActivity(isRefresh: true);
       reverseGeocoding();
     } else if (isDidChangeAppLifecycle == false) {
       print("嘻嘻嘻嘻嘻");
@@ -98,7 +137,17 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
       print("permissions::::$permissions");
       if (permissions.isGranted) {
         currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+        latitude = currentAddressInfo.latitude.toString();
+        longitude = currentAddressInfo.longitude.toString();
+        citycode = null;
+        requestActivity(isRefresh: true);
         reverseGeocoding();
+      } else {
+        // 默认成都
+        citycode = "028";
+        latitude = null;
+        longitude = null;
+        requestActivity(isRefresh: true);
       }
     }
   }
@@ -117,7 +166,121 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   }
 
   // 请求活动接口数据
-  requestActivity() async {}
+  requestActivity({bool isRefresh = false}) async {
+    print("isRefresh:::::$isRefresh");
+    if (isRefresh) {
+      activityHasNext = null;
+      lastScore = null;
+      activityList.clear();
+    }
+    if (activityHasNext != 0) {
+      DataResponseModel model = await getRecommendActivity(
+          lastScore: lastScore,
+          type: enumerateParsedNumber(selectedKey),
+          cityCode: citycode,
+          longitude: longitude,
+          latitude: latitude);
+      if (model != null) {
+        lastScore = model.lastScore;
+        activityHasNext = model.hasNext;
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            activityList.add(ActivityModel.fromJson(v));
+          });
+          if (isRefresh) {
+            _refreshController.refreshCompleted();
+            PrimaryScrollController.of(context).jumpTo(0);
+          } else {
+            _refreshController.loadComplete();
+          }
+        }
+      } else {
+        if (isRefresh) {
+          _refreshController.refreshCompleted();
+          PrimaryScrollController.of(context).jumpTo(0);
+        } else {
+          _refreshController.loadFailed();
+        }
+      }
+    } else {
+      if (isRefresh) {
+        _refreshController.refreshCompleted();
+        PrimaryScrollController.of(context).jumpTo(0);
+      } else {
+        _refreshController.loadFailed();
+      }
+    }
+    if (activityHasNext == 0) {
+      if (isRefresh) {
+        _refreshController.refreshCompleted();
+        _refreshController.loadComplete();
+        PrimaryScrollController.of(context).jumpTo(0);
+      } else {
+        _refreshController.loadNoData();
+      }
+    }
+    if (activityList.length > 0) {
+      isShowDefaultMap = false;
+    } else {
+      isShowDefaultMap = true;
+    }
+    print("activityList::::${activityList.length}");
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  // 枚举解析文字
+  enumerateParsedText(ActivityFilter ctivityEnum) {
+    ActivityFilter activity = ctivityEnum;
+    String activityText;
+    switch (activity) {
+      case ActivityFilter.HaveParticipated:
+        activityText = "已参加";
+        break;
+      case ActivityFilter.Convene:
+        activityText = "召集中";
+        break;
+      case ActivityFilter.CalledFull:
+        activityText = "召集满";
+        break;
+      case ActivityFilter.Active:
+        activityText = "活动中";
+        break;
+      case ActivityFilter.over:
+        activityText = "已结束";
+        break;
+      default:
+        activityText = "筛选";
+    }
+    return activityText;
+  }
+
+  // 枚举解析数字
+  enumerateParsedNumber(ActivityFilter ctivityEnum) {
+    ActivityFilter activity = ctivityEnum;
+    int activityNumber;
+    switch (activity) {
+      case ActivityFilter.HaveParticipated:
+        activityNumber = 0;
+        break;
+      case ActivityFilter.Convene:
+        activityNumber = 1;
+        break;
+      case ActivityFilter.CalledFull:
+        activityNumber = 2;
+        break;
+      case ActivityFilter.Active:
+        activityNumber = 3;
+        break;
+      case ActivityFilter.over:
+        activityNumber = 4;
+        break;
+      default:
+        activityNumber = null;
+    }
+    return activityNumber;
+  }
 
   // 定位失败弹窗
   _locationFailPopUps() {
@@ -142,7 +305,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           print("点击城市");
           if (Platform.isAndroid) {
             print("安卓拒绝好后$permissions");
-            if (permissions != PermissionStatus.granted ) {
+            if (permissions != PermissionStatus.granted) {
               print("1111111111111");
               // 弹窗
               _locationFailPopUps();
@@ -176,6 +339,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                   List<String> provinceCityList = provinceCity.split(" ");
                   streamAddress.sink.add(provinceCityList.last);
                   citycode = cityCode;
+                  selectedKey = null;
+                  requestActivity(isRefresh: true);
+                  // PrimaryScrollController.of(context).jumpTo(0);
                 });
           }
         },
@@ -196,7 +362,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               ),
               Container(
                 child: StreamBuilder<String>(
-                    initialData: "北京",
+                    initialData: "成都",
                     stream: streamAddress.stream,
                     builder: (BuildContext stramContext, AsyncSnapshot<String> snapshot) {
                       return Text(
@@ -233,7 +399,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               SizedBox(
                 width: 8,
               ),
-              Text(selectedKey, style: AppStyle.whiteRegular12, overflow: TextOverflow.ellipsis),
+              Text(enumerateParsedText(selectedKey), style: AppStyle.whiteRegular12, overflow: TextOverflow.ellipsis),
               const Spacer(),
               RotatedBox(
                 quarterTurns: 1,
@@ -251,27 +417,58 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ));
   }
 
-  activityTag(int index) {
-    String tag;
-    if (index == 0) {
-      tag = "准备中";
-    } else if (index == 1) {
-      tag = "召集中";
-    } else if (index == 2) {
-      tag = "邀请你";
-    } else if (index == 3) {
-      tag = "进行中";
-    } else if (index == 4) {
-      tag = "召集满";
-    } else if (index == 5) {
-      tag = "活动结束";
-    }
-    return tag;
+  // 缺省图
+  Widget defaultMap() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 224,
+            height: 224,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+            ),
+            margin: const EdgeInsets.only(bottom: 16),
+          ),
+          const Text(
+            "这里空空如也",
+            style: AppStyle.text1Regular14,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 加载页
+  loadShimmer() {
+    return Shimmer.fromColors(
+      child: ListView.builder(
+        itemBuilder: (context, index) => Card(
+          clipBehavior: Clip.hardEdge,
+          color: AppColor.layoutBgGrey,
+          margin: EdgeInsets.only(left: 16, right: 16, top: index == 0 ? 18 : 12),
+          child: Container(
+            margin: EdgeInsets.only(top: 12, bottom: 12),
+            height: 140,
+            width: ScreenUtil.instance.width,
+          ),
+        ),
+        itemCount: 20,
+      ),
+      baseColor:AppColor.layoutBgGrey.withOpacity(0.5),
+      highlightColor: AppColor.layoutBgGrey.withOpacity(0.1),
+      // enabled: _enabled,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.mainBlack,
       appBar: CustomAppBar(
         titleString: "活动",
         leading: headView(),
@@ -291,7 +488,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
             ),
             // Container(),
             items: keys,
-            itemBuilder: (String value) => Container(
+            itemBuilder: (ActivityFilter value) => Container(
                 color: AppColor.layoutBgGrey,
                 height: 22,
                 alignment: Alignment.centerLeft,
@@ -301,7 +498,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                       width: 8,
                     ),
                     Text(
-                      value,
+                      enumerateParsedText(value),
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
                     ),
                   ],
@@ -309,9 +506,10 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
             toggledChild: Container(
               child: normalChildButton(),
             ),
-            onItemSelected: (String value) {
+            onItemSelected: (ActivityFilter value) {
               selectedKey = value;
-              setState(() {});
+              requestActivity(isRefresh: true);
+              // setState(() {});
             },
             // onMenuButtonToggle: (bool isToggle) {
             //   print(isToggle);
@@ -319,21 +517,32 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           ),
         ],
       ),
-      body: ListView.builder(
-          itemCount: 20,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            String tag;
-            if (index > 5) {
-              tag = activityTag(index % 6);
-            } else {
-              tag = activityTag(index);
-            }
-            return ActivityListItem(
-              tag: tag,
-              index: index,
-            );
-          }),
+      body: isShowDefaultMap == null
+          ? loadShimmer()
+          : SmartRefresher(
+              enablePullUp: true,
+              enablePullDown: true,
+              footer: SmartRefresherHeadFooter.init().getFooter(),
+              header: SmartRefresherHeadFooter.init().getHeader(),
+              controller: _refreshController,
+              onLoading: () {
+                requestActivity(isRefresh: false);
+              },
+              onRefresh: () {
+                requestActivity(isRefresh: true);
+              },
+              child: isShowDefaultMap
+                  ? defaultMap()
+                  : ListView.builder(
+                      itemCount: activityList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        ActivityModel model = activityList[index];
+                        return ActivityListItem(
+                          activityModel: model,
+                          index: index,
+                        );
+                      })),
       floatingActionButton: new Builder(builder: (BuildContext context) {
         return new FloatingActionButton(
           child: const Icon(
@@ -345,29 +554,28 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
+            // openSurroundingInformationBottomSheet(context:context);
             // 跳转创建活动
             AppRouter.navigateCreateActivityPage(context);
           },
           mini: true,
         );
       }),
-      backgroundColor: AppColor.mainBlack,
     );
   }
 }
 
 class ActivityListItem extends StatefulWidget {
   int index;
-  String tag;
+  ActivityModel activityModel;
 
-  ActivityListItem({this.index, this.tag});
+  ActivityListItem({Key key, this.index, this.activityModel}) : super(key: key);
 
   @override
   _ActivityListItem createState() => _ActivityListItem();
 }
 
 class _ActivityListItem extends State<ActivityListItem> {
-  String serverReturnsTitle;
   String activityTitle = "";
   String activityTitle1 = "";
   double tagWidth;
@@ -379,35 +587,70 @@ class _ActivityListItem extends State<ActivityListItem> {
     interceptText();
   }
 
+  // 活动状态数字解析文字
+  NumberParsedText(int ctivityEnum) {
+    int activity = ctivityEnum;
+    String activityText;
+    switch (activity) {
+      case 0:
+        activityText = "召集中";
+        break;
+      case 1:
+        activityText = "召集满";
+        break;
+      case 2:
+        activityText = "进行中";
+        break;
+      case 3:
+        activityText = "活动结束";
+        break;
+    }
+    return activityText;
+  }
+
+  // 活动标签数字解析文字
+  tagParsedText(int tag) {
+    String activityTag;
+    switch (tag) {
+      case 0:
+        activityTag = "官方";
+        break;
+      case 1:
+        activityTag = "好友";
+        break;
+      case 2:
+        activityTag = "未签到";
+        break;
+      case 3:
+        activityTag = "已签到";
+        break;
+    }
+    return activityTag;
+  }
+
   // 截取文本
   interceptText() {
-    if (widget.tag == "召集满" || widget.tag == "召集中" || widget.tag == "准备中" || widget.tag == "邀请你") {
+    if (widget.activityModel.status == 0 || widget.activityModel.status == 1) {
       tagWidth = 56.0;
-    } else if (widget.tag == "活动结束") {
+    } else if (widget.activityModel.status == 3) {
       tagWidth = 62.0;
-    } else if (widget.tag == "进行中") {
+    } else if (widget.activityModel.status == 2) {
       tagWidth = 59.0;
-    }
-    if (widget.index % 2 == 0) {
-      serverReturnsTitle = "3V3篮球正在进行中!速速报名参加哦！";
-    } else {
-      serverReturnsTitle = "一起踢球吧！";
     }
     // 剩余宽度
     double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
     // 文本总宽度
     double totalTextWidth = 0.0;
-    for (int i = 0; i < serverReturnsTitle.length; i++) {
+    for (int i = 0; i < widget.activityModel.title.length; i++) {
       // 文本宽度
-      double textWidth = getTextSize(serverReturnsTitle[i], AppStyle.whiteMedium17, 1).width;
+      double textWidth = getTextSize(widget.activityModel.title[i], AppStyle.whiteMedium17, 1).width;
       totalTextWidth += textWidth;
       if (totalTextWidth > remainingWidth) {
-        activityTitle1 += serverReturnsTitle[i];
+        activityTitle1 += widget.activityModel.title[i];
       } else {
-        activityTitle += serverReturnsTitle[i];
+        activityTitle += widget.activityModel.title[i];
       }
     }
-    setState(() {});
   }
 
   // 标题横向布局
@@ -415,12 +658,12 @@ class _ActivityListItem extends State<ActivityListItem> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        filterTags(widget.tag),
+        filterTags(widget.activityModel.status),
         SizedBox(
           width: 6,
         ),
         Container(
-          width: ScreenUtil.instance.width * 0.49 - tagWidth,
+          width: (ScreenUtil.instance.width * 0.49 - tagWidth).toDouble(),
           child: Text(
             activityTitle,
             style: AppStyle.whiteMedium17,
@@ -437,33 +680,37 @@ class _ActivityListItem extends State<ActivityListItem> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         titleHorizontalLayout(),
-        Text(
-          activityTitle1,
-          style: AppStyle.whiteMedium17,
-          maxLines: 1,
-        ),
+        Container(
+          width: ScreenUtil.instance.width * 0.49,
+          child: Text(
+            activityTitle1,
+            style: AppStyle.whiteMedium17,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )
       ],
     );
   }
 
   // 筛选标签
-  filterTags(String tag) {
+  filterTags(int tag) {
     Widget cotainer;
-    if (tag == "召集满" || tag == "召集中" || tag == "准备中" || tag == "邀请你") {
+    if (tag == 0 || tag == 1) {
       cotainer = Container(
         width: 50,
         height: 18,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: tag == "召集满" || tag == "准备中" ? AppColor.mainBlue : AppColor.mainGreen,
+          color: tag == 1 ? AppColor.mainBlue : AppColor.mainGreen,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Text(
-          tag,
+          NumberParsedText(tag),
           style: AppStyle.whiteRegular10,
         ),
       );
-    } else if (tag == "活动结束") {
+    } else if (tag == 3) {
       cotainer = Container(
         width: 55,
         height: 18,
@@ -473,11 +720,11 @@ class _ActivityListItem extends State<ActivityListItem> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Text(
-          tag,
+          NumberParsedText(tag),
           style: AppStyle.whiteRegular10,
         ),
       );
-    } else if (tag == "进行中") {
+    } else if (tag == 2) {
       cotainer = Container(
         width: 53,
         height: 21,
@@ -495,7 +742,7 @@ class _ActivityListItem extends State<ActivityListItem> {
             color: AppColor.mainYellow,
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          child: Text(tag, style: TextStyle(fontSize: 10, color: AppColor.mainBlack)),
+          child: Text(NumberParsedText(tag), style: TextStyle(fontSize: 10, color: AppColor.mainBlack)),
         ),
       );
     }
@@ -536,124 +783,137 @@ class _ActivityListItem extends State<ActivityListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.hardEdge,
-      color: AppColor.layoutBgGrey,
-      margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
-      child: Container(
-        height: 140,
-        child: Row(
-          children: [
-            // 右边布局
-            Container(
-              margin: EdgeInsets.only(left: 12, top: 13.5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // 活动标题布局
-                  Container(
-                    constraints: BoxConstraints(
-                      minHeight: 47.0,
-                      maxWidth: ScreenUtil.instance.width * 0.49,
+    return GestureDetector(
+      onTap: () {
+        // AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+        AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+      },
+      child: Card(
+        clipBehavior: Clip.hardEdge,
+        color: AppColor.layoutBgGrey,
+        margin: EdgeInsets.only(left: 16, right: 16, top: widget.index == 0 ? 18 : 12),
+        child: Container(
+          margin: EdgeInsets.only(top: 12, bottom: 12),
+          child: Row(
+            children: [
+              // 右边布局
+              Container(
+                margin: EdgeInsets.only(
+                  left: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // 活动标题布局
+                    Container(
+                      constraints: BoxConstraints(
+                        minHeight: 47.0,
+                        minWidth: ScreenUtil.instance.width * 0.49,
+                      ),
+                      alignment: Alignment.topLeft,
+                      child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout(),
                     ),
-                    alignment: Alignment.topLeft,
-                    child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout(),
-                  ),
 
-                  // 地址布局
-                  Container(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Text(
-                      "天府三街福年广场",
-                      style: AppStyle.text1Regular12,
-                    ),
-                  ),
-                  // 时间布局
-                  Container(
-                    padding: EdgeInsets.only(top: 2),
-                    child: Text(
-                      "18:30 8月18日 周六",
-                      style: AppStyle.text1Regular12,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  // 底部布局
-                  Container(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 72,
-                        height: 21,
-                        child: Stack(
-                            clipBehavior: Clip.none,
-                            alignment: const FractionalOffset(0, 0.5),
-                            children: List.generate(
-                                6,
-                                (index) => roundedAvatar(
-                                    context, "http://devpic.aimymusic.com/ifapp/1000111/1615190646473.jpg", index))),
+                    // 地址布局
+                    Container(
+                      padding: EdgeInsets.only(top: 6),
+                      width: ScreenUtil.instance.width * 0.49,
+                      child: Text(
+                        widget.activityModel.address,
+                        style: AppStyle.text1Regular12,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        "6/6",
+                    ),
+                    // 时间布局
+                    Container(
+                      padding: EdgeInsets.only(top: 2),
+                      child: Text(
+                        DateUtil.activityTimeToString(widget.activityModel.startTime),
                         style: AppStyle.text1Regular12,
                       ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Container(
-                        width: 57,
-                        height: 23,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: AppColor.mainYellow, width: 0.5),
-                            borderRadius: BorderRadius.all(Radius.circular(12))),
-                        child: Text(
-                          "热门",
-                          style: AppStyle.whiteRegular10,
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    // 底部布局
+                    Container(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 21,
+                          child: Stack(
+                              clipBehavior: Clip.none,
+                              alignment: const FractionalOffset(0, 0.5),
+                              children: List.generate(
+                                  widget.activityModel.members.length,
+                                  (index) =>
+                                      roundedAvatar(context, widget.activityModel.members[index].avatarUri, index))),
                         ),
-                      )
-                    ],
-                  ))
-                ],
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          "${widget.activityModel.members.length}/${widget.activityModel.count}",
+                          style: AppStyle.text1Regular12,
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        widget.activityModel.tag == null
+                            ? Container()
+                            : Container(
+                                width: 57,
+                                height: 23,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColor.mainYellow, width: 0.5),
+                                    borderRadius: BorderRadius.all(Radius.circular(12))),
+                                child: Text(
+                                  tagParsedText(widget.activityModel.tag),
+                                  style: AppStyle.whiteRegular10,
+                                ),
+                              ),
+                      ],
+                    ))
+                  ],
+                ),
               ),
-            ),
-            Spacer(),
-            // 头像布局
-            ClipPath(
-              clipper: ShapeBorderClipper(
-                shape: ClipImageLeftCorner(),
+              Spacer(),
+              // 头像布局
+              ClipPath(
+                clipper: ShapeBorderClipper(
+                  shape: ClipImageLeftCorner(),
+                ),
+                child: CachedNetworkImage(
+                  /// imageUrl的淡入动画的持续时间。
+                  width: 121,
+                  height: 121,
+                  fadeInDuration: Duration(milliseconds: 0),
+                  fit: BoxFit.cover,
+                  useOldImageOnUrlChange: true,
+                  imageUrl: FileUtil.getMediumImage(widget.activityModel.pic),
+                  placeholder: (context, url) {
+                    return Container(
+                      color: AppColor.imageBgGrey,
+                    );
+                  },
+                  errorWidget: (context, url, e) {
+                    return Container(
+                      color: AppColor.imageBgGrey,
+                    );
+                  },
+                ),
               ),
-              child: CachedNetworkImage(
-                /// imageUrl的淡入动画的持续时间。
-                width: 121,
-                height: 121,
-                fadeInDuration: Duration(milliseconds: 0),
-                fit: BoxFit.cover,
-                useOldImageOnUrlChange: true,
-                imageUrl: "http://devpic.aimymusic.com/ifcms/ca4d089cc7e57ac75666187ae40fe2bb.jpeg",
-                placeholder: (context, url) {
-                  return Container(
-                    color: AppColor.imageBgGrey,
-                  );
-                },
-                errorWidget: (context, url, e) {
-                  return Container(
-                    color: AppColor.imageBgGrey,
-                  );
-                },
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            )
-          ],
+              SizedBox(
+                width: 12,
+              )
+            ],
+          ),
         ),
       ),
     );

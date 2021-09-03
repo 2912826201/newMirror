@@ -29,6 +29,7 @@ class ProfileDetailsList extends StatefulWidget {
   bool isMySelf;
   Key pageKey;
   bool imageLoading;
+
   ProfileDetailsList({this.pageKey, this.type, this.id, this.isMySelf, this.imageLoading});
 
   @override
@@ -210,20 +211,19 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       ///刷新控件
       child: ScrollConfiguration(
           behavior: OverScrollBehavior(),
-          child:  SmartRefresher(
-                  enablePullUp: true,
-                  enablePullDown: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
-                  header: SmartRefresherHeadFooter.init().getHeader(),
-                  controller: _refreshController,
-                  onLoading: () {
-
-                    if (refreshOver) {
-                      _onLoadding();
-                    }
-                  },
-                  onRefresh: _onRefresh,
-                  child: _showDataUi())),
+          child: SmartRefresher(
+              enablePullUp: true,
+              enablePullDown: true,
+              footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: listNoData ? false : true),
+              header: SmartRefresherHeadFooter.init().getHeader(),
+              controller: _refreshController,
+              onLoading: () {
+                if (refreshOver) {
+                  _onLoadding();
+                }
+              },
+              onRefresh: _onRefresh,
+              child: _showDataUi())),
     );
     return NestedScrollViewInnerScrollPositionKeyWidget(widget.pageKey, child);
   }
@@ -257,10 +257,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
           );
   }
 
-  Widget _listItem(int index){
+  Widget _listItem(int index) {
     HomeFeedModel model;
     model = followModel[index];
-   return  SizeTransition(
+    return SizeTransition(
         sizeFactor: Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(
           parent: animationMap[model.id],
           curve: Curves.fastOutSlowIn,
@@ -280,7 +280,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               isMySelf: widget.isMySelf,
               mineDetailId: widget.id,
               key: GlobalObjectKey("attention$index"),
-              removeFollowChanged: (model) {},
               deleteFeedChanged: (feedId) {}),
           onExposure: (visibilityInfo) {
             // 如果没有显示
@@ -291,6 +290,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
           },
         ));
   }
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
