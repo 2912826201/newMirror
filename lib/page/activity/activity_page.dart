@@ -16,7 +16,6 @@ import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
-import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -28,7 +27,6 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
-import 'package:mirror/widget/surrounding_information.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -459,7 +457,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ),
         itemCount: 20,
       ),
-      baseColor:AppColor.layoutBgGrey.withOpacity(0.5),
+      baseColor: AppColor.layoutBgGrey.withOpacity(0.5),
       highlightColor: AppColor.layoutBgGrey.withOpacity(0.1),
       // enabled: _enabled,
     );
@@ -554,7 +552,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
-            // openSurroundingInformationBottomSheet(context:context);
             // 跳转创建活动
             AppRouter.navigateCreateActivityPage(context);
           },
@@ -785,7 +782,6 @@ class _ActivityListItem extends State<ActivityListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // AppRouter.navigateActivityFeedPage(context, widget.activityModel);
         AppRouter.navigateActivityFeedPage(context, widget.activityModel);
       },
       child: Card(
