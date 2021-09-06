@@ -32,7 +32,6 @@ import 'package:mirror/widget/time_picker_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-
 class EditInformation extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -62,6 +61,7 @@ class _EditInformationState extends State<EditInformation> {
   double height = ScreenUtil.instance.height;
   String cityCode;
   String provinceCity;
+
   @override
   void initState() {
     super.initState();
@@ -92,7 +92,7 @@ class _EditInformationState extends State<EditInformation> {
           if (context.read<ProfileNotifier>().profile.cityCode == element.regionCode) {
             print('初始化城市=======================================cityCode=====${element.regionCode}');
             print('初始化城市=======================================cityName=====${element.regionName}');
-            provinceCity = element.regionName+" "+provinceMap[element.parentId].regionName;
+            provinceCity = element.regionName + " " + provinceMap[element.parentId].regionName;
             cityCode = element.regionCode;
           }
         });
@@ -236,14 +236,9 @@ class _EditInformationState extends State<EditInformation> {
                     },
                     child: _rowChose("性别", userSexText),
                   ),
-
                   InkWell(
                     onTap: () {
-                      openActivityTimePickerBottomSheet(context: context, firstTime: DateTime.now().add(Duration
-                        (days: 2)),onStartAndEndTimeChoseCallBack: (start,end){
-                        print('----------onStartAndEndTimeChoseCallBack----------------$start-----$end');
-                          });
-                      /* openTimePickerBottomSheet(
+                       openTimePickerBottomSheet(
                           context: context,
                           firstTime: DateTime(1960),
                           lastTime: DateTime.now(),
@@ -252,11 +247,10 @@ class _EditInformationState extends State<EditInformation> {
                           onConfirm: (date) {
                             userBirthday = DateFormat("yyyy-MM-dd").format(date);
                             setState(() {});
-                          });*/
+                          });
                     },
                     child: _rowChose("生日", userBirthday),
                   ),
-
                   InkWell(
                     child: _rowChose("地区", provinceCity),
                     onTap: () {
@@ -268,8 +262,7 @@ class _EditInformationState extends State<EditInformation> {
                           onConfirm: (provinceCity, cityCode, longitude, latitude) {
                             this.provinceCity = provinceCity;
                             this.cityCode = cityCode;
-                            setState(() {
-                            });
+                            setState(() {});
                           });
                     },
                   ),
@@ -310,9 +303,7 @@ class _EditInformationState extends State<EditInformation> {
     return Container(
       height: title == "简介" ? textHeight + 25 : 48,
       width: width,
-      padding: title == "简介"
-          ? EdgeInsets.only(top: 13, left: 16, right: 16)
-          : EdgeInsets.only(left: 16, right: 16),
+      padding: title == "简介" ? EdgeInsets.only(top: 13, left: 16, right: 16) : EdgeInsets.only(left: 16, right: 16),
       child: Row(
         children: [
           Container(
@@ -331,7 +322,7 @@ class _EditInformationState extends State<EditInformation> {
             width: width * 0.67,
             child: Text(
               textContent != null ? textContent : "去编辑",
-              style: title == "昵称"?AppStyle.whiteRegular16:AppStyle.text1Regular16,
+              style: title == "昵称" ? AppStyle.whiteRegular16 : AppStyle.text1Regular16,
             ),
           ),
           Spacer(),
@@ -382,7 +373,11 @@ class _EditInformationState extends State<EditInformation> {
                     borderRadius: BorderRadius.all(Radius.circular(59)),
                   ),
                   child: Center(
-                    child: Image.asset("assets/png/edit_pen.png",width: 23,height: 23,),
+                    child: Image.asset(
+                      "assets/png/edit_pen.png",
+                      width: 23,
+                      height: 23,
+                    ),
                   ),
                 ))
           ],
@@ -395,10 +390,7 @@ class _EditInformationState extends State<EditInformation> {
       avataruri = results.resultMap.values.first.url;
     }
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
-        description: _introduction,
-        sex: userSex,
-        birthday: userBirthday,
-        cityCode: cityCode);
+        description: _introduction, sex: userSex, birthday: userBirthday, cityCode: cityCode);
     if (model != null) {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);

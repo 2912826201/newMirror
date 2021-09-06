@@ -17,6 +17,7 @@ Future openActivityTimePickerBottomSheet(
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      backgroundColor: AppColor.layoutBgGrey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
@@ -158,8 +159,11 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
                     endDateTimeList[fixedContrlList[2].selectedItem].add(Duration(milliseconds: endMinuteList[index]));
                 break;
             }
+            endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
+                .add(Duration(minutes: -endDateTimeList[fixedContrlList[2].selectedItem].minute));
             widget.onStartAndEndTimeChoseCallBack(
-                startDateTimeList[fixedContrlList[0].selectedItem], endDateTimeList[fixedContrlList[2].selectedItem]);
+                startDateTimeList[fixedContrlList[0].selectedItem],endDateTimeList[fixedContrlList[2].selectedItem]
+                .add(Duration(minutes: endMinuteList[fixedContrlList[3].selectedItem])) );
           },
           children: List.generate(unit == "时" ? dateList.length : minuteList.length, (index) {
             return _timeItem(unit == "时" ? dateList[index].hour : minuteList[index], unit);
@@ -233,7 +237,7 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
 
   _startHourListInit() {
     bool isTody = false;
-    //活动开始时间最早6点最晚21:55点
+    //活动开始时间最早6点最晚22:00点
     int totalHour = 24 - 2;
     DateTime startTime = DateTime(widget.choseDateTime.year, widget.choseDateTime.month, widget.choseDateTime.day);
     if (widget.choseDateTime.day == DateTime.now().day) {

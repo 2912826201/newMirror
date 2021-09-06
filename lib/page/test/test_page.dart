@@ -37,6 +37,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
@@ -700,12 +701,18 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   child: Text("用户协议和隐私政策")),
               RaisedButton(
                   onPressed: () {
-                    Loading.showLoading(context, infoText: "测试");
+                    // Loading.showLoading(context, infoText: "测试");
+                    openActivityTimePickerBottomSheet(
+                        context: context,
+                        firstTime: DateTime.now(),
+                        onStartAndEndTimeChoseCallBack: (start, end) {
+                          print('----------onStartAndEndTimeChoseCallBack----------------$start-----$end');
+                        });
                     // Navigator.push(context, MaterialPageRoute(builder: (context) {
                     //   return ListviewItemPage();
                     // }));
                   },
-                  child: Text("测试listview增加item")),
+                  child: Text("开始时间结束时间选择")),
               _showSelectJoinTimePopupWindow(),
             ],
           ),
