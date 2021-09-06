@@ -30,6 +30,8 @@ class _AppDialog extends StatelessWidget {
   //是不是透明
   final bool isTransparentBack;
 
+  final TextStyle infoStyle;
+
   final List<Widget> _viewList = [];
 
   _AppDialog(
@@ -43,6 +45,7 @@ class _AppDialog extends StatelessWidget {
       this.customizeWidget,
       this.isTransparentBack = false,
       this.topImageUrl,
+      this.infoStyle,
       this.confirmColor})
       : super(key: key);
 
@@ -155,14 +158,14 @@ class _AppDialog extends StatelessWidget {
             : const EdgeInsets.fromLTRB(_outerPadding, _innerPaddingTitleInfo, _outerPadding, 0),
         child: Text(
           info,
-          style: AppStyle.text1Regular16,
+          style: infoStyle ?? AppStyle.text1Regular16,
         ),
       ));
+      //加下外边距
+      _viewList.add(SizedBox(
+        height: _outerPadding,
+      ));
     }
-    //加下外边距
-    _viewList.add(SizedBox(
-      height: _outerPadding,
-    ));
   }
 
   _buildCustomizeWidget() {
@@ -331,6 +334,7 @@ showAppDialog(BuildContext context,
     String title,
     String info,
     double progress,
+    TextStyle infoStyle,
     Widget customizeWidget,
     String circleImageUrl,
     String topImageUrl,
@@ -353,6 +357,7 @@ showAppDialog(BuildContext context,
                   buttonList: buttonList,
                   title: title,
                   info: info,
+                  infoStyle: infoStyle,
                   customizeWidget: customizeWidget,
                   circleImageUrl: circleImageUrl,
                   isTransparentBack: isTransparentBack,

@@ -14,6 +14,17 @@ const String GETACTIVITYDETAIL = "/appuser/web/activity/detail";
 
 // 获取推荐活动列表
 const String GETRECOMMENDACTIVITY = "/appuser/web/activity/getRecommendActivity";
+// 移除活动成员
+const String REMOVEMEMBER = "/appuser/web/activity/removeMember";
+// 解散活动
+const String DELETEACTIVITY = "/appuser/web/activity/delete";
+
+// 申请加入活动
+const String APPLYJOIN = "/appuser/web/activity/applyJoin";
+
+// 申请列表
+const String APPLYLIST = "/appuser/web/activity/applyList";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -112,6 +123,65 @@ Future<ActivityModel> getActivityDetailApi(int activityId) async {
   BaseResponseModel responseModel = await requestApi(GETACTIVITYDETAIL, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return ActivityModel.fromJson(responseModel.data);
+  } else {
+    return null;
+  }
+}
+
+//移除活动成员
+Future<bool> removeMember(int activityId, int uid, String reason) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  params["uid"] = uid;
+  params["reason"] = reason;
+  BaseResponseModel responseModel = await requestApi(REMOVEMEMBER, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return null;
+  }
+}
+
+//解散活动
+Future<bool> deleteActivity(int activityId) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  BaseResponseModel responseModel = await requestApi(DELETEACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return null;
+  }
+}
+
+//申请加入活动
+Future<bool> applyJoinActivity(int activityId, String message) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["message"] = message;
+  BaseResponseModel responseModel = await requestApi(APPLYJOIN, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return null;
+  }
+}
+
+//获取申请的列表
+Future<DataResponseModel> applyList(int activityId, int size, int lastId) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["size"] = size;
+  if (lastId != null) {
+    params["lastId"] = lastId;
+  }
+  BaseResponseModel responseModel = await requestApi(APPLYLIST, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
   } else {
     return null;
   }

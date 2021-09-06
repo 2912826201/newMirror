@@ -195,7 +195,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
             _getSizedBox(height: 8),
 
-            //修改参见人数
+            //修改参加人数
             _getTitleWidget("参加人数"),
             _getJoinNumberChangeUi(),
             _getSizedBox(height: 8),
@@ -394,12 +394,12 @@ class _CreateActivityPageState extends StateKeyboard {
                                 Positioned(
                                   right: 8,
                                   top: 0,
-                                  child: AppIconButton(
-                                    svgName: AppIcon.delete,
-                                    iconSize: 18,
-                                    buttonWidth: 18,
-                                    buttonHeight: 18,
-                                    bgColor: AppColor.mainRed,
+                                  child: GestureDetector(
+                                    child: Container(
+                                      height: 18,
+                                      width: 18,
+                                      color: AppColor.mainRed,
+                                    ),
                                     onTap: () {
                                       activityImageFileList.removeAt(index);
                                       setState(() {});

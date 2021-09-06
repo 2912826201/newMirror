@@ -139,6 +139,10 @@ class AppRouter {
   // 活动动态页
   static String pathActivityFeedPage = "/activity_page/activityFeedPage";
 
+  // 移除活动成员
+  static String pathRemoveUserPage = "/activity_page/createActivityPage/activityDetailPage/removeUserPage";
+  static String pathActivityUserPage = "/activity_page/createActivityPage/activityDetailPage/activityUserPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -233,6 +237,8 @@ class AppRouter {
     router.define(pathCreateActivityPage, handler: handlerCreateActivityPage);
     router.define(pathActivityDetailPage, handler: handlerActivityDetailPage);
     router.define(pathActivityFeedPage, handler: handlerActivityFeedPage);
+    router.define(pathRemoveUserPage, handler: handlerRemoveUserPage);
+    router.define(pathActivityUserPage, handler: handlerActivityUserPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -1046,10 +1052,13 @@ class AppRouter {
     _navigateToPage(context, pathCreateActivityPage, map);
   }
 
-  //去创建活动界面
-  static void navigateActivityDetailPage(BuildContext context, int activityId) {
+  //去活动详情界面
+  static void navigateActivityDetailPage(BuildContext context, int activityId, [ActivityModel activityModel]) {
     Map<String, dynamic> map = Map();
     map['activityId'] = activityId;
+    if (activityModel != null) {
+      map['activityModel'] = activityModel.toJson();
+    }
     _navigateToPage(context, pathActivityDetailPage, map);
   }
 
@@ -1060,5 +1069,26 @@ class AppRouter {
       map['activityModel'] = activityModel.toJson();
     }
     _navigateToPage(context, pathActivityFeedPage, map);
+  }
+
+  // 移除活动成员
+  static void navigateRemoveUserPage(BuildContext context, int activityId, List<UserModel> modeList) {
+    Map<String, dynamic> map = Map();
+    if (modeList != null) {
+      map['modeList'] = modeList.map((e) => e.toJson()).toList();
+    }
+    map["activityId"] = activityId;
+    _navigateToPage(context, pathRemoveUserPage, map);
+  }
+
+  // 活动成员
+  static void navigateActivityUserPage(BuildContext context, int activityId, List<UserModel> modeList, {int type = 0}) {
+    Map<String, dynamic> map = Map();
+    if (modeList != null) {
+      map['modeList'] = modeList.map((e) => e.toJson()).toList();
+    }
+    map["activityId"] = activityId;
+    map["type"] = type;
+    _navigateToPage(context, pathActivityUserPage, map);
   }
 }

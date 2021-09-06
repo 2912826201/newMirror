@@ -60,6 +60,8 @@ class CommonCommentPage extends StatefulWidget {
   final double externalBoxHeight;
   bool isBottomSheetAndHomePage;
   bool isInteractiveIn = false;
+  bool isActivity = false;
+  Function() activityMoreOnTap;
 
   CommonCommentPage(
       {@required Key key,
@@ -74,10 +76,12 @@ class CommonCommentPage extends StatefulWidget {
       this.pageSubCommentSize = 3,
       this.externalBoxHeight = 0,
       this.isShowHotOrTime = false,
+      this.activityMoreOnTap,
       this.isShowAt = true,
       this.fatherComment,
       this.isBottomSheetAndHomePage = false,
       this.isVideoCoursePage = false,
+      this.isActivity = false,
       this.commentDtoModel,
       this.isInteractiveIn})
       : super(key: key);
@@ -232,14 +236,25 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       count = 0;
     }
     var widgetArray = <Widget>[];
-    if (widget.isShowHotOrTime) {
+
+    if (widget.isActivity) {
+      if (!widget.isBottomSheetAndHomePage) {
+        widgetArray.add(getTopActivityCommentUi(
+            courseCommentHot != null && courseCommentHot.list != null && courseCommentHot.list.length > 0,
+            widget.activityMoreOnTap));
+      }
+    } else if (widget.isShowHotOrTime) {
       widgetArray.add(getCourseTopText(AppStyle.textMedium18));
       widgetArray.add(getCourseTopNumber(isHotOrTime, count, onHotCommentTitleClickBtn, onTimeCommentTitleClickBtn));
       widgetArray.add(SizedBox(height: 12));
-      widgetArray.add(getCourseTopEdit(onEditBoxClickBtn));
+      widgetArray.add(getCourseTopEdit(onEditBoxClickBtn, false));
     }
     print("111111111111111111111111111111111");
     widgetArray.add(_getCommentItemUi());
+    if (widget.isActivity && !widget.isBottomSheetAndHomePage) {
+      widgetArray.add(SizedBox(height: 20));
+      widgetArray.add(getCourseTopEdit(onEditBoxClickBtn, true));
+    }
     return Container(
       // color: AppColor.,
       child: Column(

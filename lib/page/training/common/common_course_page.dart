@@ -574,6 +574,38 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList, BuildContext cont
   }
 }
 
+//活动的顶部文字
+Widget getTopActivityCommentUi(bool isVisibility, Function() onTap) {
+  return Row(
+    children: [
+      SizedBox(width: 16),
+      Text("讨论区", style: AppStyle.whiteRegular16),
+      Spacer(),
+      Visibility(
+        visible: isVisibility,
+        child: GestureDetector(
+          child: Container(
+            color: AppColor.transparent,
+            child: Row(
+              children: [
+                Text("更多", style: AppStyle.whiteRegular12),
+                SizedBox(width: 8),
+                AppIcon.getAppIcon(
+                  AppIcon.arrow_right_18,
+                  16,
+                  color: AppColor.textWhite60,
+                )
+              ],
+            ),
+          ),
+          onTap: onTap,
+        ),
+      ),
+      SizedBox(width: 16),
+    ],
+  );
+}
+
 //课程评论的头部
 Widget getCourseTopText(TextStyle titleTextStyle) {
   return Container(
@@ -631,7 +663,7 @@ Widget getCourseTopNumber(bool isHotOrTime, int courseCommentCount, Function onH
 }
 
 //课程评论输入框
-Widget getCourseTopEdit(Function editClick) {
+Widget getCourseTopEdit(Function editClick, bool isShowPost) {
   return Center(
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -653,7 +685,16 @@ Widget getCourseTopEdit(Function editClick) {
               borderRadius: BorderRadius.all(Radius.circular(14)),
               color: AppColor.bgWhite.withOpacity(0.1),
             ),
-            child: Text("说点什么吧", style: TextStyle(fontSize: 14, color: AppColor.textWhite60)),
+            child: !isShowPost
+                ? Text("说点什么吧", style: AppStyle.text1Regular14)
+                : Row(
+                    children: [
+                      Text("说点什么吧", style: AppStyle.text1Regular14),
+                      Spacer(),
+                      Text("发送", style: AppStyle.text1Regular14),
+                      SizedBox(width: 16),
+                    ],
+                  ),
           ),
           onTap: editClick,
         ),

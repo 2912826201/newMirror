@@ -18,6 +18,8 @@ class ActivityModel {
   String description;
   int startTime;
   int endTime;
+  int groupChatId;
+  int masterId;
   List<UserModel> members;
   List<String> pics;
 
@@ -39,6 +41,8 @@ class ActivityModel {
     description = json['description'];
     startTime = json['startTime'];
     endTime = json['endTime'];
+    groupChatId = json['groupChatId'];
+    masterId = json['masterId'];
     if (json["members"] != null) {
       members = [];
       json["members"].forEach((v) {
@@ -77,6 +81,8 @@ class ActivityModel {
     map['startTime'] = startTime;
     map['endTime'] = endTime;
     map['members'] = members;
+    map['masterId'] = masterId;
+    map['groupChatId'] = groupChatId;
     map['pics'] = pics;
     return map;
   }

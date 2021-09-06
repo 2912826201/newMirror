@@ -10,12 +10,14 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -28,6 +30,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
+import 'chat_message_profile_util.dart';
 import 'message_chat_page_manager.dart';
 
 class ChatPageUtil {
@@ -585,5 +588,22 @@ class ChatPageUtil {
       return true;
     }
     return false;
+  }
+
+  Future<ConversationDto> getConversationDto(String chatId) async {
+    ConversationDto conversation;
+
+    conversation = ChatMessageProfileUtil.init().getConversation(chatId);
+    if (conversation != null) return conversation;
+
+    conversation = await ConversationDBHelper().querySingleConversation(chatId);
+    if (conversation != null) return conversation;
+
+    List<GroupChatModel> list = await getGroupChatByIds(id: int.parse(chatId));
+    if (list != null && list.length > 0) {
+      conversation = ConversationDto.fromGroupChat(list.first);
+    }
+
+    return conversation;
   }
 }

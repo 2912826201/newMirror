@@ -2665,6 +2665,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     List<String> list = [];
     list.add("进入活动");
+    list.add("查看活动群成员");
     list.add(topChat ? "取消置顶" : "置顶");
     list.add(disturbTheNews ? "取消免打扰" : "免打扰");
     list.add("退出群聊");
@@ -2674,7 +2675,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       onItemClickListener: (index) async {
         if (list[index] == "进入活动") {
           if (conversation.activityId != null) {
+            Navigator.of(context).pop();
             AppRouter.navigateActivityDetailPage(context, conversation.activityId);
+          }
+        }
+        if (list[index] == "查看活动群成员") {
+          if (conversation.activityId != null) {
+            AppRouter.navigateActivityUserPage(context, conversation.activityId, []);
           }
         } else if (list[index] == "置顶" || list[index] == "取消置顶") {
           setTopChatApi();
@@ -2756,7 +2763,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
   }
 
 
-  //退出按钮
+  //退出按钮-移除
   void exitGroupChatPr() async {
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(this.conversation.conversationId));
     if (model != null && model["state"] != null && model["state"]) {

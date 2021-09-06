@@ -18,7 +18,9 @@ import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/activity/activity_detail_page.dart';
 import 'package:mirror/page/activity/activity_flow.dart';
+import 'package:mirror/page/activity/activity_user_page.dart';
 import 'package:mirror/page/activity/create_activity_page.dart';
+import 'package:mirror/page/activity/remove_user_page.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
@@ -648,11 +650,17 @@ var handlerCreateActivityPage = Handler(handlerFunc: (BuildContext context, Map<
   return CreateActivityPage();
 });
 
-// 创建活动界面
+// 活动详情界面
 var handlerActivityDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ActivityDetailPage(activityId: data["activityId"]);
+  ActivityModel activityModel;
+  if (data['activityModel'] != null) {
+    activityModel = ActivityModel.fromJson(data['activityModel']);
+  }
+  return ActivityDetailPage(activityId: data["activityId"], activityModel: activityModel);
 });
+
+//活动动态界面
 var handlerActivityFeedPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ActivityModel activityModel;
@@ -661,5 +669,32 @@ var handlerActivityFeedPage = Handler(handlerFunc: (BuildContext context, Map<St
   }
   return ActivityFlow(
     activityModel: activityModel,
+  );
+});
+
+//活动动态界面
+var handlerRemoveUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  List<UserModel> list = [];
+  if (data['modeList'] != null) {
+    list = (data["modeList"] as List).map((e) => UserModel.fromJson(e)).toList();
+  }
+  return RemoveUserPage(
+    activityId: data["activityId"],
+    userList: list,
+  );
+});
+
+//活动动态界面
+var handlerActivityUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  List<UserModel> list = [];
+  if (data['modeList'] != null) {
+    list = (data["modeList"] as List).map((e) => UserModel.fromJson(e)).toList();
+  }
+  return ActivityUserPage(
+    activityId: data["activityId"],
+    type: data["type"],
+    userList: list,
   );
 });

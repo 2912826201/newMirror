@@ -33,6 +33,24 @@ class ConversationDBHelper {
     return list;
   }
 
+  //这里正序查出即可 后续操作会倒序处理
+  Future<ConversationDto> querySingleConversation(String chatId) async {
+    // Database db = await DBHelper().openDB();
+    List<ConversationDto> list = [];
+    List<Map<String, dynamic>> result = await DBHelper.instance.db
+        .query(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_CONVERSATIONID = $chatId");
+    for (Map<String, dynamic> map in result) {
+      list.add(ConversationDto.fromMap(map));
+    }
+
+    // await DBHelper().closeDB(db);
+    if (list.length > 0) {
+      return list.first;
+    } else {
+      return null;
+    }
+  }
+
   //移除指定会话
   Future<void> removeConversation(String id) async {
     await DBHelper.instance.db.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = '$id'");

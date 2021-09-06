@@ -29,11 +29,21 @@ class ChatMessageProfileUtil {
   ///对话用户id
   String chatUserId;
 
+  ConversationDto conversation;
+
   //这个对话的未读数
   static int unreadCount = 0;
 
   //当未读数之后接受的消息的数量+未读数
   static int unreadCountNew = 0;
+
+  getConversation(String chatId) {
+    if (chatUserId != null && chatId == this.chatUserId) {
+      return conversation;
+    } else {
+      return null;
+    }
+  }
 
   //设置数据
   setData(ConversationDto conversation, {bool isSetUnreadCount = false}) {
@@ -41,6 +51,7 @@ class ChatMessageProfileUtil {
       this.chatTypeId = conversation.getType();
       this.chatUserId = conversation.conversationId;
       this.id = conversation.id;
+      this.conversation = conversation;
       if (isSetUnreadCount) {
         unreadCount = unreadCount;
         unreadCount = 0;
@@ -57,6 +68,7 @@ class ChatMessageProfileUtil {
     chatUserId = "";
     unreadCount = 0;
     unreadCountNew = 0;
+    conversation = null;
   }
 
   setUnreadCount() {
