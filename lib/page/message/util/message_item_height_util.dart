@@ -185,6 +185,9 @@ class MessageItemHeightUtil {
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON) {
         //-------------------------------------------------系统通知-------------------------------------------
         return _getSystemCommonMsgHeight(mapModel["data"], isShowName);
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE) {
+        //-------------------------------------------------系统通知-------------------------------------------
+        return _getActivityInviteMsgHeight(mapModel["data"], isShowName);
       } else if (mapModel["name"] != null) {
         //-------------------------------------------------未知消息-------------------------------------------
         return getTextMsgHeight(mapModel["name"], isShowName);
@@ -430,21 +433,46 @@ class MessageItemHeightUtil {
   }
 
   //获取系统普通消息的高度
-  double _getSystemCommonMsgHeight(String data, bool isShowName,
-      {bool isOnlyContentHeight = false}){
-    ChatSystemMessageSubModel subModel=ChatSystemMessageSubModel.fromJson(json.decode(data));
-    return getSystemCommonMsgHeight(isShowName,
-        isOnlyContentHeight:isOnlyContentHeight,
-      content:subModel.text,
-      url:subModel.linkUrl,
-      imageUrl:subModel.picUrl,
+  double _getSystemCommonMsgHeight(String data, bool isShowName, {bool isOnlyContentHeight = false}) {
+    ChatSystemMessageSubModel subModel = ChatSystemMessageSubModel.fromJson(json.decode(data));
+    return getSystemCommonMsgHeight(
+      isShowName,
+      isOnlyContentHeight: isOnlyContentHeight,
+      content: subModel.text,
+      url: subModel.linkUrl,
+      imageUrl: subModel.picUrl,
     );
   }
 
   //获取系统普通消息的高度
-  double getSystemCommonMsgHeight(
-      bool isShowName,
-    {bool isOnlyContentHeight = false,String content="",String url="",String imageUrl=""}) {
+  double _getActivityInviteMsgHeight(String data, bool isShowName, {bool isOnlyContentHeight = false}) {
+    double itemHeight = 0.0;
+
+    if (!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
+
+    //判断有没有显示名字
+    if (isShowName && !isOnlyContentHeight) {
+      itemHeight += 4.0;
+      itemHeight += getTextSize("名字", TextStyle(fontSize: 12), 1).height;
+    }
+
+    double activityInviteHeight = 0.0;
+
+    activityInviteHeight = 180.0 + 75.0;
+
+    itemHeight += 2.0;
+
+    itemHeight += activityInviteHeight;
+
+    return itemHeight;
+  }
+
+  //获取系统普通消息的高度
+  double getSystemCommonMsgHeight(bool isShowName,
+      {bool isOnlyContentHeight = false, String content = "", String url = "", String imageUrl = ""}) {
     double itemHeight = 0.0;
 
     if (!isOnlyContentHeight) {

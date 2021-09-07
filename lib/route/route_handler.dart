@@ -20,7 +20,6 @@ import 'package:mirror/page/activity/activity_detail_page.dart';
 import 'package:mirror/page/activity/activity_flow.dart';
 import 'package:mirror/page/activity/activity_user_page.dart';
 import 'package:mirror/page/activity/create_activity_page.dart';
-import 'package:mirror/page/activity/remove_user_page.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
@@ -672,20 +671,7 @@ var handlerActivityFeedPage = Handler(handlerFunc: (BuildContext context, Map<St
   );
 });
 
-//活动动态界面
-var handlerRemoveUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  List<UserModel> list = [];
-  if (data['modeList'] != null) {
-    list = (data["modeList"] as List).map((e) => UserModel.fromJson(e)).toList();
-  }
-  return RemoveUserPage(
-    activityId: data["activityId"],
-    userList: list,
-  );
-});
-
-//活动动态界面
+//活动用户界面
 var handlerActivityUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   List<UserModel> list = [];

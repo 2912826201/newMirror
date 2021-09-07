@@ -9,6 +9,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/util/chat_message_profile_util.dart';
@@ -585,6 +586,9 @@ class MessageManager {
             case ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON:
               // print("msg.content：${contentMap.toString()}");
               return _getUSystemCommonMessage(contentMap);
+            case ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE:
+              // print("msg.content：${contentMap.toString()}");
+              return "[${msg.content.sendUserInfo.name}邀请你参加活动]";
             default:
               return "[未知类型消息]";
           }
