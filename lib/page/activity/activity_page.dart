@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foil/foil.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -647,32 +649,18 @@ class _ActivityListItem extends State<ActivityListItem> {
     double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
     // 文本总宽度
     double totalTextWidth = 0.0;
-    for (int i = 0; i < widget.activityModel.title.length; i++) {
+    widget.activityModel.title.runes.forEach((element) {
       // 文本宽度
       double textWidth;
-      // 前面的文字
-      int previousTextIndex;
-      // 判断截取了几个数字加小写英文
+      textWidth = getTextSize(String.fromCharCode(element), AppStyle.whiteMedium17, 1).width;
 
-      RegExp regExpStr = new RegExp(r"^[a-z0-9_]+$");
-      // 不匹配时
-      if (!regExpStr.hasMatch(widget.activityModel.title[i])) {
-        if (previousTextIndex != null) {
-          textWidth = getTextSize(widget.activityModel.title[previousTextIndex], AppStyle.whiteMedium17, 1).width;
-        } else {
-          textWidth = getTextSize("活", AppStyle.whiteMedium17, 1).width;
-        }
-      } else {
-        textWidth = getTextSize(widget.activityModel.title[i], AppStyle.whiteMedium17, 1).width;
-        previousTextIndex = i;
-      }
       totalTextWidth += textWidth;
       if (totalTextWidth > remainingWidth) {
-        activityTitle1 += widget.activityModel.title[i];
+        activityTitle1 += String.fromCharCode(element);
       } else {
-        activityTitle += widget.activityModel.title[i];
+        activityTitle += String.fromCharCode(element);
       }
-    }
+    });
   }
 
   // 标题横向布局
@@ -906,6 +894,7 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
               Spacer(),
               // 头像布局
+
               ClipPath(
                 clipper: ShapeBorderClipper(
                   shape: ClipImageLeftCorner(),
