@@ -177,6 +177,8 @@ const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 //关注粉丝页
 const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
+//活动详情
+const String EVENTBUS_ACTIVITY_DETAILS = "activity";
 
 ///广播类型
 //发布动态
@@ -229,6 +231,10 @@ const String AGAIN_LOGIN_REPLACE_LAYOUT = "again_login_replace_layout";
 const String LIVE_COURSE_LIVE_START_OR_END = "live_course_live_start_or_end";
 // 直播预约
 const String LIVE_COURSE_BOOK_LIVE = "live_course_book_live";
+//活动刷新
+const String ACTIVITY_REFRESH = "activityrefrensh";
+//刷新结束
+const String ACTIVITY_REFRESH_OVER = "activityrefrensh";
 
 // 主页跳转界面功能
 ///跳转界面代码[JumpAppPageModel]
