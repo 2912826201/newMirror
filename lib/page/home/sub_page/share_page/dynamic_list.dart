@@ -243,13 +243,13 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
   Widget getCourseInfo(HomeFeedModel model, BuildContext context) {
     List<FeedTagModel> tags = [];
     // // 课程不为空转换model
-    // if (model.courseDto != null) {
-    //   FeedTagModel tag = FeedTagModel();
-    //   tag.type = feed_tag_type_course;
-    //   tag.text = model.courseDto.title;
-    //   tag.courseId = model.courseDto.id;
-    //   tags.add(tag);
-    // }
+    if (model.courseDto != null) {
+      FeedTagModel tag = FeedTagModel();
+      tag.type = feed_tag_type_course;
+      tag.text = model.courseDto.title;
+      tag.courseId = model.courseDto.id;
+      tags.add(tag);
+    }
     // 活动不为空转换model
     if (model.simpleActivityDto != null) {
       FeedTagModel tag = FeedTagModel();
@@ -286,6 +286,7 @@ class DynamicListLayoutState extends State<DynamicListLayout> {
                   );
                   break;
                 case feed_tag_type_activity:
+                  AppRouter.navigateActivityDetailPage(context, tag.activityId);
                   break;
                 default:
                   break;

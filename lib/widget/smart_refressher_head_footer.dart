@@ -23,7 +23,7 @@ class SmartRefresherHeadFooter {
               SizedBox(height: 20),
               // CupertinoActivityIndicator(),
               Lottie.asset(
-                'assets/lottie/loading_refresh_red.json',
+                'assets/lottie/loading_refresh_yellow.json',
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
@@ -38,7 +38,7 @@ class SmartRefresherHeadFooter {
             children: [
               // CupertinoActivityIndicator(),
               Lottie.asset(
-                'assets/lottie/loading_refresh_red.json',
+                'assets/lottie/loading_refresh_yellow.json',
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
@@ -103,7 +103,7 @@ class SmartRefresherHeadFooter {
           body = isShowAddMore ? Text("上拉加载更多",style: textStyle,) : Text("");
         } else if (mode == LoadStatus.loading) {
           body = Lottie.asset(
-            'assets/lottie/loading_refresh_red.json',
+            'assets/lottie/loading_refresh_yellow.json',
             width: 20,
             height: 20,
             fit: BoxFit.fill,

@@ -34,8 +34,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 
-import 'activity_flow.dart';
-
 /// activity_page
 /// Created by yangjiayi on 2021/8/25.
 enum ActivityFilter {
@@ -647,16 +645,18 @@ class _ActivityListItem extends State<ActivityListItem> {
     double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
     // 文本总宽度
     double totalTextWidth = 0.0;
-    for (int i = 0; i < widget.activityModel.title.length; i++) {
+    widget.activityModel.title.runes.forEach((element) {
       // 文本宽度
-      double textWidth = getTextSize(widget.activityModel.title[i], AppStyle.whiteMedium17, 1).width;
+      double textWidth;
+      textWidth = getTextSize(String.fromCharCode(element), AppStyle.whiteMedium17, 1).width;
+
       totalTextWidth += textWidth;
       if (totalTextWidth > remainingWidth) {
-        activityTitle1 += widget.activityModel.title[i];
+        activityTitle1 += String.fromCharCode(element);
       } else {
-        activityTitle += widget.activityModel.title[i];
+        activityTitle += String.fromCharCode(element);
       }
-    }
+    });
   }
 
   // 标题横向布局
@@ -890,6 +890,7 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
               Spacer(),
               // 头像布局
+
               ClipPath(
                 clipper: ShapeBorderClipper(
                   shape: ClipImageLeftCorner(),
