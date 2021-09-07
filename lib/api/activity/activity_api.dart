@@ -25,6 +25,9 @@ const String APPLYJOIN = "/appuser/web/activity/applyJoin";
 // 申请列表
 const String APPLYLIST = "/appuser/web/activity/applyList";
 
+// 获取活动成员
+const String GETACTIVITYMEMBERLIST = "/appuser/web/activity/getActivityMemberList";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -184,5 +187,29 @@ Future<DataResponseModel> applyList(int activityId, int size, int lastId) async 
     return dataResponseModel;
   } else {
     return null;
+  }
+}
+
+//获取活动成员
+Future<List<UserModel>> getActivityMemberList(int activityId, int size, int lastTime) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETACTIVITYMEMBERLIST, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    List<UserModel> list = [];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
+        if (e != null) {
+          list.add(UserModel.fromJson(e));
+        }
+      });
+    }
+    return list;
+  } else {
+    return [];
   }
 }
