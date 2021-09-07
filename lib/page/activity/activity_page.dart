@@ -92,6 +92,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 是否显示缺省图
   bool isShowDefaultMap;
 
+  // String activityTitle;
+  // String activityTitle1;
+  // double tagWidth;
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -170,7 +173,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     if (isRefresh) {
       activityHasNext = null;
       lastScore = null;
-      activityList.clear();
     }
     if (activityHasNext != 0) {
       DataResponseModel model = await getRecommendActivity(
@@ -179,6 +181,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           cityCode: citycode,
           longitude: longitude,
           latitude: latitude);
+      if (isRefresh) {
+        activityList.clear();
+      }
       if (model != null) {
         lastScore = model.lastScore;
         activityHasNext = model.hasNext;
@@ -536,9 +541,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                       itemCount: activityList.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        ActivityModel model = activityList[index];
+                        interceptText(activityList[index]);
                         return ActivityListItem(
-                          activityModel: model,
+                          activityModel: activityList[index],
                           index: index,
                         );
                       })),
@@ -567,6 +572,40 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
       }),
     );
   }
+
+  // 截取文本
+  interceptText(ActivityModel activityModel) {
+    activityModel.activityTitle1 = null;
+    activityModel.activityTitle = null;
+    if (activityModel.status == 0 || activityModel.status == 1) {
+      activityModel.tagWidth = 56.0;
+    } else if (activityModel.status == 3) {
+      activityModel.tagWidth = 62.0;
+    } else if (activityModel.status == 2) {
+      activityModel.tagWidth = 59.0;
+    }
+    // 剩余宽度
+    double remainingWidth = ScreenUtil.instance.width * 0.49 - activityModel.tagWidth;
+    // 文本总宽度
+    double totalTextWidth = 0.0;
+    activityModel.title.runes.forEach((element) {
+      // 文本宽度
+      double textWidth;
+      textWidth = getTextSize(String.fromCharCode(element), AppStyle.whiteMedium17, 1).width;
+      totalTextWidth += textWidth;
+      if (totalTextWidth > remainingWidth) {
+        if (activityModel.activityTitle1 == null) {
+          activityModel.activityTitle1 = '\u200B';
+        }
+        activityModel.activityTitle1 += String.fromCharCode(element);
+      } else {
+        if (activityModel.activityTitle == null) {
+          activityModel.activityTitle = '\u200B';
+        }
+        activityModel.activityTitle += String.fromCharCode(element);
+      }
+    });
+  }
 }
 
 class ActivityListItem extends StatefulWidget {
@@ -580,15 +619,11 @@ class ActivityListItem extends StatefulWidget {
 }
 
 class _ActivityListItem extends State<ActivityListItem> {
-  String activityTitle = "";
-  String activityTitle1 = "";
-  double tagWidth;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    interceptText();
+    print("卡卡卡${widget.activityModel.activityTitle1} :::: ${widget.activityModel.activityTitle}");
   }
 
   // 活动状态数字解析文字
@@ -632,33 +667,6 @@ class _ActivityListItem extends State<ActivityListItem> {
     return activityTag;
   }
 
-  // 截取文本
-  interceptText() {
-    if (widget.activityModel.status == 0 || widget.activityModel.status == 1) {
-      tagWidth = 56.0;
-    } else if (widget.activityModel.status == 3) {
-      tagWidth = 62.0;
-    } else if (widget.activityModel.status == 2) {
-      tagWidth = 59.0;
-    }
-    // 剩余宽度
-    double remainingWidth = ScreenUtil.instance.width * 0.49 - tagWidth;
-    // 文本总宽度
-    double totalTextWidth = 0.0;
-    widget.activityModel.title.runes.forEach((element) {
-      // 文本宽度
-      double textWidth;
-      textWidth = getTextSize(String.fromCharCode(element), AppStyle.whiteMedium17, 1).width;
-
-      totalTextWidth += textWidth;
-      if (totalTextWidth > remainingWidth) {
-        activityTitle1 += String.fromCharCode(element);
-      } else {
-        activityTitle += String.fromCharCode(element);
-      }
-    });
-  }
-
   // 标题横向布局
   titleHorizontalLayout() {
     return Row(
@@ -669,9 +677,9 @@ class _ActivityListItem extends State<ActivityListItem> {
           width: 6,
         ),
         Container(
-          width: (ScreenUtil.instance.width * 0.49 - tagWidth).toDouble(),
+          width: (ScreenUtil.instance.width * 0.49 - widget.activityModel.tagWidth).toDouble(),
           child: Text(
-            activityTitle,
+            widget.activityModel.activityTitle,
             style: AppStyle.whiteMedium17,
             maxLines: 1,
           ),
@@ -689,7 +697,7 @@ class _ActivityListItem extends State<ActivityListItem> {
         Container(
           width: ScreenUtil.instance.width * 0.49,
           child: Text(
-            activityTitle1,
+            widget.activityModel.activityTitle1,
             style: AppStyle.whiteMedium17,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -817,7 +825,8 @@ class _ActivityListItem extends State<ActivityListItem> {
                         minWidth: ScreenUtil.instance.width * 0.49,
                       ),
                       alignment: Alignment.topLeft,
-                      child: activityTitle1.length > 0 ? titleVerticalLayout() : titleHorizontalLayout(),
+                      child:
+                          widget.activityModel.activityTitle1 != null ? titleVerticalLayout() : titleHorizontalLayout(),
                     ),
 
                     // 地址布局
