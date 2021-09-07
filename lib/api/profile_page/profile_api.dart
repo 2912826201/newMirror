@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
@@ -300,6 +301,32 @@ Future<BuddyListModel> getFollowBothList({int size, String uid, int lastTime}) a
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
     return model;
+  } else {
+    print('用户互相关注列表请求接口失败============================================');
+    return null;
+  }
+}
+
+///好友列表--互相关注列表
+Future<DataResponseModel> getFollowBothListUserModel({int size, String uid, int lastTime}) async {
+  Map<String, dynamic> map = Map();
+  if (uid != null) {
+    map["uid"] = uid;
+  }
+  if (lastTime != null) {
+    map["lastTime"] = lastTime;
+  }
+  if (size != null) {
+    map["size"] = size;
+  }
+  BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    print('用户互相关注列表请求接口=============================');
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
   } else {
     print('用户互相关注列表请求接口失败============================================');
     return null;

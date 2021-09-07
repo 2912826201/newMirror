@@ -12,6 +12,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/page/message/util/chat_page_util.dart';
 import 'package:mirror/page/message/util/message_chat_page_manager.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -22,8 +23,16 @@ class DetailMemberUserUi extends StatefulWidget {
   final List<UserModel> userList;
   final String groupChatId;
   final int activityId;
+  final int masterId;
+  final int status;
 
-  DetailMemberUserUi(this.userList, this.groupChatId, this.activityId);
+  DetailMemberUserUi(
+    this.userList,
+    this.groupChatId,
+    this.activityId,
+    this.masterId,
+    this.status,
+  );
 
   @override
   _DetailMemberUserUiState createState() {
@@ -58,8 +67,8 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         children: [
           _getUserTitle(),
           _getUserList(),
-          if (applyUserList.length > 0) _applyUserListTitle(),
-          if (applyUserList.length > 0) _getApplyUserList(),
+          if (applyUserList.length > 0 && isMaster()) _applyUserListTitle(),
+          if (applyUserList.length > 0 && isMaster()) _getApplyUserList(),
         ],
       ),
     );
@@ -98,24 +107,30 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _getUserList() {
+    List<Widget> array = [];
+    for (int index = 0; index < 5; index++) {
+      if (index < userList.length) {
+        array.add(_getItem(userList[index]));
+      } else if (index == userList.length) {
+        array.add(_addItem());
+      } else {
+        array.add(Container(
+          width: 47,
+          height: 47,
+          color: AppColor.transparent,
+        ));
+      }
+    }
     return Container(
       width: ScreenUtil.instance.width,
       height: 100,
       padding: const EdgeInsets.only(top: 12, bottom: 16),
-      child: ListView.separated(
-          itemCount: userList.length + 1,
-          scrollDirection: Axis.horizontal,
-          separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                width: 6.0,
-                color: AppColor.mainBlack,
-              ),
-          itemBuilder: (context, index) {
-            if (index != userList.length) {
-              return _getItem(userList[index]);
-            } else {
-              return _addItem();
-            }
-          }),
+      child: SingleChildScrollView(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: array,
+        ),
+      ),
     );
   }
 
@@ -128,53 +143,55 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _getApplyUserList() {
-    double itemWidth = (ScreenUtil.instance.width - 32 - 25) / 5;
+    List<Widget> array = [];
+    for (int index = 0; index < 5; index++) {
+      if (index < applyUserList.length) {
+        array.add(_getItem(applyUserList[index]));
+      } else if (index == 4) {
+        array.add(GestureDetector(
+          onTap: () {
+            AppRouter.navigateActivityUserPage(context, widget.activityId, [], type: 3, callback: (dynamic result) {
+              initData();
+            });
+          },
+          child: Container(
+            width: 47,
+            color: AppColor.transparent,
+            child: AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              16,
+              color: AppColor.textWhite60,
+            ),
+          ),
+        ));
+      } else {
+        array.add(Container(
+          width: 47,
+          height: 47,
+          color: AppColor.transparent,
+        ));
+      }
+    }
     return Container(
       width: ScreenUtil.instance.width,
       height: 100,
       padding: const EdgeInsets.only(top: 12, bottom: 16),
-      child: ListView.separated(
-          itemCount: 5,
-          scrollDirection: Axis.horizontal,
-          separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                width: 6.0,
-                color: AppColor.mainBlack,
-              ),
-          itemBuilder: (context, index) {
-            if (index == 4) {
-              return Transform.translate(
-                offset: Offset(36, 0),
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    color: AppColor.transparent,
-                    child: AppIcon.getAppIcon(
-                      AppIcon.arrow_right_18,
-                      16,
-                      color: AppColor.textWhite60,
-                    ),
-                  ),
-                ),
-              );
-            } else if (index < applyUserList.length) {
-              return _getItem(applyUserList[index]);
-            } else {
-              return Container(
-                width: itemWidth,
-              );
-            }
-          }),
+      child: SingleChildScrollView(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: array,
+        ),
+      ),
     );
   }
 
   Widget _getItem(UserModel model) {
-    double itemWidth = (ScreenUtil.instance.width - 32 - 25) / 5;
     return Container(
-      width: itemWidth,
+      width: 47,
       height: 100.0 - 12.0 - 16.0,
       child: Column(
         children: [
-          UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 45),
+          UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
           SizedBox(height: 6),
           Text(
             model.nickName ?? "",
@@ -188,10 +205,9 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _addItem() {
-    double itemWidth = (ScreenUtil.instance.width - 32 - 25) / 5;
-    return isHaveMe()
+    return widget.status != 3 && isMaster()
         ? Container(
-            width: itemWidth,
+            width: 47,
             height: 100.0 - 12.0 - 16.0,
             child: UnconstrainedBox(
               alignment: Alignment.topCenter,
@@ -207,7 +223,10 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
                   buttonWidth: 47,
                   iconColor: AppColor.mainBlack,
                   onTap: () {
-                    print("点击了添加成员");
+                    AppRouter.navigateActivityUserPage(context, widget.activityId, [], type: 4,
+                        callback: (dynamic result) {
+                      initData();
+                    });
                   },
                 ),
               ),
@@ -256,12 +275,20 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   initData() async {
+    applyUserList.clear();
     dataResponseModel = await applyList(widget.activityId, 4, null);
     if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
       dataResponseModel.list.forEach((element) {
-        applyUserList.add(UserModel.fromJson(element));
+        UserModel model = UserModel.fromJson(element);
+        if (model.dataState == 2) {
+          applyUserList.add(model);
+        }
       });
       setState(() {});
     }
+  }
+
+  isMaster() {
+    return Application.profile != null && Application.profile.uid != null && Application.profile.uid == widget.masterId;
   }
 }

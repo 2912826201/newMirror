@@ -27,6 +27,17 @@ const String APPLYLIST = "/appuser/web/activity/applyList";
 
 // 获取活动成员
 const String GETACTIVITYMEMBERLIST = "/appuser/web/activity/getActivityMemberList";
+// 获取活动用户申请列表
+const String GETACTIVITYAPPLYLIST = "/appuser/web/activity/applyList";
+
+// 同意申请
+const String AUDITAPPLY = "/appuser/web/activity/auditApply";
+
+// 邀请加入活动
+const String INVITEACTIVITY = "/appuser/web/activity/invite";
+
+// 通过邀请链接加入活动
+const String JOINBYINVITATION = "/appuser/web/activity/JoinByInvitation";
 
 //创建活动
 Future<ActivityModel> createActivity({
@@ -119,7 +130,7 @@ Future<DataResponseModel> getRecommendActivity({int size = 20, double lastScore,
   }
 }
 
-//创建活动界面-获取推荐一起活动的用户列表
+//获取活动详情
 Future<ActivityModel> getActivityDetailApi(int activityId) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
@@ -132,16 +143,16 @@ Future<ActivityModel> getActivityDetailApi(int activityId) async {
 }
 
 //移除活动成员
-Future<bool> removeMember(int activityId, int uid, String reason) async {
+Future<bool> removeMember(int activityId, String uids, String reason) async {
   Map<String, dynamic> params = {};
   params["activityId"] = activityId;
-  params["uid"] = uid;
+  params["uids"] = uids;
   params["reason"] = reason;
   BaseResponseModel responseModel = await requestApi(REMOVEMEMBER, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["state"] ?? false;
   } else {
-    return null;
+    return false;
   }
 }
 
@@ -153,7 +164,7 @@ Future<bool> deleteActivity(int activityId) async {
   if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["state"] ?? false;
   } else {
-    return null;
+    return false;
   }
 }
 
@@ -166,7 +177,7 @@ Future<bool> applyJoinActivity(int activityId, String message) async {
   if (responseModel.isSuccess && responseModel.data != null) {
     return responseModel.data["state"] ?? false;
   } else {
-    return null;
+    return false;
   }
 }
 
@@ -211,5 +222,63 @@ Future<List<UserModel>> getActivityMemberList(int activityId, int size, int last
     return list;
   } else {
     return [];
+  }
+}
+
+//获取活动用户申请列表
+Future<DataResponseModel> getActivityApplyList(int activityId, int size, int lastId) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["size"] = size;
+  if (lastId != null) {
+    params["lastId"] = lastId;
+  }
+  BaseResponseModel responseModel = await requestApi(GETACTIVITYAPPLYLIST, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
+  }
+}
+
+//同意申请
+Future<bool> auditApply(int id) async {
+  Map<String, dynamic> params = {};
+  params["id"] = id;
+  BaseResponseModel responseModel = await requestApi(AUDITAPPLY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return false;
+  }
+}
+
+//邀请加入活动
+Future<bool> inviteActivity(int activityId, String uids) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["uids"] = uids;
+  BaseResponseModel responseModel = await requestApi(INVITEACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//通过邀请链接加入活动
+Future<bool> joinByInvitation(int activityId, int uid) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["inviterId"] = uid;
+  BaseResponseModel responseModel = await requestApi(JOINBYINVITATION, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return false;
   }
 }

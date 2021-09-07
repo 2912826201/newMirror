@@ -139,8 +139,7 @@ class AppRouter {
   // 活动动态页
   static String pathActivityFeedPage = "/activity_page/activityFeedPage";
 
-  // 移除活动成员
-  static String pathRemoveUserPage = "/activity_page/createActivityPage/activityDetailPage/removeUserPage";
+  // 活动成员
   static String pathActivityUserPage = "/activity_page/createActivityPage/activityDetailPage/activityUserPage";
 
   static void configureRouter(FluroRouter router) {
@@ -237,7 +236,6 @@ class AppRouter {
     router.define(pathCreateActivityPage, handler: handlerCreateActivityPage);
     router.define(pathActivityDetailPage, handler: handlerActivityDetailPage);
     router.define(pathActivityFeedPage, handler: handlerActivityFeedPage);
-    router.define(pathRemoveUserPage, handler: handlerRemoveUserPage);
     router.define(pathActivityUserPage, handler: handlerActivityUserPage);
   }
 
@@ -1071,24 +1069,16 @@ class AppRouter {
     _navigateToPage(context, pathActivityFeedPage, map);
   }
 
-  // 移除活动成员
-  static void navigateRemoveUserPage(BuildContext context, int activityId, List<UserModel> modeList) {
-    Map<String, dynamic> map = Map();
-    if (modeList != null) {
-      map['modeList'] = modeList.map((e) => e.toJson()).toList();
-    }
-    map["activityId"] = activityId;
-    _navigateToPage(context, pathRemoveUserPage, map);
-  }
-
   // 活动成员
-  static void navigateActivityUserPage(BuildContext context, int activityId, List<UserModel> modeList, {int type = 0}) {
+  ////0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户
+  static void navigateActivityUserPage(BuildContext context, int activityId, List<UserModel> modeList,
+      {int type = 0, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     if (modeList != null) {
       map['modeList'] = modeList.map((e) => e.toJson()).toList();
     }
     map["activityId"] = activityId;
     map["type"] = type;
-    _navigateToPage(context, pathActivityUserPage, map);
+    _navigateToPage(context, pathActivityUserPage, map, callback: callback);
   }
 }

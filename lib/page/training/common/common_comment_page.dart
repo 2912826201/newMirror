@@ -249,7 +249,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       widgetArray.add(SizedBox(height: 12));
       widgetArray.add(getCourseTopEdit(onEditBoxClickBtn, false));
     }
-    print("111111111111111111111111111111111");
     widgetArray.add(_getCommentItemUi());
     if (widget.isActivity && !widget.isBottomSheetAndHomePage) {
       widgetArray.add(SizedBox(height: 20));
@@ -1059,7 +1058,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             "index:$index,count:$count,scrollHeight:$scrollHeight");
 
         if (widget.isShowHotOrTime) {
-          print("111111111111111111111111111111111");
           scrollHeight += 300;
           scrollHeight -= MediaQuery.of(context).size.height;
           if (scrollHeight < scrollHeightOld) {

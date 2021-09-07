@@ -32,7 +32,6 @@ class _DetailStartTimeUiState extends State<DetailStartTimeUi> {
   }
 
   filterTags(int status) {
-    print("widget.tag:$status");
     Widget cotainer = Container();
     if (status == 0 || status == 1) {
       cotainer = Container(
@@ -125,33 +124,33 @@ class _DetailStartTimeUiState extends State<DetailStartTimeUi> {
     }
 
     if (day != 0) {
-      widgetArray.add(getBox(day.toString(), AppStyle.yellowRegular12));
-      widgetArray.add(getBox("天", AppStyle.whiteRegular11));
+      widgetArray.add(getBox(day.toString(), AppStyle.yellowRegular16));
+      widgetArray.add(getBox("天", AppStyle.whiteRegular14));
     }
     if (hour != 0 || day != 0) {
-      widgetArray.add(getBox(hour.toString(), AppStyle.yellowRegular12));
-      widgetArray.add(getBox("时", AppStyle.whiteRegular11));
+      widgetArray.add(getBox(hour.toString(), AppStyle.yellowRegular16));
+      widgetArray.add(getBox("时", AppStyle.whiteRegular14));
     }
     if ((minute != 0 && day == 0) || (hour != 0 && day == 0)) {
-      widgetArray.add(getBox(minute.toString(), AppStyle.yellowRegular12));
-      widgetArray.add(getBox("分", AppStyle.whiteRegular11));
+      widgetArray.add(getBox(minute.toString(), AppStyle.yellowRegular16));
+      widgetArray.add(getBox("分", AppStyle.whiteRegular14));
     }
     widgetArray.add(SizedBox(width: 1));
-    widgetArray.add(getBox("开始", AppStyle.whiteRegular11, null, false));
+    widgetArray.add(getBox("开始", AppStyle.whiteRegular14, null, false));
     return widgetArray;
   }
 
-  Widget getBox(String title, TextStyle textStyle, [double width = 18, bool isDecoration = true]) {
+  Widget getBox(String title, TextStyle textStyle, [double width = 23, bool isDecoration = true]) {
     return Container(
       margin: EdgeInsets.only(left: 1),
-      height: 18,
+      height: 20,
       width: width,
-      decoration: isDecoration
-          ? BoxDecoration(
-              color: AppColor.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
-            )
-          : null,
+      // decoration: isDecoration
+      //     ? BoxDecoration(
+      //         color: AppColor.white.withOpacity(0.1),
+      //         borderRadius: BorderRadius.circular(4),
+      //       )
+      //     : null,
       alignment: Alignment.center,
       child: Text(title, style: textStyle),
     );

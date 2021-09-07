@@ -1208,6 +1208,8 @@ class _CreateActivityPageState extends StateKeyboard {
       print("model:${model.toJson().toString()}");
       isCreateActivity = false;
       ToastShow.show(msg: "创建成功", context: context);
+      Navigator.of(context).pop();
+      AppRouter.navigateActivityDetailPage(context, model.id, model);
     } else {
       isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);

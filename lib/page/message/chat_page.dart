@@ -13,6 +13,7 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
+import 'package:mirror/page/activity/util/activity_util.dart';
 import 'package:mirror/page/popup/show_group_popup.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
@@ -2478,6 +2479,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE) {
+      //print("点击了邀请参加活动消息：$position");
+      _joinByInvitationActivity(map["id"] ?? 0);
     } else {
       ////print("暂无此类型");
     }
@@ -2635,6 +2639,22 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
   }
 
+  //参加邀请的活动
+  _joinByInvitationActivity(int activityId) async {
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
+    if (activityId == null || activityId == 0) {
+      ToastShow.show(msg: "活动id错误", context: context);
+      return;
+    }
+
+    bool isJoinByInvitationActivity = await ActivityUtil.init().joinByInvitationActivity(context, activityId);
+    if (isJoinByInvitationActivity) {
+      Navigator.of(context).pop();
+      AppRouter.navigateActivityDetailPage(context, activityId);
+    }
+  }
 
   //获取消息是否免打扰和置顶
   _getConversationNotificationStatus() {

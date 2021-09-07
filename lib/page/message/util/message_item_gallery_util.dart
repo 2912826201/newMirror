@@ -239,13 +239,16 @@ class MessageItemGalleryUtil {
                 imageUrl: subModel.picUrl,
                 heroId: msg.messageUId,
               );
-            }else{
+            } else {
               return false;
             }
-          }catch (e){
+          } catch (e) {
             return false;
           }
         }
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE) {
+        //-------------------------------------------------邀请参加活动消息-------------------------------------------
+        return false;
       } else if (mapModel["name"] != null) {
         //-------------------------------------------------未知消息-------------------------------------------
         return false;

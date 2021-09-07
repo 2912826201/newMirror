@@ -108,7 +108,6 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("关注页Build完成第一帧绘制完成回调");
       PrimaryScrollController.of(context).addListener(() {
-        print('-------------------11111111111111111111111111111111111');
         if (widget.focusNode.hasFocus) {
           print('-------------------focusNode---focusNode----focusNode--focusNode');
           widget.focusNode.unfocus();
