@@ -126,7 +126,7 @@ class ActivityInviteMsg extends StatelessWidget {
               margin:
                   isMyself ? const EdgeInsets.only(right: 10, bottom: 5) : const EdgeInsets.only(left: 10, bottom: 5),
               child: Text(
-                name,
+                name ?? "",
                 style: AppStyle.text1Regular12,
               ),
             ),
@@ -226,7 +226,7 @@ class ActivityInviteMsg extends StatelessWidget {
               child: Center(
                 child: Container(
                   width: double.infinity,
-                  child: Text(activityModel.title,
+                  child: Text(activityModel.title ?? "",
                       maxLines: 1, overflow: TextOverflow.ellipsis, style: AppStyle.whiteRegular14),
                 ),
               ),

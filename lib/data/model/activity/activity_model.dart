@@ -20,6 +20,7 @@ class ActivityModel {
   int endTime;
   int groupChatId;
   int masterId;
+  bool isEvaluate;
   List<UserModel> members;
   List<String> pics;
 
@@ -43,6 +44,11 @@ class ActivityModel {
     endTime = json['endTime'];
     groupChatId = json['groupChatId'];
     masterId = json['masterId'];
+    if (json['isEvaluate'] != null && json['isEvaluate'] is int && json['isEvaluate'] == 1) {
+      isEvaluate = true;
+    } else {
+      isEvaluate = false;
+    }
     if (json["members"] != null) {
       members = [];
       json["members"].forEach((v) {
@@ -88,6 +94,7 @@ class ActivityModel {
     map['masterId'] = masterId;
     map['groupChatId'] = groupChatId;
     map['pics'] = pics;
+    map['isEvaluate'] = isEvaluate;
     return map;
   }
 }

@@ -7,9 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/activity/detail_item/detail_activity_bottom_ui.dart';
 import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
@@ -20,14 +18,15 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 import 'detail_item/deatil_activity_comment_ui.dart';
 import 'detail_item/detail_activity_feed_ui.dart';
+import 'detail_item/detail_evaluate_ui.dart';
 import 'detail_item/detail_start_time_ui.dart';
 
 class ActivityDetailPage extends StatefulWidget {
@@ -40,7 +39,7 @@ class ActivityDetailPage extends StatefulWidget {
   _ActivityDetailPageState createState() => _ActivityDetailPageState(activityModel: activityModel);
 }
 
-class _ActivityDetailPageState extends State<ActivityDetailPage> {
+class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   ActivityModel activityModel;
 
   _ActivityDetailPageState({this.activityModel});
@@ -58,6 +57,9 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   double offsetHeight = ScreenUtil.instance.width - (ScreenUtil.instance.width / (375 / 197));
 
+  GlobalKey inputEvaluateBoxKey = GlobalKey();
+  FocusNode inputEvaluateFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -74,8 +76,10 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     offsetHeight = ScreenUtil.instance.width / 4;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         titleString: "活动详情",
         actions: [
@@ -152,6 +156,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       alignment: Alignment.bottomCenter,
       children: [
         SingleChildScrollView(
+          controller: scrollController,
           child: Transform.translate(
             offset: Offset(0, -offsetHeight),
             child: Container(
@@ -223,15 +228,18 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                   child: Text(activityModel.description, style: AppStyle.text1Regular14),
                 ),
               ),
-              SizedBox(height: 30),
             ],
           ),
         ),
 
         //评价
-        // _getActivityCommentUi1(),
+        Container(
+          key: inputEvaluateBoxKey,
+          child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode),
+        ),
 
         //讨论区
+        SizedBox(height: 30),
         _getActivityCommentUi(),
 
         SizedBox(height: 20),
@@ -257,42 +265,6 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
           ),
         ),
       ],
-    );
-  }
-
-  //活动评论区
-  Widget _getActivityCommentUi1() {
-    return Visibility(
-      visible: loadingStatus == LoadingStatus.STATUS_COMPLETED,
-      child: CommonCommentPage(
-          key: childKey,
-          scrollController: scrollController,
-          refreshController: _refreshController,
-          fatherComment: null,
-          targetId: activityModel.id,
-          targetType: 4,
-          pageCommentSize: 3,
-          pushId: activityModel.masterId,
-          pageSubCommentSize: 3,
-          isShowHotOrTime: true,
-          isInteractiveIn: false,
-          commentDtoModel: null,
-          isShowAt: false,
-          isActivity: true,
-          externalScrollHeight: (524 + ScreenUtil.instance.width / 4 * 3) ~/ 1,
-          isVideoCoursePage: true,
-          activityMoreOnTap: () {
-            if (context.read<TokenNotifier>().isLoggedIn) {
-              openActivityCommentBottomSheet(
-                context: context,
-                activityId: activityModel.id,
-                pushId: activityModel.masterId,
-              );
-            } else {
-              // 去登录
-              AppRouter.navigateToLoginPage(context);
-            }
-          }),
     );
   }
 
@@ -340,7 +312,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
         break;
       }
     }
-    return DetailActivityBottomUi(activityModel.id, activityModel.status, activityModel.auth, isHaveMe, () {
+    return DetailActivityBottomUi(activityModel, isHaveMe, () {
       _initData();
     });
   }
@@ -433,5 +405,29 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
         Navigator.of(context).pop();
       }
     }
+  }
+
+  @override
+  void endChangeKeyBoardHeight(bool isOpenKeyboard) {
+    if (isOpenKeyboard) {
+      if (inputEvaluateFocusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          RenderBox renderBox = inputEvaluateBoxKey.currentContext.findRenderObject();
+          var offset = renderBox.localToGlobal(Offset.zero);
+
+          double value = (offset.dy + 230) - (ScreenUtil.instance.height - Application.keyboardHeightIfPage);
+
+          if (value > 0) {
+            scrollController.animateTo(scrollController.position.pixels + value,
+                duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+          }
+        });
+      }
+    }
+  }
+
+  @override
+  void startChangeKeyBoardHeight(bool isOpenKeyboard) {
+    // TODO: implement startChangeKeyBoardHeight
   }
 }

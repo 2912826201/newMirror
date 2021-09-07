@@ -39,6 +39,9 @@ const String INVITEACTIVITY = "/appuser/web/activity/invite";
 // 通过邀请链接加入活动
 const String JOINBYINVITATION = "/appuser/web/activity/JoinByInvitation";
 
+// 发布评价
+const String PUBLISHEVALUATE = "/appuser/web/activity/publishEvaluate";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -280,5 +283,19 @@ Future<bool> joinByInvitation(int activityId, int uid) async {
     return responseModel.data["state"] ?? false;
   } else {
     return false;
+  }
+}
+
+//发布评价
+Future<double> publishEvaluate(int activityId, double score, String content) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["score"] = score;
+  params["content"] = content;
+  BaseResponseModel responseModel = await requestApi(PUBLISHEVALUATE, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["AVGScore"] ?? -1.0;
+  } else {
+    return -1.0;
   }
 }

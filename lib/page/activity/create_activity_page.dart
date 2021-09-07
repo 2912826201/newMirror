@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
@@ -345,10 +346,6 @@ class _CreateActivityPageState extends StateKeyboard {
                 },
               ),
               Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
-              Container(
-                padding: const EdgeInsets.only(top: 3),
-                child: Text("*", style: AppStyle.redMedium16),
-              ),
               Spacer(),
               GestureDetector(
                 child: Container(
@@ -375,6 +372,7 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
+    double imageWidth = min((ScreenUtil.instance.width - 32) / 5, 45);
     return StreamBuilder<List<UserModel>>(
         initialData: recommendUserList,
         stream: recommendUserStream.stream,
@@ -395,7 +393,7 @@ class _CreateActivityPageState extends StateKeyboard {
                         itemCount: snapshot.data.length,
                         scrollDirection: Axis.horizontal,
                         separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                              width: 6.0,
+                          width: 0.0,
                               color: AppColor.mainBlack,
                             ),
                         itemBuilder: (context, index) {
@@ -422,7 +420,9 @@ class _CreateActivityPageState extends StateKeyboard {
                                           borderRadius: BorderRadius.circular(50.0 / 2),
                                         ),
                                         child: UserAvatarImageUtil.init().getUserImageWidget(
-                                            snapshot.data[index].avatarUri, snapshot.data[index].uid.toString(), 45),
+                                            snapshot.data[index].avatarUri,
+                                            snapshot.data[index].uid.toString(),
+                                            imageWidth),
                                       ),
                                       SizedBox(height: 2),
                                       Text("一起活动过", style: AppStyle.whiteRegular12),
@@ -431,7 +431,7 @@ class _CreateActivityPageState extends StateKeyboard {
                                   Visibility(
                                     visible: recommendUserSelect.contains(index),
                                     child: Positioned(
-                                      left: 45.0 - 9.0,
+                                      left: imageWidth - 9.0,
                                       top: 0,
                                       child: Container(
                                         height: 18,
@@ -504,7 +504,6 @@ class _CreateActivityPageState extends StateKeyboard {
   Widget _inputBox() {
     return Stack(
       children: [
-        Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6),
         Container(
           key: inputBoxKey,
           height: 104,
@@ -541,7 +540,6 @@ class _CreateActivityPageState extends StateKeyboard {
   Widget _getAddImageUi() {
     return Stack(
       children: [
-        Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6),
         StreamBuilder<List<File>>(
           initialData: activityImageFileList,
           stream: activityImageStream.stream,
@@ -642,19 +640,16 @@ class _CreateActivityPageState extends StateKeyboard {
           borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
         ),
         divider: const Divider(
-          height: 0,
-          color: AppColor.imageBgGrey,
+          height: 0.5,
+          color: AppColor.dividerWhite8,
         ),
         itemBuilder: (String value) {
           _unfocus();
           return Container(
-            height: 28.0 + (value == itemList[0] ? 12 : 0) + (value == itemList[itemList.length - 1] ? 12 : 0),
-            color: AppColor.imageBgGrey,
+            height: 32,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(
               left: 6,
-              top: (value == itemList[0] ? 12 : 0),
-              bottom: (value == itemList[itemList.length - 1] ? 12 : 0),
             ),
             child: Text(
               value,
@@ -677,7 +672,7 @@ class _CreateActivityPageState extends StateKeyboard {
   Widget normalChildButton(String selectedKey) {
     return SizedBox(
         width: getTextSize("需要验证信息由我确认", AppStyle.whiteRegular12, 1).width + 30,
-        height: 30,
+        height: 32,
         child: Container(
           color: AppColor.mainBlack,
           padding: const EdgeInsets.only(left: 8),
@@ -787,8 +782,6 @@ class _CreateActivityPageState extends StateKeyboard {
   Widget _getTitleWidget(String title, {bool visible = false}) {
     return Stack(
       children: [
-        Visibility(
-            visible: visible, child: Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6, top: 15)),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           height: 40,

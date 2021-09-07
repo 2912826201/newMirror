@@ -588,7 +588,7 @@ class MessageManager {
               return _getUSystemCommonMessage(contentMap);
             case ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE:
               // print("msg.content：${contentMap.toString()}");
-              return "[${msg.content.sendUserInfo.name}邀请你参加活动]";
+              return "[邀请你参加活动]";
             default:
               return "[未知类型消息]";
           }
