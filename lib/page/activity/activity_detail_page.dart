@@ -366,7 +366,8 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
     if (activityModel.members == null || activityModel.members.length < 1) {
       return Container();
     }
-    return DetailMemberUserUi(activityModel.members, activityModel.groupChatId?.toString() ?? null, activityModel.id);
+    return DetailMemberUserUi(activityModel.members, activityModel.groupChatId?.toString() ?? null, activityModel.id,
+        activityModel.masterId, activityModel.status);
   }
 
 
@@ -397,7 +398,10 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
         } else if (list[index] == "踢出团队成员") {
           if (activityModel != null && activityModel.members != null && activityModel.members.length > 0) {
             // AppRouter.navigateRemoveUserPage(context, activityModel.id,activityModel.members);
-            AppRouter.navigateActivityUserPage(context, activityModel.id, activityModel.members, type: 1);
+            AppRouter.navigateActivityUserPage(context, activityModel.id, activityModel.members, type: 1,
+                callback: (dynamic result) {
+              _initData();
+            });
           } else {
             ToastShow.show(msg: "活动成员数据有问题", context: context);
           }

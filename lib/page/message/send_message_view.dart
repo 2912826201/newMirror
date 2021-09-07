@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/data/model/training/course_model.dart';
@@ -20,6 +21,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'message_item_view/activity_invite_msg.dart';
 import 'message_item_view/new_msg_alert_msg.dart';
 import 'widget/currency_msg.dart';
 import 'message_item_view/img_video_msg.dart';
@@ -295,10 +297,16 @@ class SendMessageViewState extends State<SendMessageView> {
         return getAlertMsg(map: map);
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON) {
         //-------------------------------------------------系统消息-普通模板-------------------------------------------
-        try{
+        try {
           ChatSystemMessageSubModel subModel = ChatSystemMessageSubModel.fromJson(json.decode(mapModel["data"]));
-          return getSystemCommonMsg(subModel,msg.messageUId);
-        }catch (e){}
+          return getSystemCommonMsg(subModel, msg.messageUId);
+        } catch (e) {}
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE) {
+        //-------------------------------------------------邀请参加活动消息-------------------------------------------
+        try {
+          ActivityModel subModel = ActivityModel.fromJson(json.decode(mapModel["data"]));
+          return getActivityInviteMsg(subModel, msg.messageUId);
+        } catch (e) {}
       } else if (mapModel["name"] != null) {
         //-------------------------------------------------未知消息-------------------------------------------
         return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
@@ -567,6 +575,24 @@ class SendMessageViewState extends State<SendMessageView> {
         sendChatUserId: sendChatUserId,
         isCanLongClick: true,
         isShowChatUserName: true,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
+        setCallRemoveOverlay: widget.setCallRemoveLongPanel,
+        status: status);
+  }
+
+  //邀请参加活动消息item
+  Widget getActivityInviteMsg(ActivityModel subModel, String heroId) {
+    return ActivityInviteMsg(
+        activityModel: subModel,
+        isMyself: isMyself,
+        userUrl: userUrl,
+        name: name,
+        sendTime: sendTime,
+        sendChatUserId: sendChatUserId,
+        isCanLongClick: isCanLongClick(),
+        isShowChatUserName: widget.isShowChatUserName,
         voidMessageClickCallBack: widget.voidMessageClickCallBack,
         voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
         position: widget.position,

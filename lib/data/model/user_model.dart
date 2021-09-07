@@ -33,6 +33,11 @@ class UserModel {
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
 
+  //活动内容的字段
+  String message; //申请活动-的理由
+  int id; //本条申请的id--申请活动
+  int dataState; //2-待处理 1-已处理
+
   UserModel({
     this.uid = -1, //默认给个uid为-1
     this.phone,
@@ -61,6 +66,9 @@ class UserModel {
     this.isPhone,
     this.relation,
     this.mutualFriendCount,
+    this.message,
+    this.id,
+    this.dataState,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -91,6 +99,9 @@ class UserModel {
     isPhone = json["isPhone"];
     relation = json["relation"];
     mutualFriendCount = json["mutualFriendCount"];
+    dataState = json["dataState"];
+    id = json["id"];
+    message = json["message"];
   }
 
   Map<String, dynamic> toJson() {
@@ -122,6 +133,9 @@ class UserModel {
     map["isPhone"] = isPhone;
     map["relation"] = relation;
     map["mutualFriendCount"] = mutualFriendCount;
+    map["message"] = message;
+    map["id"] = id;
+    map["dataState"] = dataState;
     return map;
   }
 

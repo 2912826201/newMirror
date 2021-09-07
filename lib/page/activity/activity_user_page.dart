@@ -2,9 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/activity/activity_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -24,7 +29,7 @@ import 'package:provider/provider.dart';
 ///活动成员界面type
 class ActivityUserPage extends StatefulWidget {
   final int activityId;
-  final int type; //0-查看活动成员 1 -移除活动成员  2-举报成员
+  final int type; //0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户 4-邀请好友进入活动
   final List<UserModel> userList;
 
   ActivityUserPage({Key key, @required this.activityId, this.type = 0, @required this.userList}) : super(key: key);
@@ -42,7 +47,17 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   final PinYinTextEditController _reasonController = PinYinTextEditController();
   final FocusNode _focusNode = FocusNode();
 
+  //选中的用户
   List<int> selectUserList = [];
+
+  //待验证用户
+  List<UserModel> verifyUserList = [];
+  int verifyUserLastId;
+
+  //互关好友列表
+  List<UserModel> buddyModelList = [];
+  int buddyModelLastTime;
+
   double bottomOpacity = 0.4;
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -67,7 +82,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             Expanded(
               child: _getSmartRefresher(),
             ),
-            if (widget.type != 0) _getBottomBtn(),
+            if (widget.type != 0 && widget.type != 3) _getBottomBtn(),
           ],
         ),
       ),
@@ -75,56 +90,79 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   }
 
   Widget _getSmartRefresher() {
-    if (userList.length < 1) {
+    if (widget.type == 0 && userList.length < 1) {
+      return getCommentNoData();
+    }
+    if (widget.type == 3 && verifyUserList.length < 1) {
+      return getCommentNoData();
+    }
+    if (widget.type == 4 && buddyModelList.length < 1) {
       return getCommentNoData();
     }
     return SmartRefresher(
         enablePullDown: true,
-        enablePullUp: false,
+        enablePullUp: widget.type == 3 || widget.type == 4,
         header: SmartRefresherHeadFooter.init().getHeader(),
         footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
         controller: _refreshController,
         onRefresh: () {
           initData();
         },
+        onLoading: () {
+          loadData();
+        },
         child: getList());
   }
 
   Widget getList() {
     return ListView.builder(
-      itemCount: widget.type != 0 ? userList.length + 1 : userList.length,
+      itemCount: getListLen(),
       padding: EdgeInsets.only(top: 13),
       itemBuilder: (context, index) {
-        if (widget.type != 0) {
+        if (widget.type != 0 && widget.type != 3) {
           if (index == 0) {
             return _getEdit();
           }
+          UserModel model = getUserModel(index - 1);
           if (_inputController.text == null ||
               _inputController.text.length < 1 ||
-              userList[index - 1].nickName.contains(_inputController.text)) {
-            return item(userList[index - 1], index - 1, () {
-              deleteUserOnClickListener(index - 1);
+              model.nickName.contains(_inputController.text)) {
+            return item(model, index - 1, () {
+              selectUserOnClickListener(index - 1);
             });
           } else {
             return Container();
           }
         } else {
-          return item(userList[index], index, () {
-            jumpToUserProfilePage(context, userList[index].uid,
-                avatarUrl: userList[index].avatarUri, userName: userList[index].nickName, callback: (dynamic result) {
-              bool result =
-                  context.read<UserInteractiveNotifier>().value.profileUiChangeModel[userList[index].uid].isFollow;
-              if (null != result && result is bool) {
-                userList[index].relation = result ? 0 : 1;
-                if (mounted) {
-                  setState(() {});
-                }
-              }
-            });
+          UserModel model = getUserModel(index);
+          return item(model, index, () {
+            _jumpToUserProfilePage(model);
           });
         }
       },
     );
+  }
+
+  UserModel getUserModel(int index) {
+    if (widget.type == 4) {
+      return buddyModelList[index];
+    } else if (widget.type == 3) {
+      return verifyUserList[index];
+    } else {
+      return userList[index];
+    }
+  }
+
+  int getListLen() {
+    if (widget.type == 0) {
+      return userList.length;
+    } else if (widget.type == 3) {
+      return verifyUserList.length;
+    } else if (widget.type == 4) {
+      return buddyModelList.length;
+    } else {
+      return userList.length + 1;
+    }
   }
 
   Widget item(UserModel model, int index, Function() onTap) {
@@ -160,30 +198,63 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(model.nickName ?? "", style: AppStyle.whiteRegular16),
-              if (model.description != null) Text(model.description ?? "", style: AppStyle.text1Regular12),
+              Text(
+                model.nickName ?? "",
+                style: AppStyle.whiteRegular16,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              getSubtitle(model),
             ],
           )),
-          if (widget.type != 0) getSingleChoiceUi(index),
-          if (widget.type == 0) getItemUserBtnUi(model, index),
+          if (widget.type != 0 && widget.type != 3) getSingleChoiceUi(index),
+          if (widget.type == 0 || widget.type == 3) getItemUserBtnUi(model, index),
         ],
       ),
     );
   }
 
+  Widget getSubtitle(UserModel model) {
+    if (widget.type == 0 && model.description != null) {
+      return Text(
+        model.description ?? "",
+        style: AppStyle.text1Regular12,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (widget.type == 3 && model.message != null) {
+      return Text(
+        model.message ?? "",
+        style: AppStyle.text1Regular12,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Container();
+    }
+  }
+
   //按钮
   Widget getItemUserBtnUi(UserModel model, int index) {
-    return FollowButton(
-      id: model.uid,
-      relation: model.relation,
-      buttonType: FollowButtonType.COACH,
-      resetDataListener: () {},
-      onClickAttention: (int relation) {
-        setState(() {
-          model.relation = relation;
-        });
-      },
-    );
+    if (widget.type == 0) {
+      return FollowButton(
+        id: model.uid,
+        relation: model.relation,
+        buttonType: FollowButtonType.COACH,
+        resetDataListener: () {},
+        onClickAttention: (int relation) {
+          setState(() {
+            model.relation = relation;
+          });
+        },
+      );
+    } else if (widget.type == 3 && model.dataState == 2) {
+      return CustomYellowButton("同意", CustomYellowButton.buttonStateNormal, () {
+        _auditApply(model);
+      });
+    } else {
+      return Container();
+    }
   }
 
   //单选按钮
@@ -224,7 +295,11 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         });
       },
       onTap: () {
-        _showDialog();
+        if (widget.type == 1) {
+          _showDialog();
+        } else if (widget.type == 4) {
+          _inviteActivity();
+        }
       },
     );
   }
@@ -233,7 +308,9 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   Widget getCommentNoData() {
     return Container(
       width: ScreenUtil.instance.width,
+      height: ScreenUtil.instance.height,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             "assets/png/default_no_data.png",
@@ -245,7 +322,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             height: 16,
           ),
           Text(
-            "暂时没有获取到群成员信息",
+            "暂时没有获取到${widget.type == 0 ? "群成员" : (widget.type == 3 ? "待验证成员" : "")}信息",
             style: AppStyle.text1Regular14,
           )
         ],
@@ -284,14 +361,13 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     );
   }
 
-  //删除模式下的item点击
-  deleteUserOnClickListener(int index) {
+  //选择item
+  selectUserOnClickListener(int index) {
     if (selectUserList.contains(index)) {
       selectUserList.remove(index);
       bottomOpacity = 0.4;
       setState(() {});
     } else {
-      selectUserList.clear();
       selectUserList.add(index);
       bottomOpacity = 1;
       setState(() {});
@@ -305,7 +381,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration:
-      BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
       child: TextField(
         controller: _reasonController,
         cursorColor: AppColor.white,
@@ -350,15 +426,31 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       return;
     }
 
+    ActivityModel model = await getActivityDetailApi(widget.activityId);
+    if (model.times == null && model.times < 3 * 60 * 60 * 1000) {
+      ToastShow.show(msg: "移除失败：只能在活动开始三个小时前移除成员", context: context);
+      return;
+    }
+
     isRemoveMember = true;
 
     ToastShow.show(msg: "正在操作", context: context);
 
-    bool isSuccess = await removeMember(widget.activityId, userList[selectUserList.first].uid, _reasonController.text);
+    String uids = "";
+    for (int i = 0; i < selectUserList.length; i++) {
+      if (i == selectUserList.length - 1) {
+        uids += userList[selectUserList[i]].uid.toString();
+      } else {
+        uids += userList[selectUserList[i]].uid.toString() + ",";
+      }
+    }
+
+    bool isSuccess = await removeMember(widget.activityId, uids, _reasonController.text);
     _reasonController.text = "";
 
     ToastShow.show(msg: isSuccess ? "移除成功" : "移除失败", context: context);
 
+    isRemoveMember = false;
     selectUserList.clear();
 
     setState(() {});
@@ -369,16 +461,147 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       return "踢出用户";
     } else if (widget.type == 2) {
       return "举报成员";
+    } else if (widget.type == 3) {
+      return "待验证用户";
     } else {
       return "查看活动成员";
     }
   }
 
-  initData() async {
-    userList.clear();
-    userList.addAll(await getActivityMemberList(widget.activityId, 100, null));
-    setState(() {
-      _refreshController.refreshCompleted();
+  //跳转用户界面
+  _jumpToUserProfilePage(UserModel model) {
+    jumpToUserProfilePage(context, model.uid, avatarUrl: model.avatarUri, userName: model.nickName,
+        callback: (dynamic result) {
+      bool result = context.read<UserInteractiveNotifier>().value.profileUiChangeModel[model.uid].isFollow;
+      if (null != result && result is bool) {
+        model.relation = result ? 0 : 1;
+        if (mounted) {
+          setState(() {});
+        }
+      }
     });
+  }
+
+  //同意申请
+
+  _auditApply(UserModel model) async {
+    bool isAudit = await auditApply(model.id);
+    if (isAudit) {
+      model.dataState = 1;
+    } else {
+      model.dataState = 2;
+    }
+    setState(() {});
+  }
+
+  bool isInviteActivityLoading = false;
+
+  //邀请用户参加活动
+  _inviteActivity() async {
+    if (isInviteActivityLoading) {
+      ToastShow.show(msg: "正在发送邀请中", context: context);
+      return;
+    }
+    isInviteActivityLoading = true;
+    String uids = "";
+    for (int i = 0; i < selectUserList.length; i++) {
+      if (i == selectUserList.length - 1) {
+        uids += buddyModelList[selectUserList[i]].uid.toString();
+      } else {
+        uids += buddyModelList[selectUserList[i]].uid.toString() + ",";
+      }
+    }
+    bool isInviteActivity = await inviteActivity(widget.activityId, uids);
+    if (isInviteActivity) {
+      isInviteActivityLoading = false;
+      ToastShow.show(msg: "发送邀请成功", context: context);
+      Navigator.of(context).pop();
+    } else {
+      ToastShow.show(msg: "发送邀请失败", context: context);
+      isInviteActivityLoading = false;
+    }
+  }
+
+  initData() async {
+    if (widget.type == 0) {
+      //查看活动成员
+      userList.clear();
+      userList.addAll(await getActivityMemberList(widget.activityId, 100, null));
+      _refreshController.refreshCompleted();
+      setState(() {});
+    } else if (widget.type == 3) {
+      //待验证用户
+      verifyUserList.clear();
+      DataResponseModel dataResponseModel = await getActivityApplyList(widget.activityId, 20, null);
+      if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+        dataResponseModel.list.forEach((element) {
+          verifyUserList.add(UserModel.fromJson(element));
+        });
+        verifyUserLastId = dataResponseModel.lastId;
+      }
+      _refreshController.refreshCompleted();
+      setState(() {});
+    } else if (widget.type == 4) {
+      //邀请好友进入活动
+      userList.clear();
+      userList.addAll(await getActivityMemberList(widget.activityId, 100, null));
+      buddyModelList.clear();
+      getBuddyModelListData();
+    }
+  }
+
+  bool isHaveUser(int uid) {
+    for (var model in userList) {
+      if (model.uid == uid) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  loadData() async {
+    if (widget.type != 3 || widget.type != 4) {
+      _refreshController.loadComplete();
+      return;
+    }
+    if (widget.type == 3) {
+      DataResponseModel dataResponseModel = await getActivityApplyList(widget.activityId, 20, verifyUserLastId);
+      if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+        dataResponseModel.list.forEach((element) {
+          verifyUserList.add(UserModel.fromJson(element));
+        });
+        verifyUserLastId = dataResponseModel.lastId;
+      }
+      _refreshController.loadComplete();
+      setState(() {});
+    } else if (widget.type == 4) {
+      getBuddyModelListData();
+    }
+  }
+
+  getBuddyModelListData() async {
+    DataResponseModel buddyListModel = await getFollowBothListUserModel(size: 100, lastTime: buddyModelLastTime);
+    if (buddyListModel != null && buddyListModel.list != null && buddyListModel.list.length > 0) {
+      buddyListModel.list.forEach((element) {
+        UserModel model = UserModel.fromJson(element);
+        if (!isHaveUser(model.uid)) {
+          buddyModelList.add(UserModel.fromJson(element));
+        }
+      });
+      buddyModelLastTime = buddyListModel.lastTime;
+      if (buddyListModel.hasNext == 1) {
+        getBuddyModelListData();
+      } else {
+        if (_refreshController.isRefresh) {
+          _refreshController.refreshCompleted();
+        }
+        if (_refreshController.isLoading) {
+          _refreshController.loadComplete();
+        }
+        setState(() {});
+      }
+    } else {
+      setState(() {});
+    }
   }
 }
