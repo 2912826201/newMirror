@@ -219,6 +219,7 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(width: 4,),
                   AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
                   Expanded(
                     child: Container(
