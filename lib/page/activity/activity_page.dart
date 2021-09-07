@@ -7,7 +7,6 @@ import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foil/foil.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/amap/amap.dart';
