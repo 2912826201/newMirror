@@ -172,6 +172,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     print("isRefresh:::::$isRefresh");
     if (isRefresh) {
       activityHasNext = null;
+      _refreshController.loadComplete();
       lastScore = null;
     }
     if (activityHasNext != 0) {
@@ -185,6 +186,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         activityList.clear();
       }
       if (model != null) {
+        print("00000000");
         lastScore = model.lastScore;
         activityHasNext = model.hasNext;
         if (model.list.isNotEmpty) {
@@ -199,14 +201,16 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           }
         }
       } else {
+        print("111111111");
         if (isRefresh) {
           _refreshController.refreshCompleted();
           PrimaryScrollController.of(context).jumpTo(0);
         } else {
-          _refreshController.loadFailed();
+          _refreshController.loadComplete();
         }
       }
     } else {
+      print("2222222222");
       if (isRefresh) {
         _refreshController.refreshCompleted();
         PrimaryScrollController.of(context).jumpTo(0);
@@ -215,11 +219,13 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
       }
     }
     if (activityHasNext == 0) {
+      print("3333333333");
       if (isRefresh) {
         _refreshController.refreshCompleted();
         _refreshController.loadComplete();
         PrimaryScrollController.of(context).jumpTo(0);
       } else {
+        print("不会经");
         _refreshController.loadNoData();
       }
     }
