@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foil/foil.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/amap/amap.dart';
@@ -35,8 +33,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
-
-import 'activity_flow.dart';
 
 /// activity_page
 /// Created by yangjiayi on 2021/8/25.
