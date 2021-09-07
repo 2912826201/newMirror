@@ -640,7 +640,23 @@ class _ActivityListItem extends State<ActivityListItem> {
     double totalTextWidth = 0.0;
     for (int i = 0; i < widget.activityModel.title.length; i++) {
       // 文本宽度
-      double textWidth = getTextSize(widget.activityModel.title[i], AppStyle.whiteMedium17, 1).width;
+      double textWidth;
+      // 前面的文字
+      int previousTextIndex;
+      // 判断截取了几个数字加小写英文
+
+      RegExp regExpStr = new RegExp(r"^[a-z0-9_]+$");
+      // 不匹配时
+      if (!regExpStr.hasMatch(widget.activityModel.title[i])) {
+        if (previousTextIndex != null) {
+          textWidth = getTextSize(widget.activityModel.title[previousTextIndex], AppStyle.whiteMedium17, 1).width;
+        } else {
+          textWidth = getTextSize("活", AppStyle.whiteMedium17, 1).width;
+        }
+      } else {
+        textWidth = getTextSize(widget.activityModel.title[i], AppStyle.whiteMedium17, 1).width;
+        previousTextIndex = i;
+      }
       totalTextWidth += textWidth;
       if (totalTextWidth > remainingWidth) {
         activityTitle1 += widget.activityModel.title[i];
