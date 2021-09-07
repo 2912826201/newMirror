@@ -594,7 +594,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                       ),
                     ),
                     Lottie.asset(
-                      'assets/lottie/loading_refresh_red.json',
+                      'assets/lottie/loading_refresh_yellow.json',
                       width: 48,
                       height: 48,
                       fit: BoxFit.fill,
