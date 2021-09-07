@@ -23,6 +23,10 @@ class ActivityModel {
   bool isEvaluate;
   List<UserModel> members;
   List<String> pics;
+  // 附加字段
+  String activityTitle;
+  String activityTitle1;
+  double tagWidth;
 
   ActivityModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

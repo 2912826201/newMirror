@@ -131,4 +131,46 @@ class ClipImageLeftCorner extends ShapeBorder {
     return null;
   }
 
+}//裁剪左上角工具
+class ClipImagePullImage extends ShapeBorder {
+  bool isTop;
+  ClipImagePullImage({this.isTop});
+  @override
+  EdgeInsetsGeometry get dimensions => null;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection textDirection}) {
+    return null;
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
+      var width = rect.width;
+      var height = rect.height;
+      var path = Path();
+      if(isTop){
+        path.moveTo(0, 0);
+        path.lineTo(0, height/3);
+        path.lineTo(width, height/3);
+        path.lineTo(width, 0);
+      }else{
+        path.moveTo(0, height);
+        path.lineTo(0, height/3);
+        path.lineTo(width, height/3);
+        path.lineTo(width, height);
+      }
+      path.fillType = PathFillType.evenOdd;
+      return path;
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection textDirection}) {
+
+  }
+
+  @override
+  ShapeBorder scale(double t) {
+    return null;
+  }
+
 }

@@ -25,6 +25,7 @@ import 'package:mirror/page/test/download_test_page.dart';
 import 'package:mirror/page/test/echarts_test/echarts_test.dart';
 import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
+import 'package:mirror/page/test/pull_down_iamge_test.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
 import 'package:mirror/page/test/serial_popup_test.dart';
 import 'package:mirror/page/test/tag_cloud/tag_cloud_page.dart';
@@ -38,6 +39,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
+import 'package:mirror/widget/change_insert_user_bottom_sheet.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
@@ -714,6 +716,18 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   },
                   child: Text("开始时间结束时间选择")),
               _showSelectJoinTimePopupWindow(),
+              RaisedButton(
+                  onPressed: () {
+                    openUserNumberPickerBottomSheet(
+                        context: context,
+                        start:17,
+                        end: 39,
+                        onChoseCallBack: (number){
+                          print('---------------------返回的人数-$number');
+                        }
+                    );
+                  },
+                  child: Text("人数选择弹窗测试")),
             ],
           ),
         ),
