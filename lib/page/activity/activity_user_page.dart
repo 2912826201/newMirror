@@ -6,6 +6,8 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -13,11 +15,13 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
-import 'package:mirror/widget/input_formatter/precision_limit_formatter.dart';
 import 'package:mirror/widget/input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:provider/provider.dart';
 
-///活动成员界面
+///活动成员界面type
 class ActivityUserPage extends StatefulWidget {
   final int activityId;
   final int type; //0-查看活动成员 1 -移除活动成员  2-举报成员
@@ -26,16 +30,28 @@ class ActivityUserPage extends StatefulWidget {
   ActivityUserPage({Key key, @required this.activityId, this.type = 0, @required this.userList}) : super(key: key);
 
   @override
-  _ActivityUserPageState createState() => _ActivityUserPageState();
+  _ActivityUserPageState createState() => _ActivityUserPageState(userList);
 }
 
 class _ActivityUserPageState extends State<ActivityUserPage> {
+  List<UserModel> userList;
+
+  _ActivityUserPageState(this.userList);
+
   final PinYinTextEditController _inputController = PinYinTextEditController();
   final PinYinTextEditController _reasonController = PinYinTextEditController();
   final FocusNode _focusNode = FocusNode();
 
   List<int> selectUserList = [];
   double bottomOpacity = 0.4;
+
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    super.initState();
+    initData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +65,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         child: Column(
           children: [
             Expanded(
-              child: getList(),
+              child: _getSmartRefresher(),
             ),
             if (widget.type != 0) _getBottomBtn(),
           ],
@@ -58,21 +74,54 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     );
   }
 
+  Widget _getSmartRefresher() {
+    if (userList.length < 1) {
+      return getCommentNoData();
+    }
+    return SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: false,
+        header: SmartRefresherHeadFooter.init().getHeader(),
+        footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
+        controller: _refreshController,
+        onRefresh: () {
+          initData();
+        },
+        child: getList());
+  }
+
   Widget getList() {
     return ListView.builder(
-      itemCount: widget.userList.length + 1,
+      itemCount: widget.type != 0 ? userList.length + 1 : userList.length,
+      padding: EdgeInsets.only(top: 13),
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return _getEdit();
-        }
-        if (_inputController.text == null ||
-            _inputController.text.length < 1 ||
-            widget.userList[index - 1].nickName.contains(_inputController.text)) {
-          return item(widget.userList[index - 1], index - 1, () {
-            deleteUserOnClickListener(index - 1);
-          });
+        if (widget.type != 0) {
+          if (index == 0) {
+            return _getEdit();
+          }
+          if (_inputController.text == null ||
+              _inputController.text.length < 1 ||
+              userList[index - 1].nickName.contains(_inputController.text)) {
+            return item(userList[index - 1], index - 1, () {
+              deleteUserOnClickListener(index - 1);
+            });
+          } else {
+            return Container();
+          }
         } else {
-          return Container();
+          return item(userList[index], index, () {
+            jumpToUserProfilePage(context, userList[index].uid,
+                avatarUrl: userList[index].avatarUri, userName: userList[index].nickName, callback: (dynamic result) {
+              bool result =
+                  context.read<UserInteractiveNotifier>().value.profileUiChangeModel[userList[index].uid].isFollow;
+              if (null != result && result is bool) {
+                userList[index].relation = result ? 0 : 1;
+                if (mounted) {
+                  setState(() {});
+                }
+              }
+            });
+          });
         }
       },
     );
@@ -108,6 +157,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
           SizedBox(width: 12),
           Expanded(
               child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(model.nickName ?? "", style: AppStyle.whiteRegular16),
               if (model.description != null) Text(model.description ?? "", style: AppStyle.text1Regular12),
@@ -178,6 +229,30 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     );
   }
 
+  //评论没有数据
+  Widget getCommentNoData() {
+    return Container(
+      width: ScreenUtil.instance.width,
+      child: Column(
+        children: [
+          Image.asset(
+            "assets/png/default_no_data.png",
+            fit: BoxFit.cover,
+            width: 224,
+            height: 224,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Text(
+            "暂时没有获取到群成员信息",
+            style: AppStyle.text1Regular14,
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _getEdit() {
     return Container(
       height: 32,
@@ -230,7 +305,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
+      BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
       child: TextField(
         controller: _reasonController,
         cursorColor: AppColor.white,
@@ -279,8 +354,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
 
     ToastShow.show(msg: "正在操作", context: context);
 
-    bool isSuccess =
-        await removeMember(widget.activityId, widget.userList[selectUserList.first].uid, _reasonController.text);
+    bool isSuccess = await removeMember(widget.activityId, userList[selectUserList.first].uid, _reasonController.text);
     _reasonController.text = "";
 
     ToastShow.show(msg: isSuccess ? "移除成功" : "移除失败", context: context);
@@ -298,5 +372,13 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     } else {
       return "查看活动成员";
     }
+  }
+
+  initData() async {
+    userList.clear();
+    userList.addAll(await getActivityMemberList(widget.activityId, 100, null));
+    setState(() {
+      _refreshController.refreshCompleted();
+    });
   }
 }

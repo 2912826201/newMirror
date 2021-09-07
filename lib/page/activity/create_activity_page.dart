@@ -25,6 +25,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
@@ -97,6 +98,7 @@ class _CreateActivityPageState extends StateKeyboard {
   //推荐用户
   StreamController<List<UserModel>> recommendUserStream = StreamController<List<UserModel>>();
   List<UserModel> recommendUserList = [];
+  List<int> recommendUserSelect = [];
 
   //是否阅读了活动说明
   bool isReadInformation = false;
@@ -165,13 +167,14 @@ class _CreateActivityPageState extends StateKeyboard {
     return SingleChildScrollView(
       controller: scrollController,
       child: Container(
+        constraints: BoxConstraints(minHeight: ScreenUtil.instance.height),
         child: Column(
           children: [
             //头部--活动类型
             _getActivityTypeUi(),
 
             //活动名称
-            _getTitleWidget("输入活动名称"),
+            _getTitleWidget("输入活动名称", visible: true),
             _getEditWidget("输入内容", activityTitleController, titleFocusNode),
 
             //活动时间
@@ -293,10 +296,14 @@ class _CreateActivityPageState extends StateKeyboard {
                   if (snapshot.data > 0) {
                     Future.delayed(Duration(milliseconds: 100), () {
                       scrollController.animateTo(scrollController.position.maxScrollExtent,
-                          duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+                          duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
                     });
                   }
-                  return _getSizedBox(height: snapshot.data);
+                  return Container(
+                    color: AppColor.transparent,
+                    height: snapshot.data,
+                    width: ScreenUtil.instance.width,
+                  );
                 }),
           ],
         ),
@@ -338,6 +345,10 @@ class _CreateActivityPageState extends StateKeyboard {
                 },
               ),
               Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
+              Container(
+                padding: const EdgeInsets.only(top: 3),
+                child: Text("*", style: AppStyle.redMedium16),
+              ),
               Spacer(),
               GestureDetector(
                 child: Container(
@@ -388,40 +399,49 @@ class _CreateActivityPageState extends StateKeyboard {
                               color: AppColor.mainBlack,
                             ),
                         itemBuilder: (context, index) {
-                          return Container(
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  right: 8,
-                                  top: 0,
-                                  child: GestureDetector(
-                                    child: Container(
-                                      height: 18,
-                                      width: 18,
-                                      color: AppColor.mainRed,
-                                    ),
-                                    onTap: () {
-                                      activityImageFileList.removeAt(index);
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(height: 7),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: AppColor.white, width: 1),
-                                        borderRadius: BorderRadius.circular(50.0 / 2),
+                          return GestureDetector(
+                            onTap: () {
+                              if (recommendUserSelect.contains(index)) {
+                                recommendUserSelect.remove(index);
+                              } else {
+                                recommendUserSelect.add(index);
+                              }
+                              setState(() {});
+                            },
+                            child: Container(
+                              width: (ScreenUtil.instance.width - 32) / 5,
+                              color: AppColor.transparent,
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    children: [
+                                      SizedBox(height: 7),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: AppColor.white, width: 1),
+                                          borderRadius: BorderRadius.circular(50.0 / 2),
+                                        ),
+                                        child: UserAvatarImageUtil.init().getUserImageWidget(
+                                            snapshot.data[index].avatarUri, snapshot.data[index].uid.toString(), 45),
                                       ),
-                                      child: UserAvatarImageUtil.init().getUserImageWidget(
-                                          snapshot.data[index].avatarUri, snapshot.data[index].uid.toString(), 45),
+                                      SizedBox(height: 2),
+                                      Text("一起活动过", style: AppStyle.whiteRegular12),
+                                    ],
+                                  ),
+                                  Visibility(
+                                    visible: recommendUserSelect.contains(index),
+                                    child: Positioned(
+                                      left: 45.0 - 9.0,
+                                      top: 0,
+                                      child: Container(
+                                        height: 18,
+                                        width: 18,
+                                        color: AppColor.mainRed,
+                                      ),
                                     ),
-                                    SizedBox(height: 2),
-                                    Text("一起活动过", style: AppStyle.whiteRegular12),
-                                  ],
-                                )
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         }),
@@ -448,16 +468,31 @@ class _CreateActivityPageState extends StateKeyboard {
           children: [
             _showSelectJoinTimePopupWindow(),
             SizedBox(width: 18),
-            Container(
-              height: 24,
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
+            GestureDetector(
+              child: Container(
+                height: 24,
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
+                child: Text(
+                    "${DateUtil.formatTimeString(startTime)}~"
+                    "${DateUtil.formatTimeString(endTime)}",
+                    style: AppStyle.text1Regular12),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
-              child: Text("${DateUtil.formatTimeString(startTime)}~"
-                  "${DateUtil.formatTimeString(endTime)}", style: AppStyle.text1Regular12),
+              onTap: () {
+                openActivityTimePickerBottomSheet(
+                    context: context,
+                    firstTime: DateTime.now(),
+                    onStartAndEndTimeChoseCallBack: (start, end) {
+                      setState(() {
+                        startTime = start;
+                        endTime = end;
+                      });
+                    });
+              },
             ),
           ],
         ),
@@ -467,63 +502,73 @@ class _CreateActivityPageState extends StateKeyboard {
 
   ///输入框
   Widget _inputBox() {
-    return Container(
-      key: inputBoxKey,
-      height: 104,
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 16),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
-      child: TextField(
-        onTap: () {
-          equipmentStream.sink.add(equipmentKey);
-          joinPermissionsStream.sink.add(selectedPermissionsKey);
-        },
-        controller: activityIllustrateController,
-        cursorColor: AppColor.white,
-        style: AppStyle.whiteRegular12,
-        maxLines: null,
-        maxLength: 500,
-        focusNode: activityIllustrateFocusNode,
-        decoration: InputDecoration(
-          isDense: true,
-          counterText: '',
-          hintText: "活动说明...",
-          hintStyle: AppStyle.text2Regular12,
-          border: InputBorder.none,
-        ),
-        inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
-      ),
+    return Stack(
+      children: [
+        Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6),
+        Container(
+          key: inputBoxKey,
+          height: 104,
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
+          child: TextField(
+            onTap: () {
+              equipmentStream.sink.add(equipmentKey);
+              joinPermissionsStream.sink.add(selectedPermissionsKey);
+            },
+            controller: activityIllustrateController,
+            cursorColor: AppColor.white,
+            style: AppStyle.whiteRegular12,
+            maxLines: null,
+            maxLength: 500,
+            focusNode: activityIllustrateFocusNode,
+            decoration: InputDecoration(
+              isDense: true,
+              counterText: '',
+              hintText: "活动说明...",
+              hintStyle: AppStyle.text2Regular12,
+              border: InputBorder.none,
+            ),
+            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
+          ),
+        )
+      ],
     );
   }
 
   //添加图片的地方
   Widget _getAddImageUi() {
-    return StreamBuilder<List<File>>(
-      initialData: activityImageFileList,
-      stream: activityImageStream.stream,
-      builder: (context, data) {
-        return Container(
-          width: double.infinity,
-          height: 104,
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          alignment: Alignment.centerLeft,
-          child: ListView.separated(
-              itemCount: data.data.length < activityImageFileListCount ? data.data.length + 1 : data.data.length,
-              scrollDirection: Axis.horizontal,
-              separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                    width: 10.0,
-                    color: AppColor.mainBlack,
-                  ),
-              itemBuilder: (context, index) {
-                if (index != data.data.length) {
-                  return _item(index, data.data[index]);
-                } else {
-                  return _addImageItem();
-                }
-              }),
-        );
-      },
+    return Stack(
+      children: [
+        Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6),
+        StreamBuilder<List<File>>(
+          initialData: activityImageFileList,
+          stream: activityImageStream.stream,
+          builder: (context, data) {
+            return Container(
+              width: double.infinity,
+              height: 104,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.centerLeft,
+              child: ListView.separated(
+                  itemCount: data.data.length < activityImageFileListCount ? data.data.length + 1 : data.data.length,
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (BuildContext context, int index) => VerticalDivider(
+                        width: 10.0,
+                        color: AppColor.mainBlack,
+                      ),
+                  itemBuilder: (context, index) {
+                    if (index != data.data.length) {
+                      return _item(index, data.data[index]);
+                    } else {
+                      return _addImageItem();
+                    }
+                  }),
+            );
+          },
+        )
+      ],
     );
   }
 
@@ -729,8 +774,7 @@ class _CreateActivityPageState extends StateKeyboard {
           index++;
         });
         return Container(
-          height: 75,
-          padding: EdgeInsets.symmetric(horizontal: 21),
+          padding: EdgeInsets.symmetric(horizontal: 21, vertical: 8),
           child: Row(
             children: widgetArray,
           ),
@@ -740,13 +784,19 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //title-widget
-  Widget _getTitleWidget(String title) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      height: 40,
-      width: double.infinity,
-      alignment: Alignment.centerLeft,
-      child: Text(title == null ? "" : "$title:", style: AppStyle.whiteMedium14),
+  Widget _getTitleWidget(String title, {bool visible = false}) {
+    return Stack(
+      children: [
+        Visibility(
+            visible: visible, child: Positioned(child: Text("*", style: AppStyle.redMedium16), left: 6, top: 15)),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          height: 40,
+          width: double.infinity,
+          alignment: Alignment.centerLeft,
+          child: Text(title == null ? "" : "$title:", style: AppStyle.whiteMedium14),
+        )
+      ],
     );
   }
 
@@ -808,6 +858,7 @@ class _CreateActivityPageState extends StateKeyboard {
     return Container(
       height: height,
       width: width,
+      color: AppColor.transparent,
     );
   }
 
@@ -860,6 +911,9 @@ class _CreateActivityPageState extends StateKeyboard {
   _getRecommendUserList() async {
     recommendUserList = await getRecommendUserList();
     if (recommendUserList != null && recommendUserList.length > 0) {
+      for (int i = 0; i < recommendUserList.length; i++) {
+        recommendUserSelect.add(i);
+      }
       recommendUserStream.sink.add(recommendUserList);
     } else {
       // recommendUserList = [];
@@ -1075,6 +1129,7 @@ class _CreateActivityPageState extends StateKeyboard {
       equipmentStream.sink.add(equipmentKey);
       joinPermissionsStream.sink.add(selectedPermissionsKey);
     } else {
+      print("111:${activityIllustrateFocusNode.hasFocus}");
       if (activityIllustrateFocusNode.hasFocus) {
         Future.delayed(Duration(milliseconds: 100), () {
           RenderBox renderBox = inputBoxKey.currentContext.findRenderObject();
@@ -1083,6 +1138,8 @@ class _CreateActivityPageState extends StateKeyboard {
           double value = (offset.dy + 110.0) - (ScreenUtil.instance.height - Application.keyboardHeightIfPage);
 
           double widgetHeight = scrollKey.currentContext.size.height;
+
+          print("value:$value,widgetHeight:$widgetHeight,${Application.keyboardHeightIfPage}");
 
           if (value > 0) {
             if (widgetHeight >= Application.keyboardHeightIfPage) {
@@ -1200,11 +1257,11 @@ class _CreateActivityPageState extends StateKeyboard {
       return "";
     } else {
       String uids = "";
-      for (int i = 0; i < recommendUserList.length; i++) {
-        if (i == recommendUserList.length - 1) {
-          uids += recommendUserList[i].uid.toString();
+      for (int i = 0; i < recommendUserSelect.length; i++) {
+        if (i == recommendUserSelect.length - 1) {
+          uids += recommendUserList[recommendUserSelect[i]].uid.toString();
         } else {
-          uids += recommendUserList[i].uid.toString() + ",";
+          uids += recommendUserList[recommendUserSelect[i]].uid.toString() + ",";
         }
       }
       return uids;

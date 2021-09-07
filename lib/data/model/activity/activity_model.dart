@@ -56,7 +56,11 @@ class ActivityModel {
     if (json["pics"] != null) {
       pics = [];
       json["pics"].forEach((v) {
-        pics.add(v);
+        if (v is Map<String, dynamic> && v["coverUrl"] != null) {
+          pics.add(v["coverUrl"]);
+        } else if (v is String) {
+          pics.add(v);
+        }
       });
     }
   }

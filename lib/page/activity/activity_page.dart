@@ -16,11 +16,13 @@ import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/address_picker.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -30,6 +32,7 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
 
 import 'activity_flow.dart';
 
@@ -552,8 +555,14 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
           elevation: 7.0,
           highlightElevation: 14.0,
           onPressed: () {
-            // 跳转创建活动
-            AppRouter.navigateCreateActivityPage(context);
+            if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+              ToastShow.show(msg: "请先登录app!", context: context);
+              AppRouter.navigateToLoginPage(context);
+              return;
+            } else {
+              // 跳转创建活动
+              AppRouter.navigateCreateActivityPage(context);
+            }
           },
           mini: true,
         );
