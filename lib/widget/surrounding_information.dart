@@ -9,9 +9,11 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 typedef SeletedAddress = void Function(String provinceCity, String cityCode, double longitude, double latitude);
 
 Future openSurroundingInformationBottomSheet({
@@ -41,7 +43,10 @@ Future openSurroundingInformationBottomSheet({
 
 class SurroundingInformationPage extends StatefulWidget {
   SeletedAddress onSeletedAddress;
-  SurroundingInformationPage({this.onSeletedAddress});
+  bool isChangeAddress;
+  String activityAddress;
+  SurroundingInformationPage({this.onSeletedAddress, this.activityAddress = "天府软件园C区", this.isChangeAddress = false});
+
   @override
   _SurroundingInformationPageState createState() => _SurroundingInformationPageState();
 }
@@ -198,13 +203,10 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
     return Container(
       height: 68,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8)),
-      ),
       child: //搜索框
           Container(
         height: 44.0,
-        width: ScreenUtil.instance.screenWidthDp,
+        width: ScreenUtil.instance.width,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -219,7 +221,9 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(width: 4,),
+                  SizedBox(
+                    width: 4,
+                  ),
                   AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
                   Expanded(
                     child: Container(
@@ -250,6 +254,29 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
     );
   }
 
+  // 更改地点弹窗
+  Widget changeLocationPopup(PeripheralInformationPoi peripheralInformationPoi) {
+    return showAppDialog(context,
+        title: "更改地点",
+        info: "活动地点由${widget.activityAddress}变更为 ${peripheralInformationPoi.name}",
+        confirmColor: AppColor.mainYellow,
+        cancel: AppDialogButton("取消", () {
+          return true;
+        }),
+        confirm: AppDialogButton("确定", () {
+          widget.onSeletedAddress(
+              peripheralInformationPoi.name,
+              peripheralInformationPoi.citycode,
+              double.parse(peripheralInformationPoi.location.split(",")[0]),
+              double.parse(peripheralInformationPoi.location.split(",")[1]));
+          Navigator.pop(
+            context,
+          );
+          // AppSettings.openLocationSettings();
+          return true;
+        }));
+  }
+
   Widget createMiddleView() {
     return //数据列表
         Expanded(
@@ -262,36 +289,43 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
                     onLoading: onLoadMore,
                     child: ListView.builder(
                         controller: scrollController,
-                        itemExtent: 69,
+                        // itemExtent: widget.isChangeAddress ? 48 : 68,
                         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                         itemCount: searchController.text != null && searchController.text.isNotEmpty
                             ? searchPois.length
                             : pois.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
+                              behavior: HitTestBehavior.opaque,
                               onTap: () {
-                                if (searchController.text != null && searchController.text.isNotEmpty) {
-                                  widget.onSeletedAddress(
-                                      searchPois[index].name,
-                                      searchPois[index].citycode,
-                                      double.parse(searchPois[index].location.split(",")[0]),
-                                      double.parse(searchPois[index].location.split(",")[1]));
+                                if (widget.isChangeAddress) {
+                                  changeLocationPopup(searchController.text != null && searchController.text.isNotEmpty
+                                      ? searchPois[index]
+                                      : pois[index]);
                                 } else {
-                                  widget.onSeletedAddress(
-                                      pois[index].name,
-                                      pois[index].citycode,
-                                      double.parse(pois[index].location.split(",")[0]),
-                                      double.parse(pois[index].location.split(",")[1]));
+                                  if (searchController.text != null && searchController.text.isNotEmpty) {
+                                    widget.onSeletedAddress(
+                                        searchPois[index].name,
+                                        searchPois[index].citycode,
+                                        double.parse(searchPois[index].location.split(",")[0]),
+                                        double.parse(searchPois[index].location.split(",")[1]));
+                                  } else {
+                                    widget.onSeletedAddress(
+                                        pois[index].name,
+                                        pois[index].citycode,
+                                        double.parse(pois[index].location.split(",")[0]),
+                                        double.parse(pois[index].location.split(",")[1]));
+                                  }
+                                  Navigator.pop(
+                                    context,
+                                  );
                                 }
-                                Navigator.pop(
-                                  context,
-                                );
                               },
                               child: SurroundingLocationItem(
                                 poi: searchController.text != null && searchController.text.isNotEmpty
                                     ? searchPois[index]
                                     : pois[index],
+                                isChangeAddress: widget.isChangeAddress,
                               ));
                         }),
                   )
@@ -303,11 +337,58 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
     return Container(
       child: Column(
         children: <Widget>[
-          searchBar(),
+          widget.isChangeAddress
+              ? //搜索框
+              Container(
+                  margin: const EdgeInsets.only(top: 6),
+                  height: 44.0,
+                  width: ScreenUtil.instance.screenWidthDp,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 16),
+                        height: 32,
+                        width: ScreenUtil.instance.screenWidthDp - 32,
+                        decoration: BoxDecoration(
+                          color: AppColor.white.withOpacity(0.1),
+                          borderRadius: new BorderRadius.all(new Radius.circular(3.0)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 9,
+                            ),
+                            AppIcon.getAppIcon(AppIcon.input_search, 24, color: AppColor.textWhite60),
+                            Expanded(
+                              child: Container(
+                                height: 32,
+                                alignment: Alignment.center,
+                                child: TextField(
+                                  controller: searchController,
+                                  textInputAction: TextInputAction.search,
+                                  // 光标颜色
+                                  cursorColor: AppColor.white,
+                                  style: AppStyle.whiteRegular16,
+                                  decoration: const InputDecoration(
+                                      isCollapsed: true,
+                                      contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
+                                      hintText: '输入新的地点',
+                                      hintStyle: AppStyle.text1Regular16,
+                                      border: InputBorder.none),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : searchBar(),
           createMiddleView(),
-          SizedBox(
-            height: ScreenUtil.instance.bottomHeight,
-          )
         ],
       ),
     );
@@ -316,20 +397,30 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
 
 class SurroundingLocationItem extends StatelessWidget {
   PeripheralInformationPoi poi;
+  bool isChangeAddress;
 
-  SurroundingLocationItem({
-    this.poi,
-  });
+  SurroundingLocationItem({this.poi, this.isChangeAddress});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: ScreenUtil.instance.width,
-      height: 44,
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColor.dividerWhite8, width: 0.5))),
-      margin: EdgeInsets.only(left: 12, right: 12),
-      alignment: Alignment(-1, 0),
-      child: Text(poi.name, style: AppStyle.whiteRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
+    return Column(
+      children: [
+        Container(
+          width: ScreenUtil.instance.width,
+          height: 48,
+          // decoration: BoxDecoration(
+          //     border: Border(bottom: BorderSide(color: AppColor.dividerWhite8, width: 0.5))),
+          margin: isChangeAddress ? EdgeInsets.only(left: 28, right: 28) : EdgeInsets.only(left: 12, right: 12),
+          alignment: Alignment(-1, 0),
+          child: Text(poi.name,
+              style: isChangeAddress ? AppStyle.whiteRegular16 : AppStyle.whiteRegular14,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+        ),
+        Container(
+          height: 8,
+        )
+      ],
     );
   }
 }
