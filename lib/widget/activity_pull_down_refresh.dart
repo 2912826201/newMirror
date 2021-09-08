@@ -33,16 +33,23 @@ class ActivityPullDownRefresh extends StatefulWidget {
   //下拉刷新回调
   Function onrefresh;
 
-  //是否需要appBar右侧按钮
+  //是否需要appBar
+  bool needAppBar;
+
+//是否需要appBar右侧按钮
   bool needAction;
 
   //action按钮点击回调
   Function actionTap;
 
+  //主要滚动控制器
+  ScrollController scrollController;
+
   // String title;
 
   ActivityPullDownRefresh(
       {Key key,
+      this.scrollController,
       this.backGroundHeight,
       this.children,
       this.refreshIcons,
@@ -50,6 +57,7 @@ class ActivityPullDownRefresh extends StatefulWidget {
       this.iconColor,
       this.imageUrl,
       this.onrefresh,
+      this.needAppBar,
       this.needAction,
       this.actionTap})
       : super(key: key);
@@ -75,7 +83,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   double downOffset = 0;
 
   //主要控制器
-  ScrollController scrollController = ScrollController();
+  ScrollController scrollController;
 
   //刷新滚动控制器
   ScrollController lodingScrollController = ScrollController();
@@ -84,11 +92,13 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   bool isTauch = false;
 
   //刷新动画最大高度
-  double refreshHeight = 150;
+  final double refreshHeight = 100;
 
   //图片超出屏幕的高度
   final double overflowHeight = 50;
 
+  //动画是否结束(使用stop停止动画status没法正常拿来判断)
+  bool refreshIsCompleted = true;
   @override
   void initState() {
     super.initState();
@@ -97,17 +107,21 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   //刷新完成(key调用)
   refreshCompleted() {
+    print('refreshCompleted::::::::');
     lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
-    lodingAnimationController.stop();
+    lodingAnimationController.stop(canceled: true);
+    refreshIsCompleted = true;
   }
 
   //调用刷新(key调用)
   refresh() {
+    print('refresh::::::::');
     lodingScrollController.animateTo(0, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
     lodingAnimationController.forward();
   }
 
   _init() {
+    scrollController = widget.scrollController;
     //初始化loading图标和图片偏移位置
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollController.jumpTo(overflowHeight);
@@ -136,10 +150,12 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
                 top: 0,
                 child: _topLoding(),
               ),
-              Positioned(
-                child: _appBar(),
-                top: 0,
-              )
+              widget.needAppBar
+                  ? Positioned(
+                      child: _appBar(),
+                      top: 0,
+                    )
+                  : Container()
             ],
           ),
         ));
@@ -273,6 +289,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     if (scrollController.position.pixels < overflowHeight && scrollController.position.maxScrollExtent > 150) {
       scrollController.animateTo(overflowHeight, duration: Duration(milliseconds: 450), curve: Curves.ease);
     }
+    if(!refreshIsCompleted) return;
     //条件达成开始刷新
     if (lodingScrollController.position.pixels < 3) {
       lodingAnimationController.forward();
@@ -285,7 +302,8 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   _onPointerMove(PointerMoveEvent event) {
     if (scrollController.position.axisDirection == AxisDirection.down &&
-        scrollController.position.pixels < overflowHeight) {
+        scrollController.position.pixels < overflowHeight &&
+        refreshIsCompleted) {
       double moveOffset = 0.0;
       //loding跟随图片滑动比例
       if (scrollController.position.maxScrollExtent > refreshHeight) {
@@ -293,8 +311,8 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
       } else if (scrollController.position.pixels == scrollController.position.minScrollExtent) {
         moveOffset = downOffset - event.position.dy;
       }
-      //////////////loading跟随手指旋转////////////////////
-      double angle = ((event.position.dy - downOffset) % widget.iconSize) / widget.iconSize;
+      //////////////loading跟随手指偏移旋转(随便写的频率)////////////////////
+      double angle = ((event.position.dy - downOffset) % 30) / 30;
       lodingStreamController.sink.add(angle);
       ////////////loading跟随手指偏移///////////////
       if (refreshHeight - moveOffset >= 0) {
@@ -332,6 +350,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     lodingAnimationController.addStatusListener((status) {
       //动画无限循环
       if (status == AnimationStatus.completed) {
+        refreshIsCompleted = false;
         lodingAnimationController.reset();
         lodingAnimationController.forward();
       }

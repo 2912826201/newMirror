@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/activity_pull_down_refresh.dart';
 import 'package:mirror/widget/change_insert_user_bottom_sheet.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -159,15 +160,16 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        SingleChildScrollView(
+        /*SingleChildScrollView(
           controller: scrollController,
           child: Transform.translate(
             offset: Offset(0, -offsetHeight),
             child: Container(
-              child: _getSingleChildScrollView(),
-            ),
+              child:*/
+        _getSingleChildScrollView(),
+        /*    ),
           ),
-        ),
+        ),*/
         Container(
           height: 40,
           width: double.infinity,
@@ -183,12 +185,24 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getSingleChildScrollView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ActivityPullDownRefresh(
+      scrollController: scrollController,
+      key: pullDownKey,
+      refreshIcons: AppIcon.camera_switch,
+      iconSize: 50,
+      iconColor: AppColor.mainRed,
+      imageUrl: activityModel.pic == null ? "" : FileUtil.getImageSlim(activityModel.pic),
+      backGroundHeight: 300,
+      needAppBar: false,
+      needAction: activityModel != null &&
+          activityModel.masterId != null &&
+          Application.profile != null &&
+          activityModel.masterId == Application.profile.uid,
       children: [
-        //顶部图片
+        /*  //顶部图片
         _getTopImage(),
 
+        */
         SizedBox(height: 12),
 
         Container(
@@ -271,6 +285,13 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           ),
         ),
       ],
+      onrefresh: () {
+        print('-----------------onrefresh');
+        Future.delayed(Duration(milliseconds: 5000), () {
+          pullDownKey.currentState.refreshCompleted();
+        });
+      },
+      actionTap: () {},
     );
   }
 
@@ -347,7 +368,6 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     return DetailMemberUserUi(activityModel.members, activityModel.groupChatId?.toString() ?? null, activityModel.id,
         activityModel.masterId, activityModel.status);
   }
-
 
   ///初始化数据
   _initData() async {
