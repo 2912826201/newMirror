@@ -26,7 +26,7 @@ import 'package:mirror/page/test/download_test_page.dart';
 import 'package:mirror/page/test/echarts_test/echarts_test.dart';
 import 'package:mirror/page/test/listview_test_page.dart';
 import 'package:mirror/page/test/media_test_page.dart';
-import 'package:mirror/page/test/pull_down_iamge_test.dart';
+import '../../widget/activity_pull_down_refresh.dart';
 import 'package:mirror/page/test/qiniu_test_page.dart';
 import 'package:mirror/page/test/serial_popup_test.dart';
 import 'package:mirror/page/test/tag_cloud/tag_cloud_page.dart';

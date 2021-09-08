@@ -9,26 +9,32 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 
-/*= "https://img2.baidu.com/it/u=3355464299,584008140&fm=26&fmt=auto&gp=0
-      .jpg"*/
 GlobalKey<_ActivityPullDownRefreshState> pullDownKey = GlobalKey();
+
 class ActivityPullDownRefresh extends StatefulWidget {
+  //图片
   String imageUrl;
+  //图片高度
   double backGroundHeight;
+  //刷新图标
   String refreshIcons;
+  //刷新图标size
   double iconSize;
+  //刷新图标颜色
   Color iconColor;
+  //子组件
   List<Widget> children;
+  //下拉刷新回调
   Function onrefresh;
+  //是否需要appBar右侧按钮
+  bool needAction;
+  //action按钮点击回调
   Function actionTap;
-  double height;
-  double width;
+
   // String title;
 
   ActivityPullDownRefresh(
-      { Key key,
-        this.height,
-      this.width,
+      {Key key,
       this.backGroundHeight,
       this.children,
       this.refreshIcons,
@@ -36,23 +42,34 @@ class ActivityPullDownRefresh extends StatefulWidget {
       this.iconColor,
       this.imageUrl,
       this.onrefresh,
-      this.actionTap}):super(key: key);
+      this.needAction,
+      this.actionTap})
+      : super(key: key);
 
   @override
   _ActivityPullDownRefreshState createState() => _ActivityPullDownRefreshState();
 }
 
 class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with TickerProviderStateMixin {
+  //loading刷新时控制器
   AnimationController lodingAnimationController;
+  //loading手指滑动时动画控制器
   StreamController lodingStreamController = StreamController<double>();
+  //appBar显隐控制器
   StreamController appBarStreamController = StreamController<double>();
-  double upPosition = 0;
-  ScrollController scrollController = ScrollController();
-  ScrollController lodingScrollController = ScrollController();
-  bool isTauch = false;
-  double refreshHeight = 150;
+  //抬起的偏移值
+  double upOffset = 0;
+  //按下的偏移值
   double downOffset = 0;
-  double downPixels = 0;
+  //主要控制器
+  ScrollController scrollController = ScrollController();
+  //刷新滚动控制器
+  ScrollController lodingScrollController = ScrollController();
+  //是否正在触摸
+  bool isTauch = false;
+  //刷新动画最大高度
+  double refreshHeight = 150;
+  //图片超出屏幕的高度
   final double overflowHeight = 50;
 
   @override
@@ -60,19 +77,19 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     super.initState();
     _init();
   }
-
+  //刷新完成(key调用)
   refreshCompleted() {
     lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
     lodingAnimationController.stop();
   }
-
-   refresh() {
+  //调用刷新(key调用)
+  refresh() {
     lodingScrollController.animateTo(0, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
     lodingAnimationController.forward();
   }
 
-
   _init() {
+    //初始化loading图标和图片偏移位置
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollController.jumpTo(overflowHeight);
       lodingScrollController.jumpTo(refreshHeight);
@@ -87,22 +104,23 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   @override
   Widget build(BuildContext context) {
     return Container(
-          height: widget.height,
-          width:  widget.width,
-          child: Listener(
-            onPointerDown: _onPointerDown,
-            onPointerUp: _onPointerUp,
-            onPointerMove: _onPointerMove,
-            child: Stack(
+        height: ScreenUtil.instance.height,
+        width: ScreenUtil.instance.width,
+        child: Listener(
+          onPointerDown: _onPointerDown,
+          onPointerUp: _onPointerUp,
+          onPointerMove: _onPointerMove,
+          child: Stack(
             children: [
-              Positioned(
-                  top: 0,
-                  child: _list()),
+              Positioned(top: 0, child: _list()),
               Positioned(
                 top: 0,
                 child: _topLoding(),
               ),
-              Positioned(child: _appBar(),top: 0,)
+              Positioned(
+                child: _appBar(),
+                top: 0,
+              )
             ],
           ),
         ));
@@ -114,10 +132,10 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
         stream: appBarStreamController.stream,
         builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
           return Container(
-            height: 44+ScreenUtil.instance.statusBarHeight,
+            height: 44 + ScreenUtil.instance.statusBarHeight,
             width: ScreenUtil.instance.width,
             color: AppColor.mainBlack.withOpacity(snapshot.data),
-            padding: EdgeInsets.only(left: 8,right: 8,top: ScreenUtil.instance.statusBarHeight),
+            padding: EdgeInsets.only(left: 8, right: 8, top: ScreenUtil.instance.statusBarHeight),
             child: Row(
               children: [
                 Expanded(
@@ -126,7 +144,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
                     child: CustomAppBarIconButton(
                       svgName: AppIcon.nav_return,
                       iconColor: AppColor.white.withOpacity(snapshot.data),
-                      onTap: (){
+                      onTap: () {
                         Navigator.pop(context);
                       },
                     ),
@@ -138,13 +156,15 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
                   style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white.withOpacity(snapshot.data)),
                 ),
-                Expanded(
-                  child: Align(
-                      alignment: Alignment.centerRight,
-                      child: CustomAppBarIconButton(
-                          svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: widget.actionTap)),
-                  flex: 1,
-                ),
+                widget.needAction
+                    ? Expanded(
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: CustomAppBarIconButton(
+                                svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: widget.actionTap)),
+                        flex: 1,
+                      )
+                    : Spacer(),
               ],
             ),
           );
@@ -156,7 +176,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     Widget backGroundImage = CachedNetworkImage(
       height: widget.backGroundHeight,
       width: ScreenUtil.instance.width,
-      imageUrl: widget.imageUrl??"",
+      imageUrl: widget.imageUrl ?? "",
       fit: BoxFit.cover,
       placeholder: (context, url) => Container(
         color: AppColor.imageBgGrey,
@@ -167,20 +187,20 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     }
     list.addAll(widget.children);
     return Container(
-      height: widget.height,
-      width: widget.width,
-      child:SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: List.generate(list.length, (index) {
-            return list[index];
-          }),
-        ),
-      )
-    );
+        height:ScreenUtil.instance.height,
+        width:ScreenUtil.instance.width,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: List.generate(list.length, (index) {
+              return list[index];
+            }),
+          ),
+        ));
   }
 
   Widget _topLoding() {
+    //触摸穿透
     return IgnorePointer(
       child: Container(
         height: refreshHeight,
@@ -229,32 +249,37 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   _onPointerUp(PointerUpEvent event) {
     isTauch = false;
-    upPosition = scrollController.position.pixels;
+    upOffset = scrollController.position.pixels;
+    //图片回到初始位置
     if (scrollController.position.pixels < overflowHeight && scrollController.position.maxScrollExtent > 150) {
       scrollController.animateTo(overflowHeight, duration: Duration(milliseconds: 450), curve: Curves.ease);
     }
+    //条件达成开始刷新
     if (lodingScrollController.position.pixels < 3) {
       lodingAnimationController.forward();
       widget.onrefresh();
     } else {
+      //回到初始位置
       lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.ease);
     }
   }
 
   _onPointerMove(PointerMoveEvent event) {
-    print('---_onPointerMove-----------------_onPointerMove---${event.position.dy}-----$downOffset');
-    if (scrollController.position.axisDirection == AxisDirection.down && scrollController.position.pixels < overflowHeight) {
+    if (scrollController.position.axisDirection == AxisDirection.down &&
+        scrollController.position.pixels < overflowHeight) {
       double moveOffset = 0.0;
+      //loding跟随图片滑动比例
       if (scrollController.position.maxScrollExtent > refreshHeight) {
-        moveOffset = (refreshHeight/overflowHeight)*(overflowHeight  - scrollController.position.pixels);
+        moveOffset = (refreshHeight / overflowHeight) * (overflowHeight - scrollController.position.pixels);
       } else if (scrollController.position.pixels == scrollController.position.minScrollExtent) {
         moveOffset = downOffset - event.position.dy;
       }
-      double angle = 100/((event.position.dy - downOffset) % 100);
+      //////////////loading跟随手指旋转////////////////////
+      double angle = ((event.position.dy - downOffset) % widget.iconSize)/widget.iconSize;
       lodingStreamController.sink.add(angle);
+      ////////////loading跟随手指偏移///////////////
       if (refreshHeight - moveOffset >= 0) {
         lodingScrollController.jumpTo(refreshHeight - moveOffset);
-
       } else {
         lodingScrollController.jumpTo(lodingScrollController.position.minScrollExtent);
       }
@@ -263,27 +288,30 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   _controllerListener() {
     scrollController.addListener(() {
-     if (!isTauch &&
-          upPosition > overflowHeight &&
+      //快速惯性滚动阻尼
+      if (!isTauch &&
+          upOffset > overflowHeight &&
           scrollController.position.axisDirection == AxisDirection.down &&
           scrollController.position.pixels <= overflowHeight) {
         scrollController.animateTo(scrollController.position.pixels,
             duration: Duration(milliseconds: 150), curve: Curves.fastOutSlowIn);
       }
-      if(scrollController.position.pixels>=overflowHeight&& scrollController.position.pixels <= widget
-          .backGroundHeight){
+
+      ///////////////appBar显隐控制//////////////
+      if (scrollController.position.pixels >= overflowHeight &&
+          scrollController.position.pixels <= widget.backGroundHeight) {
         double nowHeight = scrollController.position.pixels - overflowHeight;
         double totalHeight = widget.backGroundHeight - overflowHeight;
-        if(nowHeight/totalHeight>=0&&nowHeight/totalHeight<=1){
-          appBarStreamController.sink.add(nowHeight/totalHeight);
+        if (nowHeight / totalHeight >= 0 && nowHeight / totalHeight <= 1) {
+          appBarStreamController.sink.add(nowHeight / totalHeight);
         }
-      }else if(scrollController.position.pixels<overflowHeight){
+      } else if (scrollController.position.pixels < overflowHeight) {
         appBarStreamController.sink.add(0.0);
       }
     });
     lodingAnimationController = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
     lodingAnimationController.addStatusListener((status) {
-      print('-------------------$status');
+      //动画无限循环
       if (status == AnimationStatus.completed) {
         lodingAnimationController.reset();
         lodingAnimationController.forward();
