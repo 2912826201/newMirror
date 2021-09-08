@@ -11,6 +11,7 @@ import 'package:mirror/widget/icon.dart';
 
 /*= "https://img2.baidu.com/it/u=3355464299,584008140&fm=26&fmt=auto&gp=0
       .jpg"*/
+GlobalKey<_ActivityPullDownRefreshState> pullDownKey = GlobalKey();
 class ActivityPullDownRefresh extends StatefulWidget {
   String imageUrl;
   double backGroundHeight;
@@ -25,7 +26,8 @@ class ActivityPullDownRefresh extends StatefulWidget {
   // String title;
 
   ActivityPullDownRefresh(
-      {this.height,
+      { Key key,
+        this.height,
       this.width,
       this.backGroundHeight,
       this.children,
@@ -34,7 +36,7 @@ class ActivityPullDownRefresh extends StatefulWidget {
       this.iconColor,
       this.imageUrl,
       this.onrefresh,
-      this.actionTap});
+      this.actionTap}):super(key: key);
 
   @override
   _ActivityPullDownRefreshState createState() => _ActivityPullDownRefreshState();
@@ -48,24 +50,29 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   ScrollController scrollController = ScrollController();
   ScrollController lodingScrollController = ScrollController();
   bool isTauch = false;
-  double refreshHeight;
+  double refreshHeight = 150;
   double downOffset = 0;
   double downPixels = 0;
   final double overflowHeight = 50;
+
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault()
-        .registerNoParameter(_refreshOver, EVENTBUS_ACTIVITY_DETAILS, registerName: ACTIVITY_REFRESH_OVER);
     _init();
   }
 
-  _refreshOver() {
-    // lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
+  refreshCompleted() {
+    lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
     lodingAnimationController.stop();
   }
+
+   refresh() {
+    lodingScrollController.animateTo(0, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
+    lodingAnimationController.forward();
+  }
+
+
   _init() {
-    refreshHeight = overflowHeight + widget.iconSize;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollController.jumpTo(overflowHeight);
       lodingScrollController.jumpTo(refreshHeight);
@@ -186,7 +193,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(height: overflowHeight),
+              Container(height: refreshHeight - widget.iconSize),
               RotationTransition(
                 alignment: Alignment.center,
                 turns: lodingAnimationController,
@@ -235,22 +242,19 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   }
 
   _onPointerMove(PointerMoveEvent event) {
+    print('---_onPointerMove-----------------_onPointerMove---${event.position.dy}-----$downOffset');
     if (scrollController.position.axisDirection == AxisDirection.down && scrollController.position.pixels < overflowHeight) {
       double moveOffset = 0.0;
       if (scrollController.position.maxScrollExtent > refreshHeight) {
-        moveOffset = ((scrollController.position.pixels - overflowHeight));
+        moveOffset = (refreshHeight/overflowHeight)*(overflowHeight  - scrollController.position.pixels);
       } else if (scrollController.position.pixels == scrollController.position.minScrollExtent) {
         moveOffset = downOffset - event.position.dy;
       }
-      if (refreshHeight + moveOffset >= 0) {
-        lodingScrollController.jumpTo(refreshHeight + moveOffset);
-        double angle = 0.0;
-        if ((refreshHeight + moveOffset - widget.iconSize) / widget.iconSize <= 1) {
-          angle = (refreshHeight + moveOffset - overflowHeight) / widget.iconSize;
-        } else {
-          angle = (refreshHeight + moveOffset - overflowHeight) / widget.iconSize - 1;
-        }
-        lodingStreamController.sink.add(angle);
+      double angle = 100/((event.position.dy - downOffset) % 100);
+      lodingStreamController.sink.add(angle);
+      if (refreshHeight - moveOffset >= 0) {
+        lodingScrollController.jumpTo(refreshHeight - moveOffset);
+
       } else {
         lodingScrollController.jumpTo(lodingScrollController.position.minScrollExtent);
       }
