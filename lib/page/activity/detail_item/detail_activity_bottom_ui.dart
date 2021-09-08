@@ -31,7 +31,7 @@ class DetailActivityBottomUi extends StatefulWidget {
 class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   bool isAgree = false;
   final PinYinTextEditController _applyJoinController = PinYinTextEditController();
-
+  Location currentAddressInfo; //当前位置的信息
   @override
   Widget build(BuildContext context) {
     if (widget.activityModel.isSignIn == null) {
@@ -119,12 +119,21 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
               child: Text("发布动态", style: AppStyle.textRegular15),
             ),
             onTap: () {
-              if (!context.read<TokenNotifier>().isLoggedIn) {
+              if (!context
+                  .read<TokenNotifier>()
+                  .isLoggedIn) {
                 AppRouter.navigateToLoginPage(context);
                 return;
               }
-              AppRouter.navigateToMediaPickerPage(context, 9, 1, true, 0, false, (result) {},
-                  publishMode: 1, activityModel: widget.activityModel);
+              AppRouter.navigateToMediaPickerPage(
+                  context,
+                  9,
+                  1,
+                  true,
+                  0,
+                  false, (result) {},
+                  publishMode: 1,
+                  activityModel: widget.activityModel);
             },
           ),
         ],
@@ -287,7 +296,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       margin: EdgeInsets.symmetric(horizontal: 40),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
+      BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
       child: TextField(
         controller: _applyJoinController,
         cursorColor: AppColor.white,
@@ -376,11 +385,9 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     } else if (model.isSignIn) {
       ToastShow.show(msg: "已经签过到了", context: context);
     } else {
-      //经度
-      String longitude = "";
-      //纬度
-      String latitude = "";
-      bool isSignInActivity = await signInActivity(widget.activityModel.id, longitude, latitude);
+      locationPermissions();
+      bool isSignInActivity = await signInActivity(
+          widget.activityModel.id, currentAddressInfo.longitude, currentAddressInfo.latitude);
       if (isSignInActivity) {
         ToastShow.show(msg: "签到成功", context: context);
       } else {
@@ -390,5 +397,40 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     if (widget.onRestDataListener != null) {
       widget.onRestDataListener();
     }
+  }
+
+  // 获取定位权限
+  locationPermissions() async {
+    // 获取定位权限
+    PermissionStatus permissions = await Permission.locationWhenInUse.status;
+    print("下次寻问permissions：：：：$permissions");
+    // 已经获取了定位权限
+    if (permissions.isGranted) {
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+    } else {
+      // 请求定位权限
+      permissions = await Permission.locationWhenInUse.request();
+      print("permissions::::$permissions");
+      if (permissions.isGranted) {
+        currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      } else {
+        _locationFailPopUps();
+      }
+    }
+  }
+
+  // 定位失败弹窗
+  _locationFailPopUps() {
+    return showAppDialog(context,
+        title: "位置信息",
+        info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
+        confirmColor: AppColor.white,
+        cancel: AppDialogButton("返回", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去设置", () {
+          AppSettings.openLocationSettings();
+          return true;
+        }));
   }
 }
