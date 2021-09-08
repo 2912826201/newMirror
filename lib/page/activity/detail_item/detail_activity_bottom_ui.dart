@@ -34,6 +34,12 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.activityModel.isSignIn == null) {
+      widget.activityModel.isSignIn = false;
+    }
+    if (widget.activityModel.isCanSignIn == null) {
+      widget.activityModel.isCanSignIn = false;
+    }
     if (widget.isHaveMe) {
       if (!widget.activityModel.isCanSignIn) {
         return _postFeedUi();
