@@ -20,6 +20,7 @@ import 'package:mirror/data/model/training/course_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/activity/activity_change_address_page.dart';
 import 'package:mirror/page/test/activation_test_page.dart';
 import 'package:mirror/page/test/agora_input_page.dart';
 import 'package:mirror/page/test/download_test_page.dart';
@@ -633,6 +634,16 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("极光测试页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ActivityChangeAddressPage(onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+                      print("provinceCity：$provinceCity, cityCod：$cityCode, longitude：$longitude, latitude：$latitude");
+                    },);
+                  }));
+                },
+                child: Text("更改地点测试页"),
               ),
               RaisedButton(
                   onPressed: () {
