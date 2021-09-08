@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/change_insert_user_bottom_sheet.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
@@ -369,6 +370,13 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
       lists: list,
       onItemClickListener: (index) async {
         if (list[index] == "更改人数") {
+          openUserNumberPickerBottomSheet(
+              context: context,
+              start: activityModel.count,
+              end: 99,
+              onChoseCallBack: (number) {
+                ToastShow.show(msg: "修改人数为:$number,但是暂无接口", context: context);
+              });
         } else if (list[index] == "更改地址") {
         } else if (list[index] == "踢出团队成员") {
           if (activityModel != null && activityModel.members != null && activityModel.members.length > 0) {

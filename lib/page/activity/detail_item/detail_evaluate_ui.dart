@@ -30,7 +30,7 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
       widget.activityModel.isEvaluate = false;
     }
     if (widget.activityModel.status != 3) {
-      return noEvaluate();
+      return Container();
     } else if (!widget.activityModel.isEvaluate) {
       return noEvaluate();
     } else {
@@ -111,9 +111,9 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
     if (widget.inputEvaluateFocusNode.hasFocus) {
       widget.inputEvaluateFocusNode.unfocus();
     }
-    double score = await publishEvaluate(widget.activityModel.id, this.score, controller.text);
-    if (score < 0) {
-      ToastShow.show(msg: "发布评价失败", context: context);
+    List list = await publishEvaluate(widget.activityModel.id, this.score, controller.text);
+    if (list[0] < 0) {
+      ToastShow.show(msg: list[1], context: context);
     } else {
       ToastShow.show(msg: "发布评价成功", context: context);
     }

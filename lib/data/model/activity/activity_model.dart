@@ -20,9 +20,12 @@ class ActivityModel {
   int endTime;
   int groupChatId;
   int masterId;
+  bool isSignIn;
+  bool isCanSignIn;
   bool isEvaluate;
   List<UserModel> members;
   List<String> pics;
+
   // 附加字段
   String activityTitle;
   String activityTitle1;
@@ -48,6 +51,16 @@ class ActivityModel {
     endTime = json['endTime'];
     groupChatId = json['groupChatId'];
     masterId = json['masterId'];
+    if (json['isSignIn'] != null && json['isSignIn'] is int && json['isSignIn'] == 1) {
+      isSignIn = true;
+    } else {
+      isSignIn = false;
+    }
+    if (json['isCanSignIn'] != null && json['isCanSignIn'] is int && json['isCanSignIn'] == 1) {
+      isCanSignIn = true;
+    } else {
+      isCanSignIn = false;
+    }
     if (json['isEvaluate'] != null && json['isEvaluate'] is int && json['isEvaluate'] == 1) {
       isEvaluate = true;
     } else {
@@ -98,6 +111,8 @@ class ActivityModel {
     map['masterId'] = masterId;
     map['groupChatId'] = groupChatId;
     map['pics'] = pics;
+    map['isSignIn'] = isSignIn;
+    map['isCanSignIn'] = isCanSignIn;
     map['isEvaluate'] = isEvaluate;
     return map;
   }

@@ -42,6 +42,9 @@ const String JOINBYINVITATION = "/appuser/web/activity/JoinByInvitation";
 // 发布评价
 const String PUBLISHEVALUATE = "/appuser/web/activity/publishEvaluate";
 
+// 活动签到
+const String SIGNINACTIVITY = "/appuser/web/activity/signIn";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -299,15 +302,31 @@ Future<List> joinByInvitation(int activityId, int uid) async {
 }
 
 //发布评价
-Future<double> publishEvaluate(int activityId, double score, String content) async {
+Future<List> publishEvaluate(int activityId, double score, String content) async {
   Map<String, dynamic> params = {};
-  params["id"] = activityId;
+  params["activityId"] = activityId;
   params["score"] = score;
   params["content"] = content;
   BaseResponseModel responseModel = await requestApi(PUBLISHEVALUATE, params);
   if (responseModel.isSuccess && responseModel.data != null) {
-    return responseModel.data["AVGScore"] ?? -1.0;
+    return [responseModel.data["AVGScore"] ?? -1.0, "", responseModel.message];
+  } else if (responseModel.code == 305) {
+    return [-1.0, responseModel.message];
   } else {
-    return -1.0;
+    return [-1.0, "发布失败"];
+  }
+}
+
+//活动签到
+Future<bool> signInActivity(int activityId, String longitude, String latitude) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  params["longitude"] = longitude;
+  params["latitude"] = latitude;
+  BaseResponseModel responseModel = await requestApi(SIGNINACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return false;
   }
 }

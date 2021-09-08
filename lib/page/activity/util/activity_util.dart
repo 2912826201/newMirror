@@ -14,6 +14,7 @@ class ActivityUtil {
     return _util;
   }
 
+  //通过邀请链接进入活动
   Future<List> joinByInvitationActivity(BuildContext context, int activityId) async {
     ActivityModel model = await getActivityDetailApi(activityId);
     if (model == null) {

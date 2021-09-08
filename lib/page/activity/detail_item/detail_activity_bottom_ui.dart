@@ -34,16 +34,60 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.activityModel.status == 3) {
-      return _endActivity();
-    } else if (widget.isHaveMe) {
-      return _haveMeUi();
+    if (widget.isHaveMe) {
+      if (!widget.activityModel.isCanSignIn) {
+        return _postFeedUi();
+      } else if (widget.activityModel.isSignIn) {
+        return _postFeedUi();
+      } else {
+        return _signInUi();
+      }
     } else {
-      return _noHaveMe();
+      if (widget.activityModel.status == 3) {
+        return _endActivity();
+      } else if (widget.activityModel.status == 2) {
+        return _joinActivityCanNot();
+      } else {
+        return _joinActivity();
+      }
     }
   }
 
-  Widget _haveMeUi() {
+  Widget _signInUi() {
+    return Container(
+      height: 40,
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColor.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 12),
+          Text("还没有签到,赶快签到吧", style: AppStyle.text1Regular14),
+          Spacer(),
+          GestureDetector(
+            child: Container(
+              height: 40,
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: AppColor.mainYellow,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("签到", style: AppStyle.textRegular15),
+            ),
+            onTap: () {
+              _signInClickListener();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _postFeedUi() {
     return Container(
       height: 40,
       width: double.infinity,
@@ -111,8 +155,8 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     );
   }
 
-  //同意
-  Widget _noHaveMe() {
+  //参加活动
+  Widget _joinActivity() {
     return Container(
       height: 40,
       width: ScreenUtil.instance.width - 32,
@@ -155,6 +199,51 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
             onTap: () {
               judgeApplyJoin();
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  //参加活动置灰
+  Widget _joinActivityCanNot() {
+    return Container(
+      height: 40,
+      width: ScreenUtil.instance.width - 32,
+      decoration: BoxDecoration(
+        color: AppColor.layoutBgGrey,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            child: Container(
+              width: 40,
+              height: 40,
+              padding: EdgeInsets.all(10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isAgree ? AppColor.mainRed : AppColor.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            onTap: () {
+              isAgree = !isAgree;
+              setState(() {});
+            },
+          ),
+          Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
+          Spacer(),
+          Container(
+            height: 40,
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: AppColor.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text("参加活动", style: AppStyle.whiteRegular15),
           ),
         ],
       ),
@@ -239,6 +328,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
         }));
   }
 
+  //申请加入活动
   _applyJoinActivity(String message) async {
     if (isShowApplyJoinActivityDialog) {
       return;
@@ -267,6 +357,32 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       widget.onRestDataListener();
     } else {
       ToastShow.show(msg: list[1], context: context);
+    }
+  }
+
+  //签到
+  _signInClickListener() async {
+    ActivityModel model = await getActivityDetailApi(widget.activityModel.id);
+    if (!widget.isHaveMe) {
+      ToastShow.show(msg: "不是这个活动的成员不能签到", context: context);
+    } else if (!model.isCanSignIn) {
+      ToastShow.show(msg: "已经过了签到时间", context: context);
+    } else if (model.isSignIn) {
+      ToastShow.show(msg: "已经签过到了", context: context);
+    } else {
+      //经度
+      String longitude = "";
+      //纬度
+      String latitude = "";
+      bool isSignInActivity = await signInActivity(widget.activityModel.id, longitude, latitude);
+      if (isSignInActivity) {
+        ToastShow.show(msg: "签到成功", context: context);
+      } else {
+        ToastShow.show(msg: "签到失败", context: context);
+      }
+    }
+    if (widget.onRestDataListener != null) {
+      widget.onRestDataListener();
     }
   }
 }
