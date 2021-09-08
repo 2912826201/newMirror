@@ -43,7 +43,7 @@ class ChangeInsertUserBottomSheet extends StatefulWidget {
 class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomSheet> {
   List<int> userNumberList = [];
   FixedExtentScrollController controller = FixedExtentScrollController();
-
+  int selectIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -56,7 +56,12 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
       userNumberList.add(widget.start + i);
     }
   }
-
+    @override
+  void deactivate() {
+    super.deactivate();
+    //弹窗关闭时回调
+    widget.onChoseCallBack(userNumberList[selectIndex]);
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -102,7 +107,7 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
         },
       ),
       onSelectedItemChanged: (index) {
-        widget.onChoseCallBack(userNumberList[index]);
+        selectIndex = index;
       },
     ));
   }

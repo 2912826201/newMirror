@@ -14,20 +14,28 @@ GlobalKey<_ActivityPullDownRefreshState> pullDownKey = GlobalKey();
 class ActivityPullDownRefresh extends StatefulWidget {
   //图片
   String imageUrl;
+
   //图片高度
   double backGroundHeight;
+
   //刷新图标
   String refreshIcons;
+
   //刷新图标size
   double iconSize;
+
   //刷新图标颜色
   Color iconColor;
+
   //子组件
   List<Widget> children;
+
   //下拉刷新回调
   Function onrefresh;
+
   //是否需要appBar右侧按钮
   bool needAction;
+
   //action按钮点击回调
   Function actionTap;
 
@@ -53,22 +61,31 @@ class ActivityPullDownRefresh extends StatefulWidget {
 class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with TickerProviderStateMixin {
   //loading刷新时控制器
   AnimationController lodingAnimationController;
+
   //loading手指滑动时动画控制器
   StreamController lodingStreamController = StreamController<double>();
+
   //appBar显隐控制器
   StreamController appBarStreamController = StreamController<double>();
+
   //抬起的偏移值
   double upOffset = 0;
+
   //按下的偏移值
   double downOffset = 0;
+
   //主要控制器
   ScrollController scrollController = ScrollController();
+
   //刷新滚动控制器
   ScrollController lodingScrollController = ScrollController();
+
   //是否正在触摸
   bool isTauch = false;
+
   //刷新动画最大高度
   double refreshHeight = 150;
+
   //图片超出屏幕的高度
   final double overflowHeight = 50;
 
@@ -77,11 +94,13 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     super.initState();
     _init();
   }
+
   //刷新完成(key调用)
   refreshCompleted() {
     lodingScrollController.animateTo(refreshHeight, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
     lodingAnimationController.stop();
   }
+
   //调用刷新(key调用)
   refresh() {
     lodingScrollController.animateTo(0, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
@@ -187,8 +206,8 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     }
     list.addAll(widget.children);
     return Container(
-        height:ScreenUtil.instance.height,
-        width:ScreenUtil.instance.width,
+        height: ScreenUtil.instance.height,
+        width: ScreenUtil.instance.width,
         child: SingleChildScrollView(
           controller: scrollController,
           child: Column(
@@ -275,7 +294,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
         moveOffset = downOffset - event.position.dy;
       }
       //////////////loading跟随手指旋转////////////////////
-      double angle = ((event.position.dy - downOffset) % widget.iconSize)/widget.iconSize;
+      double angle = ((event.position.dy - downOffset) % widget.iconSize) / widget.iconSize;
       lodingStreamController.sink.add(angle);
       ////////////loading跟随手指偏移///////////////
       if (refreshHeight - moveOffset >= 0) {
