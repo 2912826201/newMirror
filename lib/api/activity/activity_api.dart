@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
+import 'package:mirror/data/model/activity/activity_evaluate_model.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -44,6 +45,9 @@ const String PUBLISHEVALUATE = "/appuser/web/activity/publishEvaluate";
 
 // 活动签到
 const String SIGNINACTIVITY = "/appuser/web/activity/signIn";
+
+// 获取评价列表
+const String GETEVALUATELIST = "/appuser/web/activity/getEvaluateList";
 
 //创建活动
 Future<ActivityModel> createActivity({
@@ -312,6 +316,8 @@ Future<List> publishEvaluate(int activityId, double score, String content) async
     return [responseModel.data["AVGScore"] ?? -1.0, "", responseModel.message];
   } else if (responseModel.code == 305) {
     return [-1.0, responseModel.message];
+  } else if (responseModel.code == 430) {
+    return [-1.0, responseModel.message];
   } else {
     return [-1.0, "发布失败"];
   }
@@ -329,4 +335,24 @@ Future<bool> signInActivity(int activityId, String longitude, String latitude) a
   } else {
     return false;
   }
+}
+
+//获取评价列表
+Future<List<ActivityEvaluateModel>> getEvaluateList(int activityId, {int size = 2, int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETEVALUATELIST, params);
+  List<ActivityEvaluateModel> list = [];
+  if (responseModel.isSuccess && responseModel.data != null && responseModel.data["list"] != null) {
+    // try {
+    responseModel.data["list"].forEach((value) {
+      list.add(ActivityEvaluateModel.fromJson(value));
+    });
+    // } catch (e) {}
+  }
+  return list;
 }

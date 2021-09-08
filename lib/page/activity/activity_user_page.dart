@@ -169,7 +169,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   }
 
   Widget item(UserModel model, int index, Function() onTap) {
-    if (widget.type != 0 && model.uid == Application.profile.uid) {
+    if (widget.type == 1 && model.uid == Application.profile.uid) {
       return Opacity(
         opacity: 0.3,
         child: _getItem(model, index),

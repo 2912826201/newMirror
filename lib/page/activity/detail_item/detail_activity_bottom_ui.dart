@@ -1,3 +1,5 @@
+import 'package:amap_location_muka/amap_location_muka.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/activity/activity_api.dart';
@@ -14,6 +16,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class DetailActivityBottomUi extends StatefulWidget {
@@ -377,6 +380,10 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
 
   //签到
   _signInClickListener() async {
+    bool isPermissions = await locationPermissions();
+    if (!isPermissions) {
+      return;
+    }
     ActivityModel model = await getActivityDetailApi(widget.activityModel.id);
     if (!widget.isHaveMe) {
       ToastShow.show(msg: "不是这个活动的成员不能签到", context: context);
@@ -385,9 +392,8 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     } else if (model.isSignIn) {
       ToastShow.show(msg: "已经签过到了", context: context);
     } else {
-      locationPermissions();
       bool isSignInActivity = await signInActivity(
-          widget.activityModel.id, currentAddressInfo.longitude, currentAddressInfo.latitude);
+          widget.activityModel.id, currentAddressInfo.longitude.toString(), currentAddressInfo.latitude.toString());
       if (isSignInActivity) {
         ToastShow.show(msg: "签到成功", context: context);
       } else {
@@ -400,21 +406,24 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   }
 
   // 获取定位权限
-  locationPermissions() async {
+  Future<bool> locationPermissions() async {
     // 获取定位权限
     PermissionStatus permissions = await Permission.locationWhenInUse.status;
     print("下次寻问permissions：：：：$permissions");
     // 已经获取了定位权限
     if (permissions.isGranted) {
       currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      return true;
     } else {
       // 请求定位权限
       permissions = await Permission.locationWhenInUse.request();
       print("permissions::::$permissions");
       if (permissions.isGranted) {
         currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+        return true;
       } else {
         _locationFailPopUps();
+        return false;
       }
     }
   }

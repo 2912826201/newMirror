@@ -239,7 +239,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
         //评价
         Container(
           key: inputEvaluateBoxKey,
-          child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode),
+          child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode, () {
+            _initData();
+          }),
         ),
 
         //讨论区
