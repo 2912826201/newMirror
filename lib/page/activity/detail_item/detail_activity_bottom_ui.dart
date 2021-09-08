@@ -21,11 +21,10 @@ import 'package:provider/provider.dart';
 
 class DetailActivityBottomUi extends StatefulWidget {
   final ActivityModel activityModel;
-  final bool isHaveMe;
   final bool isInvite;
   final Function() onRestDataListener;
 
-  DetailActivityBottomUi(this.activityModel, this.isHaveMe, this.isInvite, this.onRestDataListener);
+  DetailActivityBottomUi(this.activityModel, this.isInvite, this.onRestDataListener);
 
   @override
   _DetailActivityBottomUiState createState() => _DetailActivityBottomUiState();
@@ -37,13 +36,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   Location currentAddressInfo; //当前位置的信息
   @override
   Widget build(BuildContext context) {
-    if (widget.activityModel.isSignIn == null) {
-      widget.activityModel.isSignIn = false;
-    }
-    if (widget.activityModel.isCanSignIn == null) {
-      widget.activityModel.isCanSignIn = false;
-    }
-    if (widget.isHaveMe) {
+    if (widget.activityModel.isJoin) {
       if (!widget.activityModel.isCanSignIn) {
         return _postFeedUi();
       } else if (widget.activityModel.isSignIn) {
@@ -385,7 +378,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       return;
     }
     ActivityModel model = await getActivityDetailApi(widget.activityModel.id);
-    if (!widget.isHaveMe) {
+    if (!widget.activityModel.isJoin) {
       ToastShow.show(msg: "不是这个活动的成员不能签到", context: context);
     } else if (!model.isCanSignIn) {
       ToastShow.show(msg: "已经过了签到时间", context: context);

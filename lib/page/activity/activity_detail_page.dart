@@ -311,14 +311,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getBottomBtn() {
-    bool isHaveMe = false;
-    for (var model in activityModel.members) {
-      if (model.uid == Application.profile.uid) {
-        isHaveMe = true;
-        break;
-      }
-    }
-    return DetailActivityBottomUi(activityModel, isHaveMe, isInvite, () {
+    return DetailActivityBottomUi(activityModel, isInvite, () {
       _initData();
     });
   }
