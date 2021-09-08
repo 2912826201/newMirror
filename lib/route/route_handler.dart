@@ -656,7 +656,7 @@ var handlerActivityDetailPage = Handler(handlerFunc: (BuildContext context, Map<
   if (data['activityModel'] != null) {
     activityModel = ActivityModel.fromJson(data['activityModel']);
   }
-  return ActivityDetailPage(activityId: data["activityId"], activityModel: activityModel);
+  return ActivityDetailPage(activityId: data["activityId"], isInvite: data["isInvite"], activityModel: activityModel);
 });
 
 //活动动态界面

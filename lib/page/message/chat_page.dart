@@ -2648,12 +2648,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       ToastShow.show(msg: "活动id错误", context: context);
       return;
     }
-
-    bool isJoinByInvitationActivity = await ActivityUtil.init().joinByInvitationActivity(context, activityId);
-    if (isJoinByInvitationActivity) {
-      Navigator.of(context).pop();
-      AppRouter.navigateActivityDetailPage(context, activityId);
-    }
+    Navigator.of(context).pop();
+    AppRouter.navigateActivityDetailPage(context, activityId, isInvite: true);
   }
 
   //获取消息是否免打扰和置顶

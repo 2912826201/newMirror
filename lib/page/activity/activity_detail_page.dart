@@ -31,18 +31,21 @@ import 'detail_item/detail_start_time_ui.dart';
 
 class ActivityDetailPage extends StatefulWidget {
   final int activityId;
+  final bool isInvite;
   final ActivityModel activityModel;
 
-  ActivityDetailPage({@required this.activityId, this.activityModel});
+  ActivityDetailPage({@required this.activityId, this.isInvite = false, this.activityModel});
 
   @override
-  _ActivityDetailPageState createState() => _ActivityDetailPageState(activityModel: activityModel);
+  _ActivityDetailPageState createState() =>
+      _ActivityDetailPageState(activityModel: activityModel, isInvite: isInvite ?? false);
 }
 
 class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   ActivityModel activityModel;
+  bool isInvite;
 
-  _ActivityDetailPageState({this.activityModel});
+  _ActivityDetailPageState({this.activityModel, this.isInvite});
 
   LoadingStatus loadingStatus;
 
@@ -312,7 +315,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
         break;
       }
     }
-    return DetailActivityBottomUi(activityModel, isHaveMe, () {
+    return DetailActivityBottomUi(activityModel, isHaveMe, isInvite, () {
       _initData();
     });
   }

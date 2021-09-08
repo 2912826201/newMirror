@@ -204,7 +204,7 @@ class _CreateActivityPageState extends StateKeyboard {
             _getJoinNumberChangeUi(),
             _getSizedBox(height: 8),
 
-            //参见活动的权限
+            //参加活动的权限
             _getTitleWidget("参加权限"),
             StreamBuilder(
               initialData: selectedPermissionsKey,
@@ -236,7 +236,7 @@ class _CreateActivityPageState extends StateKeyboard {
               },
             ),
 
-            //参见活动的器材
+            //参加活动的器材
             _getTitleWidget("器材"),
             StreamBuilder(
               initialData: equipmentKey,
@@ -1202,7 +1202,7 @@ class _CreateActivityPageState extends StateKeyboard {
       isCreateActivity = false;
       ToastShow.show(msg: "创建成功", context: context);
       Navigator.of(context).pop();
-      AppRouter.navigateActivityDetailPage(context, model.id, model);
+      AppRouter.navigateActivityDetailPage(context, model.id, activityModel: model);
     } else {
       isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);

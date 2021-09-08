@@ -12,6 +12,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -46,6 +47,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   final PinYinTextEditController _inputController = PinYinTextEditController();
   final PinYinTextEditController _reasonController = PinYinTextEditController();
   final FocusNode _focusNode = FocusNode();
+
+  ActivityModel activityModel;
 
   //选中的用户
   List<int> selectUserList = [];
@@ -511,18 +514,40 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         uids += buddyModelList[selectUserList[i]].uid.toString() + ",";
       }
     }
-    bool isInviteActivity = await inviteActivity(widget.activityId, uids);
-    if (isInviteActivity) {
-      isInviteActivityLoading = false;
-      ToastShow.show(msg: "发送邀请成功", context: context);
-      Navigator.of(context).pop();
-    } else {
-      ToastShow.show(msg: "发送邀请失败", context: context);
-      isInviteActivityLoading = false;
+    List<String> dataList = await inviteActivity(widget.activityId, uids);
+
+    dataList.forEach((element) {
+      for (var index in selectUserList) {
+        if (buddyModelList[index].uid.toString() == element) {
+          selectUserList.remove(index);
+          break;
+        }
+      }
+      postMessageManagerActivityInvite(element, activityModel, true);
+    });
+
+    if (selectUserList.length > 0) {
+      String names = "";
+      for (int i = 0; i < selectUserList.length; i++) {
+        if (i == selectUserList.length - 1) {
+          names += buddyModelList[selectUserList[i]].nickName;
+        } else {
+          names += buddyModelList[selectUserList[i]].nickName + ",";
+        }
+      }
+      ToastShow.show(msg: "对 $names 邀请失败", context: context);
     }
+
+    Navigator.of(context).pop();
+    isInviteActivityLoading = false;
   }
 
   initData() async {
+    activityModel = await getActivityDetailApi(widget.activityId);
+    if (activityModel == null) {
+      _refreshController.refreshCompleted();
+      setState(() {});
+    }
     if (widget.type == 0) {
       //查看活动成员
       userList.clear();

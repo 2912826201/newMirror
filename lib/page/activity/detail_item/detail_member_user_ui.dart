@@ -36,6 +36,7 @@ class DetailMemberUserUi extends StatefulWidget {
 
   @override
   _DetailMemberUserUiState createState() {
+    print("userList:${userList.length}");
     List<UserModel> list = [];
     if (userList.length > 4) {
       list = userList.sublist(0, 4);
@@ -61,6 +62,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
 
   @override
   Widget build(BuildContext context) {
+    print("userList111:${userList.length}");
     return Container(
       width: ScreenUtil.instance.width,
       child: Column(
@@ -205,7 +207,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _addItem() {
-    return widget.status != 3 && isMaster()
+    return widget.status != 3 && widget.status != 1 && isMaster()
         ? Container(
             width: 47,
             height: 100.0 - 12.0 - 16.0,

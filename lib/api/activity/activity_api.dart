@@ -172,15 +172,17 @@ Future<bool> deleteActivity(int activityId) async {
 }
 
 //申请加入活动
-Future<bool> applyJoinActivity(int activityId, String message) async {
+Future<List> applyJoinActivity(int activityId, String message) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
   params["message"] = message;
   BaseResponseModel responseModel = await requestApi(APPLYJOIN, params);
   if (responseModel.isSuccess && responseModel.data != null) {
-    return responseModel.data["state"] ?? false;
+    return [responseModel.data["state"] ?? false, responseModel.message];
+  } else if (responseModel.code == 430) {
+    return [false, responseModel.message];
   } else {
-    return false;
+    return [false, "申请失败"];
   }
 }
 
@@ -261,28 +263,38 @@ Future<bool> auditApply(int id) async {
 }
 
 //邀请加入活动
-Future<bool> inviteActivity(int activityId, String uids) async {
+Future<List<String>> inviteActivity(int activityId, String uids) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
   params["uids"] = uids;
   BaseResponseModel responseModel = await requestApi(INVITEACTIVITY, params);
-  if (responseModel.isSuccess && responseModel.data != null) {
-    return true;
+  if (responseModel.isSuccess && responseModel.data != null && responseModel.data["list"] != null) {
+    List<String> data = [];
+    try {
+      responseModel.data["list"].forEach((value) {
+        data.add(value.toString());
+      });
+    } catch (e) {}
+    return data;
   } else {
-    return false;
+    return [];
   }
 }
 
 //通过邀请链接加入活动
-Future<bool> joinByInvitation(int activityId, int uid) async {
+Future<List> joinByInvitation(int activityId, int uid) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
   params["inviterId"] = uid;
   BaseResponseModel responseModel = await requestApi(JOINBYINVITATION, params);
   if (responseModel.isSuccess && responseModel.data != null) {
-    return responseModel.data["state"] ?? false;
+    return [responseModel.data["state"] ?? false, responseModel.message];
+  } else if (responseModel.code == 430) {
+    return [false, responseModel.message];
+  } else if (responseModel.code == 305) {
+    return [false, responseModel.message];
   } else {
-    return false;
+    return [false, "参加失败"];
   }
 }
 

@@ -14,27 +14,19 @@ class ActivityUtil {
     return _util;
   }
 
-  Future<bool> joinByInvitationActivity(BuildContext context, int activityId) async {
+  Future<List> joinByInvitationActivity(BuildContext context, int activityId) async {
     ActivityModel model = await getActivityDetailApi(activityId);
     if (model == null) {
-      ToastShow.show(msg: "活动已经失效了", context: context);
-      return false;
+      return [false, "活动已经失效了"];
     }
     if (model.status == 3) {
-      ToastShow.show(msg: "活动已经结束了", context: context);
-      return false;
+      return [false, "活动已经结束了"];
     }
     if (model.status == 1) {
-      ToastShow.show(msg: "活动已经招募满了", context: context);
-      return false;
+      return [false, "活动已经招募满了"];
     }
-    bool isJoinByInvitation = await joinByInvitation(activityId, Application.profile.uid);
+    List list = await joinByInvitation(activityId, Application.profile.uid);
 
-    if (isJoinByInvitation) {
-      return true;
-    } else {
-      ToastShow.show(msg: "参加失败", context: context);
-      return false;
-    }
+    return list;
   }
 }

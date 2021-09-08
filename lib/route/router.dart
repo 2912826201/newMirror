@@ -1051,9 +1051,11 @@ class AppRouter {
   }
 
   //去活动详情界面
-  static void navigateActivityDetailPage(BuildContext context, int activityId, [ActivityModel activityModel]) {
+  static void navigateActivityDetailPage(BuildContext context, int activityId,
+      {ActivityModel activityModel, bool isInvite = false}) {
     Map<String, dynamic> map = Map();
     map['activityId'] = activityId;
+    map['isInvite'] = isInvite;
     if (activityModel != null) {
       map['activityModel'] = activityModel.toJson();
     }

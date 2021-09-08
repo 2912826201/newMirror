@@ -6,7 +6,9 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/auth_data.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/activity/util/activity_util.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -17,9 +19,10 @@ import 'package:provider/provider.dart';
 class DetailActivityBottomUi extends StatefulWidget {
   final ActivityModel activityModel;
   final bool isHaveMe;
+  final bool isInvite;
   final Function() onRestDataListener;
 
-  DetailActivityBottomUi(this.activityModel, this.isHaveMe, this.onRestDataListener);
+  DetailActivityBottomUi(this.activityModel, this.isHaveMe, this.isInvite, this.onRestDataListener);
 
   @override
   _DetailActivityBottomUiState createState() => _DetailActivityBottomUiState();
@@ -147,7 +150,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
                 borderRadius: BorderRadius.circular(4),
               ),
               alignment: Alignment.centerLeft,
-              child: Text("参见活动", style: AppStyle.textRegular15),
+              child: Text("参加活动", style: AppStyle.textRegular15),
             ),
             onTap: () {
               judgeApplyJoin();
@@ -159,14 +162,23 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   }
 
   judgeApplyJoin() {
+    print("widget.isInvite:${widget.isInvite}");
     if (!isAgree) {
       ToastShow.show(msg: "请先阅读互动说明", context: context);
     } else if (widget.activityModel.status == 1) {
       ToastShow.show(msg: "活动人数已经筹集满了", context: context);
     } else if (AuthData.init().getString(widget.activityModel.auth) == "所有人") {
-      _applyJoinActivity("");
+      if (widget.isInvite) {
+        _joinByInvitationActivity();
+      } else {
+        _applyJoinActivity("");
+      }
     } else if (AuthData.init().getString(widget.activityModel.auth) == "受到邀请的人") {
-      ToastShow.show(msg: "活动只允许收到邀请的人加入", context: context);
+      if (widget.isInvite) {
+        _joinByInvitationActivity();
+      } else {
+        ToastShow.show(msg: "活动只允许收到邀请的人加入", context: context);
+      }
     } else {
       _showApplyJoinActivityDialog();
     }
@@ -233,13 +245,28 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     }
     isShowApplyJoinActivityDialog = true;
 
-    bool isSuccess = await applyJoinActivity(widget.activityModel.id, message);
+    List list = await applyJoinActivity(widget.activityModel.id, message);
 
-    ToastShow.show(msg: isSuccess ? "申请成功" : "申请失败", context: context);
     isShowApplyJoinActivityDialog = false;
 
-    if (isSuccess && widget.onRestDataListener != null) {
+    if (list[0] && widget.onRestDataListener != null) {
       widget.onRestDataListener();
+      ToastShow.show(msg: "申请成功", context: context);
+    } else {
+      ToastShow.show(msg: list[1], context: context);
+    }
+  }
+
+  //参加邀请的活动
+  _joinByInvitationActivity() async {
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
+    List list = await ActivityUtil.init().joinByInvitationActivity(context, widget.activityModel.id);
+    if (list[0] && widget.onRestDataListener != null) {
+      widget.onRestDataListener();
+    } else {
+      ToastShow.show(msg: list[1], context: context);
     }
   }
 }

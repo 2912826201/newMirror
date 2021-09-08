@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/message/chat_system_message_model.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 
@@ -200,6 +201,20 @@ void _jumpChatPage(
 }
 
 //todo 目前没有自定义的所以差不多都是使用的是TextMessage 等有了自定义再改
+
+//活动的邀请链接--活动是动词  不是促销活动
+Future<Message> postMessageManagerActivityInvite(String targetId, ActivityModel activityModel, bool isPrivate) async {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo(groupId: isPrivate ? null : targetId);
+  Map<String, dynamic> liveCourseMap = Map();
+  liveCourseMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  liveCourseMap["toUserId"] = targetId;
+  liveCourseMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE;
+  liveCourseMap["name"] = ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE_NAME;
+  liveCourseMap["data"] = jsonEncode(activityModel.toJson());
+  msg.content = jsonEncode(liveCourseMap);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
+}
 
 //发送文本消息
 Future<Message> postMessageManagerText(

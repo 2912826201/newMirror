@@ -805,7 +805,7 @@ class _ActivityListItem extends State<ActivityListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        AppRouter.navigateActivityDetailPage(context, widget.activityModel.id, widget.activityModel);
+        AppRouter.navigateActivityDetailPage(context, widget.activityModel.id, activityModel: widget.activityModel);
       },
       child: Card(
         clipBehavior: Clip.hardEdge,
