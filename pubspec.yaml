@@ -189,6 +189,8 @@ dependencies:
   menu_button: ^1.4.2+1
   # 微光
   shimmer: ^2.0.0
+  # 评分
+  flutter_rating_bar: ^4.0.0
   # 自定义动效系列
   cube_transition: ^1.0.2
   like_button: ^2.0.2

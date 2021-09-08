@@ -5,6 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mirror/api/training/course_api.dart';
 import 'package:mirror/api/version_api.dart';
@@ -663,6 +664,34 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     print("是不是华为手机:${await CheckPhoneSystemUtil.init().isEmui()}");
                   },
                   child: Text("判断手机厂商")),
+              RatingBar.builder(
+                /// 定义要设置到评级栏的初始评级
+                initialRating: 3,
+                /// 设置最低评级默认为 0。
+                minRating: 1,
+                direction: Axis.horizontal,
+                /// 默认为 false。 设置 true 启用半评级支持。
+                allowHalfRating: true,
+                // 如果设置为 true，将禁用评分栏上的任何手势。默认为false。
+                ignoreGestures: false,
+                /// 如果设置为 true，则评级栏项目在被触摸时会发光。默认为true。
+                glow: false,
+                // 设置大小
+                itemSize: 24,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                itemBuilder: (context, index) {
+                  return Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  );
+                },
+                // 每当评级更新时返回当前评级。
+                onRatingUpdate: (rating) {
+                  print(rating);
+                },
+              ),
+
               RaisedButton(
                   onPressed: () async {
                     print("是否同意用户协议::${AppPrefs.isAgreeUserAgreement()}");
@@ -720,12 +749,11 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   onPressed: () {
                     openUserNumberPickerBottomSheet(
                         context: context,
-                        start:17,
+                        start: 17,
                         end: 39,
-                        onChoseCallBack: (number){
+                        onChoseCallBack: (number) {
                           print('---------------------返回的人数-$number');
-                        }
-                    );
+                        });
                   },
                   child: Text("人数选择弹窗测试")),
             ],
@@ -774,8 +802,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   initDateTime: choseDateTime,
                   onTapChoseCallBack: (dateTime) {
                     choseDateTime = dateTime;
-                    setState(() {
-                    });
+                    setState(() {});
                   },
                 ),
                 width: ScreenUtil.instance.width,
