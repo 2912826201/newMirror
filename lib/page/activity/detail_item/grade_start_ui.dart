@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mirror/constant/color.dart';
 
 class GradeStart extends StatelessWidget {
@@ -17,7 +18,40 @@ class GradeStart extends StatelessWidget {
       child: UnconstrainedBox(
         alignment: Alignment.center,
         child: Container(
-          child: Row(children: _getGradeStar(score, total)),
+          // child: Row(children: _getGradeStar(score, total)),
+          child: RatingBar.builder(
+            /// 定义要设置到评级栏的初始评级
+            initialRating: score,
+
+            /// 设置最低评级默认为 0。
+            minRating: 0,
+            direction: Axis.horizontal,
+
+            /// 默认为 false。 设置 true 启用半评级支持。
+            allowHalfRating: true,
+            // 如果设置为 true，将禁用评分栏上的任何手势。默认为false。
+            ignoreGestures: !isCanClick,
+
+            /// 如果设置为 true，则评级栏项目在被触摸时会发光。默认为true。
+            glow: isCanClick,
+            // 设置大小
+            itemSize: size,
+            itemCount: total,
+            itemPadding: EdgeInsets.symmetric(horizontal: intervalWidth / 2),
+            unratedColor: AppColor.textWhite60,
+            itemBuilder: (context, index) {
+              return Icon(
+                Icons.star,
+                color: AppColor.mainYellow,
+              );
+            },
+            // 每当评级更新时返回当前评级。
+            onRatingUpdate: (rating) {
+              if (isCanClick && listener != null) {
+                listener(rating);
+              }
+            },
+          ),
         ),
       ),
     );

@@ -156,7 +156,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   FixedExtentScrollController _yearScrollCtrl, _monthScrollCtrl, _dayScrollCtrl;
 
   Map<String, FixedExtentScrollController> _scrollCtrlMap;
-  Map<String, List<int>> _valueRangeMap;
+  Map<String, List<int>> _valueRangeMap = {};
   DateTime minDateTime, maxDateTime, initialDateTime;
   bool _isChangeDateRange = false;
 
@@ -192,16 +192,16 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
     _dayScrollCtrl = FixedExtentScrollController(initialItem: _currDay - _dayRange.first);
 
     _scrollCtrlMap = {'y': _yearScrollCtrl, 'M': _monthScrollCtrl, 'd': _dayScrollCtrl};
-    _valueRangeMap = {'y': _yearRange, 'M': _monthRange, 'd': _dayRange};
+    _valueRangeMap["y"] = this._yearRange;/* = {'y': _yearRange, 'M': _monthRange, 'd': _dayRange};*/
+    _valueRangeMap["M"] = this._monthRange;
+    _valueRangeMap["d"] = this._dayRange;
   }
 
   @override
   void initState() {
     // TODO: implement initState
+    _initDateResources();
     super.initState();
-    Future.delayed(Duration.zero, () {
-      _initDateResources();
-    });
   }
 
   @override
