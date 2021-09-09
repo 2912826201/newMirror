@@ -5,7 +5,9 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_evaluate_model.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/page/activity/detail_item/evaluate_list_dialog.dart';
 import 'package:mirror/page/activity/detail_item/evaluate_list_ui.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
@@ -36,6 +38,7 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
 
   List<ActivityEvaluateModel> evaluateList = [];
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
+  GlobalKey<EvaluateListUiState> childKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +102,12 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
           //   ),
           // ),
           Container(
-            child: EvaluateListUi(widget.activityModel, evaluateList),
+            child: EvaluateListUi(
+              childKey,
+              widget.activityModel,
+              evaluateList,
+              isFold: true,
+            ),
           ),
           Container(
             height: 26.0,
@@ -121,7 +129,9 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
                       ],
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    _openActivityEvaluateBottomSheet();
+                  },
                 ),
               ],
             ),
@@ -197,46 +207,6 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
     );
   }
 
-  //活动评价的item
-  Widget _getCommonUi(ActivityEvaluateModel model, int index, int length) {
-    return Container(
-      height: 82.0,
-      margin: EdgeInsets.only(bottom: index + 1 == length ? 0 : 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          UserAvatarImageUtil.init().getUserImageWidget(model.userInfo.avatarUri, model.userInfo.uid.toString(), 42),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 6),
-                Container(
-                  height: 28,
-                  width: double.infinity,
-                  child: Row(
-                    children: [
-                      Text(model.userInfo.nickName ?? "", style: AppStyle.whiteMedium15),
-                      SizedBox(width: 17),
-                      GradeStart(model.score, 5, isCanClick: false, size: 18, intervalWidth: 4),
-                    ],
-                  ),
-                ),
-                Text(model.content ?? "", style: AppStyle.text1Regular14, maxLines: 1, overflow: TextOverflow.ellipsis),
-                SizedBox(width: 6),
-                Text(DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(model.createTime)),
-                    style: AppStyle.text2Regular12),
-                SizedBox(width: 6),
-              ],
-            ),
-          ),
-          SizedBox(width: 15),
-        ],
-      ),
-    );
-  }
-
   _publishEvaluate() async {
     if (controller.text == null || controller.text.length < 1) {
       ToastShow.show(msg: "发布的内容为空", context: context);
@@ -260,9 +230,18 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   //获取评价
   _getEvaluateList() async {
     loadingStatus = LoadingStatus.STATUS_LOADING;
-    evaluateList.addAll(await getEvaluateList(widget.activityModel.id, size: 2));
-    print("evaluateList.length:${evaluateList.length}");
+    DataResponseModel dataResponseModel = await getEvaluateList(widget.activityModel.id, size: 2);
+    if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+      evaluateList.clear();
+      dataResponseModel.list.forEach((element) {
+        evaluateList.add(ActivityEvaluateModel.fromJson(element));
+      });
+    }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     setState(() {});
+  }
+
+  _openActivityEvaluateBottomSheet() {
+    openActivityEvaluateBottomSheet(context: context, activityModel: widget.activityModel);
   }
 }

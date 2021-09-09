@@ -338,7 +338,7 @@ Future<bool> signInActivity(int activityId, String longitude, String latitude) a
 }
 
 //获取评价列表
-Future<List<ActivityEvaluateModel>> getEvaluateList(int activityId, {int size = 2, int lastTime}) async {
+Future<DataResponseModel> getEvaluateList(int activityId, {int size = 2, int lastTime}) async {
   Map<String, dynamic> params = {};
   params["activityId"] = activityId;
   params["size"] = size;
@@ -346,13 +346,13 @@ Future<List<ActivityEvaluateModel>> getEvaluateList(int activityId, {int size = 
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(GETEVALUATELIST, params);
-  List<ActivityEvaluateModel> list = [];
-  if (responseModel.isSuccess && responseModel.data != null && responseModel.data["list"] != null) {
-    // try {
-    responseModel.data["list"].forEach((value) {
-      list.add(ActivityEvaluateModel.fromJson(value));
-    });
-    // } catch (e) {}
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
   }
-  return list;
 }

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -16,6 +17,7 @@ import 'package:mirror/data/model/activity/activity_evaluate_model.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/comment_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -38,20 +40,25 @@ import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart'
 import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'grade_start_ui.dart';
 
 class EvaluateListUi extends StatefulWidget {
   final ActivityModel activityModel;
   final List<ActivityEvaluateModel> evaluateList;
+  final RefreshController refreshController;
 
-  EvaluateListUi(this.activityModel, this.evaluateList);
+  final bool isFold;
+
+  EvaluateListUi(Key key, this.activityModel, this.evaluateList, {this.refreshController, this.isFold = false})
+      : super(key: key);
 
   @override
-  _EvaluateListUiState createState() => _EvaluateListUiState();
+  EvaluateListUiState createState() => EvaluateListUiState();
 }
 
-class _EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStateMixin {
+class EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStateMixin {
   //用户评论的的一些动画参数
   var commentListSubSettingList = <CommentListSubSetting>[];
 
@@ -74,6 +81,8 @@ class _EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStat
   //发布评论时的targetType
   int targetType;
 
+  int evaluateLastTime;
+
   @override
   void initState() {
     super.initState();
@@ -81,8 +90,9 @@ class _EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    print("1111:${widget.evaluateList.length}");
     if (commentListSubSettingList.length != widget.evaluateList.length) {
-      setCommentListSubSetting();
+      setCommentListSubSetting(isFold: widget.isFold);
     }
     var widgetArray = <Widget>[];
     widgetArray.addAll(_getCommentItemUi());
@@ -121,9 +131,6 @@ class _EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStat
       child: Column(
         children: [
           _getCommonUi(value, index, widget.evaluateList.length),
-          SizedBox(
-            height: 13,
-          ),
           getSubItemAll(value, index),
         ],
       ),
@@ -700,6 +707,36 @@ class _EvaluateListUiState extends State<EvaluateListUi> with TickerProviderStat
         print("加载子评论结束了");
       });
     }
+  }
+
+  onRefresh() async {
+    DataResponseModel dataResponseModel = await getEvaluateList(widget.activityModel.id, size: 20);
+    if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+      widget.evaluateList.clear();
+      dataResponseModel.list.forEach((element) {
+        widget.evaluateList.add(ActivityEvaluateModel.fromJson(element));
+      });
+      evaluateLastTime = dataResponseModel.lastTime;
+    }
+    print("evaluateList:${widget.evaluateList.length}");
+    if (widget.refreshController != null) {
+      widget.refreshController.refreshCompleted();
+    }
+    setState(() {});
+  }
+
+  onLoading() async {
+    DataResponseModel dataResponseModel =
+        await getEvaluateList(widget.activityModel.id, size: 20, lastTime: evaluateLastTime);
+    if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+      dataResponseModel.list.forEach((element) {
+        widget.evaluateList.add(ActivityEvaluateModel.fromJson(element));
+      });
+    }
+    if (widget.refreshController != null) {
+      widget.refreshController.loadComplete();
+    }
+    setState(() {});
   }
 
   bool isOfflineBool = false;
