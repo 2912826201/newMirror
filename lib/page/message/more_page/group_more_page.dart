@@ -25,9 +25,9 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -64,7 +64,6 @@ class GroupMorePageState extends State<GroupMorePage> {
   String groupMeName = "还未取名";
   GroupChatModel groupChatModel;
   String groupName;
-  DialogLoadingController _dialogLoadingController;
 
   LoadStatus loadStatus = LoadStatus.loading;
 
@@ -482,6 +481,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //退出按钮
   void exitGroupChatPr() async {
+    Loading.showLoading(context);
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
     if (model != null && model["state"] != null && model["state"]) {
       if (widget.exitGroupListener != null) {
@@ -496,18 +496,20 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       ToastShow.show(msg: "退出失败", context: context);
     }
+    Loading.hideLoading(context);
   }
 
   //设置消息是否置顶
   void setTopChatApi() async {
+    Loading.showLoading(context);
     topChat = !topChat;
     Map<String, dynamic> map =
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
       int index = TopChatModel.containsIndex(MessageManager.topChatModelList, topChatModel);
-      if(topChat){
-        if(index<0){
+      if (topChat) {
+        if (index < 0) {
           MessageManager.topChatModelList.add(topChatModel);
           if (null != widget.dto) {
             widget.dto.isTop = 1;
@@ -531,6 +533,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     //   print("MessageManager.topChatModelList:${element.toJson().toString()}");
     // });
 
+    Loading.hideLoading(context);
     if (mounted) {
       setState(() {});
     }
@@ -538,6 +541,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //设置消息免打扰
   void setConversationNotificationStatus() async {
+    Loading.showLoading(context);
     disturbTheNews = !disturbTheNews;
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
@@ -545,11 +549,11 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE, targetId: int.parse(widget.chatGroupId));
       int index = NoPromptUidModel.containsIndex(MessageManager.queryNoPromptUidList, model);
-      if(disturbTheNews){
+      if (disturbTheNews) {
         if (index < 0) {
           MessageManager.queryNoPromptUidList.add(model);
         }
-      }else{
+      } else {
         if (index >= 0) {
           MessageManager.queryNoPromptUidList.remove(index);
         }
@@ -557,6 +561,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       disturbTheNews = !disturbTheNews;
     }
+    Loading.hideLoading(context);
     if (mounted) {
       setState(() {});
     }
@@ -663,28 +668,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-  showProgressDialog({
-    Widget progress,
-    Color bgColor,
-  }) {
-    if (_dialogLoadingController == null) {
-      _dialogLoadingController = DialogLoadingController();
-      Navigator.of(context).push(PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (ctx, animation, secondAnimation) {
-            return LoadingProgress(
-              controller: _dialogLoadingController,
-              progress: progress,
-              bgColor: bgColor,
-            );
-          }));
-    }
-  }
-
-  dismissProgressDialog() {
-    _dialogLoadingController?.dismissDialog();
-    _dialogLoadingController = null;
-  }
 
   //是否继续
   Future<bool> isContinue() async {

@@ -16,7 +16,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/loading_progress.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 ///私人聊天-更多界面--管家-系统消息
@@ -42,7 +42,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   bool topChat = false;
   int topChatIndex = -1;
   bool isBlackList = false;
-  DialogLoadingController _dialogLoadingController;
 
   @override
   void initState() {
@@ -163,6 +162,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   //设置消息是否置顶
   void setTopChatApi() async {
+    Loading.showLoading(context);
     topChat = !topChat;
     Map<String, dynamic> map =
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatUserId), type: 0);
@@ -170,7 +170,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
       if (topChat) {
-        if(topChatIndex<0) {
+        if (topChatIndex < 0) {
           MessageManager.topChatModelList.add(topChatModel);
           topChatIndex = MessageManager.topChatModelList.length - 1;
         }
@@ -191,6 +191,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     } else {
       topChat = !topChat;
     }
+    Loading.hideLoading(context);
     if (mounted) {
       setState(() {});
     }
@@ -198,6 +199,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   //设置消息免打扰
   void setConversationNotificationStatus() async {
+    Loading.showLoading(context);
     disturbTheNews = !disturbTheNews;
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
@@ -218,6 +220,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     } else {
       disturbTheNews = !disturbTheNews;
     }
+    Loading.hideLoading(context);
     if (mounted) {
       setState(() {});
     }
@@ -285,11 +288,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   //拉黑了这个人
   void addToBlackList() async {
-    showProgressDialog();
+    Loading.showLoading(context);
     Future.delayed(Duration(milliseconds: 300), () async {
       if (await isOffline()) {
         ToastShow.show(msg: "请检查网络!", context: context);
-        dismissProgressDialog();
+        Loading.hideLoading(context);
         return;
       }
       bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
@@ -301,7 +304,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
         if (mounted) {
           setState(() {
-            dismissProgressDialog();
+            Loading.hideLoading(context);
           });
         }
         try{
@@ -315,18 +318,18 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
       } else {
         ToastShow.show(msg: "拉黑失败", context: context);
-        dismissProgressDialog();
+        Loading.hideLoading(context);
       }
     });
   }
 
   //解除了拉黑
   void removeFromBlackList() async {
-    showProgressDialog();
+    Loading.showLoading(context);
     Future.delayed(Duration(milliseconds: 300), () async {
       if (await isOffline()) {
         ToastShow.show(msg: "请检查网络!", context: context);
-        dismissProgressDialog();
+        Loading.hideLoading(context);
         return;
       }
       bool blackStatus = await ProfileCancelBlack(int.parse(widget.chatUserId));
@@ -335,14 +338,14 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         ToastShow.show(msg: "已解除拉黑", context: context);
         if (mounted) {
           setState(() {
-            dismissProgressDialog();
+            Loading.hideLoading(context);
           });
         }
         context.read<UserInteractiveNotifier>().changeBlackStatus( int.parse(widget.chatUserId), false, needNotify:
         false);
       } else {
         ToastShow.show(msg: "解除拉黑失败", context: context);
-        dismissProgressDialog();
+        Loading.hideLoading(context);
       }
     });
   }
@@ -380,28 +383,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
   }
 
-  showProgressDialog({
-    Widget progress,
-    Color bgColor,
-  }) {
-    if (_dialogLoadingController == null) {
-      _dialogLoadingController = DialogLoadingController();
-      Navigator.of(context).push(PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (ctx, animation, secondAnimation) {
-            return LoadingProgress(
-              controller: _dialogLoadingController,
-              progress: progress,
-              bgColor: bgColor,
-            );
-          }));
-    }
-  }
 
-  dismissProgressDialog() {
-    _dialogLoadingController?.dismissDialog();
-    _dialogLoadingController = null;
-  }
 
   Future<bool> isOffline() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());

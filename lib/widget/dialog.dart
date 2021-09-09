@@ -231,7 +231,7 @@ class _AppDialog extends StatelessWidget {
                 confirm.text,
                 style: confirmColor != null
                     ? TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: confirmColor)
-                    : AppStyle.redRegular18,
+                    : AppStyle.yellowRegular18,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

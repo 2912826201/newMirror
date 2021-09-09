@@ -34,6 +34,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:mirror/widget/surrounding_information.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
@@ -83,8 +84,8 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动时间
   DateTime activityDateTime = DateTime.now();
-  DateTime startTime = DateTime.now();
-  DateTime endTime = DateTime.now().add(Duration(hours: 1));
+  DateTime startTime = DateTime.now().add(Duration(hours: 3));
+  DateTime endTime = DateTime.now().add(Duration(hours: 4));
   StreamController<DateTime> activityTimeStream = StreamController<DateTime>();
 
   //活动地址
@@ -1193,8 +1194,6 @@ class _CreateActivityPageState extends StateKeyboard {
     // TODO: implement startChangeKeyBoardHeight
   }
 
-  bool isCreateActivity = false;
-
   //创建活动
   _createActivity() async {
     if (ClickUtil.isFastClick()) {
@@ -1224,13 +1223,7 @@ class _CreateActivityPageState extends StateKeyboard {
       return;
     }
 
-    if (isCreateActivity) {
-      ToastShow.show(msg: "正在创建活动", context: context);
-      return;
-    }
-    isCreateActivity = true;
-
-    ToastShow.show(msg: "正在创建活动请稍等", context: context);
+    Loading.showLoading(context, infoText: "正在创建活动");
 
     ActivityModel model = await createActivity(
       title: StringUtil.textWrapMatch(activityTitleController.text),
@@ -1249,14 +1242,14 @@ class _CreateActivityPageState extends StateKeyboard {
       uids: _getRecommendUserString(),
     );
 
+    Loading.hideLoading(context);
+
     if (model != null) {
       print("model:${model.toJson().toString()}");
-      isCreateActivity = false;
       ToastShow.show(msg: "创建成功", context: context);
       Navigator.of(context).pop();
       AppRouter.navigateActivityDetailPage(context, model.id, activityModel: model);
     } else {
-      isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);
     }
   }
