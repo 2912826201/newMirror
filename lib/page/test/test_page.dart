@@ -638,9 +638,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               RaisedButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ActivityChangeAddressPage(onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
-                      print("provinceCity：$provinceCity, cityCod：$cityCode, longitude：$longitude, latitude：$latitude");
-                    },);
+                    return ActivityChangeAddressPage();
                   }));
                 },
                 child: Text("更改地点测试页"),
