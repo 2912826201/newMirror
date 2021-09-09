@@ -49,6 +49,9 @@ const String SIGNINACTIVITY = "/appuser/web/activity/signIn";
 // 获取评价列表
 const String GETEVALUATELIST = "/appuser/web/activity/getEvaluateList";
 
+// 获取评价列表
+const String UPDATEACTIVITY = "/appuser/web/activity/update";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -186,7 +189,7 @@ Future<List> applyJoinActivity(int activityId, String message) async {
   BaseResponseModel responseModel = await requestApi(APPLYJOIN, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["state"] ?? false, responseModel.message];
-  } else if (responseModel.code == 430) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [false, responseModel.message];
   } else {
     return [false, "申请失败"];
@@ -296,9 +299,7 @@ Future<List> joinByInvitation(int activityId, int uid) async {
   BaseResponseModel responseModel = await requestApi(JOINBYINVITATION, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["state"] ?? false, responseModel.message];
-  } else if (responseModel.code == 430) {
-    return [false, responseModel.message];
-  } else if (responseModel.code == 305) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [false, responseModel.message];
   } else {
     return [false, "参加失败"];
@@ -314,9 +315,7 @@ Future<List> publishEvaluate(int activityId, double score, String content) async
   BaseResponseModel responseModel = await requestApi(PUBLISHEVALUATE, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["AVGScore"] ?? -1.0, "", responseModel.message];
-  } else if (responseModel.code == 305) {
-    return [-1.0, responseModel.message];
-  } else if (responseModel.code == 430) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [-1.0, responseModel.message];
   } else {
     return [-1.0, "发布失败"];
@@ -354,5 +353,29 @@ Future<DataResponseModel> getEvaluateList(int activityId, {int size = 2, int las
     return dataResponseModel;
   } else {
     return null;
+  }
+}
+
+//修改活动
+Future<List> updateActivity(
+    int activityId, int count, String cityCode, String address, String longitude, String latitude) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["count"] = count;
+  params["cityCode"] = cityCode;
+  params["address"] = address;
+  params["longitude"] = longitude;
+  params["latitude"] = latitude;
+  BaseResponseModel responseModel = await requestApi(UPDATEACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    try {
+      return [true, "修改成功", ActivityModel.fromJson(responseModel.data)];
+    } catch (e) {
+      return [false, responseModel.message];
+    }
+  } else if (responseModel != null && responseModel.message != null) {
+    return [false, responseModel.message];
+  } else {
+    return [false, "修改失败"];
   }
 }
