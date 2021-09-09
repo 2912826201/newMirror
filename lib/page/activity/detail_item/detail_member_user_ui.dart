@@ -6,12 +6,14 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/page/message/util/chat_page_util.dart';
 import 'package:mirror/page/message/util/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -20,39 +22,21 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 
 class DetailMemberUserUi extends StatefulWidget {
-  final List<UserModel> userList;
-  final String groupChatId;
-  final int activityId;
-  final int masterId;
-  final int status;
+  final ActivityModel activityModel;
 
-  DetailMemberUserUi(
-    this.userList,
-    this.groupChatId,
-    this.activityId,
-    this.masterId,
-    this.status,
-  );
+  DetailMemberUserUi(this.activityModel);
 
   @override
   _DetailMemberUserUiState createState() {
-    print("userList:${userList.length}");
-    List<UserModel> list = [];
-    if (userList.length > 4) {
-      list = userList.sublist(0, 4);
-    } else {
-      list.addAll(userList);
-    }
-    return _DetailMemberUserUiState(list);
+    return _DetailMemberUserUiState();
   }
 }
 
 class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
-  List<UserModel> userList;
   List<UserModel> applyUserList = [];
   DataResponseModel dataResponseModel;
 
-  _DetailMemberUserUiState(this.userList);
+  _DetailMemberUserUiState();
 
   @override
   void initState() {
@@ -62,7 +46,6 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
 
   @override
   Widget build(BuildContext context) {
-    print("userList111:${userList.length}");
     return Container(
       width: ScreenUtil.instance.width,
       child: Column(
@@ -86,10 +69,10 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
           SizedBox(width: 8),
           Container(
             padding: EdgeInsets.only(top: 2),
-            child: Text("共${userList.length}人", style: AppStyle.whiteRegular14),
+            child: Text("共${widget.activityModel.count}人", style: AppStyle.whiteRegular14),
           ),
           Spacer(),
-          if (isHaveMe())
+          if (widget.activityModel.isJoin)
             GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
@@ -100,7 +83,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
                 child: Text("群聊", style: AppStyle.textRegular12),
               ),
               onTap: () {
-                _jumpChatPage(widget.groupChatId);
+                _jumpChatPage(widget.activityModel.groupChatId.toString());
               },
             )
         ],
@@ -111,9 +94,9 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   Widget _getUserList() {
     List<Widget> array = [];
     for (int index = 0; index < 5; index++) {
-      if (index < userList.length) {
-        array.add(_getItem(userList[index]));
-      } else if (index == userList.length) {
+      if (index < widget.activityModel.members.length) {
+        array.add(_getItem(widget.activityModel.members[index]));
+      } else if (index == widget.activityModel.members.length) {
         array.add(_addItem());
       } else {
         array.add(Container(
@@ -152,7 +135,8 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
       } else if (index == 4) {
         array.add(GestureDetector(
           onTap: () {
-            AppRouter.navigateActivityUserPage(context, widget.activityId, [], type: 3, callback: (dynamic result) {
+            AppRouter.navigateActivityUserPage(context, widget.activityModel.id, [], type: 3,
+                callback: (dynamic result) {
               initData();
             });
           },
@@ -188,26 +172,34 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _getItem(UserModel model) {
-    return Container(
-      width: 47,
-      height: 100.0 - 12.0 - 16.0,
-      child: Column(
-        children: [
-          UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
-          SizedBox(height: 6),
-          Text(
-            model.nickName ?? "",
-            style: AppStyle.text1Regular12,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        if (widget.activityModel.isJoin) {
+          jumpToUserProfilePage(context, model.uid, avatarUrl: model.avatarUri, userName: model.nickName);
+        }
+      },
+      child: Container(
+        color: AppColor.transparent,
+        width: 47,
+        height: 100.0 - 12.0 - 16.0,
+        child: Column(
+          children: [
+            UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+            SizedBox(height: 6),
+            Text(
+              model.nickName ?? "",
+              style: AppStyle.text1Regular12,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _addItem() {
-    return widget.status != 3 && widget.status != 1 && isMaster()
+    return widget.activityModel.status != 3 && widget.activityModel.status != 1 && isMaster()
         ? Container(
             width: 47,
             height: 100.0 - 12.0 - 16.0,
@@ -225,7 +217,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
                   buttonWidth: 47,
                   iconColor: AppColor.mainBlack,
                   onTap: () {
-                    AppRouter.navigateActivityUserPage(context, widget.activityId, [], type: 4,
+                    AppRouter.navigateActivityUserPage(context, widget.activityModel.id, [], type: 4,
                         callback: (dynamic result) {
                       initData();
                     });
@@ -237,25 +229,13 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         : Container();
   }
 
-  bool isHaveMe() {
-    if (Application.profile == null || Application.profile.uid == null) {
-      return false;
-    }
-    for (var model in widget.userList) {
-      if (model.uid == Application.profile.uid) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   bool isLoadConversationDto = false;
 
   _jumpChatPage(String groupChatId) async {
     if (ClickUtil.isFastClick()) {
       return;
     }
-    if (widget.groupChatId == null) {
+    if (widget.activityModel.groupChatId == null) {
       ToastShow.show(msg: "群聊资料不正确!1", context: context);
       return;
     }
@@ -278,7 +258,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
 
   initData() async {
     applyUserList.clear();
-    dataResponseModel = await applyList(widget.activityId, 4, null);
+    dataResponseModel = await applyList(widget.activityModel.id, 4, null);
     if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
       dataResponseModel.list.forEach((element) {
         UserModel model = UserModel.fromJson(element);
@@ -291,6 +271,8 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   isMaster() {
-    return Application.profile != null && Application.profile.uid != null && Application.profile.uid == widget.masterId;
+    return Application.profile != null &&
+        Application.profile.uid != null &&
+        Application.profile.uid == widget.activityModel.masterId;
   }
 }

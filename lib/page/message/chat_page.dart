@@ -50,6 +50,7 @@ import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/widget/chat_bottom_Setting_box.dart';
+import 'package:mirror/widget/loading.dart';
 import 'util/chat_page_util.dart';
 import 'util/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
@@ -2671,14 +2672,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
   }
 
-  bool isShowBottomSetting = false;
 
   //是活动群聊时展示功能按钮面板
   _showBottomSetting() {
-    if (isShowBottomSetting) {
-      ToastShow.show(msg: "请稍等", context: context);
-      return;
-    }
     List<String> list = [];
     list.add("进入活动");
     list.add("查看活动群成员");
@@ -2721,13 +2717,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
   //设置消息是否置顶
   void setTopChatApi() async {
-    isShowBottomSetting = true;
+    Loading.showLoading(context);
     topChat = !topChat;
-    Map<String, dynamic> map = await (topChat ? stickChat : cancelTopChat)
-      (targetId: int.parse(this.conversation.conversationId), type: 1);
+    Map<String, dynamic> map =
+        await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(this.conversation.conversationId), type: 1);
     if (map != null && map["state"] != null && map["state"]) {
-      TopChatModel topChatModel = new TopChatModel(type: 1,
-          chatId: int.parse(this.conversation.conversationId));
+      TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(this.conversation.conversationId));
       int index = TopChatModel.containsIndex(MessageManager.topChatModelList, topChatModel);
       if (topChat) {
         if (index < 0) {
@@ -2746,21 +2741,21 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       topChat = !topChat;
     }
 
-    isShowBottomSetting = false;
+    Loading.hideLoading(context);
   }
 
 
   //设置消息免打扰
   void setConversationNotificationStatus() async {
-    isShowBottomSetting = true;
+    Loading.showLoading(context);
 
     disturbTheNews = !disturbTheNews;
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
         targetId: int.parse(this.conversation.conversationId), type: GROUP_TYPE);
     if (map != null && map["state"] != null && map["state"]) {
-      NoPromptUidModel model = NoPromptUidModel(type: GROUP_TYPE,
-          targetId: int.parse(this.conversation.conversationId));
+      NoPromptUidModel model =
+          NoPromptUidModel(type: GROUP_TYPE, targetId: int.parse(this.conversation.conversationId));
       int index = NoPromptUidModel.containsIndex(MessageManager.queryNoPromptUidList, model);
       if (disturbTheNews) {
         if (index < 0) {
@@ -2775,13 +2770,15 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       disturbTheNews = !disturbTheNews;
     }
 
-    isShowBottomSetting = false;
+    Loading.hideLoading(context);
   }
 
 
   //退出按钮-移除
   void exitGroupChatPr() async {
+    Loading.showLoading(context);
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(this.conversation.conversationId));
+    Loading.hideLoading(context);
     if (model != null && model["state"] != null && model["state"]) {
       _moreOnClickExitChatPage();
       GroupChatUserInformationDBHelper().removeGroupAllInformation(this.conversation.conversationId);

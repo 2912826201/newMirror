@@ -16,6 +16,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -262,7 +263,6 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   }
 
   judgeApplyJoin() {
-    print("widget.isInvite:${widget.isInvite}");
     if (!isAgree) {
       ToastShow.show(msg: "请先阅读互动说明", context: context);
     } else if (widget.activityModel.status == 1) {
@@ -311,14 +311,9 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     );
   }
 
-  bool isShowApplyJoinActivityDialog = false;
 
   //申请加入dialog
   _showApplyJoinActivityDialog() {
-    if (isShowApplyJoinActivityDialog) {
-      ToastShow.show(msg: "正在操作中", context: context);
-      return;
-    }
     showAppDialog(context,
         title: "申请验证",
         info: "队长需要您填写验证信息，进行审核",
@@ -341,15 +336,11 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
 
   //申请加入活动
   _applyJoinActivity(String message) async {
-    if (isShowApplyJoinActivityDialog) {
-      return;
-    }
-    isShowApplyJoinActivityDialog = true;
+    Loading.showLoading(context, infoText: "正在加入活动");
 
     List list = await applyJoinActivity(widget.activityModel.id, message);
 
-    isShowApplyJoinActivityDialog = false;
-
+    Loading.hideLoading(context);
     if (list[0] && widget.onRestDataListener != null) {
       widget.onRestDataListener();
       ToastShow.show(msg: "申请成功", context: context);
@@ -360,6 +351,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
 
   //参加邀请的活动
   _joinByInvitationActivity() async {
+    Loading.showLoading(context, infoText: "正在加入活动");
     if (ClickUtil.isFastClick()) {
       return;
     }
@@ -369,6 +361,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     } else {
       ToastShow.show(msg: list[1], context: context);
     }
+    Loading.hideLoading(context);
   }
 
   //签到
@@ -385,8 +378,11 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     } else if (model.isSignIn) {
       ToastShow.show(msg: "已经签过到了", context: context);
     } else {
+      Loading.showLoading(context);
+
       bool isSignInActivity = await signInActivity(
           widget.activityModel.id, currentAddressInfo.longitude.toString(), currentAddressInfo.latitude.toString());
+      Loading.hideLoading(context);
       if (isSignInActivity) {
         ToastShow.show(msg: "签到成功", context: context);
       } else {
