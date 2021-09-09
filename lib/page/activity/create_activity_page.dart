@@ -338,6 +338,8 @@ class _CreateActivityPageState extends StateKeyboard {
                       color: data.data ? AppColor.mainRed : AppColor.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
+                    child:
+                        data.data ? Image.asset("assets/png/select_icon_red.png", width: 20, height: 20) : Container(),
                   ),
                 ),
                 onTap: () {
@@ -425,18 +427,18 @@ class _CreateActivityPageState extends StateKeyboard {
                                             imageWidth),
                                       ),
                                       SizedBox(height: 2),
-                                      Text("一起活动过", style: AppStyle.whiteRegular12),
+                                      Text(getRelation(snapshot.data[index]), style: AppStyle.whiteRegular12),
                                     ],
                                   ),
                                   Visibility(
                                     visible: recommendUserSelect.contains(index),
                                     child: Positioned(
-                                      left: imageWidth - 9.0,
+                                      left: imageWidth - 12.0,
                                       top: 0,
                                       child: Container(
                                         height: 18,
                                         width: 18,
-                                        color: AppColor.mainRed,
+                                        child: Image.asset("assets/png/select_icon_red.png", width: 18, height: 18),
                                       ),
                                     ),
                                   ),
@@ -451,6 +453,21 @@ class _CreateActivityPageState extends StateKeyboard {
             );
           }
         });
+  }
+
+  //关系
+  String getRelation(UserModel model) {
+    if (model.isActivityTogether != null && model.isActivityTogether == 1) {
+      return "一起活动过";
+    } else if (model.relation == 1) {
+      return "关注用户";
+    } else if (model.relation == 2) {
+      return "粉丝";
+    } else if (model.relation == 3) {
+      return "互关好友";
+    } else {
+      return "一起活动过";
+    }
   }
 
   //选择时间的ui
@@ -803,7 +820,13 @@ class _CreateActivityPageState extends StateKeyboard {
             border: Border(bottom: BorderSide(width: 0.5, color: AppColor.dividerWhite8)), color: AppColor.transparent),
         width: double.infinity,
         alignment: Alignment.centerLeft,
-        child: Text(title ?? "", style: AppStyle.text1Regular14),
+        child: Row(
+          children: [
+            Image.asset("assets/png/geographic_location_select.png", width: 16, height: 16),
+            SizedBox(width: 2),
+            Text(title ?? "", style: AppStyle.text1Regular14),
+          ],
+        ),
       ),
       onTap: onTap,
     );
@@ -856,26 +879,19 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //每一个 活动项目的 item
-  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String svgName, int index) {
+  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String imageAssets, int index) {
     return GestureDetector(
       child: Container(
         width: itemWidth,
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(45 / 2),
-              child: Container(
-                height: 45,
+            Container(
+              height: 45,
+              width: 45,
+              child: Image.asset(
+                imageAssets,
                 width: 45,
-                // color: AppColor.white,
-                child: AppIconButton(
-                  onTap: () {
-                    activityTypeStream.sink.add(index);
-                  },
-                  iconColor: AppColor.white,
-                  iconSize: 45,
-                  svgName: svgName,
-                ),
+                height: 45,
               ),
             ),
             SizedBox(height: 2),

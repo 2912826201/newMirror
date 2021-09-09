@@ -13,14 +13,13 @@ class ActivityTypeData {
     }
     return _data;
   }
-
   _initData() {
-    activityTypeMap["篮球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["足球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["羽毛球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["乒乓球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["网球"] = [AppIcon.input_gallery, AppIcon.message_emotion];
-    activityTypeMap["跑步"] = [AppIcon.input_gallery, AppIcon.message_emotion];
+    activityTypeMap["篮球"] = ["assets/png/activity_kind_basketball.png", "assets/png/activity_kind_basketball_no.png"];
+    activityTypeMap["足球"] = ["assets/png/activity_kind_football.png", "assets/png/activity_kind_football_no.png"];
+    activityTypeMap["羽毛球"] = ["assets/png/activity_kind_badminton.png", "assets/png/activity_kind_badminton_no.png"];
+    activityTypeMap["乒乓球"] = ["assets/png/activity_kind_pingpong.png", "assets/png/activity_kind_pingpong_no.png"];
+    activityTypeMap["网球"] = ["assets/png/activity_kind_tennis.png", "assets/png/activity_kind_tennis_no.png"];
+    activityTypeMap["跑步"] = ["assets/png/activity_kind_run.png", "assets/png/activity_kind_run_no.png"];
     activityTypeMap.forEach((key, value) {
       activityTypeList.add(key);
     });

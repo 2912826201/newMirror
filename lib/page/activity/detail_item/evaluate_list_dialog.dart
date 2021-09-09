@@ -72,6 +72,7 @@ class ActivityEvaluateBottomSheetState extends XCState {
   @override
   void dispose() {
     _controller.dispose();
+    evaluateList.clear();
     print('================================底部弹窗dispose');
     super.dispose();
   }

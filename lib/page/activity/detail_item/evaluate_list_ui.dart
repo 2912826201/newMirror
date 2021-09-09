@@ -618,6 +618,7 @@ class EvaluateListUiState extends State<EvaluateListUi> with TickerProviderState
 
   //判断加载子评论
   onClickAddSubComment(ActivityEvaluateModel value, int index, bool isOnClickListener) {
+    print("11111");
     if (commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED) {
       // ignore: null_aware_before_operator
       if (value.commentList?.length >= value.commentCount + value.pullNumber) {
@@ -718,7 +719,9 @@ class EvaluateListUiState extends State<EvaluateListUi> with TickerProviderState
       });
       evaluateLastTime = dataResponseModel.lastTime;
     }
-    print("evaluateList:${widget.evaluateList.length}");
+    widget.evaluateList.forEach((element) {
+      element.commentList?.clear();
+    });
     if (widget.refreshController != null) {
       widget.refreshController.refreshCompleted();
     }

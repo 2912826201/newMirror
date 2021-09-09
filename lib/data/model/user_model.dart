@@ -37,6 +37,7 @@ class UserModel {
   String message; //申请活动-的理由
   int id; //本条申请的id--申请活动
   int dataState; //2-待处理 1-已处理
+  int isActivityTogether; //2-待处理 1-已处理
 
   UserModel({
     this.uid = -1, //默认给个uid为-1
@@ -69,6 +70,7 @@ class UserModel {
     this.message,
     this.id,
     this.dataState,
+    this.isActivityTogether,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -102,6 +104,7 @@ class UserModel {
     dataState = json["dataState"];
     id = json["id"];
     message = json["message"];
+    isActivityTogether = json["isActivityTogether"];
   }
 
   Map<String, dynamic> toJson() {
@@ -136,6 +139,7 @@ class UserModel {
     map["message"] = message;
     map["id"] = id;
     map["dataState"] = dataState;
+    map["isActivityTogether"] = isActivityTogether;
     return map;
   }
 
