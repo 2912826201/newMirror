@@ -150,6 +150,8 @@ class AppIcon {
   static const String pin_map_self = "assets/svg/pin_map_self.svg";
   static const String group_add = "assets/svg/group_add.svg";
   static const String group_remove = "assets/svg/group_remove.svg";
+  static const String gender_male_14 = "assets/svg/gender_male_14.svg";
+  static const String gender_female_14 = "assets/svg/gender_female_14.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {
