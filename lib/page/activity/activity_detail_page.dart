@@ -401,7 +401,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               start: activityModel.count,
               end: 99,
               onChoseCallBack: (number) async {
-                if (number == activityModel.count) {
+                if (number == null || number == activityModel.count) {
                   return;
                 }
                 List list = await ActivityUtil.init().updateActivityUtil(activityModel, count: number);
@@ -416,7 +416,13 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
         } else if (list[index] == "更改地址") {
           AppRouter.navigateActivityChangeAddressPage(context, activityModel, (result) async {
             print(result);
+            if (result == null) {
+              return;
+            }
             PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+            if (poi == null) {
+              return;
+            }
             print("poi：：：：：$poi");
             List list = await ActivityUtil.init().updateActivityUtil(activityModel,
                 address: poi.name,

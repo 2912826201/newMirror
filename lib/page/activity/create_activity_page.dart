@@ -116,6 +116,27 @@ class _CreateActivityPageState extends StateKeyboard {
   void initState() {
     super.initState();
     _initData();
+
+    if (activityDateTime.hour > 17) {
+      activityDateTime = activityDateTime.add(Duration(days: 1));
+      startTime = DateTime(
+        activityDateTime.year,
+        activityDateTime.month,
+        activityDateTime.day,
+        6,
+        0,
+        0,
+      );
+      endTime = DateTime(
+        activityDateTime.year,
+        activityDateTime.month,
+        activityDateTime.day,
+        7,
+        0,
+        0,
+      );
+    }
+
     _formatter = ReleaseFeedInputFormatter(
         controller: activityIllustrateController,
         maxNumberOfBytes: 300,
@@ -804,7 +825,8 @@ class _CreateActivityPageState extends StateKeyboard {
         double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData.init().activityTypeList.length;
         int index = 0;
         ActivityTypeData.init().activityTypeMap.forEach((key, value) {
-          widgetArray.add(_getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index));
+          widgetArray.add(
+              _getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index, index == data.data));
           index++;
         });
         return Container(
@@ -901,7 +923,7 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //每一个 活动项目的 item
-  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String imageAssets, int index) {
+  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String imageAssets, int index, bool isIndex) {
     return GestureDetector(
       child: Container(
         width: itemWidth,
@@ -917,7 +939,7 @@ class _CreateActivityPageState extends StateKeyboard {
               ),
             ),
             SizedBox(height: 2),
-            Text(typeName, style: AppStyle.whiteRegular12),
+            Text(typeName, style: isIndex ? AppStyle.whiteRegular12 : AppStyle.text1Regular12),
           ],
         ),
       ),

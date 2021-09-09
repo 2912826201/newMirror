@@ -13,6 +13,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/util/chat_message_profile_util.dart';
 import 'package:mirror/page/message/util/chat_page_util.dart';
 import 'package:mirror/page/message/util/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -171,20 +172,28 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
   }
 
   Widget _getItem(UserModel model) {
-    return Container(
-      width: 47,
-      height: 100.0 - 12.0 - 16.0,
-      child: Column(
-        children: [
-          UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
-          SizedBox(height: 6),
-          Text(
-            model.nickName ?? "",
-            style: AppStyle.text1Regular12,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        if (widget.activityModel.isJoin) {
+          jumpToUserProfilePage(context, model.uid, avatarUrl: model.avatarUri, userName: model.nickName);
+        }
+      },
+      child: Container(
+        color: AppColor.transparent,
+        width: 47,
+        height: 100.0 - 12.0 - 16.0,
+        child: Column(
+          children: [
+            UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+            SizedBox(height: 6),
+            Text(
+              model.nickName ?? "",
+              style: AppStyle.text1Regular12,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
