@@ -12,7 +12,8 @@ const String GETRECOMMENDUSERLIST = "/appuser/web/activity/getRecommendUserList"
 const String CREATEACTIVITY = "/appuser/web/activity/create";
 //获取活动详情
 const String GETACTIVITYDETAIL = "/appuser/web/activity/detail";
-
+// 获取我参加过的活动列表
+const String GETMYJOINACTIVITYLIST = "/appuser/web/activity/getMyJoinActivityList";
 // 获取推荐活动列表
 const String GETRECOMMENDACTIVITY = "/appuser/web/activity/getRecommendActivity";
 // 移除活动成员
@@ -112,23 +113,25 @@ Future<List<UserModel>> getRecommendUserList({int size = 5}) async {
     return [];
   }
 }
+
 //获取推荐活动列表
-Future<DataResponseModel> getRecommendActivity({int size = 20, double lastScore,int type,String cityCode,String longitude,String latitude}) async {
+Future<DataResponseModel> getRecommendActivity(
+    {int size = 20, double lastScore, int type, String cityCode, String longitude, String latitude}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
-  if(lastScore != null) {
+  if (lastScore != null) {
     params["lastScore"] = lastScore;
   }
-  if(type != null) {
+  if (type != null) {
     params["type"] = type;
   }
-  if(cityCode != null) {
+  if (cityCode != null) {
     params["cityCode"] = cityCode;
   }
-  if(longitude != null) {
+  if (longitude != null) {
     params["longitude"] = longitude;
   }
-  if(latitude != null) {
+  if (latitude != null) {
     params["latitude"] = latitude;
   }
   BaseResponseModel responseModel = await requestApi(GETRECOMMENDACTIVITY, params);
@@ -377,5 +380,24 @@ Future<List> updateActivity(
     return [false, responseModel.message];
   } else {
     return [false, "修改失败"];
+  }
+}
+
+// 获取我参加过的活动列表
+Future<DataResponseModel> getMyJoinActivityList({int size = 20, int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETMYJOINACTIVITYLIST, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
   }
 }

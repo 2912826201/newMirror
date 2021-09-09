@@ -201,10 +201,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           Application.profile != null &&
           activityModel.masterId == Application.profile.uid,
       children: [
-        /*  //顶部图片
-        _getTopImage(),
+          //顶部图片
+        // _getTopImage(),
 
-        */
         SizedBox(height: 12),
 
         Container(

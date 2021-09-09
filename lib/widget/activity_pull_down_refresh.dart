@@ -99,6 +99,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   //动画是否结束(使用stop停止动画status没法正常拿来判断)
   bool refreshIsCompleted = true;
+
   @override
   void initState() {
     super.initState();
@@ -124,13 +125,11 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     scrollController = widget.scrollController;
     //初始化loading图标和图片偏移位置
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scrollController.jumpTo(overflowHeight);
       lodingScrollController.jumpTo(refreshHeight);
     });
     if (widget.children == null) {
       widget.children = [];
     }
-
     _controllerListener();
   }
 
@@ -221,17 +220,21 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
       list.insert(0, backGroundImage);
     }
     list.addAll(widget.children);
+    //补上面偏移的高度
+    list.add(SizedBox(height: overflowHeight,));
     return Container(
         height: ScreenUtil.instance.height,
         width: ScreenUtil.instance.width,
-        child: SingleChildScrollView(
+        child: Transform.translate(
+          offset: Offset(0, -overflowHeight),
+          child:SingleChildScrollView(
           controller: scrollController,
           child: Column(
             children: List.generate(list.length, (index) {
               return list[index];
             }),
           ),
-        ));
+        ) ,));
   }
 
   Widget _topLoding() {
@@ -278,18 +281,11 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
   }
 
   _onPointerDown(PointerDownEvent event) {
-    isTauch = true;
     downOffset = event.position.dy;
   }
 
   _onPointerUp(PointerUpEvent event) {
-    isTauch = false;
-    upOffset = scrollController.position.pixels;
-    //图片回到初始位置
-    if (scrollController.position.pixels < overflowHeight && scrollController.position.maxScrollExtent > 150) {
-      scrollController.animateTo(overflowHeight, duration: Duration(milliseconds: 450), curve: Curves.ease);
-    }
-    if(!refreshIsCompleted) return;
+    if (!refreshIsCompleted) return;
     //条件达成开始刷新
     if (lodingScrollController.position.pixels < 3) {
       lodingAnimationController.forward();
@@ -307,7 +303,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
       double moveOffset = 0.0;
       //loding跟随图片滑动比例
       if (scrollController.position.maxScrollExtent > refreshHeight) {
-        moveOffset = (refreshHeight / overflowHeight) * (overflowHeight - scrollController.position.pixels);
+        moveOffset = (refreshHeight / overflowHeight) * scrollController.position.pixels;
       } else if (scrollController.position.pixels == scrollController.position.minScrollExtent) {
         moveOffset = downOffset - event.position.dy;
       }
@@ -315,8 +311,8 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
       double angle = ((event.position.dy - downOffset) % 30) / 30;
       lodingStreamController.sink.add(angle);
       ////////////loading跟随手指偏移///////////////
-      if (refreshHeight - moveOffset >= 0) {
-        lodingScrollController.jumpTo(refreshHeight - moveOffset);
+      if (refreshHeight + moveOffset >= 0) {
+        lodingScrollController.jumpTo(refreshHeight + moveOffset);
       } else {
         lodingScrollController.jumpTo(lodingScrollController.position.minScrollExtent);
       }
@@ -325,15 +321,6 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
 
   _controllerListener() {
     scrollController.addListener(() {
-      //快速惯性滚动阻尼
-      if (!isTauch &&
-          upOffset > overflowHeight &&
-          scrollController.position.axisDirection == AxisDirection.down &&
-          scrollController.position.pixels <= overflowHeight) {
-        scrollController.animateTo(scrollController.position.pixels,
-            duration: Duration(milliseconds: 150), curve: Curves.fastOutSlowIn);
-      }
-
       ///////////////appBar显隐控制//////////////
       if (scrollController.position.pixels >= overflowHeight &&
           scrollController.position.pixels <= widget.backGroundHeight) {
