@@ -17,6 +17,7 @@ import 'package:mirror/data/model/activity/auth_data.dart';
 import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -34,6 +35,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:mirror/widget/surrounding_information.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
@@ -83,8 +85,8 @@ class _CreateActivityPageState extends StateKeyboard {
 
   //活动时间
   DateTime activityDateTime = DateTime.now();
-  DateTime startTime = DateTime.now();
-  DateTime endTime = DateTime.now().add(Duration(hours: 1));
+  DateTime startTime = DateTime.now().add(Duration(hours: 3));
+  DateTime endTime = DateTime.now().add(Duration(hours: 4));
   StreamController<DateTime> activityTimeStream = StreamController<DateTime>();
 
   //活动地址
@@ -114,6 +116,27 @@ class _CreateActivityPageState extends StateKeyboard {
   void initState() {
     super.initState();
     _initData();
+
+    if (activityDateTime.hour > 17) {
+      activityDateTime = activityDateTime.add(Duration(days: 1));
+      startTime = DateTime(
+        activityDateTime.year,
+        activityDateTime.month,
+        activityDateTime.day,
+        6,
+        0,
+        0,
+      );
+      endTime = DateTime(
+        activityDateTime.year,
+        activityDateTime.month,
+        activityDateTime.day,
+        7,
+        0,
+        0,
+      );
+    }
+
     _formatter = ReleaseFeedInputFormatter(
         controller: activityIllustrateController,
         maxNumberOfBytes: 300,
@@ -214,7 +237,6 @@ class _CreateActivityPageState extends StateKeyboard {
               },
             ),
 
-
             _getSizedBox(height: 8),
 
             //修改参加人数
@@ -263,9 +285,7 @@ class _CreateActivityPageState extends StateKeyboard {
                 return Container(
                   child: Stack(
                     children: [
-                      _getMenuUi(equipmentKey, EquipmentData
-                          .init()
-                          .equipmentList, (value) {
+                      _getMenuUi(equipmentKey, EquipmentData.init().equipmentList, (value) {
                         equipmentKey = value;
                         equipmentStream.sink.add(equipmentKey);
                       }),
@@ -330,7 +350,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取创建活动的布局
   Widget _getCreateActivityBox() {
     return StreamBuilder(
@@ -389,7 +408,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
     double imageWidth = min((ScreenUtil.instance.width - 32) / 5, 45);
@@ -413,7 +431,7 @@ class _CreateActivityPageState extends StateKeyboard {
                         itemCount: snapshot.data.length,
                         scrollDirection: Axis.horizontal,
                         separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                          width: 0.0,
+                              width: 0.0,
                               color: AppColor.mainBlack,
                             ),
                         itemBuilder: (context, index) {
@@ -807,7 +825,8 @@ class _CreateActivityPageState extends StateKeyboard {
         double itemWidth = (ScreenUtil.instance.width - 21 - 21) / ActivityTypeData.init().activityTypeList.length;
         int index = 0;
         ActivityTypeData.init().activityTypeMap.forEach((key, value) {
-          widgetArray.add(_getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index));
+          widgetArray.add(
+              _getActivityTypeUiItem(itemWidth, key, value[index == data.data ? 0 : 1], index, index == data.data));
           index++;
         });
         return Container(
@@ -904,7 +923,7 @@ class _CreateActivityPageState extends StateKeyboard {
   }
 
   //每一个 活动项目的 item
-  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String imageAssets, int index) {
+  Widget _getActivityTypeUiItem(double itemWidth, String typeName, String imageAssets, int index, bool isIndex) {
     return GestureDetector(
       child: Container(
         width: itemWidth,
@@ -920,7 +939,7 @@ class _CreateActivityPageState extends StateKeyboard {
               ),
             ),
             SizedBox(height: 2),
-            Text(typeName, style: AppStyle.whiteRegular12),
+            Text(typeName, style: isIndex ? AppStyle.whiteRegular12 : AppStyle.text1Regular12),
           ],
         ),
       ),
@@ -1028,7 +1047,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   _unfocus() {
     if (titleFocusNode.hasFocus) {
       titleFocusNode.unfocus();
@@ -1038,20 +1056,14 @@ class _CreateActivityPageState extends StateKeyboard {
     }
   }
 
-
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
       ToastShow.show(msg: "最多只能选择$activityImageFileListCount张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(
-        context,
-        activityImageFileListCount - activityImageFileList.length,
-        typeImage,
-        false,
-        startPageGallery,
-        false,
-            (result) {
+        context, activityImageFileListCount - activityImageFileList.length, typeImage, false, startPageGallery, false,
+        (result) {
       SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -1067,7 +1079,6 @@ class _CreateActivityPageState extends StateKeyboard {
       });
     });
   }
-
 
   void getStoragePermision() async {
     var permissionStatus = await Permission.storage.status;
@@ -1111,12 +1122,12 @@ class _CreateActivityPageState extends StateKeyboard {
     if (permissions.isGranted) {
       openSurroundingInformationBottomSheet(
           context: context,
-          onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+          onSeletedAddress: (PeripheralInformationPoi poi) {
             // provinceCity 选择地址名  cityCode 城市码，
-            this.provinceCity = provinceCity;
-            this.cityCode = cityCode;
-            this.longitude = longitude.toString();
-            this.latitude = latitude.toString();
+            this.provinceCity = poi.name;
+            this.cityCode = poi.citycode;
+            this.longitude = poi.location.split(",")[0];
+            this.latitude = poi.location.split(",")[1];
             provinceCityStream.sink.add(provinceCity);
           });
     } else {
@@ -1127,12 +1138,12 @@ class _CreateActivityPageState extends StateKeyboard {
       if (permissions.isGranted) {
         openSurroundingInformationBottomSheet(
             context: context,
-            onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+            onSeletedAddress: (PeripheralInformationPoi poi) {
               // provinceCity 选择地址名  cityCode 城市码，
-              this.provinceCity = provinceCity;
-              this.cityCode = cityCode;
-              this.longitude = longitude.toString();
-              this.latitude = latitude.toString();
+              this.provinceCity = poi.name;
+              this.cityCode = poi.citycode;
+              this.longitude = poi.location.split(",")[0];
+              this.latitude = poi.location.split(",")[1];
               provinceCityStream.sink.add(provinceCity);
             });
       } else {
@@ -1193,8 +1204,6 @@ class _CreateActivityPageState extends StateKeyboard {
     // TODO: implement startChangeKeyBoardHeight
   }
 
-  bool isCreateActivity = false;
-
   //创建活动
   _createActivity() async {
     if (ClickUtil.isFastClick()) {
@@ -1224,13 +1233,7 @@ class _CreateActivityPageState extends StateKeyboard {
       return;
     }
 
-    if (isCreateActivity) {
-      ToastShow.show(msg: "正在创建活动", context: context);
-      return;
-    }
-    isCreateActivity = true;
-
-    ToastShow.show(msg: "正在创建活动请稍等", context: context);
+    Loading.showLoading(context, infoText: "正在创建活动");
 
     ActivityModel model = await createActivity(
       title: StringUtil.textWrapMatch(activityTitleController.text),
@@ -1249,14 +1252,14 @@ class _CreateActivityPageState extends StateKeyboard {
       uids: _getRecommendUserString(),
     );
 
+    Loading.hideLoading(context);
+
     if (model != null) {
       print("model:${model.toJson().toString()}");
-      isCreateActivity = false;
       ToastShow.show(msg: "创建成功", context: context);
       Navigator.of(context).pop();
       AppRouter.navigateActivityDetailPage(context, model.id, activityModel: model);
     } else {
-      isCreateActivity = false;
       ToastShow.show(msg: "创建失败", context: context);
     }
   }
@@ -1314,6 +1317,4 @@ class _CreateActivityPageState extends StateKeyboard {
       return uids;
     }
   }
-
-
 }

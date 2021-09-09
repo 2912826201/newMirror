@@ -22,6 +22,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
 import 'package:mirror/widget/input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -403,14 +404,9 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     );
   }
 
-  bool isRemoveMember = false;
 
   //移除的说明原因的dialog
   _showDialog() {
-    if (isRemoveMember) {
-      ToastShow.show(msg: "正在操作中", context: context);
-      return;
-    }
     showAppDialog(context,
         title: "请说明将他踢出小队的原因",
         customizeWidget: _reasonEditWidget(),
@@ -425,19 +421,13 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   }
 
   _removeMember() async {
-    if (isRemoveMember) {
-      return;
-    }
-
     ActivityModel model = await getActivityDetailApi(widget.activityId);
     if (model.times == null && model.times < 3 * 60 * 60 * 1000) {
       ToastShow.show(msg: "移除失败：只能在活动开始三个小时前移除成员", context: context);
       return;
     }
 
-    isRemoveMember = true;
-
-    ToastShow.show(msg: "正在操作", context: context);
+    Loading.showLoading(context, infoText: "正在移除活动成员");
 
     String uids = "";
     for (int i = 0; i < selectUserList.length; i++) {
@@ -453,8 +443,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
 
     ToastShow.show(msg: isSuccess ? "移除成功" : "移除失败", context: context);
 
-    isRemoveMember = false;
     selectUserList.clear();
+    Loading.hideLoading(context);
 
     setState(() {});
   }
@@ -497,15 +487,11 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     setState(() {});
   }
 
-  bool isInviteActivityLoading = false;
 
   //邀请用户参加活动
   _inviteActivity() async {
-    if (isInviteActivityLoading) {
-      ToastShow.show(msg: "正在发送邀请中", context: context);
-      return;
-    }
-    isInviteActivityLoading = true;
+    Loading.showLoading(context, infoText: "正在发送邀请中");
+
     String uids = "";
     for (int i = 0; i < selectUserList.length; i++) {
       if (i == selectUserList.length - 1) {
@@ -537,9 +523,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       }
       ToastShow.show(msg: "对 $names 邀请失败", context: context);
     }
-
+    Loading.hideLoading(context);
     Navigator.of(context).pop();
-    isInviteActivityLoading = false;
   }
 
   initData() async {

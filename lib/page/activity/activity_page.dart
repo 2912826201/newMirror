@@ -528,8 +528,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
       }),
     );
   }
-
-
 }
 
 class ActivityListItem extends StatefulWidget {
@@ -701,7 +699,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                 child: CachedNetworkImage(
               height: 19,
               width: 19,
-              useOldImageOnUrlChange: true,
+              // useOldImageOnUrlChange: true,
               memCacheWidth: 150,
               memCacheHeight: 150,
               imageUrl: url != null ? FileUtil.getSmallImage(url) : "",
@@ -834,7 +832,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                   height: 121,
                   fadeInDuration: Duration(milliseconds: 0),
                   fit: BoxFit.cover,
-                  useOldImageOnUrlChange: true,
+                  // useOldImageOnUrlChange: true,
                   imageUrl: FileUtil.getMediumImage(widget.activityModel.pic),
                   placeholder: (context, url) {
                     return Container(

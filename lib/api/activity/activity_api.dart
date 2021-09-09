@@ -53,6 +53,9 @@ const String GETEVALUATELIST = "/appuser/web/activity/getEvaluateList";
 // 获取评价列表
 const String UPDATEACTIVITY = "/appuser/web/activity/update";
 
+// 退出活动
+const String QUITACTIVITY = "/appuser/web/activity/quit";
+
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -399,5 +402,17 @@ Future<DataResponseModel> getMyJoinActivityList({int size = 20, int lastTime}) a
     return dataResponseModel;
   } else {
     return null;
+  }
+}
+
+// 获取我参加过的活动列表
+Future<bool> quitActivity(int activityId) async {
+  Map<String, dynamic> params = {};
+  params["activityId"] = activityId;
+  BaseResponseModel responseModel = await requestApi(QUITACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    return responseModel.data["state"] ?? false;
+  } else {
+    return false;
   }
 }

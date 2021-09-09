@@ -333,7 +333,7 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
         appBarStreamController.sink.add(0.0);
       }
     });
-    lodingAnimationController = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
+    lodingAnimationController = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
     lodingAnimationController.addStatusListener((status) {
       //动画无限循环
       if (status == AnimationStatus.completed) {

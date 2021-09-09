@@ -8,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/activity/detail_item/detail_activity_bottom_ui.dart';
 import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
@@ -23,6 +24,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
@@ -90,10 +92,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
       appBar: CustomAppBar(
         titleString: "活动详情",
         actions: [
-          activityModel != null &&
-                  activityModel.masterId != null &&
-                  Application.profile != null &&
-                  activityModel.masterId == Application.profile.uid
+          activityModel != null && activityModel.isJoin
               ? CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: _topMoreBtnClick)
               : Container(),
         ],
@@ -201,7 +200,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           Application.profile != null &&
           activityModel.masterId == Application.profile.uid,
       children: [
-          //顶部图片
+        //顶部图片
         // _getTopImage(),
 
         SizedBox(height: 12),
@@ -364,8 +363,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     if (activityModel.members == null || activityModel.members.length < 1) {
       return Container();
     }
-    return DetailMemberUserUi(activityModel.members, activityModel.groupChatId?.toString() ?? null, activityModel.id,
-        activityModel.masterId, activityModel.status);
+    return DetailMemberUserUi(activityModel);
   }
 
   ///初始化数据
@@ -385,10 +383,14 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
 
   _topMoreBtnClick() {
     List<String> list = [];
-    list.add("更改人数");
-    list.add("更改地址");
-    list.add("踢出团队成员");
-    list.add("解散活动");
+    if (Application.profile != null && Application.profile.uid == activityModel.masterId) {
+      list.add("更改人数");
+      list.add("更改地址");
+      list.add("踢出团队成员");
+      list.add("解散活动");
+    } else {
+      list.add("退出活动");
+    }
     openMoreBottomSheet(
       context: context,
       lists: list,
@@ -399,6 +401,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               start: activityModel.count,
               end: 99,
               onChoseCallBack: (number) async {
+                if (number == null || number == activityModel.count) {
+                  return;
+                }
                 List list = await ActivityUtil.init().updateActivityUtil(activityModel, count: number);
                 if (list[0]) {
                   activityModel = list[2];
@@ -409,24 +414,29 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                 }
               });
         } else if (list[index] == "更改地址") {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ActivityChangeAddressPage(
-              onSeletedAddress: (provinceCity, cityCode, longitude, latitude) async {
-                List list = await ActivityUtil.init().updateActivityUtil(activityModel,
-                    address: provinceCity,
-                    cityCode: cityCode,
-                    longitude: longitude.toString(),
-                    latitude: latitude.toString());
-                if (list[0]) {
-                  activityModel = list[2];
-                  setState(() {});
-                  ToastShow.show(msg: "修改地址成功", context: context);
-                } else {
-                  ToastShow.show(msg: "${list[1]}", context: context);
-                }
-              },
-            );
-          }));
+          AppRouter.navigateActivityChangeAddressPage(context, activityModel, (result) async {
+            print(result);
+            if (result == null) {
+              return;
+            }
+            PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+            if (poi == null) {
+              return;
+            }
+            print("poi：：：：：$poi");
+            List list = await ActivityUtil.init().updateActivityUtil(activityModel,
+                address: poi.name,
+                cityCode: poi.citycode,
+                longitude: poi.location.split(",")[0],
+                latitude: poi.location.split(",")[1]);
+            if (list[0]) {
+              activityModel = list[2];
+              setState(() {});
+              ToastShow.show(msg: "修改地址成功", context: context);
+            } else {
+              ToastShow.show(msg: "${list[1]}", context: context);
+            }
+          });
         } else if (list[index] == "踢出团队成员") {
           if (activityModel != null && activityModel.members != null && activityModel.members.length > 0) {
             // AppRouter.navigateRemoveUserPage(context, activityModel.id,activityModel.members);
@@ -448,6 +458,17 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                 _deleteActivity();
                 return true;
               }));
+        } else if (list[index] == "退出活动") {
+          showAppDialog(context,
+              title: "退出活动",
+              info: "活动开始前24小时可无条件退出活动，并且同步退出活动群聊，您确定要退出活动吗?",
+              cancel: AppDialogButton("取消", () {
+                return true;
+              }),
+              confirm: AppDialogButton("确定", () {
+                _quitActivity();
+                return true;
+              }));
         }
       },
     );
@@ -455,16 +476,25 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
 
   //解散活动
   _deleteActivity() async {
+    Loading.showLoading(context, infoText: "正在解散活动");
     bool isSuccess = await deleteActivity(activityModel.id);
 
+    Loading.hideLoading(context);
     ToastShow.show(msg: isSuccess ? "解散成功" : "解散失败", context: context);
-
     if (isSuccess) {
-      if (AppRouter.isHaveChatPage()) {
-        Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
-      } else {
-        Navigator.of(context).pop();
-      }
+      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+    }
+  }
+
+  //退出活动
+  _quitActivity() async {
+    Loading.showLoading(context, infoText: "正在退出活动");
+    bool isSuccess = await quitActivity(activityModel.id);
+
+    Loading.hideLoading(context);
+    ToastShow.show(msg: isSuccess ? "退出成功" : "退出失败", context: context);
+    if (isSuccess) {
+      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
 
