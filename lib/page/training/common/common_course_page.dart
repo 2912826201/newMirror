@@ -732,16 +732,21 @@ String getSubCommentComplete(CommentDtoModel value, bool isFold) {
     return "";
   }
 
+  return getSubCommentCompleteString(value.replys.length, value.replyCount, value.pullNumber, isFold);
+}
+
+//获取有几个子评论
+String getSubCommentCompleteString(int listCommonLen, int commentCount, int pullNumber, bool isFold) {
   int valueReplyLength = 0;
-  if (value.replys == null || value.replys.length < 1) {
+  if (listCommonLen < 1) {
     valueReplyLength = 0;
   } else {
-    valueReplyLength = value.replys.length;
+    valueReplyLength = listCommonLen;
   }
 
   // print("valueReplyLength$valueReplyLength${value.replyCount}${value.pullNumber}");
 
-  var subCommentCompleteTitle = valueReplyLength < value.replyCount + value.pullNumber ? "查看" : (isFold ? "查看" : "隐藏");
+  var subCommentCompleteTitle = valueReplyLength < commentCount + pullNumber ? "查看" : (isFold ? "查看" : "隐藏");
 
   if (subCommentCompleteTitle == "隐藏") {
     return "隐藏回复";
@@ -750,13 +755,13 @@ String getSubCommentComplete(CommentDtoModel value, bool isFold) {
       if (valueReplyLength > 0) {
         return "$subCommentCompleteTitle$valueReplyLength条回复";
       } else {
-        return "$subCommentCompleteTitle${value.replyCount + value.pullNumber}条回复";
+        return "$subCommentCompleteTitle${commentCount + pullNumber}条回复";
       }
     } else {
-      if (valueReplyLength >= value.replyCount + value.pullNumber) {
+      if (valueReplyLength >= commentCount + pullNumber) {
         return "隐藏回复";
       } else {
-        return "$subCommentCompleteTitle${value.replyCount - (valueReplyLength - value.pullNumber)}条回复";
+        return "$subCommentCompleteTitle${commentCount - (valueReplyLength - pullNumber)}条回复";
       }
     }
   }

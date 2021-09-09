@@ -12,7 +12,8 @@ const String GETRECOMMENDUSERLIST = "/appuser/web/activity/getRecommendUserList"
 const String CREATEACTIVITY = "/appuser/web/activity/create";
 //获取活动详情
 const String GETACTIVITYDETAIL = "/appuser/web/activity/detail";
-
+// 获取我参加过的活动列表
+const String GETMYJOINACTIVITYLIST = "/appuser/web/activity/getMyJoinActivityList";
 // 获取推荐活动列表
 const String GETRECOMMENDACTIVITY = "/appuser/web/activity/getRecommendActivity";
 // 移除活动成员
@@ -48,6 +49,9 @@ const String SIGNINACTIVITY = "/appuser/web/activity/signIn";
 
 // 获取评价列表
 const String GETEVALUATELIST = "/appuser/web/activity/getEvaluateList";
+
+// 获取评价列表
+const String UPDATEACTIVITY = "/appuser/web/activity/update";
 
 //创建活动
 Future<ActivityModel> createActivity({
@@ -109,23 +113,25 @@ Future<List<UserModel>> getRecommendUserList({int size = 5}) async {
     return [];
   }
 }
+
 //获取推荐活动列表
-Future<DataResponseModel> getRecommendActivity({int size = 20, double lastScore,int type,String cityCode,String longitude,String latitude}) async {
+Future<DataResponseModel> getRecommendActivity(
+    {int size = 20, double lastScore, int type, String cityCode, String longitude, String latitude}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
-  if(lastScore != null) {
+  if (lastScore != null) {
     params["lastScore"] = lastScore;
   }
-  if(type != null) {
+  if (type != null) {
     params["type"] = type;
   }
-  if(cityCode != null) {
+  if (cityCode != null) {
     params["cityCode"] = cityCode;
   }
-  if(longitude != null) {
+  if (longitude != null) {
     params["longitude"] = longitude;
   }
-  if(latitude != null) {
+  if (latitude != null) {
     params["latitude"] = latitude;
   }
   BaseResponseModel responseModel = await requestApi(GETRECOMMENDACTIVITY, params);
@@ -186,7 +192,7 @@ Future<List> applyJoinActivity(int activityId, String message) async {
   BaseResponseModel responseModel = await requestApi(APPLYJOIN, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["state"] ?? false, responseModel.message];
-  } else if (responseModel.code == 430) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [false, responseModel.message];
   } else {
     return [false, "申请失败"];
@@ -296,9 +302,7 @@ Future<List> joinByInvitation(int activityId, int uid) async {
   BaseResponseModel responseModel = await requestApi(JOINBYINVITATION, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["state"] ?? false, responseModel.message];
-  } else if (responseModel.code == 430) {
-    return [false, responseModel.message];
-  } else if (responseModel.code == 305) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [false, responseModel.message];
   } else {
     return [false, "参加失败"];
@@ -314,9 +318,7 @@ Future<List> publishEvaluate(int activityId, double score, String content) async
   BaseResponseModel responseModel = await requestApi(PUBLISHEVALUATE, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["AVGScore"] ?? -1.0, "", responseModel.message];
-  } else if (responseModel.code == 305) {
-    return [-1.0, responseModel.message];
-  } else if (responseModel.code == 430) {
+  } else if (responseModel != null && responseModel.message != null) {
     return [-1.0, responseModel.message];
   } else {
     return [-1.0, "发布失败"];
@@ -338,7 +340,7 @@ Future<bool> signInActivity(int activityId, String longitude, String latitude) a
 }
 
 //获取评价列表
-Future<List<ActivityEvaluateModel>> getEvaluateList(int activityId, {int size = 2, int lastTime}) async {
+Future<DataResponseModel> getEvaluateList(int activityId, {int size = 2, int lastTime}) async {
   Map<String, dynamic> params = {};
   params["activityId"] = activityId;
   params["size"] = size;
@@ -346,13 +348,56 @@ Future<List<ActivityEvaluateModel>> getEvaluateList(int activityId, {int size = 
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(GETEVALUATELIST, params);
-  List<ActivityEvaluateModel> list = [];
-  if (responseModel.isSuccess && responseModel.data != null && responseModel.data["list"] != null) {
-    // try {
-    responseModel.data["list"].forEach((value) {
-      list.add(ActivityEvaluateModel.fromJson(value));
-    });
-    // } catch (e) {}
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
   }
-  return list;
+}
+
+//修改活动
+Future<List> updateActivity(
+    int activityId, int count, String cityCode, String address, String longitude, String latitude) async {
+  Map<String, dynamic> params = {};
+  params["id"] = activityId;
+  params["count"] = count;
+  params["cityCode"] = cityCode;
+  params["address"] = address;
+  params["longitude"] = longitude;
+  params["latitude"] = latitude;
+  BaseResponseModel responseModel = await requestApi(UPDATEACTIVITY, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    try {
+      return [true, "修改成功", ActivityModel.fromJson(responseModel.data)];
+    } catch (e) {
+      return [false, responseModel.message];
+    }
+  } else if (responseModel != null && responseModel.message != null) {
+    return [false, responseModel.message];
+  } else {
+    return [false, "修改失败"];
+  }
+}
+
+// 获取我参加过的活动列表
+Future<DataResponseModel> getMyJoinActivityList({int size = 20, int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETMYJOINACTIVITYLIST, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    DataResponseModel dataResponseModel = DataResponseModel();
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
+  } else {
+    return null;
+  }
 }

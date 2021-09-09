@@ -20,9 +20,11 @@ class ActivityModel {
   int endTime;
   int groupChatId;
   int masterId;
-  bool isSignIn;
-  bool isCanSignIn;
-  bool isEvaluate;
+  bool _isSignIn;
+  bool _isCanSignIn;
+  bool _isEvaluate;
+  bool _isJoin;
+  double _evaluateAvgScore;
   List<UserModel> members;
   List<String> pics;
 
@@ -30,6 +32,16 @@ class ActivityModel {
   String activityTitle;
   String activityTitle1;
   double tagWidth;
+
+  bool get isSignIn => _isSignIn ?? false;
+
+  bool get isCanSignIn => _isCanSignIn ?? false;
+
+  bool get isEvaluate => _isEvaluate ?? false;
+
+  bool get isJoin => _isJoin ?? false;
+
+  double get evaluateAvgScore => _evaluateAvgScore ?? 0.0;
 
   ActivityModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -51,20 +63,26 @@ class ActivityModel {
     endTime = json['endTime'];
     groupChatId = json['groupChatId'];
     masterId = json['masterId'];
-    if (json['isSignIn'] != null && json['isSignIn'] is int && json['isSignIn'] == 1) {
-      isSignIn = true;
+    _evaluateAvgScore = json['evaluateAvgScore'];
+    if (json['isJoin'] != null && json['isJoin'] is int && json['isJoin'] == 1) {
+      _isJoin = true;
     } else {
-      isSignIn = false;
+      _isJoin = false;
+    }
+    if (json['isSignIn'] != null && json['isSignIn'] is int && json['isSignIn'] == 1) {
+      _isSignIn = true;
+    } else {
+      _isSignIn = false;
     }
     if (json['isCanSignIn'] != null && json['isCanSignIn'] is int && json['isCanSignIn'] == 1) {
-      isCanSignIn = true;
+      _isCanSignIn = true;
     } else {
-      isCanSignIn = false;
+      _isCanSignIn = false;
     }
     if (json['isEvaluate'] != null && json['isEvaluate'] is int && json['isEvaluate'] == 1) {
-      isEvaluate = true;
+      _isEvaluate = true;
     } else {
-      isEvaluate = false;
+      _isEvaluate = false;
     }
     if (json["members"] != null) {
       members = [];
@@ -111,9 +129,11 @@ class ActivityModel {
     map['masterId'] = masterId;
     map['groupChatId'] = groupChatId;
     map['pics'] = pics;
-    map['isSignIn'] = isSignIn;
-    map['isCanSignIn'] = isCanSignIn;
-    map['isEvaluate'] = isEvaluate;
+    map['isSignIn'] = _isSignIn;
+    map['isCanSignIn'] = _isCanSignIn;
+    map['isEvaluate'] = _isEvaluate;
+    map['evaluateAvgScore'] = _evaluateAvgScore;
+    map['isJoin'] = _isJoin;
     return map;
   }
 }

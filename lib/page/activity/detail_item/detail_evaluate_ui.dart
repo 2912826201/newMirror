@@ -5,7 +5,10 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_evaluate_model.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/page/activity/detail_item/evaluate_list_dialog.dart';
+import 'package:mirror/page/activity/detail_item/evaluate_list_ui.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/util/date_util.dart';
@@ -31,24 +34,17 @@ class DetailEvaluateUi extends StatefulWidget {
 
 class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   double score = 0.0;
-  double avgScore = 4.5;
   TextEditingController controller = TextEditingController();
 
   List<ActivityEvaluateModel> evaluateList = [];
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
+  GlobalKey<EvaluateListUiState> childKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    if (widget.activityModel.isEvaluate == null) {
-      widget.activityModel.isEvaluate = false;
-    }
-    if (widget.activityModel.isSignIn == null) {
-      widget.activityModel.isSignIn = false;
-    }
-    if (widget.activityModel.isCanSignIn == null) {
-      widget.activityModel.isCanSignIn = false;
-    }
     if (widget.activityModel.status != 3) {
+      return Container();
+    } else if (!widget.activityModel.isJoin) {
       return Container();
     } else if (widget.activityModel.isSignIn) {
       if (widget.activityModel.isEvaluate) {
@@ -91,18 +87,26 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
                   textAlign: TextAlign.start,
                 ),
                 Spacer(),
-                GradeStart(avgScore, 5, isCanClick: false, size: 22, intervalWidth: 10),
+                GradeStart(widget.activityModel.evaluateAvgScore, 5, isCanClick: false, size: 22, intervalWidth: 10),
                 SizedBox(width: 8),
-                Text("$avgScore分", style: AppStyle.yellowRegular14),
+                Text("${widget.activityModel.evaluateAvgScore}分", style: AppStyle.yellowRegular14),
               ],
             ),
           ),
           SizedBox(height: 10),
+          // Container(
+          //   child: Column(
+          //     children: [
+          //       for (int i = 0; i < evaluateList.length; i++) _getCommonUi(evaluateList[i], i, evaluateList.length)
+          //     ],
+          //   ),
+          // ),
           Container(
-            child: Column(
-              children: [
-                for (int i = 0; i < evaluateList.length; i++) _getCommonUi(evaluateList[i], i, evaluateList.length)
-              ],
+            child: EvaluateListUi(
+              childKey,
+              widget.activityModel,
+              evaluateList,
+              isFold: true,
             ),
           ),
           Container(
@@ -125,7 +129,9 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
                       ],
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    _openActivityEvaluateBottomSheet();
+                  },
                 ),
               ],
             ),
@@ -201,46 +207,6 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
     );
   }
 
-  //活动评价的item
-  Widget _getCommonUi(ActivityEvaluateModel model, int index, int length) {
-    return Container(
-      height: 82.0,
-      margin: EdgeInsets.only(bottom: index + 1 == length ? 0 : 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          UserAvatarImageUtil.init().getUserImageWidget(model.userInfo.avatarUri, model.userInfo.uid.toString(), 42),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 6),
-                Container(
-                  height: 28,
-                  width: double.infinity,
-                  child: Row(
-                    children: [
-                      Text(model.userInfo.nickName ?? "", style: AppStyle.whiteMedium15),
-                      SizedBox(width: 17),
-                      GradeStart(model.score, 5, isCanClick: false, size: 18, intervalWidth: 4),
-                    ],
-                  ),
-                ),
-                Text(model.content ?? "", style: AppStyle.text1Regular14, maxLines: 1, overflow: TextOverflow.ellipsis),
-                SizedBox(width: 6),
-                Text(DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(model.createTime)),
-                    style: AppStyle.text2Regular12),
-                SizedBox(width: 6),
-              ],
-            ),
-          ),
-          SizedBox(width: 15),
-        ],
-      ),
-    );
-  }
-
   _publishEvaluate() async {
     if (controller.text == null || controller.text.length < 1) {
       ToastShow.show(msg: "发布的内容为空", context: context);
@@ -264,8 +230,18 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   //获取评价
   _getEvaluateList() async {
     loadingStatus = LoadingStatus.STATUS_LOADING;
-    evaluateList.addAll(await getEvaluateList(widget.activityModel.id, size: 2));
-    print("evaluateList.length:${evaluateList.length}");
+    DataResponseModel dataResponseModel = await getEvaluateList(widget.activityModel.id, size: 2);
+    if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
+      evaluateList.clear();
+      dataResponseModel.list.forEach((element) {
+        evaluateList.add(ActivityEvaluateModel.fromJson(element));
+      });
+    }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    setState(() {});
+  }
+
+  _openActivityEvaluateBottomSheet() {
+    openActivityEvaluateBottomSheet(context: context, activityModel: widget.activityModel);
   }
 }

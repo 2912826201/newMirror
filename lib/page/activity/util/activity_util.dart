@@ -30,4 +30,21 @@ class ActivityUtil {
 
     return list;
   }
+
+//修改活动
+  Future<List> updateActivityUtil(ActivityModel model,
+      {int count, String cityCode, String address, String longitude, String latitude}) async {
+    if (model == null) {
+      return [false, "活动数据错误"];
+    }
+    if (count == null) count = model.count;
+    if (cityCode == null) cityCode = model.cityCode;
+    if (address == null) address = model.address;
+    if (longitude == null) longitude = model.longitude.toString();
+    if (latitude == null) latitude = model.latitude.toString();
+
+    List list = await updateActivity(model.id, count, cityCode, address, longitude, latitude);
+
+    return list;
+  }
 }

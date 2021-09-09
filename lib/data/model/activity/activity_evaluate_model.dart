@@ -10,8 +10,13 @@ class ActivityEvaluateModel {
   int dataState;
   int createTime;
   int updateTime;
+  int commentCount;
   UserModel userInfo;
   List<CommentDtoModel> commentList;
+
+  //额外加的字段
+  int pullNumber = 0;
+  List<int> screenOutIds = <int>[];
 
   ActivityEvaluateModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -21,6 +26,7 @@ class ActivityEvaluateModel {
     content = json['content'];
     dataState = json['dataState'];
     createTime = json['createTime'];
+    commentCount = json['commentCount'];
     updateTime = json['updateTime'];
     if (json["userInfo"] != null) {
       if (json["userInfo"] is Map<String, dynamic>) {
@@ -52,6 +58,7 @@ class ActivityEvaluateModel {
     map['createTime'] = createTime;
     map['updateTime'] = updateTime;
     map['userInfo'] = userInfo;
+    map['commentCount'] = commentCount;
     map['commentList'] = commentList;
     return map;
   }
