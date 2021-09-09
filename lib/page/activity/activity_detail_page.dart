@@ -201,10 +201,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           Application.profile != null &&
           activityModel.masterId == Application.profile.uid,
       children: [
-        /*  //顶部图片
-        _getTopImage(),
+          //顶部图片
+        // _getTopImage(),
 
-        */
         SizedBox(height: 12),
 
         Container(
@@ -225,7 +224,15 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               SizedBox(height: 12),
 
               //活动地址
-              Text("${activityModel.address}", style: AppStyle.text1Regular14),
+              Container(
+                child: Row(
+                  children: [
+                    Image.asset("assets/png/geographic_location.png", width: 20, height: 20),
+                    SizedBox(width: 4),
+                    Text("${activityModel.address}", style: AppStyle.text1Regular14),
+                  ],
+                ),
+              ),
               SizedBox(height: 38),
 
               //报名队员
