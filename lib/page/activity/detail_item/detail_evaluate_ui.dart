@@ -236,12 +236,21 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
       dataResponseModel.list.forEach((element) {
         evaluateList.add(ActivityEvaluateModel.fromJson(element));
       });
+      evaluateList.forEach((element) {
+        element.commentList?.clear();
+      });
     }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     setState(() {});
   }
 
   _openActivityEvaluateBottomSheet() {
-    openActivityEvaluateBottomSheet(context: context, activityModel: widget.activityModel);
+    openActivityEvaluateBottomSheet(
+        context: context,
+        activityModel: widget.activityModel,
+        callback: () {
+          print("11111111111111111111111111111111111111111111");
+          _getEvaluateList();
+        });
   }
 }

@@ -142,6 +142,9 @@ class AppRouter {
   // 活动成员
   static String pathActivityUserPage = "/activity_page/createActivityPage/activityDetailPage/activityUserPage";
 
+  // 参加过的活动
+  static String pathMyJoinActivityPage = "/activity_page/participatedInActivitiesPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -237,6 +240,7 @@ class AppRouter {
     router.define(pathActivityDetailPage, handler: handlerActivityDetailPage);
     router.define(pathActivityFeedPage, handler: handlerActivityFeedPage);
     router.define(pathActivityUserPage, handler: handlerActivityUserPage);
+    router.define(pathMyJoinActivityPage, handler: handlerMyJoinActivityPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -1082,5 +1086,11 @@ class AppRouter {
     map["activityId"] = activityId;
     map["type"] = type;
     _navigateToPage(context, pathActivityUserPage, map, callback: callback);
+  }
+
+  // 参加过的活动
+  static void navigateMyJoinActivityPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathMyJoinActivityPage, map);
   }
 }
