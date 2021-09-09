@@ -4,12 +4,11 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 
 import 'bottom_sheet.dart';
+
 typedef OnChoseCallBack = void Function(int);
+
 Future openUserNumberPickerBottomSheet(
-    {@required BuildContext context,
-      int start,
-      int end,
-      OnChoseCallBack onChoseCallBack}) async {
+    {@required BuildContext context, int start, int end, OnChoseCallBack onChoseCallBack}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -30,11 +29,13 @@ Future openUserNumberPickerBottomSheet(
         );
       });
 }
+
 class ChangeInsertUserBottomSheet extends StatefulWidget {
   int start;
   int end;
   OnChoseCallBack onChoseCallBack;
-  ChangeInsertUserBottomSheet({this.start, this.end,this.onChoseCallBack});
+
+  ChangeInsertUserBottomSheet({this.start, this.end, this.onChoseCallBack});
 
   @override
   _ChangeInsertUserBottomSheetState createState() => _ChangeInsertUserBottomSheetState();
@@ -44,6 +45,7 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
   List<int> userNumberList = [];
   FixedExtentScrollController controller = FixedExtentScrollController();
   int selectIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -56,23 +58,37 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
       userNumberList.add(widget.start + i);
     }
   }
-    @override
+
+  @override
   void deactivate() {
     super.deactivate();
-    //弹窗关闭时回调
-    widget.onChoseCallBack(userNumberList[selectIndex]);
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 276 + ScreenUtil.instance.bottomBarHeight,
       width: double.infinity,
-      padding: EdgeInsets.only(top: 16),
+      padding: EdgeInsets.only(top: 16,bottom: ScreenUtil.instance.bottomBarHeight),
       decoration: BoxDecoration(
           color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Column(
-        children: [_text(AppStyle.whiteRegular16, "修改参加人数"), _pickerUserNumber()],
+        children: [
+          _text(AppStyle.whiteRegular16, "修改参加人数"),
+          _pickerUserNumber(),
+          SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            child: _text(AppStyle.whiteRegular16, "确定"),
+            onTap: () {
+              widget.onChoseCallBack(userNumberList[selectIndex]);
+              Navigator.pop(context);
+            },
+          ),
+          SizedBox(height:16,)
+        ],
       ),
     );
   }
