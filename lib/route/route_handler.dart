@@ -20,6 +20,7 @@ import 'package:mirror/page/activity/activity_detail_page.dart';
 import 'package:mirror/page/activity/activity_flow.dart';
 import 'package:mirror/page/activity/activity_user_page.dart';
 import 'package:mirror/page/activity/create_activity_page.dart';
+import 'package:mirror/page/activity/participated_in_activities_page.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
@@ -683,4 +684,9 @@ var handlerActivityUserPage = Handler(handlerFunc: (BuildContext context, Map<St
     type: data["type"],
     userList: list,
   );
+});
+
+//参加过的活动界面
+var handlerMyJoinActivityPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return ParticipatedInActivitiesPage();
 });

@@ -520,7 +520,7 @@ class _CreateActivityPageState extends StateKeyboard {
               onTap: () {
                 openActivityTimePickerBottomSheet(
                     context: context,
-                    firstTime: DateTime.now(),
+                    firstTime: activityDateTime,
                     onStartAndEndTimeChoseCallBack: (start, end) {
                       setState(() {
                         startTime = start;
