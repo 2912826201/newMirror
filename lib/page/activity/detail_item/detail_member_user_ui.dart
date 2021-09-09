@@ -184,7 +184,24 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         height: 100.0 - 12.0 - 16.0,
         child: Column(
           children: [
-            UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+            Container(
+              height: 47,
+              width: 47,
+              child: Stack(
+                children: [
+                  UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+                  if (model.sex == 1 || model.sex == 2)
+                    Positioned(
+                      right: 0,
+                      child: AppIconButton(
+                        iconSize: 14,
+                        svgName: AppIcon.trash_bucket,
+                        bgColor: AppColor.mainRed,
+                      ),
+                    ),
+                ],
+              ),
+            ),
             SizedBox(height: 6),
             Text(
               model.nickName ?? "",
