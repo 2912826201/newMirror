@@ -17,6 +17,8 @@ import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/activity/util/activity_default_map.dart';
+import 'package:mirror/page/activity/util/activity_loading.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -92,9 +94,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 是否显示缺省图
   bool isShowDefaultMap;
 
-  // String activityTitle;
-  // String activityTitle1;
-  // double tagWidth;
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -169,7 +168,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   // 请求活动接口数据
   requestActivity({bool isRefresh = false}) async {
-    print("isRefresh:::::$isRefresh");
     if (isRefresh) {
       activityHasNext = null;
       _refreshController.loadComplete();
@@ -427,54 +425,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ));
   }
 
-  // 缺省图
-  Widget defaultMap() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 224,
-            height: 224,
-            decoration: BoxDecoration(
-              image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
-            ),
-            margin: const EdgeInsets.only(bottom: 16),
-          ),
-          const Text(
-            "这里空空如也",
-            style: AppStyle.text1Regular14,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 加载页
-  loadShimmer() {
-    return Shimmer.fromColors(
-      child: ListView.builder(
-        itemBuilder: (context, index) => Card(
-          clipBehavior: Clip.hardEdge,
-          color: AppColor.layoutBgGrey,
-          margin: EdgeInsets.only(left: 16, right: 16, top: index == 0 ? 18 : 12),
-          child: Container(
-            margin: EdgeInsets.only(top: 12, bottom: 12),
-            height: 140,
-            width: ScreenUtil.instance.width,
-          ),
-        ),
-        itemCount: 20,
-      ),
-      baseColor: AppColor.layoutBgGrey.withOpacity(0.5),
-      highlightColor: AppColor.layoutBgGrey.withOpacity(0.1),
-      // enabled: _enabled,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -528,7 +478,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
         ],
       ),
       body: isShowDefaultMap == null
-          ? loadShimmer()
+          ? ActivityLoading()
           : SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
@@ -542,7 +492,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                 requestActivity(isRefresh: true);
               },
               child: isShowDefaultMap
-                  ? defaultMap()
+                  ? ActivityDefaultMap()
                   : ListView.builder(
                       itemCount: activityList.length,
                       shrinkWrap: true,
@@ -579,39 +529,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     );
   }
 
-  // 截取文本
-  interceptText(ActivityModel activityModel) {
-    activityModel.activityTitle1 = null;
-    activityModel.activityTitle = null;
-    if (activityModel.status == 0 || activityModel.status == 1) {
-      activityModel.tagWidth = 56.0;
-    } else if (activityModel.status == 3) {
-      activityModel.tagWidth = 62.0;
-    } else if (activityModel.status == 2) {
-      activityModel.tagWidth = 59.0;
-    }
-    // 剩余宽度
-    double remainingWidth = ScreenUtil.instance.width * 0.49 - activityModel.tagWidth;
-    // 文本总宽度
-    double totalTextWidth = 0.0;
-    activityModel.title.runes.forEach((element) {
-      // 文本宽度
-      double textWidth;
-      textWidth = getTextSize(String.fromCharCode(element), AppStyle.whiteMedium17, 1).width;
-      totalTextWidth += textWidth;
-      if (totalTextWidth > remainingWidth) {
-        if (activityModel.activityTitle1 == null) {
-          activityModel.activityTitle1 = '\u200B';
-        }
-        activityModel.activityTitle1 += String.fromCharCode(element);
-      } else {
-        if (activityModel.activityTitle == null) {
-          activityModel.activityTitle = '\u200B';
-        }
-        activityModel.activityTitle += String.fromCharCode(element);
-      }
-    });
-  }
+
 }
 
 class ActivityListItem extends StatefulWidget {

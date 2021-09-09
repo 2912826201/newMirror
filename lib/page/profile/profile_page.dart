@@ -18,6 +18,7 @@ import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/activity/participated_in_activities_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
@@ -199,6 +200,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_about, 24,color: AppColor.white), "关于"),
         if (!AppConfig.needShowTraining) _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_feedback, 24,color: AppColor.white), "意见反馈"),
         _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_setting, 24,color: AppColor.white), "设置"),
+        _bottomSetting(AppIcon.getAppIcon(AppIcon.if_training, 24,color: AppColor.white), "参加过的活动"),
         // Platform.isIOS ? _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24), "融云") : Container()
         // _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_order, 24), "我的订单"),,
         /*
@@ -655,6 +657,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         break;
       case "设置":
         AppRouter.navigateToSettingHomePage(context);
+        break;
+      case "参加过的活动":
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ParticipatedInActivitiesPage();
+        }));
         break;
       case "测试":
         // AppRouter.navigateToLoginSucess(context);
