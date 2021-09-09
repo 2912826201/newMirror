@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -75,7 +76,8 @@ void main() {
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => FlutterBugly.postCatchedException(() {
-        runApp(
+    GestureBinding.instance.resamplingEnabled = false;
+    runApp(
           MultiProvider(
             providers: [
               //当前用户的token信息 无论匿名用户还是登录用户都会有值
