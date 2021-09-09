@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,7 @@ class _AppDialog extends StatelessWidget {
   final TextStyle infoStyle;
 
   final List<Widget> _viewList = [];
+  PeripheralInformationPoi poi;
 
   _AppDialog(
       {Key key,
@@ -46,6 +48,7 @@ class _AppDialog extends StatelessWidget {
       this.isTransparentBack = false,
       this.topImageUrl,
       this.infoStyle,
+      this.poi,
       this.confirmColor})
       : super(key: key);
 
@@ -219,7 +222,11 @@ class _AppDialog extends StatelessWidget {
         child: GestureDetector(
             onTap: () {
               if (confirm.onClick()) {
-                Navigator.pop(context);
+                if (poi != null) {
+                  Navigator.pop(context, poi);
+                } else {
+                  Navigator.pop(context);
+                }
               }
             },
             child: Container(
@@ -279,7 +286,11 @@ class _AppDialog extends StatelessWidget {
         _viewList.add(GestureDetector(
             onTap: () {
               if (element.onClick()) {
-                Navigator.pop(context);
+                if (poi != null) {
+                  Navigator.pop(context, poi);
+                } else {
+                  Navigator.pop(context);
+                }
               }
             },
             child: Container(
@@ -340,6 +351,7 @@ showAppDialog(BuildContext context,
     String topImageUrl,
     bool isTransparentBack = false,
     bool barrierDismissible = true,
+    PeripheralInformationPoi poi,
     Color confirmColor}) {
   showDialog(
       context: context,
@@ -361,6 +373,7 @@ showAppDialog(BuildContext context,
                   customizeWidget: customizeWidget,
                   circleImageUrl: circleImageUrl,
                   isTransparentBack: isTransparentBack,
+                  poi: poi,
                   topImageUrl: topImageUrl),
             ));
       });

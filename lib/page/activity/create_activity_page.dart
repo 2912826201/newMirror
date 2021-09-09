@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:keyboard_service/keyboard_service.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
@@ -16,6 +17,7 @@ import 'package:mirror/data/model/activity/auth_data.dart';
 import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -24,6 +26,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
@@ -31,6 +34,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:mirror/widget/surrounding_information.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
@@ -105,10 +109,25 @@ class _CreateActivityPageState extends StateKeyboard {
   bool isReadInformation = false;
   StreamController<bool> readInformationStream = StreamController<bool>();
 
+  ReleaseFeedInputFormatter _formatter;
+
   @override
   void initState() {
     super.initState();
     _initData();
+    _formatter = ReleaseFeedInputFormatter(
+        controller: activityIllustrateController,
+        maxNumberOfBytes: 300,
+        context: context,
+        rules: [],
+        // @回调
+        triggerAtCallback: (String str) {},
+        // #回调
+        triggerTopicCallback: (String str) {},
+        // 关闭@#视图回调
+        shutDownCallback: () async {},
+        valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+            String topicSearchStr, bool isAdd) {});
   }
 
   @override
@@ -196,7 +215,6 @@ class _CreateActivityPageState extends StateKeyboard {
               },
             ),
 
-
             _getSizedBox(height: 8),
 
             //修改参加人数
@@ -245,9 +263,7 @@ class _CreateActivityPageState extends StateKeyboard {
                 return Container(
                   child: Stack(
                     children: [
-                      _getMenuUi(equipmentKey, EquipmentData
-                          .init()
-                          .equipmentList, (value) {
+                      _getMenuUi(equipmentKey, EquipmentData.init().equipmentList, (value) {
                         equipmentKey = value;
                         equipmentStream.sink.add(equipmentKey);
                       }),
@@ -312,7 +328,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取创建活动的布局
   Widget _getCreateActivityBox() {
     return StreamBuilder(
@@ -371,7 +386,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
     double imageWidth = min((ScreenUtil.instance.width - 32) / 5, 45);
@@ -395,7 +409,7 @@ class _CreateActivityPageState extends StateKeyboard {
                         itemCount: snapshot.data.length,
                         scrollDirection: Axis.horizontal,
                         separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                          width: 0.0,
+                              width: 0.0,
                               color: AppColor.mainBlack,
                             ),
                         itemBuilder: (context, index) {
@@ -523,21 +537,28 @@ class _CreateActivityPageState extends StateKeyboard {
       children: [
         Container(
           key: inputBoxKey,
-          height: 104,
+          constraints: BoxConstraints(
+            minHeight: 104,
+          ),
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
-          child: TextField(
+          child: TextSpanField(
             onTap: () {
               equipmentStream.sink.add(equipmentKey);
               joinPermissionsStream.sink.add(selectedPermissionsKey);
             },
+            // 多行展示
+            keyboardType: TextInputType.multiline,
+            //不限制行数
+            maxLines: null,
+            enableInteractiveSelection: true,
             controller: activityIllustrateController,
             cursorColor: AppColor.white,
             style: AppStyle.whiteRegular12,
-            maxLines: null,
-            maxLength: 500,
+            textInputAction: TextInputAction.send,
+            maxLength: 100,
             focusNode: activityIllustrateFocusNode,
             decoration: InputDecoration(
               isDense: true,
@@ -546,7 +567,7 @@ class _CreateActivityPageState extends StateKeyboard {
               hintStyle: AppStyle.text2Regular12,
               border: InputBorder.none,
             ),
-            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
+            inputFormatters: [_formatter],
           ),
         )
       ],
@@ -1003,7 +1024,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   _unfocus() {
     if (titleFocusNode.hasFocus) {
       titleFocusNode.unfocus();
@@ -1013,20 +1033,14 @@ class _CreateActivityPageState extends StateKeyboard {
     }
   }
 
-
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
       ToastShow.show(msg: "最多只能选择$activityImageFileListCount张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(
-        context,
-        activityImageFileListCount - activityImageFileList.length,
-        typeImage,
-        false,
-        startPageGallery,
-        false,
-            (result) {
+        context, activityImageFileListCount - activityImageFileList.length, typeImage, false, startPageGallery, false,
+        (result) {
       SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -1042,7 +1056,6 @@ class _CreateActivityPageState extends StateKeyboard {
       });
     });
   }
-
 
   void getStoragePermision() async {
     var permissionStatus = await Permission.storage.status;
@@ -1086,12 +1099,12 @@ class _CreateActivityPageState extends StateKeyboard {
     if (permissions.isGranted) {
       openSurroundingInformationBottomSheet(
           context: context,
-          onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+          onSeletedAddress: (PeripheralInformationPoi poi) {
             // provinceCity 选择地址名  cityCode 城市码，
-            this.provinceCity = provinceCity;
-            this.cityCode = cityCode;
-            this.longitude = longitude.toString();
-            this.latitude = latitude.toString();
+            this.provinceCity = poi.name;
+            this.cityCode = poi.citycode;
+            this.longitude = poi.location.split(",")[0];
+            this.latitude = poi.location.split(",")[1];
             provinceCityStream.sink.add(provinceCity);
           });
     } else {
@@ -1102,12 +1115,12 @@ class _CreateActivityPageState extends StateKeyboard {
       if (permissions.isGranted) {
         openSurroundingInformationBottomSheet(
             context: context,
-            onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+            onSeletedAddress: (PeripheralInformationPoi poi) {
               // provinceCity 选择地址名  cityCode 城市码，
-              this.provinceCity = provinceCity;
-              this.cityCode = cityCode;
-              this.longitude = longitude.toString();
-              this.latitude = latitude.toString();
+              this.provinceCity = poi.name;
+              this.cityCode = poi.citycode;
+              this.longitude = poi.location.split(",")[0];
+              this.latitude = poi.location.split(",")[1];
               provinceCityStream.sink.add(provinceCity);
             });
       } else {
@@ -1187,6 +1200,17 @@ class _CreateActivityPageState extends StateKeyboard {
       ToastShow.show(msg: "请检查参数", context: context);
       return;
     }
+    // 检测文本
+    Map<String, dynamic> textModel = await feedTextScan(text: activityTitleController.text);
+    if (!textModel["state"]) {
+      ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
+      return;
+    }
+    textModel = await feedTextScan(text: activityIllustrateController.text);
+    if (!textModel["state"]) {
+      ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
+      return;
+    }
 
     if (isCreateActivity) {
       ToastShow.show(msg: "正在创建活动", context: context);
@@ -1197,7 +1221,7 @@ class _CreateActivityPageState extends StateKeyboard {
     ToastShow.show(msg: "正在创建活动请稍等", context: context);
 
     ActivityModel model = await createActivity(
-      title: activityTitleController.text,
+      title: StringUtil.textWrapMatch(activityTitleController.text),
       type: selectActivityType,
       count: joinNumber,
       startTime: getStartTime().millisecondsSinceEpoch,
@@ -1209,7 +1233,7 @@ class _CreateActivityPageState extends StateKeyboard {
       equipment: EquipmentData.init().getIndex(equipmentKey),
       auth: AuthData.init().getIndex(selectedPermissionsKey),
       pic: await onPostImageFile(),
-      description: activityIllustrateController.text,
+      description: StringUtil.textWrapMatch(activityIllustrateController.text),
       uids: _getRecommendUserString(),
     );
 
@@ -1278,6 +1302,4 @@ class _CreateActivityPageState extends StateKeyboard {
       return uids;
     }
   }
-
-
 }

@@ -16,6 +16,7 @@ import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/page/activity/activity_change_address_page.dart';
 import 'package:mirror/page/activity/activity_detail_page.dart';
 import 'package:mirror/page/activity/activity_flow.dart';
 import 'package:mirror/page/activity/activity_user_page.dart';
@@ -94,6 +95,7 @@ import 'package:mirror/page/webview/webview_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
+import 'package:mirror/widget/surrounding_information.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -689,4 +691,14 @@ var handlerActivityUserPage = Handler(handlerFunc: (BuildContext context, Map<St
 //参加过的活动界面
 var handlerMyJoinActivityPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ParticipatedInActivitiesPage();
+});
+
+// 更改地址
+var handlerActivityChangeAddressPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ActivityModel activityModel;
+  if (data['activityModel'] != null) {
+    activityModel = ActivityModel.fromJson(data['activityModel']);
+  }
+  return ActivityChangeAddressPage(activityModel: activityModel);
 });
