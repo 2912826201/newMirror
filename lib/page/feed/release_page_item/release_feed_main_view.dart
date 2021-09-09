@@ -257,7 +257,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                       ),
                     ),
                     // const Spacer(),
-                    SizedBox(width: 18,),
+                    SizedBox(
+                      width: 18,
+                    ),
                     // AppIcon.getAppIcon(AppIcon.arrow_right_18, 18, color: AppColor.textWhite40),
                   ],
                 ),

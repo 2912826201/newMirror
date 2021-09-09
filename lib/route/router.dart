@@ -28,6 +28,7 @@ import 'package:mirror/data/model/training/course_mode.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/event_bus.dart';
+import 'package:mirror/widget/surrounding_information.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -145,6 +146,9 @@ class AppRouter {
   // 参加过的活动
   static String pathMyJoinActivityPage = "/activity_page/participatedInActivitiesPage";
 
+  // 更改活动地点
+  static String pathActivityChangeAddressPage = "/activity_page/activityChangeAddressPage";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -241,6 +245,7 @@ class AppRouter {
     router.define(pathActivityFeedPage, handler: handlerActivityFeedPage);
     router.define(pathActivityUserPage, handler: handlerActivityUserPage);
     router.define(pathMyJoinActivityPage, handler: handlerMyJoinActivityPage);
+    router.define(pathActivityChangeAddressPage, handler: handlerActivityChangeAddressPage);
   }
 
   // 封装了入参，无论入参是什么格式都转成map
@@ -1092,5 +1097,15 @@ class AppRouter {
   static void navigateMyJoinActivityPage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathMyJoinActivityPage, map);
+  }
+
+  // 更改地址
+  static void navigateActivityChangeAddressPage(
+      BuildContext context, ActivityModel activityModel, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
+    if (activityModel != null) {
+      map['activityModel'] = activityModel.toJson();
+    }
+    _navigateToPage(context, pathActivityChangeAddressPage, map, callback: callback);
   }
 }

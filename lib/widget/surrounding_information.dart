@@ -7,6 +7,7 @@ import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -14,7 +15,7 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-typedef SeletedAddress = void Function(String provinceCity, String cityCode, double longitude, double latitude);
+typedef SeletedAddress = void Function(PeripheralInformationPoi poi);
 
 Future openSurroundingInformationBottomSheet({
   @required BuildContext context,
@@ -44,8 +45,9 @@ Future openSurroundingInformationBottomSheet({
 class SurroundingInformationPage extends StatefulWidget {
   SeletedAddress onSeletedAddress;
   bool isChangeAddress;
-  String activityAddress;
-  SurroundingInformationPage({this.onSeletedAddress, this.activityAddress = "天府软件园C区", this.isChangeAddress = false});
+  ActivityModel activityModel;
+
+  SurroundingInformationPage({this.onSeletedAddress, this.activityModel, this.isChangeAddress = false});
 
   @override
   _SurroundingInformationPageState createState() => _SurroundingInformationPageState();
@@ -258,21 +260,14 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
   Widget changeLocationPopup(PeripheralInformationPoi peripheralInformationPoi) {
     return showAppDialog(context,
         title: "更改地点",
-        info: "活动地点由${widget.activityAddress}变更为 ${peripheralInformationPoi.name}",
+        info: "活动地点由${widget.activityModel.address ?? "福年广场"}变更为 ${peripheralInformationPoi.name}",
         confirmColor: AppColor.mainYellow,
+        poi: peripheralInformationPoi,
         cancel: AppDialogButton("取消", () {
           return true;
         }),
         confirm: AppDialogButton("确定", () {
-          widget.onSeletedAddress(
-              peripheralInformationPoi.name,
-              peripheralInformationPoi.citycode,
-              double.parse(peripheralInformationPoi.location.split(",")[0]),
-              double.parse(peripheralInformationPoi.location.split(",")[1]));
-          Navigator.pop(
-            context,
-          );
-          // AppSettings.openLocationSettings();
+          Navigator.pop(context);
           return true;
         }));
   }
@@ -304,17 +299,9 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
                                       : pois[index]);
                                 } else {
                                   if (searchController.text != null && searchController.text.isNotEmpty) {
-                                    widget.onSeletedAddress(
-                                        searchPois[index].name,
-                                        searchPois[index].citycode,
-                                        double.parse(searchPois[index].location.split(",")[0]),
-                                        double.parse(searchPois[index].location.split(",")[1]));
+                                    widget.onSeletedAddress(searchPois[index]);
                                   } else {
-                                    widget.onSeletedAddress(
-                                        pois[index].name,
-                                        pois[index].citycode,
-                                        double.parse(pois[index].location.split(",")[0]),
-                                        double.parse(pois[index].location.split(",")[1]));
+                                    widget.onSeletedAddress(pois[index]);
                                   }
                                   Navigator.pop(
                                     context,

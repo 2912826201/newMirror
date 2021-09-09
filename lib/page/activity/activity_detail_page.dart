@@ -8,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/activity/detail_item/detail_activity_bottom_ui.dart';
 import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
@@ -199,7 +200,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           Application.profile != null &&
           activityModel.masterId == Application.profile.uid,
       children: [
-          //顶部图片
+        //顶部图片
         // _getTopImage(),
 
         SizedBox(height: 12),
@@ -413,24 +414,23 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                 }
               });
         } else if (list[index] == "更改地址") {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ActivityChangeAddressPage(
-              onSeletedAddress: (provinceCity, cityCode, longitude, latitude) async {
-                List list = await ActivityUtil.init().updateActivityUtil(activityModel,
-                    address: provinceCity,
-                    cityCode: cityCode,
-                    longitude: longitude.toString(),
-                    latitude: latitude.toString());
-                if (list[0]) {
-                  activityModel = list[2];
-                  setState(() {});
-                  ToastShow.show(msg: "修改地址成功", context: context);
-                } else {
-                  ToastShow.show(msg: "${list[1]}", context: context);
-                }
-              },
-            );
-          }));
+          AppRouter.navigateActivityChangeAddressPage(context, activityModel, (result) async {
+            print(result);
+            PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+            print("poi：：：：：$poi");
+            List list = await ActivityUtil.init().updateActivityUtil(activityModel,
+                address: poi.name,
+                cityCode: poi.citycode,
+                longitude: poi.location.split(",")[0],
+                latitude: poi.location.split(",")[1]);
+            if (list[0]) {
+              activityModel = list[2];
+              setState(() {});
+              ToastShow.show(msg: "修改地址成功", context: context);
+            } else {
+              ToastShow.show(msg: "${list[1]}", context: context);
+            }
+          });
         } else if (list[index] == "踢出团队成员") {
           if (activityModel != null && activityModel.members != null && activityModel.members.length > 0) {
             // AppRouter.navigateRemoveUserPage(context, activityModel.id,activityModel.members);

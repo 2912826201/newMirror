@@ -179,13 +179,13 @@ class BottomopupState extends State<BottomPopup> {
       // 除开取消的最后一个
       if (index == listLength - 1) {
         decoration = const BoxDecoration(
-          border: Border(top: BorderSide(width: 0.5, color:AppColor.mainBlack)),
+          border: Border(top: BorderSide(width: 0.5, color:AppColor.dividerWhite8)),
           color: AppColor.layoutBgGrey, // 底色
         );
       } else if (index >= 1) {
         decoration = const BoxDecoration(
           color: AppColor.layoutBgGrey, // 底色
-          border: Border(top: BorderSide(width: 0.5, color: AppColor.mainBlack)),
+          border: Border(top: BorderSide(width: 0.5, color: AppColor.dividerWhite8)),
         );
       }
     }

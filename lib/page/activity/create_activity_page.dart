@@ -17,6 +17,7 @@ import 'package:mirror/data/model/activity/auth_data.dart';
 import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -215,7 +216,6 @@ class _CreateActivityPageState extends StateKeyboard {
               },
             ),
 
-
             _getSizedBox(height: 8),
 
             //修改参加人数
@@ -264,9 +264,7 @@ class _CreateActivityPageState extends StateKeyboard {
                 return Container(
                   child: Stack(
                     children: [
-                      _getMenuUi(equipmentKey, EquipmentData
-                          .init()
-                          .equipmentList, (value) {
+                      _getMenuUi(equipmentKey, EquipmentData.init().equipmentList, (value) {
                         equipmentKey = value;
                         equipmentStream.sink.add(equipmentKey);
                       }),
@@ -331,7 +329,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取创建活动的布局
   Widget _getCreateActivityBox() {
     return StreamBuilder(
@@ -390,7 +387,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   //获取推荐好友
   Widget _getRecommendAFriendUi() {
     double imageWidth = min((ScreenUtil.instance.width - 32) / 5, 45);
@@ -414,7 +410,7 @@ class _CreateActivityPageState extends StateKeyboard {
                         itemCount: snapshot.data.length,
                         scrollDirection: Axis.horizontal,
                         separatorBuilder: (BuildContext context, int index) => VerticalDivider(
-                          width: 0.0,
+                              width: 0.0,
                               color: AppColor.mainBlack,
                             ),
                         itemBuilder: (context, index) {
@@ -1029,7 +1025,6 @@ class _CreateActivityPageState extends StateKeyboard {
     );
   }
 
-
   _unfocus() {
     if (titleFocusNode.hasFocus) {
       titleFocusNode.unfocus();
@@ -1039,20 +1034,14 @@ class _CreateActivityPageState extends StateKeyboard {
     }
   }
 
-
   //从相册获取照片
   _getImage() {
     if (activityImageFileList.length == activityImageFileListCount) {
       ToastShow.show(msg: "最多只能选择$activityImageFileListCount张图片哦~", context: context);
     }
     AppRouter.navigateToMediaPickerPage(
-        context,
-        activityImageFileListCount - activityImageFileList.length,
-        typeImage,
-        false,
-        startPageGallery,
-        false,
-            (result) {
+        context, activityImageFileListCount - activityImageFileList.length, typeImage, false, startPageGallery, false,
+        (result) {
       SelectedMediaFiles files = RuntimeProperties.selectedMediaFiles;
       if (!result || files == null) {
         print('===============================值为空退回');
@@ -1068,7 +1057,6 @@ class _CreateActivityPageState extends StateKeyboard {
       });
     });
   }
-
 
   void getStoragePermision() async {
     var permissionStatus = await Permission.storage.status;
@@ -1112,12 +1100,12 @@ class _CreateActivityPageState extends StateKeyboard {
     if (permissions.isGranted) {
       openSurroundingInformationBottomSheet(
           context: context,
-          onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+          onSeletedAddress: (PeripheralInformationPoi poi) {
             // provinceCity 选择地址名  cityCode 城市码，
-            this.provinceCity = provinceCity;
-            this.cityCode = cityCode;
-            this.longitude = longitude.toString();
-            this.latitude = latitude.toString();
+            this.provinceCity = poi.name;
+            this.cityCode = poi.citycode;
+            this.longitude = poi.location.split(",")[0];
+            this.latitude = poi.location.split(",")[1];
             provinceCityStream.sink.add(provinceCity);
           });
     } else {
@@ -1128,12 +1116,12 @@ class _CreateActivityPageState extends StateKeyboard {
       if (permissions.isGranted) {
         openSurroundingInformationBottomSheet(
             context: context,
-            onSeletedAddress: (provinceCity, cityCode, longitude, latitude) {
+            onSeletedAddress: (PeripheralInformationPoi poi) {
               // provinceCity 选择地址名  cityCode 城市码，
-              this.provinceCity = provinceCity;
-              this.cityCode = cityCode;
-              this.longitude = longitude.toString();
-              this.latitude = latitude.toString();
+              this.provinceCity = poi.name;
+              this.cityCode = poi.citycode;
+              this.longitude = poi.location.split(",")[0];
+              this.latitude = poi.location.split(",")[1];
               provinceCityStream.sink.add(provinceCity);
             });
       } else {
@@ -1307,6 +1295,4 @@ class _CreateActivityPageState extends StateKeyboard {
       return uids;
     }
   }
-
-
 }
