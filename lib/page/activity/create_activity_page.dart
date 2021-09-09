@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:keyboard_service/keyboard_service.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/runtime_properties.dart';
 import 'package:mirror/constant/color.dart';
@@ -24,6 +25,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/activity_time_chose_bottom_sheet.dart';
@@ -31,6 +33,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:mirror/widget/surrounding_information.dart';
 import 'package:mirror/widget/text_span_field/text_span_field.dart';
@@ -105,10 +108,25 @@ class _CreateActivityPageState extends StateKeyboard {
   bool isReadInformation = false;
   StreamController<bool> readInformationStream = StreamController<bool>();
 
+  ReleaseFeedInputFormatter _formatter;
+
   @override
   void initState() {
     super.initState();
     _initData();
+    _formatter = ReleaseFeedInputFormatter(
+        controller: activityIllustrateController,
+        maxNumberOfBytes: 300,
+        context: context,
+        rules: [],
+        // @回调
+        triggerAtCallback: (String str) {},
+        // #回调
+        triggerTopicCallback: (String str) {},
+        // 关闭@#视图回调
+        shutDownCallback: () async {},
+        valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+            String topicSearchStr, bool isAdd) {});
   }
 
   @override
@@ -523,21 +541,28 @@ class _CreateActivityPageState extends StateKeyboard {
       children: [
         Container(
           key: inputBoxKey,
-          height: 104,
+          constraints: BoxConstraints(
+            minHeight: 104,
+          ),
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.layoutBgGrey),
-          child: TextField(
+          child: TextSpanField(
             onTap: () {
               equipmentStream.sink.add(equipmentKey);
               joinPermissionsStream.sink.add(selectedPermissionsKey);
             },
+            // 多行展示
+            keyboardType: TextInputType.multiline,
+            //不限制行数
+            maxLines: null,
+            enableInteractiveSelection: true,
             controller: activityIllustrateController,
             cursorColor: AppColor.white,
             style: AppStyle.whiteRegular12,
-            maxLines: null,
-            maxLength: 500,
+            textInputAction: TextInputAction.send,
+            maxLength: 100,
             focusNode: activityIllustrateFocusNode,
             decoration: InputDecoration(
               isDense: true,
@@ -546,7 +571,7 @@ class _CreateActivityPageState extends StateKeyboard {
               hintStyle: AppStyle.text2Regular12,
               border: InputBorder.none,
             ),
-            inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 500)],
+            inputFormatters: [_formatter],
           ),
         )
       ],
@@ -1187,6 +1212,17 @@ class _CreateActivityPageState extends StateKeyboard {
       ToastShow.show(msg: "请检查参数", context: context);
       return;
     }
+    // 检测文本
+    Map<String, dynamic> textModel = await feedTextScan(text: activityTitleController.text);
+    if (!textModel["state"]) {
+      ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
+      return;
+    }
+    textModel = await feedTextScan(text: activityIllustrateController.text);
+    if (!textModel["state"]) {
+      ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
+      return;
+    }
 
     if (isCreateActivity) {
       ToastShow.show(msg: "正在创建活动", context: context);
@@ -1197,7 +1233,7 @@ class _CreateActivityPageState extends StateKeyboard {
     ToastShow.show(msg: "正在创建活动请稍等", context: context);
 
     ActivityModel model = await createActivity(
-      title: activityTitleController.text,
+      title: StringUtil.textWrapMatch(activityTitleController.text),
       type: selectActivityType,
       count: joinNumber,
       startTime: getStartTime().millisecondsSinceEpoch,
@@ -1209,7 +1245,7 @@ class _CreateActivityPageState extends StateKeyboard {
       equipment: EquipmentData.init().getIndex(equipmentKey),
       auth: AuthData.init().getIndex(selectedPermissionsKey),
       pic: await onPostImageFile(),
-      description: activityIllustrateController.text,
+      description: StringUtil.textWrapMatch(activityIllustrateController.text),
       uids: _getRecommendUserString(),
     );
 

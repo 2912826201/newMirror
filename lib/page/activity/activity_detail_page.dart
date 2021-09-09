@@ -246,12 +246,11 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               SingleChildScrollView(
                 child: Container(
                   width: double.infinity,
-                  height: 104,
                   decoration: BoxDecoration(
                     color: AppColor.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  padding: EdgeInsets.only(top: 26, bottom: 18, right: 10, left: 10),
+                  padding: EdgeInsets.all(10),
                   child: Text(activityModel.description, style: AppStyle.text1Regular14),
                 ),
               ),
@@ -293,12 +292,10 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
             ],
           ),
         ),
+        SizedBox(height: 20),
       ],
       onrefresh: () {
-        print('-----------------onrefresh');
-        Future.delayed(Duration(milliseconds: 5000), () {
-          pullDownKey.currentState.refreshCompleted();
-        });
+        _initData();
       },
       actionTap: () {},
     );
@@ -375,6 +372,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   _initData() async {
     activityModel = await getActivityDetailApi(widget.activityId);
     setState(() {
+      if (pullDownKey != null && pullDownKey.currentState != null) {
+        pullDownKey.currentState.refreshCompleted();
+      }
       if (activityModel == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
       } else {

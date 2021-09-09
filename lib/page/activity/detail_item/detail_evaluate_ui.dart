@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/activity/activity_api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_evaluate_model.dart';
@@ -17,6 +18,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/input_formatter/expression_team_delete_formatter.dart';
+import 'package:mirror/widget/input_formatter/release_feed_input_formatter.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 
 import 'grade_start_ui.dart';
@@ -39,6 +41,27 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   List<ActivityEvaluateModel> evaluateList = [];
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
   GlobalKey<EvaluateListUiState> childKey = GlobalKey();
+
+  ReleaseFeedInputFormatter _formatter;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _formatter = ReleaseFeedInputFormatter(
+        controller: controller,
+        maxNumberOfBytes: 300,
+        context: context,
+        rules: [],
+        // @回调
+        triggerAtCallback: (String str) {},
+        // #回调
+        triggerTopicCallback: (String str) {},
+        // 关闭@#视图回调
+        shutDownCallback: () async {},
+        valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+            String topicSearchStr, bool isAdd) {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +89,9 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   Widget haveEvaluate() {
     if (evaluateList.length < 1 && loadingStatus == LoadingStatus.STATUS_IDEL) {
       _getEvaluateList();
+    }
+    if (evaluateList.length < 1) {
+      return Container();
     }
     return Container(
       decoration: BoxDecoration(
@@ -183,7 +209,9 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
 
   Widget _getEdit() {
     return Container(
-      height: 60,
+      constraints: BoxConstraints(
+        minHeight: 60,
+      ),
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 16),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
@@ -192,17 +220,19 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
         cursorColor: AppColor.white,
         style: AppStyle.whiteRegular12,
         maxLines: null,
-        maxLength: 50,
+        maxLength: 100,
         controller: controller,
+        enableInteractiveSelection: true,
+        textInputAction: TextInputAction.send,
         focusNode: widget.inputEvaluateFocusNode,
         decoration: InputDecoration(
           isDense: true,
           counterText: '',
-          hintText: "活动说明...",
+          hintText: "活动评价",
           hintStyle: AppStyle.text2Regular12,
           border: InputBorder.none,
         ),
-        inputFormatters: [ExpressionTeamDeleteFormatter(maxLength: 50)],
+        inputFormatters: [_formatter],
       ),
     );
   }
@@ -210,6 +240,12 @@ class _DetailEvaluateUiState extends State<DetailEvaluateUi> {
   _publishEvaluate() async {
     if (controller.text == null || controller.text.length < 1) {
       ToastShow.show(msg: "发布的内容为空", context: context);
+      return;
+    }
+    // 检测文本
+    Map<String, dynamic> textModel = await feedTextScan(text: controller.text);
+    if (!textModel["state"]) {
+      ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
       return;
     }
     if (widget.inputEvaluateFocusNode.hasFocus) {
