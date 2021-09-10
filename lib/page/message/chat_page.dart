@@ -238,6 +238,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     super.initState();
     //print("ChatPage-initState");
 
+    print("chatId:${conversation.conversationId}");
+
     WidgetsBinding.instance.addObserver(this);
 
     //设置这个群聊

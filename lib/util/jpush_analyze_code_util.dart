@@ -112,7 +112,7 @@ class JpushAnalyzeCodeUtil {
           int type = int.parse(params["type"]);
           _jumpAppPage(type, context);
         } catch (e) {
-          print("极光代码解析----跳转聊天界面--参数错误:code:$code");
+          print("极光代码解析----跳转app界面--参数错误:code:$code");
         }
         break;
       case "if://redirect/chat":
@@ -123,6 +123,15 @@ class JpushAnalyzeCodeUtil {
           _jumpChatPageJudgeType(targetId, type, context);
         } catch (e) {
           print("极光代码解析----跳转聊天界面--参数错误:code:$code");
+        }
+        break;
+      case "if://redirect/activity":
+        print("极光代码解析----跳转活动详情页:code:$code");
+        try {
+          int activityId = int.parse(params["activityId"]);
+          AppRouter.navigateActivityDetailPage(context, activityId);
+        } catch (e) {
+          print("极光代码解析----跳转活动详情页--参数错误:code:$code");
         }
         break;
     }
@@ -140,31 +149,35 @@ class JpushAnalyzeCodeUtil {
   ///[JumpAppPageModel]
   void _jumpAppPage(int type, BuildContext context) {
     switch (type) {
-      case 1:
+      case JumpAppPageModel.AttentionPage:
         //关注页
         print("极光代码解析-app界面-关注页");
         break;
-      case 2:
+      case JumpAppPageModel.RecommendPage:
         //推荐页
         print("极光代码解析-app界面-推荐页");
         break;
-      case 3:
+      case JumpAppPageModel.TrainingPage:
         //训练页
         print("极光代码解析-app界面-训练页");
         break;
-      case 4:
+      case JumpAppPageModel.MessagePage:
         //消息页
         print("极光代码解析-app界面-消息页");
         break;
-      case 5:
+      case JumpAppPageModel.ProfilePage:
         //我的页面
         print("极光代码解析-app界面-我的页面");
+        break;
+      case JumpAppPageModel.ActivityPage:
+        //我的页面
+        print("极光代码解析-app界面-活动页面");
         break;
       default:
         print("极光代码解析-app界面-未知界面");
         break;
     }
-    if (type > 0 && type < 6) {
+    if (type > 0 && type <= JumpAppPageModel.PageSize) {
       JumpAppPageUtil.init(context).jumpPageType(type);
     }
   }
@@ -184,7 +197,7 @@ class JpushAnalyzeCodeUtil {
         print("极光代码解析-聊天--群聊");
         List<GroupChatModel> list = await getGroupChatByIds(id: targetId);
         if (list != null && list.length > 0) {
-          jumpGroupPage(context, list.first.name, targetId);
+          jumpChatPageConversationDto(context, ConversationDto.fromGroupChat(list.first));
         } else {
           print("极光代码解析-聊天--群聊-群聊信息为空targetId:$targetId");
         }
