@@ -41,10 +41,18 @@ class ActivityTypeData {
     return null;
   }
 
+  //传入 运动项目的名字
+  //两个路径 - 0是有白色背景透明度的 图片
+  //1是 没有背景 只有运动项目的icon 图片
+  //请使用 Image.asset
   List<String> getIconString(String string) {
     return activityTypeMap[string];
   }
 
+  //传入 第几个运动项目 index
+  //两个路径 - 0是有白色背景透明度的 图片
+  //1是 没有背景 只有运动项目的icon 图片
+  //请使用 Image.asset
   List<String> getIconStringIndex(int index) {
     return getIconString(getString(index));
   }
