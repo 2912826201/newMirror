@@ -229,7 +229,8 @@ class _ActivityFlowState extends State<ActivityFlow> with TickerProviderStateMix
 
   // 发布按钮
   Widget _gotoRelease() {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         if (!context.read<TokenNotifier>().isLoggedIn) {
           AppRouter.navigateToLoginPage(context);

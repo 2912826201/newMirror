@@ -15,6 +15,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -432,8 +433,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     return Dragball(
         withIcon: false,
         ball: Container(
-          child: PressableDough(
-              child: FloatingActionButton(
+          child: FloatingActionButton(
             child: const Icon(
               Icons.add,
               size: 25,
@@ -447,7 +447,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               AppRouter.navigateCreateActivityPage(context);
             },
             mini: true,
-          )),
+          ),
         ),
         ballSize: 50,
         startFromRight: true,
@@ -539,30 +539,6 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                               index: index,
                             );
                           })),
-          // floatingActionButton: new Builder(builder: (BuildContext context) {
-          //   return new FloatingActionButton(
-          //     child: const Icon(
-          //       Icons.add,
-          //       size: 25,
-          //     ),
-          //     foregroundColor: AppColor.mainBlack,
-          //     backgroundColor: AppColor.white,
-          //     elevation: 7.0,
-          //     highlightElevation: 14.0,
-          //     isExtended: false,
-          //     onPressed: () {
-          //       if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-          //         ToastShow.show(msg: "请先登录app!", context: context);
-          //         AppRouter.navigateToLoginPage(context);
-          //         return;
-          //       } else {
-          //         // 跳转创建活动
-          //         AppRouter.navigateCreateActivityPage(context);
-          //       }
-          //     },
-          //     mini: true,
-          //   );
-          // }),
         ));
   }
 }
@@ -863,24 +839,41 @@ class _ActivityListItem extends State<ActivityListItem> {
                 clipper: ShapeBorderClipper(
                   shape: ClipImageLeftCorner(),
                 ),
-                child: CachedNetworkImage(
-                  /// imageUrl的淡入动画的持续时间。
-                  width: 121,
-                  height: 121,
-                  fadeInDuration: Duration(milliseconds: 0),
-                  fit: BoxFit.cover,
-                  // useOldImageOnUrlChange: true,
-                  imageUrl: FileUtil.getMediumImage(widget.activityModel.pic),
-                  placeholder: (context, url) {
-                    return Container(
-                      color: AppColor.imageBgGrey,
-                    );
-                  },
-                  errorWidget: (context, url, e) {
-                    return Container(
-                      color: AppColor.imageBgGrey,
-                    );
-                  },
+                child: Stack(
+                  children: [
+                    CachedNetworkImage(
+                      /// imageUrl的淡入动画的持续时间。
+                      width: 121,
+                      height: 121,
+                      fadeInDuration: Duration(milliseconds: 0),
+                      fit: BoxFit.cover,
+                      // useOldImageOnUrlChange: true,
+                      imageUrl: FileUtil.getMediumImage(widget.activityModel.pic),
+                      placeholder: (context, url) {
+                        return Container(
+                          color: AppColor.imageBgGrey,
+                        );
+                      },
+                      errorWidget: (context, url, e) {
+                        return Container(
+                          color: AppColor.imageBgGrey,
+                        );
+                      },
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColor.mainBlue,
+                          borderRadius: BorderRadius.circular((15.0)),
+                        ),
+                        child:  Image.asset(ActivityTypeData.init().getIconStringIndex(widget.activityModel.type)[1],
+                            width: 30, height: 30),
+                      ),
+                    )
+
+                  ],
                 ),
               ),
               SizedBox(
