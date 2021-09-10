@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 
 import 'bottom_sheet.dart';
+import 'icon.dart';
 
 typedef OnChoseCallBack = void Function(int);
 
@@ -67,29 +69,83 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 276 + ScreenUtil.instance.bottomBarHeight,
+      height: 376 + ScreenUtil.instance.bottomBarHeight,
       width: double.infinity,
-      padding: EdgeInsets.only(top: 16,bottom: ScreenUtil.instance.bottomBarHeight),
+      padding: EdgeInsets.only(top: 16, bottom: ScreenUtil.instance.bottomBarHeight, left: 16, right: 16),
       decoration: BoxDecoration(
           color: AppColor.layoutBgGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Column(
         children: [
           _text(AppStyle.whiteRegular16, "修改参加人数"),
+          SizedBox(
+            height: 8,
+          ),
+          _hintText(),
+          SizedBox(
+            height: 8,
+          ),
           _pickerUserNumber(),
           SizedBox(
-            height: 20,
+            height: 12,
           ),
           GestureDetector(
-            child: _text(AppStyle.whiteRegular16, "确定"),
+            child: _bottomButton("确定"),
             onTap: () {
               widget.onChoseCallBack(userNumberList[selectIndex]);
               Navigator.pop(context);
             },
           ),
-          SizedBox(height:16,)
+          GestureDetector(
+            child: _bottomButton("取消"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _hintText() {
+    String title = "活动开始三小时内不能修改参加人数，且只能修改一次";
+    String beforResult = "";
+    String afterResult = "";
+    title.characters.toList().forEach((element) {
+      Size size = getTextSize(beforResult + element, AppStyle.text1Regular14, 1);
+      if (size.width <= ScreenUtil.instance.width - 58) {
+        beforResult += element;
+      } else {
+        afterResult += element;
+      }
+    });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 2),
+              child: AppIcon.getAppIcon(
+                AppIcon.error_circle,
+                16,
+                color: AppColor.mainRed,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(child: Text(beforResult, style: AppStyle.text1Regular14))
+          ],
+        ),
+        afterResult.length > 0
+            ? Container(
+                margin: EdgeInsets.only(left: 26),
+                child: Text(afterResult, style: AppStyle.text1Regular14),
+              )
+            : Container()
+      ],
     );
   }
 
@@ -100,6 +156,18 @@ class _ChangeInsertUserBottomSheetState extends State<ChangeInsertUserBottomShee
         child: Text(
           text,
           style: style,
+        ),
+      ),
+    );
+  }
+
+  Widget _bottomButton(String text) {
+    return Container(
+      height: 50,
+      child: Center(
+        child: Text(
+          text,
+          style: AppStyle.whiteRegular17,
         ),
       ),
     );

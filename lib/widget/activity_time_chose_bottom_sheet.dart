@@ -17,7 +17,7 @@ Future openActivityTimePickerBottomSheet(
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      backgroundColor: AppColor.layoutBgGrey,
+      backgroundColor: AppColor.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
@@ -71,18 +71,54 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 255 + ScreenUtil.instance.bottomBarHeight,
+      height: 379 + ScreenUtil.instance.bottomBarHeight,
       width: ScreenUtil.instance.width,
+      padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topRight: Radius.circular(12), topLeft: Radius.circular(12)),
-          color: AppColor.layoutBgGrey),
+        color: AppColor.layoutBgGrey,
+        borderRadius: BorderRadius.only(topRight: Radius.circular(12), topLeft: Radius.circular(12)),
+      ),
       child: Column(
         children: [
-          _titleWidget(),
-          Row(
-            children: _timePickerList(),
-          )
+          Container(
+            color: AppColor.layoutBgGrey,
+            child: Column(
+              children: [
+                _titleWidget(),
+                Row(
+                  children: _timePickerList(),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          _bottomButton("确定"),
+          _bottomButton("取消"),
         ],
+      ),
+    );
+  }
+
+  Widget _bottomButton(String title) {
+    return GestureDetector(
+      onTap: () {
+        if (title == "确定") {
+          widget.onStartAndEndTimeChoseCallBack(
+              startDateTimeList[fixedContrlList[0].selectedItem], endDateTimeList[fixedContrlList[2].selectedItem]);
+        }
+        Navigator.pop(context);
+      },
+      child: Container(
+        height: 44,
+        width: ScreenUtil.instance.width,
+        child: Center(
+          child: Text(
+            title,
+            style:AppStyle.whiteRegular16,
+          ),
+        ),
       ),
     );
   }
@@ -152,18 +188,11 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
               case 2:
                 _scrollChangeNotify(fixedContrlList[0].selectedItem);
                 break;
-              case 3:
-                endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
-                    .add(Duration(milliseconds: -endDateTimeList[fixedContrlList[2].selectedItem].minute));
-                endDateTimeList[fixedContrlList[2].selectedItem] =
-                    endDateTimeList[fixedContrlList[2].selectedItem].add(Duration(milliseconds: endMinuteList[index]));
-                break;
             }
             endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
                 .add(Duration(minutes: -endDateTimeList[fixedContrlList[2].selectedItem].minute));
-            widget.onStartAndEndTimeChoseCallBack(
-                startDateTimeList[fixedContrlList[0].selectedItem],endDateTimeList[fixedContrlList[2].selectedItem]
-                .add(Duration(minutes: endMinuteList[fixedContrlList[3].selectedItem])) );
+            endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
+                .add(Duration(minutes: endMinuteList[fixedContrlList[3].selectedItem]));
           },
           children: List.generate(unit == "时" ? dateList.length : minuteList.length, (index) {
             return _timeItem(unit == "时" ? dateList[index].hour : minuteList[index], unit);
