@@ -44,4 +44,8 @@ class ActivityTypeData {
   List<String> getIconString(String string) {
     return activityTypeMap[string];
   }
+
+  List<String> getIconStringIndex(int index) {
+    return getIconString(getString(index));
+  }
 }

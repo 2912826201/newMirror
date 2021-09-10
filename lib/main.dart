@@ -76,7 +76,7 @@ void main() {
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => FlutterBugly.postCatchedException(() {
-    GestureBinding.instance.resamplingEnabled = false;
+    // GestureBinding.instance.resamplingEnabled = true;
     runApp(
           MultiProvider(
             providers: [
