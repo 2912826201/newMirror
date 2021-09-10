@@ -246,6 +246,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.0"
+  dough:
+    dependency: "direct main"
+    description:
+      name: dough
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   english_words:
     dependency: "direct main"
     description:
@@ -253,6 +260,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.3"
   extended_image:
     dependency: "direct main"
     description:

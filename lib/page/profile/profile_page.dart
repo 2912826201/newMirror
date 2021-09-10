@@ -211,7 +211,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
      _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_achievement, 24), "我的成就"),*/
         if (AppConfig.env == Env.DEV)
           _bottomSetting(AppIcon.getAppIcon(AppIcon.profile_course, 24, color: AppColor.white), "测试"),
-
+/*
         StreamBuilder<double>(
             initialData: 0,
             stream: bottomStreamController.stream,
@@ -224,7 +224,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   height: snapshot.data,
                 ),
               );
-            })
+            })*/
       ],
     );
   }
@@ -285,10 +285,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                                 style: AppStyle.whiteBold40,
                               ),
                               if (title == "体重记录")
-                                Text(
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  child: Text(
                                   "kg",
                                   style: AppStyle.whiteMedium14,
-                                )
+                                ),)
                             ],
                           ),
                     SizedBox(
@@ -299,10 +301,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                             number != 0 && number != null ? "$number" : "--",
                             style: AppStyle.whiteMedium14,
                           )
-                        : Text(
-                            unit,
-                            style: AppStyle.text1Regular12,
-                          )
+                        :  Text(
+                              unit,
+                              style: AppStyle.text1Regular12,
+                    )
                   ],
                 ),
               )
@@ -332,90 +334,32 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里设置高斯模糊和白蒙层
   Widget _blurrectAvatar() {
-    return StreamBuilder<double>(
-        initialData: 0,
-        stream: topStreamController.stream,
-        builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
-          /*  return AnimatedContainer(
-            duration: Duration(milliseconds: getAnimateOffset(snapshot)),
-            curve: Curves.linear,
-            height: gaussianBlurHeight + 72 + snapshot.data,
-            child: Container(
-              height: gaussianBlurHeight + 72 + snapshot.data,
-              width: width,
-              child: Stack(
-                children: [
-                  Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-                    print("头像地址:$avatar");
-                    return AnimatedContainer(
-                        duration: Duration(milliseconds: getAnimateOffset(snapshot)),
-                        curve: Curves.linear,
-                        height: gaussianBlurHeight + snapshot.data,
-                        child: CachedNetworkImage(
-                          height: gaussianBlurHeight + snapshot.data,
-                          width: width,
-                          imageUrl: avatar != null ? avatar : "",
-                          fit: BoxFit.none,
-                          placeholder: (context, url) => Container(
-                            color: AppColor.bgWhite,
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: AppColor.bgWhite,
-                          ),
-                        ));
-                  }, selector: (context, notifier) {
-                    return notifier.profile.avatarUri;
-                  }),
-                  Positioned(
-                      child: AnimatedContainer(
-                          duration: Duration(milliseconds: getAnimateOffset(snapshot)),
-                          curve: Curves.linear,
-                          height: gaussianBlurHeight + snapshot.data,
-                          child: Container(
-                            width: width,
-                            height: gaussianBlurHeight + snapshot.data,
-                            color: AppColor.white.withOpacity(0.6),
-                          ))),*/
-          return AnimatedContainer(
-              duration: Duration(milliseconds: getAnimateOffset(snapshot)),
-              curve: Curves.linear,
-              height: gaussianBlurHeight + 72 + snapshot.data,
-              child: Container(
-                width: width,
-                height: gaussianBlurHeight + 72 + snapshot.data,
-                clipBehavior: Clip.hardEdge,
-                // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
-                decoration: BoxDecoration(),
-                child:
-                    /*BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-                          child:*/
-                    Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: ScreenUtil.instance.statusBarHeight,
-                    ),
-                    SizedBox(
-                      height: CustomAppBar.appBarHeight,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _getUserImage(),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _userFollowRow(),
-                  ],
-                ),
-                /*),*/
-              ));
-          /* ],
-              ),
-            ),
-          );*/
-        });
+    return Container(
+      width: width,
+      height: gaussianBlurHeight + 72,
+      clipBehavior: Clip.hardEdge,
+      // note Container 的属性clipBehavior不为Clip.none需要设置decoration不然会崩溃
+      decoration: BoxDecoration(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            height: ScreenUtil.instance.statusBarHeight,
+          ),
+          SizedBox(
+            height: CustomAppBar.appBarHeight,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          _getUserImage(),
+          SizedBox(
+            height: 12,
+          ),
+          _userFollowRow(),
+        ],
+      ),
+    );
   }
 
   //底部功能列表

@@ -221,20 +221,23 @@ class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with 
     }
     list.addAll(widget.children);
     //补上面偏移的高度
-    list.add(SizedBox(height: overflowHeight,));
+    list.add(SizedBox(
+      height: overflowHeight,
+    ));
     return Container(
         height: ScreenUtil.instance.height,
         width: ScreenUtil.instance.width,
         child: Transform.translate(
           offset: Offset(0, -overflowHeight),
-          child:SingleChildScrollView(
-          controller: scrollController,
-          child: Column(
-            children: List.generate(list.length, (index) {
-              return list[index];
-            }),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              children: List.generate(list.length, (index) {
+                return list[index];
+              }),
+            ),
           ),
-        ) ,));
+        ));
   }
 
   Widget _topLoding() {

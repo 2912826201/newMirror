@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dough/dough.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
@@ -19,6 +20,7 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/activity/util/activity_default_map.dart';
 import 'package:mirror/page/activity/util/activity_loading.dart';
+import 'package:mirror/page/message/widget/dragball.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -427,106 +429,141 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.mainBlack,
-      appBar: CustomAppBar(
-        titleString: "活动",
-        leading: headView(),
-        actions: [
-          MenuButton(
-            menuButtonBackgroundColor: AppColor.mainBlack,
-            itemBackgroundColor: AppColor.mainBlack,
-            child: normalChildButton(),
-            topDivider: false,
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColor.dividerWhite8),
-              borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
+    return Dragball(
+        withIcon: false,
+        ball: Container(
+          child: PressableDough(
+              child: FloatingActionButton(
+            child: const Icon(
+              Icons.add,
+              size: 25,
             ),
-            divider: const Divider(
-              height: 0.5,
-              color: AppColor.dividerWhite8,
-            ),
-            // Container(),
-            items: keys,
-            itemBuilder: (ActivityFilter value) => Container(
-                color: AppColor.layoutBgGrey,
-                height: 22,
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      enumerateParsedText(value),
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
-                    ),
-                  ],
-                )),
-            toggledChild: Container(
-              child: normalChildButton(),
-            ),
-            onItemSelected: (ActivityFilter value) {
-              selectedKey = value;
-              requestActivity(isRefresh: true);
-              // setState(() {});
-            },
-            // onMenuButtonToggle: (bool isToggle) {
-            //   print(isToggle);
-            // },
-          ),
-        ],
-      ),
-      body: isShowDefaultMap == null
-          ? ActivityLoading()
-          : SmartRefresher(
-              enablePullUp: true,
-              enablePullDown: true,
-              footer: SmartRefresherHeadFooter.init().getFooter(),
-              header: SmartRefresherHeadFooter.init().getHeader(),
-              controller: _refreshController,
-              onLoading: () {
-                requestActivity(isRefresh: false);
-              },
-              onRefresh: () {
-                requestActivity(isRefresh: true);
-              },
-              child: isShowDefaultMap
-                  ? ActivityDefaultMap()
-                  : ListView.builder(
-                      itemCount: activityList.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        interceptText(activityList[index]);
-                        return ActivityListItem(
-                          activityModel: activityList[index],
-                          index: index,
-                        );
-                      })),
-      floatingActionButton: new Builder(builder: (BuildContext context) {
-        return new FloatingActionButton(
-          child: const Icon(
-            Icons.add,
-            size: 25,
-          ),
-          foregroundColor: AppColor.mainBlack,
-          backgroundColor: AppColor.white,
-          elevation: 7.0,
-          highlightElevation: 14.0,
-          onPressed: () {
-            if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
-              ToastShow.show(msg: "请先登录app!", context: context);
-              AppRouter.navigateToLoginPage(context);
-              return;
-            } else {
-              // 跳转创建活动
+            foregroundColor: AppColor.mainBlack,
+            backgroundColor: AppColor.white,
+            elevation: 7.0,
+            highlightElevation: 14.0,
+            isExtended: false,
+            onPressed: () {
               AppRouter.navigateCreateActivityPage(context);
-            }
-          },
-          mini: true,
-        );
-      }),
-    );
+            },
+            mini: true,
+          )),
+        ),
+        ballSize: 50,
+        startFromRight: true,
+        initialTop: MediaQuery.of(context).size.height * 0.75,
+        onTap: () {
+          // print('点击了悬浮图标');
+          if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+            ToastShow.show(msg: "请先登录app!", context: context);
+            AppRouter.navigateToLoginPage(context);
+            return;
+          } else {
+            // 跳转创建活动
+            AppRouter.navigateCreateActivityPage(context);
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColor.mainBlack,
+          appBar: CustomAppBar(
+            titleString: "活动",
+            leading: headView(),
+            actions: [
+              MenuButton(
+                menuButtonBackgroundColor: AppColor.mainBlack,
+                itemBackgroundColor: AppColor.mainBlack,
+                child: normalChildButton(),
+                topDivider: false,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColor.dividerWhite8),
+                  borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
+                ),
+                divider: const Divider(
+                  height: 0.5,
+                  color: AppColor.dividerWhite8,
+                ),
+                // Container(),
+                items: keys,
+                itemBuilder: (ActivityFilter value) => Container(
+                    color: AppColor.layoutBgGrey,
+                    height: 22,
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          enumerateParsedText(value),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
+                        ),
+                      ],
+                    )),
+                toggledChild: Container(
+                  child: normalChildButton(),
+                ),
+                onItemSelected: (ActivityFilter value) {
+                  selectedKey = value;
+                  requestActivity(isRefresh: true);
+                  // setState(() {});
+                },
+                // onMenuButtonToggle: (bool isToggle) {
+                //   print(isToggle);
+                // },
+              ),
+            ],
+          ),
+          body: isShowDefaultMap == null
+              ? ActivityLoading()
+              : SmartRefresher(
+                  enablePullUp: true,
+                  enablePullDown: true,
+                  footer: SmartRefresherHeadFooter.init().getFooter(),
+                  header: SmartRefresherHeadFooter.init().getHeader(),
+                  controller: _refreshController,
+                  onLoading: () {
+                    requestActivity(isRefresh: false);
+                  },
+                  onRefresh: () {
+                    requestActivity(isRefresh: true);
+                  },
+                  child: isShowDefaultMap
+                      ? ActivityDefaultMap()
+                      : ListView.builder(
+                          itemCount: activityList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            interceptText(activityList[index]);
+                            return ActivityListItem(
+                              activityModel: activityList[index],
+                              index: index,
+                            );
+                          })),
+          // floatingActionButton: new Builder(builder: (BuildContext context) {
+          //   return new FloatingActionButton(
+          //     child: const Icon(
+          //       Icons.add,
+          //       size: 25,
+          //     ),
+          //     foregroundColor: AppColor.mainBlack,
+          //     backgroundColor: AppColor.white,
+          //     elevation: 7.0,
+          //     highlightElevation: 14.0,
+          //     isExtended: false,
+          //     onPressed: () {
+          //       if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+          //         ToastShow.show(msg: "请先登录app!", context: context);
+          //         AppRouter.navigateToLoginPage(context);
+          //         return;
+          //       } else {
+          //         // 跳转创建活动
+          //         AppRouter.navigateCreateActivityPage(context);
+          //       }
+          //     },
+          //     mini: true,
+          //   );
+          // }),
+        ));
   }
 }
 

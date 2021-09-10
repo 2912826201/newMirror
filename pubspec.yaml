@@ -66,7 +66,7 @@ dependencies:
   union_tabs: ^1.0.0+7
   #  extended_tabs
   # 输入框内富文本显示
-#  text_span_field: ^2.0.6
+  #  text_span_field: ^2.0.6
   # 文件路径
   path_provider: ^2.0.2
   # 视频播放器 暂时先用着系统自带的这个
@@ -89,7 +89,7 @@ dependencies:
   #  flutter_staggered_grid_view: ^0.3.2
   waterfall_flow: ^3.0.1
   #音频处理
-#  flutter_sound_lite: '7.4.9+3'
+  #  flutter_sound_lite: '7.4.9+3'
   flutter_audio_recorder2: ^0.0.1
   #音频处理
   audioplayers: ^0.19.1
@@ -130,7 +130,7 @@ dependencies:
   #打开对应文件安装apk
   open_file: ^3.2.1
   # 高德地图
-#  amap_map_fluttify: ^0.30.1
+  #  amap_map_fluttify: ^0.30.1
   amap_location_muka: ^0.1.1
   amap_flutter_map: ^2.0.1
   # svg图片
@@ -191,13 +191,15 @@ dependencies:
   shimmer: ^2.0.0
   # 评分
   flutter_rating_bar: ^4.0.0
+  # 面团UI
+  dough: ^1.0.1
   # 自定义动效系列
   cube_transition: ^1.0.2
   like_button: ^2.0.2
   animated_text_kit: ^4.2.1
   move_to_background: ^1.0.2
   flutter_echarts: ^2.1.0
-#  syncfusion_flutter_charts: ^19.2.51
+  #  syncfusion_flutter_charts: ^19.2.51
   sensors: ^2.0.3
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
