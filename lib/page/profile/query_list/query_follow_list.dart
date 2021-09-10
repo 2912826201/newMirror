@@ -543,7 +543,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                                 ),
                                 Expanded(
                                   child: TextField(
-                                    cursorColor: AppColor.black,
+                                    cursorColor: AppColor.white,
                                     style: AppStyle.whiteRegular16,
                                     controller: controller,
                                     maxLines: 1,
