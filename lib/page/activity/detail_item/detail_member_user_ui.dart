@@ -19,6 +19,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/user_avatar_image.dart';
 
 class DetailMemberUserUi extends StatefulWidget {
@@ -259,7 +260,6 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         : Container();
   }
 
-  bool isLoadConversationDto = false;
 
   _jumpChatPage(String groupChatId) async {
     if (ClickUtil.isFastClick()) {
@@ -269,19 +269,14 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
       ToastShow.show(msg: "群聊资料不正确!1", context: context);
       return;
     }
-    if (isLoadConversationDto) {
-      ToastShow.show(msg: "正在获取群聊资料中", context: context);
-      return;
-    }
-    isLoadConversationDto = true;
+    Loading.showLoading(context, infoText: "正在跳转中");
 
     ToastShow.show(msg: "正在加载中", context: context);
     ConversationDto conversation = await ChatPageUtil.init(context).getConversationDto(groupChatId);
+    Loading.hideLoading(context);
     if (conversation != null) {
-      isLoadConversationDto = false;
       jumpChatPageConversationDto(context, conversation);
     } else {
-      isLoadConversationDto = false;
       ToastShow.show(msg: "群聊资料不正确!2", context: context);
     }
   }

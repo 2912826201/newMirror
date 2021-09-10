@@ -5,8 +5,8 @@ class ActivityModel {
   String title;
   int type;
   int count;
-  int status;// 0-筹集中 1-筹集满 2-进行中 3-已结束
-  int tag;        // 0-官方 1-好友 2-未签到 3-已签到
+  int status; // 0-筹集中 1-筹集满 2-进行中 3-已结束
+  int tag; // 0-官方 1-好友 2-未签到 3-已签到
   int times;
   String cityCode;
   String address;
