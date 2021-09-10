@@ -59,6 +59,7 @@ import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
 import 'badger_test_page.dart';
 import 'explosion_image_test.dart';
+import 'floating_botton_test.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -640,6 +641,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("极光测试页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FloatingBottonTestPage();
+                  }));
+                },
+                child: Text("悬浮按钮测试"),
               ),
               RaisedButton(
                 onPressed: () {
