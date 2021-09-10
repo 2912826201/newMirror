@@ -59,6 +59,7 @@ import '../training/video_course/video_course_play_page2.dart';
 import '../training/video_course/video_course_play_page.dart';
 import 'badger_test_page.dart';
 import 'explosion_image_test.dart';
+import 'floating_botton_test.dart';
 import 'jpush_test_page.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -613,20 +614,26 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                     ),
                   ]),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.lightBlue, width: 1),
-                        color: Colors.black,
-                      ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.lightBlue, width: 1),
+                      color: Colors.black,
                     ),
-                    SizedBox(height: 50),
-                  ]),
+                  ),
+                  SizedBox(height: 50, width: 32,),
+                  AppIcon.getAppIcon(AppIcon.gender_male_14, 14,
+                      color: AppColor.white, bgColor: AppColor.mainRed, isCircle: true),
+                  SizedBox(height: 50, width: 32,),
+                  AppIcon.getAppIcon(AppIcon.gender_female_14, 14,
+                      color: AppColor.white, bgColor: AppColor.mainRed, isCircle: true),
+                ],
+              ),
               RaisedButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -634,6 +641,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
                   }));
                 },
                 child: Text("极光测试页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FloatingBottonTestPage();
+                  }));
+                },
+                child: Text("悬浮按钮测试"),
               ),
               RaisedButton(
                 onPressed: () {
@@ -676,13 +691,16 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin, Wid
               RatingBar.builder(
                 /// 定义要设置到评级栏的初始评级
                 initialRating: 3,
+
                 /// 设置最低评级默认为 0。
                 minRating: 1,
                 direction: Axis.horizontal,
+
                 /// 默认为 false。 设置 true 启用半评级支持。
                 allowHalfRating: true,
                 // 如果设置为 true，将禁用评分栏上的任何手势。默认为false。
                 ignoreGestures: false,
+
                 /// 如果设置为 true，则评级栏项目在被触摸时会发光。默认为true。
                 glow: false,
                 // 设置大小

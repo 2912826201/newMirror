@@ -10,6 +10,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
@@ -67,6 +69,11 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
   bool cityLimit = true; //仅返回指定城市数据
   String searchText = ""; // 记录上一次的搜索文本
   String searchCity = ""; // 城市赋值搜索时要用。
+  // 活动更改地点提示文本
+  String activityPromptText = '活动开始三小时内不能修改活动地点，且只能修改一次！';
+  String activityTitle;
+  String activityTitle1;
+
   @override
   void dispose() {
     super.dispose();
@@ -77,6 +84,9 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
     super.initState();
     if (mounted) {
       init();
+    }
+    if (widget.isChangeAddress) {
+      interceptText();
     }
     searchController.addListener(() {
       String val = searchController.text;
@@ -319,6 +329,80 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
                 : Container());
   }
 
+  // 截取文本
+  interceptText() {
+    // 剩余宽度
+    double remainingWidth = ScreenUtil.instance.width - 32 - 16 - 10;
+    // 文本总宽度
+    double totalTextWidth = 0.0;
+    activityPromptText.runes.forEach((element) {
+      // 文本宽度
+      double textWidth;
+      textWidth = getTextSize(String.fromCharCode(element), AppStyle.text1Regular14, 1).width;
+      totalTextWidth += textWidth;
+      if (totalTextWidth > remainingWidth) {
+        if (activityTitle1 == null) {
+          activityTitle1 = '';
+        }
+        activityTitle1 += String.fromCharCode(element);
+      } else {
+        if (activityTitle == null) {
+          activityTitle = '';
+        }
+        activityTitle += String.fromCharCode(element);
+      }
+    });
+  }
+
+  // 标题横向布局
+  titleHorizontalLayout() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        AppIcon.getAppIcon(
+          AppIcon.error_circle,
+          16,
+          color: AppColor.mainRed,
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        Column(
+          children: [
+            Container(
+              width: ScreenUtil.instance.width - 32 - 16 - 10,
+              child: Text(
+                activityTitle,
+                style: AppStyle.text1Regular14,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+// 标题纵向布局
+  titleVerticalLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        titleHorizontalLayout(),
+        Container(
+          width: ScreenUtil.instance.width - 32 - 16 - 10,
+          margin: EdgeInsets.only(left: 26),
+          child: Text(
+            activityTitle1,
+            style: AppStyle.text1Regular14,
+            maxLines: 1,
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -375,6 +459,15 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
                   ),
                 )
               : searchBar(),
+          widget.isChangeAddress
+              ? Container(
+                  width: ScreenUtil.instance.width - 32,
+                  margin: EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                  child: activityTitle1 != null && activityTitle1.length > 0
+                      ? titleVerticalLayout()
+                      : titleHorizontalLayout(),
+                )
+              : Container(),
           createMiddleView(),
         ],
       ),

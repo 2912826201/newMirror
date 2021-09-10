@@ -65,11 +65,12 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
       height: 45,
       child: Row(
         children: [
-          Text("报名队员", style: AppStyle.whiteRegular16),
+          Text(widget.activityModel.status == 2 || widget.activityModel.status == 3 ? "签到人数" : "报名队员",
+              style: AppStyle.whiteRegular16),
           SizedBox(width: 8),
           Container(
             padding: EdgeInsets.only(top: 2),
-            child: Text("共${widget.activityModel.count}人", style: AppStyle.whiteRegular14),
+            child: _getUserNumber(),
           ),
           Spacer(),
           if (widget.activityModel.isJoin)
@@ -89,6 +90,16 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         ],
       ),
     );
+  }
+
+  //获取展示人数的ui
+  Widget _getUserNumber() {
+    if (widget.activityModel.status == 2 || widget.activityModel.status == 3) {
+      return Text("共${widget.activityModel.signInAmount ?? 0}/${widget.activityModel.joinAmount ?? 0}人",
+          style: AppStyle.whiteRegular14);
+    } else {
+      return Text("共${widget.activityModel.joinAmount ?? 0}人", style: AppStyle.whiteRegular14);
+    }
   }
 
   Widget _getUserList() {
@@ -184,7 +195,26 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
         height: 100.0 - 12.0 - 16.0,
         child: Column(
           children: [
-            UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+            Container(
+              height: 47,
+              width: 47,
+              child: Stack(
+                children: [
+                  UserAvatarImageUtil.init().getUserImageWidget(model.avatarUri, model.uid.toString(), 47),
+                  if (model.sex == 1 || model.sex == 2)
+                    Positioned(
+                      right: 0,
+                      child: AppIcon.getAppIcon(
+                        model.sex == 2 ? AppIcon.gender_female_14 : AppIcon.gender_male_14,
+                        14,
+                        bgColor: AppColor.mainRed,
+                        isCircle: true,
+                        color: AppColor.white,
+                      ),
+                    ),
+                ],
+              ),
+            ),
             SizedBox(height: 6),
             Text(
               model.nickName ?? "",
