@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dough/dough.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/cupertino.dart' hide NestedScrollView, NestedScrollViewState;
 
@@ -95,7 +96,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   @override
   void initState() {
-
     followStreamController = StreamController.broadcast();
     notFollowStreamController = StreamController.broadcast();
 
@@ -661,7 +661,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   }
 
   Widget _gotoRelease() {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         if (!context.read<TokenNotifier>().isLoggedIn) {
           AppRouter.navigateToLoginPage(context);
@@ -671,7 +672,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
             publishMode: 1, topicId: model.id);
       },
-      child: Container(
+      child: PressableDough(
+          child: Container(
         width: 127,
         height: 43,
         decoration: const BoxDecoration(
@@ -703,7 +705,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             )
           ],
         ),
-      ),
+      )),
     );
   }
 

@@ -432,8 +432,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     return Dragball(
         withIcon: false,
         ball: Container(
-          child: PressableDough(
-              child: FloatingActionButton(
+          child: FloatingActionButton(
             child: const Icon(
               Icons.add,
               size: 25,
@@ -447,7 +446,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
               AppRouter.navigateCreateActivityPage(context);
             },
             mini: true,
-          )),
+          ),
         ),
         ballSize: 50,
         startFromRight: true,
