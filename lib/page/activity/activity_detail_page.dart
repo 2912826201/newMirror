@@ -220,11 +220,23 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               SizedBox(height: 10),
 
               //活动器材
-              Text("运动类型：${ActivityTypeData.init().getString(activityModel.type)}", style: AppStyle.text1Regular14),
+              Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),
               SizedBox(height: 12),
 
-              //活动器材
-              Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),
+              //运动类型
+              Container(
+                child: Row(
+                  children: [
+                    Container(
+                      child: Image.asset(ActivityTypeData.init().getIconStringIndex(activityModel.type)[1],
+                          width: 22, height: 22),
+                      padding: const EdgeInsets.only(top: 1),
+                    ),
+                    SizedBox(width: 4),
+                    Text("${ActivityTypeData.init().getString(activityModel.type)}", style: AppStyle.text1Regular14),
+                  ],
+                ),
+              ),
               SizedBox(height: 12),
 
               //活动地址
