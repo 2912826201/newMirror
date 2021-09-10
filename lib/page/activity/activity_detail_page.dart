@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/model/activity/avtivity_type_data.dart';
 import 'package:mirror/data/model/activity/equipment_data.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
@@ -217,6 +218,10 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               //活动名称
               Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
               SizedBox(height: 10),
+
+              //活动器材
+              Text("运动类型：${ActivityTypeData.init().getString(activityModel.type)}", style: AppStyle.text1Regular14),
+              SizedBox(height: 12),
 
               //活动器材
               Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),

@@ -20,6 +20,8 @@ class ActivityModel {
   int endTime;
   int groupChatId;
   int masterId;
+  int joinAmount;
+  int signInAmount;
   bool _isSignIn;
   bool _isCanSignIn;
   bool _isEvaluate;
@@ -64,6 +66,8 @@ class ActivityModel {
     groupChatId = json['groupChatId'];
     masterId = json['masterId'];
     _evaluateAvgScore = json['evaluateAvgScore'];
+    joinAmount = json['joinAmount'];
+    signInAmount = json['signInAmount'];
     if (json['isJoin'] != null && json['isJoin'] is int && json['isJoin'] == 1) {
       _isJoin = true;
     } else {
@@ -134,6 +138,8 @@ class ActivityModel {
     map['isEvaluate'] = _isEvaluate;
     map['evaluateAvgScore'] = _evaluateAvgScore;
     map['isJoin'] = _isJoin;
+    map['signInAmount'] = signInAmount;
+    map['joinAmount'] = joinAmount;
     return map;
   }
 }
