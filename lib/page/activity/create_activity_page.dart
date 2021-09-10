@@ -944,6 +944,7 @@ class _CreateActivityPageState extends StateKeyboard {
         ),
       ),
       onTap: () {
+        selectActivityType = index;
         activityTypeStream.sink.add(index);
       },
     );
