@@ -42,7 +42,7 @@ class _WeekPopWindown extends State<WeekPopWindow> {
   List<Widget> _weekListDataInit() {
     List<Widget> weekWidget = [];
     DateTime nowTime;
-    //超过6点从明天开始算
+    //超过7点从明天开始算
     bool isToday = DateTime.now().hour <= 18;
     if (isToday) {
       nowTime = DateTime.now();
