@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/activity/activity_api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -77,6 +78,13 @@ class MainPageState extends XCState {
     });
   }
 
+  // 获取活动用户申请列表未读数
+  Future<int> _applyListUnread() async {
+    int unread;
+    unread = await applyListUnread();
+    return unread;
+  }
+
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
@@ -107,7 +115,7 @@ class MainPageState extends XCState {
                 Positioned(
                     bottom: ScreenUtil.instance.bottomBarHeight,
                     child: IFTabBar(
-                      tabBarClickListener: (index) {
+                      tabBarClickListener: (index) async {
                         print('----------index-------$index');
                         /*  int nowIndex = index;
             if(!AppConfig.needShowTraining){
@@ -138,7 +146,12 @@ class MainPageState extends XCState {
                           case 0:
                             break;
                           case 1:
-                            EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                            if (AppConfig.needShowTraining) {
+                              EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                            } else {
+                              int unread = await _applyListUnread();
+                              EventBus.getDefault().post(msg: unread, registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+                            }
                             break;
                           case 2:
                             break;

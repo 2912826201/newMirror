@@ -56,7 +56,8 @@ const String UPDATEACTIVITY = "/appuser/web/activity/update";
 
 // 退出活动
 const String QUITACTIVITY = "/appuser/web/activity/quit";
-
+// 获取活动用户申请列表未读数
+const String APPLYLISTUNREAD = "/appuser/web/activity/applyListUnread";
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -202,6 +203,7 @@ Future<List> applyJoinActivity(int activityId, String message) async {
     return [false, "申请失败"];
   }
 }
+
 //获取活动成员
 Future<List<UserModel>> getActivityMemberList(int activityId, int size, int lastTime) async {
   Map<String, dynamic> params = {};
@@ -406,5 +408,18 @@ Future<bool> quitActivity(int activityId) async {
     return responseModel.data["state"] ?? false;
   } else {
     return false;
+  }
+}
+
+// 获取活动用户申请列表未读数
+Future<int> applyListUnread() async {
+  Map<String, dynamic> params = {};
+  int unread = 0;
+  BaseResponseModel responseModel = await requestApi(APPLYLISTUNREAD, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    unread = responseModel.data["applyListUnread"];
+    return unread;
+  } else {
+    return unread;
   }
 }
