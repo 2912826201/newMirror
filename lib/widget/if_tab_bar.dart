@@ -128,11 +128,11 @@ class _IFTabBarState extends State<IFTabBar> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      EventBus.getDefault()
+      EventBus.init()
           .registerSingleParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-      EventBus.getDefault()
+      EventBus.init()
           .registerNoParameter(_resetUnreadMessage, EVENTBUS_IF_TAB_BAR, registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
-      EventBus.getDefault().registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
+      EventBus.init().registerSingleParameter(_jumpPage, EVENTBUS_MAIN_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     });
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));

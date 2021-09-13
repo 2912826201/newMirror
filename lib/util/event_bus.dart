@@ -44,7 +44,7 @@ class EventBus {
 
   EventBus._();
 
-  static EventBus getDefault() {
+  static EventBus init() {
     if (_eventBus == null) {
       _eventBus = new EventBus._();
     }
@@ -177,12 +177,16 @@ const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 //关注粉丝页
 const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
+//活动列表页
+const String EVENTBUS_ACTIVITY_LIST_PAGE = "activity_list_page";
 //活动详情
-const String EVENTBUS_ACTIVITY_DETAILS = "activity";
+const String EVENTBUS_ACTIVITY_DETAILS = "activity_details_page";
 //活动主页
 const String EVENTBUS_ACTIVITY_HOME_PAGE = "activity_home_page";
 
 ///广播类型
+//登录成功
+const String EVENTBUS_LOGIN_SUCCESSFUL = "login_successful";
 //发布动态
 const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
 //直播界面的退出
@@ -276,5 +280,7 @@ const String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
 const String AGAIN_LOGIN_REFREASH_USERPAGE = "again_login_refreash_userpage";
 //动态取消关注用户
 const String EVENTBUS_FEED_UNSUBSCRIBE = "eventbus_feed_unsubscribe";
+//活动列表页-刷新
+const String ACTIVITY_LIST_RESET = "activity_list_reset";
 // 活动用户申请列表未读数 /appuser/web/activity/applyListUnread
 const String ACTIVITY_PAGE_GET_APPLYLISTUNREAD = "activity_page_get_applyListUnread";

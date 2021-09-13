@@ -17,7 +17,7 @@ class GroupUserProfileNotifier extends ChangeNotifier {
 
   setLen(int len) {
     this.len = len;
-    EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
+    EventBus.init().post(registerName: EVENTBUS_CHAT_BAR);
     notifyListeners();
   }
 
@@ -75,7 +75,7 @@ class GroupUserProfileNotifier extends ChangeNotifier {
     }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     this.len = len;
-    EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
+    EventBus.init().post(registerName: EVENTBUS_CHAT_BAR);
     notifyListeners();
   }
 }

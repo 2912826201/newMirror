@@ -57,7 +57,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
+    EventBus.init().post(registerName: SHOW_IMAGE_DIALOG);
   }
 
   @override

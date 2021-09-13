@@ -16,6 +16,7 @@ import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
 import 'package:mirror/page/activity/util/activity_util.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -67,7 +68,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
 
   GlobalKey inputEvaluateBoxKey = GlobalKey();
   FocusNode inputEvaluateFocusNode = FocusNode();
-
+  GlobalKey<ActivityPullDownRefreshState> pullDownKey = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -80,6 +81,19 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
     }
+
+    //登录成功监听
+    EventBus.init()
+        .registerNoParameter(_loginSuccessful, EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    //取消监听
+    EventBus.init().unRegister(pageName: EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
   }
 
   @override
@@ -496,12 +510,15 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   //解散活动
   _deleteActivity() async {
     Loading.showLoading(context, infoText: "正在解散活动");
-    bool isSuccess = await deleteActivity(activityModel.id);
+    List list = await deleteActivity(activityModel.id);
 
     Loading.hideLoading(context);
-    ToastShow.show(msg: isSuccess ? "解散成功" : "解散失败", context: context);
-    if (isSuccess) {
+    if (list[0]) {
+      ToastShow.show(msg: "解散成功", context: context);
+      EventBus.init().post(registerName: ACTIVITY_LIST_RESET);
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+    } else {
+      ToastShow.show(msg: list[1], context: context);
     }
   }
 
@@ -539,5 +556,10 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   @override
   void startChangeKeyBoardHeight(bool isOpenKeyboard) {
     // TODO: implement startChangeKeyBoardHeight
+  }
+
+  //登录成功
+  _loginSuccessful() {
+    _initData();
   }
 }

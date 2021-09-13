@@ -104,7 +104,7 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
-  EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
+  EventBus.init().post(msg: message, registerName: CHAT_GET_MSG);
   return true;
   // _jumpChatPage(context: context, conversation: conversation, shareMessage: message);
 }

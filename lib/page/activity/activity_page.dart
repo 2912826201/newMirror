@@ -101,6 +101,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    EventBus.init().unRegister(pageName: EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     super.dispose();
   }
 
@@ -110,6 +111,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     locationPermissions();
     EventBus.getDefault().registerSingleParameter(_applyListUnread, EVENTBUS_ACTIVITY_HOME_PAGE,
         registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+    EventBus.init().registerNoParameter(_resetPage, EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -174,6 +176,11 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   //
   _applyListUnread(int unread) {
     streamActiviityUnread.sink.add(unread);
+  }
+
+  //刷新界面
+  _resetPage() {
+    requestActivity(isRefresh: true);
   }
 
   // 请求活动接口数据

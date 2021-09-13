@@ -118,7 +118,7 @@ class ChatMessageProfileUtil {
         "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
     if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
       print("111111移除群聊");
-      EventBus.getDefault().post(msg: message, registerName: CHAT_JOIN_EXIT);
+      EventBus.init().post(msg: message, registerName: CHAT_JOIN_EXIT);
     }else{
       insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
     }
@@ -140,7 +140,7 @@ class ChatMessageProfileUtil {
     print("value:${message.originContentMap.toString()}");
     if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
       print("1111111111111加入群聊");
-      EventBus.getDefault().post(msg: message,registerName: CHAT_JOIN_EXIT);
+      EventBus.init().post(msg: message, registerName: CHAT_JOIN_EXIT);
     }else{
       insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
     }

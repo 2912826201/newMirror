@@ -210,7 +210,13 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
               child: Text("参加活动", style: AppStyle.textRegular15),
             ),
             onTap: () {
-              judgeApplyJoin();
+              if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+                ToastShow.show(msg: "请先登录app!", context: context);
+                AppRouter.navigateToLoginPage(context);
+                return;
+              } else {
+                judgeApplyJoin();
+              }
             },
           ),
         ],

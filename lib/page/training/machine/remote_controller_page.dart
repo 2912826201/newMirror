@@ -861,23 +861,22 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   _initEventBus() {
-    EventBus.getDefault()
-        .registerNoParameter(_endOfTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
+    EventBus.init().registerNoParameter(_endOfTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
 
-    EventBus.getDefault()
+    EventBus.init()
         .registerSingleParameter(_startTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
 
-    EventBus.getDefault()
+    EventBus.init()
         .registerSingleParameter(_startLiveCourse, EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_LIVE_COURSE);
 
-    EventBus.getDefault().registerSingleParameter(_scheduleTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE,
+    EventBus.init().registerSingleParameter(_scheduleTraining, EVENTBUS_REMOTE_CONTROLLER_PAGE,
         registerName: SCHEDULE_TRAINING_VIDEO);
   }
 
   _unRegisterEventBus() {
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: SCHEDULE_TRAINING_VIDEO);
+    EventBus.init().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: END_OF_TRAINING);
+    EventBus.init().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: START_TRAINING);
+    EventBus.init().unRegister(pageName: EVENTBUS_REMOTE_CONTROLLER_PAGE, registerName: SCHEDULE_TRAINING_VIDEO);
   }
 
   //机器退出训练

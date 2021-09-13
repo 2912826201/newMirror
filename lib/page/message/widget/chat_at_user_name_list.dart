@@ -35,13 +35,13 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(_resetChatAtPanel, EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
+    EventBus.init().registerNoParameter(_resetChatAtPanel, EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
   }
 
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_AT_GROUP_PANEL);
   }
 
   _resetChatAtPanel() {

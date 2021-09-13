@@ -107,7 +107,7 @@ class JumpAppPageUtil {
     }
     if (type > 0 && type <= JumpAppPageModel.PageSize) {
       Navigator.of(_context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
-      EventBus.getDefault().post(msg: type, registerName: MAIN_PAGE_JUMP_PAGE);
+      EventBus.init().post(msg: type, registerName: MAIN_PAGE_JUMP_PAGE);
     }
   }
 }

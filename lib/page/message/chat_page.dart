@@ -247,19 +247,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
 
     if (conversation.getType() == RCConversationType.Group) {
       //刷新appbar
-      EventBus.getDefault().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
+      EventBus.init().registerNoParameter(_resetCharPageBar, EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
       //判断是否退出群聊或者加入群聊
-      EventBus.getDefault().registerSingleParameter(_judgeResetPage, EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
+      EventBus.init().registerSingleParameter(_judgeResetPage, EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
       //刷新群聊的群成员
-      EventBus.getDefault().registerSingleParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE,
+      EventBus.init().registerSingleParameter(_resetChatGroupUserModelList, EVENTBUS_CHAT_PAGE,
           registerName: RESET_CHAR_GROUP_USER_LIST);
     }
     //发送消息的状态广播
-    EventBus.getDefault().registerSingleParameter(resetMsgStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
+    EventBus.init().registerSingleParameter(resetMsgStatus, EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
     //接收消息的广播
-    EventBus.getDefault().registerSingleParameter(getReceiveMessages, EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
+    EventBus.init().registerSingleParameter(getReceiveMessages, EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
     //撤回消息的广播
-    EventBus.getDefault().registerSingleParameter(withdrawMessage, EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
+    EventBus.init().registerSingleParameter(withdrawMessage, EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
     if (conversation.getType() != RCConversationType.System) {
       initSetData();
       initTextController();
@@ -357,12 +357,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     if (conversation.getType() == RCConversationType.Group) {
       Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
-      EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
-      EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
+      EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: EVENTBUS_CHAT_BAR);
+      EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_JOIN_EXIT);
     }
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: RESET_MSG_STATUS);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_GET_MSG);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_WITHDRAW_MSG);
     context.read<VoiceSettingNotifier>().stop();
   }
 
@@ -531,7 +531,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // 存入最新的值
     _removeLongPanelCall();
     context.read<ChatEnterNotifier>().changeCallback(text);
-    EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   String getChatName() {
@@ -763,7 +763,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           break;
         }
       }
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       await Future.delayed(Duration(milliseconds: 100), () {});
     }
 
@@ -802,7 +802,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           }
           chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
           judgeIsAddUnreadCountAlertMsg();
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           Future.delayed(Duration(milliseconds: 300), () {
             print("开始滚动，列表内有：${chatDataList.length}");
             _animateToIndex();
@@ -924,8 +924,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           chatDataList.clear();
           chatDataList.addAll(list);
         }
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-        EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
       }
     }
 
@@ -997,7 +997,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
 
     //未读消息的跳转数目加modelList.length
@@ -1013,7 +1013,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         deleteCancelMessage(element.conversationId, element.id ?? "");
       });
       if (!isSuccess) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     });
   }
@@ -1056,7 +1056,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
 
     //未读消息的跳转数目加1
@@ -1065,7 +1065,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     }
     // //print("conversation.conversationId:${conversation.conversationId},${conversation.getType()}");
     postVoice(chatDataList[0], conversation.conversationId, conversation.getType(), () {
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -1100,8 +1100,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         chatDataList.clear();
         chatDataList.addAll(list);
       }
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-      EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
     }
     postSelectMessage(chatDataList[0], conversation.conversationId, conversation.getType(), () {
       //
@@ -1123,7 +1123,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       chatDataList[position].msg.content = recallNotificationMessage;
       MessageManager.updateConversationByMessage(context, chatDataList[position].msg);
       if (mounted) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     }
   }
@@ -1147,8 +1147,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         if (mounted) {
           _textController.text = "";
           bottomSettingChildKey.currentState.setCursorIndexPr(0);
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1183,8 +1183,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           _textController.text = "";
           bottomSettingChildKey.currentState.setCursorIndexPr(0);
           recallNotificationMessagePosition = -1;
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
-          EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
         }
       },
     );
@@ -1250,7 +1250,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     } else {
       postImgOrVideo(modelList, conversation.conversationId, type, conversation.getType(), (isSuccess) {
         if (!isSuccess) {
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
     }
@@ -1292,12 +1292,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // }
     // _animateToIndex(index: 0);
     if (mounted) {
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postImgOrVideo([chatDataList[position]], conversation.conversationId, mediaFileModel.type, conversation.getType(),
         (isSuccess) {
       if (!isSuccess) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     });
   }
@@ -1325,7 +1325,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     // chatDataList.insert(0, chatDataModel);
     // _animateToIndex(index: 0);
     if (mounted) {
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     postVoice(chatDataList[position], conversation.conversationId, conversation.getType(), () {});
   }
@@ -1350,8 +1350,8 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (mounted) {
       _textController.text = "";
       bottomSettingChildKey.currentState.setCursorIndexPr(0);
-      EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     resetPostMessage(chatDataList[position], () {
       // EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
@@ -1385,10 +1385,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             } else if (status == RCSentStatus.Sent) {
               await getHistoryMessage(dataModel);
             }
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
             Future.delayed(Duration(milliseconds: 500), () {
               if (mounted) {
-                EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+                EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
               }
             });
             return;
@@ -1396,10 +1396,10 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
       }
       if (!isHaveMessage) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         Future.delayed(Duration(milliseconds: 500), () {
           if (mounted) {
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         });
       }
@@ -1426,7 +1426,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             model.msg.messageUId != null &&
             model.msg.messageUId == message.messageUId) {
           model.msg = message;
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           break;
         }
       }
@@ -1486,7 +1486,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         chatDataList.insert(0, time);
       }
       chatDataList.insert(0, chatDataModel);
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       //未读消息的跳转数目加1
       if (ChatMessageProfileUtil.unreadCountNew > 0) {
         ChatMessageProfileUtil.unreadCountNew++;
@@ -1545,7 +1545,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           //print("scrollPositionPixels加入：$scrollPositionPixels");
           if (scrollPositionPixels < 500) {
             chatDataList.insert(0, getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           } else {
             addChatDataList.add(getMessage(msg, isHaveAnimation: scrollPositionPixels < 500));
           }
@@ -1553,7 +1553,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       });
     } else {
       if (scrollPositionPixels < 500) {
-        EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+        EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
       }
     }
   }
@@ -1612,7 +1612,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
             chatDataList.insert(0, model);
           }
           addChatDataList.clear();
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       }
     });
@@ -1683,7 +1683,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         if (cursorIndex != atIndex) {
           if (context.read<ChatEnterNotifier>().keyWord != "") {
             context.read<ChatEnterNotifier>().openAtCallback("");
-            EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+            EventBus.init().post(registerName: CHAT_AT_GROUP_PANEL);
           }
         }
       }
@@ -1718,7 +1718,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           if (conversation.getType() == RCConversationType.Group) {
             context.read<ChatEnterNotifier>().openAtCallback(str);
             isClickAtUser = false;
-            EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+            EventBus.init().post(registerName: CHAT_AT_GROUP_PANEL);
           }
         }
         return "";
@@ -1728,7 +1728,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         //print("取消艾特功能3");
         //print('----------------------------关闭视图');
         context.read<ChatEnterNotifier>().openAtCallback("");
-        EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+        EventBus.init().post(registerName: CHAT_AT_GROUP_PANEL);
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
           String topicSearchStr, bool isAdd) {
@@ -1857,7 +1857,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _emojiState = true;
       readOnly = true;
       streamEditWidget.sink.add(0);
-      EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+      EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
       Future.delayed(Duration(milliseconds: 100), () {
         if (!_focusNode.hasFocus) {
           FocusScope.of(context).requestFocus(_focusNode);
@@ -1947,28 +1947,28 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
  Permission.microphone.request().then((value){
    if (value.isGranted) {
      _focusNode.unfocus();
-     //print("4444444444444");
-     // if(_textController.text.length>0){
-     //   context.read<ChatEnterNotifier>().clearRules();
-     //   _textController.text = "";
-     //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
-     //   _changTextLen("");
-     // }
-     _isVoiceState = !_isVoiceState;
-     messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
+        //print("4444444444444");
+        // if(_textController.text.length>0){
+        //   context.read<ChatEnterNotifier>().clearRules();
+        //   _textController.text = "";
+        //   bottomSettingChildKey.currentState.setCursorIndexPr(0);
+        //   _changTextLen("");
+        // }
+        _isVoiceState = !_isVoiceState;
+        messageInputBarChildKey.currentState.setIsVoice(_isVoiceState);
 
-     EventBus.getDefault().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
+        EventBus.init().post(msg: _isVoiceState, registerName: CHAT_BOTTOM_MORE_BTN);
 
-     if (_emojiState) {
-       _emojiState = false;
+        if (_emojiState) {
+          _emojiState = false;
           messageInputBarChildKey.currentState.setIsEmojio(_emojiState);
           bottomSettingChildKey.currentState.setEmojiState(_emojiState);
         }
-     if (readOnly) {
-       readOnly = false;
-       streamEditWidget.sink.add(0);
-     }
-     Future.delayed(Duration(milliseconds: 100), () {
+        if (readOnly) {
+          readOnly = false;
+          streamEditWidget.sink.add(0);
+        }
+        Future.delayed(Duration(milliseconds: 100), () {
        if (!_isVoiceState) {
          _emojiStateOld = true;
          FocusScope.of(context).requestFocus(_focusNode);
@@ -2036,13 +2036,13 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       // }
       //print("修改了用户名");
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     } else if (type == 1) {
       conversation.name = name;
       //修改了群名
       // _postUpdateGroupName(name);
       context.read<ConversationNotifier>().updateConversationName(name, conversation);
-      EventBus.getDefault().post(registerName: EVENTBUS_CHAT_BAR);
+      EventBus.init().post(registerName: EVENTBUS_CHAT_BAR);
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
@@ -2200,7 +2200,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     context.read<ChatEnterNotifier>().setAtSearchStr("");
     // 关闭视图
     context.read<ChatEnterNotifier>().openAtCallback("");
-    EventBus.getDefault().post(registerName: CHAT_AT_GROUP_PANEL);
+    EventBus.init().post(registerName: CHAT_AT_GROUP_PANEL);
     streamEditWidget.sink.add(0);
   }
 
@@ -2224,7 +2224,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
-    EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     isnRefreshSystemInformationIng = false;
   }
 
@@ -2251,7 +2251,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       }
       chatDetailsBodyChildKey.currentState.setLoadStatus(loadStatus);
       judgeIsAddUnreadCountAlertMsg();
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     });
   }
 
@@ -2275,7 +2275,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         longClickString != null &&
         longClickString!=""&&
         !longClickString.contains("撤回")){
-      EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+      EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     }
     this.removeLongPanelCall = call;
   }
@@ -2345,7 +2345,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           deleteCancelMessage(conversation.id, chatDataList[position].id ?? "");
           if (mounted) {
             chatDataList.removeAt(position);
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         }
       }else {
@@ -2354,12 +2354,12 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
           updateMessagePageAlert(conversation, context);
           if (mounted) {
             chatDataList.removeAt(position);
-            if(chatDataList.length>position){
-              if(ChatPageUtil.init(context).isTimeAlertMsg(chatDataList[position])){
+            if (chatDataList.length > position) {
+              if (ChatPageUtil.init(context).isTimeAlertMsg(chatDataList[position])) {
                 chatDataList.removeAt(position);
               }
             }
-            EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+            EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
           }
         });
         //print("删除-第$position个");
@@ -2435,7 +2435,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       filePathMd5Video=map["filePathMd5"];
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
     } else if (contentType == RecallNotificationMessage.objectName) {

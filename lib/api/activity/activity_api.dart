@@ -178,14 +178,16 @@ Future<bool> removeMember(int activityId, String uids, String reason) async {
 }
 
 //解散活动
-Future<bool> deleteActivity(int activityId) async {
+Future<List> deleteActivity(int activityId) async {
   Map<String, dynamic> params = {};
   params["activityId"] = activityId;
   BaseResponseModel responseModel = await requestApi(DELETEACTIVITY, params);
   if (responseModel.isSuccess && responseModel.data != null) {
-    return responseModel.data["state"] ?? false;
+    return [responseModel.data["state"] ?? false, responseModel.message];
+  } else if (responseModel != null && responseModel.message != null) {
+    return [false, responseModel.message];
   } else {
-    return false;
+    return [false, "解散失败"];
   }
 }
 

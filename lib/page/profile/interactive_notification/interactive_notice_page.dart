@@ -136,7 +136,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   @override
   void initState() {
     hintText = "这里什么都没有呢";
-    EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
+    EventBus.init().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
   }

@@ -913,7 +913,7 @@ class EvaluateListUiState extends State<EvaluateListUi> with TickerProviderState
       _deleteCommentData(commentId);
 
       ///TODO 这里是修改的删除评论的eventbus
-      EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+      EventBus.init().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
 
       ToastShow.show(msg: "已删除", context: context);
       setState(() {});

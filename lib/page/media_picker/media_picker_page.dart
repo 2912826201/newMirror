@@ -159,7 +159,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
           return;
         }
 
-        EventBus.getDefault().post(registerName: GALLERY_LEAVE);
+        EventBus.init().post(registerName: GALLERY_LEAVE);
 
         setState(() {
           _lastTimeStamp = timeStamp;
@@ -197,7 +197,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
           return;
         }
 
-        EventBus.getDefault().post(registerName: GALLERY_LEAVE);
+        EventBus.init().post(registerName: GALLERY_LEAVE);
 
         setState(() {
           _lastTimeStamp = timeStamp;

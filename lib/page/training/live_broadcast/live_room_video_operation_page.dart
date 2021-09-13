@@ -110,13 +110,13 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
     print("开播时间是:${widget.startTime},${widget.coachId}");
 
-    EventBus.getDefault().registerSingleParameter(_receiveBarrageMessage, EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.init().registerSingleParameter(_receiveBarrageMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
-    EventBus.getDefault().registerSingleParameter(_receiveNoticeMessage, EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.init().registerSingleParameter(_receiveNoticeMessage, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
-    EventBus.getDefault()
+    EventBus.init()
         .registerNoParameter(_onClickBodyListener, EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
-    EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.init().registerSingleParameter(_liveCourseStatus, EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: LIVE_COURSE_LIVE_START_OR_END);
 
     urlImageList.add("");
@@ -925,7 +925,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
           onlineManList.add(buddyModel);
           onlineManUidList.add(buddyModel.uid);
         });
-        EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+        EventBus.init().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
       }
       if (null != onlineManList) {
         resetOnlineUserNumber(onlineManList.length);
@@ -978,7 +978,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
     buddyModel.time = new DateTime.now().millisecondsSinceEpoch;
     onlineManList.insert(0, buddyModel);
     onlineManUidList.insert(0, buddyModel.uid);
-    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+    EventBus.init().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
     if (onlineManList.length < 3) {
       resetOnlineUserImage();
     }
@@ -999,7 +999,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
       }
     }
     if (isReset) {
-      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      EventBus.init().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
       if (onlineManList.length < 3) {
         resetOnlineUserImage();
       }
@@ -1062,14 +1062,11 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
   }
 
   _closeData() {
-    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-    EventBus.getDefault()
-        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
-    EventBus.getDefault()
-        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
-    EventBus.getDefault()
-        .unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
+    EventBus.init().post(registerName: EVENTBUS_LIVEROOM_EXIT);
+    EventBus.init().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    EventBus.init().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ROOM_RECEIVE_NOTICE);
+    EventBus.init().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.init().unRegister(pageName: EVENTBUS_ROOM_OPERATION_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -1415,7 +1412,7 @@ class _LiveRoomVideoOperationPageState extends StateKeyboard<LiveRoomVideoOperat
 
   //显示dialog-训练感受
   _showFeelingDialog(dynamic mapList) {
-    EventBus.getDefault().post(registerName: EVENTBUS_ON_CLICK_BODY);
+    EventBus.init().post(registerName: EVENTBUS_ON_CLICK_BODY);
     var contentMap = json.decode(mapList.toString());
     showAppDialog(context, title: "训练感受", info: "请问训练感觉怎么样呢？", barrierDismissible: false, buttonList: [
       for (Map<String, dynamic> map in contentMap)

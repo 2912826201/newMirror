@@ -332,6 +332,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
             print(e);
           }
         }
+
+        EventBus.init().post(registerName: EVENTBUS_LOGIN_SUCCESSFUL);
       } else if (responseModel.code == CODE_USERBAN) {
         showAppDialog(context,
             confirm: AppDialogButton("我知道了", () {
@@ -374,12 +376,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
       if (AppPrefs.getPublishFeedLocalInsertData(
               "${Application.postFailurekey}_${context.read<TokenNotifier>().token.uid}") !=
           null) {
-        EventBus.getDefault().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
+        EventBus.init().post(registerName: EVENTBUS_GET_FAILURE_MODEL);
       }
       // 重新登录替换关注页布局
-      EventBus.getDefault().post(msg: true, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
-      EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
-      EventBus.getDefault().post(registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
+      EventBus.init().post(msg: true, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+      EventBus.init().post(registerName: SHOW_IMAGE_DIALOG);
+      EventBus.init().post(registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
       // 获取话题详情页背景色
       Application.topicBackgroundConfig.clear();
       DataResponseModel dataResponseModel = await getBackgroundConfig();

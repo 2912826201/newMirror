@@ -140,9 +140,9 @@ class LiveDetailPageState extends XCState {
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal = context.read<MachineNotifier>().machine != null;
 
-    EventBus.getDefault().registerSingleParameter(_liveCourseStatus, EVENTBUS_LIVE_COURSE_PAGE,
+    EventBus.init().registerSingleParameter(_liveCourseStatus, EVENTBUS_LIVE_COURSE_PAGE,
         registerName: LIVE_COURSE_LIVE_START_OR_END);
-    EventBus.getDefault()
+    EventBus.init()
         .registerSingleParameter(_judgeLiveBook, EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_BOOK_LIVE);
 
     if (liveModel == null) {
@@ -161,8 +161,8 @@ class LiveDetailPageState extends XCState {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_BOOK_LIVE);
+    EventBus.init().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_LIVE_START_OR_END);
+    EventBus.init().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE, registerName: LIVE_COURSE_BOOK_LIVE);
   }
 
   void _liveCourseStatus(List list) {

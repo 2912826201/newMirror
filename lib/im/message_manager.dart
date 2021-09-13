@@ -307,7 +307,7 @@ class MessageManager {
         NoPromptUidModel model = NoPromptUidModel(type: dto.type, targetId: int.parse(dto.conversationId));
         if (!NoPromptUidModel.contains(queryNoPromptUidList, model)) {
           unreadMessageNumber += 1;
-          EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+          EventBus.init().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
         }
       }
     }
@@ -417,7 +417,7 @@ class MessageManager {
           break;
         case 7:
           //7-预约直播
-          EventBus.getDefault().post(msg: message, registerName: LIVE_COURSE_BOOK_LIVE);
+          EventBus.init().post(msg: message, registerName: LIVE_COURSE_BOOK_LIVE);
           break;
         case 8:
           //8-遥控器变化---目前只有训练进度
@@ -431,7 +431,7 @@ class MessageManager {
           //9-训练结束
           print('训练结束');
           Future.delayed(Duration(seconds: 1),(){
-            EventBus.getDefault().post(registerName: END_OF_TRAINING);
+            EventBus.init().post(registerName: END_OF_TRAINING);
           });
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
@@ -470,12 +470,12 @@ class MessageManager {
       switch (dataMap["subType"]) {
         case 0:
           GroupChatUserInformationDBHelper().update(message: message);
-          EventBus.getDefault().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.init().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 1:
         case 2:
           GroupChatUserInformationDBHelper().removeMessageGroup(message);
-          EventBus.getDefault().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
+          EventBus.init().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 4:
           //修改群名
@@ -489,11 +489,11 @@ class MessageManager {
         default:
           break;
       }
-      EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
+      EventBus.init().post(msg: message, registerName: CHAT_GET_MSG);
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
-      EventBus.getDefault().post(msg: message, registerName: CHAT_GET_MSG);
+      EventBus.init().post(msg: message, registerName: CHAT_GET_MSG);
     }
   }
 
@@ -512,7 +512,7 @@ class MessageManager {
           List list = [];
           list.add(0);
           list.add(dataMap["courseId"]);
-          EventBus.getDefault().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
+          EventBus.init().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         case 1:
           //1-心跳
@@ -526,7 +526,7 @@ class MessageManager {
           list.add(dataMap["liveRoomId"].toString());
           list.add(dataMap["users"]);
           list.add(message);
-          EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE, msg: list);
+          EventBus.init().post(registerName: EVENTBUS_ROOM_RECEIVE_NOTICE, msg: list);
           break;
         case 3:
           //3-直播结束
@@ -534,7 +534,7 @@ class MessageManager {
           List list = [];
           list.add(3);
           list.add(dataMap["courseId"]);
-          EventBus.getDefault().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
+          EventBus.init().post(msg: list, registerName: LIVE_COURSE_LIVE_START_OR_END);
           break;
         case 4:
           //4-课件开始
@@ -543,7 +543,7 @@ class MessageManager {
           list.add(4);
           list.add(dataMap["liveRoomId"]);
           list.add(dataMap["timestamp"]);
-          EventBus.getDefault().post(msg: list, registerName: START_LIVE_COURSE);
+          EventBus.init().post(msg: list, registerName: START_LIVE_COURSE);
           break;
         default:
           break;
@@ -799,7 +799,7 @@ class MessageManager {
       String modeType = dataMap["courseType"] == 0 ? mode_live : mode_video;
       list.add(dataMap["courseId"]);
       list.add(modeType);
-      EventBus.getDefault().post(msg: list, registerName: START_TRAINING);
+      EventBus.init().post(msg: list, registerName: START_TRAINING);
     } else {
       if (dataMap["courseType"] == 0) {
         //courseType-0--直播
@@ -845,12 +845,12 @@ class MessageManager {
 
   static _openMachineRemoteControllerPage(TrainingScheduleModel model){
     if (AppRouter.isHaveMachineRemoteControllerPage()) {
-      EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
+      EventBus.init().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
     } else {
       BuildContext context = Application.navigatorKey.currentState.overlay.context;
       AppRouter.navigateToMachineRemoteController(context, courseId: model.courseId, modeType: mode_video);
       Future.delayed(Duration(milliseconds: 100), () {
-        EventBus.getDefault().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
+        EventBus.init().post(msg: model, registerName: SCHEDULE_TRAINING_VIDEO);
       });
     }
   }

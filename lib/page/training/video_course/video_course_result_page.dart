@@ -45,7 +45,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
+    EventBus.init().unRegister(pageName: VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
   @override
@@ -54,7 +54,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
     course = widget.course;
     super.initState();
     //在进入本页面前已通过课程id获取课程详情 所以不在这个页面获取了 避免出现加载延迟的情况
-    EventBus.getDefault().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
+    EventBus.init().registerSingleParameter(setData, VIDEO_COURSE_RESULT_PAGE, registerName: VIDEO_COURSE_RESULT);
   }
 
   setData(List list) {

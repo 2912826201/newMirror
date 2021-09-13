@@ -66,7 +66,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVE_COURSE_PAGE+"${DateUtil.formatDateString(dataDate)}",
+    EventBus.init().unRegister(
+        pageName: EVENTBUS_LIVE_COURSE_PAGE + "${DateUtil.formatDateString(dataDate)}",
         registerName: LIVE_COURSE_BOOK_LIVE);
   }
 
@@ -78,8 +79,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage> with Autom
     liveModelArray.clear();
     getLiveModelData();
 
-    EventBus.getDefault()
-        .registerSingleParameter(_judgeLiveBook, EVENTBUS_LIVE_COURSE_PAGE+"${DateUtil.formatDateString(dataDate)}",
+    EventBus.init().registerSingleParameter(_judgeLiveBook, EVENTBUS_LIVE_COURSE_PAGE+"${DateUtil.formatDateString(dataDate)}",
         registerName: LIVE_COURSE_BOOK_LIVE);
     // _retrieveCalendarEvents();
   }
