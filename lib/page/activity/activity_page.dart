@@ -541,7 +541,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Image.asset("assets/png/activity_application.webp", width: 16, height: 16),
+                        AppIcon.getAppIcon(AppIcon.activity_unread, 16, color: AppColor.white),
                         StreamBuilder<int>(
                             initialData: 0,
                             stream: streamActiviityUnread.stream,
