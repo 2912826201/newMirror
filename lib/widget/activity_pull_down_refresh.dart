@@ -9,7 +9,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 
-GlobalKey<_ActivityPullDownRefreshState> pullDownKey = GlobalKey();
 
 class ActivityPullDownRefresh extends StatefulWidget {
   //图片
@@ -63,10 +62,10 @@ class ActivityPullDownRefresh extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ActivityPullDownRefreshState createState() => _ActivityPullDownRefreshState();
+  ActivityPullDownRefreshState createState() => ActivityPullDownRefreshState();
 }
 
-class _ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with TickerProviderStateMixin {
+class ActivityPullDownRefreshState extends State<ActivityPullDownRefresh> with TickerProviderStateMixin {
   //loading刷新时控制器
   AnimationController lodingAnimationController;
 

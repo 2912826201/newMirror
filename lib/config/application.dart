@@ -103,6 +103,7 @@ class Application {
 
   static bool isShowWidget = false;
 
+  static Map<int,String> activityPageIdMap = {};
   //用户所登录的机器
   static MachineModel machine;
 
