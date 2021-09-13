@@ -105,6 +105,10 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
     return GestureDetector(
       onTap: () {
         if (title == "确定") {
+          endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
+              .add(Duration(minutes: -endDateTimeList[fixedContrlList[2].selectedItem].minute));
+          endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
+              .add(Duration(minutes: endMinuteList[fixedContrlList[3].selectedItem]));
           widget.onStartAndEndTimeChoseCallBack(
               startDateTimeList[fixedContrlList[0].selectedItem], endDateTimeList[fixedContrlList[2].selectedItem]);
         }
@@ -116,7 +120,7 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
         child: Center(
           child: Text(
             title,
-            style:AppStyle.whiteRegular16,
+            style: AppStyle.whiteRegular16,
           ),
         ),
       ),
@@ -189,10 +193,6 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
                 _scrollChangeNotify(fixedContrlList[0].selectedItem);
                 break;
             }
-            endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
-                .add(Duration(minutes: -endDateTimeList[fixedContrlList[2].selectedItem].minute));
-            endDateTimeList[fixedContrlList[2].selectedItem] = endDateTimeList[fixedContrlList[2].selectedItem]
-                .add(Duration(minutes: endMinuteList[fixedContrlList[3].selectedItem]));
           },
           children: List.generate(unit == "时" ? dateList.length : minuteList.length, (index) {
             return _timeItem(unit == "时" ? dateList[index].hour : minuteList[index], unit);
@@ -239,9 +239,9 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
       }
       startDateTimeList[selectStartIndex] = startDateTimeList[selectStartIndex].add(Duration(minutes: startMinute));
     }
-    _scrollChangeNotify(fixedContrlList[0].selectedItem);
     _startMinuteListInit(
         startDateTimeList[fixedContrlList[0].selectedItem], endDateTimeList[fixedContrlList[2].selectedItem]);
+    _scrollChangeNotify(fixedContrlList[0].selectedItem);
     fixedContrlList[1].jumpToItem(0);
     fixedContrlList[2].jumpToItem(0);
     fixedContrlList[3].jumpToItem(0);
