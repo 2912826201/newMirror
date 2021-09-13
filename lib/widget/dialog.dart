@@ -357,24 +357,35 @@ showAppDialog(BuildContext context,
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (context) {
-        return WillPopScope(
-            onWillPop: () async => barrierDismissible, //用来屏蔽安卓返回键关弹窗
-            child: Dialog(
-              backgroundColor: isTransparentBack ? AppColor.transparent : AppColor.layoutBgGrey,
-              elevation: isTransparentBack ? 0 : null,
-              child: _AppDialog(
-                  confirm: confirm,
-                  confirmColor: confirmColor,
-                  cancel: cancel,
-                  buttonList: buttonList,
-                  title: title,
-                  info: info,
-                  infoStyle: infoStyle,
-                  customizeWidget: customizeWidget,
-                  circleImageUrl: circleImageUrl,
-                  isTransparentBack: isTransparentBack,
-                  poi: poi,
-                  topImageUrl: topImageUrl),
-            ));
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  WillPopScope(
+                      onWillPop: () async => barrierDismissible, //用来屏蔽安卓返回键关弹窗
+                      child: Dialog(
+                        backgroundColor: isTransparentBack ? AppColor.transparent : AppColor.layoutBgGrey,
+                        elevation: isTransparentBack ? 0 : null,
+                        child: _AppDialog(
+                            confirm: confirm,
+                            confirmColor: confirmColor,
+                            cancel: cancel,
+                            buttonList: buttonList,
+                            title: title,
+                            info: info,
+                            infoStyle: infoStyle,
+                            customizeWidget: customizeWidget,
+                            circleImageUrl: circleImageUrl,
+                            isTransparentBack: isTransparentBack,
+                            poi: poi,
+                            topImageUrl: topImageUrl),
+                      ))
+                ],
+              ),
+            ),
+          ),
+        );
       });
 }

@@ -22,10 +22,10 @@ import 'package:provider/provider.dart';
 
 class DetailActivityBottomUi extends StatefulWidget {
   final ActivityModel activityModel;
-  final bool isInvite;
+  final int inviterId;
   final Function() onRestDataListener;
 
-  DetailActivityBottomUi(this.activityModel, this.isInvite, this.onRestDataListener);
+  DetailActivityBottomUi(this.activityModel, this.inviterId, this.onRestDataListener);
 
   @override
   _DetailActivityBottomUiState createState() => _DetailActivityBottomUiState();
@@ -188,6 +188,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
                   color: isAgree ? AppColor.mainRed : AppColor.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
+                child: isAgree ? Image.asset("assets/png/select_icon_red.png", width: 20, height: 20) : Container(),
               ),
             ),
             onTap: () {
@@ -217,7 +218,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     );
   }
 
-  //参加活动置灰
+  //活动进行中
   Widget _joinActivityCanNot() {
     return Container(
       height: 40,
@@ -228,24 +229,8 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       ),
       child: Row(
         children: [
-          GestureDetector(
-            child: Container(
-              width: 40,
-              height: 40,
-              padding: EdgeInsets.all(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isAgree ? AppColor.mainRed : AppColor.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            onTap: () {
-              isAgree = !isAgree;
-              setState(() {});
-            },
-          ),
-          Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
+          SizedBox(width: 12),
+          Text("活动进行中", style: AppStyle.text1Regular14),
           Spacer(),
           Container(
             height: 40,
@@ -255,7 +240,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
               color: AppColor.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text("参加活动", style: AppStyle.whiteRegular15),
+            child: Text("活动进行中", style: AppStyle.whiteRegular15),
           ),
         ],
       ),
@@ -268,13 +253,13 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     } else if (widget.activityModel.status == 1) {
       ToastShow.show(msg: "活动人数已经筹集满了", context: context);
     } else if (AuthData.init().getString(widget.activityModel.auth) == "所有人") {
-      if (widget.isInvite) {
+      if (widget.inviterId != null) {
         _joinByInvitationActivity();
       } else {
         _applyJoinActivity("");
       }
     } else if (AuthData.init().getString(widget.activityModel.auth) == "受到邀请的人") {
-      if (widget.isInvite) {
+      if (widget.inviterId != null) {
         _joinByInvitationActivity();
       } else {
         ToastShow.show(msg: "活动只允许收到邀请的人加入", context: context);
@@ -289,10 +274,10 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     return Container(
       height: 104,
       width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 16),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       decoration:
-      BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color: AppColor.white.withOpacity(0.1)),
       child: TextField(
         controller: _applyJoinController,
         cursorColor: AppColor.white,
@@ -327,8 +312,10 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
           if (_applyJoinController.text == null || _applyJoinController.text.length < 1) {
             ToastShow.show(msg: "申请理由不能为空", context: context);
           } else {
-            _applyJoinActivity(_applyJoinController.text);
-            _applyJoinController.text = "";
+            Future.delayed(Duration(microseconds: 100), () {
+              _applyJoinActivity(_applyJoinController.text);
+              _applyJoinController.text = "";
+            });
           }
           return true;
         }));
@@ -337,8 +324,10 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
   //申请加入活动
   _applyJoinActivity(String message) async {
     Loading.showLoading(context, infoText: "正在加入活动");
-
-    List list = await applyJoinActivity(widget.activityModel.id, message);
+    List list;
+    await Future.delayed(Duration(microseconds: 300), () async {
+      list = await applyJoinActivity(widget.activityModel.id, message);
+    });
 
     Loading.hideLoading(context);
     if (list[0] && widget.onRestDataListener != null) {
@@ -355,7 +344,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     if (ClickUtil.isFastClick()) {
       return;
     }
-    List list = await ActivityUtil.init().joinByInvitationActivity(context, widget.activityModel.id);
+    List list = await ActivityUtil.init().joinByInvitationActivity(context, widget.activityModel.id, widget.inviterId);
     if (list[0] && widget.onRestDataListener != null) {
       widget.onRestDataListener();
     } else {

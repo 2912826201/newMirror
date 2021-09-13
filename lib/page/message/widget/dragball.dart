@@ -166,12 +166,18 @@ class _DragballState extends State<Dragball> with TickerProviderStateMixin {
     }
     if (scrollNotification is ScrollStartNotification) {
       if (scrollNotification.metrics.axis == Axis.vertical) {
+        // 缩放加隐藏
         _animationController.forward();
+        // 平移
+        // _onHideOrShowBall();
       }
     }
     if (scrollNotification is ScrollEndNotification) {
       if (scrollNotification.metrics.axis == Axis.vertical) {
+        // 缩放加隐藏
         _animationController.reverse();
+        // 平移
+        // _onHideOrShowBall();
       }
     }
     return false;

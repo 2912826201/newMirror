@@ -9,12 +9,14 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -31,10 +33,10 @@ import 'package:provider/provider.dart';
 ///活动成员界面type
 class ActivityUserPage extends StatefulWidget {
   final int activityId;
-  final int type; //0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户 4-邀请好友进入活动
+  final int type; //0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户-某一个活动 4-邀请好友进入活动 5-待验证用户-用户的全部活动
   final List<UserModel> userList;
 
-  ActivityUserPage({Key key, @required this.activityId, this.type = 0, @required this.userList}) : super(key: key);
+  ActivityUserPage({Key key, this.activityId, this.type = 0, @required this.userList}) : super(key: key);
 
   @override
   _ActivityUserPageState createState() => _ActivityUserPageState(userList);
@@ -66,9 +68,12 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  LoadingStatus loadingStatus;
+
   @override
   void initState() {
     super.initState();
+    loadingStatus = LoadingStatus.STATUS_LOADING;
     initData();
   }
 
@@ -191,28 +196,41 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       margin: const EdgeInsets.symmetric(vertical: 5),
       color: AppColor.transparent,
-      height: 48,
+      constraints: BoxConstraints(
+        minHeight: 48.0,
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          UserAvatarImageUtil.init()
-              .getUserImageWidget(model.avatarUri, model.uid.toString(), widget.type != 0 ? 32 : 38),
+          Container(
+            child: UserAvatarImageUtil.init()
+                .getUserImageWidget(model.avatarUri, model.uid.toString(), widget.type != 0 ? 32 : 38),
+            margin: EdgeInsets.only(top: 4),
+          ),
           SizedBox(width: 12),
           Expanded(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                model.nickName ?? "",
-                style: AppStyle.whiteRegular16,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              getSubtitle(model),
-            ],
-          )),
-          if (widget.type != 0 && widget.type != 3) getSingleChoiceUi(index),
-          if (widget.type == 0 || widget.type == 3) getItemUserBtnUi(model, index),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      model.nickName ?? "",
+                      style: AppStyle.whiteRegular16,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    getSubtitle(model),
+                  ],
+                )),
+                SizedBox(width: 4),
+                if (widget.type != 0 && widget.type != 3) getSingleChoiceUi(index),
+                if (widget.type == 0 || widget.type == 3) getItemUserBtnUi(model, index),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -227,11 +245,20 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         overflow: TextOverflow.ellipsis,
       );
     } else if (widget.type == 3 && model.message != null) {
-      return Text(
-        model.message ?? "",
-        style: AppStyle.text1Regular12,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "对方留言: " + "${StringUtil.breakWord(model.message)}",
+            style: AppStyle.text1Regular12,
+          ),
+          Text(
+            "活动来源: " + "${StringUtil.breakWord(model.title)}",
+            style: AppStyle.text1Regular12,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       );
     } else {
       return Container();
@@ -310,6 +337,15 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
 
   //评论没有数据
   Widget getCommentNoData() {
+    if (loadingStatus == LoadingStatus.STATUS_LOADING) {
+      return Container(
+        width: ScreenUtil.instance.width,
+        height: ScreenUtil.instance.height,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Container(
       width: ScreenUtil.instance.width,
       height: ScreenUtil.instance.height,
@@ -326,7 +362,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             height: 16,
           ),
           Text(
-            "暂时没有获取到${widget.type == 0 ? "群成员" : (widget.type == 3 ? "待验证成员" : "")}信息",
+            "暂时没有获取到${widget.type == 0 ? "群成员" : (widget.type == 3 || widget.type == 5 ? "待验证成员" : "")}信息",
             style: AppStyle.text1Regular14,
           )
         ],
@@ -415,7 +451,9 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
           return true;
         }),
         confirm: AppDialogButton("确定", () {
-          _removeMember();
+          Future.delayed(Duration(microseconds: 100), () {
+            _removeMember();
+          });
           return true;
         }));
   }
@@ -528,18 +566,22 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   }
 
   initData() async {
-    activityModel = await getActivityDetailApi(widget.activityId);
-    if (activityModel == null) {
-      _refreshController.refreshCompleted();
-      setState(() {});
+    if (widget.type != 5) {
+      activityModel = await getActivityDetailApi(widget.activityId);
+      if (activityModel == null) {
+        _refreshController.refreshCompleted();
+        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+        setState(() {});
+      }
     }
     if (widget.type == 0) {
       //查看活动成员
       userList.clear();
       userList.addAll(await getActivityMemberList(widget.activityId, 100, null));
       _refreshController.refreshCompleted();
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
-    } else if (widget.type == 3) {
+    } else if (widget.type == 3 || widget.type == 5) {
       //待验证用户
       verifyUserList.clear();
       DataResponseModel dataResponseModel = await getActivityApplyList(widget.activityId, 20, null);
@@ -550,6 +592,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         verifyUserLastId = dataResponseModel.lastId;
       }
       _refreshController.refreshCompleted();
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
     } else if (widget.type == 4) {
       //邀请好友进入活动
@@ -574,7 +617,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       _refreshController.loadComplete();
       return;
     }
-    if (widget.type == 3) {
+    if (widget.type == 3 || widget.type == 5) {
       DataResponseModel dataResponseModel = await getActivityApplyList(widget.activityId, 20, verifyUserLastId);
       if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
         dataResponseModel.list.forEach((element) {
@@ -608,9 +651,11 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         if (_refreshController.isLoading) {
           _refreshController.loadComplete();
         }
+        loadingStatus = LoadingStatus.STATUS_COMPLETED;
         setState(() {});
       }
     } else {
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
     }
   }

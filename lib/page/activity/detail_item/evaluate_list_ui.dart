@@ -474,7 +474,9 @@ class EvaluateListUiState extends State<EvaluateListUi> with TickerProviderState
                       return true;
                     }),
                     confirm: AppDialogButton("确定", () {
-                      _deleteComment(value.id, value);
+                      Future.delayed(Duration(microseconds: 100), () {
+                        _deleteComment(value.id, value);
+                      });
                       return true;
                     }));
               } else if (list[index] == "举报") {

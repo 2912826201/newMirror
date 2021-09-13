@@ -147,7 +147,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
       } else if (index == 4) {
         array.add(GestureDetector(
           onTap: () {
-            AppRouter.navigateActivityUserPage(context, widget.activityModel.id, [], type: 3,
+            AppRouter.navigateActivityUserPage(context, activityId: widget.activityModel.id, type: 3,
                 callback: (dynamic result) {
               initData();
             });
@@ -248,7 +248,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
                   buttonWidth: 47,
                   iconColor: AppColor.mainBlack,
                   onTap: () {
-                    AppRouter.navigateActivityUserPage(context, widget.activityModel.id, [], type: 4,
+                    AppRouter.navigateActivityUserPage(context, activityId: widget.activityModel.id, type: 4,
                         callback: (dynamic result) {
                       initData();
                     });
@@ -283,7 +283,7 @@ class _DetailMemberUserUiState extends State<DetailMemberUserUi> {
 
   initData() async {
     applyUserList.clear();
-    dataResponseModel = await applyList(widget.activityModel.id, 4, null);
+    dataResponseModel = await getActivityApplyList(widget.activityModel.id, 4, null);
     if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
       dataResponseModel.list.forEach((element) {
         UserModel model = UserModel.fromJson(element);

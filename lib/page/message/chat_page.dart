@@ -2652,7 +2652,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       return;
     }
     Navigator.of(context).pop();
-    AppRouter.navigateActivityDetailPage(context, activityId, isInvite: true);
+    AppRouter.navigateActivityDetailPage(context, activityId, inviterId: int.parse(conversation.conversationId));
   }
 
   //获取消息是否免打扰和置顶
@@ -2695,7 +2695,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
         }
         if (list[index] == "查看活动群成员") {
           if (conversation.activityId != null) {
-            AppRouter.navigateActivityUserPage(context, conversation.activityId, []);
+            AppRouter.navigateActivityUserPage(context, activityId: conversation.activityId);
           }
         } else if (list[index] == "置顶" || list[index] == "取消置顶") {
           setTopChatApi();
