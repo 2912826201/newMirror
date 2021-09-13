@@ -217,7 +217,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
     );
   }
 
-  //参加活动置灰
+  //活动进行中
   Widget _joinActivityCanNot() {
     return Container(
       height: 40,
@@ -228,24 +228,8 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       ),
       child: Row(
         children: [
-          GestureDetector(
-            child: Container(
-              width: 40,
-              height: 40,
-              padding: EdgeInsets.all(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isAgree ? AppColor.mainRed : AppColor.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            onTap: () {
-              isAgree = !isAgree;
-              setState(() {});
-            },
-          ),
-          Text("我已阅读并同意活动说明", style: AppStyle.whiteRegular12),
+          SizedBox(width: 12),
+          Text("活动进行中", style: AppStyle.text1Regular14),
           Spacer(),
           Container(
             height: 40,
@@ -255,7 +239,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
               color: AppColor.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text("参加活动", style: AppStyle.whiteRegular15),
+            child: Text("活动进行中", style: AppStyle.whiteRegular15),
           ),
         ],
       ),
