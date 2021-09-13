@@ -298,10 +298,10 @@ Future<List<String>> inviteActivity(int activityId, String uids) async {
 }
 
 //通过邀请链接加入活动
-Future<List> joinByInvitation(int activityId, int uid) async {
+Future<List> joinByInvitation(int activityId, int inviterId) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
-  params["inviterId"] = uid;
+  params["inviterId"] = inviterId;
   BaseResponseModel responseModel = await requestApi(JOINBYINVITATION, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     return [responseModel.data["state"] ?? false, responseModel.message];
@@ -367,11 +367,21 @@ Future<List> updateActivity(
     int activityId, int count, String cityCode, String address, String longitude, String latitude) async {
   Map<String, dynamic> params = {};
   params["id"] = activityId;
-  params["count"] = count;
-  params["cityCode"] = cityCode;
-  params["address"] = address;
-  params["longitude"] = longitude;
-  params["latitude"] = latitude;
+  if (count != null) {
+    params["count"] = count;
+  }
+  if (cityCode != null) {
+    params["cityCode"] = cityCode;
+  }
+  if (address != null) {
+    params["address"] = address;
+  }
+  if (longitude != null) {
+    params["longitude"] = longitude;
+  }
+  if (latitude != null) {
+    params["latitude"] = latitude;
+  }
   BaseResponseModel responseModel = await requestApi(UPDATEACTIVITY, params);
   if (responseModel.isSuccess && responseModel.data != null) {
     try {

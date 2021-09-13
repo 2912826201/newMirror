@@ -415,7 +415,9 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
           return true;
         }),
         confirm: AppDialogButton("确定", () {
-          _removeMember();
+          Future.delayed(Duration(microseconds: 100), () {
+            _removeMember();
+          });
           return true;
         }));
   }
