@@ -29,6 +29,7 @@ const String APPLYLIST = "/appuser/web/activity/applyList";
 
 // 获取活动成员
 const String GETACTIVITYMEMBERLIST = "/appuser/web/activity/getActivityMemberList";
+
 // 获取活动用户申请列表
 const String GETACTIVITYAPPLYLIST = "/appuser/web/activity/applyList";
 
@@ -201,27 +202,6 @@ Future<List> applyJoinActivity(int activityId, String message) async {
     return [false, "申请失败"];
   }
 }
-
-//获取申请的列表
-Future<DataResponseModel> applyList(int activityId, int size, int lastId) async {
-  Map<String, dynamic> params = {};
-  params["id"] = activityId;
-  params["size"] = size;
-  if (lastId != null) {
-    params["lastId"] = lastId;
-  }
-  BaseResponseModel responseModel = await requestApi(APPLYLIST, params);
-  if (responseModel.isSuccess && responseModel.data != null) {
-    DataResponseModel dataResponseModel = DataResponseModel();
-    if (responseModel.data != null) {
-      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
-    }
-    return dataResponseModel;
-  } else {
-    return null;
-  }
-}
-
 //获取活动成员
 Future<List<UserModel>> getActivityMemberList(int activityId, int size, int lastTime) async {
   Map<String, dynamic> params = {};
@@ -249,7 +229,9 @@ Future<List<UserModel>> getActivityMemberList(int activityId, int size, int last
 //获取活动用户申请列表
 Future<DataResponseModel> getActivityApplyList(int activityId, int size, int lastId) async {
   Map<String, dynamic> params = {};
-  params["id"] = activityId;
+  if (activityId != null) {
+    params["id"] = activityId;
+  }
   params["size"] = size;
   if (lastId != null) {
     params["lastId"] = lastId;

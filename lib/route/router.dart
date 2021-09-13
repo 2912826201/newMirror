@@ -1081,14 +1081,22 @@ class AppRouter {
   }
 
   // 活动成员
-  ////0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户
-  static void navigateActivityUserPage(BuildContext context, int activityId, List<UserModel> modeList,
-      {int type = 0, Function(dynamic result) callback}) {
+  //0-查看活动成员 1 -移除活动成员  2-举报成员 3-待验证用户-某一个活动 4-邀请好友进入活动 5-待验证用户-用户的全部活动
+  //0-查看活动成员                  需要activityId
+  //1-移除活动成员                  需要activityId type
+  //2-举报成员                      需要activityId type
+  //3-待验证用户-某一个活动           需要activityId type
+  //4-邀请好友进入活动               需要activityId type
+  //5-待验证用户-用户的全部活动        需要type
+  static void navigateActivityUserPage(BuildContext context,
+      {int activityId, List<UserModel> modeList, int type = 0, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     if (modeList != null) {
       map['modeList'] = modeList.map((e) => e.toJson()).toList();
     }
-    map["activityId"] = activityId;
+    if (activityId != null) {
+      map['activityId'] = activityId;
+    }
     map["type"] = type;
     _navigateToPage(context, pathActivityUserPage, map, callback: callback);
   }
