@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -15,7 +16,7 @@ class Loading {
   static StreamController<bool> streamController;
 
   ///note 还没有ui图，暂时按照需求给出大致的样子
-  static showLoading(BuildContext context, {String infoText}) {
+  static showLoading(BuildContext context, {String infoText,Function() backTap}) {
     streamController = StreamController<bool>();
     if (!isShow) {
       isShow = true;
@@ -54,16 +55,12 @@ class Loading {
                                     borderRadius: BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: snapshot.data
-                                      ? Theme(
-                                          data: ThemeData(
-                                            cupertinoOverrideTheme: CupertinoThemeData(
-                                              brightness: Brightness.dark,
-                                            ),
-                                          ),
-                                          child: CupertinoActivityIndicator(
-                                            radius: 14,
-                                          ),
-                                        )
+                                      ? Lottie.asset(
+                                    'assets/lottie/loading_refresh_yellow.json',
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.fill,
+                                  )
                                       : Image.asset(DefaultImage.nodata),
                                 ),
                                 SizedBox(
@@ -99,12 +96,13 @@ class Loading {
                               width: CustomAppBar.appBarButtonWidth,
                               child: Center(
                                 child: CustomAppBarIconButton(
-                                  svgName: AppIcon.nav_return,
+
+                                 svgName: AppIcon.nav_return,
                                   iconColor: AppColor.white,
                                   onTap: () {
                                     streamController.onCancel;
                                     streamController.close();
-                                    Navigator.of(context).pop();
+                                    backTap();
                                     Navigator.of(context).pop();
                                   },
                                 ),
