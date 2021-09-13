@@ -88,6 +88,15 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    //取消监听
+    EventBus.getDefault().unRegister(pageName: EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     offsetHeight = ScreenUtil.instance.width / 4;
