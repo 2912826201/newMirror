@@ -18,13 +18,11 @@ import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchTopic extends StatefulWidget {
-  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController, this.controller})
-      : super(key: key);
+  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController, this.controller}) : super(key: key);
   final FocusNode focusNode;
   final TextEditingController textController;
   final TabController controller;
   final String keyWord;
-
 
   @override
   SearchTopicState createState() => SearchTopicState();
@@ -45,11 +43,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   // 是否存在下一页
   int hasNext;
 
-// // 加载中默认文字
-//   String loadText = "加载中...";
-//
-//   // 加载状态
-//   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+  // 是否显示缺省图
+  bool isShowDefaultMap;
   RefreshController _refreshController = RefreshController();
   String lastString;
 
@@ -137,9 +132,9 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         hasNext = model.hasNext;
         if (model.list.isNotEmpty) {
           // for (int i = 0; i < 5; i++) {
-            model.list.forEach((v) {
-              topicList.add(TopicDtoModel.fromJson(v));
-            });
+          model.list.forEach((v) {
+            topicList.add(TopicDtoModel.fromJson(v));
+          });
           // }
         }
         if (refreshOrLoading) {
@@ -166,6 +161,11 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
         _refreshController.loadComplete();
       }
     }
+    if (topicList.length > 0) {
+      isShowDefaultMap = false;
+    } else {
+      isShowDefaultMap = true;
+    }
     print("topicList的长度：：：：${topicList.length}");
     if (mounted) {
       setState(() {});
@@ -175,72 +175,72 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (topicList.isNotEmpty) {
-      return Container(
-          child: ScrollConfiguration(
-              behavior: OverScrollBehavior(),
-              child: SmartRefresher(
-                  enablePullDown: true,
-                  enablePullUp: true,
-                  footer: SmartRefresherHeadFooter.init().getFooter(),
-                  header: SmartRefresherHeadFooter.init().getHeader(),
-                  controller: _refreshController,
-                  onRefresh: () {
-                    lastScore = null;
-                    hasNext = null;
-                    _refreshController.loadComplete();
-                    requestFeedInterface(refreshOrLoading: true);
-                  },
-                  onLoading: () {
-                    requestFeedInterface(refreshOrLoading: false);
-                  },
-                  child: CustomScrollView(
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                      // controller: _scrollController,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverToBoxAdapter(
-                            child: Container(
-                          margin: const EdgeInsets.only(left: 16, right: 16),
-                          child: MediaQuery.removePadding(
-                              removeTop: true,
-                              context: context,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                itemCount: topicList.length,
-                                itemBuilder: (context, index) {
-                                  return SearchTopiciItem(
-                                    model: topicList[index],
-                                  );
-                                  // }
-                                },
-                              )),
-                        ))
-                      ]))));
-    } else {
-      return Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 224,
-              height: 224,
-              decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
-              ),
-              margin: const EdgeInsets.only(bottom: 16),
-            ),
-            const Text(
-              "你的放大镜陨落星辰了",
-              style: AppStyle.text1Regular14,
-            ),
-            const Text("换一个试一试", style: AppStyle.text1Regular14),
-          ],
-        ),
-      );
-    }
+    return isShowDefaultMap == null
+        ? Container()
+        : !isShowDefaultMap
+            ? Container(
+                child: ScrollConfiguration(
+                    behavior: OverScrollBehavior(),
+                    child: SmartRefresher(
+                        enablePullDown: true,
+                        enablePullUp: true,
+                        footer: SmartRefresherHeadFooter.init().getFooter(),
+                        header: SmartRefresherHeadFooter.init().getHeader(),
+                        controller: _refreshController,
+                        onRefresh: () {
+                          lastScore = null;
+                          hasNext = null;
+                          _refreshController.loadComplete();
+                          requestFeedInterface(refreshOrLoading: true);
+                        },
+                        onLoading: () {
+                          requestFeedInterface(refreshOrLoading: false);
+                        },
+                        child: CustomScrollView(
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                            // controller: _scrollController,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              SliverToBoxAdapter(
+                                  child: Container(
+                                margin: const EdgeInsets.only(left: 16, right: 16),
+                                child: MediaQuery.removePadding(
+                                    removeTop: true,
+                                    context: context,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      primary: false,
+                                      itemCount: topicList.length,
+                                      itemBuilder: (context, index) {
+                                        return SearchTopiciItem(
+                                          model: topicList[index],
+                                        );
+                                        // }
+                                      },
+                                    )),
+                              ))
+                            ]))))
+            : Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 224,
+                      height: 224,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage("assets/png/default_no_data.png"), fit: BoxFit.cover),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 16),
+                    ),
+                    const Text(
+                      "你的放大镜陨落星辰了",
+                      style: AppStyle.text1Regular14,
+                    ),
+                    const Text("换一个试一试", style: AppStyle.text1Regular14),
+                  ],
+                ),
+              );
   }
 }
 

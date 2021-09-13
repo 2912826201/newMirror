@@ -433,6 +433,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     return Dragball(
         withIcon: false,
         ball: Container(
+          margin: EdgeInsets.only(right: 14),
           child: FloatingActionButton(
             child: const Icon(
               Icons.add,
@@ -440,8 +441,8 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
             ),
             foregroundColor: AppColor.mainBlack,
             backgroundColor: AppColor.white,
-            elevation: 7.0,
-            highlightElevation: 14.0,
+            elevation: 0,
+            // highlightElevation: 14.0,
             isExtended: false,
             onPressed: () {
               AppRouter.navigateCreateActivityPage(context);
@@ -834,7 +835,6 @@ class _ActivityListItem extends State<ActivityListItem> {
               ),
               Spacer(),
               // 头像布局
-
               ClipPath(
                 clipper: ShapeBorderClipper(
                   shape: ClipImageLeftCorner(),
@@ -868,11 +868,10 @@ class _ActivityListItem extends State<ActivityListItem> {
                           color: AppColor.mainBlue,
                           borderRadius: BorderRadius.circular((15.0)),
                         ),
-                        child:  Image.asset(ActivityTypeData.init().getIconStringIndex(widget.activityModel.type)[1],
+                        child: Image.asset(ActivityTypeData.init().getIconStringIndex(widget.activityModel.type)[1],
                             width: 30, height: 30),
                       ),
                     )
-
                   ],
                 ),
               ),
