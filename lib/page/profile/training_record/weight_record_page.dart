@@ -467,6 +467,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     }
   }
 
+
   //获取数据
   loadData() async {
     weightDataModel = await getWeightRecords(1, 1000);

@@ -1002,6 +1002,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               }
             }
             if (widget.isBottomSheetAndHomePage &&
+                !widget.isActivity&&
                 context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.length < 2) {
               context
                   .read<FeedMapNotifier>()
