@@ -46,7 +46,7 @@ class RongCloudReceiveManager {
       return;
     }else if(MessageManager.judgeBarrageMessage(msg)){
       print("收到了弹幕消息：${msg.content.encode()}");
-      EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE,msg: msg);
+      EventBus.init().post(registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE, msg: msg);
       return;
     }
 
@@ -93,10 +93,10 @@ class RongCloudReceiveManager {
       }else{
 
         //系统消息和群聊消息和私聊消息
-        List<int> list=[];
+        List<int> list = [];
         list.add(messageId);
         list.add(status);
-        EventBus.getDefault().post(msg: list,registerName: RESET_MSG_STATUS);
+        EventBus.init().post(msg: list, registerName: RESET_MSG_STATUS);
         MessageManager.updateConversationByMessageList(_context, [msg]);
       }
 
@@ -108,7 +108,7 @@ class RongCloudReceiveManager {
   //消息撤回监听
   onRecallMessageReceived(Message message) {
     print("撤回消息====${message.objectName}");
-    EventBus.getDefault().post(msg: message, registerName: CHAT_WITHDRAW_MSG);
+    EventBus.init().post(msg: message, registerName: CHAT_WITHDRAW_MSG);
     ChatMessageProfileUtil.init().judgeWithdrawIsAtMsg(message);
     MessageManager.updateConversationByMessageList(_context, [message]);
   }

@@ -83,7 +83,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     }
 
     //登录成功监听
-    EventBus.getDefault()
+    EventBus.init()
         .registerNoParameter(_loginSuccessful, EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
   }
 
@@ -93,7 +93,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     super.dispose();
 
     //取消监听
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
+    EventBus.init().unRegister(pageName: EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
   }
 
   @override
@@ -510,12 +510,15 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   //解散活动
   _deleteActivity() async {
     Loading.showLoading(context, infoText: "正在解散活动");
-    bool isSuccess = await deleteActivity(activityModel.id);
+    List list = await deleteActivity(activityModel.id);
 
     Loading.hideLoading(context);
-    ToastShow.show(msg: isSuccess ? "解散成功" : "解散失败", context: context);
-    if (isSuccess) {
+    if (list[0]) {
+      ToastShow.show(msg: "解散成功", context: context);
+      EventBus.init().post(registerName: ACTIVITY_LIST_RESET);
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+    } else {
+      ToastShow.show(msg: list[1], context: context);
     }
   }
 

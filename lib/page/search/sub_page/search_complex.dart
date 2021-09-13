@@ -92,7 +92,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   void initState() {
     // 合并请求
     mergeRequest();
-    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
+    EventBus.init().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
     Application.tabBarIndexList.add(0);
     widget.controller.addListener(() {

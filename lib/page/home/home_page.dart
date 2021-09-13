@@ -78,12 +78,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
     print("homePage初始化");
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
     // 登录页重新登录获取发布失败model通知
-    EventBus.getDefault()
+    EventBus.init()
         .registerNoParameter(postModelAssignment, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_GET_FAILURE_MODEL);
     // 发布动态页发送发布model通知
-    EventBus.getDefault()
-        .registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
-    EventBus.getDefault().registerSingleParameter(_jumpPage, EVENTBUS_HOME_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
+    EventBus.init().registerSingleParameter(pulishFeed, EVENTBUS_HOME_PAGE, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    EventBus.init().registerSingleParameter(_jumpPage, EVENTBUS_HOME_PAGE, registerName: MAIN_PAGE_JUMP_PAGE);
     _initConnectivity();
     // controller.addListener(() {
     //   Application.feedBetterPlayerControllerList.clear();

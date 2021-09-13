@@ -51,7 +51,7 @@ class UnreadMessageNotifier extends ChangeNotifier {
       }
     }
     if(needChange){
-      EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+      EventBus.init().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
       notifyListeners();
     }
   }

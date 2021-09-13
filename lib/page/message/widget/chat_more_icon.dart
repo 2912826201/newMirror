@@ -39,7 +39,7 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerSingleParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.init().registerSingleParameter(_resetMoreBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   _resetMoreBtn(bool isVoiceState) {
@@ -57,7 +57,7 @@ class _ChatMoreIconState extends State<ChatMoreIcon> {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   @override

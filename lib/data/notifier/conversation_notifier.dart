@@ -130,13 +130,13 @@ class ConversationNotifier with ChangeNotifier {
   }
 
   _updateUnreadMessageNumber(){
-    MessageManager.unreadMessageNumber=0;
+    MessageManager.unreadMessageNumber = 0;
     _conversationMap.forEach((key, value) {
-      NoPromptUidModel model=NoPromptUidModel(type: value.type,targetId: int.parse(value.conversationId));
-      if(!NoPromptUidModel.contains(MessageManager.queryNoPromptUidList,model)){
-        MessageManager.unreadMessageNumber+=value.unreadCount;
+      NoPromptUidModel model = NoPromptUidModel(type: value.type, targetId: int.parse(value.conversationId));
+      if (!NoPromptUidModel.contains(MessageManager.queryNoPromptUidList, model)) {
+        MessageManager.unreadMessageNumber += value.unreadCount;
       }
     });
-    EventBus.getDefault().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
+    EventBus.init().post(registerName: EVENTBUS_IF_TAB_BAR_UNREAD);
   }
 }

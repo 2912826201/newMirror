@@ -67,9 +67,9 @@ class _betterVideoPlayerState extends State<betterVideoPlayer> {
     streamController = StreamController.broadcast();
     streamHeight = StreamController.broadcast();
     _calculateSize();
-    EventBus.getDefault().registerSingleParameter(_deletedVideooController, EVENTBUS_VIDEO_VIEW,
+    EventBus.init().registerSingleParameter(_deletedVideooController, EVENTBUS_VIDEO_VIEW,
         registerName: EVENTBUS_VIDEO_DELETE_FEED);
-    EventBus.getDefault().registerSingleParameter(_deletedFeedVideoPlay, EVENTBUS_VIDEO_VIEW,
+    EventBus.init().registerSingleParameter(_deletedFeedVideoPlay, EVENTBUS_VIDEO_VIEW,
         registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
   }
 

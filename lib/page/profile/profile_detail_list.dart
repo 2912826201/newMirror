@@ -156,16 +156,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    EventBus.getDefault().unRegister(registerName: EVENTBUS_PROFILE_DELETE_FEED, pageName: EVENTBUS_PROFILE_PAGE);
+    EventBus.init().unRegister(registerName: EVENTBUS_PROFILE_DELETE_FEED, pageName: EVENTBUS_PROFILE_PAGE);
   }
 
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault()
-        .registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
+    EventBus.init().registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
     print('-----------------------------profileDetailsListInit');
-    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
+    EventBus.init().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
         registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"

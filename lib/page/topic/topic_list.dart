@@ -82,9 +82,8 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // TODO: implement dispose
     // 取消网络请求
     cancelRequests(token: token);
-    EventBus.getDefault()
-        .unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
-    EventBus.getDefault().unRegister(
+    EventBus.init().unRegister(registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED, pageName: EVENTBUS__TOPICDATAIL_PAGE);
+    EventBus.init().unRegister(
         registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${widget.topicId}",
         pageName: EVENTBUS__TOPICDATAIL_PAGE);
     super.dispose();
@@ -161,9 +160,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     super.initState();
     refreshController = RefreshController(initialRefresh: true);
     // requestRecommendTopic(refreshOrLoading:true);
-    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
+    EventBus.init().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
-    EventBus.getDefault().registerSingleParameter(onDoubleTap, EVENTBUS__TOPICDATAIL_PAGE,
+    EventBus.init().registerSingleParameter(onDoubleTap, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DOUBLE_TAP_TABBAR + "${widget.topicId}");
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     // Future.delayed(Duration(milliseconds: 250), () {

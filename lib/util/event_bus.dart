@@ -44,7 +44,7 @@ class EventBus {
 
   EventBus._();
 
-  static EventBus getDefault() {
+  static EventBus init() {
     if (_eventBus == null) {
       _eventBus = new EventBus._();
     }
@@ -177,8 +177,10 @@ const String EVENTBUS__TOPICDATAIL_PAGE = "topicdatailpage";
 const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 //关注粉丝页
 const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
+//活动列表页
+const String EVENTBUS_ACTIVITY_LIST_PAGE = "activity_list_page";
 //活动详情
-const String EVENTBUS_ACTIVITY_DETAILS = "activity_page";
+const String EVENTBUS_ACTIVITY_DETAILS = "activity_details_page";
 
 ///广播类型
 //登录成功
@@ -276,3 +278,5 @@ const String EVENTBUS_SEARCH_DELETED_FEED = "eventbussearchdeletedfeed";
 const String AGAIN_LOGIN_REFREASH_USERPAGE = "again_login_refreash_userpage";
 //动态取消关注用户
 const String EVENTBUS_FEED_UNSUBSCRIBE = "eventbus_feed_unsubscribe";
+//活动列表页-刷新
+const String ACTIVITY_LIST_RESET = "activity_list_reset";

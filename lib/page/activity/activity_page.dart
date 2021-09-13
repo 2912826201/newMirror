@@ -24,6 +24,7 @@ import 'package:mirror/page/activity/util/activity_loading.dart';
 import 'package:mirror/page/message/widget/dragball.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -100,6 +101,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    EventBus.init().unRegister(pageName: EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     super.dispose();
   }
 
@@ -107,7 +109,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     locationPermissions();
-
+    EventBus.init().registerNoParameter(_resetPage, EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -167,6 +169,11 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     } else {
       // 请求失败
     }
+  }
+
+  //刷新界面
+  _resetPage() {
+    requestActivity(isRefresh: true);
   }
 
   // 请求活动接口数据

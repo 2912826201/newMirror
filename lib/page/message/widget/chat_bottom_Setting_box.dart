@@ -52,7 +52,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
 
   @override
   void initState() {
-    EventBus.getDefault().registerSingleParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.init().registerSingleParameter(_resetPostBtn, EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
     super.initState();
     _initData();
   }
@@ -60,7 +60,7 @@ class ChatBottomSettingBoxState extends State<ChatBottomSettingBox> {
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_BOTTOM_MORE_BTN);
   }
 
   _resetPostBtn(bool isVoiceState) {

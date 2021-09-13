@@ -54,9 +54,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().registerNoParameter(
-        resetPage,
-        EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
+    EventBus.init().registerNoParameter(resetPage, EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
         registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
   }
 
@@ -64,10 +62,8 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   void dispose() {
     super.dispose();
     userOnlineListStream.close();
-    EventBus.getDefault().unRegister(
-        pageName:EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
-        registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET
-    );
+    EventBus.init()
+        .unRegister(pageName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG, registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
   }
 
   @override

@@ -144,7 +144,7 @@ class FeedHeader extends StatelessWidget {
     Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     print("5555455555");
     // 传入发布动态model
-    EventBus.getDefault().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    EventBus.init().post(msg: postprogressModel, registerName: EVENTBUS_POST_PORGRESS_VIEW);
   }
 
   @override

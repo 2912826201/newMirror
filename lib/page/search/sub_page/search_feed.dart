@@ -97,7 +97,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     //     requestFeednIterface(refreshOrLoading: false);
     //   }
     // });
-    EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
+    EventBus.init().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_SEARCH_FEED_PAGE,
         registerName: EVENTBUS_SEARCH_DELETED_FEED);
     int controllerIndex = 2;
     if (AppConfig.needShowTraining) {

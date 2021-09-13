@@ -138,7 +138,7 @@ class MainPageState extends XCState {
                           case 0:
                             break;
                           case 1:
-                            EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                            EventBus.init().post(registerName: TRAINING_PAGE_GET_DATA);
                             break;
                           case 2:
                             break;
