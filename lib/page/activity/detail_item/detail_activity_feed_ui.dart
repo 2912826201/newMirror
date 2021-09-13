@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/activity/activity_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:provider/provider.dart';
 
 class DetailActivityFeedUi extends StatefulWidget {
   final ActivityModel activityModel;
@@ -21,7 +24,13 @@ class _DetailActivityFeedUiState extends State<DetailActivityFeedUi> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+        if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
+          ToastShow.show(msg: "请先登录app!", context: context);
+          AppRouter.navigateToLoginPage(context);
+          return;
+        } else {
+          AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+        }
       },
       child: getBody(),
     );
