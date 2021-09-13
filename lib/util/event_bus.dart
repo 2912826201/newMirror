@@ -178,9 +178,11 @@ const String EVENTBUS_SEARCH_FEED_PAGE = "searchfeedpage";
 //关注粉丝页
 const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
 //活动详情
-const String EVENTBUS_ACTIVITY_DETAILS = "activity";
+const String EVENTBUS_ACTIVITY_DETAILS = "activity_page";
 
 ///广播类型
+//登录成功
+const String EVENTBUS_LOGIN_SUCCESSFUL = "login_successful";
 //发布动态
 const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
 //直播界面的退出

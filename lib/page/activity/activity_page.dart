@@ -865,7 +865,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                       right: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: AppColor.mainBlue,
+                          color: AppColor.mainBlack.withOpacity(0.6),
                           borderRadius: BorderRadius.circular((15.0)),
                         ),
                         child: Image.asset(ActivityTypeData.init().getIconStringIndex(widget.activityModel.type)[1],
