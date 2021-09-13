@@ -10,6 +10,7 @@ import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/overscroll_behavior.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -52,7 +53,9 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
     return Expanded(
       child: NotificationListener<ScrollNotification>(
         onNotification: _onDragNotification,
-        child: SmartRefresher(
+        child: ScrollConfiguration(
+        behavior: OverScrollBehavior(),
+    child: SmartRefresher(
             enablePullDown: true,
             enablePullUp: true,
             header: SmartRefresherHeadFooter.init().getHeader(),
@@ -80,7 +83,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                   externalBoxHeight: MediaQuery.of(context).size.height * 0.75,
                 ),
               )
-            ])),
+            ]))),
       ),
     );
   }

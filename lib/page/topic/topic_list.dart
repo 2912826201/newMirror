@@ -45,7 +45,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
 
   // 推荐话题ListModel
   List<HomeFeedModel> recommendTopicList = [];
-  RefreshController refreshController = RefreshController(initialRefresh: true);
+  RefreshController refreshController;
 
   // 是否显示缺省图
   bool isShowDefaultMap;
@@ -93,6 +93,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   // 请求推荐话题动态接口
   requestRecommendTopic({bool refreshOrLoading}) async {
     if (recommendHasNext != 0) {
+      print('------------------------requestRecommendTopic');
       DataResponseModel model =
           await pullTopicList(type: widget.type, size: 20, targetId: widget.topicId, token: token);
       if (refreshOrLoading) {
@@ -158,6 +159,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   void initState() {
     // TODO: implement initState
     super.initState();
+    refreshController = RefreshController(initialRefresh: true);
     // requestRecommendTopic(refreshOrLoading:true);
     EventBus.getDefault().registerSingleParameter(_deleteFeedCallBack, EVENTBUS__TOPICDATAIL_PAGE,
         registerName: EVENTBUS_TOPICDETAIL_DELETE_FEED);
