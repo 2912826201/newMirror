@@ -111,6 +111,7 @@ class _CreateActivityPageState extends StateKeyboard {
   StreamController<bool> readInformationStream = StreamController<bool>();
 
   ReleaseFeedInputFormatter _formatter;
+  ReleaseFeedInputFormatter _formatterTitle;
 
   @override
   void initState() {
@@ -140,6 +141,19 @@ class _CreateActivityPageState extends StateKeyboard {
     _formatter = ReleaseFeedInputFormatter(
         controller: activityIllustrateController,
         maxNumberOfBytes: 300,
+        context: context,
+        rules: [],
+        // @回调
+        triggerAtCallback: (String str) {},
+        // #回调
+        triggerTopicCallback: (String str) {},
+        // 关闭@#视图回调
+        shutDownCallback: () async {},
+        valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+            String topicSearchStr, bool isAdd) {});
+    _formatterTitle = ReleaseFeedInputFormatter(
+        controller: activityTitleController,
+        maxNumberOfBytes: 16 * 3,
         context: context,
         rules: [],
         // @回调
@@ -909,6 +923,7 @@ class _CreateActivityPageState extends StateKeyboard {
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
         ),
+        inputFormatters: [_formatterTitle],
       ),
     );
   }

@@ -188,6 +188,7 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
                   color: isAgree ? AppColor.mainRed : AppColor.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
+                child: isAgree ? Image.asset("assets/png/select_icon_red.png", width: 20, height: 20) : Container(),
               ),
             ),
             onTap: () {

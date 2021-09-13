@@ -455,8 +455,8 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
         } else if (list[index] == "踢出团队成员") {
           if (activityModel != null && activityModel.members != null && activityModel.members.length > 0) {
             // AppRouter.navigateRemoveUserPage(context, activityModel.id,activityModel.members);
-            AppRouter.navigateActivityUserPage(context, activityModel.id, activityModel.members, type: 1,
-                callback: (dynamic result) {
+            AppRouter.navigateActivityUserPage(context,
+                activityId: activityModel.id, modeList: activityModel.members, type: 1, callback: (dynamic result) {
               _initData();
             });
           } else {
