@@ -58,9 +58,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   int hasNext = 0;
   bool fristRequestIsOver = false;
   String defaultImage = DefaultImage.nodata;
-  ScrollController scrollController = ScrollController();
-  StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
-
   GlobalKey globalKey = GlobalKey();
   bool showNoMore = true;
 

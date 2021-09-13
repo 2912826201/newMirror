@@ -15,7 +15,7 @@ class ActivityUtil {
   }
 
   //通过邀请链接进入活动
-  Future<List> joinByInvitationActivity(BuildContext context, int activityId) async {
+  Future<List> joinByInvitationActivity(BuildContext context, int activityId, int inviterId) async {
     ActivityModel model = await getActivityDetailApi(activityId);
     if (model == null) {
       return [false, "活动已经失效了"];
@@ -26,7 +26,7 @@ class ActivityUtil {
     if (model.status == 1) {
       return [false, "活动已经招募满了"];
     }
-    List list = await joinByInvitation(activityId, Application.profile.uid);
+    List list = await joinByInvitation(activityId, inviterId);
 
     return list;
   }
@@ -37,12 +37,6 @@ class ActivityUtil {
     if (model == null) {
       return [false, "活动数据错误"];
     }
-    if (count == null) count = model.count;
-    if (cityCode == null) cityCode = model.cityCode;
-    if (address == null) address = model.address;
-    if (longitude == null) longitude = model.longitude.toString();
-    if (latitude == null) latitude = model.latitude.toString();
-
     List list = await updateActivity(model.id, count, cityCode, address, longitude, latitude);
 
     return list;

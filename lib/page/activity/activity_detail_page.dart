@@ -38,21 +38,19 @@ import 'detail_item/detail_start_time_ui.dart';
 
 class ActivityDetailPage extends StatefulWidget {
   final int activityId;
-  final bool isInvite;
+  final int inviterId;
   final ActivityModel activityModel;
 
-  ActivityDetailPage({@required this.activityId, this.isInvite = false, this.activityModel});
+  ActivityDetailPage({@required this.activityId, this.inviterId, this.activityModel});
 
   @override
-  _ActivityDetailPageState createState() =>
-      _ActivityDetailPageState(activityModel: activityModel, isInvite: isInvite ?? false);
+  _ActivityDetailPageState createState() => _ActivityDetailPageState(activityModel: activityModel);
 }
 
 class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   ActivityModel activityModel;
-  bool isInvite;
 
-  _ActivityDetailPageState({this.activityModel, this.isInvite});
+  _ActivityDetailPageState({this.activityModel});
 
   LoadingStatus loadingStatus;
 
@@ -354,7 +352,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getBottomBtn() {
-    return DetailActivityBottomUi(activityModel, isInvite, () {
+    return DetailActivityBottomUi(activityModel, widget.inviterId, () {
       _initData();
     });
   }
@@ -472,7 +470,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                 return true;
               }),
               confirm: AppDialogButton("确定", () {
-                _deleteActivity();
+                Future.delayed(Duration(microseconds: 100), () {
+                  _deleteActivity();
+                });
                 return true;
               }));
         } else if (list[index] == "退出活动") {
@@ -483,7 +483,9 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                 return true;
               }),
               confirm: AppDialogButton("确定", () {
-                _quitActivity();
+                Future.delayed(Duration(microseconds: 100), () {
+                  _quitActivity();
+                });
                 return true;
               }));
         }

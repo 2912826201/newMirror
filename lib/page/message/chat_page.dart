@@ -2652,7 +2652,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       return;
     }
     Navigator.of(context).pop();
-    AppRouter.navigateActivityDetailPage(context, activityId, isInvite: true);
+    AppRouter.navigateActivityDetailPage(context, activityId, inviterId: int.parse(conversation.conversationId));
   }
 
   //获取消息是否免打扰和置顶

@@ -1061,10 +1061,10 @@ class AppRouter {
 
   //去活动详情界面
   static void navigateActivityDetailPage(BuildContext context, int activityId,
-      {ActivityModel activityModel, bool isInvite = false}) {
+      {ActivityModel activityModel, int inviterId}) {
     Map<String, dynamic> map = Map();
     map['activityId'] = activityId;
-    map['isInvite'] = isInvite;
+    map['inviterId'] = inviterId;
     if (activityModel != null) {
       map['activityModel'] = activityModel.toJson();
     }
