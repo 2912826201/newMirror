@@ -29,7 +29,11 @@ class _DetailActivityFeedUiState extends State<DetailActivityFeedUi> {
           AppRouter.navigateToLoginPage(context);
           return;
         } else {
-          AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+          if (widget.activityModel.isJoin &&
+              widget.activityModel.pics != null &&
+              widget.activityModel.pics.length > 0) {
+            AppRouter.navigateActivityFeedPage(context, widget.activityModel);
+          }
         }
       },
       child: getBody(),
