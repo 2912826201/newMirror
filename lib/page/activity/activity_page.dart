@@ -109,7 +109,7 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     locationPermissions();
-    EventBus.getDefault().registerSingleParameter(_applyListUnread, EVENTBUS_ACTIVITY_HOME_PAGE,
+    EventBus.init().registerSingleParameter(_applyListUnread, EVENTBUS_ACTIVITY_HOME_PAGE,
         registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
     EventBus.init().registerNoParameter(_resetPage, EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     WidgetsBinding.instance.addObserver(this);

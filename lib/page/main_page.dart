@@ -147,10 +147,10 @@ class MainPageState extends XCState {
                             break;
                           case 1:
                             if (AppConfig.needShowTraining) {
-                              EventBus.getDefault().post(registerName: TRAINING_PAGE_GET_DATA);
+                              EventBus.init().post(registerName: TRAINING_PAGE_GET_DATA);
                             } else {
                               int unread = await _applyListUnread();
-                              EventBus.getDefault().post(msg: unread, registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+                              EventBus.init().post(msg: unread, registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
                             }
                             break;
                           case 2:
