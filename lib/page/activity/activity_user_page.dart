@@ -362,7 +362,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             height: 16,
           ),
           Text(
-            "暂时没有获取到${widget.type == 0 ? "群成员" : (widget.type == 3 ? "待验证成员" : "")}信息",
+            "暂时没有获取到${widget.type == 0 ? "群成员" : (widget.type == 3 || widget.type == 5 ? "待验证成员" : "")}信息",
             style: AppStyle.text1Regular14,
           )
         ],
