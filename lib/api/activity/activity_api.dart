@@ -231,6 +231,8 @@ Future<List<UserModel>> getActivityMemberList(int activityId, int size, int last
 }
 
 //获取活动用户申请列表
+//activityId 不传 是请求全部的活动的申请列表
+//activityId 传了 是请求指定活动的申请列表
 Future<DataResponseModel> getActivityApplyList(int activityId, int size, int lastId) async {
   Map<String, dynamic> params = {};
   if (activityId != null) {

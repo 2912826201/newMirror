@@ -460,6 +460,39 @@ class MessageManager {
           print("开始训练-StartTraining");
           _startTraining(dataMap);
           break;
+        case 11:
+          //11-音量/亮度变化-MachineSettingChange
+          print("11-音量/亮度变化-MachineSettingChange");
+          break;
+        case 12:
+          //12-新用户通知-NewUser
+          print("12-新用户通知-NewUser");
+          break;
+        case 13:
+          //13-活动邀请-ActivityInvite
+          print("13-活动邀请-ActivityInvite");
+          break;
+        case 14:
+          //14-受邀加入群聊-EntryGroupByInvite
+          print("14-受邀加入群聊-EntryGroupByInvite");
+          break;
+        case 15:
+          //15-活动解散-ActivityDissolution
+          print("15-活动解散-ActivityDissolution");
+          break;
+        case 16:
+          //16-活动用户移除-ActivityMemberRemove
+          print("16-活动用户移除-ActivityMemberRemove");
+          break;
+        case 17:
+          //17-活动人数不足-ActivityMemberNotEnough
+          print("17-活动人数不足-ActivityMemberNotEnough");
+          break;
+        case 18:
+          //18-活动申请加入-ActivityApplyJoin
+          print("18-活动申请加入-ActivityApplyJoin");
+          EventBus.init().post(msg: 1, registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+          break;
         default:
           break;
       }
