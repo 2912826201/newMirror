@@ -181,6 +181,8 @@ const String EVENTBUS_FOLLOW_FANS_PAGE = "followfanspage";
 const String EVENTBUS_ACTIVITY_LIST_PAGE = "activity_list_page";
 //活动详情
 const String EVENTBUS_ACTIVITY_DETAILS = "activity_details_page";
+//活动主页
+const String EVENTBUS_ACTIVITY_HOME_PAGE = "activity_home_page";
 
 ///广播类型
 //登录成功
@@ -280,3 +282,5 @@ const String AGAIN_LOGIN_REFREASH_USERPAGE = "again_login_refreash_userpage";
 const String EVENTBUS_FEED_UNSUBSCRIBE = "eventbus_feed_unsubscribe";
 //活动列表页-刷新
 const String ACTIVITY_LIST_RESET = "activity_list_reset";
+// 活动用户申请列表未读数 /appuser/web/activity/applyListUnread
+const String ACTIVITY_PAGE_GET_APPLYLISTUNREAD = "activity_page_get_applyListUnread";
