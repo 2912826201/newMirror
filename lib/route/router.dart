@@ -1068,7 +1068,16 @@ class AppRouter {
     if (activityModel != null) {
       map['activityModel'] = activityModel.toJson();
     }
-    _navigateToPage(context, pathActivityDetailPage, map);
+    if(Application.activityPageIdMap.containsKey(activityId)){
+      Navigator.of(context).popUntil(ModalRoute.withName(Application.activityPageIdMap[activityId]));
+      return;
+    }
+    String data = Uri.encodeComponent(json.encode(map));
+    String uri = pathActivityDetailPage + "?$paramData=" + data;
+    Application.activityPageIdMap[activityId] = uri;
+    _navigateToPage(context, pathActivityDetailPage, map,callback: (result){
+      Application.activityPageIdMap.remove(activityId);
+    });
   }
 
   // 所在位置页面

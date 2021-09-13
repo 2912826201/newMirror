@@ -68,7 +68,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
 
   GlobalKey inputEvaluateBoxKey = GlobalKey();
   FocusNode inputEvaluateFocusNode = FocusNode();
-
+  GlobalKey<ActivityPullDownRefreshState> pullDownKey = GlobalKey();
   @override
   void initState() {
     super.initState();

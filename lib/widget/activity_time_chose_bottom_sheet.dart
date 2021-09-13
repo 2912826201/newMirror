@@ -191,6 +191,7 @@ class _ActivityTimeBottomSheetState extends State<ActivityTimeBottomSheet> {
                 break;
               case 2:
                 _scrollChangeNotify(fixedContrlList[0].selectedItem);
+                fixedContrlList[3].animateToItem(0, duration: Duration(milliseconds: 100), curve: Curves.ease);
                 break;
             }
           },
