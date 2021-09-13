@@ -16,6 +16,7 @@ import 'package:mirror/page/activity/detail_item/detail_member_user_ui.dart';
 import 'package:mirror/page/activity/util/activity_util.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -80,6 +81,10 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
     }
+
+    //登录成功监听
+    EventBus.getDefault()
+        .registerNoParameter(_loginSuccessful, EVENTBUS_ACTIVITY_DETAILS, registerName: EVENTBUS_LOGIN_SUCCESSFUL);
   }
 
   @override
@@ -539,5 +544,10 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   @override
   void startChangeKeyBoardHeight(bool isOpenKeyboard) {
     // TODO: implement startChangeKeyBoardHeight
+  }
+
+  //登录成功
+  _loginSuccessful() {
+    _initData();
   }
 }

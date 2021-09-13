@@ -332,6 +332,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
             print(e);
           }
         }
+
+        EventBus.getDefault().post(registerName: EVENTBUS_LOGIN_SUCCESSFUL);
       } else if (responseModel.code == CODE_USERBAN) {
         showAppDialog(context,
             confirm: AppDialogButton("我知道了", () {
