@@ -267,11 +267,6 @@ class AppRouter {
       }
     }
     if (Application.pagePopRouterName.contains(uri)) {
-      for (int i = 0; i < Application.pagePopRouterName.length; i++) {
-        if (i > Application.pagePopRouterName.indexOf(uri)) {
-          Application.pagePopRouterName.remove(Application.pagePopRouterName[i]);
-        }
-      }
       Navigator.of(context).popUntil(ModalRoute.withName(uri));
       return;
     }
