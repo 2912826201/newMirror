@@ -416,14 +416,14 @@ class ChatPageUtil {
         chatAddHistoryMessageCount-chatDataList.length,
         (chatMessageList){
           if(chatMessageList!=null&&chatMessageList.length>0){
-            print("chatAddHistoryMessageCount-chatDataList.length:${chatAddHistoryMessageCount-chatDataList.length}");
-            print("recordTime:$recordTime");
-            print("有历史消息:${chatMessageList.length}");
-            if(chatDataList.length<1){
-              MessageManager.updateConversationByMessage(context, chatMessageList[0].msg);
-            }
+            print("chatAddHistoryMessageCount-chatDataList.length:${chatAddHistoryMessageCount - chatDataList.length}");
+          print("recordTime:$recordTime");
+          print("有历史消息:${chatMessageList.length}");
+          if (chatDataList.length < 1) {
+            MessageManager.updateConversationByMessage(context, chatMessageList[0].msg);
+          }
           chatDataList.addAll(chatMessageList);
-          EventBus.getDefault().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+          EventBus.init().post(registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
         }
       });
     }

@@ -53,7 +53,7 @@ class _LiveRoomVideoPageState extends XCState {
     //判断是否被禁言
     AppPrefs.setLiveRoomMuteMessage(int.parse(coachId));
     // player.setDataSource(url, autoPlay: true);
-    EventBus.getDefault().registerNoParameter(exit, EVENTBUS_LIVEROOM_TESTPAGE, registerName: EVENTBUS_LIVEROOM_EXIT);
+    EventBus.init().registerNoParameter(exit, EVENTBUS_LIVEROOM_TESTPAGE, registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus = LoadingStatus.STATUS_LOADING;
     getLiveVideoUrl();
     _initConnectivity();
@@ -90,7 +90,7 @@ class _LiveRoomVideoPageState extends XCState {
   void exit() {
     print("退出界面几次");
     Future.delayed(Duration(milliseconds: 100), () {
-      EventBus.getDefault().unRegister(pageName: EVENTBUS_LIVEROOM_TESTPAGE, registerName: EVENTBUS_LIVEROOM_EXIT);
+      EventBus.init().unRegister(pageName: EVENTBUS_LIVEROOM_TESTPAGE, registerName: EVENTBUS_LIVEROOM_EXIT);
       //退出聊天室
       Application.rongCloud.quitChatRoom(coachId);
       // player.stop();
@@ -313,7 +313,7 @@ class _LiveRoomVideoPageState extends XCState {
 
   _showAppDialog(String title, String subtitle) {
     if (context != null) {
-      EventBus.getDefault().post(registerName: EVENTBUS_ON_CLICK_BODY);
+      EventBus.init().post(registerName: EVENTBUS_ON_CLICK_BODY);
       showAppDialog(context,
           title: title,
           info: subtitle,

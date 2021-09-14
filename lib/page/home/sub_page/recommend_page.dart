@@ -147,12 +147,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     // 重新登录替换推荐页数据
-    EventBus.getDefault().registerSingleParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
+    EventBus.init().registerSingleParameter(againLoginReplaceLayout, EVENTBUS_RECOMMEND_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
-    EventBus.getDefault()
+    EventBus.init()
         .registerSingleParameter(_getMachineStatusInfo, EVENTBUS_RECOMMEND_PAGE, registerName: GET_MACHINE_STATUS_INFO);
-    EventBus.getDefault()
-        .registerNoParameter(_isHaveLoginSuccess, EVENTBUS_RECOMMEND_PAGE, registerName: SHOW_IMAGE_DIALOG);
+    EventBus.init().registerNoParameter(_isHaveLoginSuccess, EVENTBUS_RECOMMEND_PAGE, registerName: SHOW_IMAGE_DIALOG);
     super.initState();
     _isMachineModelInGame();
     _versionDialog();

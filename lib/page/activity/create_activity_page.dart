@@ -1239,12 +1239,12 @@ class _CreateActivityPageState extends StateKeyboard {
     }
     // 检测文本
     Map<String, dynamic> textModel = await feedTextScan(text: activityTitleController.text);
-    if (!textModel["state"]) {
+    if (textModel != null && !textModel["state"]) {
       ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
       return;
     }
     textModel = await feedTextScan(text: activityIllustrateController.text);
-    if (!textModel["state"]) {
+    if (textModel != null && !textModel["state"]) {
       ToastShow.show(msg: "你发布的描述文字可能存在敏感内容", context: context, gravity: Toast.CENTER);
       return;
     }

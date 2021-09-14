@@ -448,7 +448,7 @@ class _QueryFollowState extends State<QueryFollowList> {
       idNeedClear = true;
       context.read<UserInteractiveNotifier>().value.removeId = [];
     }
-    EventBus.getDefault().registerNoParameter(loginBeforRefreash, EVENTBUS_FOLLOW_FANS_PAGE,
+    EventBus.init().registerNoParameter(loginBeforRefreash, EVENTBUS_FOLLOW_FANS_PAGE,
         registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
     if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;

@@ -191,7 +191,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     } else if (state == AppLifecycleState.resumed) {
       Application.isBackGround = false;
       Application.jpush.clearAllNotifications();
-      EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
+      EventBus.init().post(registerName: SHOW_IMAGE_DIALOG);
     }
   }
 

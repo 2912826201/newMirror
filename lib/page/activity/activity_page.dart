@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
-
 import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dough/dough.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_button/menu_button.dart';
 import 'package:mirror/api/activity/activity_api.dart';
@@ -24,9 +23,9 @@ import 'package:mirror/page/activity/util/activity_loading.dart';
 import 'package:mirror/page/message/widget/dragball.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Clip_util.dart';
 import 'package:mirror/widget/address_picker.dart';
@@ -36,7 +35,6 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 
 /// activity_page
@@ -97,9 +95,13 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   // 是否显示缺省图
   bool isShowDefaultMap;
 
+  // 获取活动用户申请列表未读数
+  StreamController<int> streamActiviityUnread = StreamController<int>();
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    EventBus.init().unRegister(pageName: EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     super.dispose();
   }
 
@@ -107,7 +109,9 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     locationPermissions();
-
+    EventBus.init().registerSingleParameter(_applyListUnread, EVENTBUS_ACTIVITY_HOME_PAGE,
+        registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+    EventBus.init().registerNoParameter(_resetPage, EVENTBUS_ACTIVITY_LIST_PAGE, registerName: ACTIVITY_LIST_RESET);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -167,6 +171,16 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     } else {
       // 请求失败
     }
+  }
+
+  //
+  _applyListUnread(int unread) {
+    streamActiviityUnread.sink.add(unread);
+  }
+
+  //刷新界面
+  _resetPage() {
+    requestActivity(isRefresh: true);
   }
 
   // 请求活动接口数据
@@ -512,6 +526,44 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                 //   print(isToggle);
                 // },
               ),
+              SizedBox(
+                width: 10,
+              ),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  AppRouter.navigateActivityUserPage(context, type: 5);
+                },
+                child: Container(
+                    width: 32,
+                    alignment: Alignment.center,
+                    // color: AppColor.mainRed,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        AppIcon.getAppIcon(AppIcon.activity_unread, 16, color: AppColor.white),
+                        StreamBuilder<int>(
+                            initialData: 0,
+                            stream: streamActiviityUnread.stream,
+                            builder: (BuildContext stramContext, AsyncSnapshot<int> snapshot) {
+                              return snapshot.data > 0
+                                  ? Positioned(
+                                      top: -3,
+                                      right: 0,
+                                      child: Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                            color: AppColor.mainRed, borderRadius: BorderRadius.circular(3)),
+                                      ))
+                                  : Container();
+                            })
+                      ],
+                    )),
+              ),
+              SizedBox(
+                width: 8,
+              )
             ],
           ),
           body: isShowDefaultMap == null

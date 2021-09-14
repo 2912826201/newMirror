@@ -121,7 +121,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
   @override
   void initState() {
-    EventBus.getDefault()
+    EventBus.init()
         .registerNoParameter(loginRefreashPage, EVENTBUS_PROFILE_PAGE, registerName: AGAIN_LOGIN_REFREASH_USERPAGE);
     loadingStreamController = StreamController.broadcast();
     _textName = widget.userName ?? "";

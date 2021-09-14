@@ -93,7 +93,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
+    EventBus.init().unRegister(pageName: EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
     if (_animationController != null) {
       _animationController.dispose();
     }
@@ -104,7 +104,7 @@ class ChatDetailsBodyState extends State<ChatDetailsBody> with TickerProviderSta
     super.initState();
     _initData();
     _initWidget();
-    EventBus.getDefault()
+    EventBus.init()
         .registerNoParameter(resetChatMessageCount, EVENTBUS_CHAT_PAGE, registerName: CHAT_PAGE_LIST_MESSAGE_RESET);
   }
 

@@ -442,7 +442,7 @@ class AppRouter {
         List list = [];
         list.add(trainingResult);
         list.add(course);
-        EventBus.getDefault().post(msg: list, registerName: VIDEO_COURSE_RESULT);
+        EventBus.init().post(msg: list, registerName: VIDEO_COURSE_RESULT);
       });
     }
   }

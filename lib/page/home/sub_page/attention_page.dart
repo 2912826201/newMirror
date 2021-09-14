@@ -138,10 +138,10 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
     // 上拉加载
     super.initState();
     // 重新登录替换关注页布局
-    EventBus.getDefault().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
+    EventBus.init().registerNoParameter(_againLoginReplaceLayout, EVENTBUS_ATTENTION_PAGE,
         registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
     // 取消关注用户
-    EventBus.getDefault().registerSingleParameter(_removeFollowChanged, EVENTBUS_ATTENTION_PAGE,
+    EventBus.init().registerSingleParameter(_removeFollowChanged, EVENTBUS_ATTENTION_PAGE,
         registerName: EVENTBUS_FEED_UNSUBSCRIBE);
     // Build完成第一帧绘制完成回调
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -583,7 +583,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
             if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
               if (context.read<FeedMapNotifier>().value.feedMap[id].videos.length != 0) {
                 // 删除视频动态的控制器
-                EventBus.getDefault().post(msg: id, registerName: EVENTBUS_VIDEO_DELETE_FEED);
+                EventBus.init().post(msg: id, registerName: EVENTBUS_VIDEO_DELETE_FEED);
               }
               context.read<FeedMapNotifier>().deleteFeed(id);
             }
@@ -597,7 +597,7 @@ class AttentionPageState extends State<AttentionPage> with TickerProviderStateMi
                     .forget(Key('attention_page_${attentionModelList[currentInt + 1].id}'));
                 VideoExposureLayer.a();
                 Future.delayed(Duration(milliseconds: 300), () {
-                  EventBus.getDefault().post(msg: id, registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
+                  EventBus.init().post(msg: id, registerName: EVENTBUS_DELETE_FEED_VIDEO_PLAY);
                 });
               });
             }

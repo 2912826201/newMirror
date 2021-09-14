@@ -616,15 +616,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (model != null && model["state"] == true) {
       _deleteCommentData(courseCommentHot, commentId, true);
       _deleteCommentData(courseCommentTime, commentId, false);
-      if (!widget.isVideoCoursePage&&courseCommentHot != null && !widget.isShowHotOrTime) {
+      if (!widget.isVideoCoursePage && courseCommentHot != null && !widget.isShowHotOrTime) {
         context
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-      if(!widget.isVideoCoursePage)context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId, commentDtoModel);
+      if (!widget.isVideoCoursePage)
+        context.read<FeedMapNotifier>().deleteCommentCount(widget.targetId, commentDtoModel);
 
       ///TODO 这里是修改的删除评论的eventbus
-      EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+      EventBus.init().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
       if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
           !widget.isShowHotOrTime &&
           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.isNotEmpty) {

@@ -171,7 +171,7 @@ class Application {
         //TODO 处理登出后需要清掉的用户的其他数据
         MessageManager.clearUserMessage(appContext);
         RuntimeProperties.clearUserRuntimeProperties(appContext);
-        EventBus.getDefault().post(msg: true, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
+        EventBus.init().post(msg: true, registerName: AGAIN_LOGIN_REPLACE_LAYOUT);
         //友盟上报登出
         UmengCommonSdk.onProfileSignOff();
         //跳转页面 移除所有页面 重新打开首页

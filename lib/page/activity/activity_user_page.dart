@@ -15,6 +15,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/message/util/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -78,6 +79,14 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+    if (widget.type == 5) {
+      EventBus.init().post(msg: 0, registerName: ACTIVITY_PAGE_GET_APPLYLISTUNREAD);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
@@ -91,7 +100,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             Expanded(
               child: _getSmartRefresher(),
             ),
-            if (widget.type != 0 && widget.type != 3) _getBottomBtn(),
+            if (widget.type != 0 && widget.type != 3 && widget.type != 5) _getBottomBtn(),
           ],
         ),
       ),
@@ -102,7 +111,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     if (widget.type == 0 && userList.length < 1) {
       return getCommentNoData();
     }
-    if (widget.type == 3 && verifyUserList.length < 1) {
+    if ((widget.type == 3 || widget.type == 5) && verifyUserList.length < 1) {
       return getCommentNoData();
     }
     if (widget.type == 4 && buddyModelList.length < 1) {
@@ -110,7 +119,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
     }
     return SmartRefresher(
         enablePullDown: true,
-        enablePullUp: widget.type == 3 || widget.type == 4,
+        enablePullUp: widget.type == 3 || widget.type == 5 || widget.type == 4,
         header: SmartRefresherHeadFooter.init().getHeader(),
         footer: SmartRefresherHeadFooter.init().getFooter(isShowNoMore: false),
         controller: _refreshController,
@@ -128,7 +137,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       itemCount: getListLen(),
       padding: EdgeInsets.only(top: 13),
       itemBuilder: (context, index) {
-        if (widget.type != 0 && widget.type != 3) {
+        if (widget.type != 0 && widget.type != 3 && widget.type != 5) {
           if (index == 0) {
             return _getEdit();
           }
@@ -155,7 +164,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   UserModel getUserModel(int index) {
     if (widget.type == 4) {
       return buddyModelList[index];
-    } else if (widget.type == 3) {
+    } else if (widget.type == 3 || widget.type == 5) {
       return verifyUserList[index];
     } else {
       return userList[index];
@@ -165,7 +174,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
   int getListLen() {
     if (widget.type == 0) {
       return userList.length;
-    } else if (widget.type == 3) {
+    } else if (widget.type == 3 || widget.type == 5) {
+      print("verifyUserList.length:${verifyUserList.length}");
       return verifyUserList.length;
     } else if (widget.type == 4) {
       return buddyModelList.length;
@@ -226,8 +236,8 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
                   ],
                 )),
                 SizedBox(width: 4),
-                if (widget.type != 0 && widget.type != 3) getSingleChoiceUi(index),
-                if (widget.type == 0 || widget.type == 3) getItemUserBtnUi(model, index),
+                if (widget.type != 0 && widget.type != 3 && widget.type != 5) getSingleChoiceUi(index),
+                if (widget.type == 0 || widget.type == 3 || widget.type == 5) getItemUserBtnUi(model, index),
               ],
             ),
           ),
@@ -244,7 +254,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       );
-    } else if (widget.type == 3 && model.message != null) {
+    } else if ((widget.type == 3 || widget.type == 5) && model.message != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -279,7 +289,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
           });
         },
       );
-    } else if (widget.type == 3 && model.dataState == 2) {
+    } else if ((widget.type == 3 || widget.type == 5) && model.dataState == 2) {
       return CustomYellowButton("同意", CustomYellowButton.buttonStateNormal, () {
         _auditApply(model);
       });
@@ -492,7 +502,7 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
       return "踢出用户";
     } else if (widget.type == 2) {
       return "举报成员";
-    } else if (widget.type == 3) {
+    } else if (widget.type == 3 || widget.type == 5) {
       return "待验证用户";
     } else {
       return "查看活动成员";

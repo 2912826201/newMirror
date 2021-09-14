@@ -56,7 +56,8 @@ const String UPDATEACTIVITY = "/appuser/web/activity/update";
 
 // 退出活动
 const String QUITACTIVITY = "/appuser/web/activity/quit";
-
+// 获取活动用户申请列表未读数
+const String APPLYLISTUNREAD = "/appuser/web/activity/applyListUnread";
 //创建活动
 Future<ActivityModel> createActivity({
   @required String title,
@@ -177,14 +178,16 @@ Future<bool> removeMember(int activityId, String uids, String reason) async {
 }
 
 //解散活动
-Future<bool> deleteActivity(int activityId) async {
+Future<List> deleteActivity(int activityId) async {
   Map<String, dynamic> params = {};
   params["activityId"] = activityId;
   BaseResponseModel responseModel = await requestApi(DELETEACTIVITY, params);
   if (responseModel.isSuccess && responseModel.data != null) {
-    return responseModel.data["state"] ?? false;
+    return [responseModel.data["state"] ?? false, responseModel.message];
+  } else if (responseModel != null && responseModel.message != null) {
+    return [false, responseModel.message];
   } else {
-    return false;
+    return [false, "解散失败"];
   }
 }
 
@@ -202,6 +205,7 @@ Future<List> applyJoinActivity(int activityId, String message) async {
     return [false, "申请失败"];
   }
 }
+
 //获取活动成员
 Future<List<UserModel>> getActivityMemberList(int activityId, int size, int lastTime) async {
   Map<String, dynamic> params = {};
@@ -227,6 +231,8 @@ Future<List<UserModel>> getActivityMemberList(int activityId, int size, int last
 }
 
 //获取活动用户申请列表
+//activityId 不传 是请求全部的活动的申请列表
+//activityId 传了 是请求指定活动的申请列表
 Future<DataResponseModel> getActivityApplyList(int activityId, int size, int lastId) async {
   Map<String, dynamic> params = {};
   if (activityId != null) {
@@ -406,5 +412,18 @@ Future<bool> quitActivity(int activityId) async {
     return responseModel.data["state"] ?? false;
   } else {
     return false;
+  }
+}
+
+// 获取活动用户申请列表未读数
+Future<int> applyListUnread() async {
+  Map<String, dynamic> params = {};
+  int unread = 0;
+  BaseResponseModel responseModel = await requestApi(APPLYLISTUNREAD, params);
+  if (responseModel.isSuccess && responseModel.data != null) {
+    unread = responseModel.data["applyListUnread"];
+    return unread;
+  } else {
+    return unread;
   }
 }

@@ -122,7 +122,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    EventBus.getDefault().registerNoParameter(() {
+    EventBus.init().registerNoParameter(() {
       _stopPlayingVideo();
     }, EVENTBUS_GALLERY_PAGE, registerName: GALLERY_LEAVE);
     //从notifier中取值
@@ -175,7 +175,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    EventBus.getDefault().unRegister(pageName: EVENTBUS_GALLERY_PAGE, registerName: GALLERY_LEAVE);
+    EventBus.init().unRegister(pageName: EVENTBUS_GALLERY_PAGE, registerName: GALLERY_LEAVE);
     //停掉所有timer
     _timerList.forEach((timer) {
       timer.cancel();

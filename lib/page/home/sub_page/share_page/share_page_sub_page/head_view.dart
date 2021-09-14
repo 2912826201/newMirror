@@ -68,13 +68,13 @@ class HeadViewState extends State<HeadView> {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
       print('---------------------------------------删除动态');
-      EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
+      EventBus.init().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       print(widget.pageName);
       if (widget.pageName == DynamicPageType.searchComplex || widget.pageName == DynamicPageType.searchFeed) {
-        EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_SEARCH_DELETED_FEED);
+        EventBus.init().post(msg: widget.model.id, registerName: EVENTBUS_SEARCH_DELETED_FEED);
       }
       if (widget.isShowConcern) {
-        EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+        EventBus.init().post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
       widget.deleteFeedChanged(widget.model.id);
@@ -110,7 +110,7 @@ class HeadViewState extends State<HeadView> {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
         if (!widget.isShowConcern) {
-          EventBus.getDefault().post(msg: widget.model, registerName: EVENTBUS_FEED_UNSUBSCRIBE);
+          EventBus.init().post(msg: widget.model, registerName: EVENTBUS_FEED_UNSUBSCRIBE);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
         context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, false);

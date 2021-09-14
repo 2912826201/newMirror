@@ -39,6 +39,7 @@ class AppIcon {
   static const String camera_switch = "assets/svg/camera_switch.svg";
   static const String gallery_fullsize = "assets/svg/gallery_fullsize.svg";
   static const String tag_location = "assets/svg/tag_location.svg";
+  static const String activity_unread = "assets/svg/activity_unread.svg";
   static const String tag_course_black = "assets/svg/tag_course_black.svg";
   static const String tag_course_white = "assets/svg/tag_course_white.svg";
   static const String check = "assets/svg/check.svg";
@@ -152,6 +153,7 @@ class AppIcon {
   static const String group_remove = "assets/svg/group_remove.svg";
   static const String gender_male_14 = "assets/svg/gender_male_14.svg";
   static const String gender_female_14 = "assets/svg/gender_female_14.svg";
+  static const String activity_bell_16 = "assets/svg/activity_bell_16.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

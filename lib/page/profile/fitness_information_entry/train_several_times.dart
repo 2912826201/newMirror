@@ -141,7 +141,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
       print('================================健身信息录入失败');
     }
     Future.delayed(Duration(milliseconds: 100),(){
-      EventBus.getDefault().post(registerName: SHOW_IMAGE_DIALOG);
+      EventBus.init().post(registerName: SHOW_IMAGE_DIALOG);
     });
   }
 }
