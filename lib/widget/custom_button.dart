@@ -13,6 +13,8 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
+
+import 'icon.dart';
 // 自定义按钮
 
 /*
@@ -657,11 +659,12 @@ class _FollowButtonState extends State<FollowButton> {
       print("1111111");
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           widget.buttonType == FollowButtonType.COACH
-              ? Text("+", style: AppStyle.whiteRegular15)
+              ?  AppIcon.getAppIcon(AppIcon.add_follow, 15, color: AppColor.mainBlack)
               : Container(),
-          widget.buttonType == FollowButtonType.COACH ? SizedBox(width: 5) : Container(),
+          widget.buttonType == FollowButtonType.COACH ? SizedBox(width: 3) : Container(),
           Text(
               widget.buttonType == FollowButtonType.FOLLOW ||
                       widget.buttonType == FollowButtonType.SERCH ||
@@ -683,7 +686,7 @@ class _FollowButtonState extends State<FollowButton> {
     }
     //自己不显示
     if (isMySelf || (widget.buttonType == FollowButtonType.FOLLOW && widget.isMyList)) {
-      return Container();
+      return Container(width: 56,);
     }
 
     context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: isFollow);
@@ -719,7 +722,7 @@ class _FollowButtonState extends State<FollowButton> {
               _checkBlackStatus();
             }
           },
-        ));
+        ),);
   }
 }
 

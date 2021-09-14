@@ -718,7 +718,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 ? Center(
                     child: Text(
                       "编辑资料",
-                      style: AppStyle.text1Regular12,
+                      style: AppStyle.textRegular12,
                     ),
                   )
                 : _buttonLayoutSelect(notifier),
@@ -738,15 +738,15 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                     children: [
                       Spacer(),
                       !notifier.value.profileUiChangeModel[widget.userId].isFollow
-                          ? AppIcon.getAppIcon(AppIcon.chat_16, 16)
-                          : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.white),
+                          ? AppIcon.getAppIcon(AppIcon.chat_16, 16,color: AppColor.mainBlack)
+                          : AppIcon.getAppIcon(AppIcon.add_follow, 16, color: AppColor.mainBlack),
                       SizedBox(
                         width: 2,
                       ),
                       Text(
                         notifier.value.profileUiChangeModel[widget.userId].isFollow ? "关注" : "私聊",
                         style: notifier.value.profileUiChangeModel[widget.userId].isFollow
-                            ? TextStyle(color: AppColor.white, fontSize: 12)
+                            ? TextStyle(color: AppColor.mainBlack, fontSize: 12)
                             : AppStyle.textRegular12,
                       ),
                       Spacer(),
