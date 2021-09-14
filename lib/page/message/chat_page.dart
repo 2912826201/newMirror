@@ -1563,19 +1563,6 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (message == null) {
       return;
     }
-    //群聊通知
-    Map<String, dynamic> dataMap;
-
-    try {
-      if (message.originContentMap != null && message.originContentMap["data"] != null) {
-        dataMap = json.decode(message.originContentMap["data"]);
-      } else if (message.content is GroupNotificationMessage) {
-        GroupNotificationMessage msg = message.content as GroupNotificationMessage;
-        dataMap = jsonDecode(msg.data);
-      }
-    } catch (e) {
-      dataMap = Map();
-    }
     if (message.targetId != conversation.conversationId) {
       return;
     }
