@@ -860,7 +860,7 @@ class _ActivityListItem extends State<ActivityListItem> {
                           width: 8,
                         ),
                         Text(
-                          "${widget.activityModel.members.length}/${widget.activityModel.count}",
+                          "${widget.activityModel.joinAmount ?? 0}/${widget.activityModel.count}",
                           style: AppStyle.text1Regular12,
                         ),
                         SizedBox(
