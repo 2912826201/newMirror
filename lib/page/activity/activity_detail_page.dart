@@ -27,6 +27,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
+import 'package:mirror/widget/smart_refressher_head_footer.dart';
 import 'package:mirror/widget/state_build_keyboard.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
@@ -65,10 +66,11 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   List<GlobalKey> globalKeyList = <GlobalKey>[];
 
   double offsetHeight = ScreenUtil.instance.width - (ScreenUtil.instance.width / (375 / 197));
-
+  RefreshController refreshController = RefreshController();
   GlobalKey inputEvaluateBoxKey = GlobalKey();
   FocusNode inputEvaluateFocusNode = FocusNode();
   GlobalKey<ActivityPullDownRefreshState> pullDownKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -199,134 +201,226 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getSingleChildScrollView() {
-    return ActivityPullDownRefresh(
-      scrollController: scrollController,
-      key: pullDownKey,
-      refreshIcons: AppIcon.camera_switch,
-      iconSize: 50,
-      iconColor: AppColor.mainRed,
-      imageUrl: activityModel.pic == null ? "" : FileUtil.getImageSlim(activityModel.pic),
-      backGroundHeight: 300,
-      needAppBar: false,
-      needAction: activityModel != null &&
-          activityModel.masterId != null &&
-          Application.profile != null &&
-          activityModel.masterId == Application.profile.uid,
-      children: [
-        //顶部图片
-        // _getTopImage(),
-
-        SizedBox(height: 12),
-
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //开始时间
-              DetailStartTimeUi(activityModel.times, activityModel.status),
-              SizedBox(height: 21),
-
-              //活动名称
-              Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
-              SizedBox(height: 10),
-
-              //活动器材
-              Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),
+    return Transform.translate(
+        offset: const Offset(0.0, -50.0),
+        child: SmartRefresher(
+          controller: refreshController,
+          header: SmartRefresherHeadFooter.init().getActivityHeader(),
+          onRefresh: () {
+            // refreshController.x;
+          },
+          child: SingleChildScrollView(
+            child: Column(children: [
+              CachedNetworkImage(
+                height: 300,
+                width: ScreenUtil.instance.width,
+                imageUrl: activityModel.pic == null ? "" : FileUtil.getImageSlim(activityModel.pic),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: AppColor.imageBgGrey,
+                ),
+              ),
               SizedBox(height: 12),
-
-              //运动类型
               Container(
-                child: Row(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    //开始时间
+                    DetailStartTimeUi(activityModel.times, activityModel.status),
+                    SizedBox(height: 21),
+
+                    //活动名称
+                    Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
+                    SizedBox(height: 10),
+
+                    //活动器材
+                    Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}",
+                        style: AppStyle.text1Regular14),
+                    SizedBox(height: 12),
+
+                    //运动类型
                     Container(
-                      child: Image.asset(ActivityTypeData.init().getIconStringIndex(activityModel.type)[1],
-                          width: 22, height: 22),
-                      padding: const EdgeInsets.only(top: 1),
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset(ActivityTypeData.init().getIconStringIndex(activityModel.type)[1],
+                                width: 22, height: 22),
+                            padding: const EdgeInsets.only(top: 1),
+                          ),
+                          SizedBox(width: 4),
+                          Text("${ActivityTypeData.init().getString(activityModel.type)}",
+                              style: AppStyle.text1Regular14),
+                        ],
+                      ),
                     ),
-                    SizedBox(width: 4),
-                    Text("${ActivityTypeData.init().getString(activityModel.type)}", style: AppStyle.text1Regular14),
+                    SizedBox(height: 12),
+
+                    //活动地址
+                    Container(
+                      child: Row(
+                        children: [
+                          Image.asset("assets/png/geographic_location.png", width: 20, height: 20),
+                          SizedBox(width: 4),
+                          Text("${activityModel.address}", style: AppStyle.text1Regular14),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 38),
+
+                    //报名队员
+                    _getMembersUserUI(),
+
+                    //活动动态
+                    DetailActivityFeedUi(activityModel),
+                    SizedBox(height: 18),
+
+                    //活动说明
+                    SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColor.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding: EdgeInsets.all(10),
+                        child: Text(activityModel.description, style: AppStyle.text1Regular14),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 12),
-
-              //活动地址
-              Container(
-                child: Row(
-                  children: [
-                    Image.asset("assets/png/geographic_location.png", width: 20, height: 20),
-                    SizedBox(width: 4),
-                    Text("${activityModel.address}", style: AppStyle.text1Regular14),
-                  ],
-                ),
-              ),
-              SizedBox(height: 38),
-
-              //报名队员
-              _getMembersUserUI(),
-
-              //活动动态
-              DetailActivityFeedUi(activityModel),
-              SizedBox(height: 18),
-
-              //活动说明
-              SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColor.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  padding: EdgeInsets.all(10),
-                  child: Text(activityModel.description, style: AppStyle.text1Regular14),
-                ),
-              ),
-            ],
+            ]),
           ),
-        ),
-
-        //评价
-        Container(
-          key: inputEvaluateBoxKey,
-          child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode, () {
-            _initData();
-          }),
-        ),
-
-        //讨论区
-        SizedBox(height: 30),
-        _getActivityCommentUi(),
-
-        SizedBox(height: 20),
-
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("温馨提示:", style: AppStyle.yellowRegular14),
-              Container(
-                constraints: BoxConstraints(
-                  minHeight: 78,
-                ),
-                child: Text("活动开始前24小时可以随意退出，临近活动开始时退出将会记录一次爽约，累计满五次后，将会限制一周不能参加活动。", style: AppStyle.whiteRegular14),
-              )
-            ],
-          ),
-        ),
-        SizedBox(height: 20),
-      ],
-      onrefresh: () {
-        _initData();
-      },
-      actionTap: () {},
-    );
+        ));
+    //   ActivityPullDownRefresh(
+    //   scrollController: scrollController,
+    //   key: pullDownKey,
+    //   refreshIcons: AppIcon.camera_switch,
+    //   iconSize: 50,
+    //   iconColor: AppColor.mainRed,
+    //   imageUrl: activityModel.pic == null ? "" : FileUtil.getImageSlim(activityModel.pic),
+    //   backGroundHeight: 300,
+    //   needAppBar: false,
+    //   needAction: activityModel != null &&
+    //       activityModel.masterId != null &&
+    //       Application.profile != null &&
+    //       activityModel.masterId == Application.profile.uid,
+    //   children: [
+    //     //顶部图片
+    //     // _getTopImage(),
+    //
+    //     SizedBox(height: 12),
+    //
+    //     Container(
+    //       padding: EdgeInsets.symmetric(horizontal: 16),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           //开始时间
+    //           DetailStartTimeUi(activityModel.times, activityModel.status),
+    //           SizedBox(height: 21),
+    //
+    //           //活动名称
+    //           Text("活动名称：${activityModel.title ?? ""}", style: AppStyle.whiteRegular16),
+    //           SizedBox(height: 10),
+    //
+    //           //活动器材
+    //           Text("活动器材：${EquipmentData.init().getString(activityModel.equipment)}", style: AppStyle.text1Regular14),
+    //           SizedBox(height: 12),
+    //
+    //           //运动类型
+    //           Container(
+    //             child: Row(
+    //               children: [
+    //                 Container(
+    //                   child: Image.asset(ActivityTypeData.init().getIconStringIndex(activityModel.type)[1],
+    //                       width: 22, height: 22),
+    //                   padding: const EdgeInsets.only(top: 1),
+    //                 ),
+    //                 SizedBox(width: 4),
+    //                 Text("${ActivityTypeData.init().getString(activityModel.type)}", style: AppStyle.text1Regular14),
+    //               ],
+    //             ),
+    //           ),
+    //           SizedBox(height: 12),
+    //
+    //           //活动地址
+    //           Container(
+    //             child: Row(
+    //               children: [
+    //                 Image.asset("assets/png/geographic_location.png", width: 20, height: 20),
+    //                 SizedBox(width: 4),
+    //                 Text("${activityModel.address}", style: AppStyle.text1Regular14),
+    //               ],
+    //             ),
+    //           ),
+    //           SizedBox(height: 38),
+    //
+    //           //报名队员
+    //           _getMembersUserUI(),
+    //
+    //           //活动动态
+    //           DetailActivityFeedUi(activityModel),
+    //           SizedBox(height: 18),
+    //
+    //           //活动说明
+    //           SingleChildScrollView(
+    //             child: Container(
+    //               width: double.infinity,
+    //               decoration: BoxDecoration(
+    //                 color: AppColor.white.withOpacity(0.1),
+    //                 borderRadius: BorderRadius.circular(4),
+    //               ),
+    //               padding: EdgeInsets.all(10),
+    //               child: Text(activityModel.description, style: AppStyle.text1Regular14),
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //
+    //     //评价
+    //     Container(
+    //       key: inputEvaluateBoxKey,
+    //       child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode, () {
+    //         _initData();
+    //       }),
+    //     ),
+    //
+    //     //讨论区
+    //     SizedBox(height: 30),
+    //     _getActivityCommentUi(),
+    //
+    //     SizedBox(height: 20),
+    //
+    //     Container(
+    //       margin: EdgeInsets.symmetric(horizontal: 16),
+    //       decoration: BoxDecoration(
+    //         border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
+    //         borderRadius: BorderRadius.circular(4),
+    //       ),
+    //       padding: const EdgeInsets.all(12),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Text("温馨提示:", style: AppStyle.yellowRegular14),
+    //           Container(
+    //             constraints: BoxConstraints(
+    //               minHeight: 78,
+    //             ),
+    //             child: Text("活动开始前24小时可以随意退出，临近活动开始时退出将会记录一次爽约，累计满五次后，将会限制一周不能参加活动。", style: AppStyle.whiteRegular14),
+    //           )
+    //         ],
+    //       ),
+    //     ),
+    //     SizedBox(height: 20),
+    //   ],
+    //   onrefresh: () {
+    //     _initData();
+    //   },
+    //   actionTap: () {},
+    // );
   }
 
   //活动讨论区

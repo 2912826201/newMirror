@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'activity_water_drop_header.dart';
 
 class SmartRefresherHeadFooter {
   static SmartRefresherHeadFooter _headFooter;
@@ -14,7 +17,9 @@ class SmartRefresherHeadFooter {
     }
     return _headFooter;
   }
-  TextStyle textStyle =  AppStyle.text1Regular16;
+
+  TextStyle textStyle = AppStyle.text1Regular16;
+
   getHeader() {
     return WaterDropHeader(
         refresh: Container(
@@ -44,7 +49,49 @@ class SmartRefresherHeadFooter {
                 fit: BoxFit.fill,
               ),
               SizedBox(height: 6),
-              Text("释放刷新",style: AppStyle.text1Regular12,),
+              Text(
+                "释放刷新",
+                style: AppStyle.text1Regular12,
+              ),
+            ],
+          ),
+        ),
+        waterDropColor: AppColor.transparent);
+  }
+
+  // 活动头部
+  getActivityHeader() {
+    return ActivityWaterDropHeader(
+        refresh: Container(
+          child: Column(
+            children: [
+              SizedBox(height: 70),
+              Lottie.asset(
+                'assets/lottie/loading_refresh_yellow.json',
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill,
+              ),
+            ],
+          ),
+        ),
+        complete: Text(""),
+        failed: Text(""),
+        idleIcon: Container(
+          child: Column(
+            children: [
+              SizedBox(height: 50,),
+              Lottie.asset(
+                'assets/lottie/loading_refresh_yellow.json',
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill,
+              ),
+              SizedBox(height: 6),
+              Text(
+                "释放刷新",
+                style: AppStyle.text1Regular12,
+              ),
             ],
           ),
         ),
@@ -100,7 +147,12 @@ class SmartRefresherHeadFooter {
       builder: (BuildContext context, LoadStatus mode) {
         Widget body;
         if (mode == LoadStatus.idle) {
-          body = isShowAddMore ? Text("上拉加载更多",style: textStyle,) : Text("");
+          body = isShowAddMore
+              ? Text(
+                  "上拉加载更多",
+                  style: textStyle,
+                )
+              : Text("");
         } else if (mode == LoadStatus.loading) {
           body = Lottie.asset(
             'assets/lottie/loading_refresh_yellow.json',
@@ -114,11 +166,24 @@ class SmartRefresherHeadFooter {
           //   child: CircularProgressIndicator(),
           // );
         } else if (mode == LoadStatus.failed) {
-          body = isShowAddMore ? Text("上拉加载更多",style: textStyle,) : Text("");
+          body = isShowAddMore
+              ? Text(
+                  "上拉加载更多",
+                  style: textStyle,
+                )
+              : Text("");
         } else if (mode == LoadStatus.canLoading) {
-          body = Text("上拉加载更多",style: textStyle,);
+          body = Text(
+            "上拉加载更多",
+            style: textStyle,
+          );
         } else if (mode == LoadStatus.noMore) {
-          body = isShowNoMore ? Text("没有更多数据了",style: textStyle,) : Text("");
+          body = isShowNoMore
+              ? Text(
+                  "没有更多数据了",
+                  style: textStyle,
+                )
+              : Text("");
         } else {
           body = Text("");
         }
