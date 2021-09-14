@@ -1563,8 +1563,20 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     if (message == null) {
       return;
     }
-    Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
-    if (dataMap["groupChatId"].toString() != conversation.conversationId) {
+    //群聊通知
+    Map<String, dynamic> dataMap;
+
+    try {
+      if (message.originContentMap != null && message.originContentMap["data"] != null) {
+        dataMap = json.decode(message.originContentMap["data"]);
+      } else if (message.content is GroupNotificationMessage) {
+        GroupNotificationMessage msg = message.content as GroupNotificationMessage;
+        dataMap = jsonDecode(msg.data);
+      }
+    } catch (e) {
+      dataMap = Map();
+    }
+    if (message.targetId != conversation.conversationId) {
       return;
     }
     ChatPageUtil.init(Application.appContext).clearUnreadCount(conversation);
@@ -2482,6 +2494,9 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE && content == "点击查看活动详情") {
+      //print("点击查看活动详情：$position");
+      _comeInActivity(conversation.activityId);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE) {
       //print("点击了邀请参加活动消息：$position");
       _joinByInvitationActivity(map["id"] ?? 0);
@@ -2655,6 +2670,19 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
     AppRouter.navigateActivityDetailPage(context, activityId, inviterId: int.parse(conversation.conversationId));
   }
 
+  //进入活动
+  _comeInActivity(int activityId) async {
+    if (ClickUtil.isFastClick()) {
+      return;
+    }
+    if (activityId == null || activityId == 0) {
+      ToastShow.show(msg: "活动id错误", context: context);
+      return;
+    }
+    Navigator.of(context).pop();
+    AppRouter.navigateActivityDetailPage(context, activityId);
+  }
+
   //获取消息是否免打扰和置顶
   _getConversationNotificationStatus() {
     //判断有没有置顶
@@ -2688,10 +2716,7 @@ class ChatPageState extends StateKeyboard with  WidgetsBindingObserver {
       lists: list,
       onItemClickListener: (index) async {
         if (list[index] == "进入活动") {
-          if (conversation.activityId != null) {
-            Navigator.of(context).pop();
-            AppRouter.navigateActivityDetailPage(context, conversation.activityId);
-          }
+          _comeInActivity(conversation.activityId);
         }
         if (list[index] == "查看活动群成员") {
           if (conversation.activityId != null) {

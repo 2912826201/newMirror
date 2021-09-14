@@ -132,28 +132,41 @@ class _AlertMsgState extends State<AlertMsg> {
       textArray.add(widget.map["data"]);
       isChangColorArray.add(false);
     } else if (widget.map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
-      //0--加入群聊
-      //1--退出群聊
-      //2--移除群聊
-      //3--群主转移
-      //4--群名改变
-      //5--扫码加入群聊
+      //0--加入群聊-Entry
+      //1--退出群聊-Quit
+      //2--移除群聊-Remove
+      //3--群主转移-MasterTransfer
+      //4--群名改变-GroupNameChange
+      //5--扫码加入群聊-EntryByQRCode
+      //6--邀请加入-EntryByInvite
+      //7--活动即将开始-ActivityWillBegin
+      //8--活动内容变更-ActivityUpdate
       //群通知
-      if(widget.map["data"]==null||widget.map["data"]["data"]==null){
+      if (widget.map["data"] == null || widget.map["data"]["data"] == null) {
         textArray.clear();
-      }else {
+      } else {
         Map<String, dynamic> mapGroupModel = json.decode(widget.map["data"]["data"]);
         if (mapGroupModel["subType"] == 5) {
+          //5--扫码加入群聊-EntryByQRCode
           getGroupEntryByQRCode(mapGroupModel, context);
         } else if (mapGroupModel["subType"] == 4) {
+          //4--群名改变-GroupNameChange
           updateGroupName(mapGroupModel, context);
+        } else if (mapGroupModel["subType"] == 6) {
+          //6--邀请加入-EntryByInvite
+          inviteUserActivity(mapGroupModel, context);
+        } else if (mapGroupModel["subType"] == 7) {
+          //7--活动即将开始-ActivityWillBegin
+          colorArray.add(AppColor.textWhite60);
+          colorArray.add(AppColor.textWhite60);
+          textArray.add("活动即将开始");
+          isChangColorArray.add(false);
+        } else if (mapGroupModel["subType"] == 8) {
+          //8--活动内容变更-ActivityUpdate
+          updateActivity(mapGroupModel, context);
         } else {
-          if (context
-              .watch<GroupUserProfileNotifier>()
-              .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-            ChatGroupUserModel chatGroupUserModel = context
-                .watch<GroupUserProfileNotifier>()
-                .chatGroupUserModelList[0];
+          if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+            ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
             if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid != Application.profile.uid) {
               textArray.clear();
             } else {
@@ -221,6 +234,8 @@ class _AlertMsgState extends State<AlertMsg> {
       colorArray.clear();
       return;
     }
+    bool isCreateActivity1 = false;
+    bool isCreateActivity2 = false;
 
     if (mapGroupModel["subType"] == 0) {
       //邀请
@@ -228,6 +243,7 @@ class _AlertMsgState extends State<AlertMsg> {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
         isHaveUserSelf = true;
+        isCreateActivity1 = true;
       } else {
         textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
@@ -256,6 +272,9 @@ class _AlertMsgState extends State<AlertMsg> {
           if (d["uid"] == Application.profile.uid) {
             textArray.add("你${userCount > users.length ? " " : "、"}");
             isHaveUserSelf = true;
+            if (isCreateActivity1) {
+              isCreateActivity2 = true;
+            }
           } else {
             if (mapGroupModel["subType"] == 3) {
               textArray.add("${d["currentMasterName"]}${userCount > users.length ? " " : "、"}");
@@ -309,7 +328,14 @@ class _AlertMsgState extends State<AlertMsg> {
     } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");
     }
+
     isChangColorArray.add(false);
+    if (isCreateActivity1 && isCreateActivity2) {
+      textArray.clear();
+      isChangColorArray.clear();
+      textArray.add("你创建了活动");
+      isChangColorArray.add(false);
+    }
   }
 
   //扫码进入群聊
@@ -356,6 +382,91 @@ class _AlertMsgState extends State<AlertMsg> {
     }
   }
 
+  //邀请加入活动
+  inviteUserActivity(Map<String, dynamic> mapGroupModel, BuildContext context) {
+    print("邀请加入活动：${mapGroupModel.toString()}");
+    colorArray.add(AppColor.textWhite60);
+    colorArray.add(AppColor.white);
+
+    int userCount = 0;
+
+    bool isCreateActivity1 = false;
+    bool isCreateActivity2 = false;
+
+    List<dynamic> users = mapGroupModel["users"];
+    if (users == null || users.length < 1) {
+      textArray.clear();
+      isChangColorArray.clear();
+      colorArray.clear();
+      return;
+    }
+
+    //邀请
+    if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
+      textArray.add("你邀请了");
+      isChangColorArray.add(false);
+      isCreateActivity1 = true;
+    } else {
+      textArray.add(mapGroupModel["operatorName"].toString());
+      isChangColorArray.add(true);
+      textArray.add("邀请了");
+      isChangColorArray.add(false);
+      userCount++;
+    }
+
+    for (dynamic d in users) {
+      userCount++;
+      try {
+        if (d != null) {
+          if (d["uid"] == Application.profile.uid) {
+            textArray.add("你${userCount > users.length ? " " : "、"}");
+            isCreateActivity2 = true;
+          } else {
+            textArray.add("${d["groupNickName"]}${userCount > users.length ? " " : "、"}");
+          }
+          isChangColorArray.add(true);
+        }
+      } catch (e) {
+        break;
+      }
+    }
+    if (textArray.length > 0) {
+      textArray[textArray.length - 1] = textArray[textArray.length - 1].trim().replaceAll("、", "");
+    }
+    textArray.add("加入活动");
+    isChangColorArray.add(false);
+    if (isCreateActivity1 && isCreateActivity2) {
+      textArray.clear();
+      isChangColorArray.clear();
+      textArray.add("你创建了活动");
+      isChangColorArray.add(false);
+    }
+  }
+
+  //修改活动内容-8
+  updateActivity(Map<String, dynamic> mapGroupModel, BuildContext context) {
+    colorArray.add(AppColor.textWhite60);
+    colorArray.add(AppColor.mainBlue);
+
+    if (mapGroupModel["address"] == null && mapGroupModel["count"] == null) {
+      textArray.clear();
+      isChangColorArray.clear();
+      colorArray.clear();
+      return;
+    }
+    if (mapGroupModel["address"] != null) {
+      textArray.add("活动地址修改为:${mapGroupModel["address"]} ");
+      isChangColorArray.add(false);
+      textArray.add("点击查看活动详情");
+      isChangColorArray.add(true);
+    } else {
+      textArray.add("活动人数修改为:${mapGroupModel["count"]}人 ");
+      isChangColorArray.add(false);
+      textArray.add("点击查看活动详情");
+      isChangColorArray.add(true);
+    }
+  }
+
   //获取消息
   Widget alertText() {
     return Container(
@@ -392,6 +503,9 @@ class _AlertMsgState extends State<AlertMsg> {
             map["content"] = widget.recallNotificationMessage.recallContent;
             widget.voidMessageClickCallBack(
                 contentType: RecallNotificationMessage.objectName, map: map, position: widget.position);
+          } else if (text == "点击查看活动详情") {
+            widget.voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_ACTIVITY_INVITE, content: "点击查看活动详情");
           }
         },
       style: TextStyle(color: isChangeColor ? colorArray[1] : colorArray[0], fontSize: 14),

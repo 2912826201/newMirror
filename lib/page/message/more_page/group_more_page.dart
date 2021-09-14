@@ -483,6 +483,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   void exitGroupChatPr() async {
     Loading.showLoading(context);
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
+    Loading.hideLoading(context);
     if (model != null && model["state"] != null && model["state"]) {
       if (widget.exitGroupListener != null) {
         widget.exitGroupListener();
@@ -496,7 +497,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       ToastShow.show(msg: "退出失败", context: context);
     }
-    Loading.hideLoading(context);
   }
 
   //设置消息是否置顶
@@ -648,7 +648,9 @@ class GroupMorePageState extends State<GroupMorePage> {
             return true;
           }),
           confirm: AppDialogButton("确定", () {
-            exitGroupChatPr();
+            Future.delayed(Duration(microseconds: 100), () {
+              exitGroupChatPr();
+            });
             return true;
           }));
       // ToastShow.show(msg: "点击了：$title", context: context);
