@@ -19,6 +19,7 @@ class ProfileDetailsMore extends StatefulWidget {
   int userId;
   bool isFollow;
 
+
   ProfileDetailsMore({this.userId, this.isFollow});
 
   @override

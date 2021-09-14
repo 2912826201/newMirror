@@ -238,11 +238,11 @@ class _EditInformationState extends State<EditInformation> {
                   ),
                   InkWell(
                     onTap: () {
-                       openTimePickerBottomSheet(
+                      openTimePickerBottomSheet(
                           context: context,
                           firstTime: DateTime(1960),
                           lastTime: DateTime.now(),
-                          initTime: userBirthday!=null?DateTime.parse(userBirthday):null,
+                          initTime: userBirthday != null ? DateTime.parse(userBirthday) : null,
                           timeFormat: "yyyy年,MM月,dd日",
                           onConfirm: (date) {
                             userBirthday = DateFormat("yyyy-MM-dd").format(date);
@@ -363,23 +363,16 @@ class _EditInformationState extends State<EditInformation> {
                     ),
             ),
             Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 23,
-                  height: 23,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.all(Radius.circular(59)),
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      "assets/png/edit_pen.png",
-                      width: 23,
-                      height: 23,
-                    ),
-                  ),
-                ))
+              bottom: 0,
+              right: 0,
+              child: AppIconButton(
+                  svgName: AppIcon.profile_edit,
+                  bgColor: AppColor.imageBgGrey,
+                  iconColor: AppColor.white,
+                  isCircle: true,
+                  iconSize: 23,
+                ),
+            ),
           ],
         ));
   }
