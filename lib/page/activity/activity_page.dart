@@ -22,6 +22,7 @@ import 'package:mirror/page/activity/util/activity_default_map.dart';
 import 'package:mirror/page/activity/util/activity_loading.dart';
 import 'package:mirror/page/message/widget/dragball.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/check_phone_system_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
@@ -541,6 +542,12 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
+                        // IgnorePointer(
+                        // // 为false手势生效。
+                        // ignoring: false,
+                        // child:TextButton(child:Text("绘"),autofocus:true,onPressed: (){
+                        //       print("aaaaa");
+                        //     },)),
                         AppIcon.getAppIcon(AppIcon.activity_unread, 16, color: AppColor.white),
                         StreamBuilder<int>(
                             initialData: 0,
