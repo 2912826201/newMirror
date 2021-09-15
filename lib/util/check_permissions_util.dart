@@ -1,8 +1,12 @@
 import 'package:amap_location_muka/amap_location_muka.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/shared_preferences.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/check_phone_system_util.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -76,7 +80,8 @@ class CheckPermissionsUtil {
     //开始获取定位
     Loading.showLoading(context);
     try {
-      await AmapLocation.fetch();
+      await AmapLocation.fetch(
+          androidMode: AmapLocationMode.BATTERY_SAVING, iosAccuracy: AmapLocationAccuracy.THREE_KILOMETERS);
       Loading.hideLoading(context);
       if (_successListener != null) {
         _successListener();
@@ -215,4 +220,38 @@ class CheckPermissionsUtil {
       return false;
     }
   }
+}
+
+// 获取定位权限
+locationPermissions1(BuildContext context) async {
+  CheckPermissionsUtil.init(context).openAppSettingsListener(() {
+    showAppDialog(context,
+        title: "位置信息",
+        info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
+        confirmColor: AppColor.white,
+        cancel: AppDialogButton("返回", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去设置", () {
+          AppSettings.openAppSettings();
+          return true;
+        }));
+  }).openLocationSettingsListener(() {
+    showAppDialog(context,
+        title: "位置信息",
+        info: "你没有打开定位功能,请打开定位功能",
+        confirmColor: AppColor.white,
+        cancel: AppDialogButton("返回", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去设置", () {
+          AppSettings.openLocationSettings();
+          return true;
+        }));
+  }).networkErrorListener((String message) {
+    ToastShow.show(msg: message, context: context);
+  }).successListener(() {
+    //有权限时
+    ToastShow.show(msg: "权限没有问题", context: context);
+  });
 }

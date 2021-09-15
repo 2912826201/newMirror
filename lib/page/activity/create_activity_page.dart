@@ -1134,34 +1134,11 @@ class _CreateActivityPageState extends StateKeyboard {
 
   // 获取定位权限
   locationPermissions() async {
-    CheckPermissionsUtil.init(context).openAppSettingsListener(() {
-      showAppDialog(context,
-          title: "位置信息",
-          info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
-          confirmColor: AppColor.white,
-          cancel: AppDialogButton("返回", () {
-            return true;
-          }),
-          confirm: AppDialogButton("去设置", () {
-            AppSettings.openAppSettings();
-            return true;
-          }));
-    }).openLocationSettingsListener(() {
-      showAppDialog(context,
-          title: "位置信息",
-          info: "你没有打开定位功能,请打开定位功能",
-          confirmColor: AppColor.white,
-          cancel: AppDialogButton("返回", () {
-            return true;
-          }),
-          confirm: AppDialogButton("去设置", () {
-            AppSettings.openLocationSettings();
-            return true;
-          }));
-    }).networkErrorListener((String message) {
-      ToastShow.show(msg: message, context: context);
-    }).successListener(() {
-      //有权限时
+    // 获取定位权限
+    PermissionStatus permissions = await Permission.locationWhenInUse.status;
+    print("下次寻问permissions：：：：$permissions");
+    // 已经获取了定位权限
+    if (permissions.isGranted) {
       openSurroundingInformationBottomSheet(
           context: context,
           onSeletedAddress: (PeripheralInformationPoi poi) {
@@ -1172,7 +1149,41 @@ class _CreateActivityPageState extends StateKeyboard {
             this.latitude = poi.location.split(",")[1];
             provinceCityStream.sink.add(provinceCity);
           });
-    });
+    } else {
+      print("嘻嘻嘻嘻嘻");
+      // 请求定位权限
+      permissions = await Permission.locationWhenInUse.request();
+      print("permissions::::$permissions");
+      if (permissions.isGranted) {
+        openSurroundingInformationBottomSheet(
+            context: context,
+            onSeletedAddress: (PeripheralInformationPoi poi) {
+              // provinceCity 选择地址名  cityCode 城市码，
+              this.provinceCity = poi.name;
+              this.cityCode = poi.citycode;
+              this.longitude = poi.location.split(",")[0];
+              this.latitude = poi.location.split(",")[1];
+              provinceCityStream.sink.add(provinceCity);
+            });
+      } else {
+        _locationFailPopUps();
+      }
+    }
+  }
+
+  // 定位失败弹窗
+  _locationFailPopUps() {
+    return showAppDialog(context,
+        title: "位置信息",
+        info: "你没有开通位置权限，您可以通过系统\"设置\"进行权限管理",
+        confirmColor: AppColor.white,
+        cancel: AppDialogButton("返回", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去设置", () {
+          AppSettings.openLocationSettings();
+          return true;
+        }));
   }
 
   @override
