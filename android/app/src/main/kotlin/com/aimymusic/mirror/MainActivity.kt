@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.aimymusic.mirror.method.AppBadgerMethodCallHandlerImpl
+import com.aimymusic.mirror.method.LocationServiceCheckMethodCallHandlerImpl
 import com.aimymusic.mirror.method.OnMethodCallListener
 import com.aimymusic.mirror.method.SystemMethodCallHandlerImpl
 import com.aimymusic.mirror.util.BadgeUtil
@@ -86,9 +87,14 @@ class MainActivity : FlutterActivity(){
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AppBadgerMethodCallHandlerImpl.badgerChannel)
-                .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context))
+            .setMethodCallHandler(AppBadgerMethodCallHandlerImpl(context))
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SystemMethodCallHandlerImpl.badgerChannel)
-                .setMethodCallHandler(SystemMethodCallHandlerImpl(context))
+            .setMethodCallHandler(SystemMethodCallHandlerImpl(context))
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            LocationServiceCheckMethodCallHandlerImpl.badgerChannel
+        )
+            .setMethodCallHandler(LocationServiceCheckMethodCallHandlerImpl(context))
     }
 
 
