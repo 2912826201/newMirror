@@ -241,19 +241,19 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getSingleChildScrollView() {
-    return SmartRefresher(
+    return Transform.translate(
+        offset: const Offset(0.0, -50.0),
+        child: SmartRefresher(
           controller: refreshController,
           header: SmartRefresherHeadFooter.init().getActivityHeader(),
           onRefresh: () {
-
-            Future.delayed(Duration(milliseconds: 4000), () {
+            Future.delayed(Duration(milliseconds: 4000),(){
               refreshController.refreshCompleted();
             });
             // refreshController.x;
           },
           child: SingleChildScrollView(
-            child: Column(
-                children: [
+            child: Column(children: [
               CachedNetworkImage(
                 height: 300,
                 width: ScreenUtil.instance.width,
@@ -371,7 +371,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
               SizedBox(height: 20),
             ]),
           ),
-        );
+        ));
     //   ActivityPullDownRefresh(
     //   scrollController: scrollController,
     //   key: pullDownKey,
