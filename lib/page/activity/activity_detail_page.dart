@@ -104,14 +104,14 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     offsetHeight = ScreenUtil.instance.width / 4;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: CustomAppBar(
+      /* appBar: CustomAppBar(
         titleString: "活动详情",
         actions: [
           activityModel != null && activityModel.isJoin
               ? CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: _topMoreBtnClick)
               : Container(),
         ],
-      ),
+      ),*/
       body: Container(
         color: AppColor.mainBlack,
         height: ScreenUtil.instance.height,
@@ -172,6 +172,45 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     }
   }
 
+  Widget _appBar() {
+    return Container(
+      height: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight,
+      width: ScreenUtil.instance.width,
+      color: AppColor.mainBlack,
+      padding: EdgeInsets.only(left: 8, right: 8, top: ScreenUtil.instance.statusBarHeight),
+      child: Row(
+        children: [
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: CustomAppBarIconButton(
+                svgName: AppIcon.nav_return,
+                iconColor: AppColor.white,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            flex: 1,
+          ),
+          Text(
+            "活动详情",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white),
+          ),
+          activityModel != null && activityModel.isJoin
+              ? Expanded(
+                  child: Align(
+                      alignment: Alignment.centerRight,
+                      child:
+                          CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: () {})),
+                  flex: 1,
+                )
+              : Spacer(),
+        ],
+      ),
+    );
+  }
+
   Widget _getDetailWidget() {
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -183,6 +222,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
             child: Container(
               child:*/
         _getSingleChildScrollView(),
+        Positioned(top: 0, child: _appBar()),
         /*    ),
           ),
         ),*/
@@ -201,12 +241,13 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
   }
 
   Widget _getSingleChildScrollView() {
-    return Transform.translate(
-        offset: const Offset(0.0, -50.0),
-        child: SmartRefresher(
+    return SmartRefresher(
           controller: refreshController,
           header: SmartRefresherHeadFooter.init().getActivityHeader(),
           onRefresh: () {
+            Future.delayed(Duration(milliseconds: 4000), () {
+              refreshController.refreshCompleted();
+            });
             // refreshController.x;
           },
           child: SingleChildScrollView(
@@ -287,12 +328,48 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
                         child: Text(activityModel.description, style: AppStyle.text1Regular14),
                       ),
                     ),
+                    //评价
+                    Container(
+                      key: inputEvaluateBoxKey,
+                      child: DetailEvaluateUi(activityModel, inputEvaluateFocusNode, () {
+                        _initData();
+                      }),
+                    ),
                   ],
                 ),
               ),
+
+              //讨论区
+              SizedBox(height: 30),
+              _getActivityCommentUi(),
+
+              SizedBox(height: 20),
+
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColor.dividerWhite8, width: 0.5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("温馨提示:", style: AppStyle.yellowRegular14),
+                    Container(
+                      constraints: BoxConstraints(
+                        minHeight: 78,
+                      ),
+                      child: Text("活动开始前24小时可以随意退出，临近活动开始时退出将会记录一次爽约，累计满五次后，将会限制一周不能参加活动。",
+                          style: AppStyle.whiteRegular14),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
             ]),
           ),
-        ));
+        );
     //   ActivityPullDownRefresh(
     //   scrollController: scrollController,
     //   key: pullDownKey,
