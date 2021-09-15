@@ -99,7 +99,6 @@ class MessageManager {
       await updateConversationByMessage(context, msg);
     }
   }
-
   //TODO 这里应该解析转一下格式 暂时先用融云原数据 先处理数据库再更新通知器
   static updateConversationByMessage(BuildContext context, Message msg) async {
     ConversationDto dto = _convertMsgToConversation(msg);
@@ -498,8 +497,20 @@ class MessageManager {
       }
     } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
       //群聊通知
+      Map<String, dynamic> dataMap;
 
-      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      try {
+        if (message.originContentMap != null && message.originContentMap["data"] != null) {
+          dataMap = json.decode(message.originContentMap["data"]);
+        } else if (message.content is GroupNotificationMessage) {
+          GroupNotificationMessage msg = message.content as GroupNotificationMessage;
+          print("GroupNotificationMessage:${msg.data is String}");
+          print("GroupNotificationMessage:${msg.data is Map<String, dynamic>}");
+          dataMap = jsonDecode(msg.data);
+        }
+      } catch (e) {
+        dataMap = Map();
+      }
       switch (dataMap["subType"]) {
         case 0:
           GroupChatUserInformationDBHelper().update(message: message);
@@ -511,7 +522,7 @@ class MessageManager {
           EventBus.init().post(msg: message, registerName: RESET_CHAR_GROUP_USER_LIST);
           break;
         case 4:
-          //修改群名
+        //修改群名
           print("修改了群名");
           ConversationDto dto = new ConversationDto();
           dto.uid = Application.profile.uid;
@@ -635,7 +646,13 @@ class MessageManager {
       case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
         return "撤回了一条消息";
       case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
-        return _parseGrpNtf(msg.originContentMap, isTextMessageGrpNtf: false);
+        if (msg.originContentMap != null && msg.originContentMap["data"] != null) {
+          return _parseGrpNtf(msg.originContentMap, isTextMessageGrpNtf: false);
+        } else if (msg.content is GroupNotificationMessage) {
+          GroupNotificationMessage message = msg.content as GroupNotificationMessage;
+          return _parseGrpNtf(json.decode(message.data), isTextMessageGrpNtf: false);
+        }
+        return "群聊通知";
       case ChatTypeModel.MESSAGE_TYPE_CMD:
         return "私聊通知";
       case ChatTypeModel.MESSAGE_TYPE_SYSTEM_COMMON:
@@ -667,7 +684,9 @@ class MessageManager {
 
   static String _parseGrpNtf(Map<String, dynamic> content, {bool isTextMessageGrpNtf = true}) {
     Map<String, dynamic> dataMap;
-    if (isTextMessageGrpNtf) {
+    if (content["subType"] != null && content["data"] == null) {
+      dataMap = content;
+    } else if (isTextMessageGrpNtf) {
       dataMap = json.decode(json.decode(content["data"])["data"]);
     } else {
       dataMap = json.decode(content["data"]);
@@ -689,6 +708,9 @@ class MessageManager {
         String operatorName = dataMap["operatorName"];
         if (dataMap["operator"] == Application.profile.uid) {
           operatorName = "你";
+        }
+        if (operatorName == "你" && names == "你") {
+          return "你创建了活动";
         }
         return "$operatorName邀请了$names加入群聊";
       case 1:
@@ -746,6 +768,39 @@ class MessageManager {
           }
         }
         return "$names通过扫码加入了群聊";
+      case 6:
+        String names = "";
+        for (int i = 0; i < dataMap["users"].length; i++) {
+          if (dataMap["users"][i]["uid"] == Application.profile.uid) {
+            names += "你";
+          } else {
+            names += dataMap["users"][i]["groupNickName"];
+          }
+          if (i < dataMap["users"].length - 1) {
+            names += "、";
+          }
+        }
+        String operatorName = dataMap["operatorName"];
+        if (dataMap["operator"] == Application.profile.uid) {
+          operatorName = "你";
+        }
+
+        if (operatorName == "你" && names == "你") {
+          return "你创建了活动";
+        }
+        return "$operatorName邀请了$names加入活动";
+      case 7:
+        return "活动即将开始";
+      case 8:
+        if (dataMap["address"] == null && dataMap["count"] == null) {
+          return "活动内容变更";
+        }
+        if (dataMap["address"] != null) {
+          return "活动地址修改为:${dataMap["address"]}";
+        } else {
+          return "活动人数修改为:${dataMap["count"]}人";
+        }
+        return "活动内容变更";
       default:
         return "[群聊通知]";
     }

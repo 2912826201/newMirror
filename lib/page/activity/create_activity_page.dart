@@ -689,6 +689,7 @@ class _CreateActivityPageState extends StateKeyboard {
         ),
       ),
       onTap: () {
+        _unfocus();
         getStoragePermision();
       },
     );

@@ -222,18 +222,21 @@ class _ActivityUserPageState extends State<ActivityUserPage> {
             child: Row(
               children: [
                 Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      model.nickName ?? "",
-                      style: AppStyle.whiteRegular16,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    getSubtitle(model),
-                  ],
+                    child: Container(
+                  constraints: BoxConstraints(minHeight: 48),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        model.nickName ?? "",
+                        style: AppStyle.whiteRegular16,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      getSubtitle(model),
+                    ],
+                  ),
                 )),
                 SizedBox(width: 4),
                 if (widget.type != 0 && widget.type != 3 && widget.type != 5) getSingleChoiceUi(index),

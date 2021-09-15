@@ -264,6 +264,12 @@ class _DetailActivityBottomUiState extends State<DetailActivityBottomUi> {
       } else {
         _applyJoinActivity("");
       }
+    } else if (AuthData.init().getString(widget.activityModel.auth) == "需要验证信息由我确认") {
+      if (widget.inviterId != null) {
+        _joinByInvitationActivity();
+      } else {
+        _showApplyJoinActivityDialog();
+      }
     } else if (AuthData.init().getString(widget.activityModel.auth) == "受到邀请的人") {
       if (widget.inviterId != null) {
         _joinByInvitationActivity();

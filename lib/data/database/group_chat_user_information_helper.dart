@@ -101,17 +101,28 @@ class GroupChatUserInformationDBHelper {
   //移除某一个或者某几个 被移除群成员信息
   void removeMessageGroup(Message message){
     // print("移除好友");
-    if(message!=null||message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
-      Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+    if(message!=null||message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      Map<String, dynamic> mapGroupModel;
+
+      try {
+        if (message.originContentMap != null && message.originContentMap["data"] != null) {
+          mapGroupModel = json.decode(message.originContentMap["data"]);
+        } else if (message.content is GroupNotificationMessage) {
+          GroupNotificationMessage msg = message.content as GroupNotificationMessage;
+          mapGroupModel = jsonDecode(msg.data);
+        }
+      } catch (e) {
+        mapGroupModel = Map();
+      }
       //移除
-      if (mapGroupModel["subType"] == 2||mapGroupModel["subType"]==1) {
+      if (mapGroupModel["subType"] == 2 || mapGroupModel["subType"] == 1) {
         List<dynamic> users = mapGroupModel["users"];
         if (users == null || users.length < 1) {
           return;
         }
         for (dynamic d in users) {
           try {
-            if (d != null&&d["uid"]!=null) {
+            if (d != null && d["uid"] != null) {
               _remove(message.targetId, d["uid"].toString());
             }
           } catch (e) {
