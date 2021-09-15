@@ -39,6 +39,34 @@ class CheckPermissionsUtil {
 
   //检查有没有权限
   _checkPermissions() async {
+    PermissionStatus permissions = await Permission.locationWhenInUse.status;
+
+    if (permissions.isDenied) {
+      permissions = await Permission.locationWhenInUse.request();
+    }
+
+    if (permissions.isGranted) {
+      _getAmapLocation();
+    } else if (permissions.isPermanentlyDenied) {
+      if (!AppPrefs.isFirstLocationPermissionDenied()) {
+        if (CheckPhoneSystemUtil.init().isAndroid()) {
+          if (_openAppSettingsListener != null) {
+            _openAppSettingsListener();
+          }
+        } else {
+          if (_openLocationSettingsListener != null) {
+            _openLocationSettingsListener();
+          }
+        }
+      } else {
+        AppPrefs.setIsFirstLocationPermissionDenied(false);
+      }
+    } else if (permissions.isDenied) {
+      AppPrefs.removeLocationPermissionDenied();
+    }
+  }
+
+  _getAmapLocation() async {
     //检查有没有网络
     if (!(await isHaveNetwork())) {
       _analyzeErrorMessage("未连接到网络");
@@ -145,13 +173,23 @@ class CheckPermissionsUtil {
       }
     } else if (message.contains("定位权限被禁用")) {
       alert = "请授予应用定位权限";
-
-      await _getPermissionStatus();
+      if (CheckPhoneSystemUtil.init().isAndroid()) {
+        if (_openAppSettingsListener != null) {
+          _openAppSettingsListener();
+        }
+      } else {
+        if (_openLocationSettingsListener != null) {
+          _openLocationSettingsListener();
+        }
+      }
     } else if (message.contains("未连接到网络")) {
       alert = "网络异常，未连接到网络";
       isNetworkError = true;
     } else {
       alert = "获取定位权限失败...........";
+      if (_openLocationSettingsListener != null) {
+        _openLocationSettingsListener();
+      }
     }
 
     if (isNetworkError) {
@@ -164,37 +202,6 @@ class CheckPermissionsUtil {
       _errorMessageListener(alert);
     }
     print("_analyzeErrorMessage:$alert");
-  }
-
-  //当没有权限时-获取权限
-  _getPermissionStatus() async {
-    PermissionStatus permissions = await Permission.locationWhenInUse.status;
-
-    if (permissions.isDenied) {
-      permissions = await Permission.locationWhenInUse.request();
-    }
-
-    if (permissions.isGranted) {
-      if (_successListener != null) {
-        _successListener();
-      }
-    } else if (permissions.isPermanentlyDenied) {
-      if (!AppPrefs.isFirstLocationPermissionDenied()) {
-        if (CheckPhoneSystemUtil.init().isAndroid()) {
-          if (_openAppSettingsListener != null) {
-            _openAppSettingsListener();
-          }
-        } else {
-          if (_openLocationSettingsListener != null) {
-            _openLocationSettingsListener();
-          }
-        }
-      } else {
-        AppPrefs.setIsFirstLocationPermissionDenied(false);
-      }
-    } else if (permissions.isDenied) {
-      AppPrefs.removeLocationPermissionDenied();
-    }
   }
 
   //是否有网络
