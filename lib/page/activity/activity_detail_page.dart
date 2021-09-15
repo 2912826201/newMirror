@@ -104,14 +104,14 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
     offsetHeight = ScreenUtil.instance.width / 4;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      /* appBar: CustomAppBar(
+       appBar: CustomAppBar(
         titleString: "活动详情",
         actions: [
           activityModel != null && activityModel.isJoin
               ? CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.white, onTap: _topMoreBtnClick)
               : Container(),
         ],
-      ),*/
+      ),
       body: Container(
         color: AppColor.mainBlack,
         height: ScreenUtil.instance.height,
@@ -222,7 +222,7 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
             child: Container(
               child:*/
         _getSingleChildScrollView(),
-        Positioned(top: 0, child: _appBar()),
+        // Positioned(top: 0, child: _appBar()),
         /*    ),
           ),
         ),*/
@@ -245,13 +245,15 @@ class _ActivityDetailPageState extends StateKeyboard<ActivityDetailPage> {
           controller: refreshController,
           header: SmartRefresherHeadFooter.init().getActivityHeader(),
           onRefresh: () {
+
             Future.delayed(Duration(milliseconds: 4000), () {
               refreshController.refreshCompleted();
             });
             // refreshController.x;
           },
           child: SingleChildScrollView(
-            child: Column(children: [
+            child: Column(
+                children: [
               CachedNetworkImage(
                 height: 300,
                 width: ScreenUtil.instance.width,
