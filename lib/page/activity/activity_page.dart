@@ -132,13 +132,15 @@ class _ActivityState extends State<ActivityPage> with AutomaticKeepAliveClientMi
     // 已经获取了定位权限
     if (permissions.isGranted) {
       print("flutter定位只能获取到经纬度信息");
-      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
-      print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
-      latitude = currentAddressInfo.latitude.toString();
-      longitude = currentAddressInfo.longitude.toString();
-      citycode = null;
+      try {
+        currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+        print("currentAddressInfo::::::${currentAddressInfo.toJson()}");
+        latitude = currentAddressInfo.latitude.toString();
+        longitude = currentAddressInfo.longitude.toString();
+        citycode = null;
+        reverseGeocoding();
+      } catch (error) {}
       requestActivity(isRefresh: true);
-      reverseGeocoding();
     } else if (isDidChangeAppLifecycle == false) {
       print("嘻嘻嘻嘻嘻");
       // 请求定位权限

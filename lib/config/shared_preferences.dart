@@ -11,6 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 String prefsKeyIsFirstLaunch = "isFirstLaunch";
 
+//是否是第一次拒绝定位权限
+String prefsKeyIsFirstLocationPermissionDenied = "isFirstLocationPermissionDenied";
+
 // 是否同意用户协议和隐私政策
 String prefsKeyIsAgreeUserAgreement = "isAgreeUserAgreement";
 // 绑定同意用户协议只执行一次弹窗的布尔值
@@ -55,13 +58,30 @@ class AppPrefs {
     return _instance.setBool(prefsKeyIsFirstLaunch, isFirstLaunch);
   }
 
+  // 是否是第一次拒绝定位权限
+  static bool isFirstLocationPermissionDenied() {
+    bool value = _instance.getBool(prefsKeyIsFirstLocationPermissionDenied);
+    if (value == null) {
+      value = true;
+    }
+    return value;
+  }
+
+  static setIsFirstLocationPermissionDenied(bool isFirst) {
+    return _instance.setBool(prefsKeyIsFirstLocationPermissionDenied, isFirst);
+  }
+
+  static removeLocationPermissionDenied() {
+    return _instance.remove(prefsKeyIsFirstLocationPermissionDenied);
+  }
+
   //  是否同意用户协议和隐私政策
   static bool isAgreeUserAgreement() {
-     bool value = _instance.getBool(prefsKeyIsAgreeUserAgreement);
-     if (value == null) {
-       value = false;
-     }
-     return value;
+    bool value = _instance.getBool(prefsKeyIsAgreeUserAgreement);
+    if (value == null) {
+      value = false;
+    }
+    return value;
   }
 
   static setIsAgreeUserAgreement(bool isAgree) {

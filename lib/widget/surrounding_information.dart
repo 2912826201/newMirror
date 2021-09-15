@@ -105,10 +105,14 @@ class _SurroundingInformationPageState extends State<SurroundingInformationPage>
   }
 
   init() async {
-    //flutter定位只能获取到经纬度信息
-    currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
-    // 调用周边
-    aroundHttp();
+    try {
+      //flutter定位只能获取到经纬度信息
+      currentAddressInfo = await AmapLocation.fetch(iosAccuracy: AmapLocationAccuracy.HUNDREE_METERS);
+      // 调用周边
+      aroundHttp();
+    } catch (e) {
+      print("111：${e.toString()}");
+    }
   }
 
   //调用接口
