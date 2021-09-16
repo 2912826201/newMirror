@@ -306,7 +306,7 @@ class _EditInformationState extends State<EditInformation> {
       padding: title == "简介" ? EdgeInsets.only(top: 13, left: 16, right: 16) : EdgeInsets.only(left: 16, right: 16),
       child: Row(
         children: [
-          Container(
+          Align(
             alignment: title == "简介" ? Alignment.topLeft : Alignment.centerLeft,
             child: Text(
               title,
@@ -326,7 +326,7 @@ class _EditInformationState extends State<EditInformation> {
             ),
           ),
           Spacer(),
-          Container(
+          Align(
             alignment: title == "简介" ? Alignment.topRight : Alignment.centerRight,
             child: AppIcon.getAppIcon(
               AppIcon.arrow_right_18,

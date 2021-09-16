@@ -90,13 +90,13 @@ class _QueryFollowState extends State<QueryFollowList> {
       _refreshController.loadComplete();
       return;
     }
-    print('====================关注页请求接口');
+    print('====================关注页请求接口$listPage--$_lastTime');
     BuddyListModel model = await GetFollowList(20, uid: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
+      buddyList.clear();
       if (model != null) {
         hasNext = model.hasNext;
-        buddyList.clear();
         _lastTime = model.lastTime;
         if (model.list.isNotEmpty) {
           model.list.forEach((element) {
@@ -160,9 +160,9 @@ class _QueryFollowState extends State<QueryFollowList> {
     SearchUserModel model = await searchFollowUser(text, 20, uids: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1) {
       _refreshController.loadComplete();
+      buddyList.clear();
       if (model != null) {
         print('===================== =============model有值');
-        buddyList.clear();
         hasNext = model.hasNext;
         if (model.list.isNotEmpty) {
           model.list.forEach((element) {

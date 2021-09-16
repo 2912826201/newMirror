@@ -61,6 +61,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
+        print('----获取到的动态列表--type==${widget.type}-----------${model.toJson()}');
         followlastTime = model.lastTime;
         if (followModel.isNotEmpty) {
           followModel.clear();
@@ -68,11 +69,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         }
         if (model.list != null && model.list.length != 0) {
           listNoData = false;
-          print('model.list.sublist(0);----------${model.list.sublist(0).length}');
           model.list.forEach((result) {
-            print('---------------------${HomeFeedModel.fromJson(result).id}');
-            followModel.add(HomeFeedModel.fromJson(result));
-            animationMap[HomeFeedModel.fromJson(result).id] =
+            HomeFeedModel feedModel = HomeFeedModel.fromJson(result);
+            followModel.add(feedModel);
+            animationMap[feedModel.id] =
                 AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
         } else {
@@ -97,8 +97,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         followlastTime = model.lastTime;
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            animationMap[HomeFeedModel.fromJson(result).id] =
+            HomeFeedModel feedModel = HomeFeedModel.fromJson(result);
+            followModel.add(feedModel);
+            animationMap[feedModel.id] =
                 AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
           });
         }
@@ -163,7 +164,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   void initState() {
     super.initState();
     EventBus.init().registerSingleParameter(_tabBarDoubleTap, EVENTBUS_PROFILE_PAGE, registerName: DOUBLE_TAP_TABBAR);
-    print('-----------------------------profileDetailsListInit');
     EventBus.init().registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE,
         registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
@@ -174,7 +174,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   }
 
   _tabBarDoubleTap(result) {
-    print('-----------------------------333333333333333333333333333333');
     int type = result as int;
     if (type == widget.type) {
       _refreshController.requestRefresh(duration: Duration(milliseconds: 250));

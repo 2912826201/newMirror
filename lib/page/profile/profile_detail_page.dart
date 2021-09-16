@@ -718,7 +718,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 ? Center(
                     child: Text(
                       "编辑资料",
-                      style: AppStyle.textRegular12,
+                      style: AppStyle.whiteRegular12,
                     ),
                   )
                 : _buttonLayoutSelect(notifier),

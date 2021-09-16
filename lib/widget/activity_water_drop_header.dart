@@ -65,8 +65,7 @@ class _ActivityWaterDropHeader extends RefreshIndicatorState<ActivityWaterDropHe
     // TODO: implement onOffsetChange
     final double realOffset =
         offset - 44; //55.0 mean circleHeight(24) + originH (20) in Painter
-    // when readyTorefresh
-    if (!_animationController.isAnimating)
+
       _animationController.value = realOffset;
   }
 
